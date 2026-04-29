@@ -1,109 +1,217 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Leyline Sync
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+Realtime Magic: The Gathering board/controller app built with Next.js and Supabase.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+The current goal is a shared board screen plus a player controller screen. A deck can be spawned into `game_cards`, the board shows live card state, and controller buttons execute scripted card actions such as Llanowar Elves adding green mana.
 
-## Features
+## Stack
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+- Next.js app router
+- React 19
+- Tailwind CSS
+- Supabase Auth, Database, Realtime, and Edge Functions
 
-## Demo
+## Clone And Run
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+Install dependencies:
 
-## Deploy to Vercel
+```powershell
+npm install
+```
 
-Vercel deployment will guide you through creating a Supabase account and project.
+Create `.env.local`:
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-or-anon-key
+```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+Run the dev server:
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+```powershell
+npm run dev
+```
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+Open:
 
-## Clone and run locally
+- App: `http://localhost:3000`
+- Board view: `http://localhost:3000/board/<session-id>`
+- Controller view: `http://localhost:3000/controller/<session-id>`
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+## Build And Verify
 
-2. Create a Next.js app using the Supabase Starter template npx command
+Use these before committing or deploying:
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+```powershell
+npx tsc --noEmit
+npm run lint
+npm run build
+```
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+Start a production build locally:
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+```powershell
+npm run start
+```
 
-3. Use `cd` to change into the app's directory
+## Supabase Edge Function
 
-   ```bash
-   cd with-supabase-app
-   ```
+The deck spawning function lives at:
 
-4. Rename `.env.example` to `.env.local` and update the following:
+```text
+supabase/functions/spawn-deck/index.ts
+```
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+Check it locally with Deno:
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+```powershell
+deno check --config "supabase/functions/spawn-deck/deno.json" "supabase/functions/spawn-deck/index.ts"
+```
 
-5. You can now run the Next.js local development server:
+Deploy it:
 
-   ```bash
-   npm run dev
-   ```
+```powershell
+supabase functions deploy spawn-deck
+```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+Call it with:
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+```powershell
+curl -i --location --request POST "https://<PROJECT_REF>.supabase.co/functions/v1/spawn-deck" `
+  --header "Authorization: Bearer <SUPABASE_ANON_KEY>" `
+  --header "Content-Type: application/json" `
+  --data "{""sessionId"":""..."",""deckId"":""..."",""ownerId"":""...""}"
+```
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+## Expected Database Shape
 
-## Feedback and issues
+The app currently expects these tables/columns.
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+`cards`:
 
-## More Supabase examples
+- `id`
+- `name`
+- `script`
+- `type_line`
+- `image_url`
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+`decks`:
+
+- `id`
+- `list_data`, an array of card ids
+
+`game_cards`:
+
+- `id`
+- `session_id`
+- `card_id`
+- `owner_id`
+- `zone`
+- `is_tapped`
+- `position_x`
+- `position_y`
+
+`game_players`:
+
+- `session_id`
+- `player_id`
+- `mana_pool`
+
+Add the image column if it does not exist yet:
+
+```sql
+alter table public.cards
+add column if not exists image_url text;
+```
+
+## RLS Policies Needed
+
+The browser client needs to read card metadata:
+
+```sql
+create policy "Authenticated users can read cards"
+on public.cards
+for select
+to authenticated
+using (true);
+```
+
+Players need to manage their own player state:
+
+```sql
+create policy "Players can read their own player state"
+on public.game_players
+for select
+to authenticated
+using (player_id = auth.uid());
+
+create policy "Players can create their own player state"
+on public.game_players
+for insert
+to authenticated
+with check (player_id = auth.uid());
+
+create policy "Players can update their own player state"
+on public.game_players
+for update
+to authenticated
+using (player_id = auth.uid())
+with check (player_id = auth.uid());
+```
+
+Depending on your existing policies, `game_cards` also needs authenticated read/update access for the relevant session/player.
+
+## Realtime
+
+The board and controller subscribe to `game_cards` and `cards`. A 2 second fallback refresh is also in place.
+
+Enable Supabase Realtime for the relevant tables:
+
+```sql
+alter publication supabase_realtime add table public.game_cards;
+alter publication supabase_realtime add table public.cards;
+alter publication supabase_realtime add table public.game_players;
+```
+
+If a table is already in the publication, Supabase may return an error. That is fine.
+
+## Current App State
+
+Implemented:
+
+- `/board/[id]` renders the shared board for a session.
+- `/controller/[id]` renders the player controller for a session.
+- `spawn-deck` Edge Function reads `decks.list_data` and inserts rows into `game_cards`.
+- `GameBoard` fetches `game_cards`, joins card metadata manually by `card_id`, and renders `cards.image_url` when present.
+- `ControllerList` fetches the current authenticated player, loads only their `game_cards`, joins card metadata manually, and renders controls.
+- `CardController` can tap/untap a card.
+- `ActionButtons` reads `cards.script` and supports:
+  - `type: "add_mana"`
+  - `triggers: ["manual_tap"]`
+- Llanowar Elves script example:
+
+```json
+{
+  "actions": [
+    {
+      "type": "add_mana",
+      "color": "G",
+      "amount": 1
+    }
+  ],
+  "triggers": ["manual_tap"]
+}
+```
+
+Known next steps:
+
+- Add/fill `cards.image_url` values.
+- Confirm RLS policies for `cards`, `game_cards`, and `game_players`.
+- Add a visible mana pool UI so mana changes can be seen immediately.
+- Decide how zones should work: library, hand, battlefield, graveyard, exile.
+- Move more MTG script effects into typed executors: draw card, move zone, create token, deal damage.
+- Consider moving action execution into an Edge Function or RPC for safer server-side rules.
+
+## Notes
+
+Next build currently warns that there is another `package-lock.json` at `C:\Users\jordy\package-lock.json`. The build still succeeds. To silence that warning later, either remove the unrelated parent lockfile or configure `turbopack.root` in `next.config.ts`.

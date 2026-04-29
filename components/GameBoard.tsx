@@ -1,12 +1,34 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import type { RealtimePostgresChangesPayload, REALTIME_SUBSCRIBE_STATES } from '@supabase/supabase-js'
 
 type GameCard = {
   id: string
+  card_id: string
   name: string
   is_tapped: boolean
+  position_x: number
+  position_y: number
+  zone: string
+  image_url: string | null
+}
+
+type GameCardInstanceRow = {
+  id: string
+  card_id: string
+  position_x: number
+  position_y: number
+  is_tapped: boolean
+  zone: string
+}
+
+type LinkedCard = {
+  id: string
+  name: string | null
+  image_url: string | null
 }
 
 export default function GameBoard({ sessionId }: { sessionId: string }) {
@@ -18,7 +40,15 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
     const fetchCards = async () => {
       const { data, error } = await supabase
         .from('game_cards')
-        .select('id, name, is_tapped')
+        .select(`
+          id,
+          card_id,
+          position_x,
+          position_y,
+          is_tapped,
+          zone
+        `
+        )
         .eq('session_id', sessionId)
 
       if (error) {
@@ -28,13 +58,51 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
       }
 
       setErrorMessage(null)
-      setCards(data ?? [])
+
+      if (data) {
+        const gameCardRows = data as GameCardInstanceRow[]
+        const cardIds = [...new Set(gameCardRows.map((card) => card.card_id).filter(Boolean))]
+
+        const { data: linkedCardsData, error: linkedCardsError } = cardIds.length
+          ? await supabase
+              .from('cards')
+              .select('id, name, image_url')
+              .in('id', cardIds)
+          : { data: [], error: null }
+
+        if (linkedCardsError) {
+          console.error('Failed to fetch board linked cards:', linkedCardsError)
+          setErrorMessage(linkedCardsError.message)
+          return
+        }
+
+        const linkedCardsById = new Map(
+          ((linkedCardsData ?? []) as LinkedCard[]).map((card) => [card.id, card]),
+        )
+
+        const flattenedCards = gameCardRows.map((item) => {
+          const linkedCard = linkedCardsById.get(item.card_id) ?? null
+
+          return {
+            id: item.id,
+            card_id: item.card_id,
+            position_x: item.position_x,
+            position_y: item.position_y,
+            is_tapped: item.is_tapped,
+            zone: item.zone,
+            name: linkedCard?.name || 'Unknown',
+            image_url: linkedCard?.image_url ?? null,
+          }
+        })
+
+        setCards(flattenedCards)
+      }
     }
 
     fetchCards()
 
     const channel = supabase
-      .channel(`game_cards:${sessionId}`)
+      .channel(`board:${sessionId}`)
       .on(
         'postgres_changes',
         {
@@ -43,19 +111,34 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
           table: 'game_cards',
           filter: `session_id=eq.${sessionId}`,
         },
-        (payload) => {
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
           console.log('Board received realtime update:', payload)
           fetchCards()
         },
       )
-      .subscribe((status, error) => {
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'cards',
+        },
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
+          console.log('Board received card metadata update:', payload)
+          fetchCards()
+        },
+      )
+      .subscribe((status: `${REALTIME_SUBSCRIBE_STATES}`, error?: Error) => {
         console.log('Board realtime status:', status)
         if (error) {
           console.error('Board realtime error:', error)
         }
       })
 
+    const refreshInterval = window.setInterval(fetchCards, 2000)
+
     return () => {
+      window.clearInterval(refreshInterval)
       supabase.removeChannel(channel)
     }
   }, [sessionId, supabase])
@@ -79,8 +162,20 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
             card.is_tapped ? 'rotate-90 opacity-70' : ''
           }`}
         >
-          <div className="aspect-[2/3] rounded-md bg-slate-700 p-3 flex items-center justify-center text-center font-medium">
-            {card.name}
+          <div className="relative aspect-[2/3] overflow-hidden rounded-md bg-slate-700">
+            {card.image_url ? (
+              <Image
+                src={card.image_url}
+                alt={card.name || 'Magic card'}
+                fill
+                sizes="(min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center p-3 text-center font-medium">
+                {card.name || 'Unnamed Card'}
+              </div>
+            )}
           </div>
         </div>
       ))}
