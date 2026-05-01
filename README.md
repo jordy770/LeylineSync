@@ -78,9 +78,9 @@ Call it with:
 
 ```powershell
 curl -i --location --request POST "https://<PROJECT_REF>.supabase.co/functions/v1/spawn-deck" `
-  --header "Authorization: Bearer <SUPABASE_ANON_KEY>" `
+  --header "Authorization: Bearer <USER_ACCESS_TOKEN>" `
   --header "Content-Type: application/json" `
-  --data "{""sessionId"":""..."",""deckId"":""..."",""ownerId"":""...""}"
+  --data "{""sessionId"":""..."",""deckId"":""...""}"
 ```
 
 ## Expected Database Shape
@@ -107,6 +107,7 @@ The app currently expects these tables/columns.
 - `card_id`
 - `owner_id`
 - `zone`
+- `zone_position`
 - `is_tapped`
 - `position_x`
 - `position_y`
@@ -116,6 +117,33 @@ The app currently expects these tables/columns.
 - `session_id`
 - `player_id`
 - `mana_pool`
+
+`game_turn_state`:
+
+- `session_id`
+- `active_player_id`
+- `turn_number`
+- `phase`
+- `step`
+- `created_at`
+- `updated_at`
+
+`game_sessions`:
+
+- `id`
+- `status`
+- `created_by`
+- `created_at`
+- `locked_at`
+- `finished_at`
+
+`game_session_players`:
+
+- `session_id`
+- `player_id`
+- `seat_number`
+- `life_total`
+- `joined_at`
 
 Add the image column if it does not exist yet:
 
@@ -160,6 +188,36 @@ with check (player_id = auth.uid());
 ```
 
 Depending on your existing policies, `game_cards` also needs authenticated read/update access for the relevant session/player.
+
+## RPC Functions
+
+The app expects these database functions for server-side game actions:
+
+- `public.move_card_to_zone(uuid, text)`
+- `public.add_mana_from_card(uuid, uuid, uuid, text, integer, boolean)`
+- `public.draw_card(uuid, uuid)`
+- `public.untap_all(uuid, uuid)`
+- `public.clear_mana_pool(uuid, uuid)`
+- `public.initialize_turn_state(uuid, uuid)`
+- `public.advance_step(uuid)`
+- `public.create_game_session()`
+- `public.join_game_session(uuid)`
+- `public.lock_game_session(uuid)`
+
+The migrations live at:
+
+```text
+supabase/migrations/202605010000_move_card_to_zone.sql
+supabase/migrations/202605010001_add_mana_from_card.sql
+supabase/migrations/202605010002_draw_card.sql
+supabase/migrations/202605010003_untap_all.sql
+supabase/migrations/202605010004_clear_mana_pool.sql
+supabase/migrations/202605010005_turn_state.sql
+supabase/migrations/202605010006_advance_step.sql
+supabase/migrations/202605010007_advance_step_untap.sql
+supabase/migrations/202605010008_advance_step_draw.sql
+supabase/migrations/202605010009_game_sessions.sql
+```
 
 ## Realtime
 
@@ -212,6 +270,185 @@ Known next steps:
 - Move more MTG script effects into typed executors: draw card, move zone, create token, deal damage.
 - Consider moving action execution into an Edge Function or RPC for safer server-side rules.
 
+## Turn And Phase Roadmap
+
+Do not automate all Magic rules at once. First store the current turn/phase/step, then attach small server-side actions to step transitions.
+
+Recommended order:
+
+1. Add `clear_mana_pool` RPC.
+2. Add turn state in a dedicated `game_turn_state` table:
+   - `session_id`
+   - `active_player_id`
+   - `turn_number`
+   - `phase`
+   - `step`
+3. Add typed phase/step values in the app.
+4. Add `advance_step` RPC.
+5. Show current active player, turn number, phase, and step in the board/controller UI.
+
+MTG phase structure to model:
+
+- Beginning Phase
+  - Untap Step
+  - Upkeep Step
+  - Draw Step
+- Main Phase 1
+- Combat Phase
+  - Beginning of Combat Step
+  - Declare Attackers Step
+  - Declare Blockers Step
+  - Combat Damage Step
+  - End of Combat Step
+- Main Phase 2
+- Ending Phase
+  - End Step
+  - Cleanup Step
+
+Later `advance_step` can call small RPCs automatically:
+
+- battlefield cards are untapped automatically when advancing from Untap Step to Upkeep Step
+- one card is drawn automatically when advancing from Draw Step to Main Phase 1
+- `clear_mana_pool` when leaving phases where mana should empty
+- cleanup/discard logic during Cleanup Step
+
+Mana clearing should become effect-aware before it is fully automated. Some cards allow mana to stay in a player's mana pool longer than normal, so `clear_mana_pool` should eventually preserve mana covered by active effects instead of always resetting every color to zero.
+
+Likely future model:
+
+```text
+game_continuous_effects
+- id
+- session_id
+- player_id
+- source_card_id
+- effect_type
+- payload
+- expires_at_step
+- created_at
+```
+
+Example retention effect:
+
+```json
+{
+  "effect_type": "mana_does_not_empty",
+  "payload": {
+    "colors": ["G"]
+  },
+  "expires_at_step": "cleanup"
+}
+```
+
+Future `clear_mana_pool` behavior:
+
+1. Load the player's current `mana_pool`.
+2. Load active mana-retention effects for that player/session.
+3. Clear only mana that is not protected by those effects.
+4. Keep retained mana until the effect expires.
+
+Until this is implemented, automatic mana clearing in `advance_step` should be added carefully and documented as not supporting special mana-retention cards yet.
+
+## Multiplayer And Session Roadmap
+
+Before building combat, damage, and win conditions, harden multiplayer sessions. Combat depends on reliable player membership, active-player rotation, and life totals.
+
+Recommended next slice:
+
+1. Add `game_sessions`.
+2. Add `game_session_players`.
+3. Add RPCs for creating, joining, and locking a session.
+4. Update game RPCs to reject actions from users who are not members of the session.
+5. Add active-player switching at end of turn.
+
+First implemented slice:
+
+- homepage lobby for creating and joining sessions
+- homepage deck spawn by deck id
+- `game_sessions`
+- `game_session_players`
+- `create_game_session`
+- `join_game_session`
+- `lock_game_session`
+- session creator is automatically seat 1
+- joined players receive the next available seat number
+- locked sessions cannot be joined
+- `spawn-deck` derives the owner from the authenticated user token
+- `spawn-deck` rejects users who are not members of the session
+- `spawn-deck` rejects spawning a second deck for the same player/session
+
+Suggested database shape:
+
+```text
+game_sessions
+- id
+- status: open | locked | finished
+- created_by
+- created_at
+- locked_at
+- finished_at
+```
+
+```text
+game_session_players
+- session_id
+- player_id
+- seat_number
+- life_total
+- joined_at
+```
+
+Suggested RPCs:
+
+- `create_game_session()`
+- `join_game_session(session_id)`
+- `lock_game_session(session_id)`
+
+After this is in place, combat/damage can build on stable multiplayer state:
+
+- attackers/blockers
+- life total changes
+- damage assignment
+- win/loss state
+- finished session status
+
+## Multi-Session Notes
+
+Multiple games can run in parallel as long as each game uses a unique `session_id`.
+
+Current session isolation:
+
+- `game_cards.session_id` separates card state per game.
+- `game_players` uses `(session_id, player_id)` so the same player can have separate mana pools in multiple games.
+- `game_turn_state.session_id` is the primary key, so each session has one turn-state row.
+- Board/controller queries and realtime subscriptions filter by `session_id`.
+
+Known hardening work for later:
+
+- Add a dedicated `game_sessions` table.
+- Add a `game_session_players` table to explicitly track which players belong to each session.
+- Update RPCs to reject actions from users who are not part of the session.
+- Decide how active player changes at end of turn.
+- Add cleanup/archival for old sessions, cards, player state, and turn state.
+
+Current prototype caveat: `initialize_turn_state` allows any signed-in user to initialize a new session with themselves as active player. This is acceptable while prototyping, but should be tied to explicit session membership before multiplayer hardening.
+
 ## Notes
 
 Next build currently warns that there is another `package-lock.json` at `C:\Users\jordy\package-lock.json`. The build still succeeds. To silence that warning later, either remove the unrelated parent lockfile or configure `turbopack.root` in `next.config.ts`.
+
+Simpele stappen plan:
+
+[x] Mana pool zichtbaar maken.
+[x] Zones expliciet modelleren en tonen.
+[x] Acties centraliseren in een typed executor: add_mana, tap, draw_card, move_zone.
+[x] Kritieke acties verplaatsen naar Supabase RPC of Edge Function.
+[x] Mana pool kunnen clearen.
+[x] Turn state zichtbaar maken.
+[x] Turn step handmatig kunnen doorschuiven.
+[x] Untap Step automatiseert battlefield untap.
+[x] Draw Step automatiseert een kaart trekken.
+[x] Multiplayer sessies kunnen aanmaken/joinen/locken.
+[x] Decks vanuit de sessielobby kunnen spawnen.
+[ ] RLS policies strak maken per speler/session.
+[ ] Daarna pas complexere MTG-logica.

@@ -1,32 +1,16 @@
 'use client' // Cruciaal voor het gebruik van de client en hooks
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-
-type ManaPool = Record<string, number>
-
-type CardAction = {
-  type: string
-  color?: string
-  amount?: number
-}
+import { addManaFromCard, getErrorMessage } from '@/lib/game/actions'
+import type { CardScript } from '@/lib/game/types'
 
 type CardWithScript = {
   id: string
   is_tapped: boolean
   cards?: {
-    script?: {
-      actions?: CardAction[]
-      triggers?: string[]
-    } | null
+    script?: CardScript | null
   } | null
-}
-
-type SupabaseErrorLike = {
-  code?: string
-  details?: string
-  hint?: string
-  message?: string
 }
 
 interface ActionButtonsProps {
@@ -35,31 +19,8 @@ interface ActionButtonsProps {
   playerId: string;
 }
 
-function isSupabaseErrorLike(error: unknown): error is SupabaseErrorLike {
-  return typeof error === 'object' && error !== null && 'message' in error
-}
-
-function getErrorMessage(error: unknown) {
-  if (error instanceof Error) {
-    return error.message
-  }
-
-  if (isSupabaseErrorLike(error)) {
-    return [
-      error.message,
-      error.code ? `Code: ${error.code}` : null,
-      error.details,
-      error.hint,
-    ]
-      .filter(Boolean)
-      .join(' ')
-  }
-
-  return 'Er is een onbekende fout opgetreden'
-}
-
 export default function ActionButtons({ card, sessionId, playerId }: ActionButtonsProps) {
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   
   // Haal het script op uit de gejoinde 'cards' tabel
@@ -77,49 +38,15 @@ export default function ActionButtons({ card, sessionId, playerId }: ActionButto
     }
 
     try {
-      if (requiresManualTap) {
-        const { error: tapError } = await supabase
-          .from('game_cards')
-          .update({ is_tapped: true })
-          .eq('id', card.id)
-          .eq('is_tapped', false)
-
-        if (tapError) throw tapError;
-      }
-
-      // 1. Haal de huidige mana_pool op van de speler in deze sessie
-      const { data, error } = await supabase
-        .from('game_players')
-        .select('mana_pool')
-        .eq('session_id', sessionId)
-        .eq('player_id', playerId)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      // 2. Bereken de nieuwe pool
-      const currentPool = (data?.mana_pool as ManaPool | null) || { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
-      const newPool = { 
-        ...currentPool, 
-        [color]: (currentPool[color] || 0) + amount 
-      };
-
-      // 3. Update de database (Realtime zorgt voor de rest)
-      const { error: updateError } = data
-        ? await supabase
-            .from('game_players')
-            .update({ mana_pool: newPool })
-            .eq('session_id', sessionId)
-            .eq('player_id', playerId)
-        : await supabase
-            .from('game_players')
-            .insert({
-              session_id: sessionId,
-              player_id: playerId,
-              mana_pool: newPool,
-            });
-
-      if (updateError) throw updateError;
+      await addManaFromCard({
+        supabase,
+        cardId: card.id,
+        sessionId,
+        playerId,
+        color,
+        amount,
+        shouldTapCard: requiresManualTap,
+      })
       
       console.log(`Mana toegevoegd: ${amount}x ${color}`);
     } catch (err) {

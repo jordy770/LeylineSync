@@ -3,99 +3,24 @@
 import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { getBoardCards } from '@/lib/game/data'
+import type { BoardCard } from '@/lib/game/types'
 import type { RealtimePostgresChangesPayload, REALTIME_SUBSCRIBE_STATES } from '@supabase/supabase-js'
 
-type GameCard = {
-  id: string
-  card_id: string
-  name: string
-  is_tapped: boolean
-  position_x: number
-  position_y: number
-  zone: string
-  image_url: string | null
-}
-
-type GameCardInstanceRow = {
-  id: string
-  card_id: string
-  position_x: number
-  position_y: number
-  is_tapped: boolean
-  zone: string
-}
-
-type LinkedCard = {
-  id: string
-  name: string | null
-  image_url: string | null
-}
-
 export default function GameBoard({ sessionId }: { sessionId: string }) {
-  const [cards, setCards] = useState<GameCard[]>([])
+  const [cards, setCards] = useState<BoardCard[]>([])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     const fetchCards = async () => {
-      const { data, error } = await supabase
-        .from('game_cards')
-        .select(`
-          id,
-          card_id,
-          position_x,
-          position_y,
-          is_tapped,
-          zone
-        `
-        )
-        .eq('session_id', sessionId)
-
-      if (error) {
+      try {
+        const boardCards = await getBoardCards(supabase, sessionId)
+        setErrorMessage(null)
+        setCards(boardCards)
+      } catch (error) {
         console.error('Failed to fetch board cards:', error)
-        setErrorMessage(error.message)
-        return
-      }
-
-      setErrorMessage(null)
-
-      if (data) {
-        const gameCardRows = data as GameCardInstanceRow[]
-        const cardIds = [...new Set(gameCardRows.map((card) => card.card_id).filter(Boolean))]
-
-        const { data: linkedCardsData, error: linkedCardsError } = cardIds.length
-          ? await supabase
-              .from('cards')
-              .select('id, name, image_url')
-              .in('id', cardIds)
-          : { data: [], error: null }
-
-        if (linkedCardsError) {
-          console.error('Failed to fetch board linked cards:', linkedCardsError)
-          setErrorMessage(linkedCardsError.message)
-          return
-        }
-
-        const linkedCardsById = new Map(
-          ((linkedCardsData ?? []) as LinkedCard[]).map((card) => [card.id, card]),
-        )
-
-        const flattenedCards = gameCardRows.map((item) => {
-          const linkedCard = linkedCardsById.get(item.card_id) ?? null
-
-          return {
-            id: item.id,
-            card_id: item.card_id,
-            position_x: item.position_x,
-            position_y: item.position_y,
-            is_tapped: item.is_tapped,
-            zone: item.zone,
-            name: linkedCard?.name || 'Unknown',
-            image_url: linkedCard?.image_url ?? null,
-          }
-        })
-
-        setCards(flattenedCards)
+        setErrorMessage(error instanceof Error ? error.message : 'Could not load board cards')
       }
     }
 

@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { setCardTapped } from '@/lib/game/actions'
 
 export default function CardController({
   cardId,
@@ -13,10 +14,7 @@ export default function CardController({
   const supabase = useMemo(() => createClient(), [])
 
   const toggleTapped = async () => {
-    await supabase
-      .from('game_cards')
-      .update({ is_tapped: !isTapped })
-      .eq('id', cardId)
+    await setCardTapped(supabase, cardId, !isTapped)
   }
 
   return (

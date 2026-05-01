@@ -1,4 +1,5 @@
 import GameBoard from '@/components/GameBoard';
+import TurnStatusPanel from '@/components/TurnStatusPanel';
 import { Suspense } from 'react';
 
 export default function BoardPage({ params }: { params: Promise<{ id: string }> }) {
@@ -20,6 +21,9 @@ async function BoardContent({ params }: { params: Promise<{ id: string }> }) {
       </div>
       
       {/* Hier komt de component die luistert naar de database */}
+      <div className="p-6 pb-0">
+        <TurnStatusPanel sessionId={id} />
+      </div>
       <GameBoard sessionId={id} />
     </main>
   );
