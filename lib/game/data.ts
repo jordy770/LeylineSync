@@ -1,6 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
   BoardCard,
+  CombatActionState,
+  CombatAssignment,
   ControllerCard,
   GameCardInstanceRow,
   GameSession,
@@ -162,7 +164,7 @@ export async function getPlayerManaPool(
 export async function getTurnState(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase
     .from('game_turn_state')
-    .select('session_id, active_player_id, turn_number, phase, step, created_at, updated_at')
+    .select('session_id, active_player_id, priority_player_id, turn_number, phase, step, created_at, updated_at')
     .eq('session_id', sessionId)
     .maybeSingle()
 
@@ -188,17 +190,74 @@ export async function getGameSession(supabase: SupabaseClient, sessionId: string
 }
 
 export async function getGameSessionPlayers(supabase: SupabaseClient, sessionId: string) {
-  const { data, error } = await supabase
-    .from('game_session_players')
-    .select('session_id, player_id, seat_number, life_total, joined_at')
-    .eq('session_id', sessionId)
-    .order('seat_number', { ascending: true })
+  const { data, error } = await supabase.rpc('get_session_players', {
+    p_session_id: sessionId,
+  })
 
   if (error) {
     throw error
   }
 
   return (data ?? []) as GameSessionPlayer[]
+}
+
+export async function getCombatAssignments(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('get_combat_assignments', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []) as CombatAssignment[]
+}
+
+export async function getCombatActionState(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('get_combat_action_state', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as CombatActionState
+}
+
+export async function getCurrentPlayerSessions(supabase: SupabaseClient) {
+  const playerId = await getCurrentPlayerId(supabase)
+
+  if (!playerId) {
+    return []
+  }
+
+  const { data, error } = await supabase
+    .from('game_session_players')
+    .select('session_id')
+    .eq('player_id', playerId)
+
+  if (error) {
+    throw error
+  }
+
+  const sessionIds = [...new Set((data ?? []).map((row) => row.session_id).filter(Boolean))]
+
+  if (sessionIds.length === 0) {
+    return []
+  }
+
+  const { data: sessions, error: sessionsError } = await supabase
+    .from('game_sessions')
+    .select('id, status, created_by, created_at, locked_at, finished_at')
+    .in('id', sessionIds)
+    .order('created_at', { ascending: false })
+
+  if (sessionsError) {
+    throw sessionsError
+  }
+
+  return ((sessions ?? []) as Partial<GameSession>[]).map(normalizeGameSession)
 }
 
 export function normalizeManaPool(pool: ManaPool | null | undefined): ManaPool {
@@ -233,6 +292,7 @@ export function normalizeTurnState(state: Partial<GameTurnState>): GameTurnState
   return {
     session_id: state.session_id ?? '',
     active_player_id: state.active_player_id ?? '',
+    priority_player_id: state.priority_player_id ?? state.active_player_id ?? '',
     turn_number: state.turn_number ?? 1,
     phase: normalizeTurnPhase(state.phase),
     step: normalizeTurnStep(state.step),

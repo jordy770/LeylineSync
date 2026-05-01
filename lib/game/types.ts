@@ -18,6 +18,7 @@ export type GameSession = {
 export type GameSessionPlayer = {
   session_id: string
   player_id: string
+  username?: string | null
   seat_number: number
   life_total: number
   joined_at?: string
@@ -42,11 +43,42 @@ export type TurnStep =
 export type GameTurnState = {
   session_id: string
   active_player_id: string
+  priority_player_id?: string | null
   turn_number: number
   phase: TurnPhase
   step: TurnStep
   created_at?: string
   updated_at?: string
+}
+
+export type CombatAssignment = {
+  id: string
+  session_id: string
+  turn_number: number
+  attacker_card_id: string
+  attacker_name: string
+  attacking_player_id: string
+  attacking_username: string
+  defending_player_id: string
+  defending_username: string
+  blocker_card_id?: string | null
+  blocker_name?: string | null
+  created_at?: string
+}
+
+export type CombatActionState = {
+  can_declare_attackers: boolean
+  can_declare_blockers?: boolean
+  reason?: string | null
+  attack_reason?: string | null
+  block_reason?: string | null
+  blockable_attackers_count?: number
+  active_player_id?: string | null
+  priority_player_id?: string | null
+  current_player_id?: string | null
+  turn_number?: number
+  phase?: TurnPhase | string
+  step?: TurnStep | string
 }
 
 export type CardAction = {

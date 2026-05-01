@@ -1,5 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { GameTurnState, GameZone, ManaPool, SupabaseErrorLike } from './types'
+import type {
+  CombatAssignment,
+  GameSessionPlayer,
+  GameTurnState,
+  GameZone,
+  ManaPool,
+  SupabaseErrorLike,
+} from './types'
 
 export function getErrorMessage(error: unknown) {
   if (error instanceof Error) {
@@ -154,6 +161,87 @@ export async function lockGameSession(supabase: SupabaseClient, sessionId: strin
   }
 
   return data as boolean
+}
+
+export async function finishGameSession(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('finish_game_session', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as boolean
+}
+
+export async function adjustPlayerLife(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetPlayerId: string,
+  delta: number,
+) {
+  const { data, error } = await supabase.rpc('adjust_player_life', {
+    p_session_id: sessionId,
+    p_target_player_id: targetPlayerId,
+    p_delta: delta,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as GameSessionPlayer
+}
+
+export async function declareAttacker(
+  supabase: SupabaseClient,
+  sessionId: string,
+  attackerCardId: string,
+  defendingPlayerId: string,
+) {
+  const { data, error } = await supabase.rpc('declare_attacker', {
+    p_session_id: sessionId,
+    p_attacker_card_id: attackerCardId,
+    p_defending_player_id: defendingPlayerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as CombatAssignment
+}
+
+export async function declareBlocker(
+  supabase: SupabaseClient,
+  sessionId: string,
+  blockerCardId: string,
+  attackerCardId: string,
+) {
+  const { data, error } = await supabase.rpc('declare_blocker', {
+    p_session_id: sessionId,
+    p_blocker_card_id: blockerCardId,
+    p_attacker_card_id: attackerCardId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as CombatAssignment
+}
+
+export async function clearCombatAssignments(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('clear_combat_assignments', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
 }
 
 export async function spawnDeckForSession(

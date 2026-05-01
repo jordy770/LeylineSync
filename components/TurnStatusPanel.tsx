@@ -111,8 +111,11 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
         }
       })
 
+    const refreshInterval = window.setInterval(loadTurnState, 2000)
+
     return () => {
       isMounted = false
+      window.clearInterval(refreshInterval)
       supabase.removeChannel(channel)
     }
   }, [sessionId, supabase])
@@ -134,12 +137,14 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
   }
 
   const canAdvance = Boolean(
-    turnState?.active_player_id && currentPlayerId && turnState.active_player_id === currentPlayerId,
+    turnState?.priority_player_id &&
+      currentPlayerId &&
+      turnState.priority_player_id === currentPlayerId,
   )
 
   return (
     <section className="mb-5 rounded-lg border border-slate-800 bg-slate-950 p-4">
-      <div className="grid gap-3 sm:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-6">
         <div>
           <p className="text-xs text-slate-500">Turn</p>
           <p className="text-lg font-semibold text-white">{turnState?.turn_number ?? '-'}</p>
@@ -160,6 +165,12 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
           <p className="text-xs text-slate-500">Active Player</p>
           <p className="truncate font-mono text-sm text-white">
             {turnState?.active_player_id ? turnState.active_player_id.slice(0, 8) : '-'}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-500">Priority</p>
+          <p className="truncate font-mono text-sm text-white">
+            {turnState?.priority_player_id ? turnState.priority_player_id.slice(0, 8) : '-'}
           </p>
         </div>
         <div className="flex items-end">
