@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
   CombatAssignment,
+  CombatDamageResult,
   GameSessionPlayer,
   GameTurnState,
   GameZone,
@@ -242,6 +243,18 @@ export async function clearCombatAssignments(supabase: SupabaseClient, sessionId
   }
 
   return data as number
+}
+
+export async function resolveCombatDamage(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('resolve_combat_damage', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as CombatDamageResult
 }
 
 export async function spawnDeckForSession(

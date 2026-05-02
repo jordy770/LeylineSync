@@ -199,6 +199,10 @@ export default function GameSessionLobby() {
     }
   }
 
+  const winner = activeSession?.winner_player_id
+    ? players.find((player) => player.player_id === activeSession.winner_player_id)
+    : null
+
   return (
     <section className="w-full rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -261,6 +265,16 @@ export default function GameSessionLobby() {
               <p className="text-xs text-slate-500">Active Session</p>
               <p className="break-all font-mono text-sm">{activeSession.id}</p>
               <p className="mt-1 text-xs text-slate-400">Status: {activeSession.status}</p>
+              {activeSession.status === 'finished' ? (
+                <p className="mt-1 text-xs text-emerald-300">
+                  Winner:{' '}
+                  {winner
+                    ? winner.username || `Player ${winner.player_id.slice(0, 8)}`
+                    : activeSession.winner_player_id
+                      ? activeSession.winner_player_id.slice(0, 8)
+                      : 'None'}
+                </p>
+              ) : null}
             </div>
             <div className="flex flex-wrap gap-2">
               <button

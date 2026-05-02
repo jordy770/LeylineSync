@@ -207,11 +207,13 @@ The app expects these database functions for server-side game actions:
 - `public.finish_game_session(uuid)`
 - `public.get_session_players(uuid)`
 - `public.adjust_player_life(uuid, uuid, integer)`
+- `public.maybe_finish_game_session(uuid)`
 - `public.declare_attacker(uuid, uuid, uuid)`
 - `public.declare_blocker(uuid, uuid, uuid)`
 - `public.clear_combat_assignments(uuid)`
 - `public.get_combat_assignments(uuid)`
 - `public.get_combat_action_state(uuid)`
+- `public.resolve_combat_damage(uuid)`
 
 The migrations live at:
 
@@ -238,6 +240,9 @@ supabase/migrations/202605010018_combat_action_state.sql
 supabase/migrations/202605010019_combat_blockers.sql
 supabase/migrations/202605010020_turn_priority_player.sql
 supabase/migrations/202605010021_blockers_do_not_tap.sql
+supabase/migrations/202605010022_resolve_combat_damage.sql
+supabase/migrations/202605010023_parse_power_toughness.sql
+supabase/migrations/202605010024_win_loss_state.sql
 ```
 
 ## Realtime
@@ -423,6 +428,7 @@ game_sessions
 - created_at
 - locked_at
 - finished_at
+- winner_player_id
 ```
 
 ```text
@@ -490,10 +496,18 @@ Implemented first slice:
 - `clear_combat_assignments`
 - `get_combat_assignments`
 - `get_combat_action_state`
+- `resolve_combat_damage`
 - attacker declaration taps the attacker
 - combat assignments are cleared when leaving End of Combat Step and when a new turn reaches Untap Step
 - board/controller show current combat assignments
 - controller Attack and Block buttons are enabled from server-provided combat action state JSON
+- combat damage can be resolved from Combat Damage Step
+- unblocked attackers deal `cards.power` damage to the defending player's life total
+- `cards.power` and `cards.toughness` are backfilled from existing `cards.power_toughness` values like `1/1`
+- `resolve_combat_damage` falls back to parsing `cards.power_toughness` when `cards.power` is empty
+- blocked attackers do not deal player damage yet
+- sessions are automatically marked `finished` when only one player remains above 0 life
+- `game_sessions.winner_player_id` stores the winner for automatic wins
 - `game_turn_state.priority_player_id` tracks who may act/advance right now, while `active_player_id` remains the turn owner
 
 Initial `declare_attacker` rules:
@@ -532,12 +546,24 @@ cards.toughness integer nullable
 
 This only covers simple creatures. Real Magic values like `*`, `1+*`, or variable toughness should be modeled later with card scripts/effects.
 
-First `resolve_combat_damage` behavior:
+Existing `cards.power_toughness` values such as `1/1` are used as the current source of truth for simple creatures. Migration `202605010023_parse_power_toughness.sql` backfills numeric `power` and `toughness`, while keeping `power_toughness` available for display and later complex parsing.
+
+Current `resolve_combat_damage` behavior:
 
 - unblocked attackers deal `power` damage to `defending_player_id`
 - blocked attackers do not damage the player unless trample is implemented later
 - damage to creatures can be skipped in the first version
 - life changes should use the existing `adjust_player_life` path
+- damage can only be resolved once per assignment through `damage_resolved`
+- after life totals change, `maybe_finish_game_session` checks for a winner
+
+Current win/loss behavior:
+
+- `maybe_finish_game_session(session_id)` counts players with `life_total > 0`.
+- If exactly one player remains alive, the session becomes `finished`.
+- The remaining player is stored in `game_sessions.winner_player_id`.
+- If all players are at 0 life, the session becomes `finished` with no winner.
+- Manual `finish_game_session` leaves `winner_player_id` empty.
 
 ## Priority And Stack Roadmap
 
@@ -643,8 +669,10 @@ Simpele stappen plan:
 [x] Blockers koppelen aan attackers.
 [x] Blockers blijven untapped bij blocken.
 [x] Priority player toevoegen voor blockers en later stack priority.
+[x] Simpele creature power/toughness velden toevoegen.
+[x] Simpele unblocked combat damage resolven.
+[x] Win/loss state via life totals toevoegen.
 [ ] RLS policies strak maken per speler/session.
 [ ] Priority passing roadmap uitwerken voor stack.
-[ ] Creature power/toughness toevoegen.
-[ ] Combat damage koppelen aan attackers/blockers.
+[ ] Combat damage naar creatures modelleren.
 [ ] Daarna pas complexere MTG-logica.

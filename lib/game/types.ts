@@ -13,6 +13,7 @@ export type GameSession = {
   created_at?: string
   locked_at?: string | null
   finished_at?: string | null
+  winner_player_id?: string | null
 }
 
 export type GameSessionPlayer = {
@@ -69,16 +70,26 @@ export type CombatAssignment = {
 export type CombatActionState = {
   can_declare_attackers: boolean
   can_declare_blockers?: boolean
+  can_resolve_combat_damage?: boolean
   reason?: string | null
   attack_reason?: string | null
   block_reason?: string | null
+  damage_reason?: string | null
   blockable_attackers_count?: number
+  unresolved_combat_count?: number
   active_player_id?: string | null
   priority_player_id?: string | null
   current_player_id?: string | null
   turn_number?: number
   phase?: TurnPhase | string
   step?: TurnStep | string
+}
+
+export type CombatDamageResult = {
+  assignments_resolved: number
+  total_damage: number
+  finished?: boolean
+  winner_player_id?: string | null
 }
 
 export type CardAction = {
