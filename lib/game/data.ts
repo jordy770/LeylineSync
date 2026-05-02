@@ -12,6 +12,7 @@ import type {
   GameZone,
   LinkedCard,
   ManaPool,
+  StackItem,
   TurnPhase,
   TurnStep,
 } from './types'
@@ -57,6 +58,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       position_x,
       position_y,
       is_tapped,
+      damage_marked,
       zone
     `)
     .eq('session_id', sessionId)
@@ -82,6 +84,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       position_x: item.position_x ?? 0,
       position_y: item.position_y ?? 0,
       is_tapped: item.is_tapped,
+      damage_marked: item.damage_marked ?? 0,
       zone: normalizeGameZone(item.zone),
       name: linkedCard?.name || 'Unknown',
       image_url: linkedCard?.image_url ?? null,
@@ -100,6 +103,7 @@ export async function getControllerCards(
       id,
       card_id,
       is_tapped,
+      damage_marked,
       zone,
       zone_position
     `)
@@ -114,7 +118,7 @@ export async function getControllerCards(
   const linkedCardsById = await getLinkedCardsById(
     supabase,
     gameCardRows.map((card) => card.card_id),
-    'id, name, script, type_line',
+    'id, name, script, type_line, mana_cost',
   )
 
   const missingCardIds = getUniqueCardIds(gameCardRows.map((card) => card.card_id)).filter(
@@ -128,6 +132,7 @@ export async function getControllerCards(
       id: card.id,
       card_id: card.card_id,
       is_tapped: card.is_tapped,
+      damage_marked: card.damage_marked ?? 0,
       zone: normalizeGameZone(card.zone),
       zone_position: card.zone_position ?? 0,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,
@@ -164,7 +169,7 @@ export async function getPlayerManaPool(
 export async function getTurnState(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase
     .from('game_turn_state')
-    .select('session_id, active_player_id, priority_player_id, turn_number, phase, step, created_at, updated_at')
+    .select('session_id, active_player_id, priority_player_id, priority_cycle_started_by, priority_pass_count, lands_played_this_turn, turn_number, phase, step, created_at, updated_at')
     .eq('session_id', sessionId)
     .maybeSingle()
 
@@ -223,6 +228,18 @@ export async function getCombatActionState(supabase: SupabaseClient, sessionId: 
   }
 
   return data as CombatActionState
+}
+
+export async function getStackItems(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('get_stack_items', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []) as StackItem[]
 }
 
 export async function getCurrentPlayerSessions(supabase: SupabaseClient) {
@@ -294,6 +311,9 @@ export function normalizeTurnState(state: Partial<GameTurnState>): GameTurnState
     session_id: state.session_id ?? '',
     active_player_id: state.active_player_id ?? '',
     priority_player_id: state.priority_player_id ?? state.active_player_id ?? '',
+    priority_cycle_started_by: state.priority_cycle_started_by ?? null,
+    priority_pass_count: state.priority_pass_count ?? 0,
+    lands_played_this_turn: state.lands_played_this_turn ?? 0,
     turn_number: state.turn_number ?? 1,
     phase: normalizeTurnPhase(state.phase),
     step: normalizeTurnStep(state.step),

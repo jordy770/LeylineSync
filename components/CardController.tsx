@@ -7,9 +7,11 @@ import { setCardTapped } from '@/lib/game/actions'
 export default function CardController({
   cardId,
   isTapped,
+  disabled = false,
 }: {
   cardId: string
   isTapped: boolean
+  disabled?: boolean
 }) {
   const supabase = useMemo(() => createClient(), [])
 
@@ -21,7 +23,8 @@ export default function CardController({
     <button
       type="button"
       onClick={toggleTapped}
-      className="rounded-md bg-white px-3 py-2 text-sm font-medium text-slate-900"
+      disabled={disabled}
+      className="rounded-md bg-white px-3 py-2 text-sm font-medium text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {isTapped ? 'Untap' : 'Tap'}
     </button>

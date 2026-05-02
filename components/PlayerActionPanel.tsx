@@ -10,11 +10,13 @@ export default function PlayerActionPanel({
   playerId,
   libraryCount,
   tappedBattlefieldCount,
+  isSessionFinished = false,
 }: {
   sessionId: string
   playerId: string
   libraryCount: number
   tappedBattlefieldCount: number
+  isSessionFinished?: boolean
 }) {
   const supabase = useMemo(() => createClient(), [])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -54,7 +56,12 @@ export default function PlayerActionPanel({
   return (
     <section className="mb-5 rounded-lg border border-slate-800 bg-slate-950 p-4">
       <div className="grid gap-4 lg:grid-cols-3">
-        <DrawCardButton sessionId={sessionId} playerId={playerId} libraryCount={libraryCount} />
+        <DrawCardButton
+          sessionId={sessionId}
+          playerId={playerId}
+          libraryCount={libraryCount}
+          disabled={isSessionFinished}
+        />
         <div className="flex items-center justify-between gap-3 rounded-md bg-slate-900 p-3">
           <div>
             <h2 className="text-sm font-semibold text-white">Battlefield</h2>
@@ -63,7 +70,7 @@ export default function PlayerActionPanel({
           <button
             type="button"
             onClick={handleUntapAll}
-            disabled={isUntapping || tappedBattlefieldCount === 0}
+            disabled={isSessionFinished || isUntapping || tappedBattlefieldCount === 0}
             className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isUntapping ? 'Untapping...' : 'Untap All'}
@@ -77,13 +84,14 @@ export default function PlayerActionPanel({
           <button
             type="button"
             onClick={handleClearManaPool}
-            disabled={isClearingMana}
+            disabled={isSessionFinished || isClearingMana}
             className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isClearingMana ? 'Clearing...' : 'Clear Mana'}
           </button>
         </div>
       </div>
+      {isSessionFinished ? <p className="mt-3 text-xs text-slate-500">Game is finished. Player actions are locked.</p> : null}
       {errorMessage ? <p className="mt-3 text-xs text-red-300">{errorMessage}</p> : null}
     </section>
   )

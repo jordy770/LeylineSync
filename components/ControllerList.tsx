@@ -8,7 +8,9 @@ import {
   getCombatAssignments,
   getControllerCards,
   getCurrentPlayerId,
+  getGameSession,
   getGameSessionPlayers,
+  getStackItems,
 } from '@/lib/game/data'
 import type {
   CombatActionState,
@@ -29,7 +31,9 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [combatActionState, setCombatActionState] = useState<CombatActionState | null>(null)
   const [combatAssignments, setCombatAssignments] = useState<CombatAssignment[]>([])
+  const [isSessionFinished, setIsSessionFinished] = useState(false)
   const [sessionPlayers, setSessionPlayers] = useState<GameSessionPlayer[]>([])
+  const [pendingStackCount, setPendingStackCount] = useState(0)
   const [declaringAttackerId, setDeclaringAttackerId] = useState<string | null>(null)
   const [declaringBlockerId, setDeclaringBlockerId] = useState<string | null>(null)
   const supabase = useMemo(() => createClient(), [])
@@ -106,16 +110,26 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
 
     const loadGameContext = async () => {
       try {
-        const [nextCombatActionState, nextCombatAssignments, nextSessionPlayers] = await Promise.all([
+        const [
+          session,
+          nextCombatActionState,
+          nextCombatAssignments,
+          nextSessionPlayers,
+          nextStackItems,
+        ] = await Promise.all([
+          getGameSession(supabase, sessionId),
           getCombatActionState(supabase, sessionId),
           getCombatAssignments(supabase, sessionId),
           getGameSessionPlayers(supabase, sessionId),
+          getStackItems(supabase, sessionId),
         ])
 
         if (isMounted) {
+          setIsSessionFinished(session?.status === 'finished')
           setCombatActionState(nextCombatActionState)
           setCombatAssignments(nextCombatAssignments)
           setSessionPlayers(nextSessionPlayers)
+          setPendingStackCount(nextStackItems.filter((item) => item.status === 'pending').length)
         }
       } catch (error) {
         const message = getErrorMessage(error)
@@ -157,6 +171,26 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
             fetchCards(currentPlayerId)
           }
         },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_sessions',
+          filter: `id=eq.${sessionId}`,
+        },
+        loadGameContext,
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_stack_items',
+          filter: `session_id=eq.${sessionId}`,
+        },
+        loadGameContext,
       )
       .on(
         'postgres_changes',
@@ -235,7 +269,11 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
   const libraryCount = cards.filter((card) => card.zone === 'library').length
   const tappedBattlefieldCount = battlefieldCards.filter((card) => card.is_tapped).length
   const defendingPlayers = sessionPlayers.filter((player) => player.player_id !== playerId)
-  const attackUnavailableReason = getAttackUnavailableReason({ combatActionState, defendingPlayers })
+  const attackUnavailableReason = getAttackUnavailableReason({
+    combatActionState,
+    defendingPlayers,
+    isSessionFinished,
+  })
   const canDeclareAttackers = !attackUnavailableReason
   const blockableAssignments = combatAssignments.filter(
     (assignment) => assignment.defending_player_id === playerId && !assignment.blocker_card_id,
@@ -243,8 +281,23 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
   const blockUnavailableReason = getBlockUnavailableReason({
     combatActionState,
     blockableAssignments,
+    isSessionFinished,
   })
   const canDeclareBlockers = !blockUnavailableReason
+  const canUseInstantActions = Boolean(
+    !isSessionFinished &&
+      playerId &&
+      combatActionState?.priority_player_id &&
+      combatActionState.priority_player_id === playerId,
+  )
+  const canUseSorceryActions = Boolean(
+    canUseInstantActions &&
+      playerId &&
+      combatActionState?.active_player_id === playerId &&
+      (combatActionState?.step === 'precombat_main' ||
+        combatActionState?.step === 'postcombat_main') &&
+      pendingStackCount === 0,
+  )
 
   const handleDeclareAttacker = async (attackerCardId: string, defendingPlayerId: string) => {
     setErrorMessage(null)
@@ -299,6 +352,7 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
           playerId={playerId}
           libraryCount={libraryCount}
           tappedBattlefieldCount={tappedBattlefieldCount}
+          isSessionFinished={isSessionFinished}
         />
       ) : null}
       {handCards.length === 0 && battlefieldCards.length === 0 ? (
@@ -306,7 +360,16 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
           No cards in hand or on battlefield.
         </div>
       ) : null}
-      <CardSection title="Hand" cards={handCards} />
+      <CardSection
+        title="Hand"
+        cards={handCards}
+        playerId={playerId}
+        sessionId={sessionId}
+        isSessionFinished={isSessionFinished}
+        sessionPlayers={sessionPlayers}
+        canUseInstantActions={canUseInstantActions}
+        canUseSorceryActions={canUseSorceryActions}
+      />
       <CardSection
         title="Battlefield"
         cards={battlefieldCards}
@@ -322,6 +385,10 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
         blockableAssignments={blockableAssignments}
         declaringBlockerId={declaringBlockerId}
         onDeclareBlocker={handleDeclareBlocker}
+        isSessionFinished={isSessionFinished}
+        sessionPlayers={sessionPlayers}
+        canUseInstantActions={canUseInstantActions}
+        canUseSorceryActions={canUseSorceryActions}
       />
     </>
   )
@@ -342,6 +409,10 @@ function CardSection({
   blockableAssignments = [],
   declaringBlockerId,
   onDeclareBlocker,
+  isSessionFinished = false,
+  sessionPlayers = [],
+  canUseInstantActions = false,
+  canUseSorceryActions = false,
 }: {
   title: string
   cards: ControllerCard[]
@@ -357,6 +428,10 @@ function CardSection({
   blockableAssignments?: CombatAssignment[]
   declaringBlockerId?: string | null
   onDeclareBlocker?: (blockerCardId: string, attackerCardId: string) => void
+  isSessionFinished?: boolean
+  sessionPlayers?: GameSessionPlayer[]
+  canUseInstantActions?: boolean
+  canUseSorceryActions?: boolean
 }) {
   if (cards.length === 0) {
     return null
@@ -369,12 +444,24 @@ function CardSection({
         {cards.map((card) => (
           <div key={card.id} className="space-y-3 rounded-lg bg-slate-800 p-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-white font-medium">{card.name}</span>
+              <div className="min-w-0">
+                <span className="block truncate text-white font-medium">{card.name}</span>
+                {card.damage_marked > 0 ? (
+                  <span className="text-xs text-red-300">Damage: {card.damage_marked}</span>
+                ) : null}
+              </div>
               {card.zone === 'battlefield' ? (
-                <CardController cardId={card.id} isTapped={card.is_tapped} />
+                <CardController cardId={card.id} isTapped={card.is_tapped} disabled={isSessionFinished} />
               ) : null}
             </div>
-            <CardZoneControls cardId={card.id} zone={card.zone} />
+            <CardZoneControls
+              cardId={card.id}
+              zone={card.zone}
+              disabled={isSessionFinished}
+              sessionId={sessionId}
+              manaCost={card.cards?.mana_cost}
+              typeLine={card.cards?.type_line}
+            />
             {card.zone === 'battlefield' && onDeclareAttacker ? (
               <DeclareAttackerControls
                 card={card}
@@ -395,8 +482,16 @@ function CardSection({
                 onDeclareBlocker={onDeclareBlocker}
               />
             ) : null}
-            {playerId && sessionId && card.zone === 'battlefield' ? (
-              <ActionButtons card={card} sessionId={sessionId} playerId={playerId} />
+            {playerId && sessionId && (card.zone === 'battlefield' || card.zone === 'hand') ? (
+              <ActionButtons
+                card={card}
+                sessionId={sessionId}
+                playerId={playerId}
+                disabled={isSessionFinished}
+                sessionPlayers={sessionPlayers}
+                canUseInstantActions={canUseInstantActions}
+                canUseSorceryActions={canUseSorceryActions}
+              />
             ) : null}
           </div>
         ))}
@@ -560,10 +655,16 @@ function getDeclareAttackerDisabledReason({
 function getAttackUnavailableReason({
   combatActionState,
   defendingPlayers,
+  isSessionFinished,
 }: {
   combatActionState: CombatActionState | null
   defendingPlayers: GameSessionPlayer[]
+  isSessionFinished: boolean
 }) {
+  if (isSessionFinished) {
+    return 'Game is finished.'
+  }
+
   if (defendingPlayers.length === 0) {
     return 'No defending players available.'
   }
@@ -614,10 +715,16 @@ function getDeclareBlockerDisabledReason({
 function getBlockUnavailableReason({
   combatActionState,
   blockableAssignments,
+  isSessionFinished,
 }: {
   combatActionState: CombatActionState | null
   blockableAssignments: CombatAssignment[]
+  isSessionFinished: boolean
 }) {
+  if (isSessionFinished) {
+    return 'Game is finished.'
+  }
+
   if (!combatActionState) {
     return 'Checking combat permissions...'
   }

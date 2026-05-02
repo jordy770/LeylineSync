@@ -45,6 +45,9 @@ export type GameTurnState = {
   session_id: string
   active_player_id: string
   priority_player_id?: string | null
+  priority_cycle_started_by?: string | null
+  priority_pass_count?: number
+  lands_played_this_turn?: number
   turn_number: number
   phase: TurnPhase
   step: TurnStep
@@ -88,14 +91,39 @@ export type CombatActionState = {
 export type CombatDamageResult = {
   assignments_resolved: number
   total_damage: number
+  total_player_damage?: number
+  total_creature_damage?: number
+  creatures_destroyed?: number
   finished?: boolean
   winner_player_id?: string | null
+}
+
+export type StackItem = {
+  id: string
+  session_id: string
+  controller_player_id: string
+  controller_username?: string | null
+  source_card_id?: string | null
+  source_card_name?: string | null
+  target_player_id?: string | null
+  target_username?: string | null
+  action_type: string
+  payload: Record<string, unknown>
+  position: number
+  status: 'pending' | 'resolved' | 'cancelled' | string
+  created_at?: string
+  resolved_at?: string | null
 }
 
 export type CardAction = {
   type: string
   color?: string
+  colors?: string[]
   amount?: number
+  target?: 'player' | string
+  timing?: 'instant' | 'sorcery' | string
+  expires_at_phase?: string
+  expires_at_step?: string
 }
 
 export type CardScript = {
@@ -109,6 +137,7 @@ export type LinkedCard = {
   image_url?: string | null
   script?: CardScript | null
   type_line?: string | null
+  mana_cost?: string | null
 }
 
 export type BoardCard = {
@@ -116,6 +145,7 @@ export type BoardCard = {
   card_id: string
   name: string
   is_tapped: boolean
+  damage_marked: number
   position_x: number
   position_y: number
   zone: GameZone
@@ -127,6 +157,7 @@ export type ControllerCard = {
   card_id: string
   name: string
   is_tapped: boolean
+  damage_marked: number
   zone: GameZone
   zone_position: number
   cards: LinkedCard | null
@@ -138,6 +169,7 @@ export type GameCardInstanceRow = {
   position_x?: number
   position_y?: number
   is_tapped: boolean
+  damage_marked?: number
   zone?: GameZone | string
   zone_position?: number
 }

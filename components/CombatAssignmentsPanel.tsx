@@ -3,7 +3,7 @@
 import { Swords } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { getErrorMessage, resolveCombatDamage } from '@/lib/game/actions'
-import { getCombatActionState, getCombatAssignments } from '@/lib/game/data'
+import { getCombatActionState, getCombatAssignments, getGameSession } from '@/lib/game/data'
 import { createClient } from '@/lib/supabase/client'
 import type { CombatActionState, CombatAssignment } from '@/lib/game/types'
 
@@ -14,18 +14,21 @@ export default function CombatAssignmentsPanel({ sessionId }: { sessionId: strin
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [isResolvingDamage, setIsResolvingDamage] = useState(false)
+  const [isSessionFinished, setIsSessionFinished] = useState(false)
 
   useEffect(() => {
     let isMounted = true
 
     const loadAssignments = async () => {
       try {
-        const [combatAssignments, nextCombatActionState] = await Promise.all([
+        const [session, combatAssignments, nextCombatActionState] = await Promise.all([
+          getGameSession(supabase, sessionId),
           getCombatAssignments(supabase, sessionId),
           getCombatActionState(supabase, sessionId),
         ])
 
         if (isMounted) {
+          setIsSessionFinished(session?.status === 'finished')
           setAssignments(combatAssignments)
           setCombatActionState(nextCombatActionState)
           setErrorMessage(null)
@@ -43,6 +46,16 @@ export default function CombatAssignmentsPanel({ sessionId }: { sessionId: strin
 
     const channel = supabase
       .channel(`combat-assignments:${sessionId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_sessions',
+          filter: `id=eq.${sessionId}`,
+        },
+        loadAssignments,
+      )
       .on(
         'postgres_changes',
         {
@@ -96,14 +109,16 @@ export default function CombatAssignmentsPanel({ sessionId }: { sessionId: strin
 
     try {
       const result = await resolveCombatDamage(supabase, sessionId)
-      const [combatAssignments, nextCombatActionState] = await Promise.all([
+      const [session, combatAssignments, nextCombatActionState] = await Promise.all([
+        getGameSession(supabase, sessionId),
         getCombatAssignments(supabase, sessionId),
         getCombatActionState(supabase, sessionId),
       ])
+      setIsSessionFinished(session?.status === 'finished')
       setAssignments(combatAssignments)
       setCombatActionState(nextCombatActionState)
       setStatusMessage(
-        `${result.assignments_resolved} assignment(s) resolved, ${result.total_damage} damage dealt`,
+        `${result.assignments_resolved} assignment(s) resolved, ${result.total_player_damage ?? result.total_damage} player damage, ${result.total_creature_damage ?? 0} creature damage, ${result.creatures_destroyed ?? 0} destroyed`,
       )
     } catch (error) {
       const message = getErrorMessage(error)
@@ -114,8 +129,9 @@ export default function CombatAssignmentsPanel({ sessionId }: { sessionId: strin
     }
   }
 
-  const canResolveCombatDamage = Boolean(combatActionState?.can_resolve_combat_damage)
-  const damageDisabledReason = getDamageDisabledReason(combatActionState)
+  const canResolveCombatDamage =
+    Boolean(combatActionState?.can_resolve_combat_damage) && !isSessionFinished
+  const damageDisabledReason = getDamageDisabledReason(combatActionState, isSessionFinished)
 
   return (
     <section className="mb-5 rounded-lg border border-slate-800 bg-slate-950 p-4">
@@ -168,7 +184,14 @@ export default function CombatAssignmentsPanel({ sessionId }: { sessionId: strin
   )
 }
 
-function getDamageDisabledReason(combatActionState: CombatActionState | null) {
+function getDamageDisabledReason(
+  combatActionState: CombatActionState | null,
+  isSessionFinished: boolean,
+) {
+  if (isSessionFinished) {
+    return 'Game is finished.'
+  }
+
   if (!combatActionState) {
     return 'Checking combat damage state...'
   }

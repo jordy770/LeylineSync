@@ -101,6 +101,11 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
                 {card.name || 'Unnamed Card'}
               </div>
             )}
+            {card.damage_marked > 0 ? (
+              <div className="absolute right-2 top-2 rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white shadow">
+                {card.damage_marked}
+              </div>
+            ) : null}
           </div>
         </div>
       ))}

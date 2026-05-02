@@ -6,6 +6,7 @@ import type {
   GameTurnState,
   GameZone,
   ManaPool,
+  StackItem,
   SupabaseErrorLike,
 } from './types'
 
@@ -28,7 +29,10 @@ export async function setCardTapped(
   cardId: string,
   isTapped: boolean,
 ) {
-  const { error } = await supabase.from('game_cards').update({ is_tapped: isTapped }).eq('id', cardId)
+  const { error } = await supabase.rpc('set_card_tapped', {
+    p_game_card_id: cardId,
+    p_is_tapped: isTapped,
+  })
 
   if (error) {
     throw error
@@ -48,6 +52,23 @@ export async function moveCardToZone(
   if (error) {
     throw error
   }
+}
+
+export async function castCardFromHand(
+  supabase: SupabaseClient,
+  sessionId: string,
+  cardId: string,
+) {
+  const { data, error } = await supabase.rpc('cast_card_from_hand', {
+    p_session_id: sessionId,
+    p_game_card_id: cardId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
 }
 
 export async function drawCard(
@@ -128,6 +149,80 @@ export async function advanceStep(supabase: SupabaseClient, sessionId: string) {
   }
 
   return data as GameTurnState
+}
+
+export async function passPriority(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('pass_priority', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as GameTurnState
+}
+
+export async function putDealDamagePlayerOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetPlayerId: string,
+  amount: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'deal_damage_player',
+    p_payload: {
+      target_player_id: targetPlayerId,
+      amount,
+      timing,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function createManaRetentionEffect({
+  supabase,
+  sessionId,
+  sourceCardId,
+  playerId,
+  colors,
+  expiresAtPhase = 'ending',
+  expiresAtStep = 'cleanup',
+  shouldTapCard,
+}: {
+  supabase: SupabaseClient
+  sessionId: string
+  sourceCardId: string
+  playerId: string
+  colors: string[]
+  expiresAtPhase?: string
+  expiresAtStep?: string
+  shouldTapCard: boolean
+}) {
+  const { data, error } = await supabase.rpc('create_mana_retention_effect', {
+    p_session_id: sessionId,
+    p_source_card_id: sourceCardId,
+    p_colors: colors,
+    p_affected_player_id: playerId,
+    p_expires_at_phase: expiresAtPhase,
+    p_expires_at_step: expiresAtStep,
+    p_should_tap_card: shouldTapCard,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
 }
 
 export async function createGameSession(supabase: SupabaseClient) {

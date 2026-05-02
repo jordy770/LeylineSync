@@ -1,6 +1,8 @@
 import GameBoard from '@/components/GameBoard';
 import CombatAssignmentsPanel from '@/components/CombatAssignmentsPanel';
+import GameStatusPanel from '@/components/GameStatusPanel';
 import LifeTotalsPanel from '@/components/LifeTotalsPanel';
+import StackPanel from '@/components/StackPanel';
 import TurnStatusPanel from '@/components/TurnStatusPanel';
 import { Suspense } from 'react';
 
@@ -24,7 +26,9 @@ async function BoardContent({ params }: { params: Promise<{ id: string }> }) {
       
       {/* Hier komt de component die luistert naar de database */}
       <div className="p-6 pb-0">
+        <GameStatusPanel sessionId={id} />
         <TurnStatusPanel sessionId={id} />
+        <StackPanel sessionId={id} />
         <LifeTotalsPanel sessionId={id} />
         <CombatAssignmentsPanel sessionId={id} />
       </div>

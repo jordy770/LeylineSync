@@ -8,10 +8,12 @@ export default function DrawCardButton({
   sessionId,
   playerId,
   libraryCount,
+  disabled = false,
 }: {
   sessionId: string
   playerId: string
   libraryCount: number
+  disabled?: boolean
 }) {
   const supabase = useMemo(() => createClient(), [])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -42,7 +44,7 @@ export default function DrawCardButton({
         <button
           type="button"
           onClick={handleDraw}
-          disabled={isDrawing || libraryCount === 0}
+          disabled={disabled || isDrawing || libraryCount === 0}
           className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isDrawing ? 'Drawing...' : 'Draw'}

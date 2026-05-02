@@ -3,13 +3,14 @@
 import { HeartPulse, Minus, Plus } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { adjustPlayerLife, getErrorMessage } from '@/lib/game/actions'
-import { getGameSessionPlayers } from '@/lib/game/data'
+import { getGameSession, getGameSessionPlayers } from '@/lib/game/data'
 import { createClient } from '@/lib/supabase/client'
 import type { GameSessionPlayer } from '@/lib/game/types'
 
 export default function LifeTotalsPanel({ sessionId }: { sessionId: string }) {
   const supabase = useMemo(() => createClient(), [])
   const [players, setPlayers] = useState<GameSessionPlayer[]>([])
+  const [isSessionFinished, setIsSessionFinished] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [pendingPlayerId, setPendingPlayerId] = useState<string | null>(null)
 
@@ -18,9 +19,13 @@ export default function LifeTotalsPanel({ sessionId }: { sessionId: string }) {
 
     const loadPlayers = async () => {
       try {
-        const sessionPlayers = await getGameSessionPlayers(supabase, sessionId)
+        const [session, sessionPlayers] = await Promise.all([
+          getGameSession(supabase, sessionId),
+          getGameSessionPlayers(supabase, sessionId),
+        ])
 
         if (isMounted) {
+          setIsSessionFinished(session?.status === 'finished')
           setPlayers(sessionPlayers)
           setErrorMessage(null)
         }
@@ -44,6 +49,16 @@ export default function LifeTotalsPanel({ sessionId }: { sessionId: string }) {
           schema: 'public',
           table: 'game_session_players',
           filter: `session_id=eq.${sessionId}`,
+        },
+        loadPlayers,
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_sessions',
+          filter: `id=eq.${sessionId}`,
         },
         loadPlayers,
       )
@@ -86,6 +101,9 @@ export default function LifeTotalsPanel({ sessionId }: { sessionId: string }) {
         <HeartPulse className="h-4 w-4 text-red-300" aria-hidden="true" />
         <h2 className="text-sm font-semibold text-white">Life Totals</h2>
       </div>
+      {isSessionFinished ? (
+        <p className="mb-3 text-xs text-slate-500">Game is finished. Life totals are locked.</p>
+      ) : null}
 
       <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
         {players.map((player) => {
@@ -106,22 +124,22 @@ export default function LifeTotalsPanel({ sessionId }: { sessionId: string }) {
               <div className="grid grid-cols-4 gap-2">
                 <LifeButton
                   label="-5"
-                  disabled={isPending}
+                  disabled={isPending || isSessionFinished}
                   onClick={() => handleAdjustLife(player.player_id, -5)}
                 />
                 <LifeButton
                   label="-1"
-                  disabled={isPending}
+                  disabled={isPending || isSessionFinished}
                   onClick={() => handleAdjustLife(player.player_id, -1)}
                 />
                 <LifeButton
                   label="+1"
-                  disabled={isPending}
+                  disabled={isPending || isSessionFinished}
                   onClick={() => handleAdjustLife(player.player_id, 1)}
                 />
                 <LifeButton
                   label="+5"
-                  disabled={isPending}
+                  disabled={isPending || isSessionFinished}
                   onClick={() => handleAdjustLife(player.player_id, 5)}
                 />
               </div>

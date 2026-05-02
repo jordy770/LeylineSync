@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { advanceStep, getErrorMessage, initializeTurnState } from '@/lib/game/actions'
-import { getCurrentPlayerId, getTurnState, normalizeTurnState } from '@/lib/game/data'
+import { advanceStep, getErrorMessage, initializeTurnState, passPriority } from '@/lib/game/actions'
+import { getCurrentPlayerId, getGameSession, getTurnState, normalizeTurnState } from '@/lib/game/data'
 import type { GameTurnState } from '@/lib/game/types'
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 
@@ -37,6 +37,8 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
   const [isLoading, setIsLoading] = useState(true)
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null)
   const [isAdvancing, setIsAdvancing] = useState(false)
+  const [isPassingPriority, setIsPassingPriority] = useState(false)
+  const [isSessionFinished, setIsSessionFinished] = useState(false)
 
   useEffect(() => {
     let isMounted = true
@@ -49,7 +51,14 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
           setCurrentPlayerId(playerId)
         }
 
-        const existingState = await getTurnState(supabase, sessionId)
+        const [session, existingState] = await Promise.all([
+          getGameSession(supabase, sessionId),
+          getTurnState(supabase, sessionId),
+        ])
+
+        if (isMounted) {
+          setIsSessionFinished(session?.status === 'finished')
+        }
 
         if (existingState) {
           if (isMounted) {
@@ -64,6 +73,15 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
           if (isMounted) {
             setTurnState(null)
             setErrorMessage('Turn state is not initialized')
+            setIsLoading(false)
+          }
+          return
+        }
+
+        if (session?.status === 'finished') {
+          if (isMounted) {
+            setTurnState(null)
+            setErrorMessage('Game is finished')
             setIsLoading(false)
           }
           return
@@ -89,6 +107,16 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
 
     const channel = supabase
       .channel(`turn-state:${sessionId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_sessions',
+          filter: `id=eq.${sessionId}`,
+        },
+        loadTurnState,
+      )
       .on(
         'postgres_changes',
         {
@@ -136,15 +164,33 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
     }
   }
 
+  const handlePassPriority = async () => {
+    setErrorMessage(null)
+    setIsPassingPriority(true)
+
+    try {
+      const nextTurnState = await passPriority(supabase, sessionId)
+      setTurnState(normalizeTurnState(nextTurnState))
+    } catch (error) {
+      const message = getErrorMessage(error)
+      console.error('Failed to pass priority:', message, error)
+      setErrorMessage(message)
+    } finally {
+      setIsPassingPriority(false)
+    }
+  }
+
   const canAdvance = Boolean(
-    turnState?.priority_player_id &&
+    !isSessionFinished &&
+      turnState?.priority_player_id &&
       currentPlayerId &&
       turnState.priority_player_id === currentPlayerId,
   )
+  const canPassPriority = canAdvance
 
   return (
     <section className="mb-5 rounded-lg border border-slate-800 bg-slate-950 p-4">
-      <div className="grid gap-3 sm:grid-cols-6">
+      <div className="grid gap-3 sm:grid-cols-7">
         <div>
           <p className="text-xs text-slate-500">Turn</p>
           <p className="text-lg font-semibold text-white">{turnState?.turn_number ?? '-'}</p>
@@ -173,6 +219,10 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
             {turnState?.priority_player_id ? turnState.priority_player_id.slice(0, 8) : '-'}
           </p>
         </div>
+        <div>
+          <p className="text-xs text-slate-500">Passes</p>
+          <p className="text-sm font-semibold text-white">{turnState?.priority_pass_count ?? 0}</p>
+        </div>
         <div className="flex items-end">
           <button
             type="button"
@@ -183,8 +233,21 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
             {isAdvancing ? 'Advancing...' : 'Next Step'}
           </button>
         </div>
+        <div className="flex items-end">
+          <button
+            type="button"
+            onClick={handlePassPriority}
+            disabled={!canPassPriority || isPassingPriority}
+            className="w-full rounded-md bg-amber-300 px-4 py-2 text-sm font-semibold text-amber-950 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isPassingPriority ? 'Passing...' : 'Pass Priority'}
+          </button>
+        </div>
       </div>
       {isLoading ? <p className="mt-3 text-xs text-slate-500">Loading turn state...</p> : null}
+      {isSessionFinished ? (
+        <p className="mt-3 text-xs text-slate-500">Game is finished. Turn actions are locked.</p>
+      ) : null}
       {errorMessage ? <p className="mt-3 text-xs text-red-300">{errorMessage}</p> : null}
     </section>
   )

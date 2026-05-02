@@ -1,17 +1,26 @@
 # Leyline Sync
 
-Realtime Magic: The Gathering board/controller app built with Next.js and Supabase.
+Realtime Magic: The Gathering style board/controller app built with Next.js and Supabase.
 
-The current goal is a shared board screen plus a player controller screen. A deck can be spawned into `game_cards`, the board shows live card state, and controller buttons execute scripted card actions such as Llanowar Elves adding green mana.
+The app has three main screens:
 
-## Stack
+- `/` session lobby for creating, joining, locking, finishing, and spawning decks.
+- `/board/[id]` shared board view.
+- `/controller/[id]` player controller view.
 
-- Next.js app router
+The important design choice is that browser UI does not directly mutate critical game state. Most gameplay changes go through Supabase RPC functions, so rules live close to the database rows they protect.
+
+## Tech Stack
+
+- Next.js App Router
 - React 19
 - Tailwind CSS
-- Supabase Auth, Database, Realtime, and Edge Functions
+- Supabase Auth
+- Supabase Postgres
+- Supabase Realtime
+- Supabase Edge Functions for deck spawning
 
-## Clone And Run
+## Local Setup
 
 Install dependencies:
 
@@ -26,21 +35,19 @@ NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-or-anon-key
 ```
 
-Run the dev server:
+Run the app:
 
 ```powershell
 npm run dev
 ```
 
-Open:
+Useful URLs:
 
 - App: `http://localhost:3000`
-- Board view: `http://localhost:3000/board/<session-id>`
-- Controller view: `http://localhost:3000/controller/<session-id>`
+- Board: `http://localhost:3000/board/<session-id>`
+- Controller: `http://localhost:3000/controller/<session-id>`
 
-## Build And Verify
-
-Use these before committing or deploying:
+Verify before committing:
 
 ```powershell
 npx tsc --noEmit
@@ -48,96 +55,71 @@ npm run lint
 npm run build
 ```
 
-Start a production build locally:
-
-```powershell
-npm run start
-```
-
-## Supabase Edge Function
-
-The deck spawning function lives at:
+## Project Layout
 
 ```text
-supabase/functions/spawn-deck/index.ts
+app/
+  board/[id]/page.tsx         Shared board page
+  controller/[id]/page.tsx    Player controller page
+
+components/
+  GameSessionLobby.tsx        Session list/create/join/spawn controls
+  GameBoard.tsx               Battlefield board rendering
+  ControllerList.tsx          Player hand/battlefield controls
+  ActionButtons.tsx           Executes card script actions
+  CardZoneControls.tsx        Plays/casts cards from hand and moves zones
+  ManaPool.tsx                Current player's mana pool
+  TurnStatusPanel.tsx         Current turn/phase/priority UI
+  StackPanel.tsx              Pending stack items
+  CombatAssignmentsPanel.tsx  Current combat assignments
+  LifeTotalsPanel.tsx         Life totals and manual adjustment
+
+lib/game/
+  actions.ts                  Client wrappers around RPCs and Edge Functions
+  data.ts                     Client read/query helpers and normalizers
+  types.ts                    Shared TypeScript domain types
+
+supabase/
+  migrations/                 Database schema, RLS, and RPC rules
+  functions/spawn-deck/       Edge Function that creates game_cards from a deck
 ```
 
-Check it locally with Deno:
+## Runtime Model
 
-```powershell
-deno check --config "supabase/functions/spawn-deck/deno.json" "supabase/functions/spawn-deck/index.ts"
-```
+Reference card data lives in `cards`. Per-game state lives in `game_*` tables.
 
-Deploy it:
+### Reference Tables
 
-```powershell
-supabase functions deploy spawn-deck
-```
-
-Call it with:
-
-```powershell
-curl -i --location --request POST "https://<PROJECT_REF>.supabase.co/functions/v1/spawn-deck" `
-  --header "Authorization: Bearer <USER_ACCESS_TOKEN>" `
-  --header "Content-Type: application/json" `
-  --data "{""sessionId"":""..."",""deckId"":""...""}"
-```
-
-## Expected Database Shape
-
-The app currently expects these tables/columns.
-
-`cards`:
+`cards`
 
 - `id`
 - `name`
-- `script`
 - `type_line`
+- `mana_cost`
+- `power`
+- `toughness`
+- `power_toughness`
 - `image_url`
+- `script`
 
-`decks`:
-
-- `id`
-- `list_data`, an array of card ids
-
-`game_cards`:
+`decks`
 
 - `id`
-- `session_id`
-- `card_id`
-- `owner_id`
-- `zone`
-- `zone_position`
-- `is_tapped`
-- `position_x`
-- `position_y`
+- `list_data`: array of `cards.id` values
 
-`game_players`:
+### Runtime Tables
 
-- `session_id`
-- `player_id`
-- `mana_pool`
-
-`game_turn_state`:
-
-- `session_id`
-- `active_player_id`
-- `turn_number`
-- `phase`
-- `step`
-- `created_at`
-- `updated_at`
-
-`game_sessions`:
+`game_sessions`
 
 - `id`
-- `status`
+- `status`: `open`, `locked`, `finished`
 - `created_by`
 - `created_at`
 - `locked_at`
 - `finished_at`
+- `winner_player_id`
 
-`game_session_players`:
+`game_session_players`
 
 - `session_id`
 - `player_id`
@@ -145,139 +127,152 @@ The app currently expects these tables/columns.
 - `life_total`
 - `joined_at`
 
-Add the image column if it does not exist yet:
+`game_cards`
 
-```sql
-alter table public.cards
-add column if not exists image_url text;
+- `id`
+- `session_id`
+- `card_id`
+- `owner_id`
+- `zone`: `library`, `hand`, `battlefield`, `graveyard`, `exile`
+- `zone_position`
+- `is_tapped`
+- `damage_marked`
+- `position_x`
+- `position_y`
+
+`game_players`
+
+- `session_id`
+- `player_id`
+- `mana_pool`: JSON object with `W`, `U`, `B`, `R`, `G`, `C`
+
+`game_turn_state`
+
+- `session_id`
+- `active_player_id`
+- `priority_player_id`
+- `priority_cycle_started_by`
+- `priority_pass_count`
+- `lands_played_this_turn`
+- `turn_number`
+- `phase`
+- `step`
+
+`game_combat_assignments`
+
+- `session_id`
+- `turn_number`
+- `attacker_card_id`
+- `attacking_player_id`
+- `defending_player_id`
+- `blocker_card_id`
+- `damage_resolved`
+
+`game_stack_items`
+
+- `session_id`
+- `controller_player_id`
+- `source_card_id`
+- `action_type`
+- `payload`
+- `position`
+- `status`: `pending`, `resolved`, `cancelled`
+
+`game_continuous_effects`
+
+- `session_id`
+- `source_card_id`
+- `affected_player_id`
+- `affected_card_id`
+- `effect_type`
+- `payload`
+- `expires_at_turn_number`
+- `expires_at_phase`
+- `expires_at_step`
+
+## RPC Pattern
+
+Gameplay writes should be RPCs, not direct client updates.
+
+The usual flow is:
+
+1. UI calls a wrapper in `lib/game/actions.ts`.
+2. The wrapper calls `supabase.rpc(...)`.
+3. The RPC checks auth, session membership, session status, priority, phase/step, ownership, and payment.
+4. The RPC mutates runtime tables.
+5. Realtime subscriptions and fallback refresh reload the UI.
+
+Example wrapper:
+
+```ts
+export async function castCardFromHand(supabase, sessionId, cardId) {
+  const { data, error } = await supabase.rpc('cast_card_from_hand', {
+    p_session_id: sessionId,
+    p_game_card_id: cardId,
+  })
+
+  if (error) throw error
+  return data
+}
 ```
 
-## RLS Policies Needed
+When adding a new game action, add:
 
-The browser client needs to read card metadata:
+1. A migration with the RPC.
+2. A wrapper in `lib/game/actions.ts`.
+3. A type in `lib/game/types.ts` if the return shape is reused.
+4. UI in the component that owns that workflow.
 
-```sql
-create policy "Authenticated users can read cards"
-on public.cards
-for select
-to authenticated
-using (true);
-```
+## Current RPCs
 
-Players need to manage their own player state:
+Session and membership:
 
-```sql
-create policy "Players can read their own player state"
-on public.game_players
-for select
-to authenticated
-using (player_id = auth.uid());
+- `create_game_session()`
+- `join_game_session(session_id)`
+- `lock_game_session(session_id)`
+- `finish_game_session(session_id)`
+- `is_session_player(session_id, player_id)`
+- `get_session_players(session_id)`
 
-create policy "Players can create their own player state"
-on public.game_players
-for insert
-to authenticated
-with check (player_id = auth.uid());
+Cards, zones, mana:
 
-create policy "Players can update their own player state"
-on public.game_players
-for update
-to authenticated
-using (player_id = auth.uid())
-with check (player_id = auth.uid());
-```
+- `set_card_tapped(game_card_id, is_tapped)`
+- `move_card_to_zone(game_card_id, zone)`
+- `draw_card(session_id, player_id)`
+- `untap_all(session_id, player_id)`
+- `clear_mana_pool(session_id, player_id)`
+- `clear_mana_pool_for_step(session_id, phase, step)`
+- `add_mana_from_card(game_card_id, session_id, player_id, color, amount, should_tap_card)`
+- `pay_mana_cost(session_id, player_id, mana_cost)`
+- `cast_card_from_hand(session_id, game_card_id)`
+- `expire_continuous_effects_for_step(session_id, turn_number, phase, step)`
+- `create_mana_retention_effect(session_id, source_card_id, colors, affected_player_id, expires_at_phase, expires_at_step, should_tap_card)`
 
-Depending on your existing policies, `game_cards` also needs authenticated read/update access for the relevant session/player.
+Turn, priority, stack:
 
-## RPC Functions
+- `initialize_turn_state(session_id, active_player_id)`
+- `advance_step(session_id)`
+- `pass_priority(session_id)`
+- `put_action_on_stack(session_id, action_type, payload, source_card_id)`
+- `resolve_top_of_stack(session_id)`
+- `get_stack_items(session_id)`
 
-The app expects these database functions for server-side game actions:
+Combat and results:
 
-- `public.move_card_to_zone(uuid, text)`
-- `public.add_mana_from_card(uuid, uuid, uuid, text, integer, boolean)`
-- `public.draw_card(uuid, uuid)`
-- `public.untap_all(uuid, uuid)`
-- `public.clear_mana_pool(uuid, uuid)`
-- `public.initialize_turn_state(uuid, uuid)`
-- `public.advance_step(uuid)`
-- `public.is_session_player(uuid, uuid)`
-- `public.create_game_session()`
-- `public.join_game_session(uuid)`
-- `public.lock_game_session(uuid)`
-- `public.finish_game_session(uuid)`
-- `public.get_session_players(uuid)`
-- `public.adjust_player_life(uuid, uuid, integer)`
-- `public.maybe_finish_game_session(uuid)`
-- `public.declare_attacker(uuid, uuid, uuid)`
-- `public.declare_blocker(uuid, uuid, uuid)`
-- `public.clear_combat_assignments(uuid)`
-- `public.get_combat_assignments(uuid)`
-- `public.get_combat_action_state(uuid)`
-- `public.resolve_combat_damage(uuid)`
+- `declare_attacker(session_id, attacker_card_id, defending_player_id)`
+- `declare_blocker(session_id, blocker_card_id, attacker_card_id)`
+- `clear_combat_assignments(session_id)`
+- `get_combat_assignments(session_id)`
+- `get_combat_action_state(session_id)`
+- `resolve_combat_damage(session_id)`
+- `adjust_player_life(session_id, target_player_id, delta)`
+- `maybe_finish_game_session(session_id)`
 
-The migrations live at:
+## Card Scripts
 
-```text
-supabase/migrations/202605010000_move_card_to_zone.sql
-supabase/migrations/202605010001_add_mana_from_card.sql
-supabase/migrations/202605010002_draw_card.sql
-supabase/migrations/202605010003_untap_all.sql
-supabase/migrations/202605010004_clear_mana_pool.sql
-supabase/migrations/202605010005_turn_state.sql
-supabase/migrations/202605010006_advance_step.sql
-supabase/migrations/202605010007_advance_step_untap.sql
-supabase/migrations/202605010008_advance_step_draw.sql
-supabase/migrations/202605010009_game_sessions.sql
-supabase/migrations/202605010010_session_membership_hardening.sql
-supabase/migrations/202605010011_finish_game_session.sql
-supabase/migrations/202605010012_session_read_policies.sql
-supabase/migrations/202605010013_session_player_usernames.sql
-supabase/migrations/202605010014_turn_rotation.sql
-supabase/migrations/202605010015_turn_state_realtime.sql
-supabase/migrations/202605010016_adjust_player_life.sql
-supabase/migrations/202605010017_combat_declarations.sql
-supabase/migrations/202605010018_combat_action_state.sql
-supabase/migrations/202605010019_combat_blockers.sql
-supabase/migrations/202605010020_turn_priority_player.sql
-supabase/migrations/202605010021_blockers_do_not_tap.sql
-supabase/migrations/202605010022_resolve_combat_damage.sql
-supabase/migrations/202605010023_parse_power_toughness.sql
-supabase/migrations/202605010024_win_loss_state.sql
-```
+`cards.script` is JSONB metadata that tells the UI which actions to render.
 
-## Realtime
-
-The board and controller subscribe to `game_cards` and `cards`. A 2 second fallback refresh is also in place.
-
-Enable Supabase Realtime for the relevant tables:
-
-```sql
-alter publication supabase_realtime add table public.game_cards;
-alter publication supabase_realtime add table public.cards;
-alter publication supabase_realtime add table public.game_players;
-alter publication supabase_realtime add table public.game_turn_state;
-alter publication supabase_realtime add table public.game_session_players;
-```
-
-If a table is already in the publication, Supabase may return an error. That is fine.
-
-## Current App State
-
-Implemented:
-
-- `/board/[id]` renders the shared board for a session.
-- `/controller/[id]` renders the player controller for a session.
-- `spawn-deck` Edge Function reads `decks.list_data` and inserts rows into `game_cards`.
-- `GameBoard` fetches `game_cards`, joins card metadata manually by `card_id`, and renders `cards.image_url` when present.
-- `ControllerList` fetches the current authenticated player, loads only their `game_cards`, joins card metadata manually, and renders controls.
-- `CardController` can tap/untap a card.
-- `LifeTotalsPanel` shows session player life totals and can adjust life by 1 or 5.
-- `CombatAssignmentsPanel` shows declared attackers for the current combat.
-- Controller battlefield cards can be declared as attackers during Declare Attackers Step.
-- `ActionButtons` reads `cards.script` and supports:
-  - `type: "add_mana"`
-  - `triggers: ["manual_tap"]`
-- Llanowar Elves script example:
+Current supported script actions:
 
 ```json
 {
@@ -292,76 +287,312 @@ Implemented:
 }
 ```
 
-Known next steps:
+This renders a mana button on a battlefield card. If `manual_tap` is present, the RPC taps the source card when adding mana.
 
-- Add/fill `cards.image_url` values.
-- Confirm RLS policies for `cards`, `game_cards`, and `game_players`.
-- Add a visible mana pool UI so mana changes can be seen immediately.
-- Decide how zones should work: library, hand, battlefield, graveyard, exile.
-- Move more MTG script effects into typed executors: draw card, move zone, create token, deal damage.
-- Consider moving action execution into an Edge Function or RPC for safer server-side rules.
+Player damage spell:
 
-## Turn And Phase Roadmap
+```json
+{
+  "actions": [
+    {
+      "type": "deal_damage",
+      "target": "player",
+      "amount": 3
+    }
+  ]
+}
+```
 
-Do not automate all Magic rules at once. First store the current turn/phase/step, then attach small server-side actions to step transitions.
+If the card has `type_line = 'Instant'`, the UI/RPC treats it as instant timing. If `type_line = 'Sorcery'`, it uses sorcery timing. You can also set timing directly:
 
-Recommended order:
+```json
+{
+  "actions": [
+    {
+      "type": "deal_damage_player",
+      "target": "player",
+      "amount": 3,
+      "timing": "instant"
+    }
+  ]
+}
+```
 
-1. Add `clear_mana_pool` RPC.
-2. Add turn state in a dedicated `game_turn_state` table:
-   - `session_id`
-   - `active_player_id`
-   - `turn_number`
-   - `phase`
-   - `step`
-3. Add typed phase/step values in the app.
-4. Add `advance_step` RPC.
-5. Show current active player, turn number, phase, and step in the board/controller UI.
+Experimental mana retention action:
 
-MTG phase structure to model:
+```json
+{
+  "actions": [
+    {
+      "type": "retain_mana",
+      "colors": ["G"],
+      "expires_at_phase": "ending",
+      "expires_at_step": "cleanup"
+    }
+  ],
+  "triggers": ["manual_tap"]
+}
+```
 
-- Beginning Phase
-  - Untap Step
-  - Upkeep Step
-  - Draw Step
-- Main Phase 1
-- Combat Phase
-  - Beginning of Combat Step
-  - Declare Attackers Step
-  - Declare Blockers Step
-  - Combat Damage Step
-  - End of Combat Step
-- Main Phase 2
-- Ending Phase
-  - End Step
-  - Cleanup Step
+This creates a `mana_does_not_empty` continuous effect for the current player. With `manual_tap`, the source card taps when the effect is created. The card must be on the battlefield and the controller must have priority.
 
-Later `advance_step` can call small RPCs automatically:
+This action exists as infrastructure, but real mana-retention cards are intentionally parked for now. Many of those cards have subtle timing, replacement, duration, and mana-spending rules, so they should be implemented later per card or per mechanic after the core game loop is more stable.
 
-- battlefield cards are untapped automatically when advancing from Untap Step to Upkeep Step
-- one card is drawn automatically when advancing from Draw Step to Main Phase 1
-- active player rotates to the next session seat when advancing from Cleanup Step to Untap Step
-- player life totals can be changed through `adjust_player_life`
-- `clear_mana_pool` when leaving phases where mana should empty
-- cleanup/discard logic during Cleanup Step
+## Mana And Casting
 
-Mana clearing should become effect-aware before it is fully automated. Some cards allow mana to stay in a player's mana pool longer than normal, so `clear_mana_pool` should eventually preserve mana covered by active effects instead of always resetting every color to zero.
+`cards.mana_cost` stores simple costs such as:
 
-Likely future model:
+```text
+{G}
+{1}
+{2}{G}
+{R}
+```
+
+Current mana payment behavior:
+
+- Colored costs require that exact color.
+- Generic costs are paid from available mana in order: `C`, `W`, `U`, `B`, `R`, `G`.
+- Hybrid, Phyrexian, X, reducers, taxes, alternate costs, and cost increases are not modeled yet.
+
+Priority improvement:
+
+- Let players choose which colored/colorless mana pays generic costs.
+- The current automatic order is acceptable for early testing, but it can spend a color the player wanted to keep.
+- This should be handled before deeper casting work, because permanent spells through stack will make payment choices more visible.
+
+Current mana clearing behavior:
+
+- Mana automatically clears when `advance_step` leaves the current step.
+- Clearing applies to existing `game_players.mana_pool` rows.
+- By default, every color in `W`, `U`, `B`, `R`, `G`, and `C` goes to `0`.
+- Effects can preserve specific colors through `game_continuous_effects`.
+- Real card implementations that create mana-retention effects are deferred.
+
+Mana retention effect:
+
+```json
+{
+  "effect_type": "mana_does_not_empty",
+  "affected_player_id": "player uuid or null for all players",
+  "payload": {
+    "colors": ["G", "C"]
+  },
+  "expires_at_phase": "ending",
+  "expires_at_step": "cleanup"
+}
+```
+
+`clear_mana_pool_for_step` reads those active effects. If `colors` contains `G`, green mana is kept when the step advances while the other colors are cleared. After clearing, `advance_step` calls `expire_continuous_effects_for_step`, so step-scoped effects still apply to the step they expire on.
+
+Current land behavior:
+
+- Lands are played from hand through `cast_card_from_hand`.
+- A player can play one land per turn.
+- Lands require active player, main phase, priority, and empty stack.
+- Basic lands can use `add_mana` scripts on battlefield.
+
+Current nonland permanent behavior:
+
+- Non-Instant/Sorcery cards can be cast from hand through `cast_card_from_hand`.
+- The RPC pays `cards.mana_cost`.
+- The card moves to battlefield.
+- This is intentionally simplified and does not use the stack yet for permanent spells.
+
+Current Instant/Sorcery behavior:
+
+- The card is cast through its `ActionButtons` spell action.
+- Mana cost is paid if the source card is in hand.
+- A `game_stack_items` row is created.
+- The source card moves from hand to graveyard.
+- When all players pass priority, the top stack item resolves.
+
+## Turn And Priority
+
+`active_player_id` and `priority_player_id` are separate:
+
+```text
+active_player_id = whose turn it is
+priority_player_id = who is allowed to act now
+```
+
+`advance_step` controls phase progression:
+
+- Untap step untaps active player's battlefield.
+- Draw step draws one card.
+- Cleanup advances to the next seat and resets `lands_played_this_turn`.
+- Combat assignments are cleared around combat cleanup points.
+- Marked damage is cleared during Cleanup Step.
+
+`pass_priority` controls priority:
+
+1. Current priority player passes.
+2. Priority moves to the next player by `seat_number`.
+3. If all players pass:
+   - resolve top stack item if stack is not empty
+   - otherwise advance the step
+
+This is a practical approximation. Later, APNAP edge cases and windows around every special action can be made more precise.
+
+## Combat
+
+Current combat support:
+
+- Active player declares attackers during Declare Attackers Step.
+- Declaring an attacker taps it.
+- Defending priority player declares blockers during Declare Blockers Step.
+- Blockers do not tap.
+- One blocker per attacker is supported.
+- Combat damage is resolved manually during Combat Damage Step.
+- Unblocked attackers damage defending player.
+- Blocked attackers mark damage on blockers.
+- Blockers mark damage back on attackers.
+- Creatures with lethal marked damage move to graveyard.
+- Marked damage clears during Cleanup Step.
+
+Current limitations:
+
+- No trample.
+- No first strike/double strike.
+- No vigilance.
+- No summoning sickness.
+- No protection/prevention/replacement effects.
+- No multiple blockers.
+- No planeswalker/battle targets.
+
+## Realtime
+
+The UI subscribes to runtime tables and also uses short fallback refresh intervals.
+
+Realtime tables currently used:
+
+- `game_cards`
+- `cards`
+- `game_players`
+- `game_turn_state`
+- `game_session_players`
+- `game_sessions`
+- `game_combat_assignments`
+- `game_stack_items`
+- `game_continuous_effects`
+
+Add tables to Supabase Realtime when needed:
+
+```sql
+alter publication supabase_realtime add table public.game_cards;
+alter publication supabase_realtime add table public.game_players;
+alter publication supabase_realtime add table public.game_turn_state;
+alter publication supabase_realtime add table public.game_session_players;
+alter publication supabase_realtime add table public.game_stack_items;
+alter publication supabase_realtime add table public.game_continuous_effects;
+```
+
+If a table is already in the publication, Supabase can return an error. That is fine.
+
+## Edge Function: spawn-deck
+
+The deck spawning function lives at:
+
+```text
+supabase/functions/spawn-deck/index.ts
+```
+
+It:
+
+- checks the authenticated user
+- checks session membership
+- rejects duplicate deck spawning for the same player/session
+- reads `decks.list_data`
+- inserts card instances into `game_cards`
+
+Check locally:
+
+```powershell
+deno check --config "supabase/functions/spawn-deck/deno.json" "supabase/functions/spawn-deck/index.ts"
+```
+
+Deploy:
+
+```powershell
+supabase functions deploy spawn-deck
+```
+
+## Migrations
+
+Run migrations in order. Current migration list:
+
+```text
+202605010000_move_card_to_zone.sql
+202605010001_add_mana_from_card.sql
+202605010002_draw_card.sql
+202605010003_untap_all.sql
+202605010004_clear_mana_pool.sql
+202605010005_turn_state.sql
+202605010006_advance_step.sql
+202605010007_advance_step_untap.sql
+202605010008_advance_step_draw.sql
+202605010009_game_sessions.sql
+202605010010_session_membership_hardening.sql
+202605010011_finish_game_session.sql
+202605010012_session_read_policies.sql
+202605010013_session_player_usernames.sql
+202605010014_turn_rotation.sql
+202605010015_turn_state_realtime.sql
+202605010016_adjust_player_life.sql
+202605010017_combat_declarations.sql
+202605010018_combat_action_state.sql
+202605010019_combat_blockers.sql
+202605010020_turn_priority_player.sql
+202605010021_blockers_do_not_tap.sql
+202605010022_resolve_combat_damage.sql
+202605010023_parse_power_toughness.sql
+202605010024_win_loss_state.sql
+202605010025_blocked_attacker_damage.sql
+202605010026_lethal_damage_to_graveyard.sql
+202605010027_blocker_damage_to_attackers.sql
+202605010028_runtime_state_rls.sql
+202605010029_priority_passing.sql
+202605010030_stack_action_layer.sql
+202605010031_stack_action_timing.sql
+202605010032_stack_item_display_details.sql
+202605010033_stack_item_player_name_fallback.sql
+202605010034_mana_cost_and_casting.sql
+202605010035_fix_cast_card_from_hand_row_select.sql
+202605010036_land_play_limit.sql
+202605010037_effect_aware_mana_clearing.sql
+202605010038_mana_retention_action.sql
+```
+
+## Adding New Card Mechanics
+
+Use the smallest server-side rule you can.
+
+For a new activated ability:
+
+1. Add a script action in `cards.script`.
+2. Add UI handling in `ActionButtons.tsx`.
+3. Add or extend an RPC in a migration.
+4. Add a wrapper in `lib/game/actions.ts`.
+5. Store any temporary state in a `game_*` runtime table.
+
+For a new static or continuous effect, prefer a table instead of hardcoding flags everywhere:
 
 ```text
 game_continuous_effects
 - id
 - session_id
-- player_id
 - source_card_id
+- affected_player_id nullable
+- affected_card_id nullable
 - effect_type
 - payload
-- expires_at_step
+- expires_at_phase nullable
+- expires_at_step nullable
+- expires_at_turn_number nullable
 - created_at
 ```
 
-Example retention effect:
+Example: mana does not empty
 
 ```json
 {
@@ -373,306 +604,139 @@ Example retention effect:
 }
 ```
 
-Future `clear_mana_pool` behavior:
+Mana retention is already wired into automatic mana clearing. The generic card action/RPC exists, but actual real-card support is parked because these cards tend to need precise custom rules. When this is picked up again, implement one concrete card or one narrow mechanic at a time and let it insert a `game_continuous_effects` row.
 
-1. Load the player's current `mana_pool`.
-2. Load active mana-retention effects for that player/session.
-3. Clear only mana that is not protected by those effects.
-4. Keep retained mana until the effect expires.
+Example: indestructible
 
-Until this is implemented, automatic mana clearing in `advance_step` should be added carefully and documented as not supporting special mana-retention cards yet.
+Recommended model:
 
-## Multiplayer And Session Roadmap
+```json
+{
+  "effect_type": "indestructible",
+  "affected_card_id": "game_card_id",
+  "payload": {}
+}
+```
 
-Before building combat, damage, and win conditions, harden multiplayer sessions. Combat depends on reliable player membership, active-player rotation, and life totals.
+Where to apply it:
 
-Recommended next slice:
+- In the lethal-damage-to-graveyard part of `resolve_combat_damage`.
+- Before moving a creature with lethal damage to graveyard, check active `indestructible` effects.
+- If present, keep the card on battlefield with marked damage until cleanup.
 
-1. Add `game_sessions`.
-2. Add `game_session_players`.
-3. Add RPCs for creating, joining, and locking a session.
-4. Update game RPCs to reject actions from users who are not members of the session.
-5. Add active-player switching at end of turn.
+Example: trample
 
-First implemented slice:
+Recommended model:
 
-- homepage lobby for creating and joining sessions
-- homepage shows sessions where the current user is a player
-- homepage deck spawn by deck id
+```json
+{
+  "effect_type": "trample",
+  "affected_card_id": "attacker_game_card_id",
+  "payload": {}
+}
+```
+
+Where to apply it:
+
+- In `resolve_combat_damage`.
+- For a blocked attacker with trample, compute lethal damage needed for the blocker.
+- Assign excess damage to defending player.
+- Keep the first implementation simple: one blocker only, no damage assignment choices.
+
+Example: vigilance
+
+Recommended model:
+
+```json
+{
+  "effect_type": "vigilance",
+  "affected_card_id": "attacker_game_card_id",
+  "payload": {}
+}
+```
+
+Where to apply it:
+
+- In `declare_attacker`.
+- If the attacker has vigilance, do not tap it.
+
+## Development Rules Of Thumb
+
+- Put irreversible or rules-critical changes in RPCs.
+- Keep card metadata in `cards`; keep match state in `game_*`.
+- Keep UI permissive enough to show useful controls, but trust RPCs as final authority.
+- Prefer adding a migration over editing an old already-run migration.
+- Keep new mechanics narrow. Build one effect type, one rule hook, and one UI surface at a time.
+- After changing TypeScript, run `npx tsc --noEmit` and `npm run lint`.
+- After changing SQL, run the new migration against Supabase and test the actual action in the UI.
+
+## Finished Game Data Retention
+
+Do not hard-delete runtime data immediately when a game finishes. The UI still needs enough data to show the final state, winner, final life totals, and debugging context.
+
+Keep long-term:
+
 - `game_sessions`
 - `game_session_players`
-- `create_game_session`
-- `join_game_session`
-- `lock_game_session`
-- `finish_game_session`
-- session creator is automatically seat 1
-- joined players receive the next available seat number
-- session seats show `profiles.username` with id fallback instead of only ids
-- turn rotation uses `game_session_players.seat_number`
-- turn state uses realtime plus a short fallback refresh so the next active player updates
-- life totals use `game_session_players.life_total` with realtime plus fallback refresh
-- locked sessions cannot be joined
-- session creator can finish the session
-- `spawn-deck` derives the owner from the authenticated user token
-- `spawn-deck` rejects users who are not members of the session
-- `spawn-deck` rejects spawning a second deck for the same player/session
-- `advance_step` rejects users who are not members of the session
+- later: compact match history or `game_results`
 
-Suggested database shape:
+Clean up later:
 
-```text
-game_sessions
-- id
-- status: open | locked | finished
-- created_by
-- created_at
-- locked_at
-- finished_at
-- winner_player_id
-```
-
-```text
-game_session_players
-- session_id
-- player_id
-- seat_number
-- life_total
-- joined_at
-```
-
-Suggested RPCs:
-
-- `create_game_session()`
-- `join_game_session(session_id)`
-- `lock_game_session(session_id)`
-
-After this is in place, combat/damage can build on stable multiplayer state:
-
-- attackers/blockers
-- life total changes
-- damage assignment
-- win/loss state
-- finished session status
-
-## Combat Roadmap
-
-Build combat in small layers. Do not start with full Magic combat rules, because power/toughness, blockers, combat damage, trample, first strike, summoning sickness, vigilance, and special card text all add complexity quickly.
-
-Recommended order:
-
-1. Store combat declarations.
-2. Add `declare_attacker`.
-3. Show current attackers in the UI.
-4. Add `declare_blocker`.
-5. Add simple card stats for creatures.
-6. Resolve basic combat damage.
-7. Add special rules and card effects later.
-
-First combat table:
-
-```text
-game_combat_assignments
-- id
-- session_id
-- turn_number
-- attacker_card_id
-- attacking_player_id
-- defending_player_id
-- blocker_card_id nullable
-- created_at
-```
-
-First combat RPCs:
-
-- `declare_attacker(session_id, attacker_card_id, defending_player_id)`
-- `declare_blocker(session_id, blocker_card_id, attacker_card_id)`
-- `clear_combat_assignments(session_id)`
-
-Implemented first slice:
-
+- `game_cards`
 - `game_combat_assignments`
-- `declare_attacker`
-- `declare_blocker`
-- `clear_combat_assignments`
-- `get_combat_assignments`
-- `get_combat_action_state`
-- `resolve_combat_damage`
-- attacker declaration taps the attacker
-- combat assignments are cleared when leaving End of Combat Step and when a new turn reaches Untap Step
-- board/controller show current combat assignments
-- controller Attack and Block buttons are enabled from server-provided combat action state JSON
-- combat damage can be resolved from Combat Damage Step
-- unblocked attackers deal `cards.power` damage to the defending player's life total
-- `cards.power` and `cards.toughness` are backfilled from existing `cards.power_toughness` values like `1/1`
-- `resolve_combat_damage` falls back to parsing `cards.power_toughness` when `cards.power` is empty
-- blocked attackers do not deal player damage yet
-- sessions are automatically marked `finished` when only one player remains above 0 life
-- `game_sessions.winner_player_id` stores the winner for automatic wins
-- `game_turn_state.priority_player_id` tracks who may act/advance right now, while `active_player_id` remains the turn owner
+- `game_turn_state`
+- `game_stack_items`
+- temporary effect/token tables
 
-Initial `declare_attacker` rules:
+Future cleanup should be an explicit RPC or scheduled job, not part of `maybe_finish_game_session`.
 
-- current user must be a player in the session
-- current user must be the active player
-- current step must be `declare_attackers`
-- attacker card must be owned by the active player
-- attacker card must be on the battlefield
-- attacker card must be untapped
-- defending player must be another player in the same session
-- declaring an attacker taps the attacker for now
+## Roadmap
 
-Initial `declare_blocker` rules:
+Done:
 
-- current user must be the defending player
-- current user must be the priority player for the current block declaration window
-- current step must be `declare_blockers`
-- blocker card must be owned by the defending player
-- blocker card must be on the battlefield
-- blocker card must be untapped
-- blocker can block one attacker for the first implementation
-- declaring a blocker does not tap the blocker
+- [x] Authenticated sessions and session membership
+- [x] Deck spawning per session/player
+- [x] Board and controller views
+- [x] Zones and manual zone movement
+- [x] Mana pool display
+- [x] Basic mana generation from scripted cards
+- [x] Turn, phase, and step state
+- [x] Automatic untap and draw steps
+- [x] Active player rotation
+- [x] Life totals and win/loss state
+- [x] Attackers, blockers, and combat assignment UI
+- [x] Combat damage to players and creatures
+- [x] Lethal damage to graveyard
+- [x] Priority passing
+- [x] Basic stack model
+- [x] Instant/Sorcery damage actions through stack
+- [x] Mana costs and first casting flow
+- [x] Basic lands and one-land-per-turn rule
+- [x] Automatic mana clearing with effect-aware retention
+- [x] Infrastructure for mana retention effects
 
-Combat assignment cleanup:
+High-value next work:
 
-- clear assignments when leaving `end_of_combat`
-- also clear assignments when a new turn begins as a safety fallback
+- [ ] Player-chosen payment for generic mana costs
+- [ ] Permanent spells through stack instead of direct battlefield movement
+- [ ] Land play UI state that shows remaining land plays
+- [ ] Real card implementations for mana-retention effects, parked until later
+- [ ] Summoning sickness
+- [ ] Vigilance
+- [ ] Trample
+- [ ] Indestructible
+- [ ] Multiple blockers and damage assignment
+- [ ] First strike / double strike
+- [ ] Cleanup hand-size discard
+- [ ] Token creation
+- [ ] Better card script schema validation
+- [ ] Scheduled cleanup for old finished game runtime data
 
-Creature stats should come after declarations. Start with simple nullable columns on `cards`:
+## Known Caveats
 
-```text
-cards.power integer nullable
-cards.toughness integer nullable
-```
-
-This only covers simple creatures. Real Magic values like `*`, `1+*`, or variable toughness should be modeled later with card scripts/effects.
-
-Existing `cards.power_toughness` values such as `1/1` are used as the current source of truth for simple creatures. Migration `202605010023_parse_power_toughness.sql` backfills numeric `power` and `toughness`, while keeping `power_toughness` available for display and later complex parsing.
-
-Current `resolve_combat_damage` behavior:
-
-- unblocked attackers deal `power` damage to `defending_player_id`
-- blocked attackers do not damage the player unless trample is implemented later
-- damage to creatures can be skipped in the first version
-- life changes should use the existing `adjust_player_life` path
-- damage can only be resolved once per assignment through `damage_resolved`
-- after life totals change, `maybe_finish_game_session` checks for a winner
-
-Current win/loss behavior:
-
-- `maybe_finish_game_session(session_id)` counts players with `life_total > 0`.
-- If exactly one player remains alive, the session becomes `finished`.
-- The remaining player is stored in `game_sessions.winner_player_id`.
-- If all players are at 0 life, the session becomes `finished` with no winner.
-- Manual `finish_game_session` leaves `winner_player_id` empty.
-
-## Priority And Stack Roadmap
-
-`priority_player_id` is the first building block for Magic priority. It should stay separate from `active_player_id`.
-
-Current meaning:
-
-```text
-active_player_id = the turn owner
-priority_player_id = the player allowed to act or advance right now
-```
-
-Current usage:
-
-- During normal turn steps, priority usually points to the active player.
-- During Declare Blockers Step, priority can point to the defending player.
-- The `Next Step` button uses `priority_player_id`.
-- Combat action buttons use server-provided JSON from `get_combat_action_state`.
-
-Important future rule:
-
-Do not model priority as multiple players acting at the same time. Magic priority is sequential. Only one player has priority at a time, then priority is passed to the next player.
-
-Future stack/priority model:
-
-```text
-game_priority_state
-- session_id
-- priority_player_id
-- priority_cycle_started_by
-- consecutive_passes
-- stack_is_waiting
-- updated_at
-```
-
-Possible first RPCs:
-
-- `pass_priority(session_id)`
-- `put_action_on_stack(session_id, source_card_id, action_payload)`
-- `resolve_top_of_stack(session_id)`
-
-Future `pass_priority` behavior:
-
-1. Current `priority_player_id` passes.
-2. Priority moves to the next player by `seat_number`.
-3. If every relevant player passes in sequence:
-   - resolve the top stack item if the stack is not empty
-   - otherwise allow the step/phase to advance
-4. If a player adds something to the stack, reset pass count and priority cycle.
-
-For now, keep `priority_player_id` in `game_turn_state`. Only split it into a dedicated `game_priority_state` table once instants, activated abilities, and stack resolution become real features.
-
-## Multi-Session Notes
-
-Multiple games can run in parallel as long as each game uses a unique `session_id`.
-
-Current session isolation:
-
-- `game_cards.session_id` separates card state per game.
-- `game_players` uses `(session_id, player_id)` so the same player can have separate mana pools in multiple games.
-- `game_turn_state.session_id` is the primary key, so each session has one turn-state row.
-- `game_turn_state.active_player_id` is the turn owner; `priority_player_id` is the player allowed to act/advance now.
-- Board/controller queries and realtime subscriptions filter by `session_id`.
-
-Known hardening work for later:
-
-- Add a dedicated `game_sessions` table.
-- Add a `game_session_players` table to explicitly track which players belong to each session.
-- Update RPCs to reject actions from users who are not part of the session.
-- Decide how active player changes at end of turn.
-- Add cleanup/archival for old sessions, cards, player state, and turn state.
-
-Current prototype caveat: `initialize_turn_state` allows any signed-in user to initialize a new session with themselves as active player. This is acceptable while prototyping, but should be tied to explicit session membership before multiplayer hardening.
-
-## Notes
-
-Next build currently warns that there is another `package-lock.json` at `C:\Users\jordy\package-lock.json`. The build still succeeds. To silence that warning later, either remove the unrelated parent lockfile or configure `turbopack.root` in `next.config.ts`.
-
-Simpele stappen plan:
-
-[x] Mana pool zichtbaar maken.
-[x] Zones expliciet modelleren en tonen.
-[x] Acties centraliseren in een typed executor: add_mana, tap, draw_card, move_zone.
-[x] Kritieke acties verplaatsen naar Supabase RPC of Edge Function.
-[x] Mana pool kunnen clearen.
-[x] Turn state zichtbaar maken.
-[x] Turn step handmatig kunnen doorschuiven.
-[x] Untap Step automatiseert battlefield untap.
-[x] Draw Step automatiseert een kaart trekken.
-[x] Multiplayer sessies kunnen aanmaken/joinen/locken.
-[x] Decks vanuit de sessielobby kunnen spawnen.
-[x] Eerste RPC membership hardening op `advance_step`.
-[x] Game sessies kunnen stoppen/finishen.
-[x] Home toont bestaande sessies van de speler.
-[x] Session read policies voor sessie-overzicht.
-[x] Session player list via security-definer RPC.
-[x] Seats tonen `profiles.username` met id fallback.
-[x] Turn rotation naar de volgende session seat.
-[x] Turn state realtime/fallback refresh voor actieve speler wissels.
-[x] Life totals zichtbaar en aanpasbaar via RPC.
-[x] Combat declarations opslaan.
-[x] Attackers tonen in de UI.
-[x] Blockers koppelen aan attackers.
-[x] Blockers blijven untapped bij blocken.
-[x] Priority player toevoegen voor blockers en later stack priority.
-[x] Simpele creature power/toughness velden toevoegen.
-[x] Simpele unblocked combat damage resolven.
-[x] Win/loss state via life totals toevoegen.
-[ ] RLS policies strak maken per speler/session.
-[ ] Priority passing roadmap uitwerken voor stack.
-[ ] Combat damage naar creatures modelleren.
-[ ] Daarna pas complexere MTG-logica.
+- Permanent spells currently move directly from hand to battlefield after paying mana.
+- Instant/Sorcery cards move from hand to graveyard when put on the stack. A dedicated `stack` card zone can be added later for counterspells and cancellation.
+- Mana cost parsing is intentionally simple.
+- Priority is good enough for early stack work, but not a full rules-engine implementation.
+- Public `cards` metadata is treated as shared reference data. If hidden decklists or private collections matter later, add separate RLS boundaries.
+- Next build may warn about another `package-lock.json` at `C:\Users\jordy\package-lock.json`; the build can still succeed. Configure `turbopack.root` or remove the unrelated parent lockfile to silence it.
