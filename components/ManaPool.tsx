@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getCurrentPlayerId, getPlayerManaPool, normalizeManaPool } from '@/lib/game/data'
+import { enableFallbackRefresh } from '@/lib/game/dev'
 import type { ManaColor, ManaPool as ManaPoolType } from '@/lib/game/types'
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 
@@ -97,11 +98,13 @@ export default function ManaPool({ sessionId }: { sessionId: string }) {
         }
       })
 
-    const refreshInterval = window.setInterval(loadManaPool, 2000)
+    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadManaPool, 2000) : null
 
     return () => {
       isMounted = false
-      window.clearInterval(refreshInterval)
+      if (refreshInterval) {
+        window.clearInterval(refreshInterval)
+      }
       supabase.removeChannel(channel)
     }
   }, [sessionId, supabase])

@@ -6,9 +6,19 @@ import {
   addManaFromCard,
   createManaRetentionEffect,
   getErrorMessage,
+  putCounterSpellOnStack,
   putDealDamagePlayerOnStack,
 } from '@/lib/game/actions'
-import type { CardAction, CardScript, GameSessionPlayer, GameZone } from '@/lib/game/types'
+import {
+  decrementPaymentColor,
+  getPaymentTotal,
+  incrementPaymentColor,
+  manaColors,
+  normalizeManaPayment,
+  parseManaCost,
+  type ManaPayment,
+} from '@/lib/game/mana'
+import type { CardAction, CardScript, GameSessionPlayer, GameZone, StackItem } from '@/lib/game/types'
 
 type CardWithScript = {
   id: string
@@ -17,6 +27,7 @@ type CardWithScript = {
   cards?: {
     script?: CardScript | null
     type_line?: string | null
+    mana_cost?: string | null
   } | null
 }
 
@@ -26,6 +37,7 @@ interface ActionButtonsProps {
   playerId: string;
   disabled?: boolean;
   sessionPlayers?: GameSessionPlayer[];
+  stackItems?: StackItem[];
   canUseInstantActions?: boolean;
   canUseSorceryActions?: boolean;
 }
@@ -36,6 +48,7 @@ export default function ActionButtons({
   playerId,
   disabled = false,
   sessionPlayers = [],
+  stackItems = [],
   canUseInstantActions = false,
   canUseSorceryActions = false,
 }: ActionButtonsProps) {
@@ -43,6 +56,8 @@ export default function ActionButtons({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [pendingActionIndex, setPendingActionIndex] = useState<number | null>(null)
   const [selectedTargets, setSelectedTargets] = useState<Record<number, string>>({})
+  const [selectedStackTargets, setSelectedStackTargets] = useState<Record<number, string>>({})
+  const [genericPayments, setGenericPayments] = useState<Record<number, ManaPayment>>({})
   
   // Haal het script op uit de gejoinde 'cards' tabel
   const script = card.cards?.script;
@@ -82,12 +97,25 @@ export default function ActionButtons({
     targetPlayerId: string,
     amount: number,
     timing: 'instant' | 'sorcery',
+    genericPayment?: ManaPayment,
   ) => {
     setErrorMessage(null)
     setPendingActionIndex(actionIndex)
 
     try {
-      await putDealDamagePlayerOnStack(supabase, sessionId, targetPlayerId, amount, timing, card.id)
+      await putDealDamagePlayerOnStack(
+        supabase,
+        sessionId,
+        targetPlayerId,
+        amount,
+        timing,
+        card.id,
+        genericPayment ? normalizeManaPayment(genericPayment) : undefined,
+      )
+      setGenericPayments((current) => ({
+        ...current,
+        [actionIndex]: {},
+      }))
     } catch (err) {
       const message = getErrorMessage(err)
       console.error('Fout bij stack actie:', message, err)
@@ -115,6 +143,35 @@ export default function ActionButtons({
     } catch (err) {
       const message = getErrorMessage(err)
       console.error('Fout bij mana-retentie effect:', message, err)
+      setErrorMessage(message)
+    } finally {
+      setPendingActionIndex(null)
+    }
+  }
+
+  const handleCounterSpellAction = async (
+    actionIndex: number,
+    targetStackItemId: string,
+    genericPayment?: ManaPayment,
+  ) => {
+    setErrorMessage(null)
+    setPendingActionIndex(actionIndex)
+
+    try {
+      await putCounterSpellOnStack(
+        supabase,
+        sessionId,
+        targetStackItemId,
+        card.id,
+        genericPayment ? normalizeManaPayment(genericPayment) : undefined,
+      )
+      setGenericPayments((current) => ({
+        ...current,
+        [actionIndex]: {},
+      }))
+    } catch (err) {
+      const message = getErrorMessage(err)
+      console.error('Fout bij counterspell actie:', message, err)
       setErrorMessage(message)
     } finally {
       setPendingActionIndex(null)
@@ -152,6 +209,12 @@ export default function ActionButtons({
           if (isPlayerDamageAction(action) && typeof action.amount === 'number') {
             const amount = action.amount
             const actionTiming = getActionTiming(action, card.cards?.type_line)
+            const parsedManaCost = parseManaCost(card.cards?.mana_cost)
+            const needsGenericChoice = card.zone === 'hand' && parsedManaCost.generic > 0
+            const genericPayment = genericPayments[index] ?? {}
+            const selectedGenericPaymentTotal = getPaymentTotal(genericPayment)
+            const hasValidGenericChoice =
+              !needsGenericChoice || selectedGenericPaymentTotal === parsedManaCost.generic
             const canUseTiming =
               actionTiming === 'instant'
                 ? canUseInstantActions
@@ -165,6 +228,7 @@ export default function ActionButtons({
               !actionTiming ||
               !canUseTiming ||
               !targetPlayerId ||
+              !hasValidGenericChoice ||
               pendingActionIndex === index
             const timingLabel = actionTiming ? actionTiming[0].toUpperCase() + actionTiming.slice(1) : 'Stack'
 
@@ -187,12 +251,37 @@ export default function ActionButtons({
                     </option>
                   ))}
                 </select>
+                {needsGenericChoice ? (
+                  <GenericManaPaymentPicker
+                    genericCost={parsedManaCost.generic}
+                    payment={genericPayment}
+                    disabled={disabled || pendingActionIndex === index}
+                    onIncrement={(color) =>
+                      setGenericPayments((current) => ({
+                        ...current,
+                        [index]: incrementPaymentColor(genericPayment, color, parsedManaCost.generic),
+                      }))
+                    }
+                    onDecrement={(color) =>
+                      setGenericPayments((current) => ({
+                        ...current,
+                        [index]: decrementPaymentColor(genericPayment, color),
+                      }))
+                    }
+                  />
+                ) : null}
                 <button
                   type="button"
                   disabled={isDisabled}
                   onClick={() =>
                     actionTiming
-                      ? handleStackDamageAction(index, targetPlayerId, amount, actionTiming)
+                      ? handleStackDamageAction(
+                          index,
+                          targetPlayerId,
+                          amount,
+                          actionTiming,
+                          needsGenericChoice ? genericPayment : undefined,
+                        )
                       : undefined
                   }
                   className="flex items-center justify-center gap-2 rounded-md bg-sky-300 p-3 text-sm font-bold text-sky-950 transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
@@ -243,6 +332,93 @@ export default function ActionButtons({
               </button>
             )
           }
+
+          if (isCounterSpellAction(action)) {
+            if (card.zone !== 'hand') {
+              return null
+            }
+
+            const pendingStackItems = stackItems.filter((item) => item.status === 'pending')
+            const parsedManaCost = parseManaCost(card.cards?.mana_cost)
+            const needsGenericChoice = card.zone === 'hand' && parsedManaCost.generic > 0
+            const genericPayment = genericPayments[index] ?? {}
+            const selectedGenericPaymentTotal = getPaymentTotal(genericPayment)
+            const hasValidGenericChoice =
+              !needsGenericChoice || selectedGenericPaymentTotal === parsedManaCost.generic
+            const targetStackItemId =
+              selectedStackTargets[index] || pendingStackItems[0]?.id || ''
+            const isDisabled =
+              disabled ||
+              !canUseInstantActions ||
+              !targetStackItemId ||
+              !hasValidGenericChoice ||
+              pendingActionIndex === index
+
+            return (
+              <div key={index} className="col-span-2 grid gap-2 rounded-xl border border-violet-700 bg-violet-950/40 p-3">
+                <select
+                  value={targetStackItemId}
+                  disabled={disabled || pendingStackItems.length === 0 || pendingActionIndex === index}
+                  onChange={(event) =>
+                    setSelectedStackTargets((current) => ({
+                      ...current,
+                      [index]: event.target.value,
+                    }))
+                  }
+                  className="rounded-md border border-violet-800 bg-slate-950 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {pendingStackItems.length === 0 ? (
+                    <option value="">Stack is empty</option>
+                  ) : (
+                    pendingStackItems.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {formatStackTargetLabel(item)}
+                      </option>
+                    ))
+                  )}
+                </select>
+                {needsGenericChoice ? (
+                  <GenericManaPaymentPicker
+                    genericCost={parsedManaCost.generic}
+                    payment={genericPayment}
+                    disabled={disabled || pendingActionIndex === index}
+                    onIncrement={(color) =>
+                      setGenericPayments((current) => ({
+                        ...current,
+                        [index]: incrementPaymentColor(genericPayment, color, parsedManaCost.generic),
+                      }))
+                    }
+                    onDecrement={(color) =>
+                      setGenericPayments((current) => ({
+                        ...current,
+                        [index]: decrementPaymentColor(genericPayment, color),
+                      }))
+                    }
+                  />
+                ) : null}
+                <button
+                  type="button"
+                  disabled={isDisabled}
+                  onClick={() =>
+                    handleCounterSpellAction(
+                      index,
+                      targetStackItemId,
+                      needsGenericChoice ? genericPayment : undefined,
+                    )
+                  }
+                  className="flex items-center justify-center gap-2 rounded-md bg-violet-300 p-3 text-sm font-bold text-violet-950 transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {pendingActionIndex === index ? 'Adding...' : 'Instant: Counter target spell'}
+                </button>
+                {!canUseInstantActions ? (
+                  <p className="text-xs text-slate-500">Requires priority.</p>
+                ) : null}
+                {pendingStackItems.length === 0 ? (
+                  <p className="text-xs text-slate-500">There are no pending stack items to counter.</p>
+                ) : null}
+              </div>
+            )
+          }
           
           return null;
         })}
@@ -282,6 +458,30 @@ function isRetainManaAction(action: CardAction) {
   return action.type === 'retain_mana' || action.type === 'mana_does_not_empty'
 }
 
+function isCounterSpellAction(action: CardAction) {
+  return (
+    action.type === 'counter_spell' ||
+    action.type === 'counter_target_spell' ||
+    (action.type === 'counter' && (action.target === 'spell' || action.target_type === 'spell'))
+  )
+}
+
+function formatStackTargetLabel(item: StackItem) {
+  if (item.action_type === 'cast_permanent') {
+    return `Cast ${item.source_card_name ?? 'Unknown permanent'}`
+  }
+
+  if (item.action_type === 'deal_damage_player') {
+    return `${item.source_card_name ?? 'Unknown source'} damage`
+  }
+
+  if (item.action_type === 'counter_spell') {
+    return `${item.source_card_name ?? 'Counterspell'} counter`
+  }
+
+  return item.source_card_name ?? item.action_type
+}
+
 function getRetainedManaColors(action: CardAction) {
   if (Array.isArray(action.colors)) {
     return action.colors
@@ -296,4 +496,59 @@ function getRetainedManaColors(action: CardAction) {
   }
 
   return []
+}
+
+function GenericManaPaymentPicker({
+  genericCost,
+  payment,
+  disabled,
+  onIncrement,
+  onDecrement,
+}: {
+  genericCost: number
+  payment: ManaPayment
+  disabled: boolean
+  onIncrement: (color: (typeof manaColors)[number]) => void
+  onDecrement: (color: (typeof manaColors)[number]) => void
+}) {
+  const selectedTotal = getPaymentTotal(payment)
+
+  return (
+    <div className="rounded-md border border-slate-700 bg-slate-950 p-2">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <p className="text-xs font-medium text-slate-300">Pay generic mana</p>
+        <p className="text-xs text-slate-500">
+          {selectedTotal}/{genericCost}
+        </p>
+      </div>
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+        {manaColors.map((color) => (
+          <div key={color} className="flex items-center justify-between gap-1 rounded bg-slate-900 p-1">
+            <button
+              type="button"
+              disabled={disabled || (payment[color] ?? 0) <= 0}
+              onClick={() => onDecrement(color)}
+              className="h-7 w-7 rounded bg-slate-800 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              -
+            </button>
+            <span className="min-w-8 text-center text-xs font-bold text-white">
+              {color} {payment[color] ?? 0}
+            </span>
+            <button
+              type="button"
+              disabled={disabled || selectedTotal >= genericCost}
+              onClick={() => onIncrement(color)}
+              className="h-7 w-7 rounded bg-slate-800 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              +
+            </button>
+          </div>
+        ))}
+      </div>
+      {selectedTotal !== genericCost ? (
+        <p className="mt-2 text-xs text-amber-300">Choose exactly {genericCost} mana for the generic cost.</p>
+      ) : null}
+    </div>
+  )
 }

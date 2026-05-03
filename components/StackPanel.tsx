@@ -4,6 +4,7 @@ import { Layers } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { getErrorMessage } from '@/lib/game/actions'
 import { getStackItems } from '@/lib/game/data'
+import { enableFallbackRefresh } from '@/lib/game/dev'
 import { createClient } from '@/lib/supabase/client'
 import type { StackItem } from '@/lib/game/types'
 
@@ -53,11 +54,13 @@ export default function StackPanel({ sessionId }: { sessionId: string }) {
         }
       })
 
-    const refreshInterval = window.setInterval(loadStack, 2000)
+    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadStack, 2000) : null
 
     return () => {
       isMounted = false
-      window.clearInterval(refreshInterval)
+      if (refreshInterval) {
+        window.clearInterval(refreshInterval)
+      }
       supabase.removeChannel(channel)
     }
   }, [sessionId, supabase])
@@ -94,6 +97,19 @@ function formatStackAction(item: StackItem) {
     return `${item.source_card_name ?? 'Unknown source'} deals ${String(
       item.payload.amount ?? 0,
     )} damage to ${item.target_username ?? getTargetFallback(item)}`
+  }
+
+  if (item.action_type === 'cast_permanent') {
+    return `Cast ${item.source_card_name ?? 'Unknown permanent'}`
+  }
+
+  if (item.action_type === 'counter_spell') {
+    const targetLabel =
+      typeof item.payload.target_stack_label === 'string'
+        ? item.payload.target_stack_label
+        : 'target spell'
+
+    return `${item.source_card_name ?? 'Counterspell'} counters ${targetLabel}`
   }
 
   return item.action_type

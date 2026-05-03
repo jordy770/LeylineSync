@@ -1,8 +1,10 @@
 // components/ControllerList.tsx
 'use client'
+import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { declareAttacker, declareBlocker, getErrorMessage } from '@/lib/game/actions'
+import { enableFallbackRefresh, showDevControls } from '@/lib/game/dev'
 import {
   getCombatActionState,
   getCombatAssignments,
@@ -11,17 +13,22 @@ import {
   getGameSession,
   getGameSessionPlayers,
   getStackItems,
+  getTurnState,
 } from '@/lib/game/data'
 import type {
   CombatActionState,
   CombatAssignment,
-  ControllerCard,
-  GameSessionPlayer,
-} from '@/lib/game/types'
+    ControllerCard,
+    GameSessionPlayer,
+    GameTurnState,
+    StackItem,
+  } from '@/lib/game/types'
 import CardController from './CardController'
 import ActionButtons from './ActionButtons'
 import CardZoneControls from './CardZoneControls'
 import PlayerActionPanel from './PlayerActionPanel'
+import StaticEffectControls from './StaticEffectControls'
+import DevAdminPanel from './DevAdminPanel'
 
 export default function ControllerList({ sessionId }: { sessionId: string }) {
   const [cards, setCards] = useState<ControllerCard[]>([])
@@ -33,6 +40,8 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
   const [combatAssignments, setCombatAssignments] = useState<CombatAssignment[]>([])
   const [isSessionFinished, setIsSessionFinished] = useState(false)
   const [sessionPlayers, setSessionPlayers] = useState<GameSessionPlayer[]>([])
+  const [turnState, setTurnState] = useState<GameTurnState | null>(null)
+  const [stackItems, setStackItems] = useState<StackItem[]>([])
   const [pendingStackCount, setPendingStackCount] = useState(0)
   const [declaringAttackerId, setDeclaringAttackerId] = useState<string | null>(null)
   const [declaringBlockerId, setDeclaringBlockerId] = useState<string | null>(null)
@@ -116,20 +125,24 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
           nextCombatAssignments,
           nextSessionPlayers,
           nextStackItems,
+          nextTurnState,
         ] = await Promise.all([
           getGameSession(supabase, sessionId),
           getCombatActionState(supabase, sessionId),
           getCombatAssignments(supabase, sessionId),
           getGameSessionPlayers(supabase, sessionId),
           getStackItems(supabase, sessionId),
+          getTurnState(supabase, sessionId),
         ])
 
         if (isMounted) {
           setIsSessionFinished(session?.status === 'finished')
-          setCombatActionState(nextCombatActionState)
-          setCombatAssignments(nextCombatAssignments)
-          setSessionPlayers(nextSessionPlayers)
-          setPendingStackCount(nextStackItems.filter((item) => item.status === 'pending').length)
+            setCombatActionState(nextCombatActionState)
+            setCombatAssignments(nextCombatAssignments)
+            setSessionPlayers(nextSessionPlayers)
+            setStackItems(nextStackItems)
+            setPendingStackCount(nextStackItems.filter((item) => item.status === 'pending').length)
+            setTurnState(nextTurnState)
         }
       } catch (error) {
         const message = getErrorMessage(error)
@@ -217,6 +230,16 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
         {
           event: '*',
           schema: 'public',
+          table: 'game_combat_blockers',
+          filter: `session_id=eq.${sessionId}`,
+        },
+        loadGameContext,
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
           table: 'game_session_players',
           filter: `session_id=eq.${sessionId}`,
         },
@@ -229,16 +252,20 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
         }
       })
 
-    const refreshInterval = window.setInterval(() => {
-      if (currentPlayerId) {
-        fetchCards(currentPlayerId)
-      }
-      loadGameContext()
-    }, 2000)
+    const refreshInterval = enableFallbackRefresh
+      ? window.setInterval(() => {
+          if (currentPlayerId) {
+            fetchCards(currentPlayerId)
+          }
+          loadGameContext()
+        }, 2000)
+      : null
 
     return () => {
       isMounted = false
-      window.clearInterval(refreshInterval)
+      if (refreshInterval) {
+        window.clearInterval(refreshInterval)
+      }
       supabase.removeChannel(channel)
     }
   }, [sessionId, supabase])
@@ -255,15 +282,6 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
     )
   }
 
-  if (cards.length === 0) {
-    return (
-      <div className="rounded-lg bg-slate-900 p-4 text-sm text-slate-300 space-y-2">
-        <p>No cards found for session <span className="font-mono">{sessionId}</span>.</p>
-        {lastFetchInfo ? <p className="text-slate-500">{lastFetchInfo}</p> : null}
-      </div>
-    )
-  }
-
   const handCards = cards.filter((card) => card.zone === 'hand')
   const battlefieldCards = cards.filter((card) => card.zone === 'battlefield')
   const libraryCount = cards.filter((card) => card.zone === 'library').length
@@ -276,7 +294,7 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
   })
   const canDeclareAttackers = !attackUnavailableReason
   const blockableAssignments = combatAssignments.filter(
-    (assignment) => assignment.defending_player_id === playerId && !assignment.blocker_card_id,
+    (assignment) => assignment.defending_player_id === playerId,
   )
   const blockUnavailableReason = getBlockUnavailableReason({
     combatActionState,
@@ -298,6 +316,42 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
         combatActionState?.step === 'postcombat_main') &&
       pendingStackCount === 0,
   )
+
+  const refreshControllerData = async () => {
+    if (playerId) {
+      const result = await getControllerCards(supabase, sessionId, playerId)
+      setCards(result.cards)
+      setLastFetchInfo(
+        result.missingCardIds.length > 0
+          ? `Session ${sessionId}: ${result.rowCount} card(s) loaded, ${result.missingCardIds.length} card id(s) not found in cards`
+          : `Session ${sessionId}: ${result.rowCount} card(s) loaded`,
+      )
+    }
+
+    const [
+      session,
+      nextCombatActionState,
+      nextCombatAssignments,
+      nextSessionPlayers,
+      nextStackItems,
+      nextTurnState,
+    ] = await Promise.all([
+      getGameSession(supabase, sessionId),
+      getCombatActionState(supabase, sessionId),
+      getCombatAssignments(supabase, sessionId),
+      getGameSessionPlayers(supabase, sessionId),
+      getStackItems(supabase, sessionId),
+      getTurnState(supabase, sessionId),
+    ])
+
+    setIsSessionFinished(session?.status === 'finished')
+      setCombatActionState(nextCombatActionState)
+      setCombatAssignments(nextCombatAssignments)
+      setSessionPlayers(nextSessionPlayers)
+      setStackItems(nextStackItems)
+      setPendingStackCount(nextStackItems.filter((item) => item.status === 'pending').length)
+      setTurnState(nextTurnState)
+  }
 
   const handleDeclareAttacker = async (attackerCardId: string, defendingPlayerId: string) => {
     setErrorMessage(null)
@@ -346,6 +400,15 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
   return (
     <>
       {lastFetchInfo ? <p className="mb-3 text-xs text-slate-500">{lastFetchInfo}</p> : null}
+      {showDevControls ? (
+        <DevAdminPanel
+          sessionId={sessionId}
+          currentPlayerId={playerId}
+          sessionPlayers={sessionPlayers}
+          turnState={turnState}
+          onChanged={refreshControllerData}
+        />
+      ) : null}
       {playerId ? (
         <PlayerActionPanel
           sessionId={sessionId}
@@ -366,9 +429,13 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
         playerId={playerId}
         sessionId={sessionId}
         isSessionFinished={isSessionFinished}
-        sessionPlayers={sessionPlayers}
-        canUseInstantActions={canUseInstantActions}
+          sessionPlayers={sessionPlayers}
+          stackItems={stackItems}
+          canUseInstantActions={canUseInstantActions}
         canUseSorceryActions={canUseSorceryActions}
+        landsPlayedThisTurn={turnState?.lands_played_this_turn ?? 0}
+        landPlayLimit={turnState?.land_play_limit ?? 1}
+        turnNumber={turnState?.turn_number ?? 1}
       />
       <CardSection
         title="Battlefield"
@@ -389,6 +456,9 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
         sessionPlayers={sessionPlayers}
         canUseInstantActions={canUseInstantActions}
         canUseSorceryActions={canUseSorceryActions}
+        landsPlayedThisTurn={turnState?.lands_played_this_turn ?? 0}
+        landPlayLimit={turnState?.land_play_limit ?? 1}
+        turnNumber={turnState?.turn_number ?? 1}
       />
     </>
   )
@@ -411,8 +481,12 @@ function CardSection({
   onDeclareBlocker,
   isSessionFinished = false,
   sessionPlayers = [],
+  stackItems = [],
   canUseInstantActions = false,
   canUseSorceryActions = false,
+  landsPlayedThisTurn = 0,
+  landPlayLimit = 1,
+  turnNumber = 1,
 }: {
   title: string
   cards: ControllerCard[]
@@ -430,8 +504,12 @@ function CardSection({
   onDeclareBlocker?: (blockerCardId: string, attackerCardId: string) => void
   isSessionFinished?: boolean
   sessionPlayers?: GameSessionPlayer[]
+  stackItems?: StackItem[]
   canUseInstantActions?: boolean
   canUseSorceryActions?: boolean
+  landsPlayedThisTurn?: number
+  landPlayLimit?: number
+  turnNumber?: number
 }) {
   if (cards.length === 0) {
     return null
@@ -443,14 +521,35 @@ function CardSection({
       <div className="grid grid-cols-1 gap-4">
         {cards.map((card) => (
           <div key={card.id} className="space-y-3 rounded-lg bg-slate-800 p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <span className="block truncate text-white font-medium">{card.name}</span>
-                {card.damage_marked > 0 ? (
-                  <span className="text-xs text-red-300">Damage: {card.damage_marked}</span>
-                ) : null}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 gap-3">
+                <CardThumbnail card={card} />
+                <div className="min-w-0">
+                  <span className="block truncate text-white font-medium">{card.name}</span>
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    {card.cards?.mana_cost ? (
+                      <span className="rounded bg-slate-950 px-2 py-0.5 text-xs text-slate-300">
+                        {card.cards.mana_cost}
+                      </span>
+                    ) : null}
+                    {getPowerToughnessLabel(card) ? (
+                      <span className="rounded bg-white px-2 py-0.5 text-xs font-semibold text-slate-950">
+                        {getPowerToughnessLabel(card)}
+                      </span>
+                    ) : null}
+                  </div>
+                  {card.cards?.type_line ? (
+                    <span className="mt-1 block truncate text-xs text-slate-400">
+                      {card.cards.type_line}
+                    </span>
+                  ) : null}
+                  {card.damage_marked > 0 ? (
+                    <span className="block text-xs text-red-300">Damage: {card.damage_marked}</span>
+                  ) : null}
+                  {card.zone === 'battlefield' ? <KeywordLabels card={card} /> : null}
+                </div>
               </div>
-              {card.zone === 'battlefield' ? (
+              {showDevControls && card.zone === 'battlefield' ? (
                 <CardController cardId={card.id} isTapped={card.is_tapped} disabled={isSessionFinished} />
               ) : null}
             </div>
@@ -461,7 +560,21 @@ function CardSection({
               sessionId={sessionId}
               manaCost={card.cards?.mana_cost}
               typeLine={card.cards?.type_line}
+              landsPlayedThisTurn={landsPlayedThisTurn}
+              landPlayLimit={landPlayLimit}
+              canUseSorceryActions={canUseSorceryActions}
             />
+            {showDevControls && card.zone === 'battlefield' && sessionId ? (
+              <StaticEffectControls
+                cardId={card.id}
+                sessionId={sessionId}
+                controllerPlayerId={card.controller_player_id}
+                copiedScript={card.copied_script}
+                staticEffectsSuppressed={card.static_effects_suppressed}
+                sessionPlayers={sessionPlayers}
+                disabled={isSessionFinished}
+              />
+            ) : null}
             {card.zone === 'battlefield' && onDeclareAttacker ? (
               <DeclareAttackerControls
                 card={card}
@@ -469,6 +582,7 @@ function CardSection({
                 attackUnavailableReason={attackUnavailableReason}
                 defendingPlayers={defendingPlayers}
                 isDeclaring={declaringAttackerId === card.id}
+                turnNumber={turnNumber}
                 onDeclareAttacker={onDeclareAttacker}
               />
             ) : null}
@@ -487,9 +601,10 @@ function CardSection({
                 card={card}
                 sessionId={sessionId}
                 playerId={playerId}
-                disabled={isSessionFinished}
-                sessionPlayers={sessionPlayers}
-                canUseInstantActions={canUseInstantActions}
+                  disabled={isSessionFinished}
+                  sessionPlayers={sessionPlayers}
+                  stackItems={stackItems}
+                  canUseInstantActions={canUseInstantActions}
                 canUseSorceryActions={canUseSorceryActions}
               />
             ) : null}
@@ -497,6 +612,74 @@ function CardSection({
         ))}
       </div>
     </section>
+  )
+}
+
+function CardThumbnail({ card }: { card: ControllerCard }) {
+  const [isPressed, setIsPressed] = useState(false)
+  const imageUrl = card.cards?.image_url
+
+  return (
+    <div
+      tabIndex={0}
+      role="button"
+      aria-label={`Preview ${card.name}`}
+      onPointerDown={() => setIsPressed(true)}
+      onPointerUp={() => setIsPressed(false)}
+      onPointerCancel={() => setIsPressed(false)}
+      onPointerLeave={() => setIsPressed(false)}
+      onContextMenu={(event) => event.preventDefault()}
+      className="group relative h-20 w-14 shrink-0 touch-none select-none overflow-hidden rounded border border-slate-700 bg-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-300"
+    >
+      {imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt={card.name || 'Magic card'}
+          fill
+          sizes="56px"
+          className="object-cover"
+        />
+      ) : (
+        <div className="flex h-full items-center justify-center px-1 text-center text-[10px] text-slate-500">
+          No image
+        </div>
+      )}
+      {imageUrl ? (
+        <div
+          className={`pointer-events-none fixed left-1/2 top-1/2 z-50 w-64 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-slate-600 bg-slate-950 p-2 shadow-2xl shadow-black/70 group-hover:block group-focus:block sm:w-72 ${
+            isPressed ? 'block' : 'hidden'
+          }`}
+        >
+          <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-slate-900">
+            <Image
+              src={imageUrl}
+              alt={card.name || 'Magic card preview'}
+              fill
+              sizes="288px"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+function KeywordLabels({ card }: { card: ControllerCard }) {
+  const labels = getSupportedKeywordLabels(card)
+
+  if (labels.length === 0) {
+    return null
+  }
+
+  return (
+    <div className="mt-1 flex flex-wrap gap-1">
+      {labels.map((label) => (
+        <span key={label} className="rounded bg-emerald-950 px-2 py-0.5 text-xs text-emerald-200">
+          {label}
+        </span>
+      ))}
+    </div>
   )
 }
 
@@ -568,6 +751,7 @@ function DeclareAttackerControls({
   attackUnavailableReason,
   defendingPlayers,
   isDeclaring,
+  turnNumber,
   onDeclareAttacker,
 }: {
   card: ControllerCard
@@ -575,19 +759,20 @@ function DeclareAttackerControls({
   attackUnavailableReason?: string | null
   defendingPlayers: GameSessionPlayer[]
   isDeclaring: boolean
+  turnNumber: number
   onDeclareAttacker: (attackerCardId: string, defendingPlayerId: string) => void
 }) {
   const [defendingPlayerId, setDefendingPlayerId] = useState(defendingPlayers[0]?.player_id ?? '')
   const resolvedDefendingPlayerId = defendingPlayerId || defendingPlayers[0]?.player_id || ''
-  const isDisabled =
-    !canDeclareAttackers || card.is_tapped || isDeclaring || defendingPlayers.length === 0
   const disabledReason = getDeclareAttackerDisabledReason({
     card,
     canDeclareAttackers,
     attackUnavailableReason,
     defendingPlayers,
     isDeclaring,
+    turnNumber,
   })
+  const isDisabled = Boolean(disabledReason)
 
   if (defendingPlayers.length === 0) {
     return null
@@ -616,6 +801,24 @@ function DeclareAttackerControls({
         {isDeclaring ? 'Attacking...' : 'Attack'}
       </button>
       {disabledReason ? <p className="text-xs text-slate-500 sm:basis-full">{disabledReason}</p> : null}
+      {!disabledReason && cardHasPrintedOrCopiedVigilance(card) ? (
+        <p className="text-xs text-emerald-300 sm:basis-full">Vigilance: this creature will not tap.</p>
+      ) : null}
+      {!disabledReason && cardHasPrintedOrCopiedKeyword(card, 'trample') ? (
+        <p className="text-xs text-emerald-300 sm:basis-full">
+          Trample: excess combat damage can hit the defending player.
+        </p>
+      ) : null}
+      {!disabledReason && cardHasPrintedOrCopiedKeyword(card, 'first_strike') ? (
+        <p className="text-xs text-emerald-300 sm:basis-full">
+          First strike: this creature deals combat damage before regular damage.
+        </p>
+      ) : null}
+      {!disabledReason && cardHasPrintedOrCopiedKeyword(card, 'double_strike') ? (
+        <p className="text-xs text-emerald-300 sm:basis-full">
+          Double strike: this creature deals first strike and regular combat damage.
+        </p>
+      ) : null}
     </div>
   )
 }
@@ -626,12 +829,14 @@ function getDeclareAttackerDisabledReason({
   attackUnavailableReason,
   defendingPlayers,
   isDeclaring,
+  turnNumber,
 }: {
   card: ControllerCard
   canDeclareAttackers: boolean
   attackUnavailableReason?: string | null
   defendingPlayers: GameSessionPlayer[]
   isDeclaring: boolean
+  turnNumber: number
 }) {
   if (isDeclaring) {
     return 'Declaring attacker...'
@@ -645,11 +850,98 @@ function getDeclareAttackerDisabledReason({
     return 'Tapped cards cannot be declared as attackers yet.'
   }
 
+  if (!isCreatureCard(card)) {
+    return 'Only creatures can attack.'
+  }
+
+  if (hasSummoningSickness(card, turnNumber)) {
+    return 'Creature has summoning sickness.'
+  }
+
   if (!canDeclareAttackers) {
     return attackUnavailableReason ?? 'Attack is not available right now.'
   }
 
   return null
+}
+
+function isCreatureCard(card: ControllerCard) {
+  return (card.cards?.type_line ?? '').toLowerCase().includes('creature')
+}
+
+function getPowerToughnessLabel(card: ControllerCard) {
+  const linkedCard = card.cards
+
+  if (!linkedCard || !isCreatureCard(card)) {
+    return null
+  }
+
+  if (linkedCard.power_toughness) {
+    return linkedCard.power_toughness
+  }
+
+  if (linkedCard.power !== null && linkedCard.power !== undefined) {
+    return `${linkedCard.power}/${linkedCard.toughness ?? '?'}`
+  }
+
+  return null
+}
+
+function hasSummoningSickness(card: ControllerCard, turnNumber: number) {
+  const enteredTurn = card.entered_battlefield_turn_number
+
+  if (enteredTurn === null || enteredTurn === undefined) {
+    return false
+  }
+
+  if (enteredTurn < turnNumber) {
+    return false
+  }
+
+  return !cardHasPrintedOrCopiedHaste(card)
+}
+
+function cardHasPrintedOrCopiedHaste(card: ControllerCard) {
+  return cardHasPrintedOrCopiedKeyword(card, 'haste')
+}
+
+function cardHasPrintedOrCopiedVigilance(card: ControllerCard) {
+  return cardHasPrintedOrCopiedKeyword(card, 'vigilance')
+}
+
+function cardHasPrintedOrCopiedKeyword(card: ControllerCard, keyword: string) {
+  const normalizedKeyword = normalizeKeyword(keyword)
+  const printedKeywords = card.cards?.keywords ?? []
+
+  if (printedKeywords.some((printedKeyword) => normalizeKeyword(printedKeyword) === normalizedKeyword)) {
+    return true
+  }
+
+  const printedEffects = card.cards?.script?.continuous_effects ?? []
+  const copiedEffects = card.copied_script?.continuous_effects ?? []
+  const effects = copiedEffects.length > 0 ? copiedEffects : printedEffects
+
+  return effects.some((effect) => {
+    const effectType = effect.type ?? effect.effect_type
+    return normalizeKeyword(effectType) === normalizedKeyword
+  })
+}
+
+function getSupportedKeywordLabels(card: ControllerCard) {
+  return [
+    ['haste', 'Haste'],
+    ['vigilance', 'Vigilance'],
+    ['trample', 'Trample'],
+    ['indestructible', 'Indestructible'],
+    ['first_strike', 'First strike'],
+    ['double_strike', 'Double strike'],
+  ]
+    .filter(([keyword]) => cardHasPrintedOrCopiedKeyword(card, keyword))
+    .map(([, label]) => label)
+}
+
+function normalizeKeyword(keyword: string | undefined) {
+  return (keyword ?? '').toLowerCase().replace(/[\s-]+/g, '_')
 }
 
 function getAttackUnavailableReason({

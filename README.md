@@ -33,6 +33,7 @@ Create `.env.local`:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-or-anon-key
+NEXT_PUBLIC_ENABLE_FALLBACK_REFRESH=true
 ```
 
 Run the app:
@@ -55,6 +56,97 @@ npm run lint
 npm run build
 ```
 
+## Card Catalog Import
+
+The repo includes a Scryfall bulk JSON file at:
+
+```text
+lib/default-cards-20260429211148.json
+```
+
+Import a clean English card catalog into `public.cards` with:
+
+```powershell
+npm run import:cards
+```
+
+By default this imports:
+
+- English cards only
+- non-digital cards only
+- one representative print per `oracle_id`
+- playable cards only, skipping tokens, art cards, emblems, planes, schemes, minigames, stickers, and similar extras
+
+Test without writing to Supabase:
+
+```powershell
+npm run import:cards -- --dry-run --limit 5
+```
+
+Useful options:
+
+```powershell
+npm run import:cards -- --limit 1000
+npm run import:cards -- --batch-size 250
+npm run import:cards -- --include-digital
+npm run import:cards -- --include-non-english
+npm run import:cards -- --all-prints
+npm run import:cards -- --include-extras
+npm run import:cards -- --file path/to/scryfall.json
+```
+
+If Supabase returns `TypeError: fetch failed` during a large import, rerun with a smaller batch:
+
+```powershell
+npm run import:cards -- --batch-size 25
+```
+
+The importer retries failed batches automatically, but large rows plus network/PostgREST limits can still make smaller batches more reliable.
+
+The importer reads the file as a stream, so it can handle large Scryfall JSON arrays. It upserts card metadata by `cards.id = scryfall.id` and updates:
+
+- `name`
+- `mana_cost`
+- `type_line`
+- `oracle_text`
+- `power_toughness`
+- `keywords`
+- `image_url`
+- `power`
+- `toughness`
+
+It does not update `script`. New imported rows rely on the table default for `script`, and existing playable scripts stay intact. Add gameplay scripts later through focused migrations or override tooling.
+
+Import translated/non-English cards only if you want language prints as separate catalog rows:
+
+```powershell
+npm run import:cards -- --include-non-english
+```
+
+Import every print instead of one representative print per `oracle_id` only if you want print-level collecting/search:
+
+```powershell
+npm run import:cards -- --all-prints
+```
+
+For a real import, use a service role key locally:
+
+```env
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+Never expose the service role key in browser code or commit it.
+
+Recommended checks after a full import:
+
+- Search a few known cards in the dev admin card picker.
+- Check that `image_url`, `mana_cost`, `type_line`, `keywords`, and power/toughness look right.
+- Spawn a few simple creatures and confirm their controller card preview renders.
+- Spawn cards with supported keywords such as `Flying`, `Reach`, `Trample`, `Vigilance`, `First strike`, and `Double strike`.
+- Use `Rebuild Effects` or replay the card to refresh keyword-backed continuous effects on existing battlefield cards.
+
+The importer should stay focused on reference metadata. Do not generate gameplay `script` from Oracle text automatically; add supported gameplay behavior through migrations or a future override system.
+
 ## Project Layout
 
 ```text
@@ -68,6 +160,7 @@ components/
   ControllerList.tsx          Player hand/battlefield controls
   ActionButtons.tsx           Executes card script actions
   CardZoneControls.tsx        Plays/casts cards from hand and moves zones
+  CardCatalogPicker.tsx       Reusable card catalog search/filter picker
   ManaPool.tsx                Current player's mana pool
   TurnStatusPanel.tsx         Current turn/phase/priority UI
   StackPanel.tsx              Pending stack items
@@ -133,12 +226,15 @@ Reference card data lives in `cards`. Per-game state lives in `game_*` tables.
 - `session_id`
 - `card_id`
 - `owner_id`
-- `zone`: `library`, `hand`, `battlefield`, `graveyard`, `exile`
+- `controller_player_id`
+- `zone`: `library`, `hand`, `stack`, `battlefield`, `graveyard`, `exile`
 - `zone_position`
 - `is_tapped`
 - `damage_marked`
 - `position_x`
 - `position_y`
+- `copied_script`
+- `static_effects_suppressed`
 
 `game_players`
 
@@ -167,6 +263,17 @@ Reference card data lives in `cards`. Per-game state lives in `game_*` tables.
 - `defending_player_id`
 - `blocker_card_id`
 - `damage_resolved`
+- `first_strike_damage_resolved`
+
+`game_combat_blockers`
+
+- `assignment_id`
+- `session_id`
+- `turn_number`
+- `attacker_card_id`
+- `blocker_card_id`
+- `blocking_player_id`
+- `damage_assignment_order`
 
 `game_stack_items`
 
@@ -182,6 +289,7 @@ Reference card data lives in `cards`. Per-game state lives in `game_*` tables.
 
 - `session_id`
 - `source_card_id`
+- `source_zone_required`
 - `affected_player_id`
 - `affected_card_id`
 - `effect_type`
@@ -201,6 +309,35 @@ The usual flow is:
 3. The RPC checks auth, session membership, session status, priority, phase/step, ownership, and payment.
 4. The RPC mutates runtime tables.
 5. Realtime subscriptions and fallback refresh reload the UI.
+
+## Dev Controls
+
+Debug/test UI is hidden by default. Enable it locally with:
+
+```env
+NEXT_PUBLIC_SHOW_DEV_CONTROLS=true
+```
+
+Currently gated dev controls:
+
+- Dev Admin panel for adding mana, spawning cards, and setting phase/step.
+- Dev Admin card picker with search, type/color/keyword filters, and selected-card preview.
+- Static-effect lifecycle panel on battlefield cards.
+- Manual card tap/untap button.
+- Manual battlefield zone moves such as `To Hand` and `Graveyard`.
+- Player action panel with manual draw, untap all, and clear mana.
+
+Normal gameplay controls remain visible without this flag, including play/cast, card script actions, combat controls, priority passing, stack display, turn status, mana pool, and life totals.
+
+## Refresh Behavior
+
+The app uses Supabase Realtime subscriptions and also has a 2-second fallback refresh for important panels. Disable the fallback polling locally with:
+
+```env
+NEXT_PUBLIC_ENABLE_FALLBACK_REFRESH=false
+```
+
+When disabled, the UI still loads initial data and reacts to realtime events, but it will no longer poll every 2 seconds.
 
 Example wrapper:
 
@@ -245,12 +382,19 @@ Cards, zones, mana:
 - `add_mana_from_card(game_card_id, session_id, player_id, color, amount, should_tap_card)`
 - `pay_mana_cost(session_id, player_id, mana_cost)`
 - `cast_card_from_hand(session_id, game_card_id)`
+- `get_land_play_limit(session_id, player_id)`
+- `register_card_continuous_effects(session_id, source_card_id)`
+- `rebuild_scripted_continuous_effects(session_id)`
+- `set_card_controller(game_card_id, controller_player_id)`
+- `set_card_copied_script(game_card_id, copied_script)`
+- `set_card_static_effects_suppressed(game_card_id, suppressed)`
 - `expire_continuous_effects_for_step(session_id, turn_number, phase, step)`
 - `create_mana_retention_effect(session_id, source_card_id, colors, affected_player_id, expires_at_phase, expires_at_step, should_tap_card)`
 
 Turn, priority, stack:
 
 - `initialize_turn_state(session_id, active_player_id)`
+- `get_turn_state(session_id)`
 - `advance_step(session_id)`
 - `pass_priority(session_id)`
 - `put_action_on_stack(session_id, action_type, payload, source_card_id)`
@@ -261,6 +405,7 @@ Combat and results:
 
 - `declare_attacker(session_id, attacker_card_id, defending_player_id)`
 - `declare_blocker(session_id, blocker_card_id, attacker_card_id)`
+- `set_combat_blocker_order(session_id, assignment_id, blocker_card_ids)`
 - `clear_combat_assignments(session_id)`
 - `get_combat_assignments(session_id)`
 - `get_combat_action_state(session_id)`
@@ -303,6 +448,21 @@ Player damage spell:
 }
 ```
 
+Counter target spell:
+
+```json
+{
+  "actions": [
+    {
+      "type": "counter_spell",
+      "target": "spell",
+      "timing": "instant"
+    }
+  ],
+  "triggers": ["cast"]
+}
+```
+
 If the card has `type_line = 'Instant'`, the UI/RPC treats it as instant timing. If `type_line = 'Sorcery'`, it uses sorcery timing. You can also set timing directly:
 
 ```json
@@ -338,6 +498,68 @@ This creates a `mana_does_not_empty` continuous effect for the current player. W
 
 This action exists as infrastructure, but real mana-retention cards are intentionally parked for now. Many of those cards have subtle timing, replacement, duration, and mana-spending rules, so they should be implemented later per card or per mechanic after the core game loop is more stable.
 
+Current supported script continuous effects:
+
+```json
+{
+  "continuous_effects": [
+    {
+      "type": "additional_land_plays",
+      "amount": 1,
+      "affected": "controller",
+      "source_zone_required": "battlefield"
+    }
+  ]
+}
+```
+
+Continuous effects are registered into `game_continuous_effects` when the source permanent enters the battlefield through `register_card_continuous_effects`. The current supported `affected` values are `controller`, `self`, `all`, and `all_players`. Use `source_zone_required: "battlefield"` for effects that should only count while the source card remains on the battlefield.
+
+Imported Scryfall `cards.keywords` are also used for supported built-in keyword effects. The current keyword-to-effect mapping is:
+
+- `Haste` -> `haste`
+- `Vigilance` -> `vigilance`
+- `Trample` -> `trample`
+- `Indestructible` -> `indestructible`
+- `First strike` -> `first_strike`
+- `Double strike` -> `double_strike`
+
+Other imported keywords are kept as card metadata, but they do not affect rules until the engine supports them.
+
+Scripted continuous effects are treated as derived runtime state. The source of truth is the current `game_cards` row:
+
+- `controller_player_id` decides who receives `affected: "controller"` effects.
+- `copied_script` can override the printed card script for copy effects.
+- `static_effects_suppressed` disables script-registered static effects from that source.
+- `rebuild_scripted_continuous_effects(session_id)` deletes old script-registered rows and rebuilds them from current battlefield permanents.
+
+This rebuild approach handles normal battlefield enter/leave, gives copy/control-change mechanics a clear integration point, and avoids stale static effect rows becoming the authority.
+
+Test cards added by migration:
+
+- `Exploration Test`: Enchantment, `{G}`, gives its controller one additional land play while on the battlefield.
+- `Green Mana Vessel Test`: Artifact, `{2}`, keeps green mana from emptying while on the battlefield.
+
+Real continuous-effect cards added by migration:
+
+- `Exploration`: Enchantment, `{G}`, gives its controller one additional land play while on the battlefield.
+- `Azusa, Lost but Seeking`: Legendary Creature, `{2}{G}`, gives its controller two additional land plays while on the battlefield.
+- `Upwelling`: Enchantment, `{3}{G}`, all players keep all mana as steps and phases end while on the battlefield.
+- `Omnath, Locus of Mana`: Legendary Creature, `{2}{G}`, its controller keeps green mana as steps and phases end while on the battlefield.
+- `Raging Goblin`: Creature, `{R}`, has haste and can attack the turn it enters.
+- `Serra Angel`: Creature, `{3}{W}{W}`, has vigilance and does not tap when attacking.
+- `Darksteel Myr`: Artifact Creature, `{3}`, has indestructible and survives lethal damage.
+- `Colossal Dreadmaw`: Creature, `{4}{G}{G}`, has trample and can push excess combat damage through blockers.
+- `White Knight`: Creature, `{W}{W}`, has first strike.
+- `Fencing Ace`: Creature, `{1}{W}`, has double strike.
+
+The controller view includes a compact `Static effects` panel on battlefield cards for early lifecycle testing:
+
+- `Rebuild Effects` recalculates script-registered continuous effects for the session.
+- `Suppress Effects` / `Unsuppress Effects` toggles `static_effects_suppressed`.
+- `Set Controller` updates `controller_player_id` and rebuilds effects.
+- Copy presets can set or clear `copied_script` for simple copy-effect testing.
+
 ## Mana And Casting
 
 `cards.mana_cost` stores simple costs such as:
@@ -352,14 +574,9 @@ This action exists as infrastructure, but real mana-retention cards are intentio
 Current mana payment behavior:
 
 - Colored costs require that exact color.
-- Generic costs are paid from available mana in order: `C`, `W`, `U`, `B`, `R`, `G`.
+- Generic costs can be paid with a player-chosen mix of `W`, `U`, `B`, `R`, `G`, and `C`.
+- If no generic payment choice is passed, the RPC still falls back to the old automatic order: `C`, `W`, `U`, `B`, `R`, `G`.
 - Hybrid, Phyrexian, X, reducers, taxes, alternate costs, and cost increases are not modeled yet.
-
-Priority improvement:
-
-- Let players choose which colored/colorless mana pays generic costs.
-- The current automatic order is acceptable for early testing, but it can spend a color the player wanted to keep.
-- This should be handled before deeper casting work, because permanent spells through stack will make payment choices more visible.
 
 Current mana clearing behavior:
 
@@ -388,16 +605,30 @@ Mana retention effect:
 Current land behavior:
 
 - Lands are played from hand through `cast_card_from_hand`.
-- A player can play one land per turn.
+- A player can play one land per turn by default.
+- `additional_land_plays` continuous effects can raise that limit.
 - Lands require active player, main phase, priority, and empty stack.
+- Turn status and hand card controls show `lands_played_this_turn` against the current land play limit, such as `0/1`, `1/2`, or `2/3`.
 - Basic lands can use `add_mana` scripts on battlefield.
 
 Current nonland permanent behavior:
 
 - Non-Instant/Sorcery cards can be cast from hand through `cast_card_from_hand`.
 - The RPC pays `cards.mana_cost`.
-- The card moves to battlefield.
-- This is intentionally simplified and does not use the stack yet for permanent spells.
+- The card moves to the `stack` zone and creates a `cast_permanent` stack item.
+- When all players pass priority, `resolve_top_of_stack` moves the card to battlefield.
+- Permanents track `entered_battlefield_turn_number` for summoning sickness.
+
+Current attacking behavior:
+
+- Only creatures can attack.
+- Creatures that entered the battlefield during the current turn cannot attack.
+- `haste` continuous effects bypass summoning sickness.
+- `vigilance` continuous effects let a creature attack without tapping.
+- `trample` continuous effects let excess blocker damage hit the defending player.
+- `indestructible` continuous effects prevent lethal damage from moving the creature to graveyard.
+- `first_strike` continuous effects let a creature deal damage in the first-strike combat damage pass.
+- `double_strike` continuous effects let a creature deal damage in both first-strike and regular combat damage passes.
 
 Current Instant/Sorcery behavior:
 
@@ -406,6 +637,9 @@ Current Instant/Sorcery behavior:
 - A `game_stack_items` row is created.
 - The source card moves from hand to graveyard.
 - When all players pass priority, the top stack item resolves.
+- `Counterspell` can target a pending stack item.
+- When a `counter_spell` stack item resolves, the target stack item is marked `cancelled`.
+- If the countered target is a permanent spell, its source card moves from `stack` to graveyard.
 
 ## Turn And Priority
 
@@ -442,22 +676,24 @@ Current combat support:
 - Declaring an attacker taps it.
 - Defending priority player declares blockers during Declare Blockers Step.
 - Blockers do not tap.
-- One blocker per attacker is supported.
+- Multiple blockers per attacker are supported.
+- The attacking player can reorder multiple blockers to choose combat damage order.
 - Combat damage is resolved manually during Combat Damage Step.
 - Unblocked attackers damage defending player.
 - Blocked attackers mark damage on blockers.
 - Blockers mark damage back on attackers.
+- If first strike or double strike is present, the first `Resolve Combat Damage` click resolves first-strike damage only.
+- The next `Resolve Combat Damage` click resolves regular damage.
+- Blocked trample attackers assign lethal damage to blockers, then excess damage to the defending player.
+- Multiple-blocker damage assignment follows the chosen blocker order.
 - Creatures with lethal marked damage move to graveyard.
+- Indestructible creatures stay on the battlefield even with lethal marked damage.
 - Marked damage clears during Cleanup Step.
 
 Current limitations:
 
-- No trample.
-- No first strike/double strike.
-- No vigilance.
-- No summoning sickness.
 - No protection/prevention/replacement effects.
-- No multiple blockers.
+- Multiple-blocker damage amounts are still automatic; there is no player-chosen over-assignment yet.
 - No planeswalker/battle targets.
 
 ## Realtime
@@ -473,6 +709,7 @@ Realtime tables currently used:
 - `game_session_players`
 - `game_sessions`
 - `game_combat_assignments`
+- `game_combat_blockers`
 - `game_stack_items`
 - `game_continuous_effects`
 
@@ -483,6 +720,7 @@ alter publication supabase_realtime add table public.game_cards;
 alter publication supabase_realtime add table public.game_players;
 alter publication supabase_realtime add table public.game_turn_state;
 alter publication supabase_realtime add table public.game_session_players;
+alter publication supabase_realtime add table public.game_combat_blockers;
 alter publication supabase_realtime add table public.game_stack_items;
 alter publication supabase_realtime add table public.game_continuous_effects;
 ```
@@ -561,6 +799,23 @@ Run migrations in order. Current migration list:
 202605010036_land_play_limit.sql
 202605010037_effect_aware_mana_clearing.sql
 202605010038_mana_retention_action.sql
+202605010039_chosen_generic_mana_payment.sql
+202605010040_turn_state_display_rpc.sql
+202605010041_permanent_spells_use_stack.sql
+202605010042_battlefield_static_effects_land_limit.sql
+202605010043_scripted_continuous_effect_cards.sql
+202605010044_static_effect_lifecycle_rebuild.sql
+202605010045_real_continuous_effect_cards.sql
+202605010046_summoning_sickness_and_haste.sql
+202605010047_dev_admin_tools.sql
+202605010048_vigilance.sql
+202605010049_combat_keywords_and_multiple_blockers.sql
+202605010050_first_strike_double_strike.sql
+202605010051_sync_gemini_card_seed.sql
+202605010052_blocker_damage_order.sql
+202605010053_counterspell_stack_action.sql
+202605010054_stack_action_type_counterspell_constraint.sql
+202605010055_register_keyword_continuous_effects.sql
 ```
 
 ## Adding New Card Mechanics
@@ -582,6 +837,7 @@ game_continuous_effects
 - id
 - session_id
 - source_card_id
+- source_zone_required nullable
 - affected_player_id nullable
 - affected_card_id nullable
 - effect_type
@@ -606,6 +862,22 @@ Example: mana does not empty
 
 Mana retention is already wired into automatic mana clearing. The generic card action/RPC exists, but actual real-card support is parked because these cards tend to need precise custom rules. When this is picked up again, implement one concrete card or one narrow mechanic at a time and let it insert a `game_continuous_effects` row.
 
+Example: additional land plays while source is on battlefield
+
+```json
+{
+  "effect_type": "additional_land_plays",
+  "source_card_id": "game_card_id",
+  "source_zone_required": "battlefield",
+  "affected_player_id": "controller_player_id",
+  "payload": {
+    "amount": 1
+  }
+}
+```
+
+`get_land_play_limit` starts at `1` and adds active `additional_land_plays` effects. If `source_zone_required` is set, the effect only counts while the source card is still in that zone.
+
 Example: indestructible
 
 Recommended model:
@@ -623,6 +895,7 @@ Where to apply it:
 - In the lethal-damage-to-graveyard part of `resolve_combat_damage`.
 - Before moving a creature with lethal damage to graveyard, check active `indestructible` effects.
 - If present, keep the card on battlefield with marked damage until cleanup.
+- This is now implemented for script-registered `indestructible` effects.
 
 Example: trample
 
@@ -641,7 +914,7 @@ Where to apply it:
 - In `resolve_combat_damage`.
 - For a blocked attacker with trample, compute lethal damage needed for the blocker.
 - Assign excess damage to defending player.
-- Keep the first implementation simple: one blocker only, no damage assignment choices.
+- The current implementation supports multiple blockers and uses the attacking player's chosen blocker order.
 
 Example: vigilance
 
@@ -659,6 +932,31 @@ Where to apply it:
 
 - In `declare_attacker`.
 - If the attacker has vigilance, do not tap it.
+
+Example: first strike and double strike
+
+```json
+{
+  "effect_type": "first_strike",
+  "affected_card_id": "game_card_id",
+  "payload": {}
+}
+```
+
+```json
+{
+  "effect_type": "double_strike",
+  "affected_card_id": "game_card_id",
+  "payload": {}
+}
+```
+
+Where to apply it:
+
+- In `resolve_combat_damage`.
+- If any first strike or double strike creature is involved, resolve a first-strike pass first.
+- Move lethal non-indestructible creatures to graveyard before the regular damage pass.
+- Double strike creatures also deal damage during the regular pass.
 
 ## Development Rules Of Thumb
 
@@ -714,28 +1012,45 @@ Done:
 - [x] Basic lands and one-land-per-turn rule
 - [x] Automatic mana clearing with effect-aware retention
 - [x] Infrastructure for mana retention effects
+- [x] Player-chosen payment for generic mana costs
+- [x] Permanent spells through stack instead of direct battlefield movement
+- [x] Land play UI state that shows remaining land plays
+- [x] Battlefield-gated continuous effects for land play limits
+- [x] Basic registration of continuous effects from card scripts
+- [x] Static-effect lifecycle rebuild for zone moves, copies, controller changes, and suppression flags
+- [x] Real continuous-effect card data for Exploration, Azusa, Upwelling, and Omnath
+- [x] Controller UI controls for static-effect lifecycle testing
+- [x] Summoning sickness and basic haste support
+- [x] Dev admin panel for adding mana, spawning cards, and setting turn state
+- [x] Vigilance
+- [x] Trample
+- [x] Indestructible
+- [x] Multiple blockers and automatic damage assignment
+- [x] First strike / double strike
+- [x] Player-chosen blocker order
+- [x] Basic counterspell stack cancellation
+- [x] Supported keyword effects from imported Scryfall `keywords`
+- [x] Better card picker/search filters for large imported catalogs
 
 High-value next work:
 
-- [ ] Player-chosen payment for generic mana costs
-- [ ] Permanent spells through stack instead of direct battlefield movement
-- [ ] Land play UI state that shows remaining land plays
-- [ ] Real card implementations for mana-retention effects, parked until later
-- [ ] Summoning sickness
-- [ ] Vigilance
-- [ ] Trample
-- [ ] Indestructible
-- [ ] Multiple blockers and damage assignment
-- [ ] First strike / double strike
-- [ ] Cleanup hand-size discard
+- [ ] Full Scryfall card catalog import validation
+- [ ] Card script override system separate from imported Scryfall metadata
+- [ ] Flying and Reach combat legality
+- [ ] Player-chosen combat damage over-assignment amounts
 - [ ] Token creation
+- [ ] Counters, starting with +1/+1 counters
+- [ ] Temporary until-end-of-turn power/toughness effects
+- [ ] Cleanup hand-size discard
+- [ ] Real card-specific UI/actions for copy, control-change, and suppression effects
+- [ ] Real card implementations for mana-retention effects, parked until later
 - [ ] Better card script schema validation
 - [ ] Scheduled cleanup for old finished game runtime data
 
 ## Known Caveats
 
-- Permanent spells currently move directly from hand to battlefield after paying mana.
-- Instant/Sorcery cards move from hand to graveyard when put on the stack. A dedicated `stack` card zone can be added later for counterspells and cancellation.
+- Counterspell cancellation exists, but there is no full target legality/replacement/protection model yet.
+- Instant/Sorcery cards still move from hand to graveyard when put on the stack. Permanent spells use the `stack` zone.
 - Mana cost parsing is intentionally simple.
 - Priority is good enough for early stack work, but not a full rules-engine implementation.
 - Public `cards` metadata is treated as shared reference data. If hidden decklists or private collections matter later, add separate RLS boundaries.

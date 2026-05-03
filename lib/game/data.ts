@@ -3,6 +3,7 @@ import type {
   BoardCard,
   CombatActionState,
   CombatAssignment,
+  CardCatalogFilters,
   ControllerCard,
   GameCardInstanceRow,
   GameSession,
@@ -18,7 +19,7 @@ import type {
 } from './types'
 
 export const emptyManaPool: ManaPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }
-export const gameZones = ['library', 'hand', 'battlefield', 'graveyard', 'exile'] as const
+export const gameZones = ['library', 'hand', 'stack', 'battlefield', 'graveyard', 'exile'] as const
 export const gameSessionStatuses = ['open', 'locked', 'finished'] as const
 export const turnPhases = ['beginning', 'main_1', 'combat', 'main_2', 'ending'] as const
 export const turnSteps = [
@@ -105,7 +106,11 @@ export async function getControllerCards(
       is_tapped,
       damage_marked,
       zone,
-      zone_position
+      zone_position,
+      controller_player_id,
+      copied_script,
+      static_effects_suppressed,
+      entered_battlefield_turn_number
     `)
     .eq('session_id', sessionId)
     .eq('owner_id', playerId)
@@ -115,11 +120,11 @@ export async function getControllerCards(
   }
 
   const gameCardRows = (data ?? []) as GameCardInstanceRow[]
-  const linkedCardsById = await getLinkedCardsById(
-    supabase,
-    gameCardRows.map((card) => card.card_id),
-    'id, name, script, type_line, mana_cost',
-  )
+    const linkedCardsById = await getLinkedCardsById(
+      supabase,
+      gameCardRows.map((card) => card.card_id),
+      'id, name, image_url, script, type_line, mana_cost, keywords, power, toughness, power_toughness',
+    )
 
   const missingCardIds = getUniqueCardIds(gameCardRows.map((card) => card.card_id)).filter(
     (cardId) => !linkedCardsById.has(cardId),
@@ -135,6 +140,10 @@ export async function getControllerCards(
       damage_marked: card.damage_marked ?? 0,
       zone: normalizeGameZone(card.zone),
       zone_position: card.zone_position ?? 0,
+      controller_player_id: card.controller_player_id ?? null,
+      copied_script: card.copied_script ?? null,
+      static_effects_suppressed: card.static_effects_suppressed ?? false,
+      entered_battlefield_turn_number: card.entered_battlefield_turn_number ?? null,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,
       cards: linkedCard,
     }
@@ -167,17 +176,17 @@ export async function getPlayerManaPool(
 }
 
 export async function getTurnState(supabase: SupabaseClient, sessionId: string) {
-  const { data, error } = await supabase
-    .from('game_turn_state')
-    .select('session_id, active_player_id, priority_player_id, priority_cycle_started_by, priority_pass_count, lands_played_this_turn, turn_number, phase, step, created_at, updated_at')
-    .eq('session_id', sessionId)
-    .maybeSingle()
+  const { data, error } = await supabase.rpc('get_turn_state', {
+    p_session_id: sessionId,
+  })
 
   if (error) {
     throw error
   }
 
-  return data ? normalizeTurnState(data as Partial<GameTurnState>) : null
+  const turnState = Array.isArray(data) ? data[0] : data
+
+  return turnState ? normalizeTurnState(turnState as Partial<GameTurnState>) : null
 }
 
 export async function getGameSession(supabase: SupabaseClient, sessionId: string) {
@@ -277,6 +286,47 @@ export async function getCurrentPlayerSessions(supabase: SupabaseClient) {
   return ((sessions ?? []) as Partial<GameSession>[]).map(normalizeGameSession)
 }
 
+export async function getCardCatalog(
+  supabase: SupabaseClient,
+  filters: CardCatalogFilters | string = '',
+) {
+  const normalizedFilters: CardCatalogFilters =
+    typeof filters === 'string' ? { search: filters } : filters
+  const limit = Math.min(Math.max(normalizedFilters.limit ?? 80, 1), 200)
+
+  let query = supabase
+    .from('cards')
+    .select('id, name, image_url, type_line, mana_cost, keywords, power, toughness, power_toughness')
+    .order('name', { ascending: true })
+    .limit(limit)
+
+  const trimmedSearch = normalizedFilters.search?.trim() ?? ''
+
+  if (trimmedSearch) {
+    query = query.ilike('name', `%${trimmedSearch}%`)
+  }
+
+  if (normalizedFilters.type && normalizedFilters.type !== 'all') {
+    query = query.ilike('type_line', `%${normalizedFilters.type}%`)
+  }
+
+  if (normalizedFilters.color && normalizedFilters.color !== 'all') {
+    query = query.ilike('mana_cost', `%{${normalizedFilters.color}}%`)
+  }
+
+  if (normalizedFilters.keyword) {
+    query = query.contains('keywords', [normalizedFilters.keyword])
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []) as LinkedCard[]
+}
+
 export function normalizeManaPool(pool: ManaPool | null | undefined): ManaPool {
   return {
     ...emptyManaPool,
@@ -310,10 +360,13 @@ export function normalizeTurnState(state: Partial<GameTurnState>): GameTurnState
   return {
     session_id: state.session_id ?? '',
     active_player_id: state.active_player_id ?? '',
+    active_username: state.active_username ?? null,
     priority_player_id: state.priority_player_id ?? state.active_player_id ?? '',
+    priority_username: state.priority_username ?? state.active_username ?? null,
     priority_cycle_started_by: state.priority_cycle_started_by ?? null,
     priority_pass_count: state.priority_pass_count ?? 0,
     lands_played_this_turn: state.lands_played_this_turn ?? 0,
+    land_play_limit: state.land_play_limit ?? 1,
     turn_number: state.turn_number ?? 1,
     phase: normalizeTurnPhase(state.phase),
     step: normalizeTurnStep(state.step),

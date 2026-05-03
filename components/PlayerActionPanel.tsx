@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { clearManaPool, getErrorMessage, untapAll } from '@/lib/game/actions'
+import { showDevControls } from '@/lib/game/dev'
 import DrawCardButton from './DrawCardButton'
 
 export default function PlayerActionPanel({
@@ -22,6 +23,10 @@ export default function PlayerActionPanel({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isUntapping, setIsUntapping] = useState(false)
   const [isClearingMana, setIsClearingMana] = useState(false)
+
+  if (!showDevControls) {
+    return null
+  }
 
   const handleUntapAll = async () => {
     setErrorMessage(null)

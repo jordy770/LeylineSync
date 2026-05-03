@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
+  CardScript,
   CombatAssignment,
   CombatDamageResult,
   GameSessionPlayer,
@@ -58,10 +59,12 @@ export async function castCardFromHand(
   supabase: SupabaseClient,
   sessionId: string,
   cardId: string,
+  genericPayment?: Record<string, number>,
 ) {
   const { data, error } = await supabase.rpc('cast_card_from_hand', {
     p_session_id: sessionId,
     p_game_card_id: cardId,
+    p_generic_payment: genericPayment ?? null,
   })
 
   if (error) {
@@ -170,6 +173,7 @@ export async function putDealDamagePlayerOnStack(
   amount: number,
   timing: 'instant' | 'sorcery',
   sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -178,8 +182,34 @@ export async function putDealDamagePlayerOnStack(
       target_player_id: targetPlayerId,
       amount,
       timing,
+      generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function putCounterSpellOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetStackItemId: string,
+  sourceCardId: string,
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'counter_spell',
+    p_payload: {
+      target_stack_item_id: targetStackItemId,
+      timing: 'instant',
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId,
   })
 
   if (error) {
@@ -216,6 +246,72 @@ export async function createManaRetentionEffect({
     p_expires_at_phase: expiresAtPhase,
     p_expires_at_step: expiresAtStep,
     p_should_tap_card: shouldTapCard,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function rebuildScriptedContinuousEffects(
+  supabase: SupabaseClient,
+  sessionId: string,
+) {
+  const { data, error } = await supabase.rpc('rebuild_scripted_continuous_effects', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
+export async function setCardController(
+  supabase: SupabaseClient,
+  cardId: string,
+  controllerPlayerId: string,
+) {
+  const { data, error } = await supabase.rpc('set_card_controller', {
+    p_game_card_id: cardId,
+    p_controller_player_id: controllerPlayerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function setCardCopiedScript(
+  supabase: SupabaseClient,
+  cardId: string,
+  copiedScript: CardScript | null,
+) {
+  const { data, error } = await supabase.rpc('set_card_copied_script', {
+    p_game_card_id: cardId,
+    p_copied_script: copiedScript,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function setCardStaticEffectsSuppressed(
+  supabase: SupabaseClient,
+  cardId: string,
+  suppressed: boolean,
+) {
+  const { data, error } = await supabase.rpc('set_card_static_effects_suppressed', {
+    p_game_card_id: cardId,
+    p_suppressed: suppressed,
   })
 
   if (error) {
@@ -328,6 +424,25 @@ export async function declareBlocker(
   return data as CombatAssignment
 }
 
+export async function setCombatBlockerOrder(
+  supabase: SupabaseClient,
+  sessionId: string,
+  assignmentId: string,
+  blockerCardIds: string[],
+) {
+  const { data, error } = await supabase.rpc('set_combat_blocker_order', {
+    p_session_id: sessionId,
+    p_assignment_id: assignmentId,
+    p_blocker_card_ids: blockerCardIds,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
 export async function clearCombatAssignments(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('clear_combat_assignments', {
     p_session_id: sessionId,
@@ -407,6 +522,90 @@ export async function addManaFromCard({
   }
 
   return data as ManaPool
+}
+
+export async function devAddMana(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+  color: string,
+  amount: number,
+) {
+  const { data, error } = await supabase.rpc('dev_add_mana', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+    p_color: color,
+    p_amount: amount,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as ManaPool
+}
+
+export async function devSpawnCard({
+  supabase,
+  sessionId,
+  playerId,
+  cardId,
+  zone,
+  tapped,
+}: {
+  supabase: SupabaseClient
+  sessionId: string
+  playerId: string
+  cardId: string
+  zone: GameZone
+  tapped: boolean
+}) {
+  const { data, error } = await supabase.rpc('dev_spawn_card', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+    p_card_id: cardId,
+    p_zone: zone,
+    p_tapped: tapped,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devSetTurnState({
+  supabase,
+  sessionId,
+  phase,
+  step,
+  activePlayerId,
+  priorityPlayerId,
+  turnNumber,
+}: {
+  supabase: SupabaseClient
+  sessionId: string
+  phase: string
+  step: string
+  activePlayerId?: string | null
+  priorityPlayerId?: string | null
+  turnNumber?: number | null
+}) {
+  const { data, error } = await supabase.rpc('dev_set_turn_state', {
+    p_session_id: sessionId,
+    p_phase: phase,
+    p_step: step,
+    p_active_player_id: activePlayerId ?? null,
+    p_priority_player_id: priorityPlayerId ?? null,
+    p_turn_number: turnNumber ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as GameTurnState
 }
 
 function isSupabaseErrorLike(error: unknown): error is SupabaseErrorLike {

@@ -4,6 +4,7 @@ import { Trophy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { getErrorMessage } from '@/lib/game/actions'
 import { getGameSession, getGameSessionPlayers } from '@/lib/game/data'
+import { enableFallbackRefresh } from '@/lib/game/dev'
 import { createClient } from '@/lib/supabase/client'
 import type { GameSession, GameSessionPlayer } from '@/lib/game/types'
 
@@ -68,11 +69,13 @@ export default function GameStatusPanel({ sessionId }: { sessionId: string }) {
         }
       })
 
-    const refreshInterval = window.setInterval(loadStatus, 2000)
+    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadStatus, 2000) : null
 
     return () => {
       isMounted = false
-      window.clearInterval(refreshInterval)
+      if (refreshInterval) {
+        window.clearInterval(refreshInterval)
+      }
       supabase.removeChannel(channel)
     }
   }, [sessionId, supabase])

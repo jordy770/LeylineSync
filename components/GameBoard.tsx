@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { getBoardCards } from '@/lib/game/data'
+import { enableFallbackRefresh } from '@/lib/game/dev'
 import type { BoardCard } from '@/lib/game/types'
 import type { RealtimePostgresChangesPayload, REALTIME_SUBSCRIBE_STATES } from '@supabase/supabase-js'
 
@@ -60,10 +61,12 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
         }
       })
 
-    const refreshInterval = window.setInterval(fetchCards, 2000)
+    const refreshInterval = enableFallbackRefresh ? window.setInterval(fetchCards, 2000) : null
 
     return () => {
-      window.clearInterval(refreshInterval)
+      if (refreshInterval) {
+        window.clearInterval(refreshInterval)
+      }
       supabase.removeChannel(channel)
     }
   }, [sessionId, supabase])

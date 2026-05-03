@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { advanceStep, getErrorMessage, initializeTurnState, passPriority } from '@/lib/game/actions'
 import { getCurrentPlayerId, getGameSession, getTurnState, normalizeTurnState } from '@/lib/game/data'
+import { enableFallbackRefresh } from '@/lib/game/dev'
 import type { GameTurnState } from '@/lib/game/types'
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 
@@ -95,9 +96,10 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
           setIsLoading(false)
         }
       } catch (error) {
-        console.error('Failed to load turn state:', error)
+        const message = getErrorMessage(error)
+        console.error('Failed to load turn state:', message, error)
         if (isMounted) {
-          setErrorMessage(error instanceof Error ? error.message : 'Could not load turn state')
+          setErrorMessage(message)
           setIsLoading(false)
         }
       }
@@ -139,11 +141,13 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
         }
       })
 
-    const refreshInterval = window.setInterval(loadTurnState, 2000)
+    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadTurnState, 2000) : null
 
     return () => {
       isMounted = false
-      window.clearInterval(refreshInterval)
+      if (refreshInterval) {
+        window.clearInterval(refreshInterval)
+      }
       supabase.removeChannel(channel)
     }
   }, [sessionId, supabase])
@@ -190,7 +194,7 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
 
   return (
     <section className="mb-5 rounded-lg border border-slate-800 bg-slate-950 p-4">
-      <div className="grid gap-3 sm:grid-cols-7">
+      <div className="grid gap-3 sm:grid-cols-8">
         <div>
           <p className="text-xs text-slate-500">Turn</p>
           <p className="text-lg font-semibold text-white">{turnState?.turn_number ?? '-'}</p>
@@ -211,17 +215,27 @@ export default function TurnStatusPanel({ sessionId }: { sessionId: string }) {
           <p className="text-xs text-slate-500">Active Player</p>
           <p className="truncate font-mono text-sm text-white">
             {turnState?.active_player_id ? turnState.active_player_id.slice(0, 8) : '-'}
+            {turnState?.active_username ? ` (${turnState.active_username})` : ''}
           </p>
         </div>
         <div>
           <p className="text-xs text-slate-500">Priority</p>
           <p className="truncate font-mono text-sm text-white">
             {turnState?.priority_player_id ? turnState.priority_player_id.slice(0, 8) : '-'}
+            {turnState?.priority_username ? ` (${turnState.priority_username})` : ''}
           </p>
         </div>
         <div>
           <p className="text-xs text-slate-500">Passes</p>
           <p className="text-sm font-semibold text-white">{turnState?.priority_pass_count ?? 0}</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-500">Land Plays</p>
+          <p className="text-sm font-semibold text-white">
+            {turnState
+              ? `${Math.min(turnState.lands_played_this_turn ?? 0, turnState.land_play_limit ?? 1)}/${turnState.land_play_limit ?? 1}`
+              : '-'}
+          </p>
         </div>
         <div className="flex items-end">
           <button

@@ -4,6 +4,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "import:cards": "node scripts/import-scryfall-cards.mjs",
     "lint": "eslint ."
   },
   "dependencies": {
