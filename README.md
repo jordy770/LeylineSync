@@ -2,9 +2,10 @@
 
 Realtime Magic: The Gathering style board/controller app built with Next.js and Supabase.
 
-The app has three main screens:
+The app has four main screens:
 
 - `/` session lobby for creating, joining, locking, finishing, and spawning decks.
+- `/decks` deck manager for importing and editing reusable decklists.
 - `/board/[id]` shared board view.
 - `/controller/[id]` player controller view.
 
@@ -151,11 +152,13 @@ The importer should stay focused on reference metadata. Do not generate gameplay
 
 ```text
 app/
+  decks/page.tsx             Deck import/manage page
   board/[id]/page.tsx         Shared board page
   controller/[id]/page.tsx    Player controller page
 
 components/
   GameSessionLobby.tsx        Session list/create/join/spawn controls
+  DeckManager.tsx             Text decklist import, user deck list, and simple deck editor
   GameBoard.tsx               Battlefield board rendering
   ControllerList.tsx          Player hand/battlefield controls
   ActionButtons.tsx           Executes card script actions
@@ -198,7 +201,10 @@ Reference card data lives in `cards`. Per-game state lives in `game_*` tables.
 `decks`
 
 - `id`
+- `name`
 - `list_data`: array of `cards.id` values
+- `created_by`
+- `created_at`
 
 ### Runtime Tables
 
@@ -742,6 +748,17 @@ It:
 - rejects duplicate deck spawning for the same player/session
 - reads `decks.list_data`
 - inserts card instances into `game_cards`
+- shuffles the deck before inserting, so library order is different for each game
+
+The `/decks` page includes a text deck import tool and a simple deck editor. It accepts one card per line with optional counts:
+
+```text
+4 Lightning Bolt
+4x Counterspell
+24 Island
+```
+
+The import RPC stores matched card IDs in `decks.list_data`. Lines that do not match a card are reported as not accepted and skipped. The deck editor can add cards with quantities, update quantities, and remove cards. The lobby loads the current user's decks and lets the player select a deck by name instead of pasting a UUID.
 
 Check locally:
 
@@ -816,6 +833,12 @@ Run migrations in order. Current migration list:
 202605010053_counterspell_stack_action.sql
 202605010054_stack_action_type_counterspell_constraint.sql
 202605010055_register_keyword_continuous_effects.sql
+202605010056_restore_scripted_card_behaviors.sql
+202605010057_deck_import_from_text.sql
+202605010058_deck_read_policy_own_decks.sql
+202605010059_update_deck_list.sql
+202605010060_fix_deck_import_quantity_parser.sql
+202605010061_deck_owner_id_compat.sql
 ```
 
 ## Adding New Card Mechanics
@@ -1031,6 +1054,9 @@ Done:
 - [x] Basic counterspell stack cancellation
 - [x] Supported keyword effects from imported Scryfall `keywords`
 - [x] Better card picker/search filters for large imported catalogs
+- [x] Text decklist import into `decks`
+- [x] Randomized deck order when spawning a game library
+- [x] Simple deck editor for adding, removing, and updating card quantities
 
 High-value next work:
 

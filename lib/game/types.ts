@@ -25,6 +25,35 @@ export type GameSessionPlayer = {
   joined_at?: string
 }
 
+export type DeckImportResult = {
+  id: string | null
+  name: string
+  card_count: number
+  missing?: Array<{
+    line_number: number
+    line: string
+    name: string
+    quantity: number
+  }>
+}
+
+export type DeckSummary = {
+  id: string
+  name: string | null
+  card_count: number
+  created_at?: string | null
+}
+
+export type DeckCardLine = {
+  card_id: string
+  quantity: number
+  card: LinkedCard | null
+}
+
+export type DeckDetail = DeckSummary & {
+  cards: DeckCardLine[]
+}
+
 export type TurnPhase = 'beginning' | 'main_1' | 'combat' | 'main_2' | 'ending'
 
 export type TurnStep =

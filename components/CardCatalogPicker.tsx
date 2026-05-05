@@ -104,24 +104,24 @@ export default function CardCatalogPicker({
   const selectedCard = cards.find((card) => card.id === value) ?? null
 
   return (
-    <div className="grid gap-2">
+    <div className="grid min-w-0 gap-2">
       <input
         type="search"
         value={search}
         disabled={disabled}
         onChange={(event) => setSearch(event.target.value)}
         placeholder="Search card name"
-        className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full min-w-0 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
       />
 
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <select
           value={typeFilter}
           disabled={disabled}
           onChange={(event) =>
             setTypeFilter(event.target.value as NonNullable<CardCatalogFilters['type']>)
           }
-          className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full min-w-0 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           {cardTypeFilters.map((filter) => (
             <option key={filter.value} value={filter.value}>
@@ -136,7 +136,7 @@ export default function CardCatalogPicker({
           onChange={(event) =>
             setColorFilter(event.target.value as NonNullable<CardCatalogFilters['color']>)
           }
-          className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full min-w-0 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           {colorFilters.map((filter) => (
             <option key={filter.value} value={filter.value}>
@@ -149,7 +149,7 @@ export default function CardCatalogPicker({
           value={keywordFilter}
           disabled={disabled}
           onChange={(event) => setKeywordFilter(event.target.value)}
-          className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full min-w-0 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           <option value="all">All keywords</option>
           {keywordFilters.map((keyword) => (
@@ -164,7 +164,7 @@ export default function CardCatalogPicker({
         value={value}
         disabled={disabled || cards.length === 0}
         onChange={(event) => onChange(event.target.value)}
-        className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full min-w-0 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
       >
         {cards.length === 0 ? (
           <option value="">No cards found</option>
@@ -183,7 +183,7 @@ export default function CardCatalogPicker({
       </div>
 
       {selectedCard ? (
-        <div className="grid grid-cols-[56px_1fr] gap-3 rounded-md border border-slate-800 bg-slate-900/70 p-2">
+        <div className="grid min-w-0 grid-cols-[56px_minmax(0,1fr)] gap-3 rounded-md border border-slate-800 bg-slate-900/70 p-2">
           {selectedCard.image_url ? (
             <Image
               src={selectedCard.image_url}

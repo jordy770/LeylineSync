@@ -91,8 +91,10 @@ Deno.serve(async (req) => {
       throw new Error('Deck list_data is leeg of geen array')
     }
 
+    const shuffledCardIds = shuffleArray(deck.list_data)
+
     // 4. Transformeer de deck-lijst naar rijen voor game_cards[cite: 1]
-    const cardsToSpawn = deck.list_data.map((card_id: string, index: number) => ({
+    const cardsToSpawn = shuffledCardIds.map((card_id: string, index: number) => ({
       session_id: sessionId,
       card_id: card_id,
       owner_id: ownerId,
@@ -129,3 +131,16 @@ Deno.serve(async (req) => {
     )
   }
 })
+
+function shuffleArray<T>(items: T[]) {
+  const shuffled = [...items]
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    const item = shuffled[index]
+    shuffled[index] = shuffled[randomIndex]
+    shuffled[randomIndex] = item
+  }
+
+  return shuffled
+}

@@ -3,6 +3,7 @@ import type {
   CardScript,
   CombatAssignment,
   CombatDamageResult,
+  DeckImportResult,
   GameSessionPlayer,
   GameTurnState,
   GameZone,
@@ -489,6 +490,40 @@ export async function spawnDeckForSession(
   }
 
   return data as { message: string; count: number }
+}
+
+export async function importDeckFromText(
+  supabase: SupabaseClient,
+  name: string,
+  decklist: string,
+) {
+  const { data, error } = await supabase.rpc('import_deck_from_text', {
+    p_name: name,
+    p_decklist: decklist,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as DeckImportResult
+}
+
+export async function updateDeckList(
+  supabase: SupabaseClient,
+  deckId: string,
+  cardIds: string[],
+) {
+  const { data, error } = await supabase.rpc('update_deck_list', {
+    p_deck_id: deckId,
+    p_card_ids: cardIds,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as { id: string; card_count: number }
 }
 
 export async function addManaFromCard({

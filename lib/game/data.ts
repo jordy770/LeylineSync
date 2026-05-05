@@ -5,6 +5,8 @@ import type {
   CombatAssignment,
   CardCatalogFilters,
   ControllerCard,
+  DeckDetail,
+  DeckSummary,
   GameCardInstanceRow,
   GameSession,
   GameSessionPlayer,
@@ -284,6 +286,75 @@ export async function getCurrentPlayerSessions(supabase: SupabaseClient) {
   }
 
   return ((sessions ?? []) as Partial<GameSession>[]).map(normalizeGameSession)
+}
+
+export async function getUserDecks(supabase: SupabaseClient) {
+  const playerId = await getCurrentPlayerId(supabase)
+
+  if (!playerId) {
+    return []
+  }
+
+  const { data, error } = await supabase
+    .from('decks')
+    .select('id, name, list_data, created_at')
+    .or(`created_by.eq.${playerId},owner_id.eq.${playerId}`)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []).map((deck) => ({
+    id: deck.id,
+    name: deck.name ?? null,
+    card_count: Array.isArray(deck.list_data) ? deck.list_data.length : 0,
+    created_at: deck.created_at ?? null,
+  })) as DeckSummary[]
+}
+
+export async function getDeckDetail(supabase: SupabaseClient, deckId: string) {
+  const { data, error } = await supabase
+    .from('decks')
+    .select('id, name, list_data, created_at')
+    .eq('id', deckId)
+    .maybeSingle()
+
+  if (error) {
+    throw error
+  }
+
+  if (!data) {
+    return null
+  }
+
+  const cardIds = Array.isArray(data.list_data) ? (data.list_data as string[]) : []
+  const linkedCardsById = await getLinkedCardsById(
+    supabase,
+    cardIds,
+    'id, name, image_url, type_line, mana_cost, keywords, power, toughness, power_toughness',
+  )
+  const countsByCardId = new Map<string, number>()
+
+  for (const cardId of cardIds) {
+    countsByCardId.set(cardId, (countsByCardId.get(cardId) ?? 0) + 1)
+  }
+
+  return {
+    id: data.id,
+    name: data.name ?? null,
+    card_count: cardIds.length,
+    created_at: data.created_at ?? null,
+    cards: [...countsByCardId.entries()]
+      .map(([cardId, quantity]) => ({
+        card_id: cardId,
+        quantity,
+        card: linkedCardsById.get(cardId) ?? null,
+      }))
+      .sort((left, right) =>
+        (left.card?.name ?? left.card_id).localeCompare(right.card?.name ?? right.card_id),
+      ),
+  } as DeckDetail
 }
 
 export async function getCardCatalog(

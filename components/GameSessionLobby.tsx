@@ -11,13 +11,19 @@ import {
   lockGameSession,
   spawnDeckForSession,
 } from '@/lib/game/actions'
-import { getCurrentPlayerSessions, getGameSession, getGameSessionPlayers } from '@/lib/game/data'
-import type { GameSession, GameSessionPlayer } from '@/lib/game/types'
+import {
+  getCurrentPlayerSessions,
+  getGameSession,
+  getGameSessionPlayers,
+  getUserDecks,
+} from '@/lib/game/data'
+import type { DeckSummary, GameSession, GameSessionPlayer } from '@/lib/game/types'
 
 export default function GameSessionLobby() {
   const supabase = useMemo(() => createClient(), [])
   const [sessionIdInput, setSessionIdInput] = useState('')
-  const [deckIdInput, setDeckIdInput] = useState('')
+  const [selectedDeckId, setSelectedDeckId] = useState('')
+  const [userDecks, setUserDecks] = useState<DeckSummary[]>([])
   const [playerSessions, setPlayerSessions] = useState<GameSession[]>([])
   const [activeSession, setActiveSession] = useState<GameSession | null>(null)
   const [players, setPlayers] = useState<GameSessionPlayer[]>([])
@@ -40,15 +46,26 @@ export default function GameSessionLobby() {
     setPlayerSessions(sessions)
   }
 
+  const refreshUserDecks = async () => {
+    const decks = await getUserDecks(supabase)
+    setUserDecks(decks)
+    setSelectedDeckId((current) => current || decks[0]?.id || '')
+  }
+
   useEffect(() => {
     let isMounted = true
 
     const loadPlayerSessions = async () => {
       try {
-        const sessions = await getCurrentPlayerSessions(supabase)
+        const [sessions, decks] = await Promise.all([
+          getCurrentPlayerSessions(supabase),
+          getUserDecks(supabase),
+        ])
 
         if (isMounted) {
           setPlayerSessions(sessions)
+          setUserDecks(decks)
+          setSelectedDeckId((current) => current || decks[0]?.id || '')
         }
       } catch (error) {
         const message = getErrorMessage(error)
@@ -176,10 +193,10 @@ export default function GameSessionLobby() {
       return
     }
 
-    const deckId = deckIdInput.trim()
+    const deckId = selectedDeckId.trim()
 
     if (!deckId) {
-      setErrorMessage('Enter a deck id')
+      setErrorMessage('Select a deck')
       return
     }
 
@@ -313,26 +330,64 @@ export default function GameSessionLobby() {
           </div>
 
           <div className="rounded-md border border-slate-800 p-3">
-            <label htmlFor="deck-id" className="mb-2 block text-sm font-medium text-slate-300">
-              Deck ID
-            </label>
+            <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <label htmlFor="deck-select" className="text-sm font-medium text-slate-300">
+                Deck
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    refreshUserDecks().catch((error) => {
+                      const message = getErrorMessage(error)
+                      console.error('Failed to refresh decks:', message, error)
+                      setErrorMessage(message)
+                    })
+                  }
+                  disabled={isWorking}
+                  className="rounded-md bg-slate-700 px-3 py-1 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Refresh Decks
+                </button>
+                <Link
+                  href="/decks"
+                  className="rounded-md bg-sky-400 px-3 py-1 text-xs font-semibold text-sky-950"
+                >
+                  Manage Decks
+                </Link>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-2 sm:flex-row">
-              <input
-                id="deck-id"
-                value={deckIdInput}
-                onChange={(event) => setDeckIdInput(event.target.value)}
-                placeholder="Paste a deck id"
-                className="min-w-0 flex-1 rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-slate-400"
-              />
+              <select
+                id="deck-select"
+                value={selectedDeckId}
+                onChange={(event) => setSelectedDeckId(event.target.value)}
+                disabled={isWorking || userDecks.length === 0}
+                className="min-w-0 flex-1 rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {userDecks.length === 0 ? (
+                  <option value="">No decks found</option>
+                ) : (
+                  userDecks.map((deck) => (
+                    <option key={deck.id} value={deck.id}>
+                      {deck.name || 'Untitled Deck'} ({deck.card_count})
+                    </option>
+                  ))
+                )}
+              </select>
               <button
                 type="button"
                 onClick={handleSpawnDeck}
-                disabled={isWorking}
+                disabled={isWorking || !selectedDeckId}
                 className="rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Spawn Deck
               </button>
             </div>
+            {userDecks.length === 0 ? (
+              <p className="mt-2 text-xs text-slate-400">Create a deck first, then refresh this list.</p>
+            ) : null}
           </div>
 
           <div className="flex flex-wrap gap-2">
