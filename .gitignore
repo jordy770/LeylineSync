@@ -44,4 +44,4 @@ supabase/.temp/
 *.tsbuildinfo
 next-env.d.ts
 
-.components\default-cards-20260429211148.json
+/components/default-cards-20260429211148.json
