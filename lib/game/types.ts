@@ -220,6 +220,7 @@ export type BoardCard = {
   position_y: number
   zone: GameZone
   image_url: string | null
+  controller_player_id?: string | null
 }
 
 export type ControllerCard = {

@@ -62,7 +62,8 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       position_y,
       is_tapped,
       damage_marked,
-      zone
+      zone,
+      controller_player_id
     `)
     .eq('session_id', sessionId)
     .eq('zone', 'battlefield')
@@ -91,6 +92,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       zone: normalizeGameZone(item.zone),
       name: linkedCard?.name || 'Unknown',
       image_url: linkedCard?.image_url ?? null,
+      controller_player_id: item.controller_player_id ?? null,
     }
   })
 }
