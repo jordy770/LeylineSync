@@ -569,7 +569,6 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
     <div className="relative h-[100svh] overflow-hidden p-3 landscape:h-screen">
       <div className="pointer-events-none absolute inset-0 opacity-40">
         <div className="absolute left-10 top-20 h-px w-44 rotate-[-28deg] bg-cyan-200/30" />
-        <div className="absolute bottom-12 left-1/2 h-32 w-[34rem] -translate-x-1/2 rounded-[100%] border-t border-cyan-200/25 bg-cyan-400/10 blur-sm" />
         <div className="absolute -bottom-24 left-1/2 h-72 w-[48rem] -translate-x-1/2 rounded-[100%] bg-cyan-500/10 blur-3xl" />
       </div>
       {lastFetchInfo && showDevControls ? <p className="mb-3 text-xs text-slate-500">{lastFetchInfo}</p> : null}
@@ -595,7 +594,7 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
 
         <main className="relative z-[80] grid min-h-0 grid-rows-[auto_1fr] overflow-visible">
           <ControllerBattlefieldList cards={battlefieldCards} selectedCardId={selectedCard?.id} onSelect={setSelectedCardId} />
-          <div className="relative flex min-h-0 items-end justify-center overflow-visible rounded-[100%] border-t border-cyan-300/30 bg-cyan-500/5">
+          <div className="relative flex min-h-0 items-end justify-center overflow-visible">
           <PlayDropZone
             refCallback={(element) => {
               playDropZoneRef.current = element
@@ -880,7 +879,7 @@ function PlayDropZone({
       layout
       initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: isHandRaised ? -12 : 0, scale: isHandRaised ? 1.08 : 1 }}
-      className={`pointer-events-none absolute bottom-[13.75rem] left-1/2 z-10 w-[min(34rem,88%)] -translate-x-1/2 rounded-[1.25rem] border px-6 py-3 text-center backdrop-blur transition-shadow [@media(max-height:760px)]:bottom-[9.5rem] [@media(max-height:760px)]:w-[min(26rem,76%)] [@media(max-height:760px)]:px-3 [@media(max-height:760px)]:py-1.5 ${
+        className={`pointer-events-none absolute bottom-[9.75rem] left-6 right-6 z-10 mx-auto max-w-[34rem] rounded-[1.25rem] border px-6 py-3 text-center backdrop-blur transition-shadow ${
         isHandRaised
           ? 'border-cyan-200/80 bg-cyan-500/20 shadow-[0_0_48px_rgba(34,211,238,0.58),inset_0_0_34px_rgba(34,211,238,0.14)]'
           : 'border-cyan-300/45 bg-cyan-950/35 shadow-[0_0_28px_rgba(34,211,238,0.22)]'
@@ -924,11 +923,11 @@ function ControllerHandFan({
       ref={handContainerRef}
       layout
       onPointerDown={() => onRaiseChange(true)}
-      className="relative z-[90] flex h-[19rem] w-full items-end overflow-visible px-6 pb-0 [@media(max-height:760px)]:h-[12.5rem] [@media(max-height:760px)]:px-3"
+      className="relative z-[90] flex h-[19rem] w-full -translate-x-6 items-end overflow-visible px-6 pb-0 [@media(max-height:760px)]:h-[12.5rem] [@media(max-height:760px)]:px-3"
     >
       <motion.div
         layout
-        animate={{ y: isRaised ? -18 : 400 }}
+        animate={{ y: isRaised ? 50 : 120 }}
         transition={{ type: 'spring', stiffness: 280, damping: 28 }}
         className="flex min-h-[19rem] min-w-full items-end justify-center gap-4 overflow-visible [@media(max-height:760px)]:min-h-[12.5rem] [@media(max-height:760px)]:gap-2"
       >
