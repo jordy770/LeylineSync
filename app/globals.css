@@ -66,3 +66,54 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .mtg-card-glow {
+    box-shadow: 0 0 20px var(--glow-color, #00ffff), 0 0 40px var(--glow-color, #00ffff);
+  }
+
+  .mtg-priority-border {
+    animation: priority-pulse 1.5s ease-in-out infinite;
+  }
+
+  .mtg-attack-glow {
+    animation: attack-glow 0.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes priority-pulse {
+    0%,
+    100% {
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+    50% {
+      border-color: rgba(251, 191, 36, 1);
+    }
+  }
+
+  @keyframes attack-glow {
+    from {
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    }
+    to {
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.8);
+    }
+  }
+
+  @media (orientation: portrait) {
+    .landscape-only {
+      display: none;
+    }
+    .portrait-warning {
+      display: flex;
+    }
+  }
+
+  @media (orientation: landscape) {
+    .landscape-only {
+      display: flex;
+    }
+    .portrait-warning {
+      display: none;
+    }
+  }
+}

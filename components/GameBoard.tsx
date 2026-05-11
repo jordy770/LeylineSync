@@ -43,6 +43,7 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
   const [combatAssignments, setCombatAssignments] = useState<CombatAssignment[]>([])
   const [stackItems, setStackItems] = useState<StackItem[]>([])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [focusedPlayerId, setFocusedPlayerId] = useState<string | null>(null)
   const boardRef = useRef<HTMLDivElement | null>(null)
   const [targetElements, setTargetElements] = useState<Map<string, HTMLElement>>(() => new Map())
   const supabase = useMemo(() => createClient(), [])
@@ -177,8 +178,8 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
     () => buildBoardConnections(combatAssignments, stackItems),
     [combatAssignments, stackItems],
   )
-  const focusSeat = getFocusSeat(seats)
-  const minimapSeats = seats.filter((seat) => seat.player && seat !== focusSeat)
+  const focusSeat = getFocusSeat(seats, focusedPlayerId)
+  const minimapSeats = seats.filter((seat) => seat.player && seat.player.player_id !== focusSeat.player?.player_id)
   const pendingStackItems = stackItems.filter((item) => item.status === 'pending')
   const registerTargetRef = useCallback((playerId: string, element: HTMLElement | null) => {
     if (!playerId) {
@@ -213,8 +214,15 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
   }
 
   return (
-    <div ref={boardRef} className="relative isolate overflow-hidden p-4 [perspective:1600px] sm:p-6">
+    <div ref={boardRef} className="relative isolate min-h-[calc(100vh-4rem)] overflow-hidden p-4 [perspective:1600px] sm:p-6">
       <div className="pointer-events-none absolute inset-0 opacity-40">
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px',
+          }}
+        />
         <div className="absolute inset-x-8 top-1/2 h-px bg-cyan-200/20 [transform:rotateX(62deg)_translateZ(-70px)]" />
         <div className="absolute bottom-0 left-10 right-10 top-28 bg-[linear-gradient(90deg,transparent,rgba(103,232,249,0.12),transparent)] blur-2xl [transform:rotateX(66deg)_translateZ(-100px)]" />
         <div className="absolute bottom-12 left-16 right-16 h-px bg-cyan-200/10 [transform:rotateX(66deg)_translateZ(-90px)]" />
@@ -223,30 +231,93 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
         <div className="absolute -right-16 top-0 h-60 w-60 rounded-full bg-red-500/10 blur-3xl" />
       </div>
       <BoardConnectionOverlay connections={connections} />
-      <motion.div
-        layout
-        className="relative z-20 grid min-h-[72vh] gap-5 [transform-style:preserve-3d] xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
-      >
-        <FocusSeatPanel seat={focusSeat} turnState={turnState} />
-        <StackRail stackItems={pendingStackItems} />
-        <motion.aside layout className="grid content-start gap-3">
-          <AnimatePresence initial={false}>
-            {minimapSeats.map((seat) => (
-              <MiniPlayerWidget
-                key={seat.player?.player_id ?? seat.index}
-                seat={seat}
-                registerTargetRef={registerTargetRef}
-              />
-            ))}
-          </AnimatePresence>
-        </motion.aside>
-      </motion.div>
+      <BoardViewChrome
+        turnState={turnState}
+        isFocusMode={Boolean(focusedPlayerId)}
+        onToggleFocus={() => setFocusedPlayerId((current) => (current ? null : focusSeat.player?.player_id ?? null))}
+      />
+      <AnimatePresence mode="wait">
+        {focusedPlayerId ? (
+          <motion.div
+            key="focus-board"
+            layout
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className="relative z-20 grid min-h-[72vh] gap-5 [transform-style:preserve-3d] xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
+          >
+            <FocusSeatPanel seat={focusSeat} turnState={turnState} />
+            <StackRail stackItems={pendingStackItems} />
+            <motion.aside layout className="grid content-start gap-3">
+              <AnimatePresence initial={false}>
+                {minimapSeats.map((seat) => (
+                  <MiniPlayerWidget
+                    key={seat.player?.player_id ?? seat.index}
+                    seat={seat}
+                    registerTargetRef={registerTargetRef}
+                    onClick={() => setFocusedPlayerId(seat.player?.player_id ?? null)}
+                  />
+                ))}
+              </AnimatePresence>
+            </motion.aside>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="grid-board"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="relative z-20 grid min-h-[72vh] gap-4 xl:grid-cols-[minmax(0,1fr)_10.5rem] 2xl:gap-6"
+          >
+            <div className="grid min-h-[72vh] grid-cols-1 gap-4 md:grid-cols-2">
+              {seats.length > 0 ? (
+                seats.map((seat) => (
+                  <PlayerQuadrantPanel
+                    key={seat.player?.player_id ?? seat.index}
+                    seat={seat}
+                    turnState={turnState}
+                    onFocus={() => setFocusedPlayerId(seat.player?.player_id ?? null)}
+                  />
+                ))
+              ) : (
+                <EmptyBoardPanel />
+              )}
+            </div>
+            <StackRail stackItems={pendingStackItems} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <CombatManager
         assignments={combatAssignments}
         cards={cards}
         boardElement={boardRef.current}
         targetElements={targetElements}
       />
+    </div>
+  )
+}
+
+function BoardViewChrome({
+  turnState,
+  isFocusMode,
+  onToggleFocus,
+}: {
+  turnState: GameTurnState | null
+  isFocusMode: boolean
+  onToggleFocus: () => void
+}) {
+  return (
+    <div className="relative z-30 mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="rounded-full border border-slate-700 bg-slate-900/80 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-black/30 backdrop-blur">
+        Turn {turnState?.turn_number ?? '-'} · {formatStepLabel(turnState?.step)}
+      </div>
+      <button
+        type="button"
+        onClick={onToggleFocus}
+        className="rounded-lg border border-slate-700 bg-slate-900/85 px-4 py-2 text-sm font-semibold text-slate-200 transition-colors hover:bg-slate-800"
+      >
+        {isFocusMode ? 'Grid View' : 'Focus Priority'}
+      </button>
     </div>
   )
 }
@@ -315,9 +386,11 @@ function FocusSeatPanel({
 function MiniPlayerWidget({
   seat,
   registerTargetRef,
+  onClick,
 }: {
   seat: BoardSeat
   registerTargetRef: (playerId: string, element: HTMLElement | null) => void
+  onClick?: () => void
 }) {
   if (!seat.player) {
     return null
@@ -326,12 +399,21 @@ function MiniPlayerWidget({
   return (
     <motion.section
       ref={(element) => registerTargetRef(seat.player?.player_id ?? '', element)}
+      role="button"
+      tabIndex={0}
       layout
       initial={{ opacity: 0, x: 18 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 18 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="relative z-40 rounded-lg border border-white/10 bg-slate-950/85 p-3 shadow-[0_22px_50px_rgba(0,0,0,0.45)] backdrop-blur [transform:translateZ(36px)]"
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onClick?.()
+        }
+      }}
+      className="relative z-40 cursor-pointer rounded-lg border border-white/10 bg-slate-950/85 p-3 shadow-[0_22px_50px_rgba(0,0,0,0.45)] backdrop-blur transition-colors hover:border-cyan-300/50 [transform:translateZ(36px)]"
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -372,6 +454,119 @@ function MiniPlayerWidget({
         ))}
       </motion.div>
     </motion.section>
+  )
+}
+
+function PlayerQuadrantPanel({
+  seat,
+  turnState,
+  onFocus,
+}: {
+  seat: BoardSeat
+  turnState: GameTurnState | null
+  onFocus: () => void
+}) {
+  if (!seat.player) {
+    return null
+  }
+
+  return (
+    <motion.section
+      layout
+      role="button"
+      tabIndex={0}
+      onClick={onFocus}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onFocus()
+        }
+      }}
+      className={`group relative min-h-[20rem] cursor-pointer overflow-hidden rounded-lg border bg-gradient-to-br p-3 shadow-[0_24px_60px_rgba(0,0,0,0.42)] transition-colors ${
+        seat.isPriority
+          ? 'border-amber-300/80 from-amber-950/55 to-slate-950/90 mtg-priority-border'
+          : 'border-white/10 from-slate-900/85 to-slate-950/95 hover:border-cyan-300/45'
+      }`}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(34,211,238,0.16),transparent_34%),radial-gradient(circle_at_100%_100%,rgba(245,158,11,0.12),transparent_32%)]" />
+      {seat.isPriority ? (
+        <motion.div
+          className="pointer-events-none absolute inset-0 rounded-lg border-4 border-amber-400"
+          animate={{ opacity: [0.45, 1, 0.45] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+        />
+      ) : null}
+      <div className="relative z-10 mb-3 flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-600 to-slate-900 text-base font-bold text-white">
+            {getPlayerInitial(seat.player)}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-white">{getPlayerLabel(seat.player)}</p>
+            <p className="text-xs text-slate-400">
+              P{seat.player.seat_number} · {formatStepLabel(turnState?.step)}
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <p
+            className={`text-3xl font-bold ${
+              seat.player.life_total > 20
+                ? 'text-emerald-300'
+                : seat.player.life_total > 10
+                  ? 'text-amber-300'
+                  : 'text-red-300'
+            }`}
+          >
+            {seat.player.life_total}
+          </p>
+          <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">Life</p>
+        </div>
+      </div>
+      <div className="relative z-10">
+        <div className="mb-2 flex items-center justify-between text-xs text-slate-500">
+          <span>Battlefield</span>
+          <span>{seat.cards.length} cards</span>
+        </div>
+        {seat.cards.length > 0 ? (
+          <motion.div layout className="grid grid-cols-3 gap-2 sm:grid-cols-4 2xl:grid-cols-5">
+            <AnimatePresence initial={false}>
+              {seat.cards.slice(0, 10).map((card) => (
+                <MotionCard
+                  key={card.id}
+                  card={{
+                    id: card.id,
+                    name: card.name,
+                    image_url: card.image_url,
+                    is_tapped: card.is_tapped,
+                    damage_marked: card.damage_marked,
+                    zone: card.zone,
+                  }}
+                  size="board"
+                  className={`shadow-[0_12px_24px_rgba(0,0,0,0.42)] ${
+                    seat.isPriority ? 'ring-1 ring-amber-300/25' : ''
+                  }`}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        ) : (
+          <div className="flex min-h-44 items-center justify-center rounded-lg border border-dashed border-white/10 text-xs text-slate-500">
+            Battlefield empty
+          </div>
+        )}
+      </div>
+    </motion.section>
+  )
+}
+
+function EmptyBoardPanel() {
+  return (
+    <div className="col-span-full flex min-h-[24rem] items-center justify-center rounded-lg border border-dashed border-cyan-300/20 bg-slate-950/50 text-sm text-slate-500">
+      Waiting for players to join the session.
+    </div>
   )
 }
 
@@ -443,8 +638,9 @@ function getPlayerLabel(player: GameSessionPlayer) {
   return player.username || `Player ${player.player_id.slice(0, 8)}`
 }
 
-function getFocusSeat(seats: BoardSeat[]) {
+function getFocusSeat(seats: BoardSeat[], focusedPlayerId?: string | null) {
   return (
+    (focusedPlayerId ? seats.find((seat) => seat.player?.player_id === focusedPlayerId) : null) ??
     seats.find((seat) => seat.isPriority) ??
     seats[0] ?? {
       player: null,
@@ -464,6 +660,10 @@ function formatStepLabel(step: GameTurnState['step'] | undefined) {
     .split('_')
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
+}
+
+function getPlayerInitial(player: GameSessionPlayer) {
+  return (player.username?.trim()[0] || `P${player.seat_number}`[0] || 'P').toUpperCase()
 }
 
 function buildBoardConnections(
