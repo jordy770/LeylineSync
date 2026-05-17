@@ -158,6 +158,20 @@ export type StackItem = {
   resolved_at?: string | null
 }
 
+export type GameActionLog = {
+  id: string
+  session_id: string
+  actor_player_id: string
+  target_player_id?: string | null
+  action_type: string
+  description?: string | null
+  before_state: Record<string, unknown>
+  after_state: Record<string, unknown>
+  created_at: string
+  undone_at?: string | null
+  undone_by?: string | null
+}
+
 export type CardAction = {
   type: string
   color?: string

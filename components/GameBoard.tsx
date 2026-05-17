@@ -10,7 +10,7 @@ import {
   getStackItems,
   getTurnState,
 } from '@/lib/game/data'
-import { enableFallbackRefresh } from '@/lib/game/dev'
+import { enableFallbackRefresh, fallbackRefreshIntervalMs } from '@/lib/game/dev'
 import type {
   BoardCard,
   CombatAssignment,
@@ -155,7 +155,7 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
         }
       })
 
-    const refreshInterval = enableFallbackRefresh ? window.setInterval(fetchBoardState, 2000) : null
+    const refreshInterval = enableFallbackRefresh ? window.setInterval(fetchBoardState, fallbackRefreshIntervalMs) : null
 
     return () => {
       if (refreshInterval) {
@@ -214,15 +214,9 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
   }
 
   return (
-    <div ref={boardRef} className="relative isolate min-h-[calc(100vh-4rem)] overflow-hidden p-4 [perspective:1600px] sm:p-6">
+    <div ref={boardRef} className="relative isolate min-h-[calc(100vh-5.75rem)] overflow-hidden p-4 [perspective:1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6">
       <div className="pointer-events-none absolute inset-0 opacity-40">
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px',
-          }}
-        />
+        <div className="leyline-table-grid absolute inset-0 opacity-10" />
         <div className="absolute inset-x-8 top-1/2 h-px bg-cyan-200/20 [transform:rotateX(62deg)_translateZ(-70px)]" />
         <div className="absolute bottom-0 left-10 right-10 top-28 bg-[linear-gradient(90deg,transparent,rgba(103,232,249,0.12),transparent)] blur-2xl [transform:rotateX(66deg)_translateZ(-100px)]" />
         <div className="absolute bottom-12 left-16 right-16 h-px bg-cyan-200/10 [transform:rotateX(66deg)_translateZ(-90px)]" />
@@ -244,11 +238,11 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="relative z-20 grid min-h-[72vh] gap-5 [transform-style:preserve-3d] xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
+            className="relative z-20 grid min-h-[72vh] gap-5 [transform-style:preserve-3d] [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_7.5rem_minmax(9rem,11rem)] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
           >
             <FocusSeatPanel seat={focusSeat} turnState={turnState} />
             <StackRail stackItems={pendingStackItems} />
-            <motion.aside layout className="grid content-start gap-3">
+            <motion.aside layout className="grid content-start gap-3 [@media(max-height:640px)]:gap-2">
               <AnimatePresence initial={false}>
                 {minimapSeats.map((seat) => (
                   <MiniPlayerWidget
@@ -267,9 +261,9 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="relative z-20 grid min-h-[72vh] gap-4 xl:grid-cols-[minmax(0,1fr)_10.5rem] 2xl:gap-6"
+            className="relative z-20 grid min-h-[72vh] gap-4 [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_7.5rem] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_10.5rem] 2xl:gap-6"
           >
-            <div className="grid min-h-[72vh] grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid min-h-[72vh] grid-cols-1 gap-4 [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:grid-cols-2 [@media(max-height:640px)]:gap-2 md:grid-cols-2">
               {seats.length > 0 ? (
                 seats.map((seat) => (
                   <PlayerQuadrantPanel
@@ -307,14 +301,15 @@ function BoardViewChrome({
   onToggleFocus: () => void
 }) {
   return (
-    <div className="relative z-30 mb-4 flex flex-wrap items-center justify-between gap-3">
-      <div className="rounded-full border border-slate-700 bg-slate-900/80 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-black/30 backdrop-blur">
-        Turn {turnState?.turn_number ?? '-'} · {formatStepLabel(turnState?.step)}
+    <div className="relative z-30 mb-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 [@media(max-height:640px)]:mb-2 [@media(max-height:640px)]:gap-2">
+      <div />
+      <div className="leyline-phase-pill rounded-full px-6 py-2 text-center text-sm font-semibold text-white [@media(max-height:640px)]:px-4 [@media(max-height:640px)]:py-1.5 [@media(max-height:640px)]:text-xs">
+        Turn {turnState?.turn_number ?? '-'} &middot; {formatStepLabel(turnState?.step)}
       </div>
       <button
         type="button"
         onClick={onToggleFocus}
-        className="rounded-lg border border-slate-700 bg-slate-900/85 px-4 py-2 text-sm font-semibold text-slate-200 transition-colors hover:bg-slate-800"
+        className="justify-self-end rounded-lg border border-slate-700 bg-slate-900/85 px-4 py-2 text-sm font-semibold text-slate-200 shadow-lg shadow-black/20 transition-colors hover:border-cyan-300/40 hover:bg-slate-800 [@media(max-height:640px)]:px-3 [@media(max-height:640px)]:py-1.5 [@media(max-height:640px)]:text-xs"
       >
         {isFocusMode ? 'Grid View' : 'Focus Priority'}
       </button>
@@ -332,14 +327,16 @@ function FocusSeatPanel({
   return (
     <motion.section
       layout
-      className="relative z-10 min-h-[32rem] overflow-hidden rounded-lg border border-cyan-300/70 bg-slate-950/65 p-4 shadow-[0_30px_70px_rgba(0,0,0,0.5),0_0_34px_rgba(56,189,248,0.32)] [transform:rotateX(5deg)_translateZ(0)] [transform-origin:center_bottom] [transform-style:preserve-3d]"
+      className={`leyline-glass-panel relative z-10 min-h-[32rem] overflow-hidden rounded-lg p-4 [transform:rotateX(5deg)_translateZ(0)] [transform-origin:center_bottom] [transform-style:preserve-3d] [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:p-3 ${
+        seat.isPriority ? 'leyline-priority-panel mtg-priority-border' : ''
+      }`}
     >
-      <div className="absolute inset-0 rounded-lg border border-cyan-300/30" />
-      <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-cyan-200/80 shadow-[0_0_18px_rgba(125,211,252,0.9)]" />
-      <div className="pointer-events-none absolute inset-x-6 bottom-6 top-20 rounded-[1.5rem] border border-cyan-200/10 bg-[linear-gradient(115deg,rgba(14,165,233,0.08),transparent_42%,rgba(148,163,184,0.06))]" />
-      <div className="relative mb-4 flex flex-wrap items-start justify-between gap-3 [transform:translateZ(28px)]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_0%,rgba(34,211,238,0.12),transparent_26%),linear-gradient(115deg,rgba(148,163,184,0.08),transparent_40%)]" />
+      <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-cyan-200/55 shadow-[0_0_18px_rgba(125,211,252,0.55)]" />
+      <div className="pointer-events-none absolute inset-x-6 bottom-6 top-20 rounded-lg border border-white/10" />
+      <div className="relative mb-4 flex flex-wrap items-start justify-between gap-3 [transform:translateZ(28px)] [@media(max-height:640px)]:mb-2">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200/85">
             {seat.player ? `Player ${seat.player.seat_number}` : 'No active player'}
           </p>
           <h2 className="truncate text-lg font-bold text-white">
@@ -347,14 +344,14 @@ function FocusSeatPanel({
             {seat.isPriority ? <span className="text-cyan-300"> - Priority</span> : null}
           </h2>
         </div>
-        <div className="rounded border border-cyan-300/50 bg-cyan-950/50 px-3 py-2 text-right">
+        <div className="rounded-md border border-white/15 bg-slate-950/70 px-3 py-2 text-right">
           <p className="text-[10px] uppercase text-cyan-200/80">Phase</p>
           <p className="text-sm font-bold text-white">{formatStepLabel(turnState?.step)}</p>
         </div>
       </div>
       <motion.div
         layout
-        className="relative grid grid-cols-2 gap-3 [transform:translateZ(34px)] sm:grid-cols-3 xl:grid-cols-5"
+        className="relative grid grid-cols-2 gap-3 [transform:translateZ(34px)] [@media(max-height:640px)]:grid-cols-4 [@media(max-height:640px)]:gap-2 sm:grid-cols-3 xl:grid-cols-5"
       >
         <AnimatePresence initial={false}>
           {seat.cards.map((card) => (
@@ -369,13 +366,14 @@ function FocusSeatPanel({
                 zone: card.zone,
               }}
               size="board"
-              className="max-w-40 shadow-[0_16px_26px_rgba(0,0,0,0.42)] [transform:translateZ(14px)]"
+              className="max-w-40 [transform:translateZ(14px)] [@media(max-height:640px)]:max-w-20"
+              visualClassName="shadow-[0_16px_26px_rgba(0,0,0,0.42)]"
             />
           ))}
         </AnimatePresence>
       </motion.div>
       {seat.cards.length === 0 ? (
-        <div className="relative flex min-h-56 items-center justify-center rounded-md border border-dashed border-cyan-300/20 text-xs text-cyan-100/40 [transform:translateZ(20px)]">
+        <div className="relative flex min-h-56 items-center justify-center rounded-md border border-dashed border-white/15 text-xs text-slate-500 [transform:translateZ(20px)] [@media(max-height:640px)]:min-h-28">
           Battlefield empty
         </div>
       ) : null}
@@ -413,20 +411,22 @@ function MiniPlayerWidget({
           onClick?.()
         }
       }}
-      className="relative z-40 cursor-pointer rounded-lg border border-white/10 bg-slate-950/85 p-3 shadow-[0_22px_50px_rgba(0,0,0,0.45)] backdrop-blur transition-colors hover:border-cyan-300/50 [transform:translateZ(36px)]"
+      className={`leyline-glass-panel relative z-40 cursor-pointer rounded-lg p-3 transition-colors hover:border-cyan-300/50 [transform:translateZ(36px)] [@media(max-height:640px)]:p-2 ${
+        seat.isPriority ? 'leyline-priority-panel' : ''
+      }`}
     >
-      <div className="mb-3 flex items-start justify-between gap-3">
+      <div className="mb-3 flex items-start justify-between gap-3 [@media(max-height:640px)]:mb-2">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
             P{seat.player.seat_number}
           </p>
           <p className="truncate text-sm font-bold text-white">{getPlayerLabel(seat.player)}</p>
         </div>
-        <p className={seat.isPriority ? 'text-3xl font-bold text-cyan-300' : 'text-3xl font-bold text-red-300'}>
+        <p className={seat.isPriority ? 'text-3xl font-bold text-amber-300 [@media(max-height:640px)]:text-xl' : 'text-3xl font-bold text-cyan-200 [@media(max-height:640px)]:text-xl'}>
           {seat.player.life_total}
         </p>
       </div>
-      <div className="mb-3 grid grid-cols-2 gap-2 text-xs text-slate-400">
+      <div className="mb-3 grid grid-cols-2 gap-2 text-xs text-slate-400 [@media(max-height:640px)]:hidden">
         <div>
           <p className="text-slate-500">Battlefield</p>
           <p className="font-semibold text-white">{seat.cards.length}</p>
@@ -436,7 +436,7 @@ function MiniPlayerWidget({
           <p className="font-semibold text-white">{seat.player.seat_number}</p>
         </div>
       </div>
-      <motion.div layout className="flex gap-1 overflow-hidden">
+      <motion.div layout className="flex gap-1 overflow-hidden [@media(max-height:640px)]:hidden">
         {seat.cards.slice(0, 4).map((card) => (
           <MotionCard
             key={card.id}
@@ -449,7 +449,8 @@ function MiniPlayerWidget({
               zone: card.zone,
             }}
             size="thumb"
-            className="-mr-5 border-cyan-200/20"
+            className="-mr-5"
+            visualClassName="border-cyan-200/20"
           />
         ))}
       </motion.div>
@@ -482,37 +483,39 @@ function PlayerQuadrantPanel({
           onFocus()
         }
       }}
-      className={`group relative min-h-[20rem] cursor-pointer overflow-hidden rounded-lg border bg-gradient-to-br p-3 shadow-[0_24px_60px_rgba(0,0,0,0.42)] transition-colors ${
+      className={`leyline-glass-panel group relative min-h-[20rem] cursor-pointer overflow-hidden rounded-lg p-3 transition-colors [@media(max-height:640px)]:min-h-[10.5rem] [@media(max-height:640px)]:p-2 ${
         seat.isPriority
-          ? 'border-amber-300/80 from-amber-950/55 to-slate-950/90 mtg-priority-border'
-          : 'border-white/10 from-slate-900/85 to-slate-950/95 hover:border-cyan-300/45'
+          ? 'leyline-priority-panel mtg-priority-border'
+          : 'hover:border-cyan-300/45'
       }`}
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(34,211,238,0.16),transparent_34%),radial-gradient(circle_at_100%_100%,rgba(245,158,11,0.12),transparent_32%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(34,211,238,0.12),transparent_34%),radial-gradient(circle_at_100%_100%,rgba(245,158,11,0.08),transparent_32%)]" />
       {seat.isPriority ? (
         <motion.div
-          className="pointer-events-none absolute inset-0 rounded-lg border-4 border-amber-400"
+          className="pointer-events-none absolute inset-0 rounded-lg border-2 border-amber-300"
           animate={{ opacity: [0.45, 1, 0.45] }}
           transition={{ repeat: Infinity, duration: 1.5 }}
         />
       ) : null}
-      <div className="relative z-10 mb-3 flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+      <div className="relative z-10 mb-3 flex items-center justify-between gap-3 border-b border-white/10 pb-3 [@media(max-height:640px)]:mb-2 [@media(max-height:640px)]:gap-2 [@media(max-height:640px)]:pb-2">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-600 to-slate-900 text-base font-bold text-white">
+          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-base font-bold text-white [@media(max-height:640px)]:h-8 [@media(max-height:640px)]:w-8 [@media(max-height:640px)]:text-sm ${
+            seat.isPriority ? 'border-amber-300/50 bg-amber-500/15' : 'border-cyan-200/20 bg-slate-900/80'
+          }`}>
             {getPlayerInitial(seat.player)}
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-white">{getPlayerLabel(seat.player)}</p>
-            <p className="text-xs text-slate-400">
-              P{seat.player.seat_number} · {formatStepLabel(turnState?.step)}
+            <p className="truncate text-sm font-semibold text-white [@media(max-height:640px)]:text-xs">{getPlayerLabel(seat.player)}</p>
+            <p className="text-xs text-slate-400 [@media(max-height:640px)]:text-[10px]">
+              P{seat.player.seat_number} &middot; {formatStepLabel(turnState?.step)}
             </p>
           </div>
         </div>
         <div className="text-right">
           <p
-            className={`text-3xl font-bold ${
+            className={`text-3xl font-bold [@media(max-height:640px)]:text-xl ${
               seat.player.life_total > 20
                 ? 'text-emerald-300'
                 : seat.player.life_total > 10
@@ -526,12 +529,12 @@ function PlayerQuadrantPanel({
         </div>
       </div>
       <div className="relative z-10">
-        <div className="mb-2 flex items-center justify-between text-xs text-slate-500">
+        <div className="mb-2 flex items-center justify-between text-xs text-slate-500 [@media(max-height:640px)]:mb-1 [@media(max-height:640px)]:text-[10px]">
           <span>Battlefield</span>
           <span>{seat.cards.length} cards</span>
         </div>
         {seat.cards.length > 0 ? (
-          <motion.div layout className="grid grid-cols-3 gap-2 sm:grid-cols-4 2xl:grid-cols-5">
+          <motion.div layout className="grid grid-cols-3 gap-2 [@media(max-height:640px)]:grid-cols-4 [@media(max-height:640px)]:gap-1 sm:grid-cols-4 2xl:grid-cols-5">
             <AnimatePresence initial={false}>
               {seat.cards.slice(0, 10).map((card) => (
                 <MotionCard
@@ -545,7 +548,8 @@ function PlayerQuadrantPanel({
                     zone: card.zone,
                   }}
                   size="board"
-                  className={`shadow-[0_12px_24px_rgba(0,0,0,0.42)] ${
+                  className="[@media(max-height:640px)]:max-w-14"
+                  visualClassName={`shadow-[0_12px_24px_rgba(0,0,0,0.42)] ${
                     seat.isPriority ? 'ring-1 ring-amber-300/25' : ''
                   }`}
                 />
@@ -553,7 +557,7 @@ function PlayerQuadrantPanel({
             </AnimatePresence>
           </motion.div>
         ) : (
-          <div className="flex min-h-44 items-center justify-center rounded-lg border border-dashed border-white/10 text-xs text-slate-500">
+          <div className="flex min-h-44 items-center justify-center rounded-lg border border-dashed border-white/10 text-xs text-slate-500 [@media(max-height:640px)]:min-h-16">
             Battlefield empty
           </div>
         )}
@@ -564,7 +568,7 @@ function PlayerQuadrantPanel({
 
 function EmptyBoardPanel() {
   return (
-    <div className="col-span-full flex min-h-[24rem] items-center justify-center rounded-lg border border-dashed border-cyan-300/20 bg-slate-950/50 text-sm text-slate-500">
+    <div className="leyline-glass-panel col-span-full flex min-h-[24rem] items-center justify-center rounded-lg border-dashed text-sm text-slate-500 [@media(max-height:640px)]:min-h-[calc(100svh-8rem)]">
       Waiting for players to join the session.
     </div>
   )
@@ -574,14 +578,14 @@ function StackRail({ stackItems }: { stackItems: StackItem[] }) {
   return (
     <motion.section
       layout
-      className="relative z-30 order-first mx-auto w-full max-w-44 rounded-lg border border-cyan-200/40 bg-black/85 p-3 text-center shadow-[0_24px_54px_rgba(0,0,0,0.52),0_0_22px_rgba(34,211,238,0.2)] [transform:translateZ(42px)] xl:order-none"
+      className="leyline-glass-panel relative z-30 order-first mx-auto w-full max-w-44 rounded-lg p-3 text-center [transform:translateZ(42px)] [@media(max-height:640px)]:order-none [@media(max-height:640px)]:h-full [@media(max-height:640px)]:max-w-none [@media(max-height:640px)]:p-2 xl:order-none"
     >
-      <h2 className="mb-3 rounded border border-cyan-300/40 bg-cyan-950/40 py-1 text-xs font-bold uppercase tracking-[0.18em] text-white">
+      <h2 className="mb-3 rounded-md border border-cyan-300/30 bg-cyan-950/30 py-1 text-xs font-bold uppercase tracking-[0.18em] text-cyan-50 [@media(max-height:640px)]:mb-2 [@media(max-height:640px)]:text-[10px]">
         The Stack
       </h2>
-      <div className="grid gap-2 lg:min-h-[26rem] lg:content-start">
+      <div className="grid gap-2 [@media(max-height:640px)]:gap-1 lg:min-h-[26rem] lg:content-start">
         {stackItems.length === 0 ? (
-          <div className="rounded border border-white/10 px-2 py-12 text-xs text-slate-500 lg:py-24">
+          <div className="rounded-md border border-white/10 px-2 py-12 text-xs text-slate-500 [@media(max-height:640px)]:py-8 [@media(max-height:640px)]:text-[10px] lg:py-24">
             Empty
           </div>
         ) : (
@@ -592,12 +596,12 @@ function StackRail({ stackItems }: { stackItems: StackItem[] }) {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="rounded border border-cyan-300/40 bg-cyan-950/30 p-2 text-left shadow-[0_0_14px_rgba(34,211,238,0.12)]"
+              className="rounded-md border border-cyan-300/30 bg-cyan-950/25 p-2 text-left shadow-[0_0_14px_rgba(34,211,238,0.1)] [@media(max-height:640px)]:p-1.5"
             >
-              <p className="truncate text-xs font-semibold text-white">
+              <p className="truncate text-xs font-semibold text-white [@media(max-height:640px)]:text-[10px]">
                 {item.source_card_name ?? item.action_type}
               </p>
-              <p className="truncate text-[10px] text-cyan-200/70">{item.controller_username ?? 'Unknown'}</p>
+              <p className="truncate text-[10px] text-cyan-200/70 [@media(max-height:640px)]:text-[9px]">{item.controller_username ?? 'Unknown'}</p>
             </motion.div>
           ))
         )}
@@ -708,11 +712,20 @@ function BoardConnectionOverlay({ connections }: { connections: BoardConnection[
 
   return (
     <svg
-      className="pointer-events-none absolute inset-0 z-10 h-full w-full overflow-visible"
+      className="pointer-events-none absolute inset-0 z-10 h-full w-full overflow-visible opacity-80"
       viewBox="0 0 100 100"
       preserveAspectRatio="none"
       aria-hidden="true"
     >
+      <defs>
+        <filter id="board-connection-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.8" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
       <AnimatePresence>
         {connections.map((connection) => (
           <motion.path
@@ -723,9 +736,11 @@ function BoardConnectionOverlay({ connections }: { connections: BoardConnection[
             exit={{ pathLength: 0, opacity: 0 }}
             transition={{ duration: 0.55, ease: 'easeOut' }}
             fill="none"
+            filter="url(#board-connection-glow)"
             stroke={connection.lane === 'combat' ? '#f59e0b' : '#38bdf8'}
             strokeLinecap="round"
-            strokeWidth="0.45"
+            strokeDasharray={connection.lane === 'combat' ? '2 1.5' : undefined}
+            strokeWidth={connection.lane === 'combat' ? '0.38' : '0.32'}
             vectorEffect="non-scaling-stroke"
           />
         ))}

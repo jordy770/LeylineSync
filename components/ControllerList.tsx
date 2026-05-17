@@ -2,16 +2,16 @@
 'use client'
 import Image from 'next/image'
 import { AnimatePresence, motion, useDragControls, type PanInfo } from 'framer-motion'
+import { BookOpen, Layers, Skull, Zap, type LucideIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   castCardFromHand,
-  declareAttacker,
-  declareBlocker,
   getErrorMessage,
   passPriority,
+  putCounterSpellOnStack,
 } from '@/lib/game/actions'
-import { enableFallbackRefresh, showDevControls } from '@/lib/game/dev'
+import { enableFallbackRefresh, fallbackRefreshIntervalMs, showDevControls } from '@/lib/game/dev'
 import { parseManaCost } from '@/lib/game/mana'
 import {
   getCombatActionState,
@@ -20,8 +20,10 @@ import {
   getCurrentPlayerId,
   getGameSession,
   getGameSessionPlayers,
+  getPlayerManaPool,
   getStackItems,
   getTurnState,
+  normalizeManaPool,
 } from '@/lib/game/data'
 import type {
   CombatActionState,
@@ -29,15 +31,71 @@ import type {
     ControllerCard,
     GameSessionPlayer,
     GameTurnState,
+    ManaColor,
+    ManaPool,
     StackItem,
   } from '@/lib/game/types'
-import CardController from './CardController'
 import ActionButtons from './ActionButtons'
 import CardZoneControls from './CardZoneControls'
-import PlayerActionPanel from './PlayerActionPanel'
-import StaticEffectControls from './StaticEffectControls'
-import DevAdminPanel from './DevAdminPanel'
 import MotionCard from './MotionCard'
+
+type ControllerCenterView = 'hand' | 'battlefield'
+
+const manaColorsForDisplay: Array<{
+  color: ManaColor
+  label: string
+  className: string
+}> = [
+  { color: 'W', label: 'White', className: '' },
+  { color: 'U', label: 'Blue', className: '' },
+  { color: 'B', label: 'Black', className: '' },
+  { color: 'R', label: 'Red', className: '' },
+  { color: 'G', label: 'Green', className: '' },
+  { color: 'C', label: 'Colorless', className: '' },
+]
+
+const cockpitPanelClass =
+  'rounded-lg border border-white/10 bg-slate-950/72 shadow-[0_18px_46px_rgba(0,0,0,0.34)] backdrop-blur'
+const cockpitPanelStrongClass =
+  'rounded-lg border border-white/10 bg-slate-950/88 shadow-[0_20px_54px_rgba(0,0,0,0.42)] backdrop-blur'
+const cockpitSoftPanelClass = 'rounded-md border border-white/10 bg-white/[0.045]'
+const cockpitLabelClass = 'text-[10px] font-black uppercase tracking-[0.14em] text-cyan-200/85'
+const cockpitMutedClass = 'text-slate-400'
+const cockpitButtonClass =
+  'rounded-md border border-white/10 bg-slate-900/90 text-slate-100 transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-45'
+const priorityButtonClass =
+  'rounded-md bg-amber-300 text-amber-950 shadow-[0_0_28px_rgba(245,158,11,0.18)]'
+
+function getCockpitSelectionClass(isSelected: boolean, tone: 'cyan' | 'red' = 'cyan') {
+  if (!isSelected) {
+    return 'border-white/10 bg-black/20 hover:border-white/20 hover:bg-white/[0.055]'
+  }
+
+  return tone === 'red'
+    ? 'border-red-300/60 bg-red-500/15 ring-2 ring-red-300/15'
+    : 'border-cyan-300/60 bg-cyan-400/12 ring-2 ring-cyan-300/15'
+}
+
+function getCockpitBadgeClass(tone: 'slate' | 'amber' | 'red' | 'emerald' | 'cyan' = 'slate') {
+  const toneClass = {
+    slate: 'border-white/15 bg-white/10 text-slate-100',
+    amber: 'border-amber-300/30 bg-amber-500/15 text-amber-100',
+    red: 'border-red-300/30 bg-red-500/15 text-red-100',
+    emerald: 'border-emerald-300/30 bg-emerald-500/15 text-emerald-100',
+    cyan: 'border-cyan-300/30 bg-cyan-400/15 text-cyan-100',
+  }[tone]
+
+  return `rounded-md border px-2 py-0.5 ${toneClass}`
+}
+
+function getCockpitTileToneClass(tone: 'cyan' | 'slate' | 'amber' | 'emerald') {
+  return {
+    slate: 'border-white/10 bg-white/[0.045] text-slate-100',
+    amber: 'border-amber-300/20 bg-amber-500/10 text-amber-100',
+    emerald: 'border-emerald-300/20 bg-emerald-500/10 text-emerald-100',
+    cyan: 'border-cyan-300/20 bg-cyan-400/10 text-cyan-100',
+  }[tone]
+}
 
 export default function ControllerList({ sessionId }: { sessionId: string }) {
   const [cards, setCards] = useState<ControllerCard[]>([])
@@ -51,15 +109,19 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
   const [sessionPlayers, setSessionPlayers] = useState<GameSessionPlayer[]>([])
   const [turnState, setTurnState] = useState<GameTurnState | null>(null)
   const [stackItems, setStackItems] = useState<StackItem[]>([])
+  const [manaPool, setManaPool] = useState<ManaPool>(() => normalizeManaPool(null))
   const [pendingStackCount, setPendingStackCount] = useState(0)
-  const [declaringAttackerId, setDeclaringAttackerId] = useState<string | null>(null)
-  const [declaringBlockerId, setDeclaringBlockerId] = useState<string | null>(null)
   const [draftedCardId, setDraftedCardId] = useState<string | null>(null)
   const [swipeCastingCardId, setSwipeCastingCardId] = useState<string | null>(null)
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
   const [isPassingPriority, setIsPassingPriority] = useState(false)
   const [isHandRaised, setIsHandRaised] = useState(false)
+  const [isTargeting, setIsTargeting] = useState(false)
+  const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null)
+  const [isCastingTargetedSpell, setIsCastingTargetedSpell] = useState(false)
+  const [centerView, setCenterView] = useState<ControllerCenterView>('hand')
   const [handOrder, setHandOrder] = useState<string[]>([])
+  const [previewCard, setPreviewCard] = useState<ControllerCard | null>(null)
   const handContainerRef = useRef<HTMLDivElement | null>(null)
   const attackTargetElements = useRef(new Map<string, HTMLElement>())
   const blockTargetElements = useRef(new Map<string, HTMLElement>())
@@ -83,9 +145,13 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
       setErrorMessage(null)
 
       try {
-        const result = await getControllerCards(supabase, sessionId, currentPlayerId)
+        const [result, nextManaPool] = await Promise.all([
+          getControllerCards(supabase, sessionId, currentPlayerId),
+          getPlayerManaPool(supabase, sessionId, currentPlayerId),
+        ])
         if (isMounted) {
           setCards(result.cards)
+          setManaPool(nextManaPool)
           setLastFetchInfo(
             result.missingCardIds.length > 0
               ? `Session ${sessionId}: ${result.rowCount} card(s) loaded, ${result.missingCardIds.length} card id(s) not found in cards`
@@ -259,6 +325,20 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
         {
           event: '*',
           schema: 'public',
+          table: 'game_players',
+          filter: `session_id=eq.${sessionId}`,
+        },
+        () => {
+          if (currentPlayerId) {
+            fetchCards(currentPlayerId)
+          }
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
           table: 'game_session_players',
           filter: `session_id=eq.${sessionId}`,
         },
@@ -277,7 +357,7 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
             fetchCards(currentPlayerId)
           }
           loadGameContext()
-        }, 2000)
+        }, fallbackRefreshIntervalMs)
       : null
 
     return () => {
@@ -320,6 +400,11 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
     }
   }, [isHandRaised])
 
+  useEffect(() => {
+    setIsTargeting(false)
+    setSelectedTargetId(null)
+  }, [selectedCardId])
+
   const registerAttackTargetRef = useCallback((playerId: string, element: HTMLElement | null) => {
     updateElementRefMap(attackTargetElements.current, playerId, element)
   }, [])
@@ -329,12 +414,12 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
   }, [])
 
   if (isLoading) {
-    return <p className="text-slate-400">Loading cards...</p>
+    return <p>Loading cards...</p>
   }
 
   if (errorMessage) {
     return (
-      <div className="rounded-lg bg-red-950 p-4 text-sm text-red-100">
+      <div className="p-4 text-sm">
         Could not load cards: {errorMessage}
       </div>
     )
@@ -353,7 +438,6 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
   const currentPlayer = sessionPlayers.find((player) => player.player_id === playerId) ?? null
   const opponentPlayers = sessionPlayers.filter((player) => player.player_id !== playerId)
   const libraryCount = cards.filter((card) => card.zone === 'library').length
-  const tappedBattlefieldCount = battlefieldCards.filter((card) => card.is_tapped).length
   const defendingPlayers = sessionPlayers.filter((player) => player.player_id !== playerId)
   const attackUnavailableReason = getAttackUnavailableReason({
     combatActionState,
@@ -384,41 +468,55 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
         combatActionState?.step === 'postcombat_main') &&
       pendingStackCount === 0,
   )
+  const shouldShowCombatTargets = isCombatInteractionStep(combatActionState?.step)
+  const pendingStackItems = stackItems.filter((item) => item.status === 'pending')
+  const requiresTarget = selectedCard ? doesCardRequireStackTarget(selectedCard) : false
+  const selectedTargetName = selectedTargetId
+    ? formatStackTargetLabel(pendingStackItems.find((item) => item.id === selectedTargetId) ?? null)
+    : null
 
-  const refreshControllerData = async () => {
+  const castSelectedCard = async (card: ControllerCard, targetStackItemId?: string | null) => {
+    if (doesCardRequireStackTarget(card)) {
+      if (!targetStackItemId) {
+        setSelectedCardId(card.id)
+        setIsTargeting(true)
+        return
+      }
+
+      setErrorMessage(null)
+      setIsCastingTargetedSpell(true)
+
+      try {
+        await putCounterSpellOnStack(supabase, sessionId, targetStackItemId, card.id)
+        setIsTargeting(false)
+        setSelectedTargetId(null)
+        if (playerId) {
+          const result = await getControllerCards(supabase, sessionId, playerId)
+          setCards(result.cards)
+        }
+      } catch (error) {
+        const message = getErrorMessage(error)
+        console.error('Failed to cast targeted spell:', message, error)
+        setErrorMessage(message)
+      } finally {
+        setIsCastingTargetedSpell(false)
+      }
+      return
+    }
+
+    await castCardFromHand(supabase, sessionId, card.id)
     if (playerId) {
       const result = await getControllerCards(supabase, sessionId, playerId)
       setCards(result.cards)
-      setLastFetchInfo(
-        result.missingCardIds.length > 0
-          ? `Session ${sessionId}: ${result.rowCount} card(s) loaded, ${result.missingCardIds.length} card id(s) not found in cards`
-          : `Session ${sessionId}: ${result.rowCount} card(s) loaded`,
-      )
+    }
+  }
+
+  const handleConfirmTargetedCast = async () => {
+    if (!selectedCard) {
+      return
     }
 
-    const [
-      session,
-      nextCombatActionState,
-      nextCombatAssignments,
-      nextSessionPlayers,
-      nextStackItems,
-      nextTurnState,
-    ] = await Promise.all([
-      getGameSession(supabase, sessionId),
-      getCombatActionState(supabase, sessionId),
-      getCombatAssignments(supabase, sessionId),
-      getGameSessionPlayers(supabase, sessionId),
-      getStackItems(supabase, sessionId),
-      getTurnState(supabase, sessionId),
-    ])
-
-    setIsSessionFinished(session?.status === 'finished')
-      setCombatActionState(nextCombatActionState)
-      setCombatAssignments(nextCombatAssignments)
-      setSessionPlayers(nextSessionPlayers)
-      setStackItems(nextStackItems)
-      setPendingStackCount(nextStackItems.filter((item) => item.status === 'pending').length)
-      setTurnState(nextTurnState)
+    await castSelectedCard(selectedCard, selectedTargetId)
   }
 
   const handleSwipeCast = async (card: ControllerCard, info: PanInfo) => {
@@ -436,6 +534,15 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
     setSelectedCardId(card.id)
     setDraftedCardId(card.id)
 
+    if (doesCardRequireStackTarget(card)) {
+      if (!canUseInstantActions) {
+        return
+      }
+
+      setIsTargeting(true)
+      return
+    }
+
     const swipeEligibility = getSwipeCastEligibility({
       card,
       isSessionFinished,
@@ -452,12 +559,8 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
     setSwipeCastingCardId(card.id)
 
     try {
-      await castCardFromHand(supabase, sessionId, card.id)
+      await castSelectedCard(card)
       setDraftedCardId(null)
-      if (playerId) {
-        const result = await getControllerCards(supabase, sessionId, playerId)
-        setCards(result.cards)
-      }
     } catch (error) {
       const message = getErrorMessage(error)
       console.error('Failed to swipe-cast card:', message, error)
@@ -500,238 +603,194 @@ export default function ControllerList({ sessionId }: { sessionId: string }) {
     }
   }
 
-  const handleCombatDragEnd = (card: ControllerCard, info: PanInfo) => {
-    if (card.zone !== 'battlefield') {
-      return
-    }
-
-    if (canDeclareAttackers && onBoardPoint(info, attackTargetElements.current)) {
-      const targetPlayerId = getElementHitId(info, attackTargetElements.current)
-      if (targetPlayerId) {
-        handleDeclareAttacker(card.id, targetPlayerId)
-      }
-      return
-    }
-
-    if (canDeclareBlockers && onBoardPoint(info, blockTargetElements.current)) {
-      const attackerCardId = getElementHitId(info, blockTargetElements.current)
-      if (attackerCardId) {
-        handleDeclareBlocker(card.id, attackerCardId)
-      }
-    }
-  }
-
-  const handleDeclareAttacker = async (attackerCardId: string, defendingPlayerId: string) => {
-    setErrorMessage(null)
-    setDeclaringAttackerId(attackerCardId)
-
-    try {
-      await declareAttacker(supabase, sessionId, attackerCardId, defendingPlayerId)
-      if (playerId) {
-        const result = await getControllerCards(supabase, sessionId, playerId)
-        setCards(result.cards)
-      }
-    } catch (error) {
-      const message = getErrorMessage(error)
-      console.error('Failed to declare attacker:', message, error)
-      setErrorMessage(message)
-    } finally {
-      setDeclaringAttackerId(null)
-    }
-  }
-
-  const handleDeclareBlocker = async (blockerCardId: string, attackerCardId: string) => {
-    setErrorMessage(null)
-    setDeclaringBlockerId(blockerCardId)
-
-    try {
-      await declareBlocker(supabase, sessionId, blockerCardId, attackerCardId)
-      if (playerId) {
-        const [result, nextAssignments, nextActionState] = await Promise.all([
-          getControllerCards(supabase, sessionId, playerId),
-          getCombatAssignments(supabase, sessionId),
-          getCombatActionState(supabase, sessionId),
-        ])
-        setCards(result.cards)
-        setCombatAssignments(nextAssignments)
-        setCombatActionState(nextActionState)
-      }
-    } catch (error) {
-      const message = getErrorMessage(error)
-      console.error('Failed to declare blocker:', message, error)
-      setErrorMessage(message)
-    } finally {
-      setDeclaringBlockerId(null)
-    }
-  }
+  const closePreview = () => setPreviewCard(null)
 
   return (
-    <div className="relative h-[100svh] overflow-hidden p-3 landscape:h-screen">
-      <div className="pointer-events-none absolute inset-0 opacity-40">
-        <div className="absolute left-10 top-20 h-px w-44 rotate-[-28deg] bg-cyan-200/30" />
-        <div className="absolute -bottom-24 left-1/2 h-72 w-[48rem] -translate-x-1/2 rounded-[100%] bg-cyan-500/10 blur-3xl" />
+    <div className="relative h-[100svh] overflow-hidden p-2 pt-10 text-white landscape:h-screen">
+      <div className="pointer-events-none absolute inset-0 opacity-70">
+        <div className="leyline-table-grid absolute inset-0 opacity-10" />
+        <div className="absolute inset-x-8 top-24 h-px bg-cyan-200/15" />
+        <div className="absolute -bottom-28 left-1/2 h-80 w-[46rem] -translate-x-1/2 rounded-[100%] bg-cyan-500/10 blur-3xl" />
       </div>
-      {lastFetchInfo && showDevControls ? <p className="mb-3 text-xs text-slate-500">{lastFetchInfo}</p> : null}
-      <div className="relative z-10 grid h-[calc(100svh-1.5rem)] grid-cols-[12rem_minmax(0,1fr)_20rem] gap-3 overflow-visible [@media(max-height:760px)]:grid-cols-[9rem_minmax(0,1fr)_16rem] [@media(max-height:760px)]:gap-2">
-        <aside className="relative z-20 grid min-h-0 grid-rows-[auto_1fr_auto] gap-3 overflow-hidden [@media(max-height:760px)]:gap-2">
+      {lastFetchInfo && showDevControls ? <span className="sr-only">{lastFetchInfo}</span> : null}
+      <div className="relative z-10 grid h-[calc(100svh-3rem)] grid-cols-1 grid-rows-[minmax(0,1fr)_minmax(12rem,38svh)] gap-3 overflow-hidden landscape:grid-cols-[13rem_minmax(0,1fr)_20rem] landscape:grid-rows-none landscape:overflow-visible [@media(max-height:760px)]:landscape:grid-cols-[10rem_minmax(0,1fr)_16rem] [@media(max-height:760px)]:gap-2">
+        <aside className={`relative z-20 hidden min-h-0 grid-rows-[auto_auto_minmax(0,1fr)_auto] gap-3 overflow-hidden p-2 landscape:grid [@media(max-height:760px)]:gap-2 ${cockpitPanelClass}`}>
           <ControllerPlayerPanel
             currentPlayer={currentPlayer}
             isPriority={Boolean(playerId && turnState?.priority_player_id === playerId)}
           />
-          <ControllerMinimaps players={opponentPlayers} registerAttackTargetRef={registerAttackTargetRef} />
-          <ControllerCombatTargets
-            canDeclareAttackers={canDeclareAttackers}
-            attackUnavailableReason={attackUnavailableReason}
-            defendingPlayers={defendingPlayers}
-            canDeclareBlockers={canDeclareBlockers}
-            blockUnavailableReason={blockUnavailableReason}
-            blockableAssignments={blockableAssignments}
-            registerAttackTargetRef={registerAttackTargetRef}
-            registerBlockTargetRef={registerBlockTargetRef}
-            compact
+          <ControllerEconomyPanel
+            manaPool={manaPool}
+            lands={battlefieldCards.filter(isLandCard)}
+            selectedCardId={selectedCard?.id}
+            onSelectCard={setSelectedCardId}
           />
+          <ControllerMinimaps players={opponentPlayers} registerAttackTargetRef={registerAttackTargetRef} />
+          {shouldShowCombatTargets ? (
+            <ControllerCombatTargets
+              canDeclareAttackers={canDeclareAttackers}
+              attackUnavailableReason={attackUnavailableReason}
+              defendingPlayers={defendingPlayers}
+              canDeclareBlockers={canDeclareBlockers}
+              blockUnavailableReason={blockUnavailableReason}
+              blockableAssignments={blockableAssignments}
+              registerAttackTargetRef={registerAttackTargetRef}
+              registerBlockTargetRef={registerBlockTargetRef}
+              compact
+            />
+          ) : null}
         </aside>
 
-        <main className="relative z-[80] grid min-h-0 grid-rows-[auto_1fr] overflow-visible">
-          <ControllerBattlefieldList cards={battlefieldCards} selectedCardId={selectedCard?.id} onSelect={setSelectedCardId} />
+        <main className="relative z-[80] grid min-h-0 grid-rows-[auto_1fr] overflow-visible p-2">
+          <ControllerCenterStatusBar
+            currentPlayer={currentPlayer}
+            isPriority={canUseInstantActions}
+            turnState={turnState}
+            handCount={orderedHandCards.length}
+            battlefieldCount={battlefieldCards.length}
+            centerView={centerView}
+            onCenterViewChange={setCenterView}
+          />
           <div className="relative flex min-h-0 items-end justify-center overflow-visible">
-          <PlayDropZone
-            refCallback={(element) => {
-              playDropZoneRef.current = element
-            }}
-            selectedCard={selectedCard}
-            canUseSorceryActions={canUseSorceryActions}
-            isHandRaised={isHandRaised}
-          />
-          <ControllerHandFan
-            cards={orderedHandCards}
-            selectedCardId={selectedCard?.id}
-            swipeCastingCardId={swipeCastingCardId}
-            isRaised={isHandRaised}
-            handContainerRef={handContainerRef}
-            onSelect={setSelectedCardId}
-            onRaiseChange={setIsHandRaised}
-            onReorder={handleHandReorder}
-            onSwipeCast={handleSwipeCast}
-          />
+            <AnimatePresence mode="wait" initial={false}>
+              {isTargeting && requiresTarget ? (
+                <motion.div
+                  key="targeting"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.16 }}
+                  className="absolute inset-0 min-h-0 overflow-hidden p-4 [@media(max-height:760px)]:p-3"
+                >
+                  <StackTargetSelector
+                    items={pendingStackItems}
+                    selectedTargetId={selectedTargetId}
+                    onSelectTarget={setSelectedTargetId}
+                  />
+                </motion.div>
+              ) : centerView === 'hand' ? (
+                <motion.div
+                  key="hand"
+                  initial={{ opacity: 0, x: -18 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 18 }}
+                  transition={{ duration: 0.18 }}
+                  className="absolute inset-0 flex items-end justify-center overflow-visible"
+                >
+                  <PlayDropZone
+                    refCallback={(element) => {
+                      playDropZoneRef.current = element
+                    }}
+                    selectedCard={selectedCard}
+                    canUseSorceryActions={canUseSorceryActions}
+                    isHandRaised={isHandRaised}
+                  />
+                  <ControllerHandFan
+                    cards={orderedHandCards}
+                    selectedCardId={selectedCard?.id}
+                    swipeCastingCardId={swipeCastingCardId}
+                    isRaised={isHandRaised}
+                    handContainerRef={handContainerRef}
+                    onSelect={setSelectedCardId}
+                    onRaiseChange={setIsHandRaised}
+                    onReorder={handleHandReorder}
+                    onSwipeCast={handleSwipeCast}
+                    onPreviewStart={setPreviewCard}
+                    onPreviewEnd={closePreview}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="battlefield"
+                  initial={{ opacity: 0, x: 18 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -18 }}
+                  transition={{ duration: 0.18 }}
+                  className="absolute inset-0 min-h-0 overflow-hidden p-4 [@media(max-height:760px)]:p-3"
+                >
+                  <ControllerBattlefieldGrid
+                    cards={battlefieldCards}
+                    selectedCardId={selectedCard?.id}
+                    onSelect={setSelectedCardId}
+                    onPreviewStart={setPreviewCard}
+                    onPreviewEnd={closePreview}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </main>
 
-        <aside className="relative z-30 grid min-h-0 grid-rows-[auto_1fr] gap-3 overflow-hidden [@media(max-height:760px)]:gap-2">
-          <ControllerActionPad
-            canPassPriority={canUseInstantActions}
-            isPassingPriority={isPassingPriority}
-            onPassPriority={handlePassPriority}
-            selectedCard={selectedCard}
-          />
-          <SelectedCardDock
-            card={selectedCard}
-            playerId={playerId}
-            sessionId={sessionId}
-            isSessionFinished={isSessionFinished}
-            sessionPlayers={sessionPlayers}
-            stackItems={stackItems}
-            canUseInstantActions={canUseInstantActions}
-            canUseSorceryActions={canUseSorceryActions}
-            landsPlayedThisTurn={turnState?.lands_played_this_turn ?? 0}
-            landPlayLimit={turnState?.land_play_limit ?? 1}
-          />
+        <aside className="relative z-30 grid h-full min-h-0 grid-rows-[12.5rem_minmax(0,1fr)] gap-3 overflow-hidden [@media(max-height:760px)]:grid-rows-[10.75rem_minmax(0,1fr)] [@media(max-height:760px)]:gap-2">
+          <div className="min-h-0 overflow-hidden">
+            <ControllerActionPad
+              canPassPriority={canUseInstantActions}
+              isPassingPriority={isPassingPriority}
+              onPassPriority={handlePassPriority}
+              libraryCount={libraryCount}
+              graveyardCount={cards.filter((card) => card.zone === 'graveyard').length}
+              stackCount={pendingStackCount}
+              manaPool={manaPool}
+            />
+          </div>
+          <div className="min-h-0 overflow-hidden">
+            <SelectedCardDock
+              card={selectedCard}
+              playerId={playerId}
+              sessionId={sessionId}
+              isSessionFinished={isSessionFinished}
+              sessionPlayers={sessionPlayers}
+              stackItems={stackItems}
+              canUseInstantActions={canUseInstantActions}
+              canUseSorceryActions={canUseSorceryActions}
+              requiresTarget={requiresTarget}
+              isTargeting={isTargeting}
+              selectedTargetName={selectedTargetName}
+              selectedTargetId={selectedTargetId}
+              isCastingTargetedSpell={isCastingTargetedSpell}
+              onStartTargeting={() => setIsTargeting(true)}
+              onCancelTargeting={() => {
+                setIsTargeting(false)
+                setSelectedTargetId(null)
+              }}
+              onConfirmTargetedCast={handleConfirmTargetedCast}
+              landsPlayedThisTurn={turnState?.lands_played_this_turn ?? 0}
+              landPlayLimit={turnState?.land_play_limit ?? 1}
+              onPreviewStart={setPreviewCard}
+              onPreviewEnd={closePreview}
+            />
+          </div>
         </aside>
       </div>
-      {showDevControls ? (
-        <div className="relative z-20 mt-4">
-          <DevAdminPanel
-            sessionId={sessionId}
-            currentPlayerId={playerId}
-            sessionPlayers={sessionPlayers}
-            turnState={turnState}
-            onChanged={refreshControllerData}
-          />
-        </div>
-      ) : null}
-      {showDevControls && playerId ? (
-        <PlayerActionPanel
-          sessionId={sessionId}
-          playerId={playerId}
-          libraryCount={libraryCount}
-          tappedBattlefieldCount={tappedBattlefieldCount}
-          isSessionFinished={isSessionFinished}
-        />
-      ) : null}
-      {showDevControls ? (
-        <DraftZone
-        card={draftedCard}
-        isCasting={Boolean(draftedCard && swipeCastingCardId === draftedCard.id)}
-        onClear={() => setDraftedCardId(null)}
-        />
-      ) : null}
-      {showDevControls ? (
-        <div className="relative z-20 mt-4">
-          <ControllerCombatTargets
-            canDeclareAttackers={canDeclareAttackers}
-            attackUnavailableReason={attackUnavailableReason}
-            defendingPlayers={defendingPlayers}
-            canDeclareBlockers={canDeclareBlockers}
-            blockUnavailableReason={blockUnavailableReason}
-            blockableAssignments={blockableAssignments}
-            registerAttackTargetRef={registerAttackTargetRef}
-            registerBlockTargetRef={registerBlockTargetRef}
-          />
+      {previewCard ? (
+        <div
+          className="fixed inset-0 z-[300] flex items-center justify-center"
+          onPointerUp={closePreview}
+          onPointerCancel={closePreview}
+          onPointerLeave={closePreview}
+        >
+          <div className="relative aspect-[2/3] w-[min(13rem,42vw,62vh)] animate-in zoom-in-95 duration-150">
+            {previewCard.cards?.image_url ? (
+              <Image
+                src={previewCard.cards.image_url}
+                alt={previewCard.name}
+                fill
+                draggable={false}
+                sizes="384px"
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center p-4 text-center">
+                <p className="text-lg font-black">{previewCard.name}</p>
+              </div>
+            )}
+          </div>
         </div>
       ) : null}
       {handCards.length === 0 && battlefieldCards.length === 0 ? (
-        <div className="rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
+        <div className="p-4 text-sm">
           No cards in hand or on battlefield.
         </div>
-      ) : null}
-      {showDevControls ? (
-        <>
-          <CardSection
-        title="Hand"
-        cards={handCards}
-        playerId={playerId}
-        sessionId={sessionId}
-        isSessionFinished={isSessionFinished}
-          sessionPlayers={sessionPlayers}
-          stackItems={stackItems}
-          canUseInstantActions={canUseInstantActions}
-        canUseSorceryActions={canUseSorceryActions}
-        landsPlayedThisTurn={turnState?.lands_played_this_turn ?? 0}
-        landPlayLimit={turnState?.land_play_limit ?? 1}
-        turnNumber={turnState?.turn_number ?? 1}
-        draftedCardId={draftedCardId}
-        swipeCastingCardId={swipeCastingCardId}
-        onSwipeCast={handleSwipeCast}
-        onCombatDragEnd={handleCombatDragEnd}
-          />
-          <CardSection
-        title="Battlefield"
-        cards={battlefieldCards}
-        playerId={playerId}
-        sessionId={sessionId}
-        canDeclareAttackers={canDeclareAttackers}
-        attackUnavailableReason={attackUnavailableReason}
-        defendingPlayers={defendingPlayers}
-        declaringAttackerId={declaringAttackerId}
-        onDeclareAttacker={handleDeclareAttacker}
-        canDeclareBlockers={canDeclareBlockers}
-        blockUnavailableReason={blockUnavailableReason}
-        blockableAssignments={blockableAssignments}
-        declaringBlockerId={declaringBlockerId}
-        onDeclareBlocker={handleDeclareBlocker}
-        isSessionFinished={isSessionFinished}
-        sessionPlayers={sessionPlayers}
-        canUseInstantActions={canUseInstantActions}
-        canUseSorceryActions={canUseSorceryActions}
-        landsPlayedThisTurn={turnState?.lands_played_this_turn ?? 0}
-        landPlayLimit={turnState?.land_play_limit ?? 1}
-        turnNumber={turnState?.turn_number ?? 1}
-        draftedCardId={draftedCardId}
-        swipeCastingCardId={swipeCastingCardId}
-        onSwipeCast={handleSwipeCast}
-        onCombatDragEnd={handleCombatDragEnd}
-          />
-        </>
       ) : null}
     </div>
   )
@@ -745,56 +804,363 @@ function ControllerPlayerPanel({
   isPriority: boolean
 }) {
   return (
-    <section className="rounded-lg border border-cyan-200/25 bg-slate-950/75 p-3 shadow-[0_0_22px_rgba(34,211,238,0.12)] backdrop-blur [@media(max-height:760px)]:p-2">
+    <section className={`p-2 [@media(max-height:760px)]:p-1 ${isPriority ? 'rounded-lg border border-amber-300/50 bg-amber-400/12 shadow-[0_0_26px_rgba(245,158,11,0.14)]' : ''}`}>
       <div className="flex items-center gap-3">
-        <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-cyan-300/40 bg-cyan-950/30 text-lg font-bold text-cyan-100 [@media(max-height:760px)]:h-12 [@media(max-height:760px)]:w-12">
+        <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-cyan-300/20 bg-cyan-400/10 text-lg font-black text-cyan-100 [@media(max-height:760px)]:h-12 [@media(max-height:760px)]:w-12">
           P{currentPlayer?.seat_number ?? '-'}
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">
+          <p className={isPriority ? 'text-xs font-black uppercase tracking-[0.16em] text-amber-100' : cockpitLabelClass}>
             P{currentPlayer?.seat_number ?? '-'} {isPriority ? '- Priority' : ''}
           </p>
-          <p className="truncate text-sm font-bold text-white">
+          <p className="truncate text-sm font-black text-white">
             {currentPlayer?.username ?? 'No player'}
           </p>
-          <p className="mt-1 text-xl font-bold text-white [@media(max-height:760px)]:text-lg">Life: {currentPlayer?.life_total ?? '-'}</p>
+          <p className="mt-1 text-2xl font-black leading-none text-white [@media(max-height:760px)]:text-xl">{currentPlayer?.life_total ?? '-'}</p>
+          <p className={`text-[10px] font-bold uppercase tracking-[0.16em] ${cockpitMutedClass}`}>Life</p>
         </div>
       </div>
     </section>
   )
 }
 
-function ControllerBattlefieldList({
+function ControllerEconomyPanel({
+  manaPool,
+  lands,
+  selectedCardId,
+  onSelectCard,
+}: {
+  manaPool: ManaPool
+  lands: ControllerCard[]
+  selectedCardId?: string
+  onSelectCard: (cardId: string) => void
+}) {
+  const totalMana = getManaPoolTotal(manaPool)
+  const untappedLands = lands.filter((card) => !card.is_tapped).length
+
+  return (
+    <section className={`relative overflow-hidden p-2 [@media(max-height:760px)]:p-1 ${cockpitSoftPanelClass}`}>
+      <div className="relative mb-3 flex items-center justify-between gap-3 [@media(max-height:760px)]:mb-2">
+        <div>
+          <p className={cockpitLabelClass}>The Economy</p>
+          <p className="text-sm font-black text-white [@media(max-height:760px)]:text-xs">
+            {totalMana > 0 ? `${totalMana} Mana` : 'Empty Pool'}
+          </p>
+        </div>
+        <span className={`${getCockpitBadgeClass(untappedLands > 0 ? 'emerald' : 'slate')} text-[10px] font-black uppercase`}>
+          {untappedLands}/{lands.length} ready
+        </span>
+      </div>
+
+      <MiniManaPool manaPool={manaPool} compact />
+
+      <div className="relative mt-3 [@media(max-height:760px)]:mt-2">
+        <div className={`mb-2 flex items-center justify-between ${cockpitLabelClass}`}>
+          <span>Lands</span>
+          <span>{lands.length}</span>
+        </div>
+        {lands.length > 0 ? (
+          <div className="grid grid-cols-1 gap-1.5 overflow-hidden">
+            {lands.slice(0, 6).map((card) => (
+              <button
+                key={card.id}
+                type="button"
+                onClick={() => onSelectCard(card.id)}
+                className={`relative grid h-12 min-w-0 grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-2 overflow-hidden rounded-md border p-1.5 text-left transition-colors [@media(max-height:760px)]:h-10 ${getCockpitSelectionClass(selectedCardId === card.id)}`}
+              >
+                <div className={`relative h-9 w-7 overflow-hidden [@media(max-height:760px)]:h-7 [@media(max-height:760px)]:w-6 ${
+                  card.is_tapped ? 'rotate-90 opacity-75' : ''
+                }`}>
+                  {card.cards?.image_url ? (
+                    <Image
+                      src={card.cards.image_url}
+                      alt={card.name || 'Land card'}
+                      fill
+                      draggable={false}
+                      sizes="32px"
+                      className="object-cover"
+                    />
+                  ) : null}
+                </div>
+                <span className="truncate text-xs font-bold text-white [@media(max-height:760px)]:text-[10px]">
+                  {card.name}
+                </span>
+                <span className={`${getCockpitBadgeClass(card.is_tapped ? 'amber' : 'emerald')} px-1.5 py-0.5 text-[9px] font-bold uppercase`}>
+                  {card.is_tapped ? 'Tapped' : 'Ready'}
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className={`px-2 py-3 text-center text-xs ${cockpitMutedClass} [@media(max-height:760px)]:py-2`}>
+            No lands on battlefield.
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+function ControllerCenterStatusBar({
+  currentPlayer,
+  isPriority,
+  turnState,
+  handCount,
+  battlefieldCount,
+  centerView,
+  onCenterViewChange,
+}: {
+  currentPlayer: GameSessionPlayer | null
+  isPriority: boolean
+  turnState: GameTurnState | null
+  handCount: number
+  battlefieldCount: number
+  centerView: ControllerCenterView
+  onCenterViewChange: (view: ControllerCenterView) => void
+}) {
+  return (
+    <motion.section
+      className={`mb-3 flex h-16 items-center justify-between gap-3 px-3 [@media(max-height:760px)]:mb-2 [@media(max-height:760px)]:h-12 ${isPriority ? 'rounded-lg border border-amber-300/50 bg-amber-400/12 shadow-[0_0_28px_rgba(245,158,11,0.16)]' : cockpitPanelClass}`}
+    >
+      <div className="flex min-w-0 items-center gap-3">
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-black [@media(max-height:760px)]:h-8 [@media(max-height:760px)]:w-8 ${isPriority ? 'bg-amber-300 text-amber-950' : 'border border-cyan-300/20 bg-cyan-400/10 text-cyan-100'}`}>
+          {currentPlayer ? getPlayerInitial(currentPlayer) : '-'}
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-base font-black text-white [@media(max-height:760px)]:text-sm">
+            {currentPlayer?.username ?? 'No player'}
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-black leading-none text-white [@media(max-height:760px)]:text-sm">
+              {currentPlayer?.life_total ?? '-'}
+            </span>
+            <span className={`text-[10px] font-bold uppercase tracking-[0.14em] ${cockpitMutedClass}`}>Life</span>
+            {isPriority ? (
+              <span className={`${getCockpitBadgeClass('amber')} text-[10px] font-black uppercase [@media(max-height:760px)]:hidden`}>
+                Priority
+              </span>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex shrink-0 items-center rounded-md border border-white/10 bg-slate-950/70 p-1">
+        {[
+          { id: 'hand' as const, label: 'Hand', count: handCount },
+          { id: 'battlefield' as const, label: 'Board', count: battlefieldCount },
+        ].map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onCenterViewChange(item.id)}
+            className={`rounded px-3 py-1.5 text-xs font-bold transition-colors [@media(max-height:760px)]:px-2 [@media(max-height:760px)]:py-1 ${
+              centerView === item.id
+                ? 'bg-white text-slate-950'
+                : 'text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            {item.label} ({item.count})
+          </button>
+        ))}
+      </div>
+
+      <div className="min-w-0 text-right">
+        <p className="truncate text-sm font-black uppercase tracking-[0.14em] text-white [@media(max-height:760px)]:text-xs">
+          {formatStepLabel(turnState?.step)}
+        </p>
+        <p className={`text-[10px] font-bold uppercase tracking-[0.14em] ${cockpitMutedClass}`}>
+          Turn {turnState?.turn_number ?? '-'}
+        </p>
+      </div>
+    </motion.section>
+  )
+}
+
+function ControllerBattlefieldGrid({
   cards,
   selectedCardId,
   onSelect,
+  onPreviewStart,
+  onPreviewEnd,
 }: {
   cards: ControllerCard[]
   selectedCardId?: string
   onSelect: (cardId: string) => void
+  onPreviewStart: (card: ControllerCard) => void
+  onPreviewEnd: () => void
+}) {
+  const landCards = cards.filter(isLandCard)
+  const nonLandCards = cards.filter((card) => !isLandCard(card))
+  const readyLandCount = landCards.filter((card) => !card.is_tapped).length
+
+  return (
+    <section className={`relative h-full min-h-0 overflow-hidden p-3 ${cockpitPanelClass}`}>
+      <div className="relative mb-3 flex items-center justify-between gap-3">
+        <div>
+          <p className={cockpitLabelClass}>Center View</p>
+          <h2 className="text-sm font-black text-white">Battlefield</h2>
+        </div>
+        <span className={`${getCockpitBadgeClass('cyan')} px-3 py-1 text-xs font-black`}>
+          {cards.length}
+        </span>
+      </div>
+      {cards.length > 0 ? (
+        <div className="relative grid max-h-[calc(100%-3.25rem)] gap-4 overflow-auto pr-1 [@media(max-height:760px)]:gap-3">
+          <BattlefieldCardGroup
+            title="Permanents"
+            cards={nonLandCards}
+            selectedCardId={selectedCardId}
+            onSelect={onSelect}
+            onPreviewStart={onPreviewStart}
+            onPreviewEnd={onPreviewEnd}
+          />
+          <BattlefieldCardGroup
+            title="Lands"
+            meta={`${readyLandCount}/${landCards.length} ready`}
+            cards={landCards}
+            selectedCardId={selectedCardId}
+            onSelect={onSelect}
+            onPreviewStart={onPreviewStart}
+            onPreviewEnd={onPreviewEnd}
+            compact
+          />
+        </div>
+      ) : (
+        <div className={`relative flex h-[calc(100%-3.25rem)] items-center justify-center text-xs ${cockpitMutedClass}`}>
+          No permanents on battlefield.
+        </div>
+      )}
+    </section>
+  )
+}
+
+function StackTargetSelector({
+  items,
+  selectedTargetId,
+  onSelectTarget,
+}: {
+  items: StackItem[]
+  selectedTargetId: string | null
+  onSelectTarget: (targetId: string) => void
 }) {
   return (
-    <section className="rounded-lg border border-white/15 bg-slate-950/70 p-3 shadow-xl shadow-black/30 backdrop-blur [@media(max-height:760px)]:p-2">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <h2 className="text-sm font-bold text-cyan-200">Battlefield</h2>
-        <span className="text-xs text-slate-500">{cards.length}</span>
+    <section className={`relative grid h-full min-h-0 grid-rows-[auto_1fr] overflow-hidden p-3 ${cockpitPanelStrongClass}`}>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-red-200">Targeting Mode</p>
+          <h2 className="text-sm font-black text-white">Select a spell on the stack</h2>
+        </div>
+        <span className={`${getCockpitBadgeClass('red')} text-[10px] font-black uppercase`}>
+          {items.length} pending
+        </span>
       </div>
-      <div className="grid max-h-32 gap-1 overflow-hidden [@media(max-height:760px)]:max-h-20">
-        {cards.slice(0, 7).map((card) => (
-          <button
-            key={card.id}
-            type="button"
-            onClick={() => onSelect(card.id)}
-            className={`flex min-w-0 items-center justify-between gap-2 rounded px-2 py-1 text-left text-sm ${
-              selectedCardId === card.id ? 'bg-cyan-400/20 text-cyan-100' : 'text-slate-300'
-            }`}
-          >
-            <span className="truncate">{card.name}</span>
-            <span className="shrink-0 text-xs text-slate-500">{card.cards?.mana_cost}</span>
-          </button>
-        ))}
-      </div>
+
+      {items.length > 0 ? (
+        <div className="grid content-start gap-3 overflow-auto pr-1">
+          {items.map((item) => {
+            const isSelected = selectedTargetId === item.id
+
+            return (
+              <motion.button
+                key={item.id}
+                type="button"
+                onClick={() => onSelectTarget(item.id)}
+                className={`grid gap-1 rounded-lg border p-4 text-left transition ${getCockpitSelectionClass(isSelected, 'red')}`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <p className="truncate text-base font-black text-white">{formatStackTargetLabel(item)}</p>
+                  <span className={`${getCockpitBadgeClass('red')} text-[10px] font-bold uppercase`}>
+                    #{item.position + 1}
+                  </span>
+                </div>
+                <p className={`truncate text-xs font-medium ${cockpitMutedClass}`}>
+                  {item.controller_username ?? item.controller_player_id.slice(0, 8)} - {item.action_type}
+                </p>
+              </motion.button>
+            )
+          })}
+        </div>
+      ) : (
+        <div className={`flex items-center justify-center p-4 text-center text-sm font-semibold ${cockpitMutedClass}`}>
+          No pending stack items.
+        </div>
+      )}
     </section>
+  )
+}
+
+function BattlefieldCardGroup({
+  title,
+  meta,
+  cards,
+  selectedCardId,
+  onSelect,
+  onPreviewStart,
+  onPreviewEnd,
+  compact = false,
+}: {
+  title: string
+  meta?: string
+  cards: ControllerCard[]
+  selectedCardId?: string
+  onSelect: (cardId: string) => void
+  onPreviewStart: (card: ControllerCard) => void
+  onPreviewEnd: () => void
+  compact?: boolean
+}) {
+  return (
+    <div className="relative">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p className={cockpitLabelClass}>{title}</p>
+        {meta ? <p className={`text-[10px] font-bold uppercase tracking-[0.12em] ${cockpitMutedClass}`}>{meta}</p> : null}
+      </div>
+      {cards.length > 0 ? (
+        <div className={`grid gap-3 [@media(max-height:760px)]:gap-2 ${
+          compact
+            ? 'grid-cols-5 [@media(max-height:760px)]:grid-cols-6'
+            : 'grid-cols-3 sm:grid-cols-4 [@media(max-height:760px)]:grid-cols-5'
+        }`}>
+          {cards.map((card) => (
+            <button
+              key={card.id}
+              type="button"
+              onClick={() => onSelect(card.id)}
+              onPointerDown={() => onPreviewStart(card)}
+              onPointerUp={onPreviewEnd}
+              onPointerLeave={onPreviewEnd}
+              onPointerCancel={onPreviewEnd}
+              className={`min-w-0 rounded-md border p-1.5 text-left transition-colors ${getCockpitSelectionClass(selectedCardId === card.id)}`}
+            >
+              <div
+                className="transition-transform duration-200 ease-in-out"
+                style={isLandCard(card) && card.is_tapped ? { transform: 'rotate(45deg)' } : undefined}
+              >
+                <MotionCard
+                  card={{
+                    id: card.id,
+                    name: card.name,
+                    image_url: card.cards?.image_url,
+                    is_tapped: isLandCard(card) ? false : card.is_tapped,
+                    damage_marked: card.damage_marked,
+                    zone: card.zone,
+                  }}
+                  size={compact ? 'preview' : 'board'}
+                  visualClassName=""
+                  showNameFallback
+                />
+              </div>
+              <p className="mt-2 truncate text-xs font-bold text-white [@media(max-height:760px)]:mt-1 [@media(max-height:760px)]:text-[10px]">
+                {card.name}
+              </p>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className={`rounded-md border border-dashed border-white/10 px-3 py-4 text-center text-xs font-semibold ${cockpitMutedClass}`}>
+          No {title.toLowerCase()}.
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -802,38 +1168,100 @@ function ControllerActionPad({
   canPassPriority,
   isPassingPriority,
   onPassPriority,
-  selectedCard,
+  libraryCount,
+  graveyardCount,
+  stackCount,
+  manaPool,
 }: {
   canPassPriority: boolean
   isPassingPriority: boolean
   onPassPriority: () => void
-  selectedCard: ControllerCard | null
+  libraryCount: number
+  graveyardCount: number
+  stackCount: number
+  manaPool: ManaPool
 }) {
+  const manaTotal = getManaPoolTotal(manaPool)
+
   return (
-    <section className="rounded-lg border border-white/20 bg-slate-950/75 p-3 shadow-[0_0_26px_rgba(14,165,233,0.18)] backdrop-blur [@media(max-height:760px)]:p-2">
-      <button
+    <section className={`grid h-full min-h-0 grid-rows-[auto_auto_auto] gap-2 p-2 ${cockpitPanelClass}`}>
+      <motion.button
         type="button"
         onClick={onPassPriority}
         disabled={!canPassPriority || isPassingPriority}
-        className="mb-3 h-16 w-full rounded-lg border border-cyan-200/60 bg-cyan-500 px-4 text-xl font-bold uppercase tracking-wide text-white shadow-[0_0_24px_rgba(14,165,233,0.75)] disabled:cursor-not-allowed disabled:bg-slate-600 disabled:opacity-60 [@media(max-height:760px)]:mb-2 [@media(max-height:760px)]:h-12 [@media(max-height:760px)]:text-base"
+        whileHover={{ scale: canPassPriority ? 1.015 : 1 }}
+        whileTap={{ scale: canPassPriority ? 0.97 : 1 }}
+        className={`relative min-h-14 overflow-hidden px-3 py-2 text-center disabled:cursor-not-allowed ${
+          canPassPriority
+            ? `${priorityButtonClass} font-black uppercase`
+            : `${cockpitButtonClass} font-bold opacity-50`
+        }`}
       >
-        {isPassingPriority ? 'Passing...' : 'Pass Priority / OK'}
-      </button>
-      <div className="grid grid-cols-2 gap-2">
-        {['Graveyard', '+/-', 'Commander', 'Mana Pool'].map((label) => (
-          <button
-            key={label}
-            type="button"
-            className="h-12 rounded-md border border-white/20 bg-white/15 text-sm font-bold uppercase text-white shadow-inner [@media(max-height:760px)]:h-9 [@media(max-height:760px)]:text-xs"
-          >
-            {label}
-          </button>
-        ))}
+        <span className="relative z-10 block text-base [@media(max-height:760px)]:text-sm">
+          {isPassingPriority ? 'Passing...' : canPassPriority ? 'Pass Priority' : 'Waiting'}
+        </span>
+        <span className="relative z-10 mt-0.5 block text-[9px] font-semibold uppercase tracking-[0.16em] opacity-80">
+          {canPassPriority ? 'You have priority' : 'Priority is elsewhere'}
+        </span>
+        {canPassPriority ? (
+          <motion.span
+            className="pointer-events-none absolute inset-0 bg-amber-200/30"
+            initial={{ scale: 0.86, opacity: 0.8 }}
+            animate={{ scale: 1.08, opacity: 0 }}
+            transition={{ repeat: Infinity, duration: 1.2 }}
+          />
+        ) : null}
+      </motion.button>
+
+      <div className="grid grid-cols-2 gap-1.5">
+        <CockpitStatTile icon={Layers} label="Library" value={libraryCount} tone="cyan" />
+        <CockpitStatTile icon={Skull} label="Graveyard" value={graveyardCount} tone="slate" />
+        <CockpitStatTile icon={BookOpen} label="Stack" value={stackCount} tone="amber" />
+        <CockpitStatTile icon={Zap} label="Mana" value={manaTotal} tone="emerald" />
       </div>
-      {selectedCard ? (
-        <p className="mt-2 truncate text-xs text-slate-400">Selected: {selectedCard.name}</p>
-      ) : null}
+      <MiniManaPool manaPool={manaPool} />
     </section>
+  )
+}
+
+function CockpitStatTile({
+  icon: Icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: LucideIcon
+  label: string
+  value: number
+  tone: 'cyan' | 'slate' | 'amber' | 'emerald'
+}) {
+  const toneClass = getCockpitTileToneClass(tone)
+
+  return (
+    <div className={`flex items-center justify-between gap-2 rounded-md border p-1.5 px-2.5 ${toneClass}`}>
+      <div className="flex min-w-0 items-center gap-2">
+        <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden="true" />
+        <p className="truncate text-[8px] font-black uppercase tracking-[0.14em] opacity-80">{label}</p>
+      </div>
+      <p className="text-sm font-black leading-none tabular-nums">{value}</p>
+    </div>
+  )
+}
+
+function MiniManaPool({ manaPool, compact = false }: { manaPool: ManaPool; compact?: boolean }) {
+  return (
+    <div className={`grid gap-1.5 ${compact ? 'grid-cols-3' : 'grid-cols-6'}`}>
+      {manaColorsForDisplay.map((item) => (
+        <div
+          key={item.color}
+          title={item.label}
+          className={`relative aspect-square font-bold text-sm transition-all duration-300 ${getManaOrbClass(item.color, manaPool[item.color] ?? 0)}`}
+        >
+          <span className="absolute top-[18%] text-[9px] font-black leading-none opacity-80">{item.color}</span>
+          <span className="absolute bottom-[16%] text-base font-black leading-none tabular-nums">{manaPool[item.color] ?? 0}</span>
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -850,12 +1278,12 @@ function ControllerMinimaps({
         <div
           key={player.player_id}
           ref={(element) => registerAttackTargetRef(player.player_id, element)}
-          className="rounded-lg border border-cyan-200/20 bg-slate-950/70 p-3 shadow-xl shadow-black/30 backdrop-blur [@media(max-height:760px)]:p-2"
+          className={`${cockpitSoftPanelClass} p-2 [@media(max-height:760px)]:p-1.5`}
         >
-          <p className="text-xs font-semibold text-cyan-300">P{player.seat_number}</p>
-          <p className="text-3xl font-bold text-cyan-200 [@media(max-height:760px)]:text-2xl">{player.life_total}</p>
-          <p className="truncate text-xs text-slate-300">{player.username}</p>
-          <p className="text-xs text-slate-500">Life</p>
+          <p className={cockpitLabelClass}>P{player.seat_number}</p>
+          <p className="text-3xl font-black leading-none text-cyan-100 [@media(max-height:760px)]:text-2xl">{player.life_total}</p>
+          <p className="truncate text-xs font-bold text-white">{player.username}</p>
+          <p className={`text-xs ${cockpitMutedClass}`}>Life</p>
         </div>
       ))}
     </aside>
@@ -879,14 +1307,10 @@ function PlayDropZone({
       layout
       initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: isHandRaised ? -12 : 0, scale: isHandRaised ? 1.08 : 1 }}
-        className={`pointer-events-none absolute bottom-[9.75rem] left-6 right-6 z-10 mx-auto max-w-[34rem] rounded-[1.25rem] border px-6 py-3 text-center backdrop-blur transition-shadow ${
-        isHandRaised
-          ? 'border-cyan-200/80 bg-cyan-500/20 shadow-[0_0_48px_rgba(34,211,238,0.58),inset_0_0_34px_rgba(34,211,238,0.14)]'
-          : 'border-cyan-300/45 bg-cyan-950/35 shadow-[0_0_28px_rgba(34,211,238,0.22)]'
-      }`}
+      className={`pointer-events-none absolute bottom-[9.75rem] left-6 right-6 z-10 mx-auto max-w-[34rem] px-6 py-3 text-center ${cockpitPanelClass}`}
     >
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-200 [@media(max-height:760px)]:text-[10px]">Play / Cast Zone</p>
-      <p className="mt-1 truncate text-xs text-slate-300 [@media(max-height:760px)]:text-[10px]">
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-200 [@media(max-height:760px)]:text-[10px]">Play / Cast Zone</p>
+      <p className={`mt-1 truncate text-xs [@media(max-height:760px)]:text-[10px] ${cockpitMutedClass}`}>
         Throw a hand card here
         {selectedCard ? `: ${selectedCard.name}` : ''}
       </p>
@@ -907,6 +1331,8 @@ function ControllerHandFan({
   onRaiseChange,
   onReorder,
   onSwipeCast,
+  onPreviewStart,
+  onPreviewEnd,
 }: {
   cards: ControllerCard[]
   selectedCardId?: string
@@ -917,19 +1343,21 @@ function ControllerHandFan({
   onRaiseChange: (isRaised: boolean) => void
   onReorder: (cardId: string, direction: -1 | 1) => void
   onSwipeCast: (card: ControllerCard, info: PanInfo) => void
+  onPreviewStart: (card: ControllerCard) => void
+  onPreviewEnd: () => void
 }) {
   return (
     <motion.div
       ref={handContainerRef}
-      layout
+      layout={false}
       onPointerDown={() => onRaiseChange(true)}
-      className="relative z-[90] flex h-[19rem] w-full -translate-x-6 items-end overflow-visible px-6 pb-0 [@media(max-height:760px)]:h-[12.5rem] [@media(max-height:760px)]:px-3"
+      className="relative z-[90] flex h-[19rem] w-full -translate-x-6 items-end overflow-visible [@media(max-height:760px)]:h-[12.5rem]"
     >
       <motion.div
-        layout
+        layout={false}
         animate={{ y: isRaised ? 50 : 120 }}
         transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-        className="flex min-h-[19rem] min-w-full items-end justify-center gap-4 overflow-visible [@media(max-height:760px)]:min-h-[12.5rem] [@media(max-height:760px)]:gap-2"
+        className="relative z-10 flex h-[19rem] min-w-full items-end justify-center overflow-visible [@media(max-height:760px)]:h-[12.5rem]"
       >
       <AnimatePresence initial={false}>
         {cards.map((card, index) => {
@@ -942,6 +1370,7 @@ function ControllerHandFan({
               card={card}
               cardWidthClass={cardWidthClass}
               index={index}
+              cardCount={cards.length}
               isSelected={isSelected}
               isCasting={swipeCastingCardId === card.id}
               isHandRaised={isRaised}
@@ -949,6 +1378,8 @@ function ControllerHandFan({
               onRaiseChange={onRaiseChange}
               onReorder={onReorder}
               onSwipeCast={onSwipeCast}
+              onPreviewStart={onPreviewStart}
+              onPreviewEnd={onPreviewEnd}
             />
           )
         })}
@@ -962,6 +1393,7 @@ function HandCardDragItem({
   card,
   cardWidthClass,
   index,
+  cardCount,
   isSelected,
   isCasting,
   isHandRaised,
@@ -969,10 +1401,13 @@ function HandCardDragItem({
   onRaiseChange,
   onReorder,
   onSwipeCast,
+  onPreviewStart,
+  onPreviewEnd,
 }: {
   card: ControllerCard
   cardWidthClass: string
   index: number
+  cardCount: number
   isSelected: boolean
   isCasting: boolean
   isHandRaised: boolean
@@ -980,13 +1415,18 @@ function HandCardDragItem({
   onRaiseChange: (isRaised: boolean) => void
   onReorder: (cardId: string, direction: -1 | 1) => void
   onSwipeCast: (card: ControllerCard, info: PanInfo) => void
+  onPreviewStart: (card: ControllerCard) => void
+  onPreviewEnd: () => void
 }) {
   const dragControls = useDragControls()
   const [dragNonce, setDragNonce] = useState(0)
+  const midIndex = (cardCount - 1) / 2
+  const rotationAngle = (index - midIndex) * 4
+  const yOffset = Math.abs(index - midIndex) * 2
 
   return (
     <motion.div
-      layout
+      layout={false}
       key={`${card.id}:${dragNonce}`}
       role="button"
       tabIndex={0}
@@ -999,14 +1439,19 @@ function HandCardDragItem({
       onPointerDown={(event) => {
         onRaiseChange(true)
         onSelect(card.id)
+        onPreviewStart(card)
         dragControls.start(event)
       }}
+      onPointerUp={onPreviewEnd}
+      onPointerLeave={onPreviewEnd}
+      onPointerCancel={onPreviewEnd}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           onSelect(card.id)
         }
       }}
       onDragEnd={(_, info) => {
+        onPreviewEnd()
         setDragNonce((current) => current + 1)
 
         if (Math.abs(info.offset.x) > 72 && Math.abs(info.offset.y) < 120) {
@@ -1019,27 +1464,32 @@ function HandCardDragItem({
       initial={{ opacity: 0, y: 40 }}
       animate={{
         opacity: isCasting ? 0.55 : 1,
-        y: isSelected && isHandRaised ? -12 : 0,
-        rotate: isSelected ? -3 : 0,
-        scale: isSelected ? 1.06 : 0.96,
+        y: isSelected && isHandRaised ? -24 : yOffset,
+        rotate: isSelected ? 0 : rotationAngle,
+        scale: isSelected ? 1.08 : 0.95,
         zIndex: isSelected ? 140 : 100 + index,
       }}
       exit={{ opacity: 0, y: 40 }}
       whileDrag={{ scale: 1.12, rotate: 0, zIndex: 999, cursor: 'grabbing' }}
-      whileHover={{ y: -44, scale: 1.04 }}
-      className={`relative shrink-0 origin-bottom cursor-grab touch-none select-none active:cursor-grabbing ${cardWidthClass}`}
+      whileHover={{
+        y: -50,
+        rotate: 0,
+        scale: 1.1,
+        transition: { type: 'spring', stiffness: 300, damping: 20 },
+      }}
+      className={`relative shrink-0 origin-bottom cursor-grab touch-none select-none active:cursor-grabbing ${isSelected ? 'drop-shadow-[0_0_18px_rgba(103,232,249,0.32)]' : ''} ${getHandOverlapClass(cardCount)} ${cardWidthClass}`}
     >
       <MotionCard
         card={{
           id: card.id,
           name: card.name,
           image_url: card.cards?.image_url,
+          is_tapped: card.is_tapped,
           damage_marked: card.damage_marked,
           zone: card.zone,
         }}
-        useLayoutId
         size="preview"
-        className={isSelected ? 'border-cyan-300 shadow-[0_0_30px_rgba(34,211,238,0.65)]' : ''}
+        visualClassName=""
       />
     </motion.div>
   )
@@ -1054,8 +1504,18 @@ function SelectedCardDock({
   stackItems,
   canUseInstantActions,
   canUseSorceryActions,
+  requiresTarget,
+  isTargeting,
+  selectedTargetName,
+  selectedTargetId,
+  isCastingTargetedSpell,
+  onStartTargeting,
+  onCancelTargeting,
+  onConfirmTargetedCast,
   landsPlayedThisTurn,
   landPlayLimit,
+  onPreviewStart,
+  onPreviewEnd,
 }: {
   card: ControllerCard | null
   playerId: string | null
@@ -1065,66 +1525,227 @@ function SelectedCardDock({
   stackItems: StackItem[]
   canUseInstantActions: boolean
   canUseSorceryActions: boolean
+  requiresTarget: boolean
+  isTargeting: boolean
+  selectedTargetName: string | null
+  selectedTargetId: string | null
+  isCastingTargetedSpell: boolean
+  onStartTargeting: () => void
+  onCancelTargeting: () => void
+  onConfirmTargetedCast: () => void
   landsPlayedThisTurn: number
   landPlayLimit: number
+  onPreviewStart: (card: ControllerCard) => void
+  onPreviewEnd: () => void
 }) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  useEffect(() => {
+    if (card?.id) {
+      setIsExpanded(true)
+    }
+  }, [card?.id])
+
   if (!card) {
     return null
   }
 
+  const powerToughness = getPowerToughnessLabel(card)
+  const keywords = card.zone === 'battlefield' ? getSupportedKeywordLabels(card) : []
+
   return (
-    <section className="min-h-0 overflow-hidden rounded-lg border border-white/20 bg-slate-950/90 p-3 shadow-[0_0_28px_rgba(14,165,233,0.18)] backdrop-blur [@media(max-height:760px)]:p-2">
-      <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-cyan-300 [@media(max-height:760px)]:mb-1">
-        Selected Card
-      </p>
-      <div className="mb-2 flex items-center justify-between gap-3">
+    <motion.section
+      layout={false}
+      initial={false}
+      animate={{ height: '100%' }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className={`relative z-[150] h-full w-full overflow-hidden p-2 ${cockpitPanelStrongClass}`}
+    >
+      <button
+        type="button"
+        onClick={() => setIsExpanded((current) => !current)}
+        className="grid h-12 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-md px-3 text-left transition-colors hover:bg-white/[0.055]"
+      >
         <div className="min-w-0">
-          <p className="truncate text-sm font-bold text-white">{card.name}</p>
-          <p className="truncate text-xs text-slate-500">{card.cards?.type_line}</p>
+          <p className="truncate text-sm font-black text-white">{card.name}</p>
         </div>
-        <span className="shrink-0 rounded bg-cyan-400/15 px-2 py-1 text-xs font-semibold text-cyan-200">
-          {card.zone}
-        </span>
-      </div>
-      <div className="max-h-32 overflow-auto [@media(max-height:760px)]:max-h-20">
-        <CardZoneControls
-          cardId={card.id}
-          zone={card.zone}
-          disabled={isSessionFinished}
-          sessionId={sessionId}
-          manaCost={card.cards?.mana_cost}
-          typeLine={card.cards?.type_line}
-          landsPlayedThisTurn={landsPlayedThisTurn}
-          landPlayLimit={landPlayLimit}
-          canUseSorceryActions={canUseSorceryActions}
-        />
-        {playerId ? (
-          <ActionButtons
-            card={card}
-            sessionId={sessionId}
-            playerId={playerId}
-            disabled={isSessionFinished}
-            sessionPlayers={sessionPlayers}
-            stackItems={stackItems}
-            canUseInstantActions={canUseInstantActions}
-            canUseSorceryActions={canUseSorceryActions}
-          />
+        <div className="flex shrink-0 items-center gap-2">
+          {!isExpanded ? (
+            <span className={`${getCockpitBadgeClass('emerald')} text-[10px] font-black uppercase`}>
+              Cast / Tap
+            </span>
+          ) : null}
+          <span className={`${getCockpitBadgeClass('cyan')} px-2 py-1 text-xs font-bold`}>
+            {card.zone}
+          </span>
+        </div>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isExpanded ? (
+          <motion.div
+            key="selected-card-expanded"
+            initial={{ height: 0, opacity: 0, y: 18 }}
+            animate={{ height: 'auto', opacity: 1, y: 0 }}
+            exit={{ height: 0, opacity: 0, y: 12 }}
+            transition={{ type: 'spring', stiffness: 330, damping: 32 }}
+            className="min-h-0 overflow-auto p-3 [@media(max-height:760px)]:p-2"
+          >
+            {isTargeting ? (
+              <div className="grid h-full content-between gap-3 p-2">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">
+                    Select a target on the stack
+                  </p>
+                  <p className="mt-2 truncate text-sm font-bold text-white">
+                    {selectedTargetName ? `Target: ${selectedTargetName}` : 'No target selected'}
+                  </p>
+                </div>
+                <div className="grid grid-cols-[1fr_auto] gap-2">
+                  <button
+                    type="button"
+                    disabled={!selectedTargetId || isCastingTargetedSpell}
+                    onClick={onConfirmTargetedCast}
+                    className="rounded-md bg-red-300 px-3 py-2 text-sm font-black uppercase tracking-[0.12em] text-red-950 disabled:cursor-not-allowed disabled:opacity-45"
+                  >
+                    {isCastingTargetedSpell
+                      ? 'Casting...'
+                      : selectedTargetId
+                        ? 'Confirm Cast'
+                        : 'Choose Target'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onCancelTargeting}
+                    className={`${cockpitButtonClass} px-3 py-2 text-xs font-bold uppercase`}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+            <div className="flex min-h-0 gap-3">
+              <MotionCard
+                card={{
+                  id: card.id,
+                  name: card.name,
+                  image_url: card.cards?.image_url,
+                  is_tapped: card.is_tapped,
+                  damage_marked: card.damage_marked,
+                  zone: card.zone,
+                }}
+                size="preview"
+                interactive
+                className="w-24 shrink-0 [@media(max-height:760px)]:w-20"
+                visualClassName=""
+                showNameFallback
+                onPointerDown={() => onPreviewStart(card)}
+                onPointerUp={onPreviewEnd}
+                onPointerLeave={onPreviewEnd}
+                onPointerCancel={onPreviewEnd}
+              />
+              <div className="min-w-0 flex-1 overflow-auto p-2">
+                <div className="mb-2 min-w-0">
+                  <p className="line-clamp-1 text-base font-black leading-tight text-white [@media(max-height:760px)]:text-sm">{card.name}</p>
+                  {card.cards?.type_line ? (
+                    <p className={`mt-1 line-clamp-1 text-xs font-medium leading-snug ${cockpitMutedClass}`}>{card.cards.type_line}</p>
+                  ) : null}
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {card.cards?.mana_cost ? (
+                      <span className={`${getCockpitBadgeClass('slate')} text-xs font-semibold`}>
+                        {card.cards.mana_cost}
+                      </span>
+                    ) : null}
+                    {powerToughness ? (
+                      <span className={`${getCockpitBadgeClass('slate')} text-xs font-semibold`}>
+                        {powerToughness}
+                      </span>
+                    ) : null}
+                    {card.is_tapped ? (
+                      <span className={`${getCockpitBadgeClass('amber')} text-xs font-semibold`}>
+                        Tapped
+                      </span>
+                    ) : null}
+                    {card.damage_marked > 0 ? (
+                      <span className={`${getCockpitBadgeClass('red')} text-xs font-semibold`}>
+                        Damage {card.damage_marked}
+                      </span>
+                    ) : null}
+                    {keywords.slice(0, 3).map((label) => (
+                      <span
+                        key={label}
+                        className={`${getCockpitBadgeClass('cyan')} text-[10px]`}
+                      >
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <CardZoneControls
+                  cardId={card.id}
+                  zone={card.zone}
+                  disabled={isSessionFinished}
+                  sessionId={sessionId}
+                  manaCost={card.cards?.mana_cost}
+                  typeLine={card.cards?.type_line}
+                  landsPlayedThisTurn={landsPlayedThisTurn}
+                  landPlayLimit={landPlayLimit}
+                  canUseSorceryActions={canUseSorceryActions}
+                />
+                {requiresTarget && card.zone === 'hand' ? (
+                  <button
+                    type="button"
+                    disabled={!canUseInstantActions}
+                    onClick={onStartTargeting}
+                    className="mt-2 w-full rounded-md bg-red-300 px-3 py-2 text-sm font-black uppercase tracking-[0.12em] text-red-950 disabled:cursor-not-allowed disabled:opacity-45"
+                  >
+                    Select Target
+                  </button>
+                ) : null}
+                {playerId && !requiresTarget ? (
+                  <ActionButtons
+                    card={card}
+                    sessionId={sessionId}
+                    playerId={playerId}
+                    disabled={isSessionFinished}
+                    sessionPlayers={sessionPlayers}
+                    stackItems={stackItems}
+                    canUseInstantActions={canUseInstantActions}
+                    canUseSorceryActions={canUseSorceryActions}
+                  />
+                ) : null}
+              </div>
+            </div>
+            )}
+          </motion.div>
         ) : null}
-      </div>
-    </section>
+      </AnimatePresence>
+    </motion.section>
   )
 }
 
 function getHandFanCardWidth(cardCount: number) {
   if (cardCount <= 4) {
-    return 'w-24 sm:w-32 [@media(max-height:760px)]:w-20'
+    return 'w-28 [@media(max-height:760px)]:w-20'
   }
 
   if (cardCount <= 7) {
-    return 'w-24 sm:w-28 [@media(max-height:760px)]:w-[4.5rem]'
+    return 'w-24 [@media(max-height:760px)]:w-[4.5rem]'
   }
 
-  return 'w-20 sm:w-24 [@media(max-height:760px)]:w-16'
+  return 'w-20 [@media(max-height:760px)]:w-16'
+}
+
+function getHandOverlapClass(cardCount: number) {
+  if (cardCount <= 4) {
+    return '-mx-3 [@media(max-height:760px)]:-mx-2'
+  }
+
+  if (cardCount <= 7) {
+    return '-mx-4 [@media(max-height:760px)]:-mx-3'
+  }
+
+  return '-mx-6 [@media(max-height:760px)]:-mx-4'
 }
 
 function orderCardsByIds(cards: ControllerCard[], orderedIds: string[]) {
@@ -1139,62 +1760,6 @@ function orderCardsByIds(cards: ControllerCard[], orderedIds: string[]) {
   const remainingCards = cards.filter((card) => !orderedIds.includes(card.id))
 
   return [...orderedCards, ...remainingCards]
-}
-
-function DraftZone({
-  card,
-  isCasting,
-  onClear,
-}: {
-  card: ControllerCard | null
-  isCasting: boolean
-  onClear: () => void
-}) {
-  return (
-    <AnimatePresence initial={false}>
-      {card ? (
-        <motion.section
-          layout
-          initial={{ opacity: 0, y: -16, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -16, scale: 0.98 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-          className="mb-5 rounded-lg border border-sky-400/60 bg-sky-950/40 p-4 shadow-xl shadow-sky-950/20"
-        >
-          <div className="flex items-center gap-4">
-            <MotionCard
-              card={{
-                id: card.id,
-                name: card.name,
-                image_url: card.cards?.image_url,
-                damage_marked: card.damage_marked,
-                zone: 'draft',
-              }}
-              size="preview"
-              useLayoutId={false}
-              className="max-w-24"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-white">{card.name}</p>
-              <p className="mt-1 text-xs text-slate-400">
-                {isCasting
-                  ? 'Casting from Draft Zone...'
-                  : 'Draft Zone: finish choices with the visible controls, or cancel staging.'}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={onClear}
-              disabled={isCasting}
-              className="rounded-md border border-slate-600 px-3 py-2 text-sm font-semibold text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Cancel
-            </button>
-          </div>
-        </motion.section>
-      ) : null}
-    </AnimatePresence>
-  )
 }
 
 function ControllerCombatTargets({
@@ -1226,14 +1791,14 @@ function ControllerCombatTargets({
   }
 
   return (
-    <section className={`${compact ? 'h-full overflow-hidden p-3' : 'mb-5 p-4'} rounded-lg border border-cyan-300/30 bg-slate-950/80 shadow-[0_0_22px_rgba(34,211,238,0.12)]`}>
+    <section className={compact ? `h-full overflow-hidden p-3 ${cockpitSoftPanelClass}` : `mb-5 p-4 ${cockpitPanelClass}`}>
       <div className="mb-2 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-sm font-bold text-white">Combat</h2>
-          <p className="text-xs text-slate-500">Drag creatures to targets.</p>
+          <h2 className="text-sm font-black text-white">Combat</h2>
+          <p className={`text-xs ${cockpitMutedClass}`}>Drag creatures to targets.</p>
         </div>
         {canDeclareBlockers ? (
-          <span className="rounded bg-red-500/15 px-2 py-1 text-xs font-semibold text-red-200">
+          <span className={`${getCockpitBadgeClass('red')} text-xs font-semibold`}>
             Defend: {blockableAssignments.length} incoming
           </span>
         ) : null}
@@ -1241,7 +1806,7 @@ function ControllerCombatTargets({
 
       {shouldShowAttackTargets ? (
         <div className="mb-3">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-red-200">
             Attack Targets
           </p>
           <div className={compact ? 'grid gap-2' : 'grid grid-cols-3 gap-2'}>
@@ -1250,32 +1815,32 @@ function ControllerCombatTargets({
                 <div
                   key={player.player_id}
                   ref={(element) => registerAttackTargetRef(player.player_id, element)}
-                  className={`rounded-md border ${compact ? 'p-2' : 'p-3'} ${
+                  className={`${compact ? 'p-2' : 'p-3'} rounded-md border transition-colors ${
                     canDeclareAttackers
-                      ? 'border-cyan-300/60 bg-cyan-950/30'
-                      : 'border-slate-700 bg-slate-900/70 opacity-60'
+                      ? 'border-red-300/25 bg-red-500/10'
+                      : 'border-white/10 bg-white/[0.045] opacity-60'
                   }`}
                 >
-                  <p className="text-xs font-semibold text-slate-400">P{player.seat_number}</p>
+                  <p className="text-xs font-black uppercase tracking-[0.12em] text-red-100">P{player.seat_number}</p>
                   <p className="truncate text-sm font-bold text-white">
                     {player.username || `Player ${player.player_id.slice(0, 8)}`}
                   </p>
-                  <p className={compact ? 'text-xl font-bold text-cyan-200' : 'text-2xl font-bold text-cyan-200'}>{player.life_total}</p>
+                  <p className={compact ? 'text-xl font-black text-red-100' : 'text-2xl font-black text-red-100'}>{player.life_total}</p>
                 </div>
               ))
             ) : (
-              <p className="col-span-3 text-xs text-slate-500">No defending players.</p>
+              <p className={`col-span-3 text-xs ${cockpitMutedClass}`}>No defending players.</p>
             )}
           </div>
           {!canDeclareAttackers && attackUnavailableReason ? (
-            <p className="mt-2 text-xs text-slate-500">{attackUnavailableReason}</p>
+            <p className={`mt-2 text-xs ${cockpitMutedClass}`}>{attackUnavailableReason}</p>
           ) : null}
         </div>
       ) : null}
 
       {shouldShowBlockTargets ? (
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-red-200">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-red-200">
             Incoming Attackers
           </p>
           <div className="grid gap-2">
@@ -1284,460 +1849,29 @@ function ControllerCombatTargets({
                 <div
                   key={assignment.id}
                   ref={(element) => registerBlockTargetRef(assignment.attacker_card_id, element)}
-                  className={`rounded-md border p-3 ${
+                  className={`rounded-md border p-3 transition-colors ${
                     canDeclareBlockers
-                      ? 'border-red-300/60 bg-red-950/30'
-                      : 'border-slate-700 bg-slate-900/70 opacity-60'
+                      ? 'border-red-300/25 bg-red-500/10'
+                      : 'border-white/10 bg-white/[0.045] opacity-60'
                   }`}
                 >
                   <p className="truncate text-sm font-bold text-white">{assignment.attacker_name}</p>
-                  <p className="text-xs text-slate-400">
+                  <p className={`text-xs ${cockpitMutedClass}`}>
                     From {assignment.attacking_username} to {assignment.defending_username}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-500">No attackers are attacking you.</p>
+              <p className={`text-xs ${cockpitMutedClass}`}>No attackers are attacking you.</p>
             )}
           </div>
           {!canDeclareBlockers && blockUnavailableReason ? (
-            <p className="mt-2 text-xs text-slate-500">{blockUnavailableReason}</p>
+            <p className={`mt-2 text-xs ${cockpitMutedClass}`}>{blockUnavailableReason}</p>
           ) : null}
         </div>
       ) : null}
     </section>
   )
-}
-
-function CardSection({
-  title,
-  cards,
-  playerId,
-  sessionId,
-  canDeclareAttackers = false,
-  attackUnavailableReason,
-  defendingPlayers = [],
-  declaringAttackerId,
-  onDeclareAttacker,
-  canDeclareBlockers = false,
-  blockUnavailableReason,
-  blockableAssignments = [],
-  declaringBlockerId,
-  onDeclareBlocker,
-  isSessionFinished = false,
-  sessionPlayers = [],
-  stackItems = [],
-  canUseInstantActions = false,
-  canUseSorceryActions = false,
-  landsPlayedThisTurn = 0,
-  landPlayLimit = 1,
-  turnNumber = 1,
-  draftedCardId,
-  swipeCastingCardId,
-  onSwipeCast,
-  onCombatDragEnd,
-}: {
-  title: string
-  cards: ControllerCard[]
-  playerId?: string | null
-  sessionId?: string
-  canDeclareAttackers?: boolean
-  attackUnavailableReason?: string | null
-  defendingPlayers?: GameSessionPlayer[]
-  declaringAttackerId?: string | null
-  onDeclareAttacker?: (attackerCardId: string, defendingPlayerId: string) => void
-  canDeclareBlockers?: boolean
-  blockUnavailableReason?: string | null
-  blockableAssignments?: CombatAssignment[]
-  declaringBlockerId?: string | null
-  onDeclareBlocker?: (blockerCardId: string, attackerCardId: string) => void
-  isSessionFinished?: boolean
-  sessionPlayers?: GameSessionPlayer[]
-  stackItems?: StackItem[]
-  canUseInstantActions?: boolean
-  canUseSorceryActions?: boolean
-  landsPlayedThisTurn?: number
-  landPlayLimit?: number
-  turnNumber?: number
-  draftedCardId?: string | null
-  swipeCastingCardId?: string | null
-  onSwipeCast?: (card: ControllerCard, info: PanInfo) => void
-  onCombatDragEnd?: (card: ControllerCard, info: PanInfo) => void
-}) {
-  if (cards.length === 0) {
-    return null
-  }
-
-  return (
-    <section className="mb-5">
-      <h2 className="mb-2 text-sm font-semibold text-slate-300">{title}</h2>
-      <div className="grid grid-cols-1 gap-4">
-        {cards.map((card) => (
-          <motion.div
-            key={card.id}
-            layout
-            drag={card.zone === 'hand' || card.zone === 'battlefield'}
-            dragConstraints={
-              card.zone === 'hand'
-                ? { top: -160, bottom: 0 }
-                : { top: -180, right: 180, bottom: 180, left: -180 }
-            }
-            dragElastic={0.18}
-            onDragEnd={(_, info) => {
-              onSwipeCast?.(card, info)
-              onCombatDragEnd?.(card, info)
-            }}
-            whileHover={{ scale: card.zone === 'hand' ? 1.015 : 1.005 }}
-            whileTap={{ scale: card.zone === 'hand' ? 0.985 : 1 }}
-            transition={{ type: 'spring', stiffness: 360, damping: 32 }}
-            className={`space-y-3 rounded-lg border p-4 shadow-lg shadow-black/20 ${
-              draftedCardId === card.id
-                ? 'border-sky-400/70 bg-sky-950/40'
-                : 'border-white/10 bg-slate-800'
-            } ${swipeCastingCardId === card.id ? 'opacity-60' : ''}`}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex min-w-0 gap-3">
-                <CardThumbnail card={card} />
-                <div className="min-w-0">
-                  <span className="block truncate text-white font-medium">{card.name}</span>
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    {card.cards?.mana_cost ? (
-                      <span className="rounded bg-slate-950 px-2 py-0.5 text-xs text-slate-300">
-                        {card.cards.mana_cost}
-                      </span>
-                    ) : null}
-                    {getPowerToughnessLabel(card) ? (
-                      <span className="rounded bg-white px-2 py-0.5 text-xs font-semibold text-slate-950">
-                        {getPowerToughnessLabel(card)}
-                      </span>
-                    ) : null}
-                  </div>
-                  {card.cards?.type_line ? (
-                    <span className="mt-1 block truncate text-xs text-slate-400">
-                      {card.cards.type_line}
-                    </span>
-                  ) : null}
-                  {card.damage_marked > 0 ? (
-                    <span className="block text-xs text-red-300">Damage: {card.damage_marked}</span>
-                  ) : null}
-                  {card.zone === 'battlefield' ? <KeywordLabels card={card} /> : null}
-                </div>
-              </div>
-              {showDevControls && card.zone === 'battlefield' ? (
-                <CardController cardId={card.id} isTapped={card.is_tapped} disabled={isSessionFinished} />
-              ) : null}
-            </div>
-            <CardZoneControls
-              cardId={card.id}
-              zone={card.zone}
-              disabled={isSessionFinished}
-              sessionId={sessionId}
-              manaCost={card.cards?.mana_cost}
-              typeLine={card.cards?.type_line}
-              landsPlayedThisTurn={landsPlayedThisTurn}
-              landPlayLimit={landPlayLimit}
-              canUseSorceryActions={canUseSorceryActions}
-            />
-            {showDevControls && card.zone === 'battlefield' && sessionId ? (
-              <StaticEffectControls
-                cardId={card.id}
-                sessionId={sessionId}
-                controllerPlayerId={card.controller_player_id}
-                copiedScript={card.copied_script}
-                staticEffectsSuppressed={card.static_effects_suppressed}
-                sessionPlayers={sessionPlayers}
-                disabled={isSessionFinished}
-              />
-            ) : null}
-            {card.zone === 'battlefield' && onDeclareAttacker ? (
-              <DeclareAttackerControls
-                card={card}
-                canDeclareAttackers={canDeclareAttackers}
-                attackUnavailableReason={attackUnavailableReason}
-                defendingPlayers={defendingPlayers}
-                isDeclaring={declaringAttackerId === card.id}
-                turnNumber={turnNumber}
-                onDeclareAttacker={onDeclareAttacker}
-              />
-            ) : null}
-            {card.zone === 'battlefield' && onDeclareBlocker ? (
-              <DeclareBlockerControls
-                card={card}
-                canDeclareBlockers={canDeclareBlockers}
-                blockUnavailableReason={blockUnavailableReason}
-                blockableAssignments={blockableAssignments}
-                isDeclaring={declaringBlockerId === card.id}
-                onDeclareBlocker={onDeclareBlocker}
-              />
-            ) : null}
-            {playerId && sessionId && (card.zone === 'battlefield' || card.zone === 'hand') ? (
-              <ActionButtons
-                card={card}
-                sessionId={sessionId}
-                playerId={playerId}
-                  disabled={isSessionFinished}
-                  sessionPlayers={sessionPlayers}
-                  stackItems={stackItems}
-                  canUseInstantActions={canUseInstantActions}
-                canUseSorceryActions={canUseSorceryActions}
-              />
-            ) : null}
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function CardThumbnail({ card }: { card: ControllerCard }) {
-  const [isPressed, setIsPressed] = useState(false)
-  const imageUrl = card.cards?.image_url
-
-  return (
-    <div
-      tabIndex={0}
-      role="button"
-      aria-label={`Preview ${card.name}`}
-      onPointerDown={() => setIsPressed(true)}
-      onPointerUp={() => setIsPressed(false)}
-      onPointerCancel={() => setIsPressed(false)}
-      onPointerLeave={() => setIsPressed(false)}
-      onContextMenu={(event) => event.preventDefault()}
-      className="group relative h-20 w-14 shrink-0 touch-none select-none overflow-hidden rounded border border-slate-700 bg-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-300"
-    >
-      <MotionCard
-        card={{
-          id: card.id,
-          name: card.name,
-          image_url: imageUrl,
-          damage_marked: card.damage_marked,
-          zone: card.zone,
-        }}
-        size="thumb"
-        interactive
-        className="border-0 shadow-none"
-        showNameFallback={false}
-      />
-      {imageUrl ? (
-        <div
-          className={`pointer-events-none fixed left-1/2 top-1/2 z-50 w-64 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-slate-600 bg-slate-950 p-2 shadow-2xl shadow-black/70 group-hover:block group-focus:block sm:w-72 ${
-            isPressed ? 'block' : 'hidden'
-          }`}
-        >
-          <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-slate-900">
-            <Image
-              src={imageUrl}
-              alt={card.name || 'Magic card preview'}
-              fill
-              sizes="288px"
-              className="object-cover"
-            />
-          </div>
-        </div>
-      ) : null}
-    </div>
-  )
-}
-
-function KeywordLabels({ card }: { card: ControllerCard }) {
-  const labels = getSupportedKeywordLabels(card)
-
-  if (labels.length === 0) {
-    return null
-  }
-
-  return (
-    <div className="mt-1 flex flex-wrap gap-1">
-      {labels.map((label) => (
-        <span key={label} className="rounded bg-emerald-950 px-2 py-0.5 text-xs text-emerald-200">
-          {label}
-        </span>
-      ))}
-    </div>
-  )
-}
-
-function DeclareBlockerControls({
-  card,
-  canDeclareBlockers,
-  blockUnavailableReason,
-  blockableAssignments,
-  isDeclaring,
-  onDeclareBlocker,
-}: {
-  card: ControllerCard
-  canDeclareBlockers: boolean
-  blockUnavailableReason?: string | null
-  blockableAssignments: CombatAssignment[]
-  isDeclaring: boolean
-  onDeclareBlocker: (blockerCardId: string, attackerCardId: string) => void
-}) {
-  const [attackerCardId, setAttackerCardId] = useState(blockableAssignments[0]?.attacker_card_id ?? '')
-  const resolvedAttackerCardId = attackerCardId || blockableAssignments[0]?.attacker_card_id || ''
-  const isDisabled =
-    !canDeclareBlockers || card.is_tapped || isDeclaring || blockableAssignments.length === 0
-  const disabledReason = getDeclareBlockerDisabledReason({
-    card,
-    canDeclareBlockers,
-    blockUnavailableReason,
-    blockableAssignments,
-    isDeclaring,
-  })
-
-  if (blockableAssignments.length === 0 && !blockUnavailableReason) {
-    return null
-  }
-
-  return (
-    <div className="flex flex-col gap-2 rounded-md border border-slate-700 p-3 sm:flex-row sm:items-center">
-      <select
-        value={resolvedAttackerCardId}
-        onChange={(event) => setAttackerCardId(event.target.value)}
-        disabled={isDeclaring || blockableAssignments.length === 0}
-        className="min-w-0 flex-1 rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {blockableAssignments.length === 0 ? (
-          <option value="">No attackers</option>
-        ) : (
-          blockableAssignments.map((assignment) => (
-            <option key={assignment.id} value={assignment.attacker_card_id}>
-              {assignment.attacker_name} attacking {assignment.defending_username}
-            </option>
-          ))
-        )}
-      </select>
-      <button
-        type="button"
-        onClick={() => onDeclareBlocker(card.id, resolvedAttackerCardId)}
-        disabled={isDisabled}
-        className="rounded-md bg-sky-400 px-3 py-2 text-sm font-semibold text-sky-950 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {isDeclaring ? 'Blocking...' : 'Block'}
-      </button>
-      {disabledReason ? <p className="text-xs text-slate-500 sm:basis-full">{disabledReason}</p> : null}
-    </div>
-  )
-}
-
-function DeclareAttackerControls({
-  card,
-  canDeclareAttackers,
-  attackUnavailableReason,
-  defendingPlayers,
-  isDeclaring,
-  turnNumber,
-  onDeclareAttacker,
-}: {
-  card: ControllerCard
-  canDeclareAttackers: boolean
-  attackUnavailableReason?: string | null
-  defendingPlayers: GameSessionPlayer[]
-  isDeclaring: boolean
-  turnNumber: number
-  onDeclareAttacker: (attackerCardId: string, defendingPlayerId: string) => void
-}) {
-  const [defendingPlayerId, setDefendingPlayerId] = useState(defendingPlayers[0]?.player_id ?? '')
-  const resolvedDefendingPlayerId = defendingPlayerId || defendingPlayers[0]?.player_id || ''
-  const disabledReason = getDeclareAttackerDisabledReason({
-    card,
-    canDeclareAttackers,
-    attackUnavailableReason,
-    defendingPlayers,
-    isDeclaring,
-    turnNumber,
-  })
-  const isDisabled = Boolean(disabledReason)
-
-  if (defendingPlayers.length === 0) {
-    return null
-  }
-
-  return (
-    <div className="flex flex-col gap-2 rounded-md border border-slate-700 p-3 sm:flex-row sm:items-center">
-      <select
-        value={resolvedDefendingPlayerId}
-        onChange={(event) => setDefendingPlayerId(event.target.value)}
-        disabled={isDeclaring}
-        className="min-w-0 flex-1 rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {defendingPlayers.map((player) => (
-          <option key={player.player_id} value={player.player_id}>
-            {player.username || `Player ${player.player_id.slice(0, 8)}`}
-          </option>
-        ))}
-      </select>
-      <button
-        type="button"
-        onClick={() => onDeclareAttacker(card.id, resolvedDefendingPlayerId)}
-        disabled={isDisabled}
-        className="rounded-md bg-amber-400 px-3 py-2 text-sm font-semibold text-amber-950 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {isDeclaring ? 'Attacking...' : 'Attack'}
-      </button>
-      {disabledReason ? <p className="text-xs text-slate-500 sm:basis-full">{disabledReason}</p> : null}
-      {!disabledReason && cardHasPrintedOrCopiedVigilance(card) ? (
-        <p className="text-xs text-emerald-300 sm:basis-full">Vigilance: this creature will not tap.</p>
-      ) : null}
-      {!disabledReason && cardHasPrintedOrCopiedKeyword(card, 'trample') ? (
-        <p className="text-xs text-emerald-300 sm:basis-full">
-          Trample: excess combat damage can hit the defending player.
-        </p>
-      ) : null}
-      {!disabledReason && cardHasPrintedOrCopiedKeyword(card, 'first_strike') ? (
-        <p className="text-xs text-emerald-300 sm:basis-full">
-          First strike: this creature deals combat damage before regular damage.
-        </p>
-      ) : null}
-      {!disabledReason && cardHasPrintedOrCopiedKeyword(card, 'double_strike') ? (
-        <p className="text-xs text-emerald-300 sm:basis-full">
-          Double strike: this creature deals first strike and regular combat damage.
-        </p>
-      ) : null}
-    </div>
-  )
-}
-
-function getDeclareAttackerDisabledReason({
-  card,
-  canDeclareAttackers,
-  attackUnavailableReason,
-  defendingPlayers,
-  isDeclaring,
-  turnNumber,
-}: {
-  card: ControllerCard
-  canDeclareAttackers: boolean
-  attackUnavailableReason?: string | null
-  defendingPlayers: GameSessionPlayer[]
-  isDeclaring: boolean
-  turnNumber: number
-}) {
-  if (isDeclaring) {
-    return 'Declaring attacker...'
-  }
-
-  if (defendingPlayers.length === 0) {
-    return 'No defending players available.'
-  }
-
-  if (card.is_tapped) {
-    return 'Tapped cards cannot be declared as attackers yet.'
-  }
-
-  if (!isCreatureCard(card)) {
-    return 'Only creatures can attack.'
-  }
-
-  if (hasSummoningSickness(card, turnNumber)) {
-    return 'Creature has summoning sickness.'
-  }
-
-  if (!canDeclareAttackers) {
-    return attackUnavailableReason ?? 'Attack is not available right now.'
-  }
-
-  return null
 }
 
 function getSwipeCastEligibility({
@@ -1803,23 +1937,6 @@ function updateElementRefMap(
   }
 }
 
-function getElementHitId(info: PanInfo, elements: Map<string, HTMLElement>) {
-  for (const [id, element] of elements.entries()) {
-    const rect = element.getBoundingClientRect()
-
-    if (
-      info.point.x >= rect.left &&
-      info.point.x <= rect.right &&
-      info.point.y >= rect.top &&
-      info.point.y <= rect.bottom
-    ) {
-      return id
-    }
-  }
-
-  return null
-}
-
 function isPointInElement(info: PanInfo, element: HTMLElement | null) {
   if (!element) {
     return false
@@ -1833,10 +1950,6 @@ function isPointInElement(info: PanInfo, element: HTMLElement | null) {
     info.point.y >= rect.top &&
     info.point.y <= rect.bottom
   )
-}
-
-function onBoardPoint(info: PanInfo, elements: Map<string, HTMLElement>) {
-  return Boolean(getElementHitId(info, elements))
 }
 
 function isCreatureCard(card: ControllerCard) {
@@ -1859,28 +1972,6 @@ function getPowerToughnessLabel(card: ControllerCard) {
   }
 
   return null
-}
-
-function hasSummoningSickness(card: ControllerCard, turnNumber: number) {
-  const enteredTurn = card.entered_battlefield_turn_number
-
-  if (enteredTurn === null || enteredTurn === undefined) {
-    return false
-  }
-
-  if (enteredTurn < turnNumber) {
-    return false
-  }
-
-  return !cardHasPrintedOrCopiedHaste(card)
-}
-
-function cardHasPrintedOrCopiedHaste(card: ControllerCard) {
-  return cardHasPrintedOrCopiedKeyword(card, 'haste')
-}
-
-function cardHasPrintedOrCopiedVigilance(card: ControllerCard) {
-  return cardHasPrintedOrCopiedKeyword(card, 'vigilance')
 }
 
 function cardHasPrintedOrCopiedKeyword(card: ControllerCard, keyword: string) {
@@ -1946,38 +2037,6 @@ function getAttackUnavailableReason({
   return null
 }
 
-function getDeclareBlockerDisabledReason({
-  card,
-  canDeclareBlockers,
-  blockUnavailableReason,
-  blockableAssignments,
-  isDeclaring,
-}: {
-  card: ControllerCard
-  canDeclareBlockers: boolean
-  blockUnavailableReason?: string | null
-  blockableAssignments: CombatAssignment[]
-  isDeclaring: boolean
-}) {
-  if (isDeclaring) {
-    return 'Declaring blocker...'
-  }
-
-  if (blockableAssignments.length === 0) {
-    return blockUnavailableReason ?? 'No attackers are attacking you.'
-  }
-
-  if (card.is_tapped) {
-    return 'Tapped cards cannot be declared as blockers yet.'
-  }
-
-  if (!canDeclareBlockers) {
-    return blockUnavailableReason ?? 'Block is not available right now.'
-  }
-
-  return null
-}
-
 function getBlockUnavailableReason({
   combatActionState,
   blockableAssignments,
@@ -2004,4 +2063,88 @@ function getBlockUnavailableReason({
   }
 
   return null
+}
+
+function formatStepLabel(step: GameTurnState['step'] | undefined) {
+  if (!step) {
+    return 'Waiting'
+  }
+
+  return step
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+}
+
+function isCombatInteractionStep(step: string | undefined) {
+  if (!step) {
+    return false
+  }
+
+  const normalizedStep = String(step).toLowerCase()
+
+  return normalizedStep.includes('attack') || normalizedStep.includes('block')
+}
+
+function doesCardRequireStackTarget(card: ControllerCard) {
+  const typeLine = card.cards?.type_line?.toLowerCase() || ''
+  const linkedCardWithText = card.cards as ({ oracle_text?: string | null } & NonNullable<ControllerCard['cards']>) | null
+  const text = linkedCardWithText?.oracle_text?.toLowerCase() || ''
+  const actions = card.cards?.script?.actions ?? []
+  const copiedActions = card.copied_script?.actions ?? []
+  const allActions = copiedActions.length > 0 ? copiedActions : actions
+  const hasTargetText =
+    (typeLine.includes('instant') || typeLine.includes('sorcery')) &&
+    text.includes('target')
+  const hasStackTargetAction = allActions.some((action) => {
+    const actionType = normalizeKeyword(action.type)
+    return (
+      action.target === 'spell' ||
+      action.target_type === 'spell' ||
+      actionType === 'counter_spell' ||
+      actionType === 'counter_target_spell'
+    )
+  })
+
+  return hasTargetText || hasStackTargetAction
+}
+
+function formatStackTargetLabel(item: StackItem | null) {
+  if (!item) {
+    return 'Unknown target'
+  }
+
+  const payloadLabel =
+    typeof item.payload.target_stack_label === 'string'
+      ? item.payload.target_stack_label
+      : null
+
+  return item.source_card_name ?? payloadLabel ?? item.action_type
+}
+
+function getPlayerInitial(player: GameSessionPlayer) {
+  const label = player.username || `P${player.seat_number}`
+  return label.charAt(0).toUpperCase()
+}
+
+function getManaPoolTotal(manaPool: ManaPool) {
+  return manaColorsForDisplay.reduce((total, item) => total + (manaPool[item.color] ?? 0), 0)
+}
+
+function getManaOrbClass(color: ManaColor, value: number) {
+  const isActive = value > 0
+  const toneClass = {
+    W: 'border-yellow-100/40 bg-yellow-50 text-slate-950',
+    U: 'border-cyan-200/35 bg-cyan-500/18 text-cyan-50',
+    B: 'border-fuchsia-200/25 bg-fuchsia-950/45 text-fuchsia-100',
+    R: 'border-red-200/35 bg-red-500/18 text-red-50',
+    G: 'border-emerald-200/35 bg-emerald-500/18 text-emerald-50',
+    C: 'border-slate-200/25 bg-slate-500/18 text-slate-100',
+  }[color]
+
+  return `flex items-center justify-center rounded-full border shadow-inner ${toneClass} ${isActive ? 'font-black shadow-white/10' : 'opacity-45'}`
+}
+
+function isLandCard(card: ControllerCard) {
+  return card.cards?.type_line?.toLowerCase().includes('land') ?? false
 }

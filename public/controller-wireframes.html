@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lely Horizon - UX Iteratie Opties</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        @page {
+            size: A4 landscape;
+            margin: 10mm 12mm;
+            background-color: #020617;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+            font-size: 11pt;
+            line-height: 1.4;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 20pt;
+            color: #22d3ee;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 5px 0;
+            border-bottom: 2px solid #0891b2;
+            padding-bottom: 5px;
+            font-weight: 800;
+        }
+        .intro {
+            font-size: 10pt;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+        .options-grid {
+            display: table;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 12px 0;
+        }
+        .option-column {
+            display: table-cell;
+            width: 33.333%;
+            vertical-align: top;
+            background-color: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+        .option-header {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+        .option-badge {
+            display: inline-block;
+            background-color: #0e7490;
+            color: #e0f2fe;
+            font-size: 8pt;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .option-title {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+        }
+        .option-desc {
+            font-size: 9.5pt;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            min-height: 45px;
+        }
+        /* Simulated Mobile Device Layout */
+        .phone-mockup {
+            width: 100%;
+            height: 145px;
+            background-color: #020617;
+            border: 3px solid #334155;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            padding: 5px;
+            font-size: 7.5pt;
+        }
+        .phone-grid {
+            width: 100%;
+            height: 100%;
+            display: table;
+            border-collapse: separate;
+            border-spacing: 4px;
+        }
+        .phone-row {
+            display: table-row;
+        }
+        .phone-cell {
+            display: table-cell;
+            background-color: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 4px;
+            vertical-align: top;
+            padding: 4px;
+        }
+        .left-rail { width: 22%; }
+        .center-stage { width: 53%; position: relative; }
+        .right-rail { width: 25%; }
+        
+        /* Elements inside mockups */
+        .orb-grid {
+            display: table;
+            width: 100%;
+        }
+        .orb-row { display: table-row; }
+        .orb {
+            display: table-cell;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 6px;
+            font-weight: bold;
+            margin: 1px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .orb-w { bg-color: #fef08a; background: #eab308; color: #000; }
+        .orb-u { bg-color: #3b82f6; background: #2563eb; color: #fff; }
+        .orb-b { bg-color: #a855f7; background: #7c3aed; color: #fff; }
+        .orb-r { bg-color: #ef4444; background: #dc2626; color: #fff; }
+        .orb-g { bg-color: #10b981; background: #059669; color: #fff; shadow: 0 0 6px #10b981; }
+        
+        .master-btn {
+            background-color: #ea580c;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 4px 0;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-size: 7px;
+            box-shadow: 0 0 6px rgba(234,88,12,0.5);
+            margin-bottom: 4px;
+        }
+        .master-btn.waiting {
+            background-color: #334155;
+            color: #94a3b8;
+            box-shadow: none;
+        }
+        
+        .stat-hud {
+            background: #1e293b;
+            padding: 2px;
+            border-radius: 2px;
+            font-size: 6.5pt;
+            margin-bottom: 2px;
+            color: #cbd5e1;
+        }
+        
+        /* Iteration Specific Layouts */
+        /* Iteration 1 */
+        .hand-fan-container {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            height: 45px;
+        }
+        .fan-card {
+            display: inline-block;
+            width: 26px;
+            height: 38px;
+            background: #1e293b;
+            border: 1px solid #22d3ee;
+            border-radius: 2px;
+            margin: 0 -5px;
+            position: relative;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.5);
+        }
+        .fan-card.c1 { transform: rotate(-8deg) translateY(4px); }
+        .fan-card.c2 { transform: rotate(-3deg) translateY(1px); border-color: #38bdf8; box-shadow: 0 0 6px #38bdf8;}
+        .fan-card.c3 { transform: rotate(3deg) translateY(1px); }
+        .fan-card.c4 { transform: rotate(8deg) translateY(4px); }
+        
+        .stack-overlay-container {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px dashed #ef4444;
+            border-radius: 4px;
+            height: 80px;
+            margin-top: 5px;
+            padding: 4px;
+        }
+        .stack-item-row {
+            background: #1e293b;
+            border: 1px solid #dc2626;
+            padding: 2px 4px;
+            border-radius: 2px;
+            margin-bottom: 2px;
+            font-size: 6.5pt;
+            color: #ef4444;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        /* Iteration 2 */
+        .full-screen-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.95);
+            border: 1px solid #ef4444;
+            z-index: 100;
+            padding: 8px;
+        }
+        .modal-title {
+            color: #f87171;
+            font-weight: bold;
+            font-size: 7.5pt;
+            border-bottom: 1px solid #7f1d1d;
+            padding-bottom: 2px;
+            margin-bottom: 6px;
+        }
+        .modal-target-box {
+            background: #0f172a;
+            border: 1px solid #ef4444;
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(239,68,68,0.3);
+            margin-bottom: 8px;
+            font-size: 8pt;
+        }
+        .modal-cancel-btn {
+            background: #334155;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 3px 0;
+            border-radius: 3px;
+            font-size: 6.5pt;
+            text-transform: uppercase;
+        }
+        
+        /* Iteration 3 */
+        .tab-bar {
+            background: #0f172a;
+            border-bottom: 1px solid #334155;
+            padding: 2px;
+            font-size: 6.5pt;
+        }
+        .tab-item {
+            display: inline-block;
+            padding: 1px 4px;
+            background: #1e293b;
+            color: #94a3b8;
+            border-radius: 2px 2px 0 0;
+            margin-right: 2px;
+        }
+        .tab-item.active {
+            background: #020617;
+            color: #22d3ee;
+            border: 1px solid #334155;
+            border-bottom: 1px solid #020617;
+            font-weight: bold;
+        }
+        .tab-item.targeting-tab {
+            background: #7f1d1d;
+            color: #f87171;
+            border: 1px solid #dc2626;
+            font-weight: bold;
+        }
+        
+        .selected-dock-fixed {
+            background: #090d16;
+            border-top: 1px solid #22d3ee;
+            padding: 4px;
+            height: 48px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        
+        .bullet-list {
+            margin: 8px 0 0 0;
+            padding-left: 14px;
+            font-size: 9pt;
+            color: #94a3b8;
+        }
+        .bullet-list li {
+            margin-bottom: 4px;
+        }
+        .bullet-list strong {
+            color: #cbd5e1;
+        }
+        
+        .codex-box {
+            margin-top: 10px;
+            background-color: #020617;
+            border-left: 3px solid #22d3ee;
+            padding: 6px 8px;
+            font-family: monospace;
+            font-size: 8pt;
+            color: #a5f3fc;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Lely Horizon — UX/UI Targeting & Layout Iteraties</h1>
+    <div class="intro">
+        Wanneer een speler een interactieve spell speelt zoals <strong>Counterspell</strong>, moet de controller transformeren om de benodigde targeting-input te vangen zonder de algehele layout te breken. Hieronder staan drie concrete architectuur-opties voor Codex.
+    </div>
+
+    <div class="options-grid">
+        
+        <!-- OPTIE 1 -->
+        <div class="option-column">
+            <div class="option-header">
+                <span class="option-badge">Optie 1</span>
+                <h3 class="option-title">Contextual Overlay</h3>
+            </div>
+            <div class="option-desc">
+                De 3-koloms basis blijft muurvast staan voor je spiergeheugen. Zodra targeting nodig is, zakt de handwaaier volledig weg en maakt plaats voor de actieve Stack.
+            </div>
+            
+            <!-- Mockup State A: Normal -->
+            <div style="font-size: 8pt; font-weight: bold; margin-bottom: 4px; color: #22d3ee;">1A. Ruststand (Hand in Focus)</div>
+            <div class="phone-mockup" style="margin-bottom: 10px;">
+                <div class="phone-grid">
+                    <div class="phone-row">
+                        <!-- Links -->
+                        <div class="phone-cell left-rail">
+                            <div style="color:#22d3ee; font-weight:bold; font-size:6px;">P1: JORDY</div>
+                            <div style="font-size:9px; font-weight:bold; margin:2px 0;">18 HP</div>
+                            <div style="font-size:6px; color:#64748b; margin-bottom:4px;">ECONOMY</div>
+                            <div class="orb" style="background:#059669; color:#fff; box-shadow: 0 0 4px #10b981;">G:1</div>
+                        </div>
+                        <!-- Midden -->
+                        <div class="phone-cell center-stage">
+                            <div style="text-align:center; color:#64748b; font-size:6px; margin-top:5px;">BATTLEFIELD (COMPACT)</div>
+                            <div class="hand-fan-container">
+                                <div class="fan-card c1"></div>
+                                <div class="fan-card c2"></div>
+                                <div class="fan-card c3"></div>
+                                <div class="fan-card c4"></div>
+                            </div>
+                        </div>
+                        <!-- Rechts -->
+                        <div class="phone-cell right-rail">
+                            <div class="master-btn">PASS PRIORITY</div>
+                            <div class="stat-hud">📚 LIB: 18</div>
+                            <div class="stat-hud">💀 GRAVE: 1</div>
+                            <div class="selected-dock-fixed" style="height:32px; border-top-color:#334155;">
+                                <span style="font-size:6px; color:#94a3b8;">Geselecteerd: Counterspell</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mockup State B: Active Targeting -->
+            <div style="font-size: 8pt; font-weight: bold; margin-bottom: 4px; color: #f87171;">1B. Targeting Stand (Hand weg, Stack open)</div>
+            <div class="phone-mockup">
+                <div class="phone-grid">
+                    <div class="phone-row">
+                        <!-- Links -->
+                        <div class="phone-cell left-rail">
+                            <div style="color:#64748b; font-size:6px;">P1: JORDY</div>
+                            <div style="font-size:9px; font-weight:bold; margin:2px 0;">18 HP</div>
+                            <div class="orb" style="background:#059669; color:#fff; box-shadow: 0 0 4px #10b981;">G:1</div>
+                        </div>
+                        <!-- Midden -->
+                        <div class="phone-cell center-stage">
+                            <div class="stack-overlay-container">
+                                <div style="font-size:5.5pt; color:#94a3b8; text-transform:uppercase; margin-bottom:2px;">Kies Target op de Stack:</div>
+                                <div class="stack-item-row">⚠️ P2: Lightning Bolt</div>
+                                <div style="background:#1e293b; padding:2px; font-size:5.5pt; color:#64748b; border-radius:2px;">P3: Sol Ring</div>
+                            </div>
+                        </div>
+                        <!-- Rechts -->
+                        <div class="phone-cell right-rail">
+                            <div class="master-btn" style="background:#ea580c; box-shadow:0 0 8px #ea580c;">CONFIRM CAST</div>
+                            <div class="stat-hud">📚 LIB: 18</div>
+                            <div class="selected-dock-fixed" style="height:32px; border-top-color:#ef4444; background:#180f15;">
+                                <span style="font-size:6px; color:#f87171; font-weight:bold;">Targeting Bolt ⚡</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="bullet-list">
+                <li><strong>UX-Gevoel:</strong> Alsof je een fysieke controller vasthoudt. Knoppen verschuiven nooit.</li>
+                <li><strong>Mechaniek:</strong> `HandFan` animeert naar `y: 400` via Framer Motion. Tegelijkertijd fadet de `StackView` in op dezelfde plek.</li>
+                <li><strong>Codex Focus:</strong> Geen zware herstructurering van grid kolommen nodig. Vaste layout-omgeving.</li>
+            </ul>
+            <div class="codex-box">
+                // Codex State Switch:<br>
+                isTargeting ? &lt;StackOverlay /&gt; : &lt;HandFan /&gt;
+            </div>
+        </div>
+        
+        <!-- OPTIE 2 -->
+        <div class="option-column">
+            <div class="option-header">
+                <span class="option-badge">Optie 2</span>
+                <h3 class="option-title">Modal Focus</h3>
+            </div>
+            <div class="option-desc">
+                Maximale rust en nul foutmarges. Zodra er een target vereist is, schuift er een full-screen modal over de controller heen om de invoer af te dwingen.
+            </div>
+            
+            <!-- Mockup State A: Normal -->
+            <div style="font-size: 8pt; font-weight: bold; margin-bottom: 4px; color: #22d3ee;">2A. Ruststand</div>
+            <div class="phone-mockup" style="margin-bottom: 10px;">
+                <div class="phone-grid">
+                    <div class="phone-row">
+                        <div class="phone-cell left-rail">
+                            <div style="font-size:9px; font-weight:bold;">18 HP</div>
+                        </div>
+                        <div class="phone-cell center-stage" style="text-align:center; padding-top:40px; color:#334155; font-weight:bold;">
+                            Normale HUD View
+                        </div>
+                        <div class="phone-cell right-rail">
+                            <div class="master-btn waiting">WAITING</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mockup State B: Active Targeting -->
+            <div style="font-size: 8pt; font-weight: bold; margin-bottom: 4px; color: #f87171;">2B. Full-Screen Targeting Mode</div>
+            <div class="phone-mockup">
+                <!-- Main app blurry/dark beneath -->
+                <div class="full-screen-modal">
+                    <div class="modal-title">⚔️ TARGETING VEREIST: COUNTERSPELL</div>
+                    <div style="font-size:6pt; color:#94a3b8; margin-bottom:4px;">Klik op de spell die je wilt counteren:</div>
+                    
+                    <div class="modal-target-box">
+                        <span style="color:#f87171;">[STACK ITEM #1]</span> P2: Lightning Bolt
+                    </div>
+                    
+                    <div class="phone-grid" style="height:30px; margin-top:5px;">
+                        <div class="phone-row">
+                            <div class="phone-cell" style="background:#7f1d1d; text-align:center; color:white; font-weight:bold; font-size:7px; border-color:#ef4444; width:50%;">
+                                CONFIRM CAST
+                            </div>
+                            <div class="phone-cell modal-cancel-btn" style="width:50%; padding-top:6px;">
+                                ANNULEREN
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="bullet-list">
+                <li><strong>UX-Gevoel:</strong> Absoluut gefocust. Het sluit fouten uit omdat de speler niks anders kan indrukken.</li>
+                <li><strong>Mechaniek:</strong> Een absolute overlay div `fixed inset-0 z-[200]` die over de complete JSX heen rendert op basis van `isTargeting === true`.</li>
+                <li><strong>Codex Focus:</strong> Veiligste optie voor Codex. Geen enkele kans op layout-shifting in je hoofdgrid.</li>
+            </ul>
+            <div class="codex-box">
+                {isTargeting && &lt;FullScreenTargetingModal /&gt;}
+            </div>
+        </div>
+        
+        <!-- OPTIE 3 -->
+        <div class="option-column">
+            <div class="option-header">
+                <span class="option-badge">Optie 3</span>
+                <h3 class="option-title">Picture-in-Picture Tab</h3>
+            </div>
+            <div class="option-desc">
+                Gebruikt het tab-systeem dat je al hebt (Hand / Board). Er opent automatisch een tijdelijke, rode "Stack" tab in het centrum van je huidige grid.
+            </div>
+            
+            <!-- Mockup State A: Normal -->
+            <div style="font-size: 8pt; font-weight: bold; margin-bottom: 4px; color: #22d3ee;">3A. Ruststand (Hand Tab Actief)</div>
+            <div class="phone-mockup" style="margin-bottom: 10px;">
+                <div class="tab-bar">
+                    <div class="tab-item active">Hand (4)</div>
+                    <div class="tab-item">Board (4)</div>
+                </div>
+                <div class="phone-grid" style="height:110px;">
+                    <div class="phone-row">
+                        <div class="phone-cell left-rail">
+                            <div style="font-size:9px; font-weight:bold;">18 HP</div>
+                        </div>
+                        <div class="phone-cell center-stage" style="vertical-align:bottom; padding-bottom:5px; text-align:center;">
+                            <div class="fan-card" style="transform:none; margin:0 1px;"></div>
+                            <div class="fan-card" style="transform:none; margin:0 1px;"></div>
+                        </div>
+                        <div class="phone-cell right-rail">
+                            <div class="master-btn">PASS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mockup State B: Active Targeting -->
+            <div style="font-size: 8pt; font-weight: bold; margin-bottom: 4px; color: #f87171;">3B. Automatische Tab Switch naar "Stack"</div>
+            <div class="phone-mockup">
+                <div class="tab-bar">
+                    <div class="tab-item">Hand (4)</div>
+                    <div class="tab-item">Board (4)</div>
+                    <div class="tab-item targeting-tab">⚠️ Stack Target (1)</div>
+                </div>
+                <div class="phone-grid" style="height:110px;">
+                    <div class="phone-row">
+                        <div class="phone-cell left-rail">
+                            <div style="font-size:9px; font-weight:bold;">18 HP</div>
+                        </div>
+                        <div class="phone-cell center-stage" style="padding:4px;">
+                            <div style="font-size:5.5pt; color:#64748b; margin-bottom:2px;">Selecteer uit actieve Stack:</div>
+                            <div class="stack-item-row" style="margin:0; text-align:center; padding:6px 0;">⚡ [P2] Lightning Bolt</div>
+                        </div>
+                        <div class="phone-cell right-rail">
+                            <div class="master-btn" style="background:#dc2626;">CAST ON TARGET</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="bullet-list">
+                <li><strong>UX-Gevoel:</strong> Systeemgedreven en overzichtelijk. Maakt herkenbaar gebruik van de bestaande navigatiestructuur.</li>
+                <li><strong>Mechaniek:</strong> De `centerViewMode` state springt automatisch van `'hand'` naar `'stack'` zodra `requiresTarget` activeert.</li>
+                <li><strong>Codex Focus:</strong> Zeer makkelijk te integreren in je huidige state, omdat je de JSX structuur van het midden-panel hergebruikt.</li>
+            </ul>
+            <div class="codex-box">
+                setViewMode('stack'); // Getriggerd door spell drop
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

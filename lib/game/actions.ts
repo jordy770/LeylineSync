@@ -5,6 +5,7 @@ import type {
   CombatDamageResult,
   DeckImportResult,
   GameSessionPlayer,
+  GameActionLog,
   GameTurnState,
   GameZone,
   ManaPool,
@@ -92,6 +93,40 @@ export async function drawCard(
   return data as string
 }
 
+export async function devDrawCard(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_draw_card', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as string
+}
+
+export async function devUndoLastDraw(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_undo_last_draw', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as string
+}
+
 export async function untapAll(
   supabase: SupabaseClient,
   sessionId: string,
@@ -115,6 +150,40 @@ export async function clearManaPool(
   playerId: string,
 ) {
   const { data, error } = await supabase.rpc('clear_mana_pool', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as ManaPool
+}
+
+export async function devUntapAll(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_untap_all', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
+export async function devClearManaPool(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_clear_mana_pool', {
     p_session_id: sessionId,
     p_player_id: playerId,
   })
@@ -641,6 +710,129 @@ export async function devSetTurnState({
   }
 
   return data as GameTurnState
+}
+
+export async function devMoveCardToZone(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  zone: GameZone,
+) {
+  const { data, error } = await supabase.rpc('dev_move_card_to_zone', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_zone: zone,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devSetCardTapped(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  isTapped: boolean,
+) {
+  const { data, error } = await supabase.rpc('dev_set_card_tapped', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_is_tapped: isTapped,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devSetCardDamage(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  damageMarked: number,
+) {
+  const { data, error } = await supabase.rpc('dev_set_card_damage', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_damage_marked: damageMarked,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devShuffleLibrary(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_shuffle_library', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
+export async function devPutCardOnTop(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_put_card_on_top', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devPutCardOnBottom(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_put_card_on_bottom', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devUndoAction(
+  supabase: SupabaseClient,
+  actionId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_undo_action', {
+    p_action_id: actionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as GameActionLog
 }
 
 function isSupabaseErrorLike(error: unknown): error is SupabaseErrorLike {

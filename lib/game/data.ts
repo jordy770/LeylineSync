@@ -11,6 +11,7 @@ import type {
   GameSession,
   GameSessionPlayer,
   GameSessionStatus,
+  GameActionLog,
   GameTurnState,
   GameZone,
   LinkedCard,
@@ -217,6 +218,25 @@ export async function getGameSessionPlayers(supabase: SupabaseClient, sessionId:
   }
 
   return (data ?? []) as GameSessionPlayer[]
+}
+
+export async function getGameActionLogs(
+  supabase: SupabaseClient,
+  sessionId: string,
+  limit = 12,
+) {
+  const { data, error } = await supabase
+    .from('game_action_log')
+    .select('id, session_id, actor_player_id, target_player_id, action_type, description, before_state, after_state, created_at, undone_at, undone_by')
+    .eq('session_id', sessionId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []) as GameActionLog[]
 }
 
 export async function getCombatAssignments(supabase: SupabaseClient, sessionId: string) {

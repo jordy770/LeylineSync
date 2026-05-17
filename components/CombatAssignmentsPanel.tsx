@@ -4,7 +4,7 @@ import { ArrowDown, ArrowUp, Swords } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { getErrorMessage, resolveCombatDamage, setCombatBlockerOrder } from '@/lib/game/actions'
 import { getCombatActionState, getCombatAssignments, getGameSession } from '@/lib/game/data'
-import { enableFallbackRefresh } from '@/lib/game/dev'
+import { enableFallbackRefresh, fallbackRefreshIntervalMs } from '@/lib/game/dev'
 import { createClient } from '@/lib/supabase/client'
 import type { CombatActionState, CombatAssignment } from '@/lib/game/types'
 
@@ -105,7 +105,7 @@ export default function CombatAssignmentsPanel({ sessionId }: { sessionId: strin
         }
       })
 
-    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadAssignments, 2000) : null
+    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadAssignments, fallbackRefreshIntervalMs) : null
 
     return () => {
       isMounted = false
