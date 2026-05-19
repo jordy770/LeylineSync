@@ -1,169 +1,31 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import {
-  getBoardCards,
-  getCombatAssignments,
-  getGameSessionPlayers,
-  getStackItems,
-  getTurnState,
-} from '@/lib/game/data'
-import { enableFallbackRefresh, fallbackRefreshIntervalMs } from '@/lib/game/dev'
+  buildBoardConnections,
+  buildBoardSeats,
+  getCombatCardIds,
+  getFocusSeat,
+  type BoardSeat,
+} from '@/lib/game/board-selectors'
+import { useBoardGameState } from '@/lib/game/use-board-game-state'
 import type {
-  BoardCard,
-  CombatAssignment,
   GameSessionPlayer,
   GameTurnState,
-  StackItem,
 } from '@/lib/game/types'
-import type { RealtimePostgresChangesPayload, REALTIME_SUBSCRIBE_STATES } from '@supabase/supabase-js'
+import BoardConnectionOverlay from './board/BoardConnectionOverlay'
+import BoardViewChrome from './board/BoardViewChrome'
+import EmptyBoardPanel from './board/EmptyBoardPanel'
+import StackRail from './board/StackRail'
 import MotionCard from './MotionCard'
 import CombatManager from './CombatManager'
 
-type BoardSeat = {
-  player: GameSessionPlayer | null
-  cards: BoardCard[]
-  index: number
-  isPriority: boolean
-}
-
-type BoardConnection = {
-  id: string
-  lane: 'combat' | 'stack'
-  label: string
-  path: string
-}
-
 export default function GameBoard({ sessionId }: { sessionId: string }) {
-  const [cards, setCards] = useState<BoardCard[]>([])
-  const [players, setPlayers] = useState<GameSessionPlayer[]>([])
-  const [turnState, setTurnState] = useState<GameTurnState | null>(null)
-  const [combatAssignments, setCombatAssignments] = useState<CombatAssignment[]>([])
-  const [stackItems, setStackItems] = useState<StackItem[]>([])
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const { cards, players, turnState, combatAssignments, stackItems, errorMessage } = useBoardGameState(sessionId)
   const [focusedPlayerId, setFocusedPlayerId] = useState<string | null>(null)
   const boardRef = useRef<HTMLDivElement | null>(null)
   const [targetElements, setTargetElements] = useState<Map<string, HTMLElement>>(() => new Map())
-  const supabase = useMemo(() => createClient(), [])
-
-  useEffect(() => {
-    const fetchBoardState = async () => {
-      try {
-        const [boardCards, sessionPlayers, nextTurnState, nextCombatAssignments, nextStackItems] =
-          await Promise.all([
-            getBoardCards(supabase, sessionId),
-            getGameSessionPlayers(supabase, sessionId),
-            getTurnState(supabase, sessionId),
-            getCombatAssignments(supabase, sessionId),
-            getStackItems(supabase, sessionId),
-          ])
-
-        setErrorMessage(null)
-        setCards(boardCards)
-        setPlayers(sessionPlayers)
-        setTurnState(nextTurnState)
-        setCombatAssignments(nextCombatAssignments)
-        setStackItems(nextStackItems)
-      } catch (error) {
-        console.error('Failed to fetch board state:', error)
-        setErrorMessage(error instanceof Error ? error.message : 'Could not load board state')
-      }
-    }
-
-    fetchBoardState()
-
-    const channel = supabase
-      .channel(`board:${sessionId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'game_cards',
-          filter: `session_id=eq.${sessionId}`,
-        },
-        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
-          console.log('Board received realtime update:', payload)
-          fetchBoardState()
-        },
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'cards',
-        },
-        fetchBoardState,
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'game_turn_state',
-          filter: `session_id=eq.${sessionId}`,
-        },
-        fetchBoardState,
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'game_session_players',
-          filter: `session_id=eq.${sessionId}`,
-        },
-        fetchBoardState,
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'game_combat_assignments',
-          filter: `session_id=eq.${sessionId}`,
-        },
-        fetchBoardState,
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'game_combat_blockers',
-          filter: `session_id=eq.${sessionId}`,
-        },
-        fetchBoardState,
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'game_stack_items',
-          filter: `session_id=eq.${sessionId}`,
-        },
-        fetchBoardState,
-      )
-      .subscribe((status: `${REALTIME_SUBSCRIBE_STATES}`, error?: Error) => {
-        console.log('Board realtime status:', status)
-        if (error) {
-          console.error('Board realtime error:', error)
-        }
-      })
-
-    const refreshInterval = enableFallbackRefresh ? window.setInterval(fetchBoardState, fallbackRefreshIntervalMs) : null
-
-    return () => {
-      if (refreshInterval) {
-        window.clearInterval(refreshInterval)
-      }
-      supabase.removeChannel(channel)
-    }
-  }, [sessionId, supabase])
 
   const combatCardIds = useMemo(() => getCombatCardIds(combatAssignments), [combatAssignments])
   const boardCards = useMemo(
@@ -287,32 +149,6 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
         boardElement={boardRef.current}
         targetElements={targetElements}
       />
-    </div>
-  )
-}
-
-function BoardViewChrome({
-  turnState,
-  isFocusMode,
-  onToggleFocus,
-}: {
-  turnState: GameTurnState | null
-  isFocusMode: boolean
-  onToggleFocus: () => void
-}) {
-  return (
-    <div className="relative z-30 mb-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 [@media(max-height:640px)]:mb-2 [@media(max-height:640px)]:gap-2">
-      <div />
-      <div className="leyline-phase-pill rounded-full px-6 py-2 text-center text-sm font-semibold text-white [@media(max-height:640px)]:px-4 [@media(max-height:640px)]:py-1.5 [@media(max-height:640px)]:text-xs">
-        Turn {turnState?.turn_number ?? '-'} &middot; {formatStepLabel(turnState?.step)}
-      </div>
-      <button
-        type="button"
-        onClick={onToggleFocus}
-        className="justify-self-end rounded-lg border border-slate-700 bg-slate-900/85 px-4 py-2 text-sm font-semibold text-slate-200 shadow-lg shadow-black/20 transition-colors hover:border-cyan-300/40 hover:bg-slate-800 [@media(max-height:640px)]:px-3 [@media(max-height:640px)]:py-1.5 [@media(max-height:640px)]:text-xs"
-      >
-        {isFocusMode ? 'Grid View' : 'Focus Priority'}
-      </button>
     </div>
   )
 }
@@ -566,93 +402,8 @@ function PlayerQuadrantPanel({
   )
 }
 
-function EmptyBoardPanel() {
-  return (
-    <div className="leyline-glass-panel col-span-full flex min-h-[24rem] items-center justify-center rounded-lg border-dashed text-sm text-slate-500 [@media(max-height:640px)]:min-h-[calc(100svh-8rem)]">
-      Waiting for players to join the session.
-    </div>
-  )
-}
-
-function StackRail({ stackItems }: { stackItems: StackItem[] }) {
-  return (
-    <motion.section
-      layout
-      className="leyline-glass-panel relative z-30 order-first mx-auto w-full max-w-44 rounded-lg p-3 text-center [transform:translateZ(42px)] [@media(max-height:640px)]:order-none [@media(max-height:640px)]:h-full [@media(max-height:640px)]:max-w-none [@media(max-height:640px)]:p-2 xl:order-none"
-    >
-      <h2 className="mb-3 rounded-md border border-cyan-300/30 bg-cyan-950/30 py-1 text-xs font-bold uppercase tracking-[0.18em] text-cyan-50 [@media(max-height:640px)]:mb-2 [@media(max-height:640px)]:text-[10px]">
-        The Stack
-      </h2>
-      <div className="grid gap-2 [@media(max-height:640px)]:gap-1 lg:min-h-[26rem] lg:content-start">
-        {stackItems.length === 0 ? (
-          <div className="rounded-md border border-white/10 px-2 py-12 text-xs text-slate-500 [@media(max-height:640px)]:py-8 [@media(max-height:640px)]:text-[10px] lg:py-24">
-            Empty
-          </div>
-        ) : (
-          stackItems.map((item) => (
-            <motion.div
-              key={item.id}
-              layout
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="rounded-md border border-cyan-300/30 bg-cyan-950/25 p-2 text-left shadow-[0_0_14px_rgba(34,211,238,0.1)] [@media(max-height:640px)]:p-1.5"
-            >
-              <p className="truncate text-xs font-semibold text-white [@media(max-height:640px)]:text-[10px]">
-                {item.source_card_name ?? item.action_type}
-              </p>
-              <p className="truncate text-[10px] text-cyan-200/70 [@media(max-height:640px)]:text-[9px]">{item.controller_username ?? 'Unknown'}</p>
-            </motion.div>
-          ))
-        )}
-      </div>
-    </motion.section>
-  )
-}
-
-function buildBoardSeats(
-  players: GameSessionPlayer[],
-  cards: BoardCard[],
-  priorityPlayerId: string | null,
-) {
-  const sortedPlayers = [...players].sort((left, right) => left.seat_number - right.seat_number)
-
-  return sortedPlayers.map<BoardSeat>((player, index) => ({
-    player,
-    index,
-    isPriority: Boolean(player && player.player_id === priorityPlayerId),
-    cards: cards.filter((card) => card.controller_player_id === player.player_id),
-  }))
-}
-
-function getCombatCardIds(assignments: CombatAssignment[]) {
-  const cardIds = new Set<string>()
-
-  for (const assignment of assignments) {
-    cardIds.add(assignment.attacker_card_id)
-    for (const blocker of assignment.blockers ?? []) {
-      cardIds.add(blocker.blocker_card_id)
-    }
-  }
-
-  return cardIds
-}
-
 function getPlayerLabel(player: GameSessionPlayer) {
   return player.username || `Player ${player.player_id.slice(0, 8)}`
-}
-
-function getFocusSeat(seats: BoardSeat[], focusedPlayerId?: string | null) {
-  return (
-    (focusedPlayerId ? seats.find((seat) => seat.player?.player_id === focusedPlayerId) : null) ??
-    seats.find((seat) => seat.isPriority) ??
-    seats[0] ?? {
-      player: null,
-      cards: [],
-      index: 0,
-      isPriority: false,
-    }
-  )
 }
 
 function formatStepLabel(step: GameTurnState['step'] | undefined) {
@@ -670,81 +421,3 @@ function getPlayerInitial(player: GameSessionPlayer) {
   return (player.username?.trim()[0] || `P${player.seat_number}`[0] || 'P').toUpperCase()
 }
 
-function buildBoardConnections(
-  combatAssignments: CombatAssignment[],
-  stackItems: StackItem[],
-): BoardConnection[] {
-  const combatConnections = combatAssignments.slice(0, 5).map((assignment, index) => ({
-    id: `combat-${assignment.id}`,
-    lane: 'combat' as const,
-    label: assignment.blocker_name
-      ? `${assignment.attacker_name} blocked by ${assignment.blocker_name}`
-      : `${assignment.attacker_name} attacks ${assignment.defending_username}`,
-    path: connectionPath(index, combatAssignments.length, 18, 82),
-  }))
-
-  const stackConnections = stackItems
-    .filter((item) => item.status === 'pending')
-    .slice(0, 3)
-    .map((item, index) => ({
-      id: `stack-${item.id}`,
-      lane: 'stack' as const,
-      label: item.source_card_name ?? item.action_type,
-      path: connectionPath(index, 3, 82, 18),
-    }))
-
-  return [...combatConnections, ...stackConnections]
-}
-
-function connectionPath(index: number, total: number, startY: number, endY: number) {
-  const spread = total <= 1 ? 0 : (index - (total - 1) / 2) * 10
-  const startX = 18 + Math.max(0, index) * 5
-  const endX = 82 - Math.max(0, index) * 5
-  const controlX = 50 + spread
-
-  return `M ${startX} ${startY} C ${controlX} ${startY}, ${controlX} ${endY}, ${endX} ${endY}`
-}
-
-function BoardConnectionOverlay({ connections }: { connections: BoardConnection[] }) {
-  if (connections.length === 0) {
-    return null
-  }
-
-  return (
-    <svg
-      className="pointer-events-none absolute inset-0 z-10 h-full w-full overflow-visible opacity-80"
-      viewBox="0 0 100 100"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <defs>
-        <filter id="board-connection-glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="1.8" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      <AnimatePresence>
-        {connections.map((connection) => (
-          <motion.path
-            key={connection.id}
-            d={connection.path}
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.85 }}
-            exit={{ pathLength: 0, opacity: 0 }}
-            transition={{ duration: 0.55, ease: 'easeOut' }}
-            fill="none"
-            filter="url(#board-connection-glow)"
-            stroke={connection.lane === 'combat' ? '#f59e0b' : '#38bdf8'}
-            strokeLinecap="round"
-            strokeDasharray={connection.lane === 'combat' ? '2 1.5' : undefined}
-            strokeWidth={connection.lane === 'combat' ? '0.38' : '0.32'}
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </AnimatePresence>
-    </svg>
-  )
-}

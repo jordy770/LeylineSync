@@ -234,6 +234,7 @@ export type BoardCard = {
   position_y: number
   zone: GameZone
   image_url: string | null
+  type_line?: string | null
   controller_player_id?: string | null
 }
 
