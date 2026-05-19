@@ -9,8 +9,8 @@ import {
   declareBlocker as declareBlockerAction,
   passPriority as passPriorityAction,
 } from '@/lib/game/actions'
-import { isAddManaBehaviorAction, selectFirstManaAbility } from '@/lib/game/card-behavior'
-import { canCardRespond, isLandCard } from '@/lib/game/controller-selectors'
+import { isAddManaBehaviorAction, selectFirstManaAbility, selectManaAbilities } from '@/lib/game/card-behavior'
+import { canCardRespond } from '@/lib/game/controller-selectors'
 import { useControllerGameState } from '@/lib/game/use-controller-game-state'
 import type {
   BoardCard,
@@ -80,7 +80,7 @@ export type ControllerV3State = {
   handCards: ControllerCard[]
   battlefieldCards: ControllerCard[]
   ownCreatures: ControllerCard[]
-  ownLands: ControllerCard[]
+  manaSourceCards: ControllerCard[]
   opponentBattlefieldCards: BoardCard[]
   incomingAttackers: CombatAssignment[]
   stackItems: StackItem[]
@@ -243,7 +243,7 @@ function MainPhaseLayout({
     <main>
       <ControllerStateHeader state={state} />
       <ZoneDataIndicators counters={state.zoneCounters} />
-      <ManaPoolComponent manaPool={state.manaPool} onTapForMana={actions.tapForMana} lands={state.ownLands} />
+      <ManaPoolComponent manaPool={state.manaPool} onTapForMana={actions.tapForMana} manaSources={state.manaSourceCards} />
       <HandZoneComponent cards={state.handCards} onCastSpell={actions.castSpell} />
       <BattlefieldZoneComponent cards={state.battlefieldCards} onTapForMana={actions.tapForMana} />
     </main>
@@ -475,11 +475,11 @@ function ZoneDataIndicators({ counters }: { counters: ZoneCounters }) {
 
 function ManaPoolComponent({
   manaPool,
-  lands,
+  manaSources,
   onTapForMana,
 }: {
   manaPool: ManaPool
-  lands: ControllerCard[]
+  manaSources: ControllerCard[]
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
 }) {
   return (
@@ -494,7 +494,7 @@ function ManaPoolComponent({
       </ul>
       <h3>Mana Sources</h3>
       <ul>
-        {lands.map((card) => (
+        {manaSources.map((card) => (
           <li key={card.id}>
             <button type="button" disabled={card.is_tapped} onClick={() => onTapForMana(card.id)}>
               Tap {card.name}
@@ -551,7 +551,7 @@ function BattlefieldZoneComponent({
               <h3>{card.name}</h3>
               <p>{card.is_tapped ? 'Tapped' : 'Untapped'}</p>
               <p>{card.damage_marked} damage</p>
-              {isLandCard(card) ? (
+              {hasManaAbility(card) ? (
                 <button type="button" disabled={card.is_tapped} onClick={() => onTapForMana(card.id)}>
                   Tap for mana
                 </button>
@@ -676,7 +676,7 @@ function buildControllerV3State({
     .sort((left, right) => left.zone_position - right.zone_position)
   const battlefieldCards = cards.filter((card) => card.zone === 'battlefield')
   const ownCreatures = battlefieldCards.filter((card) => card.cards?.type_line?.toLowerCase().includes('creature'))
-  const ownLands = battlefieldCards.filter(isLandCard)
+  const manaSourceCards = battlefieldCards.filter(hasManaAbility)
   const incomingAttackers = combatAssignments.filter((assignment) => assignment.defending_player_id === playerId)
   const responseCards = cards.filter((card) => canCardRespond(card, pendingStackItems.length > 0))
 
@@ -699,7 +699,7 @@ function buildControllerV3State({
     handCards,
     battlefieldCards,
     ownCreatures,
-    ownLands,
+    manaSourceCards,
     opponentBattlefieldCards: boardCards.filter((card) => card.controller_player_id !== playerId),
     incomingAttackers,
     stackItems: pendingStackItems,
@@ -755,6 +755,11 @@ function normalizeGamePhase(step: GameTurnState['step'] | undefined): GamePhase 
   }
 
   return Object.values(GamePhase).includes(step as GamePhase) ? (step as GamePhase) : null
+}
+
+function hasManaAbility(card: ControllerCard) {
+  const script = card.copied_script ?? card.cards?.script ?? null
+  return selectManaAbilities(script, card.cards?.type_line).length > 0
 }
 
 function getPlayerLabel(player: GameSessionPlayer) {
