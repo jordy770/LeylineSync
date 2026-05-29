@@ -32,6 +32,7 @@ export default function JudgePlayerCardTools({
     putSelectedCardOnTop,
     putSelectedCardOnBottom,
     clearSelectedCardSummoningSickness,
+    adjustSelectedCardCounters,
   } = useJudgeCardTools({
     sessionId,
     playerId,
@@ -139,14 +140,38 @@ export default function JudgePlayerCardTools({
               </div>
 
               {selectedCard.zone === 'battlefield' ? (
-                <button
-                  type="button"
-                  disabled={isSessionFinished || isPending}
-                  onClick={clearSelectedCardSummoningSickness}
-                  className="w-full rounded-md border border-violet-300/20 bg-violet-950/30 px-3 py-2 text-sm font-semibold text-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Clear Summoning Sickness
-                </button>
+                <>
+                  <button
+                    type="button"
+                    disabled={isSessionFinished || isPending}
+                    onClick={clearSelectedCardSummoningSickness}
+                    className="w-full rounded-md border border-violet-300/20 bg-violet-950/30 px-3 py-2 text-sm font-semibold text-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Clear Summoning Sickness
+                  </button>
+
+                  <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={isSessionFinished || isPending || (selectedCard.plus_one_counters ?? 0) <= 0}
+                      onClick={() => adjustSelectedCardCounters(-1)}
+                      className="rounded-md border border-emerald-300/20 bg-emerald-950/30 px-3 py-2 text-sm font-bold text-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      −
+                    </button>
+                    <span className="text-center text-xs font-semibold text-emerald-200">
+                      +1/+1 counters: {selectedCard.plus_one_counters ?? 0}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={isSessionFinished || isPending}
+                      onClick={() => adjustSelectedCardCounters(1)}
+                      className="rounded-md border border-emerald-300/20 bg-emerald-950/30 px-3 py-2 text-sm font-bold text-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      +
+                    </button>
+                  </div>
+                </>
               ) : null}
             </>
           ) : null}

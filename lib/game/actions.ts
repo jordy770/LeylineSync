@@ -513,6 +513,25 @@ export async function setCombatBlockerOrder(
   return data as number
 }
 
+export async function adjustCardCounters(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  delta: number,
+) {
+  const { data, error } = await supabase.rpc('adjust_card_counters', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_delta: delta,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
 export async function clearCombatAssignments(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('clear_combat_assignments', {
     p_session_id: sessionId,

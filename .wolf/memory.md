@@ -302,3 +302,27 @@
 | 16:54 | Edited components/ControllerListV4.tsx | 8→8 lines | ~73 |
 | 16:57 | Session end: 124 writes across 7 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 14 reads | ~121567 tok |
 | 17:37 | Session end: 124 writes across 7 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 14 reads | ~121567 tok |
+| 17:44 | Created .git/COMMITMSG.tmp | — | ~241 |
+| 17:46 | Session end: 125 writes across 8 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 15 reads | ~122296 tok |
+| 18:09 | Created supabase/migrations/202605010068_plus_one_counters.sql | — | ~4392 |
+| 18:09 | Edited lib/game/types.ts | 7→8 lines | ~63 |
+| 18:09 | Edited lib/game/types.ts | 6→7 lines | ~63 |
+| 18:09 | Edited lib/game/types.ts | 5→6 lines | ~45 |
+| 18:09 | Edited lib/game/data.ts | 11→12 lines | ~67 |
+| 18:10 | Edited lib/game/data.ts | 5→6 lines | ~61 |
+| 18:10 | Edited lib/game/data.ts | 7→8 lines | ~62 |
+| 18:10 | Edited lib/game/data.ts | 6→7 lines | ~89 |
+| 18:10 | Edited lib/game/actions.ts | added 1 condition(s) | ~128 |
+| 18:10 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~135 |
+| 18:11 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~275 |
+| 18:11 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~157 |
+| 18:11 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~245 |
+| 18:12 | Edited lib/game/use-judge-card-tools.ts | 10→11 lines | ~63 |
+| 18:12 | Edited lib/game/use-judge-card-tools.ts | expanded (+7 lines) | ~156 |
+| 18:12 | Edited components/judge/JudgePlayerCardTools.tsx | 4→5 lines | ~44 |
+| 18:13 | Edited components/judge/JudgePlayerCardTools.tsx | added nullish coalescing | ~530 |
+| 18:14 | Edited README.md | 2→3 lines | ~18 |
+| 18:15 | Edited README.md | 6→6 lines | ~103 |
+| 18:15 | Edited README.md | 2→3 lines | ~73 |
+
+| 18:15 | +1/+1 counters: migration 068 (plus_one_counters col, card_effective_power/toughness helpers, resolve+mover use effective P/T, adjust_card_counters RPC). Client: types/data selects, adjustCardCounters wrapper, V4 effective P/T + emerald counter badges (sheet/zoom/battlefield), judge +/- stepper | migrations/068, types.ts, data.ts, actions.ts, ControllerListV4.tsx, use-judge-card-tools.ts, JudgePlayerCardTools.tsx, README | ✅ tsc+lint clean | ~6000 || 18:16 | Created .git/COMMITMSG.tmp | — | ~175 |

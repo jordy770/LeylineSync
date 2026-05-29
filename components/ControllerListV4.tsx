@@ -146,6 +146,17 @@ function getCardKeywords(card: ControllerCard): string[] {
   return [...found]
 }
 
+/** Printed P/T with +1/+1 counters folded in, e.g. base 2/2 with 3 counters -> "5/5". */
+function getEffectivePT(card: ControllerCard): string | null {
+  const base = getPowerToughnessLabel(card)
+  if (!base) return null
+  const counters = card.plus_one_counters ?? 0
+  if (counters === 0) return base
+  const match = base.match(/^(\d+)\s*\/\s*(\d+)$/)
+  if (!match) return base
+  return `${Number(match[1]) + counters}/${Number(match[2]) + counters}`
+}
+
 type SpellPlan =
   | { kind: 'player_damage'; amount: number; timing: 'instant' | 'sorcery' }
   | { kind: 'counterspell' }
@@ -711,13 +722,18 @@ function MainArea({
             key={card.id}
             type="button"
             onClick={() => handleCardTap(card)}
-            className="w-14 shrink-0 transition-transform active:scale-95"
+            className="relative w-14 shrink-0 transition-transform active:scale-95"
           >
             <MotionCard
               card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
               size="board"
               useLayoutId={false}
             />
+            {(card.plus_one_counters ?? 0) > 0 && (
+              <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow ring-1 ring-black/40">
+                +{card.plus_one_counters}
+              </span>
+            )}
           </button>
         ))}
         {creatures.length === 0 && other.length === 0 && (
@@ -1058,8 +1074,17 @@ function CardActionSheet({
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1.5">
             {pt && (
-              <span className="rounded-lg bg-slate-700 px-2.5 py-1 text-sm font-black text-white">
-                {pt}
+              <span
+                className={`rounded-lg px-2.5 py-1 text-sm font-black ${
+                  (card.plus_one_counters ?? 0) > 0 ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-white'
+                }`}
+              >
+                {getEffectivePT(card)}
+              </span>
+            )}
+            {(card.plus_one_counters ?? 0) > 0 && (
+              <span className="text-[9px] font-bold text-emerald-400">
+                +{card.plus_one_counters} counter{card.plus_one_counters! > 1 ? 's' : ''}
               </span>
             )}
             {card.damage_marked > 0 && (
@@ -1249,7 +1274,13 @@ function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClose: () 
             </div>
             <div className="flex shrink-0 items-center gap-2">
               {pt && (
-                <span className="rounded-lg bg-slate-700 px-2 py-1 text-sm font-black text-white">{pt}</span>
+                <span
+                  className={`rounded-lg px-2 py-1 text-sm font-black text-white ${
+                    (card.plus_one_counters ?? 0) > 0 ? 'bg-emerald-600' : 'bg-slate-700'
+                  }`}
+                >
+                  {getEffectivePT(card)}
+                </span>
               )}
               {card.cards?.mana_cost && (
                 <ManaCostDisplay manaCost={card.cards.mana_cost} />

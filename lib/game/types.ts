@@ -238,6 +238,7 @@ export type BoardCard = {
   type_line?: string | null
   controller_player_id?: string | null
   is_face_down?: boolean | null
+  plus_one_counters?: number
 }
 
 export type ControllerCard = {
@@ -252,6 +253,7 @@ export type ControllerCard = {
   copied_script?: CardScript | null
   static_effects_suppressed?: boolean
   entered_battlefield_turn_number?: number | null
+  plus_one_counters?: number
   cards: LinkedCard | null
 }
 
@@ -268,6 +270,7 @@ export type GameCardInstanceRow = {
   copied_script?: CardScript | null
   static_effects_suppressed?: boolean
   entered_battlefield_turn_number?: number | null
+  plus_one_counters?: number
 }
 
 export type SupabaseErrorLike = {

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
+  adjustCardCounters,
   devClearSummoningSickness,
   devMoveCardToZone,
   devPutCardOnBottom,
@@ -120,6 +121,13 @@ export function useJudgeCardTools({
         ? runJudgeAction(
             () => devClearSummoningSickness(supabase, sessionId, selectedCard.id),
             'Summoning sickness cleared',
+          )
+        : Promise.resolve(),
+    adjustSelectedCardCounters: (delta: number) =>
+      selectedCard
+        ? runJudgeAction(
+            () => adjustCardCounters(supabase, sessionId, selectedCard.id, delta),
+            delta > 0 ? 'Counter added' : 'Counter removed',
           )
         : Promise.resolve(),
   }

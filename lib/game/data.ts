@@ -64,7 +64,8 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       is_tapped,
       damage_marked,
       zone,
-      controller_player_id
+      controller_player_id,
+      plus_one_counters
     `)
     .eq('session_id', sessionId)
     .eq('zone', 'battlefield')
@@ -95,6 +96,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       image_url: linkedCard?.image_url ?? null,
       type_line: linkedCard?.type_line ?? null,
       controller_player_id: item.controller_player_id ?? null,
+      plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
     }
   })
 }
@@ -190,7 +192,8 @@ export async function getControllerCards(
       controller_player_id,
       copied_script,
       static_effects_suppressed,
-      entered_battlefield_turn_number
+      entered_battlefield_turn_number,
+      plus_one_counters
     `)
     .eq('session_id', sessionId)
     .eq('owner_id', playerId)
@@ -224,6 +227,7 @@ export async function getControllerCards(
       copied_script: card.copied_script ?? null,
       static_effects_suppressed: card.static_effects_suppressed ?? false,
       entered_battlefield_turn_number: card.entered_battlefield_turn_number ?? null,
+      plus_one_counters: card.plus_one_counters ?? 0,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,
       cards: linkedCard,
     }

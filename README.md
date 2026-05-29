@@ -270,6 +270,7 @@ Reference card data lives in `cards`. Per-game state lives in `game_*` tables.
 - `static_effects_suppressed`
 - `entered_battlefield_turn_number`: turn the card entered the battlefield, used for summoning sickness
 - `is_face_down`: card is exiled face-down and hidden from other players
+- `plus_one_counters`: number of +1/+1 counters; each raises effective power and toughness by 1
 
 `game_players`
 
@@ -921,6 +922,7 @@ Run migrations in order. Current migration list:
 202605010065_dev_clear_summoning_sickness.sql
 202605010066_exile_face_down.sql
 202605010067_deathtouch.sql
+202605010068_plus_one_counters.sql
 ```
 
 ## Adding New Card Mechanics
@@ -1164,9 +1166,9 @@ High-value next work:
 - [x] Flying and Reach combat legality
 - [x] Cleanup hand-size discard (V4 controller)
 - [x] Landscape-mobile production controller (V4) with card-first interaction, zone inspection, and pass-only priority
+- [x] +1/+1 counters (effective power/toughness in combat, display, judge stepper)
 - [ ] Player-chosen combat damage over-assignment amounts
 - [ ] Token creation
-- [ ] Counters, starting with +1/+1 counters
 - [ ] Temporary until-end-of-turn power/toughness effects
 - [ ] Card script override system separate from imported Scryfall metadata
 - [ ] Real card-specific UI/actions for copy, control-change, and suppression effects
