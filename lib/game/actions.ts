@@ -820,6 +820,23 @@ export async function devPutCardOnBottom(
   return data
 }
 
+export async function devClearSummoningSickness(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_clear_summoning_sickness', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
 export async function devUndoAction(
   supabase: SupabaseClient,
   actionId: string,

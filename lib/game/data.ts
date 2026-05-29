@@ -99,6 +99,80 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
   })
 }
 
+export type OpponentZoneData = {
+  graveyard: BoardCard[]
+  exile: BoardCard[]
+  handCount: number
+  libraryCount: number
+}
+
+export async function getOpponentZoneData(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+): Promise<OpponentZoneData> {
+  const [graveyardResult, exileResult, handCountResult, libraryCountResult] = await Promise.all([
+    supabase
+      .from('game_cards')
+      .select('id, card_id, is_tapped, damage_marked, zone, controller_player_id, is_face_down')
+      .eq('session_id', sessionId)
+      .eq('controller_player_id', playerId)
+      .eq('zone', 'graveyard'),
+    supabase
+      .from('game_cards')
+      .select('id, card_id, is_tapped, damage_marked, zone, controller_player_id, is_face_down')
+      .eq('session_id', sessionId)
+      .eq('controller_player_id', playerId)
+      .eq('zone', 'exile'),
+    supabase
+      .from('game_cards')
+      .select('*', { count: 'exact', head: true })
+      .eq('session_id', sessionId)
+      .eq('controller_player_id', playerId)
+      .eq('zone', 'hand'),
+    supabase
+      .from('game_cards')
+      .select('*', { count: 'exact', head: true })
+      .eq('session_id', sessionId)
+      .eq('controller_player_id', playerId)
+      .eq('zone', 'library'),
+  ])
+
+  const graveyardRows = (graveyardResult.data ?? []) as GameCardInstanceRow[]
+  const exileRows = (exileResult.data ?? []) as GameCardInstanceRow[]
+  const allCardIds = [...graveyardRows, ...exileRows].map((r) => r.card_id)
+
+  const linkedCards = allCardIds.length > 0
+    ? await getLinkedCardsById(supabase, allCardIds, 'id, name, image_url, type_line')
+    : new Map<string, LinkedCard>()
+
+  const toZoneCard = (item: GameCardInstanceRow): BoardCard => {
+    const linked = linkedCards.get(item.card_id) ?? null
+    const faceDown = (item as Record<string, unknown>).is_face_down === true
+    return {
+      id: item.id,
+      card_id: item.card_id,
+      position_x: 0,
+      position_y: 0,
+      is_tapped: item.is_tapped,
+      damage_marked: item.damage_marked ?? 0,
+      zone: normalizeGameZone(item.zone),
+      name: faceDown ? 'Hidden card' : (linked?.name ?? 'Unknown'),
+      image_url: faceDown ? null : (linked?.image_url ?? null),
+      type_line: faceDown ? null : (linked?.type_line ?? null),
+      controller_player_id: item.controller_player_id ?? null,
+      is_face_down: faceDown,
+    }
+  }
+
+  return {
+    graveyard: graveyardRows.map(toZoneCard),
+    exile: exileRows.map(toZoneCard),
+    handCount: handCountResult.count ?? 0,
+    libraryCount: libraryCountResult.count ?? 0,
+  }
+}
+
 export async function getControllerCards(
   supabase: SupabaseClient,
   sessionId: string,
@@ -129,7 +203,7 @@ export async function getControllerCards(
     const linkedCardsById = await getLinkedCardsById(
       supabase,
       gameCardRows.map((card) => card.card_id),
-      'id, name, image_url, script, type_line, mana_cost, keywords, power, toughness, power_toughness',
+      'id, name, image_url, script, type_line, mana_cost, oracle_text, keywords, power, toughness, power_toughness',
     )
 
   const missingCardIds = getUniqueCardIds(gameCardRows.map((card) => card.card_id)).filter(

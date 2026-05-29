@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
+  devClearSummoningSickness,
   devMoveCardToZone,
   devPutCardOnBottom,
   devPutCardOnTop,
@@ -112,6 +113,13 @@ export function useJudgeCardTools({
         ? runJudgeAction(
             () => devPutCardOnBottom(supabase, sessionId, selectedCard.id),
             'Moved to bottom of library',
+          )
+        : Promise.resolve(),
+    clearSelectedCardSummoningSickness: () =>
+      selectedCard
+        ? runJudgeAction(
+            () => devClearSummoningSickness(supabase, sessionId, selectedCard.id),
+            'Summoning sickness cleared',
           )
         : Promise.resolve(),
   }

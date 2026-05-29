@@ -210,6 +210,7 @@ export type LinkedCard = {
   script?: CardScript | null
   type_line?: string | null
   mana_cost?: string | null
+  oracle_text?: string | null
   keywords?: string[] | null
   power?: number | null
   toughness?: number | null
@@ -236,6 +237,7 @@ export type BoardCard = {
   image_url: string | null
   type_line?: string | null
   controller_player_id?: string | null
+  is_face_down?: boolean | null
 }
 
 export type ControllerCard = {

@@ -1,0 +1,767 @@
+{
+  "version": 1,
+  "bugs": [
+    {
+      "id": "bug-001",
+      "timestamp": "2026-05-28T09:33:08.014Z",
+      "error_message": "Wrong reference: errors should be issues",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Used \"errors\" instead of \"issues\"",
+      "fix": "Changed errors → issues",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T09:33:08.014Z"
+    },
+    {
+      "id": "bug-002",
+      "timestamp": "2026-05-28T22:43:02.388Z",
+      "error_message": "Missing await",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T22:43:02.388Z"
+    },
+    {
+      "id": "bug-003",
+      "timestamp": "2026-05-29T08:12:12.847Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had \"relative min-h-[100svh] overflow-hidden bg-[#0F11",
+      "fix": "Changed to \"relative min-h-[100svh] overflow-hidden bg-[#0F11",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T08:12:12.847Z"
+    },
+    {
+      "id": "bug-004",
+      "timestamp": "2026-05-29T08:13:24.822Z",
+      "error_message": "Wrong operator: === should be &&",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Used \"===\" instead of \"&&\"",
+      "fix": "Changed operator === → &&",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T08:13:24.822Z"
+    },
+    {
+      "id": "bug-005",
+      "timestamp": "2026-05-29T08:18:25.434Z",
+      "error_message": "CSS fix: Center",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Center: grouped step labels */ → grouped step labels — sliding gold pill + opacity fade */",
+      "fix": "Changed Center: grouped step labels */ → grouped step labels — sliding gold pill + opacity fade */",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-29T08:20:56.660Z"
+    },
+    {
+      "id": "bug-006",
+      "timestamp": "2026-05-29T08:32:53.853Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had \"relative min-h-[100svh] overflow-hidden bg-[#0F11",
+      "fix": "Changed to \"relative h-[100svh] overflow-hidden bg-[#0F1117] ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T08:32:53.853Z"
+    },
+    {
+      "id": "bug-007",
+      "timestamp": "2026-05-29T08:33:21.544Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "24 lines replaced/restructured",
+      "fix": "Rewrote 28→3 lines (24 removed) | Also: turnState,; pendingStackItems, | Also: turnState={turnState}; pendingStackItems={pendingStackItems}",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-29T08:34:02.195Z"
+    },
+    {
+      "id": "bug-008",
+      "timestamp": "2026-05-29T09:19:23.170Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T09:19:23.170Z"
+    },
+    {
+      "id": "bug-009",
+      "timestamp": "2026-05-29T09:25:48.096Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "45 lines replaced/restructured",
+      "fix": "Rewrote 97→57 lines (45 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T09:25:48.096Z"
+    },
+    {
+      "id": "bug-010",
+      "timestamp": "2026-05-29T09:30:30.142Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T09:30:30.142Z"
+    },
+    {
+      "id": "bug-011",
+      "timestamp": "2026-05-29T09:36:09.604Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/data.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T09:36:09.604Z"
+    },
+    {
+      "id": "bug-012",
+      "timestamp": "2026-05-29T09:36:20.708Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had '@/lib/game/use-controller-game-state'",
+      "fix": "Changed to '@/lib/game/data'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T09:36:20.708Z"
+    },
+    {
+      "id": "bug-013",
+      "timestamp": "2026-05-29T09:37:28.114Z",
+      "error_message": "Missing error handling in OpponentBoardOverlay",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T09:37:28.114Z"
+    },
+    {
+      "id": "bug-014",
+      "timestamp": "2026-05-29T09:51:00.533Z",
+      "error_message": "Type error",
+      "file": "lib/game/data.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T09:51:00.533Z"
+    },
+    {
+      "id": "bug-015",
+      "timestamp": "2026-05-29T09:51:12.565Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 13→26 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T09:51:12.565Z"
+    },
+    {
+      "id": "bug-016",
+      "timestamp": "2026-05-29T10:08:55.985Z",
+      "error_message": "CSS fix: label, opacity, type",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "label: 'Exile', value: zoneData?.exile.length ?? '—', color: 'text-amber-400' → 'Library', value: zoneData?.libraryCount ?? '—', color: 'text-blue-300'; opacity: 0 → 0, x: 8; type: 'spring', damping: 32, stiffness: 320 → 'spring', stiffness: 400, damping: 35",
+      "fix": "Changed label: 'Exile', value: zoneData?.exile.length ?? '—', color: 'text-amber-400' → 'Library', value: zoneData?.libraryCount ?? '—', color: 'text-blue-300'; opacity: 0 → 0, x: 8; type: 'spring', damping: 32, stiffness: 320 → 'spring', stiffness: 400, damping: 35",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T10:08:55.985Z"
+    },
+    {
+      "id": "bug-017",
+      "timestamp": "2026-05-29T10:15:00.691Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T10:15:00.691Z"
+    },
+    {
+      "id": "bug-018",
+      "timestamp": "2026-05-29T10:15:32.572Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T10:15:32.572Z"
+    },
+    {
+      "id": "bug-019",
+      "timestamp": "2026-05-29T10:16:06.681Z",
+      "error_message": "CSS fix: tab",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "tab: 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     color: 'text-amber-500' → 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     countCls: 'text-amber-500'",
+      "fix": "Changed tab: 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     color: 'text-amber-500' → 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     countCls: 'text-amber-500'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T10:16:06.681Z"
+    },
+    {
+      "id": "bug-020",
+      "timestamp": "2026-05-29T10:25:14.869Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T10:25:14.869Z"
+    },
+    {
+      "id": "bug-021",
+      "timestamp": "2026-05-29T10:32:22.254Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T10:32:22.254Z"
+    },
+    {
+      "id": "bug-022",
+      "timestamp": "2026-05-29T10:33:15.941Z",
+      "error_message": "P0001: Use this spell action to cast instant and sorcery cards",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "CardActionSheet always called castCardFromHand for all hand cards. Counterspells require putCounterSpellOnStack with a targetStackItemId.",
+      "fix": "castSpell action now checks doesCardRequireStackTarget. If true and stack has items, routes to putCounterSpellOnStack targeting the top stack item.",
+      "tags": [
+        "counterspell",
+        "stack",
+        "rpc"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T10:33:15.942Z"
+    },
+    {
+      "id": "bug-023",
+      "timestamp": "2026-05-29T10:39:09.371Z",
+      "error_message": "CSS fix: Left",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Left: username + turn */ → active-player dot + username + turn */",
+      "fix": "Changed Left: username + turn */ → active-player dot + username + turn */",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-29T10:39:43.176Z"
+    },
+    {
+      "id": "bug-024",
+      "timestamp": "2026-05-29T10:47:08.380Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: const isLand = card.cards?.type_line?.toLowerCase().includes; const manaCost = parseManaCost(card.cards?.mana_cost)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-29T10:47:39.761Z"
+    },
+    {
+      "id": "bug-025",
+      "timestamp": "2026-05-29T12:18:09.472Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "13 lines replaced/restructured",
+      "fix": "Rewrote 67→47 lines (13 removed) | Also: turnState={turnState}; playerId={playerId}",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-29T12:18:15.203Z"
+    },
+    {
+      "id": "bug-026",
+      "timestamp": "2026-05-29T12:35:50.986Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "10 lines replaced/restructured",
+      "fix": "Rewrote 33→42 lines (10 removed) | Also: <div className=\"flex h-12 shrink-0 items-center ju; className=\"flex items-center gap-1.5 rounded-lg bo | Also: <div className=\"flex h-9 shrink-0 items-center jus; <button",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-29T12:36:09.432Z"
+    },
+    {
+      "id": "bug-027",
+      "timestamp": "2026-05-29T12:44:27.489Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T12:44:27.489Z"
+    },
+    {
+      "id": "bug-028",
+      "timestamp": "2026-05-29T12:45:53.487Z",
+      "error_message": "declare_attacker 400 — Creature has summoning sickness",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "DeclareAttackersLayout showed all untapped creatures without checking summoning sickness. Server rejects creatures that entered_battlefield_turn_number >= turn_number without haste.",
+      "fix": "Added isAttackable() check mirroring server validation. Sick creatures show at 45% opacity with Sick badge and are un-selectable. Error display moved above action bar to be always visible.",
+      "tags": [
+        "summoning-sickness",
+        "declare-attackers",
+        "combat"
+      ],
+      "related_bugs": [
+        "bug-001"
+      ],
+      "occurrences": 3,
+      "last_seen": "2026-05-29T12:45:53.488Z"
+    },
+    {
+      "id": "bug-029",
+      "timestamp": "2026-05-29T12:51:08.524Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had \"relative h-[100svh] overflow-hidden bg-[#0F1117] ",
+      "fix": "Changed to \"relative h-[100svh] overflow-hidden bg-[#0F1117] ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T12:51:08.524Z"
+    },
+    {
+      "id": "bug-030",
+      "timestamp": "2026-05-29T12:58:37.947Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/data.ts",
+      "root_cause": "Had 'id, name, image_url, script, type_line, mana_cost",
+      "fix": "Changed to 'id, name, image_url, script, type_line, mana_cost",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T12:58:37.947Z"
+    },
+    {
+      "id": "bug-031",
+      "timestamp": "2026-05-29T12:59:23.556Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: const maxHandSize = 7; const mustDiscard = isActivePlayer && turnState?.step === 'c | Also: {/* ── Combat damage strip ─────────────────────────────────; {(turnState?.step === 'combat_damage' || turnState?.step === | Also: // ─── Combat Damage Strip ─────────────────────────────────; function CombatDamageStrip({",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-05-29T13:01:27.344Z"
+    },
+    {
+      "id": "bug-032",
+      "timestamp": "2026-05-29T13:00:19.388Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T13:00:19.388Z"
+    },
+    {
+      "id": "bug-033",
+      "timestamp": "2026-05-29T13:00:35.856Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 33→48 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T13:00:35.856Z"
+    },
+    {
+      "id": "bug-034",
+      "timestamp": "2026-05-29T13:12:11.654Z",
+      "error_message": "CSS fix: id",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "id: a.attacker_card_id, name: a.attacker_name ?? 'Attacker', image_url: attackerCard?.image_url, is_tapped: true, damage_marked: 0, zone: 'battlefield' → b.blocker_card_id, name: b.blocker_name ?? 'Blocker', image_url: blockerCard?.image_url, is_tapped: false, damage_marked: 0, zone: 'battlefield'",
+      "fix": "Changed id: a.attacker_card_id, name: a.attacker_name ?? 'Attacker', image_url: attackerCard?.image_url, is_tapped: true, damage_marked: 0, zone: 'battlefield' → b.blocker_card_id, name: b.blocker_name ?? 'Blocker', image_url: blockerCard?.image_url, is_tapped: false, damage_marked: 0, zone: 'battlefield'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T13:12:11.654Z"
+    },
+    {
+      "id": "bug-035",
+      "timestamp": "2026-05-29T13:12:51.500Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T13:12:51.500Z"
+    },
+    {
+      "id": "bug-036",
+      "timestamp": "2026-05-29T13:13:18.071Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T13:13:18.071Z"
+    },
+    {
+      "id": "bug-037",
+      "timestamp": "2026-05-29T13:21:44.287Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: type SpellPlan =; | { kind: 'player_damage'; amount: number; timing: 'instant' | Also: // Plain cast — permanents and untargeted spells; // Targeted player-damage spell (Lightning Bolt etc.) | Also: {canCast && !picking && (; onClick={handleCast}",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-05-29T13:26:35.170Z"
+    },
+    {
+      "id": "bug-038",
+      "timestamp": "2026-05-29T13:23:12.650Z",
+      "error_message": "V4 controller: combat damage never resolved — attacking dealt no damage",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "V4 removed all manual step controls and left only PASS. advance_step from combat_damage to end_of_combat does not call resolve_combat_damage, and V4 never invoked the RPC, so passing priority through combat_damage skipped damage entirely.",
+      "fix": "Added combat damage resolution to PriorityPanel: during combat_damage step the active player sees a Resolve button that calls resolve_combat_damage. Tracks returned damage_stage (first_strike vs regular) to handle the two-pass first/double strike flow; switches back to PASS once the regular pass resolves. Resets stage on leaving the step.",
+      "tags": [
+        "combat",
+        "combat-damage",
+        "v4",
+        "priority",
+        "resolve"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T13:23:12.651Z"
+    },
+    {
+      "id": "bug-039",
+      "timestamp": "2026-05-29T13:29:43.507Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had \"flex w-[90px] shrink-0 items-center gap-1.5\"",
+      "fix": "Changed to \"flex shrink-0 items-center gap-1.5\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T13:29:43.507Z"
+    },
+    {
+      "id": "bug-040",
+      "timestamp": "2026-05-29T13:29:50.758Z",
+      "error_message": "CSS fix: Right",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Right: library count + priority indicator + life */ → mana pool + library count + priority indicator + life */",
+      "fix": "Changed Right: library count + priority indicator + life */ → mana pool + library count + priority indicator + life */",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T13:29:50.758Z"
+    },
+    {
+      "id": "bug-041",
+      "timestamp": "2026-05-29T14:02:27.496Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: function KeywordBadges({ keywords }: { keywords: string[] }); if (keywords.length === 0) return null | Also: canOrderBlockers,; onSetBlockerOrder,",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-29T14:05:07.910Z"
+    },
+    {
+      "id": "bug-042",
+      "timestamp": "2026-05-29T14:05:32.871Z",
+      "error_message": "Missing await",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T14:05:32.871Z"
+    },
+    {
+      "id": "bug-043",
+      "timestamp": "2026-05-29T14:06:26.145Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "No early return/throw for edge case: target < 0 || target >= next.length",
+      "fix": "Added guard clause: if (target < 0 || target >= next.length)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T14:06:26.145Z"
+    },
+    {
+      "id": "bug-044",
+      "timestamp": "2026-05-29T14:26:09.308Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Condition was: if (step === 'declare_blockers' && incomingAttackers.l)",
+      "fix": "Changed to: if (step === 'declare_blockers' && incomingAttackers.l)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T14:26:09.308Z"
+    },
+    {
+      "id": "bug-045",
+      "timestamp": "2026-05-29T14:27:26.399Z",
+      "error_message": "V4: after declaring blockers the game is stuck — DeclareBlockersLayout stays shown and step never advances",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "layoutState returned declare_blockers whenever step===declare_blockers AND incomingAttackers>0, without checking priority. After the defender confirmed and passed priority, step was still declare_blockers with attackers present, so the layout kept showing and trapped them — neither player could complete the priority pass to advance. The declare_attackers layout already gated on hasPriority; declare_blockers did not.",
+      "fix": "Added && hasPriority to the declare_blockers layoutState condition. After the defender passes, priority leaves them, the layout exits to the board (Wait), and the active player can pass to advance to combat_damage.",
+      "tags": [
+        "v4",
+        "combat",
+        "declare-blockers",
+        "priority",
+        "layout",
+        "stuck"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T14:27:26.400Z"
+    },
+    {
+      "id": "bug-046",
+      "timestamp": "2026-05-29T14:34:28.022Z",
+      "error_message": "CSS fix: scale",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "scale: 0.85, opacity: 0 → 0.9, opacity: 0",
+      "fix": "Changed scale: 0.85, opacity: 0 → 0.9, opacity: 0",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T14:34:28.022Z"
+    },
+    {
+      "id": "bug-047",
+      "timestamp": "2026-05-29T14:56:53.589Z",
+      "error_message": "V4 CardZoomOverlay not centered (offset right/down)",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Centering used Tailwind -translate-x-1/2 -translate-y-1/2, but the panel is a Framer motion.div with animate={{scale}}, which writes an inline transform that overrides the Tailwind translate utilities. The centering translate was lost so the top-left corner sat at screen center.",
+      "fix": "Center via flexbox on the backdrop (flex items-center justify-center) and make the panel a child of it. The panel keeps its scale/opacity animation without needing transform-based positioning.",
+      "tags": [
+        "v4",
+        "card-zoom",
+        "framer-motion",
+        "transform",
+        "centering",
+        "css"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T14:56:53.590Z"
+    }
+  ]
+}

@@ -11,6 +11,29 @@ The app has four main screens:
 
 The important design choice is that browser UI does not directly mutate critical game state. Most gameplay changes go through Supabase RPC functions, so rules live close to the database rows they protect.
 
+## Controller Views
+
+The controller page supports several rendering versions, selected with a `?v=` query parameter on `/controller/[id]`:
+
+- default (no param): `ControllerListV2`, the polished tabbed controller.
+- `?v=1`: `ControllerList`, the original legacy controller.
+- `?v=3`: `ControllerListV3`, the bare-HTML state-machine reference.
+- `?v=4`: `ControllerListV4`, the production landscape-mobile controller.
+
+`ControllerListV4` is the current target design. It is a single-screen landscape layout that adapts to the turn state instead of using tabs. Its layout state is derived from the turn step, priority, stack, and incoming attackers, and switches between a default board view and dedicated Declare Attackers / Declare Blockers full-screen layouts.
+
+V4 features:
+
+- **Status bar** with a sliding gold step indicator (grouped phases), active-player dot, floating mana pool pips, library count, life total, and a priority (`YOU`) marker.
+- **Card-first interaction.** Tapping a battlefield card with a single simple `{T}: add mana` ability taps it directly; anything more complex opens a bottom `CardActionSheet`. There is no separate mana sidebar — cards are the interaction surface.
+- **CardActionSheet** shows zone-aware abilities (a land in hand offers Play, not its battlefield mana ability), a Cast button with mana-cost pips, mana abilities, and a tappable thumbnail that opens a full `CardZoomOverlay` with oracle text.
+- **Playability glow.** During a priority window, castable cards get an amber ring and uncastable ones dim. Affordability is checked against untapped lands plus floating mana, and lands respect the one-per-turn limit.
+- **Combat layouts.** Declare Attackers filters out summoning-sick creatures (no haste) and tapped creatures. Confirming declarations passes priority rather than force-advancing the step, so opponents get their instant-speed window. A combat-damage strip shows attacker → blocker matchups.
+- **Opponent inspection.** Compact opponent pills show life, hand count, permanents, and graveyard count at a glance; tapping one opens an `OpponentBoardOverlay` with tabbed Board / Graveyard / Exile zones. Face-down exiled cards render hidden.
+- **Own zones.** `GY` and `EX` buttons on the hand strip open a `MyZonesSheet` for your graveyard and exile.
+- **Cleanup discard.** When it is your cleanup step and your hand is over seven cards, a discard banner appears and tapping hand cards discards them to the graveyard.
+- **Priority is pass-only.** There is no "next step" shortcut in V4; the step advances on the server only when all players pass priority, so every player always receives priority.
+
 ## Tech Stack
 
 - Next.js App Router
@@ -174,6 +197,10 @@ lib/game/
   actions.ts                  Client wrappers around RPCs and Edge Functions
   data.ts                     Client read/query helpers and normalizers
   types.ts                    Shared TypeScript domain types
+  card-behavior-schema.ts     Zod schemas for V1 and V2 card scripts, validateCardScript()
+
+scripts/
+  validate-card-scripts.ts    Audit script — validates all card scripts in the DB
 
 supabase/
   migrations/                 Database schema, RLS, and RPC rules
@@ -241,6 +268,8 @@ Reference card data lives in `cards`. Per-game state lives in `game_*` tables.
 - `position_y`
 - `copied_script`
 - `static_effects_suppressed`
+- `entered_battlefield_turn_number`: turn the card entered the battlefield, used for summoning sickness
+- `is_face_down`: card is exiled face-down and hidden from other players
 
 `game_players`
 
@@ -332,6 +361,7 @@ Currently gated dev controls:
 - Manual card tap/untap button.
 - Manual battlefield zone moves such as `To Hand` and `Graveyard`.
 - Player action panel with manual draw, untap all, and clear mana.
+- Judge card tools, including `Clear Summoning Sickness` on battlefield cards (zeroes `entered_battlefield_turn_number` via `dev_clear_summoning_sickness`).
 
 Normal gameplay controls remain visible without this flag, including play/cast, card script actions, combat controls, priority passing, stack display, turn status, mana pool, and life totals.
 
@@ -418,6 +448,36 @@ Combat and results:
 - `resolve_combat_damage(session_id)`
 - `adjust_player_life(session_id, target_player_id, delta)`
 - `maybe_finish_game_session(session_id)`
+
+## Card Script Validation
+
+`cards.script` is validated at runtime using Zod schemas defined in `lib/game/card-behavior-schema.ts`.
+
+The validator understands both the V1 legacy format (`{ actions, triggers, continuous_effects }`) and the V2 structured format (`{ schema_version: 2, spell_effect, activated_abilities, ... }`). Version detection mirrors `getCardBehaviorVersion` in `card-behavior.ts`.
+
+In development (`NODE_ENV === 'development'`), `normalizeCardBehaviorToV2` automatically warns in the browser console whenever a card with an invalid script is loaded:
+
+```text
+[card-behavior] Invalid card script (v1):
+  • actions.0.color: Invalid enum value. Expected 'W' | 'U' | 'B' | 'R' | 'G' | 'C'
+```
+
+To audit all card scripts in the database:
+
+```powershell
+npm run validate:scripts
+```
+
+This requires `NEXT_PUBLIC_SUPABASE_URL` and either `SUPABASE_SERVICE_ROLE_KEY` (preferred) or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the environment. It exits with code 1 and prints every failing card and field if any scripts are invalid.
+
+The validator enforces:
+
+- `.strict()` at the top level of both V1 and V2 — no hallucinated top-level keys.
+- Known action types (`add_mana`, `deal_damage`, `counter_spell` in V1; `add_mana`, `deal_damage`, `counter` in V2) are validated with their required fields.
+- `color` on `add_mana` must be one of `W`, `U`, `B`, `R`, `G`, `C`.
+- Unknown action types pass through, so adding new mechanics does not require updating the schema first.
+
+Never auto-generate `cards.script` content from oracle text. Always add scripts through deliberate migrations or a future override system.
 
 ## Card Scripts
 
@@ -523,12 +583,15 @@ Continuous effects are registered into `game_continuous_effects` when the source
 
 Imported Scryfall `cards.keywords` are also used for supported built-in keyword effects. The current keyword-to-effect mapping is:
 
+- `Flying` -> `flying`
+- `Reach` -> `reach`
 - `Haste` -> `haste`
 - `Vigilance` -> `vigilance`
 - `Trample` -> `trample`
 - `Indestructible` -> `indestructible`
 - `First strike` -> `first_strike`
 - `Double strike` -> `double_strike`
+- `Deathtouch` -> `deathtouch`
 
 Other imported keywords are kept as card metadata, but they do not affect rules until the engine supports them.
 
@@ -558,6 +621,17 @@ Real continuous-effect cards added by migration:
 - `Colossal Dreadmaw`: Creature, `{4}{G}{G}`, has trample and can push excess combat damage through blockers.
 - `White Knight`: Creature, `{W}{W}`, has first strike.
 - `Fencing Ace`: Creature, `{1}{W}`, has double strike.
+- `Serra Angel`: Creature, `{3}{W}{W}`, has flying and vigilance (script updated to include both explicitly).
+
+Test cards added by migration for flying/reach:
+
+- `Air Elemental Test`: Creature, `{2}{U}{U}`, 4/4, has flying.
+- `Silhana Ledgewalker Test`: Creature, `{1}{G}`, 1/1, has reach.
+
+Test cards added by migration for deathtouch:
+
+- `Deathtouch Viper Test`: Creature, `{B}`, 1/1, has deathtouch.
+- `Deathtouch Trampler Test`: Creature, `{3}{B}{G}`, 5/5, has deathtouch and trample (assigns 1 to each blocker, tramples the rest to the player).
 
 The controller view includes a compact `Static effects` panel on battlefield cards for early lifecycle testing:
 
@@ -635,6 +709,7 @@ Current attacking behavior:
 - `indestructible` continuous effects prevent lethal damage from moving the creature to graveyard.
 - `first_strike` continuous effects let a creature deal damage in the first-strike combat damage pass.
 - `double_strike` continuous effects let a creature deal damage in both first-strike and regular combat damage passes.
+- `deathtouch` continuous effects make any amount of damage (>= 1) from the source lethal. A deathtouch attacker assigns only 1 to each blocker; combined with `trample`, the rest tramples to the defending player automatically.
 
 Current Instant/Sorcery behavior:
 
@@ -701,6 +776,7 @@ Current limitations:
 - No protection/prevention/replacement effects.
 - Multiple-blocker damage amounts are still automatic; there is no player-chosen over-assignment yet.
 - No planeswalker/battle targets.
+- Flying legality is enforced by `declare_blocker`. If the attacker has a `flying` continuous effect, only blockers with `flying` or `reach` are accepted. Make sure to call `Rebuild Effects` (or `register_card_continuous_effects`) after a flying or reach card enters the battlefield so the effect is registered before combat.
 
 ## Realtime
 
@@ -839,6 +915,12 @@ Run migrations in order. Current migration list:
 202605010059_update_deck_list.sql
 202605010060_fix_deck_import_quantity_parser.sql
 202605010061_deck_owner_id_compat.sql
+202605010062_judge_draw_tools.sql
+202605010063_card_behavior_compat.sql
+202605010064_flying_and_reach.sql
+202605010065_dev_clear_summoning_sickness.sql
+202605010066_exile_face_down.sql
+202605010067_deathtouch.sql
 ```
 
 ## Adding New Card Mechanics
@@ -956,6 +1038,23 @@ Where to apply it:
 - In `declare_attacker`.
 - If the attacker has vigilance, do not tap it.
 
+Example: flying and reach
+
+```json
+{ "effect_type": "flying", "affected_card_id": "game_card_id", "payload": {} }
+```
+
+```json
+{ "effect_type": "reach", "affected_card_id": "game_card_id", "payload": {} }
+```
+
+Where to apply it:
+
+- In `declare_blocker`.
+- If the attacker has a `flying` continuous effect, only blockers with `flying` or `reach` are accepted.
+- `reach` alone does not grant flying — a reach creature is still blocked normally by non-flying creatures.
+- After the full Scryfall import, `Flying` and `Reach` in `cards.keywords` are automatically registered via `register_card_continuous_effects`.
+
 Example: first strike and double strike
 
 ```json
@@ -1050,6 +1149,7 @@ Done:
 - [x] Indestructible
 - [x] Multiple blockers and automatic damage assignment
 - [x] First strike / double strike
+- [x] Deathtouch (lethal at 1 damage, interacts with trample)
 - [x] Player-chosen blocker order
 - [x] Basic counterspell stack cancellation
 - [x] Supported keyword effects from imported Scryfall `keywords`
@@ -1060,22 +1160,23 @@ Done:
 
 High-value next work:
 
-- [ ] Full Scryfall card catalog import validation
-- [ ] Card script override system separate from imported Scryfall metadata
-- [ ] Flying and Reach combat legality
+- [x] Zod schema validation for `cards.script` (V1 + V2), dev-mode console warnings, and `npm run validate:scripts` audit tool
+- [x] Flying and Reach combat legality
+- [x] Cleanup hand-size discard (V4 controller)
+- [x] Landscape-mobile production controller (V4) with card-first interaction, zone inspection, and pass-only priority
 - [ ] Player-chosen combat damage over-assignment amounts
 - [ ] Token creation
 - [ ] Counters, starting with +1/+1 counters
 - [ ] Temporary until-end-of-turn power/toughness effects
-- [ ] Cleanup hand-size discard
+- [ ] Card script override system separate from imported Scryfall metadata
 - [ ] Real card-specific UI/actions for copy, control-change, and suppression effects
 - [ ] Real card implementations for mana-retention effects, parked until later
-- [ ] Better card script schema validation
 - [ ] Scheduled cleanup for old finished game runtime data
 
 ## Known Caveats
 
-- Counterspell cancellation exists, but there is no full target legality/replacement/protection model yet.
+- Counterspell cancellation exists, but there is no full target legality/replacement/protection model yet. In the V4 controller, casting a counterspell auto-targets the top (most recently cast) stack item; there is no per-item target picker yet.
+- The V4 `CardActionSheet` lists non-mana activated abilities but they are not yet server-wired, so they show as `Soon`.
 - Instant/Sorcery cards still move from hand to graveyard when put on the stack. Permanent spells use the `stack` zone.
 - Mana cost parsing is intentionally simple.
 - Priority is good enough for early stack work, but not a full rules-engine implementation.

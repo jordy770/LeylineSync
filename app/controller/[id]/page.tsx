@@ -1,7 +1,7 @@
 import ControllerList from '@/components/ControllerList';
 import ControllerListV2 from '@/components/ControllerListV2';
 import ControllerListV3 from '@/components/ControllerListV3';
-import ControllerViewNav from '@/components/layout/ControllerViewNav';
+import ControllerListV4 from '@/components/ControllerListV4';
 import { Suspense } from 'react';
 
 export default function ControllerPage({
@@ -29,12 +29,14 @@ async function ControllerContent({
   const { v } = await searchParams;
   const useLegacyController = v === '1';
   const useControllerV3 = v === '3';
+  const useControllerV4 = v === '4';
 
   return (
     <main className="leyline-table-bg min-h-screen overflow-visible text-white">
-      <ControllerViewNav sessionId={id} isLegacy={useLegacyController} />
-      
-      {useControllerV3 ? (
+
+      {useControllerV4 ? (
+        <ControllerListV4 sessionId={id} />
+      ) : useControllerV3 ? (
         <ControllerListV3 sessionId={id} />
       ) : useLegacyController ? (
         <ControllerList sessionId={id} />

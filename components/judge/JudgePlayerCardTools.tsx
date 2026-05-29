@@ -31,6 +31,7 @@ export default function JudgePlayerCardTools({
     updateSelectedCardDamage,
     putSelectedCardOnTop,
     putSelectedCardOnBottom,
+    clearSelectedCardSummoningSickness,
   } = useJudgeCardTools({
     sessionId,
     playerId,
@@ -136,6 +137,17 @@ export default function JudgePlayerCardTools({
                   Bottom Library
                 </button>
               </div>
+
+              {selectedCard.zone === 'battlefield' ? (
+                <button
+                  type="button"
+                  disabled={isSessionFinished || isPending}
+                  onClick={clearSelectedCardSummoningSickness}
+                  className="w-full rounded-md border border-violet-300/20 bg-violet-950/30 px-3 py-2 text-sm font-semibold text-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Clear Summoning Sickness
+                </button>
+              ) : null}
             </>
           ) : null}
         </div>

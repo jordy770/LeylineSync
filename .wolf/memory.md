@@ -1,0 +1,304 @@
+# Memory
+
+> Chronological action log. Hooks and AI append to this file automatically.
+> Old sessions are consolidated by the daemon weekly.
+
+| 13:50 | Read design-conversation-summary.md and persisted key context to Claude memory system | docs/design-conversation-summary.md, .claude/projects/.../memory/ | 6 memory files written (overview, hard rules, architecture, roadmap, styling, workflow) | ~500 |
+
+| 2026-05-27 | Designed Declare Blockers v5 — true MTG 5:7 card ratio + horizontal scroll for unlimited attackers | pencil-new.pen (frame HIB35) | ✅ approved by user |
+
+## Session: 2026-05-27 23:17
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 23:34 | Created .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_overview.md | — | ~309 |
+| 23:34 | Created .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_hard_rules.md | — | ~419 |
+| 23:35 | Created .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_architecture.md | — | ~504 |
+| 23:35 | Created .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | — | ~503 |
+| 23:35 | Created .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/feedback_workflow.md | — | ~300 |
+| 23:38 | Created .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_styling.md | — | ~427 |
+| 23:38 | Created .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | — | ~208 |
+| 23:38 | Session end: 7 writes across 7 files (project_overview.md, project_hard_rules.md, project_architecture.md, project_roadmap.md, feedback_workflow.md) | 6 reads | ~14860 tok |
+| 23:41 | Created .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/reference_pencil_designs.md | — | ~302 |
+| 23:41 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~75 |
+| 23:41 | Session end: 9 writes across 8 files (project_overview.md, project_hard_rules.md, project_architecture.md, project_roadmap.md, feedback_workflow.md) | 6 reads | ~15264 tok |
+| 00:16 | Session end: 9 writes across 8 files (project_overview.md, project_hard_rules.md, project_architecture.md, project_roadmap.md, feedback_workflow.md) | 6 reads | ~15264 tok |
+| 00:37 | Created lib/game/card-behavior-schema.ts | — | ~2132 |
+
+## Session: 2026-05-28 11:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-28 11:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:31 | Created scripts/validate-card-scripts.ts | — | ~559 |
+| 11:32 | Edited lib/game/card-behavior-schema.ts | inline fix | ~16 |
+| 11:32 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~69 |
+| 11:32 | Edited lib/game/card-behavior-schema.ts | 6→6 lines | ~71 |
+| 11:33 | Edited lib/game/card-behavior-schema.ts | 6→6 lines | ~74 |
+| 11:33 | Edited lib/game/card-behavior-schema.ts | inline fix | ~14 |
+| 11:33 | Edited lib/game/card-behavior-schema.ts | inline fix | ~17 |
+| 22:58 | Edited package.json | 1→2 lines | ~37 |
+| 22:58 | Session: card-behavior-schema.ts (Zod v4 schemas for V1+V2), validate-card-scripts.ts audit script, validate:scripts npm script — tsc + lint clean | lib/game/card-behavior-schema.ts, scripts/validate-card-scripts.ts, package.json | ✓ complete | ~3500 |
+| 22:59 | Session end: 8 writes across 3 files (validate-card-scripts.ts, card-behavior-schema.ts, package.json) | 2 reads | ~1183 tok |
+| 23:08 | Session end: 8 writes across 3 files (validate-card-scripts.ts, card-behavior-schema.ts, package.json) | 2 reads | ~1183 tok |
+| 23:20 | Session end: 8 writes across 3 files (validate-card-scripts.ts, card-behavior-schema.ts, package.json) | 2 reads | ~1183 tok |
+| 23:21 | Edited lib/game/card-behavior.ts | added 1 import(s) | ~45 |
+| 23:22 | Edited lib/game/card-behavior.ts | added 2 condition(s) | ~154 |
+| 23:26 | Session end: 10 writes across 4 files (validate-card-scripts.ts, card-behavior-schema.ts, package.json, card-behavior.ts) | 2 reads | ~1382 tok |
+| 23:30 | Session end: 10 writes across 4 files (validate-card-scripts.ts, card-behavior-schema.ts, package.json, card-behavior.ts) | 2 reads | ~1382 tok |
+| 23:39 | Edited README.md | 4→8 lines | ~108 |
+| 23:39 | Edited README.md | modified script() | ~436 |
+| 23:39 | Edited README.md | modified script() | ~37 |
+| 23:39 | Edited README.md | 12→11 lines | ~181 |
+| 23:43 | Created supabase/migrations/202605010064_flying_and_reach.sql | — | ~3605 |
+| 23:43 | Edited README.md | 8→10 lines | ~92 |
+| 23:43 | Edited README.md | 5→6 lines | ~142 |
+| 23:43 | Edited README.md | expanded (+6 lines) | ~92 |
+| 23:44 | Edited README.md | 2→5 lines | ~40 |
+| 23:44 | Edited README.md | inline fix | ~11 |
+| 23:44 | Edited README.md | expanded (+17 lines) | ~174 |
+| 23:47 | Session end: 21 writes across 6 files (validate-card-scripts.ts, card-behavior-schema.ts, package.json, card-behavior.ts, README.md) | 7 reads | ~28949 tok |
+
+## Session: 2026-05-29 00:51
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:51 | Added dev_clear_summoning_sickness judge tool | 202605010065_dev_clear_summoning_sickness.sql, actions.ts, use-judge-card-tools.ts, JudgePlayerCardTools.tsx | ✅ working | ~800 |
+
+## Session: 2026-05-28 00:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:42 | Created supabase/migrations/202605010065_dev_clear_summoning_sickness.sql | — | ~369 |
+| 00:43 | Edited lib/game/actions.ts | added 1 condition(s) | ~103 |
+| 00:43 | Edited lib/game/use-judge-card-tools.ts | 9→10 lines | ~57 |
+| 00:43 | Edited lib/game/use-judge-card-tools.ts | expanded (+7 lines) | ~144 |
+| 00:43 | Edited components/judge/JudgePlayerCardTools.tsx | 17→18 lines | ~113 |
+| 00:43 | Edited components/judge/JudgePlayerCardTools.tsx | expanded (+11 lines) | ~414 |
+| 00:43 | Session end: 6 writes across 4 files (202605010065_dev_clear_summoning_sickness.sql, actions.ts, use-judge-card-tools.ts, JudgePlayerCardTools.tsx) | 17 reads | ~40714 tok |
+| 00:52 | Session end: 6 writes across 4 files (202605010065_dev_clear_summoning_sickness.sql, actions.ts, use-judge-card-tools.ts, JudgePlayerCardTools.tsx) | 18 reads | ~40714 tok |
+| 00:53 | Session end: 6 writes across 4 files (202605010065_dev_clear_summoning_sickness.sql, actions.ts, use-judge-card-tools.ts, JudgePlayerCardTools.tsx) | 20 reads | ~41185 tok |
+| 00:55 | Session end: 6 writes across 4 files (202605010065_dev_clear_summoning_sickness.sql, actions.ts, use-judge-card-tools.ts, JudgePlayerCardTools.tsx) | 21 reads | ~51273 tok |
+| 00:58 | Session end: 6 writes across 4 files (202605010065_dev_clear_summoning_sickness.sql, actions.ts, use-judge-card-tools.ts, JudgePlayerCardTools.tsx) | 21 reads | ~51273 tok |
+| 01:03 | Created components/ControllerListV4.tsx | — | ~10155 |
+
+## Session: 2026-05-28 01:05
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 01:05 | Edited app/controller/[id]/page.tsx | added 1 import(s) | ~100 |
+| 01:05 | Edited app/controller/[id]/page.tsx | modified return() | ~163 |
+| 01:06 | Session end: 2 writes across 1 files (page.tsx) | 1 reads | ~652 tok |
+| 01:15 | Session end: 2 writes across 1 files (page.tsx) | 2 reads | ~10807 tok |
+| 01:20 | Session end: 2 writes across 1 files (page.tsx) | 2 reads | ~10807 tok |
+| 01:24 | Session end: 2 writes across 1 files (page.tsx) | 2 reads | ~10807 tok |
+| 01:36 | Created components/ControllerListV4.tsx | — | ~12927 |
+| 01:37 | Session end: 3 writes across 2 files (page.tsx, ControllerListV4.tsx) | 6 reads | ~25793 tok |
+
+## Session: 2026-05-29 10:02
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-29 10:02
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:12 | Edited components/ControllerListV4.tsx | "relative min-h-[100svh] o" → "relative min-h-[100svh] o" | ~26 |
+| 10:13 | Edited components/ControllerListV4.tsx | 5→5 lines | ~60 |
+| 10:13 | Edited components/ControllerListV4.tsx | modified ManaPoolDisplay() | ~207 |
+| 10:13 | Session end: 3 writes across 1 files (ControllerListV4.tsx) | 1 reads | ~293 tok |
+| 10:18 | Edited components/ControllerListV4.tsx | expanded (+6 lines) | ~334 |
+| 10:18 | Edited components/ControllerListV4.tsx | CSS: hasPriority | ~59 |
+| 10:20 | Edited components/ControllerListV4.tsx | CSS: opacity, opacity | ~188 |
+| 10:21 | Edited components/ControllerListV4.tsx | inline fix | ~36 |
+| 10:22 | Session end: 7 writes across 1 files (ControllerListV4.tsx) | 1 reads | ~910 tok |
+| 10:32 | Edited components/ControllerListV4.tsx | "relative min-h-[100svh] o" → "relative h-[100svh] overf" | ~25 |
+| 10:33 | Edited components/ControllerListV4.tsx | 7→7 lines | ~60 |
+| 10:33 | Edited components/ControllerListV4.tsx | removed 28 lines | ~28 |
+| 10:33 | Edited components/ControllerListV4.tsx | modified MainArea() | ~105 |
+| 10:34 | Edited components/ControllerListV4.tsx | 11→8 lines | ~90 |
+| 10:34 | Session end: 12 writes across 1 files (ControllerListV4.tsx) | 1 reads | ~1218 tok |
+| 11:19 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~1086 |
+| 11:19 | Session end: 13 writes across 1 files (ControllerListV4.tsx) | 1 reads | ~2304 tok |
+| 11:25 | Edited components/ControllerListV4.tsx | CSS: active | ~649 |
+| 11:27 | Edited components/ControllerListV4.tsx | expanded (+12 lines) | ~324 |
+
+## Session: 2026-05-29 11:27
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-29 11:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-29 11:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:30 | Edited components/ControllerListV4.tsx | added optional chaining | ~1577 |
+| 11:30 | Session end: 1 writes across 1 files (ControllerListV4.tsx) | 1 reads | ~14508 tok |
+| 11:36 | Edited lib/game/data.ts | added optional chaining | ~687 |
+| 11:36 | Edited components/ControllerListV4.tsx | added 2 import(s) | ~54 |
+| 11:36 | Edited components/ControllerListV4.tsx | CSS: supabase, sessionId | ~140 |
+| 11:36 | Edited components/ControllerListV4.tsx | 9→11 lines | ~96 |
+| 11:36 | Edited components/ControllerListV4.tsx | 8→10 lines | ~111 |
+| 11:37 | Edited components/ControllerListV4.tsx | modified OpponentBoardOverlay() | ~2048 |
+| 11:47 | Session end: 7 writes across 2 files (ControllerListV4.tsx, data.ts) | 3 reads | ~23297 tok |
+| 11:50 | Created supabase/migrations/202605010066_exile_face_down.sql | — | ~98 |
+| 11:50 | Edited lib/game/types.ts | 6→7 lines | ~46 |
+| 11:50 | Edited lib/game/data.ts | 12→12 lines | ~140 |
+| 11:51 | Edited lib/game/data.ts | 16→18 lines | ~206 |
+| 11:51 | Edited components/ControllerListV4.tsx | expanded (+13 lines) | ~365 |
+| 11:57 | Session end: 12 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~26073 tok |
+
+| 11:58 | Rebuilt ControllerListV4: removed ManaPanel, added CardActionSheet, OpponentBoardOverlay with zone data (graveyard/exile/hand count/library count), sliding step pill, is_face_down migration 066 | ControllerListV4.tsx, data.ts, types.ts, migrations/066 | ✅ tsc clean | ~8000 || 11:59 | Session end: 12 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~26073 tok |
+| 12:07 | Session end: 12 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~26073 tok |
+| 12:08 | Edited components/ControllerListV4.tsx | modified OpponentBoardOverlay() | ~2956 |
+| 12:09 | Session end: 13 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~30098 tok |
+| 12:12 | Session end: 13 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~30098 tok |
+| 12:14 | Edited components/ControllerListV4.tsx | 4→6 lines | ~147 |
+| 12:14 | Edited components/ControllerListV4.tsx | 10→13 lines | ~150 |
+| 12:14 | Edited components/ControllerListV4.tsx | CSS: pendingStackItems, ownGraveyard, ownExile | ~252 |
+| 12:14 | Edited components/ControllerListV4.tsx | 2→7 lines | ~91 |
+| 12:15 | Edited components/ControllerListV4.tsx | expanded (+33 lines) | ~641 |
+| 12:15 | Edited components/ControllerListV4.tsx | added optional chaining | ~1924 |
+| 12:16 | Edited components/ControllerListV4.tsx | CSS: countCls, countCls | ~232 |
+| 12:16 | Edited components/ControllerListV4.tsx | 8→8 lines | ~130 |
+| 12:16 | Session end: 21 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~38313 tok |
+| 12:25 | Edited components/ControllerListV4.tsx | expanded (+10 lines) | ~127 |
+| 12:25 | Session end: 22 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~38440 tok |
+| 12:32 | Edited components/ControllerListV4.tsx | 9→10 lines | ~74 |
+| 12:32 | Edited components/ControllerListV4.tsx | inline fix | ~38 |
+| 12:32 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~163 |
+| 12:33 | Session end: 25 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~38715 tok |
+| 12:37 | Session end: 25 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~38715 tok |
+| 12:38 | Edited components/ControllerListV4.tsx | 4→5 lines | ~110 |
+| 12:38 | Edited components/ControllerListV4.tsx | expanded (+7 lines) | ~81 |
+| 12:38 | Edited components/ControllerListV4.tsx | 13→15 lines | ~179 |
+| 12:39 | Edited components/ControllerListV4.tsx | CSS: isActivePlayer, libraryCount | ~335 |
+| 12:39 | Edited components/ControllerListV4.tsx | 14→18 lines | ~262 |
+| 12:39 | Edited components/ControllerListV4.tsx | CSS: canCastSorceries, canCastInstants | ~76 |
+| 12:39 | Edited components/ControllerListV4.tsx | expanded (+10 lines) | ~364 |
+| 12:40 | Edited components/ControllerListV4.tsx | 4→6 lines | ~28 |
+| 12:40 | Session end: 33 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~40793 tok |
+| 12:47 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~213 |
+| 12:47 | Edited components/ControllerListV4.tsx | 3→5 lines | ~67 |
+| 12:47 | Edited components/ControllerListV4.tsx | CSS: availableMana, canPlayLand | ~62 |
+| 12:47 | Edited components/ControllerListV4.tsx | 6→8 lines | ~37 |
+| 12:47 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~417 |
+| 12:47 | Session end: 38 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~41589 tok |
+| 14:18 | Edited components/ControllerListV4.tsx | modified PriorityPanel() | ~510 |
+| 14:18 | Edited components/ControllerListV4.tsx | 8→5 lines | ~56 |
+| 14:18 | Session end: 40 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~42155 tok |
+| 14:21 | Edited components/ControllerListV4.tsx | CSS: onPassPriority | ~114 |
+| 14:21 | Edited components/ControllerListV4.tsx | onAdvanceStep() → onPassPriority() | ~203 |
+| 14:21 | Edited components/ControllerListV4.tsx | CSS: onPassPriority | ~138 |
+| 14:22 | Edited components/ControllerListV4.tsx | onAdvanceStep() → onPassPriority() | ~133 |
+| 14:22 | Edited components/ControllerListV4.tsx | 8→8 lines | ~94 |
+| 14:22 | Edited components/ControllerListV4.tsx | 10→10 lines | ~115 |
+| 14:22 | Session end: 46 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~43070 tok |
+| 14:35 | Edited components/ControllerListV4.tsx | CSS: active, active | ~469 |
+| 14:36 | Edited components/ControllerListV4.tsx | CSS: active, active | ~333 |
+| 14:36 | Edited components/ControllerListV4.tsx | reduced (-8 lines) | ~93 |
+| 14:36 | Session end: 49 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~43965 tok |
+| 14:44 | Edited components/ControllerListV4.tsx | CSS: card | ~348 |
+| 14:44 | Edited components/ControllerListV4.tsx | expanded (+8 lines) | ~735 |
+| 14:45 | Edited components/ControllerListV4.tsx | 39→35 lines | ~430 |
+| 14:45 | Session end: 52 writes across 4 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts) | 4 reads | ~45478 tok |
+| 14:50 | Edited app/controller/[id]/page.tsx | 6→5 lines | ~80 |
+| 14:51 | Edited app/controller/[id]/page.tsx | 3→2 lines | ~26 |
+| 14:51 | Edited components/ControllerListV4.tsx | "relative h-[100svh] overf" → "relative h-[100svh] overf" | ~24 |
+| 14:51 | Session end: 55 writes across 5 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 5 reads | ~46046 tok |
+| 14:58 | Edited lib/game/types.ts | 12→13 lines | ~92 |
+| 14:58 | Edited lib/game/data.ts | "id, name, image_url, scri" → "id, name, image_url, scri" | ~32 |
+| 14:58 | Edited components/ControllerListV4.tsx | CSS: active | ~418 |
+| 14:59 | Edited components/ControllerListV4.tsx | expanded (+10 lines) | ~113 |
+| 14:59 | Edited components/ControllerListV4.tsx | added optional chaining | ~791 |
+| 14:59 | Edited components/ControllerListV4.tsx | 10→11 lines | ~80 |
+| 14:59 | Edited components/ControllerListV4.tsx | added optional chaining | ~77 |
+| 14:59 | Edited components/ControllerListV4.tsx | CSS: discardCard, cardId | ~95 |
+| 15:00 | Edited components/ControllerListV4.tsx | 6→9 lines | ~121 |
+| 15:00 | Edited components/ControllerListV4.tsx | CSS: mustDiscard, discardCount, onDiscardCard | ~68 |
+| 15:00 | Edited components/ControllerListV4.tsx | 6→9 lines | ~42 |
+| 15:00 | Edited components/ControllerListV4.tsx | expanded (+10 lines) | ~169 |
+| 15:00 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~611 |
+| 15:00 | Edited components/ControllerListV4.tsx | CSS: combatAssignments, turnState | ~47 |
+| 15:00 | Edited components/ControllerListV4.tsx | 3→5 lines | ~22 |
+| 15:00 | Edited components/ControllerListV4.tsx | 3→5 lines | ~64 |
+| 15:01 | Edited components/ControllerListV4.tsx | added optional chaining | ~137 |
+| 15:01 | Edited components/ControllerListV4.tsx | added optional chaining | ~422 |
+| 15:12 | Edited components/ControllerListV4.tsx | CSS: blockers, blocker_card_id, blocker_name | ~553 |
+| 15:12 | Edited components/ControllerListV4.tsx | 2→2 lines | ~31 |
+| 15:12 | Edited components/ControllerListV4.tsx | added error handling | ~328 |
+| 15:13 | Edited components/ControllerListV4.tsx | added optional chaining | ~405 |
+
+| 15:14 | V4 completeness pass: CardZoomOverlay (oracle text), cleanup discard UI, CombatDamageStrip, opponent pill zone badges (hand/board/GY) | ControllerListV4.tsx, data.ts, types.ts | ✅ tsc clean | ~6000 || 15:14 | Session end: 77 writes across 5 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 5 reads | ~53711 tok |
+| 15:15 | Edited README.md | 8→10 lines | ~101 |
+| 15:15 | Edited README.md | modified default() | ~761 |
+| 15:16 | Edited README.md | 3→5 lines | ~42 |
+| 15:16 | Edited README.md | 3→4 lines | ~86 |
+| 15:16 | Edited README.md | 4→5 lines | ~104 |
+| 15:16 | Edited README.md | 1→2 lines | ~98 |
+
+| 15:16 | Documented V4 controller in README: new Controller Views section, is_face_down + entered_battlefield_turn_number schema, migrations 065/066, dev clear-sickness tool, roadmap + caveats | README.md | ✅ | ~1500 || 15:16 | Session end: 83 writes across 6 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 6 reads | ~64862 tok |
+| 15:21 | Edited components/ControllerListV4.tsx | 4→5 lines | ~38 |
+| 15:21 | Edited components/ControllerListV4.tsx | modified ControllerListV4() | ~116 |
+| 15:21 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~206 |
+| 15:21 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~95 |
+| 15:21 | Edited components/ControllerListV4.tsx | 5→8 lines | ~109 |
+| 15:22 | Edited components/ControllerListV4.tsx | CSS: canResolveCombatDamage, combatDamageStage, onResolveCombatDamage | ~676 |
+| 15:25 | Edited components/ControllerListV4.tsx | 5→6 lines | ~47 |
+| 15:25 | Edited components/ControllerListV4.tsx | added optional chaining | ~372 |
+| 15:25 | Edited components/ControllerListV4.tsx | added optional chaining | ~246 |
+| 15:25 | Edited components/ControllerListV4.tsx | 10→15 lines | ~241 |
+| 15:26 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~596 |
+| 15:26 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~920 |
+| 15:29 | Edited components/ControllerListV4.tsx | 2→2 lines | ~33 |
+| 15:29 | Edited components/ControllerListV4.tsx | 7→8 lines | ~135 |
+| 15:30 | Edited components/ControllerListV4.tsx | inline fix | ~34 |
+| 15:30 | Edited components/ControllerListV4.tsx | — | ~0 |
+| 15:30 | Edited components/ControllerListV4.tsx | 4→3 lines | ~32 |
+| 15:30 | Edited components/ControllerListV4.tsx | modified CardActionSheet() | ~80 |
+
+| 15:31 | V4: fixed combat damage never resolving (Resolve button in PriorityPanel, 2-pass first/double strike), added spell target picker (player-damage + counterspell stack-item), restored mana pool pips in status bar, lint cleanup | ControllerListV4.tsx | ✅ tsc+lint clean | ~5000 || 15:31 | Session end: 101 writes across 6 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 10 reads | ~86200 tok |
+| 15:37 | Session end: 101 writes across 6 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 10 reads | ~86200 tok |
+| 15:41 | Session end: 101 writes across 6 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 10 reads | ~86200 tok |
+| 15:48 | Session end: 101 writes across 6 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 10 reads | ~86200 tok |
+| 15:55 | Created supabase/migrations/202605010067_deathtouch.sql | — | ~6295 |
+| 15:55 | Edited README.md | 3→4 lines | ~30 |
+| 15:55 | Edited README.md | 2→3 lines | ~28 |
+| 15:55 | Edited README.md | 1→2 lines | ~92 |
+| 15:55 | Edited README.md | 2→7 lines | ~104 |
+| 15:56 | Edited README.md | 2→3 lines | ~35 |
+
+| 15:57 | Deathtouch engine: migration 067 (card_has_deathtouch, dealt_deathtouch_damage flag, lethal=1 in resolve, deathtouch-aware mover, register+constraint+keyword map, 2 test cards). Deathtouch+trample assigns 1/blocker then tramples rest automatically | migrations/067, README.md | ✅ tsc clean | ~4000 || 15:57 | Session end: 107 writes across 7 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 14 reads | ~113876 tok |
+| 16:02 | Edited components/ControllerListV4.tsx | added optional chaining | ~315 |
+| 16:02 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~148 |
+| 16:02 | Edited components/ControllerListV4.tsx | 9→12 lines | ~157 |
+| 16:03 | Edited components/ControllerListV4.tsx | 7→9 lines | ~102 |
+| 16:03 | Edited components/ControllerListV4.tsx | 4→5 lines | ~38 |
+| 16:03 | Edited components/ControllerListV4.tsx | expanded (+7 lines) | ~153 |
+| 16:03 | Edited components/ControllerListV4.tsx | CSS: setBlockerOrder, assignmentId, orderedBlockerIds | ~115 |
+| 16:04 | Edited components/ControllerListV4.tsx | 5→7 lines | ~100 |
+| 16:05 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~430 |
+| 16:05 | Edited components/ControllerListV4.tsx | 2→7 lines | ~63 |
+| 16:05 | Edited components/ControllerListV4.tsx | expanded (+15 lines) | ~258 |
+| 16:06 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~2199 |
+| 16:06 | Edited components/ControllerListV4.tsx | 3→4 lines | ~20 |
+
+| 16:12 | V4: keyword badges (getCardKeywords from Scryfall keywords + scripted effects) in card sheet & zoom; blocker damage-order UI (BlockerOrderSheet, up/down reorder, setCombatBlockerOrder) triggered from CombatDamageStrip for 2+ blockers during combat_damage | ControllerListV4.tsx | ✅ tsc+lint clean | ~3500 || 16:12 | Session end: 120 writes across 7 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 14 reads | ~120439 tok |
+| 16:26 | Edited components/ControllerListV4.tsx | 2→5 lines | ~100 |
+| 16:27 | Session end: 121 writes across 7 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 14 reads | ~120544 tok |
+| 16:34 | Edited components/ControllerListV4.tsx | 53→55 lines | ~667 |
+| 16:34 | Session end: 122 writes across 7 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 14 reads | ~121282 tok |
+| 16:54 | Edited components/ControllerListV4.tsx | 17→16 lines | ~188 |
+| 16:54 | Edited components/ControllerListV4.tsx | 8→8 lines | ~73 |
+| 16:57 | Session end: 124 writes across 7 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 14 reads | ~121567 tok |
+| 17:37 | Session end: 124 writes across 7 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 14 reads | ~121567 tok |

@@ -1,4 +1,5 @@
 import type { CardAction, CardContinuousEffect, CardScript, GameZone, ManaColor } from './types'
+import { validateCardScript } from './card-behavior-schema'
 
 export type CardBehaviorSchemaVersion = 1 | 2
 
@@ -119,6 +120,13 @@ export function normalizeCardBehaviorToV2(
 ): CardBehaviorScriptV2 {
   if (!script) {
     return emptyCardBehaviorV2()
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    const validation = validateCardScript(script)
+    if (!validation.success) {
+      console.warn('[card-behavior] Invalid card script (v%d):\n%s', validation.version, validation.errors.map(e => `  • ${e}`).join('\n'), script)
+    }
   }
 
   if (getCardBehaviorVersion(script) === 2) {

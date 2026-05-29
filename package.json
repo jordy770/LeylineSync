@@ -5,6 +5,7 @@
     "build": "next build",
     "start": "next start",
     "import:cards": "node scripts/import-scryfall-cards.mjs",
+    "validate:scripts": "npx tsx scripts/validate-card-scripts.ts",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -23,7 +24,8 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.3.0"
+    "tailwind-merge": "^3.3.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
