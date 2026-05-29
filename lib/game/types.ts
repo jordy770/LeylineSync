@@ -217,6 +217,14 @@ export type LinkedCard = {
   power?: number | null
   toughness?: number | null
   power_toughness?: string | null
+  is_token?: boolean | null
+}
+
+export type TokenCard = {
+  id: string
+  name: string | null
+  type_line: string | null
+  power_toughness: string | null
 }
 
 export type CardCatalogFilters = {

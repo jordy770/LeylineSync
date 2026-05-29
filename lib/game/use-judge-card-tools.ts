@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import {
   adjustCardCounters,
   applyPtPump,
+  createToken,
   devClearSummoningSickness,
   devMoveCardToZone,
   devPutCardOnBottom,
@@ -14,7 +15,8 @@ import {
   devShuffleLibrary,
   getErrorMessage,
 } from './actions'
-import type { ControllerCard, GameZone } from './types'
+import { getTokenCards } from './data'
+import type { ControllerCard, GameZone, TokenCard } from './types'
 
 export function useJudgeCardTools({
   sessionId,
@@ -34,6 +36,15 @@ export function useJudgeCardTools({
   const [damageMarked, setDamageMarked] = useState(0)
   const [isPending, setIsPending] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
+  const [tokenCards, setTokenCards] = useState<TokenCard[]>([])
+
+  useEffect(() => {
+    let cancelled = false
+    getTokenCards(supabase)
+      .then((tokens) => { if (!cancelled) setTokenCards(tokens) })
+      .catch(() => { if (!cancelled) setTokenCards([]) })
+    return () => { cancelled = true }
+  }, [supabase])
 
   const selectedCard = visibleCards.find((card) => card.id === selectedCardId) ?? visibleCards[0] ?? null
 
@@ -74,9 +85,15 @@ export function useJudgeCardTools({
     damageMarked,
     isPending,
     message,
+    tokenCards,
     setSelectedCardId,
     setTargetZone,
     setDamageMarked,
+    createTokenForPlayer: (tokenCardId: string, name: string) =>
+      runJudgeAction(
+        () => createToken(supabase, sessionId, playerId, tokenCardId, 1),
+        `Created ${name}`,
+      ),
     shuffleLibrary: () =>
       runJudgeAction(
         () => devShuffleLibrary(supabase, sessionId, playerId),

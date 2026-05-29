@@ -28,8 +28,8 @@
       "first_read": "2026-05-29T12:50:52.935Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/README.md": {
-      "count": 2,
-      "tokens": 10968,
+      "count": 4,
+      "tokens": 11234,
       "first_read": "2026-05-29T13:15:19.320Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010029_priority_passing.sql": {
@@ -83,13 +83,13 @@
       "first_read": "2026-05-29T16:07:37.106Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/lib/game/use-judge-card-tools.ts": {
-      "count": 1,
-      "tokens": 1111,
+      "count": 3,
+      "tokens": 1402,
       "first_read": "2026-05-29T16:12:25.086Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/components/judge/JudgePlayerCardTools.tsx": {
-      "count": 2,
-      "tokens": 1804,
+      "count": 4,
+      "tokens": 2557,
       "first_read": "2026-05-29T16:12:49.394Z"
     }
   },
@@ -1071,26 +1071,129 @@
       "action": "create",
       "tokens": 288,
       "at": "2026-05-29T20:39:40.257Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "action": "edit",
+      "tokens": 180,
+      "at": "2026-05-29T22:37:06.544Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010070_tokens.sql",
+      "action": "create",
+      "tokens": 1383,
+      "at": "2026-05-29T22:46:30.815Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
+      "action": "edit",
+      "tokens": 94,
+      "at": "2026-05-29T22:46:44.254Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
+      "action": "edit",
+      "tokens": 38,
+      "at": "2026-05-29T22:46:50.217Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
+      "action": "edit",
+      "tokens": 20,
+      "at": "2026-05-29T22:46:56.919Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
+      "action": "edit",
+      "tokens": 111,
+      "at": "2026-05-29T22:47:03.220Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+      "action": "edit",
+      "tokens": 137,
+      "at": "2026-05-29T22:47:09.768Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-judge-card-tools.ts",
+      "action": "edit",
+      "tokens": 102,
+      "at": "2026-05-29T22:47:29.973Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-judge-card-tools.ts",
+      "action": "edit",
+      "tokens": 154,
+      "at": "2026-05-29T22:47:37.267Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-judge-card-tools.ts",
+      "action": "edit",
+      "tokens": 116,
+      "at": "2026-05-29T22:47:48.489Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/judge/JudgePlayerCardTools.tsx",
+      "action": "edit",
+      "tokens": 46,
+      "at": "2026-05-29T22:47:55.836Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/judge/JudgePlayerCardTools.tsx",
+      "action": "edit",
+      "tokens": 332,
+      "at": "2026-05-29T22:48:13.779Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 114,
+      "at": "2026-05-29T22:48:27.479Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "action": "edit",
+      "tokens": 20,
+      "at": "2026-05-29T22:52:24.417Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "action": "edit",
+      "tokens": 79,
+      "at": "2026-05-29T22:52:31.260Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "action": "edit",
+      "tokens": 405,
+      "at": "2026-05-29T22:52:44.970Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.git/COMMITMSG.tmp",
+      "action": "create",
+      "tokens": 287,
+      "at": "2026-05-29T22:55:50.392Z"
     }
   ],
   "edit_counts": {
-    "components/ControllerListV4.tsx": 110,
-    "lib/game/data.ts": 10,
+    "components/ControllerListV4.tsx": 111,
+    "lib/game/data.ts": 13,
     "supabase/migrations/202605010066_exile_face_down.sql": 1,
-    "lib/game/types.ts": 7,
+    "lib/game/types.ts": 8,
     "app/controller/[id]/page.tsx": 2,
-    "README.md": 17,
+    "README.md": 21,
     "supabase/migrations/202605010067_deathtouch.sql": 1,
-    ".git/COMMITMSG.tmp": 3,
+    ".git/COMMITMSG.tmp": 4,
     "supabase/migrations/202605010068_plus_one_counters.sql": 1,
-    "lib/game/actions.ts": 2,
-    "lib/game/use-judge-card-tools.ts": 4,
-    "components/judge/JudgePlayerCardTools.tsx": 4,
-    "supabase/migrations/202605010069_until_end_of_turn_pumps.sql": 1
+    "lib/game/actions.ts": 3,
+    "lib/game/use-judge-card-tools.ts": 7,
+    "components/judge/JudgePlayerCardTools.tsx": 6,
+    "supabase/migrations/202605010069_until_end_of_turn_pumps.sql": 1,
+    "supabase/migrations/202605010070_tokens.sql": 1
   },
   "anatomy_hits": 18,
   "anatomy_misses": 0,
-  "repeated_reads_warned": 61,
+  "repeated_reads_warned": 67,
   "cerebrum_warnings": 0,
-  "stop_count": 32
+  "stop_count": 35
 }

@@ -1068,7 +1068,12 @@ function CardActionSheet({
                 <ManaCostDisplay manaCost={card.cards.mana_cost} />
               </div>
             )}
-            <div className="mt-1.5">
+            <div className="mt-1.5 flex flex-wrap items-center gap-1">
+              {card.cards?.is_token && (
+                <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-purple-300">
+                  Token
+                </span>
+              )}
               <KeywordBadges keywords={getCardKeywords(card)} />
             </div>
           </div>

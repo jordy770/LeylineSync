@@ -345,3 +345,24 @@
 | 22:08 | Edited README.md | expanded (+9 lines) | ~372 |
 
 | 22:17 | Until-EOT pumps: migration 069 (pump effect_type, card_effective_* fold in pumps, create_pt_pump RPC w/ cleanup expiry, get_combat_assignments exposes effective attacker_power/toughness). RESEARCH: attacker P/T was missing at declare blockers (BoardCard lacked P/T + CombatAssignment had no P/T) — fixed via effective attacker P/T in RPC + power_toughness on BoardCard. Client: types, applyPtPump, effective P/T shown in attack/block layouts, judge pump buttons | migrations/069, types.ts, data.ts, actions.ts, ControllerListV4.tsx, use-judge-card-tools.ts, JudgePlayerCardTools.tsx, README | ✅ tsc+lint clean | ~7000 || 22:39 | Created .git/COMMITMSG.tmp | — | ~269 |
+| 23:53 | Session end: 163 writes across 13 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 18 reads | ~146094 tok |
+| 00:37 | Edited README.md | 6→8 lines | ~168 |
+| 00:37 | Session end: 164 writes across 13 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 18 reads | ~146540 tok |
+| 00:38 | Session end: 164 writes across 13 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 18 reads | ~146540 tok |
+| 00:46 | Created supabase/migrations/202605010070_tokens.sql | — | ~1291 |
+| 00:46 | Edited lib/game/types.ts | expanded (+8 lines) | ~94 |
+| 00:46 | Edited lib/game/data.ts | 2→2 lines | ~38 |
+| 00:46 | Edited lib/game/data.ts | 4→5 lines | ~20 |
+| 00:47 | Edited lib/game/data.ts | added nullish coalescing | ~111 |
+| 00:47 | Edited lib/game/actions.ts | added 1 condition(s) | ~137 |
+| 00:47 | Edited lib/game/use-judge-card-tools.ts | added 1 import(s) | ~102 |
+| 00:47 | Edited lib/game/use-judge-card-tools.ts | added 2 condition(s) | ~154 |
+| 00:47 | Edited lib/game/use-judge-card-tools.ts | expanded (+6 lines) | ~116 |
+| 00:47 | Edited components/judge/JudgePlayerCardTools.tsx | 4→6 lines | ~46 |
+| 00:48 | Edited components/judge/JudgePlayerCardTools.tsx | added nullish coalescing | ~332 |
+| 00:48 | Edited components/ControllerListV4.tsx | added optional chaining | ~114 |
+| 00:52 | Edited README.md | 2→3 lines | ~19 |
+| 00:52 | Edited README.md | 3→3 lines | ~74 |
+| 00:52 | Edited README.md | expanded (+8 lines) | ~378 |
+
+| 00:55 | Token creation: migration 070 (is_token on cards, seed 6 token catalog rows incl flying Spirit, create_token RPC 1-20, cease_token_if_off_battlefield trigger deletes tokens leaving battlefield + their effects). Client: LinkedCard.is_token, getTokenCards, createToken wrapper, judge Create Token buttons, V4 Token badge | migrations/070, types.ts, data.ts, actions.ts, use-judge-card-tools.ts, JudgePlayerCardTools.tsx, ControllerListV4.tsx, README | ✅ tsc+lint clean | ~5000 || 00:55 | Created .git/COMMITMSG.tmp | — | ~268 |

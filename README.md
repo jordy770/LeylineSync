@@ -788,6 +788,14 @@ A creature's effective power/toughness is its printed value plus modifiers:
 
 `card_effective_power(session, card)` and `card_effective_toughness(session, card)` fold both in. `resolve_combat_damage` and `move_lethal_damaged_creatures_to_graveyard` use the effective values, and `get_combat_assignments` exposes `attacker_power`/`attacker_toughness` so the controller can show real combat numbers (including counters and pumps) during declare blockers. Counters reset to 0 when a creature dies. Negative pumps are allowed but a creature reduced to 0 toughness without marked damage is not yet swept as a state-based action.
 
+## Tokens
+
+Tokens are catalog `cards` rows flagged `is_token = true` (seeded set: Soldier, Saproling, Zombie, Goblin, Beast, and a flying Spirit). A token instance is a normal `game_cards` row, so combat, P/T, counters, pumps, and display all work unchanged.
+
+- `create_token(session, player, token_card_id, count)` spawns 1–20 tokens onto a player's battlefield and registers their continuous effects (e.g. the Spirit's flying).
+- A token that leaves the battlefield ceases to exist: an `after update of zone` trigger (`cease_token_if_off_battlefield`) deletes the instance and its continuous effects when its zone changes away from `battlefield` — so dying, getting bounced, or being exiled removes the token instead of piling it up in another zone.
+- Judge tools expose a "Create Token" control; the V4 controller shows a `Token` badge on the card sheet.
+
 ## Realtime
 
 The UI subscribes to runtime tables and also uses short fallback refresh intervals.
@@ -933,6 +941,7 @@ Run migrations in order. Current migration list:
 202605010067_deathtouch.sql
 202605010068_plus_one_counters.sql
 202605010069_until_end_of_turn_pumps.sql
+202605010070_tokens.sql
 ```
 
 ## Adding New Card Mechanics
@@ -1178,8 +1187,10 @@ High-value next work:
 - [x] Landscape-mobile production controller (V4) with card-first interaction, zone inspection, and pass-only priority
 - [x] +1/+1 counters (effective power/toughness in combat, display, judge stepper)
 - [x] Until-end-of-turn power/toughness pumps (effect with cleanup expiry, effective P/T in combat, judge control)
+- [x] Token creation (is_token catalog rows, create_token RPC, cease-to-exist trigger, judge control)
 - [ ] Player-chosen combat damage over-assignment amounts
-- [ ] Token creation
+- [ ] State-based action sweep for 0-toughness creatures (e.g. from negative pumps) without marked damage
+- [ ] Creature-targeting spells from hand through the stack (so pumps/counters/removal can be cast and targeted, not just applied via judge tools)
 - [ ] Card script override system separate from imported Scryfall metadata
 - [ ] Real card-specific UI/actions for copy, control-change, and suppression effects
 - [ ] Real card implementations for mana-retention effects, parked until later

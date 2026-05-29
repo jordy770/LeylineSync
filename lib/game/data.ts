@@ -16,6 +16,7 @@ import type {
   GameZone,
   LinkedCard,
   ManaPool,
+  TokenCard,
   StackItem,
   TurnPhase,
   TurnStep,
@@ -207,7 +208,7 @@ export async function getControllerCards(
     const linkedCardsById = await getLinkedCardsById(
       supabase,
       gameCardRows.map((card) => card.card_id),
-      'id, name, image_url, script, type_line, mana_cost, oracle_text, keywords, power, toughness, power_toughness',
+      'id, name, image_url, script, type_line, mana_cost, oracle_text, keywords, power, toughness, power_toughness, is_token',
     )
 
   const missingCardIds = getUniqueCardIds(gameCardRows.map((card) => card.card_id)).filter(
@@ -317,6 +318,20 @@ export async function getGameActionLogs(
   }
 
   return (data ?? []) as GameActionLog[]
+}
+
+export async function getTokenCards(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('cards')
+    .select('id, name, type_line, power_toughness')
+    .eq('is_token', true)
+    .order('name')
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []) as TokenCard[]
 }
 
 export async function getCombatAssignments(supabase: SupabaseClient, sessionId: string) {

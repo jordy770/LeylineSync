@@ -34,6 +34,8 @@ export default function JudgePlayerCardTools({
     clearSelectedCardSummoningSickness,
     adjustSelectedCardCounters,
     pumpSelectedCard,
+    tokenCards,
+    createTokenForPlayer,
   } = useJudgeCardTools({
     sessionId,
     playerId,
@@ -202,6 +204,26 @@ export default function JudgePlayerCardTools({
       ) : (
         <p className="text-xs text-slate-500">No visible cards for this player.</p>
       )}
+
+      {tokenCards.length > 0 ? (
+        <div className="mt-3 border-t border-white/10 pt-3">
+          <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">Create Token</h4>
+          <div className="flex flex-wrap gap-2">
+            {tokenCards.map((token) => (
+              <button
+                key={token.id}
+                type="button"
+                disabled={isSessionFinished || isPending}
+                onClick={() => createTokenForPlayer(token.id, token.name ?? 'Token')}
+                className="rounded-md border border-emerald-300/20 bg-emerald-950/30 px-2.5 py-1.5 text-xs font-semibold text-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {(token.name ?? 'Token').replace(/ Token$/, '')}
+                {token.power_toughness ? ` ${token.power_toughness}` : ''}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {message ? <p className="mt-2 text-xs text-slate-300">{message}</p> : null}
     </div>

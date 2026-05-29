@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-29T20:39:40.243Z
-> Files: 293 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-29T22:55:50.379Z
+> Files: 294 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -14,7 +14,7 @@
 - `package.json` — Node.js package manifest (~352 tok)
 - `postcss.config.mjs` — Declares config (~45 tok)
 - `proxy.ts` — Exports proxy, config (~184 tok)
-- `README.md` — Project documentation (~11234 tok)
+- `README.md` — Project documentation (~11541 tok)
 - `tailwind.config.ts` — Tailwind CSS configuration (~558 tok)
 - `tsconfig.json` — TypeScript configuration (~218 tok)
 
@@ -39,7 +39,7 @@
 
 ## .git/
 
-- `COMMITMSG.tmp` — Declares carrying (~269 tok)
+- `COMMITMSG.tmp` (~268 tok)
 
 ## app/
 
@@ -113,7 +113,7 @@
 - `ControllerList.tsx` — components/ControllerList.tsx (~20457 tok)
 - `ControllerListV2.tsx` — ControllerListV2 — uses useState, useMemo (~10088 tok)
 - `ControllerListV3.tsx` — manaColors — uses useMemo (~6422 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~27688 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~27766 tok)
 - `DeckManager.tsx` — DeckManager — uses useMemo, useState, useEffect (~3880 tok)
 - `deploy-button.tsx` — DeployButton (~385 tok)
 - `DevAdminPanel.tsx` — DevAdminPanel — uses useMemo, useState, useEffect (~3112 tok)
@@ -153,7 +153,7 @@
 
 ## components/judge/
 
-- `JudgePlayerCardTools.tsx` — JudgePlayerCardTools (~2544 tok)
+- `JudgePlayerCardTools.tsx` — JudgePlayerCardTools (~2837 tok)
 - `JudgeStatChip.tsx` — JudgeStatChip (~219 tok)
 - `PlayerManaPool.tsx` — manaColorsForDisplay (~519 tok)
 - `RecentJudgeActions.tsx` — RecentJudgeActions (~833 tok)
@@ -192,24 +192,24 @@
 ## lib/game/
 
 - `action-selectors.ts` — Exports CardWithScript, getActionTiming, isPlayerDamageAction, isRetainManaAction + 3 more (~652 tok)
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 30 more (~5354 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 30 more (~5470 tok)
 - `blueprint.ts` — Exports GameViewStep, BoardLayoutKey, PriorityRole, StackActionType + 21 more (~3457 tok)
 - `board-selectors.ts` — Exports BoardSeat, BoardConnection, buildBoardSeats, getCombatCardIds + 2 more (~812 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2148 tok)
 - `card-behavior.ts` — Exports CardBehaviorSchemaVersion, CardBehaviorStatus, CardBehaviorZone, CardBehaviorTargetType + 14 (~2557 tok)
 - `controller-selectors.ts` — Exports selectControllerViewModel, getCanQuickCast, canCardRespond, doesCardRequireStackTarget + 2 more (~1459 tok)
-- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 17 more (~4830 tok)
+- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 18 more (~4926 tok)
 - `dev.ts` — Exports showDevControls, enableFallbackRefresh, fallbackRefreshIntervalMs (~86 tok)
 - `judge-selectors.ts` — Exports PlayerJudgeStats, buildPlayerJudgeStats, getEmptyPlayerJudgeStats (~235 tok)
 - `legacy-controller-selectors.ts` — Exports LegacyControllerViewFocus, orderCardsByIds, selectLegacyControllerViewModel (~1119 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 4 more (~600 tok)
-- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 24 more (~1984 tok)
+- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 25 more (~2030 tok)
 - `use-board-game-state.ts` — Exports useBoardGameState (~1008 tok)
 - `use-card-action-handlers.ts` — Exports useCardActionHandlers (~1286 tok)
 - `use-controller-game-state.ts` — Exports useControllerGameState (~1660 tok)
 - `use-game-loop-state.ts` — Exports UseGameLoopStateResult, useGameLoopState, fetchGameLoopState (~1580 tok)
 - `use-judge-action-log.ts` — Exports useJudgeActionLog (~281 tok)
-- `use-judge-card-tools.ts` — Exports useJudgeCardTools (~1290 tok)
+- `use-judge-card-tools.ts` — Exports useJudgeCardTools (~1465 tok)
 - `use-judge-game-state.ts` — Exports useJudgeGameState (~1130 tok)
 - `use-legacy-controller-game-state.ts` — Exports useLegacyControllerGameState (~2299 tok)
 
@@ -310,6 +310,7 @@
 - `202605010067_deathtouch.sql` — Deathtouch support. (~6295 tok)
 - `202605010068_plus_one_counters.sql` — +1/+1 counters. (~4392 tok)
 - `202605010069_until_end_of_turn_pumps.sql` — Until-end-of-turn power/toughness pumps (Giant Growth style). (~2374 tok)
+- `202605010070_tokens.sql` — Token creation. (~1291 tok)
 
 ## vercel/
 

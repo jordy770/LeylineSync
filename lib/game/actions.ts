@@ -551,6 +551,27 @@ export async function applyPtPump(
   }
 }
 
+export async function createToken(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+  tokenCardId: string,
+  count = 1,
+) {
+  const { data, error } = await supabase.rpc('create_token', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+    p_token_card_id: tokenCardId,
+    p_count: count,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
 export async function clearCombatAssignments(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('clear_combat_assignments', {
     p_session_id: sessionId,

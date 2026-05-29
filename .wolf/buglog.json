@@ -858,6 +858,102 @@
       "related_bugs": [],
       "occurrences": 3,
       "last_seen": "2026-05-29T19:48:17.515Z"
+    },
+    {
+      "id": "bug-054",
+      "timestamp": "2026-05-29T22:46:50.220Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/data.ts",
+      "root_cause": "Had 'id, name, image_url, script, type_line, mana_cost",
+      "fix": "Changed to 'id, name, image_url, script, type_line, mana_cost",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T22:46:50.220Z"
+    },
+    {
+      "id": "bug-055",
+      "timestamp": "2026-05-29T22:47:03.223Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/data.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T22:47:03.223Z"
+    },
+    {
+      "id": "bug-056",
+      "timestamp": "2026-05-29T22:47:09.771Z",
+      "error_message": "Missing await",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T22:47:09.771Z"
+    },
+    {
+      "id": "bug-057",
+      "timestamp": "2026-05-29T22:47:37.270Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "lib/game/use-judge-card-tools.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T22:47:37.270Z"
+    },
+    {
+      "id": "bug-058",
+      "timestamp": "2026-05-29T22:48:13.782Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/judge/JudgePlayerCardTools.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T22:48:13.782Z"
+    },
+    {
+      "id": "bug-059",
+      "timestamp": "2026-05-29T22:48:27.482Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T22:48:27.482Z"
     }
   ]
 }
