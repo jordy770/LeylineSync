@@ -78,7 +78,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
   const linkedCardsById = await getLinkedCardsById(
     supabase,
     gameCardRows.map((card) => card.card_id),
-    'id, name, image_url, type_line',
+    'id, name, image_url, type_line, power_toughness',
   )
 
   return gameCardRows.map<BoardCard>((item) => {
@@ -95,6 +95,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       name: linkedCard?.name || 'Unknown',
       image_url: linkedCard?.image_url ?? null,
       type_line: linkedCard?.type_line ?? null,
+      power_toughness: linkedCard?.power_toughness ?? null,
       controller_player_id: item.controller_player_id ?? null,
       plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
     }

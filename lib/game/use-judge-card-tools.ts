@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   adjustCardCounters,
+  applyPtPump,
   devClearSummoningSickness,
   devMoveCardToZone,
   devPutCardOnBottom,
@@ -128,6 +129,13 @@ export function useJudgeCardTools({
         ? runJudgeAction(
             () => adjustCardCounters(supabase, sessionId, selectedCard.id, delta),
             delta > 0 ? 'Counter added' : 'Counter removed',
+          )
+        : Promise.resolve(),
+    pumpSelectedCard: (power: number, toughness: number) =>
+      selectedCard
+        ? runJudgeAction(
+            () => applyPtPump(supabase, sessionId, selectedCard.id, power, toughness),
+            `+${power}/+${toughness} until end of turn`,
           )
         : Promise.resolve(),
   }

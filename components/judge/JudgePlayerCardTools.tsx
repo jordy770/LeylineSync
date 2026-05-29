@@ -33,6 +33,7 @@ export default function JudgePlayerCardTools({
     putSelectedCardOnBottom,
     clearSelectedCardSummoningSickness,
     adjustSelectedCardCounters,
+    pumpSelectedCard,
   } = useJudgeCardTools({
     sessionId,
     playerId,
@@ -170,6 +171,28 @@ export default function JudgePlayerCardTools({
                     >
                       +
                     </button>
+                  </div>
+
+                  <div className="grid grid-cols-[auto_1fr] items-center gap-2">
+                    <span className="text-xs font-semibold text-sky-200">Pump (EOT)</span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        disabled={isSessionFinished || isPending}
+                        onClick={() => pumpSelectedCard(1, 1)}
+                        className="rounded-md border border-sky-300/20 bg-sky-950/30 px-3 py-2 text-sm font-bold text-sky-100 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        +1/+1
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isSessionFinished || isPending}
+                        onClick={() => pumpSelectedCard(3, 3)}
+                        className="rounded-md border border-sky-300/20 bg-sky-950/30 px-3 py-2 text-sm font-bold text-sky-100 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        +3/+3
+                      </button>
+                    </div>
                   </div>
                 </>
               ) : null}

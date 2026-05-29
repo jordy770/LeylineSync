@@ -826,6 +826,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-29T16:13:11.854Z"
+    },
+    {
+      "id": "bug-052",
+      "timestamp": "2026-05-29T19:47:17.314Z",
+      "error_message": "Missing await",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-29T19:47:17.314Z"
+    },
+    {
+      "id": "bug-053",
+      "timestamp": "2026-05-29T19:47:42.882Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {getEffectivePT(card) && (; <span",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-29T19:48:17.515Z"
     }
   ]
 }

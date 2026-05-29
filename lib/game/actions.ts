@@ -532,6 +532,25 @@ export async function adjustCardCounters(
   return data as number
 }
 
+export async function applyPtPump(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  power: number,
+  toughness: number,
+) {
+  const { error } = await supabase.rpc('create_pt_pump', {
+    p_session_id: sessionId,
+    p_target_card_id: targetCardId,
+    p_power: power,
+    p_toughness: toughness,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
 export async function clearCombatAssignments(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('clear_combat_assignments', {
     p_session_id: sessionId,

@@ -93,6 +93,8 @@ export type CombatAssignment = {
   turn_number: number
   attacker_card_id: string
   attacker_name: string
+  attacker_power?: number
+  attacker_toughness?: number
   attacking_player_id: string
   attacking_username: string
   defending_player_id: string
@@ -236,6 +238,7 @@ export type BoardCard = {
   zone: GameZone
   image_url: string | null
   type_line?: string | null
+  power_toughness?: string | null
   controller_player_id?: string | null
   is_face_down?: boolean | null
   plus_one_counters?: number

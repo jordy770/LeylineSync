@@ -326,3 +326,22 @@
 | 18:15 | Edited README.md | 2→3 lines | ~73 |
 
 | 18:15 | +1/+1 counters: migration 068 (plus_one_counters col, card_effective_power/toughness helpers, resolve+mover use effective P/T, adjust_card_counters RPC). Client: types/data selects, adjustCardCounters wrapper, V4 effective P/T + emerald counter badges (sheet/zoom/battlefield), judge +/- stepper | migrations/068, types.ts, data.ts, actions.ts, ControllerListV4.tsx, use-judge-card-tools.ts, JudgePlayerCardTools.tsx, README | ✅ tsc+lint clean | ~6000 || 18:16 | Created .git/COMMITMSG.tmp | — | ~175 |
+| 18:16 | Session end: 146 writes across 12 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 18 reads | ~139831 tok |
+| 21:46 | Created supabase/migrations/202605010069_until_end_of_turn_pumps.sql | — | ~2374 |
+| 21:46 | Edited lib/game/types.ts | 4→6 lines | ~48 |
+| 21:46 | Edited lib/game/types.ts | 6→7 lines | ~55 |
+| 21:46 | Edited lib/game/data.ts | 7→7 lines | ~63 |
+| 21:47 | Edited lib/game/data.ts | 6→7 lines | ~78 |
+| 21:47 | Edited lib/game/actions.ts | added 1 condition(s) | ~131 |
+| 21:47 | Edited components/ControllerListV4.tsx | 4→9 lines | ~150 |
+| 21:47 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~169 |
+| 21:48 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~144 |
+| 21:48 | Edited lib/game/use-judge-card-tools.ts | 3→4 lines | ~22 |
+| 21:48 | Edited lib/game/use-judge-card-tools.ts | expanded (+7 lines) | ~165 |
+| 21:48 | Edited components/judge/JudgePlayerCardTools.tsx | 3→4 lines | ~34 |
+| 21:48 | Edited components/judge/JudgePlayerCardTools.tsx | expanded (+22 lines) | ~494 |
+| 22:07 | Edited README.md | 2→3 lines | ~22 |
+| 22:08 | Edited README.md | 4→4 lines | ~74 |
+| 22:08 | Edited README.md | expanded (+9 lines) | ~372 |
+
+| 22:17 | Until-EOT pumps: migration 069 (pump effect_type, card_effective_* fold in pumps, create_pt_pump RPC w/ cleanup expiry, get_combat_assignments exposes effective attacker_power/toughness). RESEARCH: attacker P/T was missing at declare blockers (BoardCard lacked P/T + CombatAssignment had no P/T) — fixed via effective attacker P/T in RPC + power_toughness on BoardCard. Client: types, applyPtPump, effective P/T shown in attack/block layouts, judge pump buttons | migrations/069, types.ts, data.ts, actions.ts, ControllerListV4.tsx, use-judge-card-tools.ts, JudgePlayerCardTools.tsx, README | ✅ tsc+lint clean | ~7000 || 22:39 | Created .git/COMMITMSG.tmp | — | ~269 |

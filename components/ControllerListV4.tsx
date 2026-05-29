@@ -2166,8 +2166,14 @@ function DeclareAttackersLayout({
                     className="w-full"
                   />
                 </div>
-                {card.cards?.power_toughness && (
-                  <span className="text-[9px] font-black text-slate-300">{card.cards.power_toughness}</span>
+                {getEffectivePT(card) && (
+                  <span
+                    className={`text-[9px] font-black ${
+                      (card.plus_one_counters ?? 0) > 0 ? 'text-emerald-400' : 'text-slate-300'
+                    }`}
+                  >
+                    {getEffectivePT(card)}
+                  </span>
                 )}
                 {attackable && !isAttacking && (
                   <span className="text-[8px] text-slate-600">Tap to attack</span>
@@ -2318,6 +2324,11 @@ function DeclareBlockersLayout({
               <p className="w-full truncate text-center text-[10px] font-bold text-white">
                 {assignment.attacker_name}
               </p>
+              {assignment.attacker_power != null && assignment.attacker_toughness != null && (
+                <span className="rounded bg-[#D4591A]/20 px-1.5 py-0.5 text-[10px] font-black text-[#D4591A]">
+                  {assignment.attacker_power}/{assignment.attacker_toughness}
+                </span>
+              )}
               {assignedBlockers.length > 0 ? (
                 <div className="flex flex-wrap justify-center gap-1">
                   {assignedBlockers.map((b) => (
@@ -2382,8 +2393,14 @@ function DeclareBlockersLayout({
                   useLayoutId={false}
                   className="w-full"
                 />
-                {card.cards?.power_toughness && (
-                  <span className="text-[9px] font-black text-slate-300">{card.cards.power_toughness}</span>
+                {getEffectivePT(card) && (
+                  <span
+                    className={`text-[9px] font-black ${
+                      (card.plus_one_counters ?? 0) > 0 ? 'text-emerald-400' : 'text-slate-300'
+                    }`}
+                  >
+                    {getEffectivePT(card)}
+                  </span>
                 )}
                 {isBlocking && blockingTarget && (
                   <span className="w-full truncate text-center text-[8px] text-cyan-300">

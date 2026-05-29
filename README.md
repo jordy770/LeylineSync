@@ -779,6 +779,15 @@ Current limitations:
 - No planeswalker/battle targets.
 - Flying legality is enforced by `declare_blocker`. If the attacker has a `flying` continuous effect, only blockers with `flying` or `reach` are accepted. Make sure to call `Rebuild Effects` (or `register_card_continuous_effects`) after a flying or reach card enters the battlefield so the effect is registered before combat.
 
+## Power/Toughness Modifiers
+
+A creature's effective power/toughness is its printed value plus modifiers:
+
+- **+1/+1 counters** — permanent, stored in `game_cards.plus_one_counters`. Adjust with `adjust_card_counters(session, card, delta)`.
+- **Until-end-of-turn pumps** — `game_continuous_effects` rows of `effect_type = 'pump'` with `{ power, toughness }` payload, created by `create_pt_pump(session, target, power, toughness)`. They expire during the cleanup step via `expire_continuous_effects_for_step`.
+
+`card_effective_power(session, card)` and `card_effective_toughness(session, card)` fold both in. `resolve_combat_damage` and `move_lethal_damaged_creatures_to_graveyard` use the effective values, and `get_combat_assignments` exposes `attacker_power`/`attacker_toughness` so the controller can show real combat numbers (including counters and pumps) during declare blockers. Counters reset to 0 when a creature dies. Negative pumps are allowed but a creature reduced to 0 toughness without marked damage is not yet swept as a state-based action.
+
 ## Realtime
 
 The UI subscribes to runtime tables and also uses short fallback refresh intervals.
@@ -923,6 +932,7 @@ Run migrations in order. Current migration list:
 202605010066_exile_face_down.sql
 202605010067_deathtouch.sql
 202605010068_plus_one_counters.sql
+202605010069_until_end_of_turn_pumps.sql
 ```
 
 ## Adding New Card Mechanics
@@ -1167,9 +1177,9 @@ High-value next work:
 - [x] Cleanup hand-size discard (V4 controller)
 - [x] Landscape-mobile production controller (V4) with card-first interaction, zone inspection, and pass-only priority
 - [x] +1/+1 counters (effective power/toughness in combat, display, judge stepper)
+- [x] Until-end-of-turn power/toughness pumps (effect with cleanup expiry, effective P/T in combat, judge control)
 - [ ] Player-chosen combat damage over-assignment amounts
 - [ ] Token creation
-- [ ] Temporary until-end-of-turn power/toughness effects
 - [ ] Card script override system separate from imported Scryfall metadata
 - [ ] Real card-specific UI/actions for copy, control-change, and suppression effects
 - [ ] Real card implementations for mana-retention effects, parked until later
