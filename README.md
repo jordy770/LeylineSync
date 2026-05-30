@@ -723,6 +723,15 @@ Current Instant/Sorcery behavior:
 - When a `counter_spell` stack item resolves, the target stack item is marked `cancelled`.
 - If the countered target is a permanent spell, its source card moves from `stack` to graveyard.
 
+Supported targeted stack actions:
+
+- `deal_damage_player` — burn to a player (payload `{ target_player_id, amount }`).
+- `deal_damage_creature` — burn/removal to a creature (`{ target_card_id, amount }`); on resolution it marks damage and re-checks lethal.
+- `pump_creature` — combat trick (`{ target_card_id, power, toughness }`); on resolution it creates an until-end-of-turn pump on the target.
+- `counter_spell` — targets a pending stack item.
+
+A spell's script `actions` decide which targets the V4 controller offers: `deal_damage` with `target_type` including `player`/`creature`/`any` shows the matching choices, and a `pump` action shows creature targets. If the target has left the battlefield by resolution the spell fizzles harmlessly. Seeded test spells: `Lightning Strike Test` (`{1}{R}`, 3 damage any target) and `Giant Growth Test` (`{G}`, +3/+3 to target creature).
+
 ## Turn And Priority
 
 `active_player_id` and `priority_player_id` are separate:
@@ -942,6 +951,7 @@ Run migrations in order. Current migration list:
 202605010068_plus_one_counters.sql
 202605010069_until_end_of_turn_pumps.sql
 202605010070_tokens.sql
+202605010071_creature_targeting_spells.sql
 ```
 
 ## Adding New Card Mechanics
@@ -1189,8 +1199,8 @@ High-value next work:
 - [x] Until-end-of-turn power/toughness pumps (effect with cleanup expiry, effective P/T in combat, judge control)
 - [x] Token creation (is_token catalog rows, create_token RPC, cease-to-exist trigger, judge control)
 - [ ] Player-chosen combat damage over-assignment amounts
+- [x] Creature-targeting spells from hand through the stack — burn/removal (`deal_damage_creature`) and combat tricks (`pump_creature`) cast and targeted from hand
 - [ ] State-based action sweep for 0-toughness creatures (e.g. from negative pumps) without marked damage
-- [ ] Creature-targeting spells from hand through the stack (so pumps/counters/removal can be cast and targeted, not just applied via judge tools)
 - [ ] Card script override system separate from imported Scryfall metadata
 - [ ] Real card-specific UI/actions for copy, control-change, and suppression effects
 - [ ] Real card implementations for mana-retention effects, parked until later

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-29T22:55:50.379Z
-> Files: 294 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T12:20:17.541Z
+> Files: 295 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -14,7 +14,7 @@
 - `package.json` — Node.js package manifest (~352 tok)
 - `postcss.config.mjs` — Declares config (~45 tok)
 - `proxy.ts` — Exports proxy, config (~184 tok)
-- `README.md` — Project documentation (~11541 tok)
+- `README.md` — Project documentation (~11779 tok)
 - `tailwind.config.ts` — Tailwind CSS configuration (~558 tok)
 - `tsconfig.json` — TypeScript configuration (~218 tok)
 
@@ -39,7 +39,7 @@
 
 ## .git/
 
-- `COMMITMSG.tmp` (~268 tok)
+- `COMMITMSG.tmp` (~298 tok)
 
 ## app/
 
@@ -113,7 +113,7 @@
 - `ControllerList.tsx` — components/ControllerList.tsx (~20457 tok)
 - `ControllerListV2.tsx` — ControllerListV2 — uses useState, useMemo (~10088 tok)
 - `ControllerListV3.tsx` — manaColors — uses useMemo (~6422 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~27766 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~29129 tok)
 - `DeckManager.tsx` — DeckManager — uses useMemo, useState, useEffect (~3880 tok)
 - `deploy-button.tsx` — DeployButton (~385 tok)
 - `DevAdminPanel.tsx` — DevAdminPanel — uses useMemo, useState, useEffect (~3112 tok)
@@ -192,7 +192,7 @@
 ## lib/game/
 
 - `action-selectors.ts` — Exports CardWithScript, getActionTiming, isPlayerDamageAction, isRetainManaAction + 3 more (~652 tok)
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 30 more (~5470 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 28 more (~5864 tok)
 - `blueprint.ts` — Exports GameViewStep, BoardLayoutKey, PriorityRole, StackActionType + 21 more (~3457 tok)
 - `board-selectors.ts` — Exports BoardSeat, BoardConnection, buildBoardSeats, getCombatCardIds + 2 more (~812 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2148 tok)
@@ -311,6 +311,7 @@
 - `202605010068_plus_one_counters.sql` — +1/+1 counters. (~4392 tok)
 - `202605010069_until_end_of_turn_pumps.sql` — Until-end-of-turn power/toughness pumps (Giant Growth style). (~2374 tok)
 - `202605010070_tokens.sql` — Token creation. (~1291 tok)
+- `202605010071_creature_targeting_spells.sql` — Creature-targeting spells through the stack. (~4577 tok)
 
 ## vercel/
 

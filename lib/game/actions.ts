@@ -264,6 +264,64 @@ export async function putDealDamagePlayerOnStack(
   return data as StackItem
 }
 
+export async function putDealDamageCreatureOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  amount: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'deal_damage_creature',
+    p_payload: {
+      target_card_id: targetCardId,
+      amount,
+      timing,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function putPumpCreatureOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  power: number,
+  toughness: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'pump_creature',
+    p_payload: {
+      target_card_id: targetCardId,
+      power,
+      toughness,
+      timing,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
 export async function putCounterSpellOnStack(
   supabase: SupabaseClient,
   sessionId: string,

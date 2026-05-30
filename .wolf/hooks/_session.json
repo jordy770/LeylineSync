@@ -3,8 +3,8 @@
   "started": "2026-05-29T09:28:41.652Z",
   "files_read": {
     "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx": {
-      "count": 44,
-      "tokens": 27638,
+      "count": 50,
+      "tokens": 28465,
       "first_read": "2026-05-29T09:29:39.868Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/lib/game/use-controller-game-state.ts": {
@@ -28,8 +28,8 @@
       "first_read": "2026-05-29T12:50:52.935Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/README.md": {
-      "count": 4,
-      "tokens": 11234,
+      "count": 6,
+      "tokens": 11556,
       "first_read": "2026-05-29T13:15:19.320Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010029_priority_passing.sql": {
@@ -1173,27 +1173,112 @@
       "action": "create",
       "tokens": 287,
       "at": "2026-05-29T22:55:50.392Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010071_creature_targeting_spells.sql",
+      "action": "create",
+      "tokens": 4904,
+      "at": "2026-05-30T12:05:56.674Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+      "action": "edit",
+      "tokens": 390,
+      "at": "2026-05-30T12:06:12.115Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 588,
+      "at": "2026-05-30T12:06:34.260Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 54,
+      "at": "2026-05-30T12:06:44.213Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 392,
+      "at": "2026-05-30T12:07:05.096Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 249,
+      "at": "2026-05-30T12:07:24.425Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 248,
+      "at": "2026-05-30T12:07:52.178Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 174,
+      "at": "2026-05-30T12:08:00.339Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 940,
+      "at": "2026-05-30T12:08:34.451Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 164,
+      "at": "2026-05-30T12:08:43.136Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "action": "edit",
+      "tokens": 20,
+      "at": "2026-05-30T12:10:34.087Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "action": "edit",
+      "tokens": 77,
+      "at": "2026-05-30T12:10:41.530Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "action": "edit",
+      "tokens": 327,
+      "at": "2026-05-30T12:11:02.322Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.git/COMMITMSG.tmp",
+      "action": "create",
+      "tokens": 319,
+      "at": "2026-05-30T12:20:17.567Z"
     }
   ],
   "edit_counts": {
-    "components/ControllerListV4.tsx": 111,
+    "components/ControllerListV4.tsx": 119,
     "lib/game/data.ts": 13,
     "supabase/migrations/202605010066_exile_face_down.sql": 1,
     "lib/game/types.ts": 8,
     "app/controller/[id]/page.tsx": 2,
-    "README.md": 21,
+    "README.md": 24,
     "supabase/migrations/202605010067_deathtouch.sql": 1,
-    ".git/COMMITMSG.tmp": 4,
+    ".git/COMMITMSG.tmp": 5,
     "supabase/migrations/202605010068_plus_one_counters.sql": 1,
-    "lib/game/actions.ts": 3,
+    "lib/game/actions.ts": 4,
     "lib/game/use-judge-card-tools.ts": 7,
     "components/judge/JudgePlayerCardTools.tsx": 6,
     "supabase/migrations/202605010069_until_end_of_turn_pumps.sql": 1,
-    "supabase/migrations/202605010070_tokens.sql": 1
+    "supabase/migrations/202605010070_tokens.sql": 1,
+    "supabase/migrations/202605010071_creature_targeting_spells.sql": 1
   },
   "anatomy_hits": 18,
   "anatomy_misses": 0,
-  "repeated_reads_warned": 67,
+  "repeated_reads_warned": 75,
   "cerebrum_warnings": 0,
-  "stop_count": 35
+  "stop_count": 36
 }

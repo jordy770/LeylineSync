@@ -12,7 +12,9 @@ import {
   moveCardToZone,
   passPriority as passPriorityAction,
   putCounterSpellOnStack,
+  putDealDamageCreatureOnStack,
   putDealDamagePlayerOnStack,
+  putPumpCreatureOnStack,
   resolveCombatDamage,
   setCombatBlockerOrder,
 } from '@/lib/game/actions'
@@ -146,6 +148,16 @@ function getCardKeywords(card: ControllerCard): string[] {
   return [...found]
 }
 
+/** Effective P/T label for a board card (printed + counters). Empty string if no P/T. */
+function effectiveBoardPT(card: BoardCard): string {
+  const base = card.power_toughness
+  if (!base) return ''
+  const counters = card.plus_one_counters ?? 0
+  const match = base.match(/^(\d+)\s*\/\s*(\d+)$/)
+  if (counters === 0 || !match) return base
+  return `${Number(match[1]) + counters}/${Number(match[2]) + counters}`
+}
+
 /** Printed P/T with +1/+1 counters folded in, e.g. base 2/2 with 3 counters -> "5/5". */
 function getEffectivePT(card: ControllerCard): string | null {
   const base = getPowerToughnessLabel(card)
@@ -158,9 +170,16 @@ function getEffectivePT(card: ControllerCard): string | null {
 }
 
 type SpellPlan =
-  | { kind: 'player_damage'; amount: number; timing: 'instant' | 'sorcery' }
+  | { kind: 'damage'; amount: number; timing: 'instant' | 'sorcery'; canTargetPlayer: boolean; canTargetCreature: boolean }
+  | { kind: 'pump'; power: number; toughness: number; timing: 'instant' | 'sorcery' }
   | { kind: 'counterspell' }
   | { kind: 'normal' }
+
+function targetTypeMatches(tt: unknown, want: string): boolean {
+  if (!tt) return false
+  if (tt === want || tt === 'any') return true
+  return Array.isArray(tt) && (tt.includes(want) || tt.includes('any'))
+}
 
 /** Classifies what a hand spell does so the cast flow can pick targets correctly. */
 function getSpellPlan(card: ControllerCard): SpellPlan {
@@ -169,19 +188,27 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
     card.cards?.type_line,
   )
   const actions = script.spell_effect?.actions ?? []
+  const timing: 'instant' | 'sorcery' = card.cards?.type_line?.toLowerCase().includes('sorcery')
+    ? 'sorcery'
+    : 'instant'
+
+  const pump = actions.find((a) => a.type === 'pump') as
+    | (CardBehaviorAction & { power?: number; toughness?: number })
+    | undefined
+  if (pump && (typeof pump.power === 'number' || typeof pump.toughness === 'number')) {
+    return { kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing }
+  }
+
   const damage = actions.find((a) => a.type === 'deal_damage' || a.type === 'deal_damage_player') as
     | (CardBehaviorAction & { amount?: number; target_type?: unknown; target?: unknown })
     | undefined
-
   if (damage && typeof damage.amount === 'number') {
     const tt = damage.target_type ?? damage.target
-    const targetsPlayer =
-      !tt ||
-      tt === 'player' ||
-      (Array.isArray(tt) && tt.includes('player'))
-    if (targetsPlayer) {
-      const timing = card.cards?.type_line?.toLowerCase().includes('sorcery') ? 'sorcery' : 'instant'
-      return { kind: 'player_damage', amount: damage.amount, timing }
+    // No target type defaults to player (legacy player-burn behavior).
+    const canTargetPlayer = !tt || targetTypeMatches(tt, 'player')
+    const canTargetCreature = targetTypeMatches(tt, 'creature')
+    if (canTargetPlayer || canTargetCreature) {
+      return { kind: 'damage', amount: damage.amount, timing, canTargetPlayer, canTargetCreature }
     }
   }
 
@@ -328,8 +355,22 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     dealDamageToPlayer: async (cardId: string, targetPlayerId: string) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
-      if (!card || plan?.kind !== 'player_damage') return
+      if (!card || plan?.kind !== 'damage') return
       await putDealDamagePlayerOnStack(supabase, sessionId, targetPlayerId, plan.amount, plan.timing, cardId)
+      await refresh()
+    },
+    dealDamageToCreature: async (cardId: string, targetCardId: string) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const plan = card ? getSpellPlan(card) : null
+      if (!card || plan?.kind !== 'damage') return
+      await putDealDamageCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId)
+      await refresh()
+    },
+    pumpCreature: async (cardId: string, targetCardId: string) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const plan = card ? getSpellPlan(card) : null
+      if (!card || plan?.kind !== 'pump') return
+      await putPumpCreatureOnStack(supabase, sessionId, targetCardId, plan.power, plan.toughness, plan.timing, cardId)
       await refresh()
     },
     // Counterspell targeting a specific pending stack item
@@ -461,9 +502,12 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             players={players}
             playerId={playerId}
             pendingStackItems={pendingStackItems}
+            boardCards={boardCards}
             onTapForMana={async (cardId, color) => { await actions.tapForMana(cardId, color) }}
             onCastCard={async (cardId) => { await actions.castSpell(cardId) }}
             onDealDamageToPlayer={async (cardId, targetPlayerId) => { await actions.dealDamageToPlayer(cardId, targetPlayerId) }}
+            onDealDamageToCreature={async (cardId, targetCardId) => { await actions.dealDamageToCreature(cardId, targetCardId) }}
+            onPumpCreature={async (cardId, targetCardId) => { await actions.pumpCreature(cardId, targetCardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onClose={() => setSelectedCard(null)}
           />
@@ -970,9 +1014,12 @@ function CardActionSheet({
   players,
   playerId,
   pendingStackItems,
+  boardCards,
   onTapForMana,
   onCastCard,
   onDealDamageToPlayer,
+  onDealDamageToCreature,
+  onPumpCreature,
   onCounterSpell,
   onClose,
 }: {
@@ -983,9 +1030,12 @@ function CardActionSheet({
   players: GameSessionPlayer[]
   playerId: string | null
   pendingStackItems: StackItem[]
+  boardCards: BoardCard[]
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
   onCastCard: (cardId: string) => Promise<void>
   onDealDamageToPlayer: (cardId: string, targetPlayerId: string) => Promise<void>
+  onDealDamageToCreature: (cardId: string, targetCardId: string) => Promise<void>
+  onPumpCreature: (cardId: string, targetCardId: string) => Promise<void>
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
   onClose: () => void
 }) {
@@ -1013,8 +1063,12 @@ function CardActionSheet({
   const [picking, setPicking] = useState(false)
 
   const spellPlan = getSpellPlan(card)
+  const targetableCreatures = boardCards.filter((c) => c.type_line?.toLowerCase().includes('creature'))
   const needsTarget =
-    canCast && (spellPlan.kind === 'player_damage' || (spellPlan.kind === 'counterspell' && pendingStackItems.length > 0))
+    canCast &&
+    ((spellPlan.kind === 'damage' && (spellPlan.canTargetPlayer || (spellPlan.canTargetCreature && targetableCreatures.length > 0))) ||
+      (spellPlan.kind === 'pump' && targetableCreatures.length > 0) ||
+      (spellPlan.kind === 'counterspell' && pendingStackItems.length > 0))
 
   const handleCast = () => {
     if (needsTarget) {
@@ -1116,12 +1170,12 @@ function CardActionSheet({
         )}
 
         {/* Target picker */}
-        {picking && spellPlan.kind === 'player_damage' && (
+        {picking && spellPlan.kind === 'damage' && (
           <div className="mb-3 space-y-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
               Deal {spellPlan.amount} damage to
             </p>
-            {players.map((p) => (
+            {spellPlan.canTargetPlayer && players.map((p) => (
               <button
                 key={p.player_id}
                 type="button"
@@ -1133,6 +1187,45 @@ function CardActionSheet({
                   {p.player_id === playerId && <span className="ml-1 text-[10px] text-slate-500">(you)</span>}
                 </span>
                 <span className="text-sm font-black text-[#D4591A]">♥{p.life_total} → {Math.max(0, p.life_total - spellPlan.amount)}</span>
+              </button>
+            ))}
+            {spellPlan.canTargetCreature && targetableCreatures.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { void onDealDamageToCreature(card.id, c.id); onClose() }}
+                className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
+              >
+                <span className="truncate font-bold text-white">{c.name}</span>
+                <span className="ml-2 shrink-0 text-xs font-black text-slate-300">
+                  {effectiveBoardPT(c)}
+                </span>
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPicking(false)}
+              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
+            >
+              Back
+            </button>
+          </div>
+        )}
+
+        {picking && spellPlan.kind === 'pump' && (
+          <div className="mb-3 space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              Give +{spellPlan.power}/+{spellPlan.toughness} to
+            </p>
+            {targetableCreatures.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { void onPumpCreature(card.id, c.id); onClose() }}
+                className="flex w-full items-center justify-between rounded-2xl border border-emerald-400/40 bg-emerald-400/10 px-4 py-2.5 transition active:scale-95"
+              >
+                <span className="truncate font-bold text-white">{c.name}</span>
+                <span className="ml-2 shrink-0 text-xs font-black text-emerald-300">{effectiveBoardPT(c)}</span>
               </button>
             ))}
             <button

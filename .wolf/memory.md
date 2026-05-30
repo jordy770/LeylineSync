@@ -366,3 +366,19 @@
 | 00:52 | Edited README.md | expanded (+8 lines) | ~378 |
 
 | 00:55 | Token creation: migration 070 (is_token on cards, seed 6 token catalog rows incl flying Spirit, create_token RPC 1-20, cease_token_if_off_battlefield trigger deletes tokens leaving battlefield + their effects). Client: LinkedCard.is_token, getTokenCards, createToken wrapper, judge Create Token buttons, V4 Token badge | migrations/070, types.ts, data.ts, actions.ts, use-judge-card-tools.ts, JudgePlayerCardTools.tsx, ControllerListV4.tsx, README | ✅ tsc+lint clean | ~5000 || 00:55 | Created .git/COMMITMSG.tmp | — | ~268 |
+| 01:05 | Session end: 180 writes across 14 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 18 reads | ~151022 tok |
+| 14:05 | Created supabase/migrations/202605010071_creature_targeting_spells.sql | — | ~4577 |
+| 14:06 | Edited lib/game/actions.ts | added nullish coalescing | ~390 |
+| 14:06 | Edited components/ControllerListV4.tsx | added 3 condition(s) | ~588 |
+| 14:06 | Edited components/ControllerListV4.tsx | 5→7 lines | ~54 |
+| 14:07 | Edited components/ControllerListV4.tsx | added 2 condition(s) | ~392 |
+| 14:07 | Edited components/ControllerListV4.tsx | 9→12 lines | ~249 |
+| 14:07 | Edited components/ControllerListV4.tsx | expanded (+6 lines) | ~248 |
+| 14:08 | Edited components/ControllerListV4.tsx | added optional chaining | ~174 |
+| 14:08 | Edited components/ControllerListV4.tsx | expanded (+39 lines) | ~940 |
+| 14:08 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~164 |
+| 14:10 | Edited README.md | 2→3 lines | ~19 |
+| 14:10 | Edited README.md | 2→2 lines | ~72 |
+| 14:11 | Edited README.md | expanded (+9 lines) | ~305 |
+
+| 14:19 | Creature-targeting spells: migration 071 (deal_damage_creature + pump_creature stack actions; constraint, put_action_on_stack + resolve_top_of_stack reproduced with new branches; seed Lightning Strike Test + Giant Growth Test). Client: put...CreatureOnStack/putPumpCreatureOnStack wrappers, getSpellPlan now damage(canTargetPlayer/Creature)+pump, CardActionSheet picker offers players+creatures, effectiveBoardPT helper | migrations/071, actions.ts, ControllerListV4.tsx, README | ✅ tsc+lint clean | ~7000 || 14:20 | Created .git/COMMITMSG.tmp | — | ~298 |

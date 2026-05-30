@@ -954,6 +954,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-29T22:48:27.482Z"
+    },
+    {
+      "id": "bug-060",
+      "timestamp": "2026-05-30T12:06:12.118Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T12:06:12.118Z"
+    },
+    {
+      "id": "bug-061",
+      "timestamp": "2026-05-30T12:06:34.263Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "No early return/throw for edge case: !tt",
+      "fix": "Added guard clause: if (!tt)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T12:06:34.263Z"
+    },
+    {
+      "id": "bug-062",
+      "timestamp": "2026-05-30T12:08:00.342Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: /** Effective P/T label for a board card (printed + counters; function effectiveBoardPT(card: BoardCard): string {",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-30T12:08:43.139Z"
+    },
+    {
+      "id": "bug-063",
+      "timestamp": "2026-05-30T12:08:34.455Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 28→67 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T12:08:34.455Z"
     }
   ]
 }
