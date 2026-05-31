@@ -382,3 +382,126 @@
 | 14:11 | Edited README.md | expanded (+9 lines) | ~305 |
 
 | 14:19 | Creature-targeting spells: migration 071 (deal_damage_creature + pump_creature stack actions; constraint, put_action_on_stack + resolve_top_of_stack reproduced with new branches; seed Lightning Strike Test + Giant Growth Test). Client: put...CreatureOnStack/putPumpCreatureOnStack wrappers, getSpellPlan now damage(canTargetPlayer/Creature)+pump, CardActionSheet picker offers players+creatures, effectiveBoardPT helper | migrations/071, actions.ts, ControllerListV4.tsx, README | ✅ tsc+lint clean | ~7000 || 14:20 | Created .git/COMMITMSG.tmp | — | ~298 |
+| 14:20 | Session end: 194 writes across 15 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 18 reads | ~161017 tok |
+| 14:31 | Session end: 194 writes across 15 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 18 reads | ~161017 tok |
+| 14:33 | Created scripts/test-board-setup.sql | — | ~1705 |
+| 14:34 | Created .git/COMMITMSG.tmp | — | ~108 |
+| 14:34 | Session end: 196 writes across 16 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 18 reads | ~162959 tok |
+| 14:49 | Edited lib/game/card-behavior-schema.ts | 38→43 lines | ~405 |
+| 14:49 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~291 |
+| 14:52 | Session end: 198 writes across 17 files (ControllerListV4.tsx, data.ts, 202605010066_exile_face_down.sql, types.ts, page.tsx) | 18 reads | ~164319 tok |
+| 14:54 | Edited components/ControllerListV4.tsx | added optional chaining | ~258 |
+| 14:54 | Edited components/ControllerListV4.tsx | getCanQuickCast() → canCastHandSpell() | ~75 |
+| 14:54 | Edited components/ControllerListV4.tsx | reduced (-9 lines) | ~68 |
+
+## Session: 2026-05-30 15:18
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-30 15:18
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:29 | Edited components/ControllerListV4.tsx | modified StatusBar() | ~72 |
+| 00:29 | Edited components/ControllerListV4.tsx | 7→6 lines | ~63 |
+| 00:33 | Session end: 2 writes across 1 files (ControllerListV4.tsx) | 1 reads | ~29375 tok |
+| 00:39 | Edited lib/game/data.ts | added optional chaining | ~294 |
+| 00:39 | Edited lib/game/types.ts | 4→6 lines | ~45 |
+| 00:39 | Edited lib/game/types.ts | 4→6 lines | ~43 |
+| 00:40 | Edited lib/game/use-controller-game-state.ts | expanded (+9 lines) | ~378 |
+| 00:40 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~21 |
+| 00:45 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~78 |
+| 00:46 | Edited components/ControllerListV4.tsx | modified effectiveBoardPT() | ~308 |
+| 00:48 | Edited components/ControllerListV4.tsx | 6→6 lines | ~102 |
+| 00:48 | Edited components/ControllerListV4.tsx | 6→11 lines | ~160 |
+| 00:50 | Edited lib/game/data.ts | modified getActivePumpTotals() | ~159 |
+
+| 00:51 | Pump now visualized everywhere (was only at declare blockers): getActivePumpTotals folds pump effects onto cards/boardCards in controller state, getEffectivePT/effectiveBoardPT add pumps + counters, battlefield badge shows effective P/T, sheet shows +X/+X until EOT note, realtime subs game_continuous_effects. Also fixed hand glow + Cast not showing for target spells (shared canCastHandSpell), removed dead StatusBar hasPriority prop, schema target_type string|array | ControllerListV4.tsx, data.ts, types.ts, use-controller-game-state.ts, card-behavior-schema.ts | ✅ tsc+lint clean | ~5000 || 00:51 | Session end: 12 writes across 4 files (ControllerListV4.tsx, data.ts, types.ts, use-controller-game-state.ts) | 3 reads | ~37863 tok |
+
+## Session: 2026-05-31 15:27
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-31 15:27
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:42 | Edited README.md | expanded (+32 lines) | ~494 |
+| 15:43 | Edited README.md | 22→27 lines | ~336 |
+| 15:46 | Created supabase/migrations/202605010072_activated_abilities.sql | — | ~1482 |
+| 15:46 | Edited lib/game/actions.ts | added optional chaining | ~200 |
+| 15:47 | Edited components/ControllerListV4.tsx | 4→5 lines | ~24 |
+| 15:47 | Edited components/ControllerListV4.tsx | CSS: activateAbility, sourceCardId, abilityIndex | ~150 |
+| 15:47 | Edited components/ControllerListV4.tsx | 4→5 lines | ~156 |
+| 15:47 | Edited components/ControllerListV4.tsx | CSS: onActivateAbility, sourceId, abilityIndex | ~146 |
+| 15:47 | Edited components/ControllerListV4.tsx | 8→9 lines | ~44 |
+| 15:47 | Edited components/ControllerListV4.tsx | 13→17 lines | ~266 |
+| 15:48 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~224 |
+| 15:49 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~1191 |
+| 15:51 | Edited README.md | abilities() → effect() | ~69 |
+| 15:51 | Edited README.md | "CardActionSheet" → "activate_ability" | ~57 |
+| 15:51 | Edited README.md | 2→3 lines | ~23 |
+| 15:51 | Edited README.md | 1→3 lines | ~304 |
+
+| 15:53 | Phase 1: wired non-mana activated abilities. Migration 072 activate_ability RPC (pays tap_self+mana costs, reuses put_action_on_stack for deal_damage effect, source stays on battlefield) + Prodigal Sorcerer Test seed. Client: activateAbility wrapper, CardActionSheet ability buttons replace Soon with cost label + player/creature target picker (abilityPick state, original ability index). README phased roadmap added. | migrations/072, actions.ts, ControllerListV4.tsx, README | ✅ tsc+lint clean | ~6000 || 15:54 | Session end: 16 writes across 4 files (README.md, 202605010072_activated_abilities.sql, actions.ts, ControllerListV4.tsx) | 3 reads | ~49018 tok |
+| 15:58 | Session end: 16 writes across 4 files (README.md, 202605010072_activated_abilities.sql, actions.ts, ControllerListV4.tsx) | 3 reads | ~49018 tok |
+| 22:46 | Created supabase/migrations/202605010073_dev_pass_priority.sql | — | ~487 |
+| 22:47 | Edited lib/game/actions.ts | added 1 condition(s) | ~172 |
+| 22:47 | Edited components/DevAdminPanel.tsx | inline fix | ~32 |
+| 22:47 | Edited components/DevAdminPanel.tsx | CSS: players | ~269 |
+| 22:49 | Edited README.md | 2→3 lines | ~20 |
+| 22:49 | Edited README.md | 1→2 lines | ~106 |
+
+| 22:50 | Judge can pass priority for all players: migration 073 dev_pass_priority (makes judge the last passer then delegates to pass_priority -> resolves stack or advances step; reuses guarded fns by aligning priority_player_id with auth.uid()). devPassPriority wrapper + Pass Priority (all players) button in DevAdminPanel Turn State. For solo testing. | migrations/073, actions.ts, DevAdminPanel.tsx, README | ✅ tsc+lint clean | ~2500 || 22:50 | Session end: 22 writes across 6 files (README.md, 202605010072_activated_abilities.sql, actions.ts, ControllerListV4.tsx, 202605010073_dev_pass_priority.sql) | 6 reads | ~60819 tok |
+
+## Session: 2026-05-31 22:56
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:57 | Created supabase/migrations/202605010074_zero_toughness_sba.sql | — | ~880 |
+| 22:58 | Edited README.md | inline fix | ~180 |
+| 22:58 | Edited README.md | 2→3 lines | ~20 |
+| 22:58 | Edited README.md | inline fix | ~28 |
+| 22:58 | Edited README.md | inline fix | ~58 |
+| 23:05 | Add 0-toughness SBA sweep (rule 704.5f, ignores indestructible) to lethal mover | supabase/migrations/202605010074_zero_toughness_sba.sql, README.md | done; needs apply | ~3k |
+| 23:06 | Session end: 5 writes across 2 files (202605010074_zero_toughness_sba.sql, README.md) | 4 reads | ~20563 tok |
+| 23:11 | Edited README.md | inline fix | ~52 |
+| 23:11 | Edited README.md | inline fix | ~69 |
+| 23:11 | Verified counterspell per-item picker already implemented in V4; closed Phase 1 (checkboxes + stale caveat) | components/ControllerListV4.tsx, README.md | done | ~2k |
+| 23:15 | Created supabase/migrations/202605010075_card_script_authoring.sql | — | ~963 |
+| 23:15 | Edited scripts/import-scryfall-cards.mjs | 3→4 lines | ~27 |
+| 23:16 | Edited lib/game/actions.ts | added nullish coalescing | ~171 |
+| 23:16 | Edited lib/game/types.ts | 14→18 lines | ~138 |
+| 23:16 | Edited lib/game/actions.ts | 3→4 lines | ~20 |
+| 23:16 | Edited lib/game/data.ts | added 1 condition(s) | ~178 |
+| 23:17 | Created components/CardBehaviorEditor.tsx | — | ~2338 |
+| 23:17 | Created app/cards/behavior/page.tsx | — | ~287 |
+| 23:18 | Edited README.md | 2→3 lines | ~21 |
+| 23:18 | Edited README.md | modified authoring() | ~190 |
+| 23:18 | Edited README.md | expanded (+9 lines) | ~353 |
+| 23:20 | Phase 2 card-script authoring: oracle_id col + importer, set_card_script/relink_card_scripts RPCs, /cards/behavior editor with live validateCardScript | migrations/...075, scripts/import-scryfall-cards.mjs, components/CardBehaviorEditor.tsx, app/cards/behavior/page.tsx, lib/game/{actions,data,types}.ts | done; tsc+lint clean; needs migration apply + reimport to backfill oracle_id | ~12k |
+| 23:20 | Session end: 18 writes across 9 files (202605010074_zero_toughness_sba.sql, README.md, 202605010075_card_script_authoring.sql, import-scryfall-cards.mjs, actions.ts) | 12 reads | ~77542 tok |
+| 23:23 | Session end: 18 writes across 9 files (202605010074_zero_toughness_sba.sql, README.md, 202605010075_card_script_authoring.sql, import-scryfall-cards.mjs, actions.ts) | 12 reads | ~77542 tok |
+| 23:29 | Session end: 18 writes across 9 files (202605010074_zero_toughness_sba.sql, README.md, 202605010075_card_script_authoring.sql, import-scryfall-cards.mjs, actions.ts) | 12 reads | ~77542 tok |
+| 23:40 | Session end: 18 writes across 9 files (202605010074_zero_toughness_sba.sql, README.md, 202605010075_card_script_authoring.sql, import-scryfall-cards.mjs, actions.ts) | 12 reads | ~77542 tok |
+| 23:48 | Created supabase/migrations/202605010076_triggered_abilities.sql | — | ~4548 |
+| 23:48 | Edited lib/game/card-behavior-schema.ts | expanded (+21 lines) | ~431 |
+| 23:51 | Edited README.md | 2→3 lines | ~22 |
+| 23:51 | Edited README.md | inline fix | ~98 |
+| 23:51 | Edited README.md | modified Effects() | ~499 |
+| 23:53 | Phase 3 triggered abilities (ETB + upkeep, auto-resolved effects): DB triggers enqueue triggered_ability stack items; resolve applies gain/lose life, drain, draw | migrations/...076, lib/game/card-behavior-schema.ts, README.md | done; tsc+lint clean; needs migration apply | ~14k |
+| 23:54 | Session end: 23 writes across 11 files (202605010074_zero_toughness_sba.sql, README.md, 202605010075_card_script_authoring.sql, import-scryfall-cards.mjs, actions.ts) | 17 reads | ~94077 tok |
+| 23:59 | Created app/cards/behavior/page.tsx | — | ~346 |
+| 00:01 | Session end: 24 writes across 11 files (202605010074_zero_toughness_sba.sql, README.md, 202605010075_card_script_authoring.sql, import-scryfall-cards.mjs, actions.ts) | 18 reads | ~94819 tok |
+| 00:03 | Created supabase/migrations/202605010077_dies_and_attacks_triggers.sql | — | ~1899 |
+| 00:03 | Edited supabase/migrations/202605010077_dies_and_attacks_triggers.sql | left() → version() | ~554 |
+| 00:04 | Edited README.md | 2→3 lines | ~23 |
+| 00:04 | Edited README.md | inline fix | ~96 |
+| 00:04 | Edited README.md | 1→5 lines | ~237 |
+| 00:04 | Edited README.md | 2→2 lines | ~114 |
+| 00:07 | Phase 3 dies + attacks trigger events: fire_zone_change_triggers (ETB+dies) replaces ETB-only; fire_attack_triggers on combat_assignments insert; get_stack_items label fallback | migrations/...077, README.md | done; needs migration apply | ~7k |
+| 00:07 | Session end: 30 writes across 12 files (202605010074_zero_toughness_sba.sql, README.md, 202605010075_card_script_authoring.sql, import-scryfall-cards.mjs, actions.ts) | 19 reads | ~98498 tok |
+| 00:26 | Created lib/game/card-behavior-builder.ts | — | ~2357 |
+| 00:26 | Created components/CardBehaviorForm.tsx | — | ~2065 |

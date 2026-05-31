@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T12:20:17.541Z
-> Files: 295 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-31T22:26:55.559Z
+> Files: 306 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -14,7 +14,7 @@
 - `package.json` — Node.js package manifest (~352 tok)
 - `postcss.config.mjs` — Declares config (~45 tok)
 - `proxy.ts` — Exports proxy, config (~184 tok)
-- `README.md` — Project documentation (~11779 tok)
+- `README.md` — Project documentation (~13696 tok)
 - `tailwind.config.ts` — Tailwind CSS configuration (~558 tok)
 - `tsconfig.json` — TypeScript configuration (~218 tok)
 
@@ -39,7 +39,7 @@
 
 ## .git/
 
-- `COMMITMSG.tmp` (~298 tok)
+- `COMMITMSG.tmp` (~108 tok)
 
 ## app/
 
@@ -79,6 +79,10 @@
 
 - `page.tsx` — BoardPage (~215 tok)
 
+## app/cards/behavior/
+
+- `page.tsx` — CardBehaviorPage (~346 tok)
+
 ## app/controller-style-lab/
 
 - `controller-style-lab.module.css` — Styles: 114 rules, 1 vars, 2 media queries (~3062 tok)
@@ -105,6 +109,8 @@
 
 - `ActionButtons.tsx` — ActionButtons (~4382 tok)
 - `auth-button.tsx` — AuthButton (~239 tok)
+- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~2338 tok)
+- `CardBehaviorForm.tsx` — inputClass (~2065 tok)
 - `CardCatalogPicker.tsx` — cardTypeFilters — uses useMemo, useState, useEffect (~2316 tok)
 - `CardController.tsx` — CardController — uses useMemo (~221 tok)
 - `CardZoneControls.tsx` — CardZoneControls — uses useMemo, useState (~2178 tok)
@@ -113,10 +119,10 @@
 - `ControllerList.tsx` — components/ControllerList.tsx (~20457 tok)
 - `ControllerListV2.tsx` — ControllerListV2 — uses useState, useMemo (~10088 tok)
 - `ControllerListV3.tsx` — manaColors — uses useMemo (~6422 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~29129 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~30812 tok)
 - `DeckManager.tsx` — DeckManager — uses useMemo, useState, useEffect (~3880 tok)
 - `deploy-button.tsx` — DeployButton (~385 tok)
-- `DevAdminPanel.tsx` — DevAdminPanel — uses useMemo, useState, useEffect (~3112 tok)
+- `DevAdminPanel.tsx` — DevAdminPanel (~3316 tok)
 - `DrawCardButton.tsx` — DrawCardButton — uses useMemo, useState (~906 tok)
 - `env-var-warning.tsx` — EnvVarWarning (~160 tok)
 - `forgot-password-form.tsx` — ForgotPasswordForm — renders form — uses useState (~1049 tok)
@@ -192,21 +198,22 @@
 ## lib/game/
 
 - `action-selectors.ts` — Exports CardWithScript, getActionTiming, isPlayerDamageAction, isRetainManaAction + 3 more (~652 tok)
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 28 more (~5864 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 28 more (~6322 tok)
 - `blueprint.ts` — Exports GameViewStep, BoardLayoutKey, PriorityRole, StackActionType + 21 more (~3457 tok)
 - `board-selectors.ts` — Exports BoardSeat, BoardConnection, buildBoardSeats, getCombatCardIds + 2 more (~812 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2148 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~2357 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2393 tok)
 - `card-behavior.ts` — Exports CardBehaviorSchemaVersion, CardBehaviorStatus, CardBehaviorZone, CardBehaviorTargetType + 14 (~2557 tok)
 - `controller-selectors.ts` — Exports selectControllerViewModel, getCanQuickCast, canCardRespond, doesCardRequireStackTarget + 2 more (~1459 tok)
-- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 18 more (~4926 tok)
+- `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5401 tok)
 - `dev.ts` — Exports showDevControls, enableFallbackRefresh, fallbackRefreshIntervalMs (~86 tok)
 - `judge-selectors.ts` — Exports PlayerJudgeStats, buildPlayerJudgeStats, getEmptyPlayerJudgeStats (~235 tok)
 - `legacy-controller-selectors.ts` — Exports LegacyControllerViewFocus, orderCardsByIds, selectLegacyControllerViewModel (~1119 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 4 more (~600 tok)
-- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 25 more (~2030 tok)
+- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 26 more (~2097 tok)
 - `use-board-game-state.ts` — Exports useBoardGameState (~1008 tok)
 - `use-card-action-handlers.ts` — Exports useCardActionHandlers (~1286 tok)
-- `use-controller-game-state.ts` — Exports useControllerGameState (~1660 tok)
+- `use-controller-game-state.ts` — Exports useControllerGameState (~1851 tok)
 - `use-game-loop-state.ts` — Exports UseGameLoopStateResult, useGameLoopState, fetchGameLoopState (~1580 tok)
 - `use-judge-action-log.ts` — Exports useJudgeActionLog (~281 tok)
 - `use-judge-card-tools.ts` — Exports useJudgeCardTools (~1465 tok)
@@ -225,7 +232,8 @@
 
 ## scripts/
 
-- `import-scryfall-cards.mjs` — defaultInputFile: flushBatch, upsertBatchWithRetry, getSupabaseErrorMessage + 15 more (~3055 tok)
+- `import-scryfall-cards.mjs` — defaultInputFile: flushBatch, upsertBatchWithRetry, getSupabaseErrorMessage + 15 more (~3063 tok)
+- `test-board-setup.sql` — Test board setup for the new mechanics (deathtouch, +1/+1 counters, pumps, (~1705 tok)
 - `validate-card-scripts.ts` — Audit script — validates all card scripts in the database against the Zod schema. (~559 tok)
 
 ## supabase/
@@ -312,6 +320,12 @@
 - `202605010069_until_end_of_turn_pumps.sql` — Until-end-of-turn power/toughness pumps (Giant Growth style). (~2374 tok)
 - `202605010070_tokens.sql` — Token creation. (~1291 tok)
 - `202605010071_creature_targeting_spells.sql` — Creature-targeting spells through the stack. (~4577 tok)
+- `202605010072_activated_abilities.sql` — Non-mana activated abilities. (~1482 tok)
+- `202605010073_dev_pass_priority.sql` — Judge tool: pass priority on behalf of all players. (~487 tok)
+- `202605010074_zero_toughness_sba.sql` — State-based action: creatures with 0 or less toughness are put into the (~880 tok)
+- `202605010075_card_script_authoring.sql` — Card script authoring (Phase 2 — lightweight approach). (~963 tok)
+- `202605010076_triggered_abilities.sql` — Triggered abilities (Phase 3, first slice): enters-the-battlefield and (~4548 tok)
+- `202605010077_dies_and_attacks_triggers.sql` — Triggered abilities (Phase 3, second slice): dies and attacks events. (~2018 tok)
 
 ## vercel/
 

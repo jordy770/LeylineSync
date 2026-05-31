@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import CardCatalogPicker from '@/components/CardCatalogPicker'
-import { devAddMana, devSetTurnState, devSpawnCard, getErrorMessage } from '@/lib/game/actions'
+import { devAddMana, devPassPriority, devSetTurnState, devSpawnCard, getErrorMessage } from '@/lib/game/actions'
 import { gameZones, turnPhases, turnSteps } from '@/lib/game/data'
 import { manaColors } from '@/lib/game/mana'
 import { showDevControls } from '@/lib/game/dev'
@@ -242,6 +242,20 @@ export default function DevAdminPanel({
               className="rounded bg-fuchsia-300 px-3 py-2 text-sm font-semibold text-fuchsia-950 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Set Turn State
+            </button>
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={() =>
+                runDevAction(
+                  () => devPassPriority(supabase, sessionId),
+                  'Priority passed for all players',
+                )
+              }
+              className="rounded border border-fuchsia-400/40 bg-fuchsia-950/40 px-3 py-2 text-sm font-semibold text-fuchsia-100 disabled:cursor-not-allowed disabled:opacity-50"
+              title="Passes priority on behalf of all players: resolves the top of the stack, or advances the step if the stack is empty."
+            >
+              Pass Priority (all players)
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
+  CardCatalogEntry,
   CardScript,
   CombatAssignment,
   CombatDamageResult,
@@ -236,6 +237,46 @@ export async function passPriority(supabase: SupabaseClient, sessionId: string) 
   return data as GameTurnState
 }
 
+// Judge tool: pass priority on behalf of all players (resolve the stack or advance the step).
+export async function devPassPriority(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('dev_pass_priority', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as GameTurnState
+}
+
+export async function setCardScript(
+  supabase: SupabaseClient,
+  cardId: string,
+  script: CardScript | null,
+) {
+  const { data, error } = await supabase.rpc('set_card_script', {
+    p_card_id: cardId,
+    p_script: script,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as CardCatalogEntry
+}
+
+export async function relinkCardScripts(supabase: SupabaseClient) {
+  const { data, error } = await supabase.rpc('relink_card_scripts')
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? 0) as number
+}
+
 export async function putDealDamagePlayerOnStack(
   supabase: SupabaseClient,
   sessionId: string,
@@ -313,6 +354,30 @@ export async function putPumpCreatureOnStack(
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function activateAbility(
+  supabase: SupabaseClient,
+  sessionId: string,
+  sourceCardId: string,
+  abilityIndex: number,
+  target?: { targetCardId?: string | null; targetPlayerId?: string | null },
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('activate_ability', {
+    p_session_id: sessionId,
+    p_source_card_id: sourceCardId,
+    p_ability_index: abilityIndex,
+    p_target_player_id: target?.targetPlayerId ?? null,
+    p_target_card_id: target?.targetCardId ?? null,
+    p_generic_payment: genericPayment ?? null,
   })
 
   if (error) {

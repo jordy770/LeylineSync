@@ -29,6 +29,9 @@ const KNOWN_V1_ACTION_TYPES = ['add_mana', 'deal_damage', 'counter_spell'] as co
 
 // The catch-all only matches action types we haven't explicitly modelled,
 // preventing known types with typo'd fields from silently passing.
+// target_type may be a single type or a list (e.g. "any target" -> creature + player).
+const TargetTypeSchema = z.union([z.string(), z.array(z.string())]).optional()
+
 const UnknownV1ActionSchema = z.object({
   type: z.string().refine(
     (t) => !(KNOWN_V1_ACTION_TYPES as readonly string[]).includes(t),
@@ -37,8 +40,10 @@ const UnknownV1ActionSchema = z.object({
   color: z.string().optional(),
   colors: z.array(z.string()).optional(),
   amount: z.number().optional(),
+  power: z.number().optional(),
+  toughness: z.number().optional(),
   target: z.string().optional(),
-  target_type: z.string().optional(),
+  target_type: TargetTypeSchema,
   timing: z.string().optional(),
   expires_at_phase: z.string().optional(),
   expires_at_step: z.string().optional(),
@@ -54,7 +59,7 @@ export const CardActionSchema = z.union([
     type: z.literal('deal_damage'),
     amount: z.number().int().positive(),
     target: z.string().optional(),
-    target_type: z.string().optional(),
+    target_type: TargetTypeSchema,
     timing: z.string().optional(),
     expires_at_phase: z.string().optional(),
     expires_at_step: z.string().optional(),
@@ -62,7 +67,7 @@ export const CardActionSchema = z.union([
   z.object({
     type: z.literal('counter_spell'),
     target: z.string().optional(),
-    target_type: z.string().optional(),
+    target_type: TargetTypeSchema,
     timing: z.string().optional(),
   }),
   UnknownV1ActionSchema,
@@ -114,7 +119,9 @@ const CardBehaviorCostSchema = z.union([
   UnknownCostSchema,
 ])
 
-const KNOWN_V2_ACTION_TYPES = ['add_mana', 'deal_damage', 'counter'] as const
+const KNOWN_V2_ACTION_TYPES = [
+  'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
+] as const
 
 const UnknownV2ActionSchema = z.object({
   type: z.string().refine(
@@ -122,6 +129,9 @@ const UnknownV2ActionSchema = z.object({
     { message: 'Known V2 action type with invalid fields — check required fields for this type' },
   ),
 }).passthrough()
+
+// Fixed (non-chosen) recipient for auto-resolving triggered-ability effects.
+const BehaviorRecipientSchema = z.enum(['controller', 'each_opponent', 'active_player'])
 
 const CardBehaviorActionSchema = z.union([
   z.object({
@@ -134,11 +144,27 @@ const CardBehaviorActionSchema = z.union([
     amount: z.number(),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    recipient: BehaviorRecipientSchema.optional(),
   }),
   z.object({
     type: z.literal('counter'),
     target_ref: z.string().optional(),
     target_type: z.literal('spell').optional(),
+  }),
+  z.object({
+    type: z.literal('gain_life'),
+    amount: z.number(),
+    recipient: BehaviorRecipientSchema.optional(),
+  }),
+  z.object({
+    type: z.literal('lose_life'),
+    amount: z.number(),
+    recipient: BehaviorRecipientSchema.optional(),
+  }),
+  z.object({
+    type: z.literal('draw'),
+    amount: z.number(),
+    recipient: BehaviorRecipientSchema.optional(),
   }),
   UnknownV2ActionSchema,
 ])

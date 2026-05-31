@@ -363,6 +363,7 @@ Currently gated dev controls:
 - Manual battlefield zone moves such as `To Hand` and `Graveyard`.
 - Player action panel with manual draw, untap all, and clear mana.
 - Judge card tools, including `Clear Summoning Sickness` on battlefield cards (zeroes `entered_battlefield_turn_number` via `dev_clear_summoning_sickness`).
+- Dev Admin `Pass Priority (all players)` — passes priority on behalf of every seat via `dev_pass_priority` (resolves the top of the stack, or advances the step when the stack is empty). Useful for solo testing without switching accounts.
 
 Normal gameplay controls remain visible without this flag, including play/cast, card script actions, combat controls, priority passing, stack display, turn status, mana pool, and life totals.
 
@@ -732,6 +733,8 @@ Supported targeted stack actions:
 
 A spell's script `actions` decide which targets the V4 controller offers: `deal_damage` with `target_type` including `player`/`creature`/`any` shows the matching choices, and a `pump` action shows creature targets. If the target has left the battlefield by resolution the spell fizzles harmlessly. Seeded test spells: `Lightning Strike Test` (`{1}{R}`, 3 damage any target) and `Giant Growth Test` (`{G}`, +3/+3 to target creature).
 
+Non-mana **activated abilities** use `activate_ability(session, source_card_id, ability_index, target_player_id?, target_card_id?, generic_payment?)`. It pays the ability's `tap_self` and `mana` costs (the source stays on the battlefield), then puts the effect on the stack by reusing `put_action_on_stack`, so targeting and resolution are shared with creature-targeting spells. Today only `deal_damage` effects are supported. The V4 `CardActionSheet` lists each non-mana ability with its cost; tapping one opens the same player/creature target picker. Seeded test card: `Prodigal Sorcerer Test` (`{2}{U}` 1/1, `{T}: deal 1 damage to any target`). Mana abilities still use the dedicated tap-for-mana flow.
+
 ## Turn And Priority
 
 `active_player_id` and `priority_player_id` are separate:
@@ -795,7 +798,7 @@ A creature's effective power/toughness is its printed value plus modifiers:
 - **+1/+1 counters** — permanent, stored in `game_cards.plus_one_counters`. Adjust with `adjust_card_counters(session, card, delta)`.
 - **Until-end-of-turn pumps** — `game_continuous_effects` rows of `effect_type = 'pump'` with `{ power, toughness }` payload, created by `create_pt_pump(session, target, power, toughness)`. They expire during the cleanup step via `expire_continuous_effects_for_step`.
 
-`card_effective_power(session, card)` and `card_effective_toughness(session, card)` fold both in. `resolve_combat_damage` and `move_lethal_damaged_creatures_to_graveyard` use the effective values, and `get_combat_assignments` exposes `attacker_power`/`attacker_toughness` so the controller can show real combat numbers (including counters and pumps) during declare blockers. Counters reset to 0 when a creature dies. Negative pumps are allowed but a creature reduced to 0 toughness without marked damage is not yet swept as a state-based action.
+`card_effective_power(session, card)` and `card_effective_toughness(session, card)` fold both in. `resolve_combat_damage` and `move_lethal_damaged_creatures_to_graveyard` use the effective values, and `get_combat_assignments` exposes `attacker_power`/`attacker_toughness` so the controller can show real combat numbers (including counters and pumps) during declare blockers. Counters reset to 0 when a creature dies. Negative pumps are allowed: a creature reduced to 0 or less toughness is put into the graveyard as a state-based action (rule 704.5f) regardless of marked damage or indestructible, distinct from lethal marked damage (704.5g) which indestructible prevents.
 
 ## Tokens
 
@@ -804,6 +807,32 @@ Tokens are catalog `cards` rows flagged `is_token = true` (seeded set: Soldier, 
 - `create_token(session, player, token_card_id, count)` spawns 1–20 tokens onto a player's battlefield and registers their continuous effects (e.g. the Spirit's flying).
 - A token that leaves the battlefield ceases to exist: an `after update of zone` trigger (`cease_token_if_off_battlefield`) deletes the instance and its continuous effects when its zone changes away from `battlefield` — so dying, getting bounced, or being exiled removes the token instead of piling it up in another zone.
 - Judge tools expose a "Create Token" control; the V4 controller shows a `Token` badge on the card sheet.
+
+## Card Behavior Authoring
+
+Real imported cards arrive with no behavior: the Scryfall importer deliberately leaves `cards.script` empty and never writes that column, so the upsert's `ON CONFLICT DO UPDATE` preserves any authored script across reimports.
+
+- **Editor:** `/cards/behavior` (auth-gated). Pick a card, edit its JSON behavior script, and save. The draft is validated live with `validateCardScript` (the same V1/V2 Zod schema the game runtime uses); Save is blocked while invalid. An empty editor clears the card's behavior.
+- **Write path:** `set_card_script(card_id, script)` stores the script onto `cards.script`. The V4/judge clients read `coalesce(game_cards.copied_script, cards.script)` at runtime, unchanged.
+- **`oracle_id`:** the importer now stores Scryfall's `oracle_id` (card identity) alongside `cards.id` (the printing id). Existing rows are backfilled on the next reimport.
+- **Relink:** if the representative printing chosen for an oracle changes between imports, the authored script would otherwise be stranded on the old printing id. `relink_card_scripts()` (a button in the editor) copies a non-empty script forward to sibling printings of the same `oracle_id` that have no script yet.
+
+## Triggered Abilities
+
+A card's behavior script may carry `triggered_abilities: [{ event, effects }]`. When a matching event fires, each ability is enqueued onto the stack as a `triggered_ability` item (its effects and controller baked into the payload, so resolution does not depend on the source surviving) and resolves like any other stack item — players pass priority, then `resolve_top_of_stack` applies it.
+
+- **Events wired so far:**
+  - `enters_the_battlefield` (aliases `etb`, `enters`) and `dies` (alias `death`, battlefield → graveyard) via a single database trigger on `game_cards` zone changes (`fire_zone_change_triggers`).
+  - `beginning_of_upkeep` (alias `upkeep`) via a trigger on `game_turn_state` entering the upkeep step (fires for the active player's permanents).
+  - `attacks` (aliases `declares_attack`, `attack`) via a trigger on inserts into `game_combat_assignments`.
+  - Detection mirrors the token cease-to-exist trigger pattern. The zone-change trigger sorts before the cease trigger so a token's own `dies` ability is enqueued before it is removed; `game_stack_items.source_card_id` is `ON DELETE SET NULL` and the source card name is baked into the payload `label` (surfaced by `get_stack_items`), so the trigger still resolves and displays after its source disappears.
+- **Effects (auto-resolved, fixed recipients — no chosen target yet):**
+  - `{ "type": "gain_life", "amount": N }` — controller gains N.
+  - `{ "type": "lose_life", "amount": N, "recipient": "each_opponent" | "controller" }` — recipients lose N (default `each_opponent`).
+  - `{ "type": "deal_damage", "amount": N, "recipient": ... }` — same as lose_life for player recipients.
+  - `{ "type": "draw", "amount": N }` — controller draws N (stops if the library is empty).
+- **Seeded test cards:** `Welcome Drain Test` ({1}{B} 2/2, ETB: each opponent loses 2, you gain 2); `Upkeep Scholar Test` ({2}{U} 1/3, upkeep: gain 1 life); `Parting Gift Test` ({1}{W} 2/2, dies: gain 2 life); `Raiding Berserker Test` ({1}{R} 2/2, attacks: deal 1 to each opponent).
+- **Not yet:** targeted triggers (e.g. "destroy target creature") that require interactive target selection when the trigger goes on the stack.
 
 ## Realtime
 
@@ -952,6 +981,12 @@ Run migrations in order. Current migration list:
 202605010069_until_end_of_turn_pumps.sql
 202605010070_tokens.sql
 202605010071_creature_targeting_spells.sql
+202605010072_activated_abilities.sql
+202605010073_dev_pass_priority.sql
+202605010074_zero_toughness_sba.sql
+202605010075_card_script_authoring.sql
+202605010076_triggered_abilities.sql
+202605010077_dies_and_attacks_triggers.sql
 ```
 
 ## Adding New Card Mechanics
@@ -1200,16 +1235,53 @@ High-value next work:
 - [x] Token creation (is_token catalog rows, create_token RPC, cease-to-exist trigger, judge control)
 - [ ] Player-chosen combat damage over-assignment amounts
 - [x] Creature-targeting spells from hand through the stack — burn/removal (`deal_damage_creature`) and combat tricks (`pump_creature`) cast and targeted from hand
-- [ ] State-based action sweep for 0-toughness creatures (e.g. from negative pumps) without marked damage
+- [x] State-based action sweep for 0-toughness creatures (e.g. from negative pumps) without marked damage
 - [ ] Card script override system separate from imported Scryfall metadata
 - [ ] Real card-specific UI/actions for copy, control-change, and suppression effects
 - [ ] Real card implementations for mana-retention effects, parked until later
 - [ ] Scheduled cleanup for old finished game runtime data
 
+### Phased plan
+
+The engine now has many mechanics (combat keywords, counters, pumps, tokens,
+targeted spells) but almost no real cards use them — the Scryfall importer
+deliberately leaves `cards.script` empty, so only hand-seeded cards have
+behavior beyond imported keywords. The roadmap is therefore sequenced to finish
+half-built execution paths first, then build the content platform that makes the
+mechanics matter, then add depth and ops.
+
+#### Phase 1 — Finish the half-built paths (small, low-risk)
+
+- [x] Wire non-mana activated abilities — `activate_ability` pays tap/mana costs then reuses the stack for the effect (damage to player/creature today). Reuses the creature-targeting stack work.
+- [x] State-based sweep for 0-toughness creatures — `move_lethal_damaged_creatures_to_graveyard` now sweeps creatures with effective toughness ≤ 0 (rule 704.5f, ignores indestructible) alongside lethal marked damage.
+- [x] Counterspell per-item target picker — the V4 cast sheet lists each pending stack item (top-of-stack first) and counters the chosen one via `putCounterSpellOnStack(..., stackItemId, ...)`.
+
+#### Phase 2 — Content platform (strategic core)
+
+- [x] Card script authoring (lightweight): behavior is authored directly onto `cards.script`, which the importer never writes — so the upsert's `ON CONFLICT DO UPDATE` already preserves it across reimports. Added `oracle_id` to `cards` (+ importer support) and a `relink_card_scripts()` helper so authored behavior can be re-attached if the representative printing for an oracle changes. Authoring/validation UI at `/cards/behavior`. (A separate `oracle_id`-keyed override table with a runtime `coalesce` was considered but deferred — it would mean rewriting ~10 tested runtime functions for little extra benefit given reimports already preserve `cards.script`.)
+
+#### Phase 3 — Broaden behavior coverage on the platform
+
+- [~] Triggered abilities (ETB, dies, attack/upkeep) — biggest missing category. **Done:** enters-the-battlefield, beginning-of-upkeep, dies, and attacks events all fire and resolve through the stack with auto-resolved effects (gain/lose life, damage to each opponent/controller, draw). Remaining: targeted triggers (which need interactive target selection).
+- [ ] More spell effect types (draw, destroy, bounce, tap/untap, add counters).
+- [ ] Real copy / control-change / suppression cards.
+- [ ] Real mana-retention cards.
+
+#### Phase 4 — Rules-engine depth & polish
+
+- [ ] Player-chosen combat damage over-assignment amounts.
+- [ ] Richer mana model (hybrid, X, Phyrexian).
+- [ ] Fuller priority/APNAP, replacement/prevention/protection.
+
+#### Phase 5 — Operational
+
+- [ ] Scheduled cleanup of finished-game runtime data.
+- [ ] Hidden-zone RLS hardening if private decklists matter.
+
 ## Known Caveats
 
-- Counterspell cancellation exists, but there is no full target legality/replacement/protection model yet. In the V4 controller, casting a counterspell auto-targets the top (most recently cast) stack item; there is no per-item target picker yet.
-- The V4 `CardActionSheet` lists non-mana activated abilities but they are not yet server-wired, so they show as `Soon`.
+- Counterspell cancellation exists, but there is no full target legality/replacement/protection model yet. The V4 controller offers a per-item picker (choose which pending stack item to counter), but there is no protection/"can't be countered" enforcement.
+- Non-mana activated abilities are wired via `activate_ability` (tap/mana costs, then the effect goes on the stack). Currently only `deal_damage` effects are supported; other effect types still render as `Soon`.
 - Instant/Sorcery cards still move from hand to graveyard when put on the stack. Permanent spells use the `stack` zone.
 - Mana cost parsing is intentionally simple.
 - Priority is good enough for early stack work, but not a full rules-engine implementation.

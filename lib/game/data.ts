@@ -320,6 +320,35 @@ export async function getGameActionLogs(
   return (data ?? []) as GameActionLog[]
 }
 
+/** Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. */
+export async function getActivePumpTotals(supabase: SupabaseClient, sessionId: string) {
+  const totals: Record<string, { power: number; toughness: number }> = {}
+
+  const { data, error } = await supabase
+    .from('game_continuous_effects')
+    .select('affected_card_id, payload')
+    .eq('session_id', sessionId)
+    .eq('effect_type', 'pump')
+
+  if (error) {
+    console.error('Failed to load pump effects:', error.message)
+    return totals
+  }
+
+  for (const row of (data ?? []) as { affected_card_id: string | null; payload: Record<string, unknown> | null }[]) {
+    const id = row.affected_card_id
+    if (!id) continue
+    const power = Number(row.payload?.power ?? 0)
+    const toughness = Number(row.payload?.toughness ?? 0)
+    const entry = totals[id] ?? { power: 0, toughness: 0 }
+    entry.power += Number.isFinite(power) ? power : 0
+    entry.toughness += Number.isFinite(toughness) ? toughness : 0
+    totals[id] = entry
+  }
+
+  return totals
+}
+
 export async function getTokenCards(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('cards')
@@ -513,6 +542,24 @@ export async function getCardCatalog(
   }
 
   return (data ?? []) as LinkedCard[]
+}
+
+// Full catalog detail for a single card, including its behavior script and
+// oracle_id. Used by the card-behavior authoring editor.
+export async function getCardDetail(supabase: SupabaseClient, cardId: string) {
+  const { data, error } = await supabase
+    .from('cards')
+    .select(
+      'id, oracle_id, name, image_url, type_line, mana_cost, oracle_text, keywords, power, toughness, power_toughness, script',
+    )
+    .eq('id', cardId)
+    .maybeSingle()
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? null) as LinkedCard | null
 }
 
 export function normalizeManaPool(pool: ManaPool | null | undefined): ManaPool {

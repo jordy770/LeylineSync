@@ -213,12 +213,16 @@ export type LinkedCard = {
   type_line?: string | null
   mana_cost?: string | null
   oracle_text?: string | null
+  oracle_id?: string | null
   keywords?: string[] | null
   power?: number | null
   toughness?: number | null
   power_toughness?: string | null
   is_token?: boolean | null
 }
+
+// A full catalog card row, as returned by set_card_script.
+export type CardCatalogEntry = LinkedCard
 
 export type TokenCard = {
   id: string
@@ -250,6 +254,8 @@ export type BoardCard = {
   controller_player_id?: string | null
   is_face_down?: boolean | null
   plus_one_counters?: number
+  pump_power?: number
+  pump_toughness?: number
 }
 
 export type ControllerCard = {
@@ -265,6 +271,8 @@ export type ControllerCard = {
   static_effects_suppressed?: boolean
   entered_battlefield_turn_number?: number | null
   plus_one_counters?: number
+  pump_power?: number
+  pump_toughness?: number
   cards: LinkedCard | null
 }
 

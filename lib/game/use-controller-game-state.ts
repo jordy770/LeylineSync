@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getErrorMessage } from './actions'
 import {
+  getActivePumpTotals,
   getBoardCards,
   getCombatActionState,
   getCombatAssignments,
@@ -66,6 +67,7 @@ export function useControllerGameState(sessionId: string) {
         nextCombatAssignments,
         nextStackItems,
         nextManaPool,
+        pumpTotals,
       ] = await Promise.all([
         getGameSession(supabase, sessionId),
         getControllerCards(supabase, sessionId, currentPlayerId),
@@ -76,11 +78,19 @@ export function useControllerGameState(sessionId: string) {
         getCombatAssignments(supabase, sessionId),
         getStackItems(supabase, sessionId),
         getPlayerManaPool(supabase, sessionId, currentPlayerId),
+        getActivePumpTotals(supabase, sessionId),
       ])
 
+      // Fold active until-end-of-turn pumps onto each card so effective P/T shows
+      // immediately, not just at declare blockers (which reads server-side P/T).
+      const withPump = <T extends { id: string }>(card: T): T => {
+        const pump = pumpTotals[card.id]
+        return pump ? { ...card, pump_power: pump.power, pump_toughness: pump.toughness } : card
+      }
+
       setPlayerId(currentPlayerId)
-      setCards(controllerResult.cards)
-      setBoardCards(allBoardCards)
+      setCards(controllerResult.cards.map(withPump))
+      setBoardCards(allBoardCards.map(withPump))
       setPlayers(sessionPlayers)
       setTurnState(nextTurnState)
       setCombatActionState(nextCombatActionState)
@@ -113,6 +123,7 @@ export function useControllerGameState(sessionId: string) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_stack_items', filter: `session_id=eq.${sessionId}` }, loadControllerState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, loadControllerState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers' }, loadControllerState)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, loadControllerState)
       .subscribe((status, error) => {
         console.log('Controller v2 realtime status:', status)
         if (error) {
