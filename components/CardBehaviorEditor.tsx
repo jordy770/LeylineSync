@@ -1,10 +1,17 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import CardBehaviorForm from '@/components/CardBehaviorForm'
 import CardCatalogPicker from '@/components/CardCatalogPicker'
 import { getErrorMessage, relinkCardScripts, setCardScript } from '@/lib/game/actions'
 import { getCardDetail } from '@/lib/game/data'
 import { validateCardScript } from '@/lib/game/card-behavior-schema'
+import {
+  EMPTY_BUILDER_FORM,
+  buildScriptFromForm,
+  parseScriptToForm,
+  type BuilderForm,
+} from '@/lib/game/card-behavior-builder'
 import { createClient } from '@/lib/supabase/client'
 import type { CardScript, LinkedCard } from '@/lib/game/types'
 
@@ -18,11 +25,25 @@ const EMPTY_SCRIPT_PLACEHOLDER = `{
   ]
 }`
 
+type EditorMode = 'form' | 'json'
+
+const emptyBuilderForm = (): BuilderForm => ({
+  keywords: [...EMPTY_BUILDER_FORM.keywords],
+  triggers: [...EMPTY_BUILDER_FORM.triggers],
+})
+
+const scriptToText = (script: CardScript | null | undefined) =>
+  script ? JSON.stringify(script, null, 2) : ''
+
+const formToText = (form: BuilderForm) => scriptToText(buildScriptFromForm(form))
+
 export default function CardBehaviorEditor() {
   const supabase = useMemo(() => createClient(), [])
   const [selectedCardId, setSelectedCardId] = useState('')
   const [card, setCard] = useState<LinkedCard | null>(null)
   const [draft, setDraft] = useState('')
+  const [editorMode, setEditorMode] = useState<EditorMode>('form')
+  const [formValue, setFormValue] = useState<BuilderForm>(() => emptyBuilderForm())
   const [loadedScriptText, setLoadedScriptText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -35,6 +56,8 @@ export default function CardBehaviorEditor() {
       if (!cardId) {
         setCard(null)
         setDraft('')
+        setEditorMode('form')
+        setFormValue(emptyBuilderForm())
         setLoadedScriptText('')
         return
       }
@@ -46,8 +69,11 @@ export default function CardBehaviorEditor() {
       try {
         const detail = await getCardDetail(supabase, cardId)
         setCard(detail)
-        const text = detail?.script ? JSON.stringify(detail.script, null, 2) : ''
+        const text = scriptToText(detail?.script)
+        const parsedForm = parseScriptToForm(detail?.script ?? null)
         setDraft(text)
+        setFormValue(parsedForm ?? emptyBuilderForm())
+        setEditorMode(parsedForm ? 'form' : 'json')
         setLoadedScriptText(text)
       } catch (error) {
         setErrorMessage(getErrorMessage(error))
@@ -84,8 +110,29 @@ export default function CardBehaviorEditor() {
     return { ok: true as const, version: result.version, parsed: parsed as CardScript }
   }, [draft])
 
+  const formCompatibleDraft = useMemo(() => {
+    if (!validation.ok) {
+      return null
+    }
+    return parseScriptToForm(validation.parsed)
+  }, [validation])
+
   const isDirty = draft !== loadedScriptText
   const canSave = !isSaving && !isLoading && Boolean(selectedCardId) && validation.ok && isDirty
+
+  const handleFormChange = (next: BuilderForm) => {
+    setFormValue(next)
+    setDraft(formToText(next))
+  }
+
+  const switchToForm = () => {
+    if (formCompatibleDraft === null) {
+      return
+    }
+    setFormValue(formCompatibleDraft)
+    setDraft(formToText(formCompatibleDraft))
+    setEditorMode('form')
+  }
 
   const handleSave = async () => {
     if (!validation.ok) {
@@ -99,9 +146,12 @@ export default function CardBehaviorEditor() {
     try {
       const script = draft.trim() ? (validation.parsed as CardScript) : null
       const updated = await setCardScript(supabase, selectedCardId, script)
-      const text = updated?.script ? JSON.stringify(updated.script, null, 2) : ''
+      const text = scriptToText(updated?.script)
+      const parsedForm = parseScriptToForm(updated?.script ?? null)
       setCard(updated)
       setDraft(text)
+      setFormValue(parsedForm ?? emptyBuilderForm())
+      setEditorMode((mode) => (mode === 'form' && parsedForm ? 'form' : mode))
       setLoadedScriptText(text)
       setSuccessMessage(script ? 'Behavior saved.' : 'Behavior cleared.')
     } catch (error) {
@@ -179,10 +229,41 @@ export default function CardBehaviorEditor() {
             Behavior script {card?.name ? `— ${card.name}` : ''}
           </h2>
           <div className="flex items-center gap-2">
+            <div className="flex overflow-hidden rounded border border-slate-700">
+              <button
+                type="button"
+                onClick={switchToForm}
+                disabled={!selectedCardId || formCompatibleDraft === null}
+                className={`px-2 py-1 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${
+                  editorMode === 'form'
+                    ? 'bg-fuchsia-300 text-fuchsia-950'
+                    : 'bg-slate-900 text-slate-300'
+                }`}
+                title={
+                  formCompatibleDraft === null
+                    ? 'This script uses fields the guided form cannot edit.'
+                    : undefined
+                }
+              >
+                Form
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditorMode('json')}
+                disabled={!selectedCardId}
+                className={`px-2 py-1 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${
+                  editorMode === 'json'
+                    ? 'bg-fuchsia-300 text-fuchsia-950'
+                    : 'bg-slate-900 text-slate-300'
+                }`}
+              >
+                JSON
+              </button>
+            </div>
             <button
               type="button"
               onClick={handleFormat}
-              disabled={!draft.trim()}
+              disabled={!draft.trim() || editorMode === 'form'}
               className="rounded border border-slate-700 px-2 py-1 text-xs text-slate-300 disabled:opacity-40"
             >
               Format
@@ -198,14 +279,35 @@ export default function CardBehaviorEditor() {
           </div>
         </div>
 
-        <textarea
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          disabled={isLoading || !selectedCardId}
-          spellCheck={false}
-          placeholder={selectedCardId ? EMPTY_SCRIPT_PLACEHOLDER : 'Select a card to edit its behavior.'}
-          className="min-h-[420px] w-full resize-y rounded border border-slate-800 bg-slate-900 p-3 font-mono text-xs leading-relaxed text-slate-100 disabled:opacity-50"
-        />
+        {editorMode === 'form' ? (
+          <div className="min-h-[420px] rounded border border-slate-800 bg-slate-950/40 p-3">
+            <CardBehaviorForm
+              value={formValue}
+              onChange={handleFormChange}
+              disabled={isLoading || !selectedCardId}
+            />
+          </div>
+        ) : (
+          <textarea
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            disabled={isLoading || !selectedCardId}
+            spellCheck={false}
+            placeholder={selectedCardId ? EMPTY_SCRIPT_PLACEHOLDER : 'Select a card to edit its behavior.'}
+            className="min-h-[420px] w-full resize-y rounded border border-slate-800 bg-slate-900 p-3 font-mono text-xs leading-relaxed text-slate-100 disabled:opacity-50"
+          />
+        )}
+
+        {editorMode === 'form' && draft.trim() ? (
+          <details className="rounded border border-slate-800 bg-slate-900/60 p-3">
+            <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-slate-400">
+              Generated JSON
+            </summary>
+            <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-slate-200">
+              {draft}
+            </pre>
+          </details>
+        ) : null}
 
         {validation.ok ? (
           draft.trim() ? (

@@ -174,7 +174,9 @@ function parseKeywords(value: unknown): BuilderKeyword[] | null {
     if (
       !type ||
       !(BUILDER_KEYWORDS as readonly string[]).includes(type) ||
-      (e.affected !== undefined && e.affected !== 'source')
+      (e.affected !== undefined && e.affected !== 'source') ||
+      (e.source_zone_required !== undefined && e.source_zone_required !== 'battlefield') ||
+      Object.keys(e).some((key) => !['type', 'effect_type', 'affected', 'source_zone_required'].includes(key))
     ) {
       return null
     }
