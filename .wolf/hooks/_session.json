@@ -1,321 +1,183 @@
 {
-  "session_id": "session-2026-05-31-2256",
-  "started": "2026-05-31T20:56:34.544Z",
+  "session_id": "session-2026-06-01-1129",
+  "started": "2026-06-01T09:29:05.320Z",
   "files_read": {
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010068_plus_one_counters.sql": {
-      "count": 1,
-      "tokens": 4392,
-      "first_read": "2026-05-31T20:57:16.805Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010069_until_end_of_turn_pumps.sql": {
-      "count": 1,
-      "tokens": 2374,
-      "first_read": "2026-05-31T20:57:27.017Z"
-    },
     "c:/Users/Jordy/dev/LeylineSync/README.md": {
-      "count": 5,
-      "tokens": 12745,
-      "first_read": "2026-05-31T20:58:12.701Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/.wolf/anatomy.md": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-05-31T21:05:49.904Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx": {
-      "count": 2,
-      "tokens": 30812,
-      "first_read": "2026-05-31T21:11:01.680Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/scripts/import-scryfall-cards.mjs": {
-      "count": 3,
-      "tokens": 3055,
-      "first_read": "2026-05-31T21:12:07.229Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts": {
-      "count": 4,
-      "tokens": 2393,
-      "first_read": "2026-05-31T21:14:59.631Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx": {
       "count": 1,
-      "tokens": 2316,
-      "first_read": "2026-05-31T21:15:36.265Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts": {
-      "count": 1,
-      "tokens": 5240,
-      "first_read": "2026-05-31T21:15:44.627Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts": {
-      "count": 2,
-      "tokens": 6162,
-      "first_read": "2026-05-31T21:15:57.044Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts": {
-      "count": 1,
-      "tokens": 2059,
-      "first_read": "2026-05-31T21:16:14.964Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/.wolf/cerebrum.md": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-05-31T21:20:26.370Z"
+      "tokens": 14057,
+      "first_read": "2026-06-01T09:45:40.231Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010071_creature_targeting_spells.sql": {
       "count": 1,
       "tokens": 4577,
-      "first_read": "2026-05-31T21:45:05.739Z"
+      "first_read": "2026-06-01T09:45:56.855Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010070_tokens.sql": {
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010078_trigger_effect_vocabulary.sql": {
       "count": 1,
-      "tokens": 1291,
-      "first_read": "2026-05-31T21:45:56.838Z"
+      "tokens": 3552,
+      "first_read": "2026-06-01T09:46:02.385Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010002_draw_card.sql": {
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior.ts": {
       "count": 1,
-      "tokens": 483,
-      "first_read": "2026-05-31T21:46:04.833Z"
+      "tokens": 2557,
+      "first_read": "2026-06-01T09:46:23.338Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010016_adjust_player_life.sql": {
+    "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx": {
+      "count": 9,
+      "tokens": 32035,
+      "first_read": "2026-06-01T09:46:32.553Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010074_zero_toughness_sba.sql": {
       "count": 1,
-      "tokens": 529,
-      "first_read": "2026-05-31T21:46:05.062Z"
+      "tokens": 880,
+      "first_read": "2026-06-01T09:47:45.979Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010030_stack_action_layer.sql": {
-      "count": 2,
-      "tokens": 3688,
-      "first_read": "2026-05-31T21:48:52.307Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/app/controller/[id]/page.tsx": {
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010077_dies_and_attacks_triggers.sql": {
       "count": 1,
-      "tokens": 396,
-      "first_read": "2026-05-31T21:59:21.116Z"
+      "tokens": 2018,
+      "first_read": "2026-06-01T09:48:02.111Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010033_stack_item_player_name_fallback.sql": {
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts": {
       "count": 1,
-      "tokens": 547,
-      "first_read": "2026-05-31T22:03:41.169Z"
+      "tokens": 6322,
+      "first_read": "2026-06-01T09:48:11.105Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorEditor.tsx": {
-      "count": 2,
-      "tokens": 2338,
-      "first_read": "2026-05-31T22:26:59.965Z"
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/controller-selectors.ts": {
+      "count": 1,
+      "tokens": 1459,
+      "first_read": "2026-06-01T09:49:58.092Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts": {
+      "count": 1,
+      "tokens": 2458,
+      "first_read": "2026-06-01T09:52:05.787Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/.wolf/memory.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-01T09:55:15.415Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/.wolf/anatomy.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-01T09:55:47.568Z"
     }
   },
   "files_written": [
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010074_zero_toughness_sba.sql",
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010079_more_spell_effects.sql",
       "action": "create",
-      "tokens": 943,
-      "at": "2026-05-31T20:57:55.149Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 192,
-      "at": "2026-05-31T20:58:19.671Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 22,
-      "at": "2026-05-31T20:58:28.010Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 30,
-      "at": "2026-05-31T20:58:35.769Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 62,
-      "at": "2026-05-31T20:58:41.223Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 56,
-      "at": "2026-05-31T21:11:17.353Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 74,
-      "at": "2026-05-31T21:11:22.265Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010075_card_script_authoring.sql",
-      "action": "create",
-      "tokens": 1031,
-      "at": "2026-05-31T21:15:22.887Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/scripts/import-scryfall-cards.mjs",
-      "action": "edit",
-      "tokens": 29,
-      "at": "2026-05-31T21:15:27.458Z"
+      "tokens": 6492,
+      "at": "2026-06-01T09:49:32.919Z"
     },
     {
       "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
       "action": "edit",
-      "tokens": 171,
-      "at": "2026-05-31T21:16:08.803Z"
+      "tokens": 396,
+      "at": "2026-06-01T09:50:22.992Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
       "action": "edit",
-      "tokens": 138,
-      "at": "2026-05-31T21:16:21.006Z"
+      "tokens": 84,
+      "at": "2026-06-01T09:50:38.151Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
       "action": "edit",
-      "tokens": 20,
-      "at": "2026-05-31T21:16:25.650Z"
+      "tokens": 253,
+      "at": "2026-06-01T09:50:47.080Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
       "action": "edit",
-      "tokens": 178,
-      "at": "2026-05-31T21:16:32.489Z"
+      "tokens": 234,
+      "at": "2026-06-01T09:50:56.056Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorEditor.tsx",
-      "action": "create",
-      "tokens": 2338,
-      "at": "2026-05-31T21:17:06.289Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/app/cards/behavior/page.tsx",
-      "action": "create",
-      "tokens": 287,
-      "at": "2026-05-31T21:17:14.660Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
       "action": "edit",
-      "tokens": 23,
-      "at": "2026-05-31T21:18:09.951Z"
+      "tokens": 102,
+      "at": "2026-06-01T09:51:03.053Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
       "action": "edit",
-      "tokens": 204,
-      "at": "2026-05-31T21:18:19.124Z"
+      "tokens": 344,
+      "at": "2026-06-01T09:51:12.694Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
       "action": "edit",
-      "tokens": 378,
-      "at": "2026-05-31T21:18:32.174Z"
+      "tokens": 121,
+      "at": "2026-06-01T09:51:25.555Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010076_triggered_abilities.sql",
-      "action": "create",
-      "tokens": 4873,
-      "at": "2026-05-31T21:48:02.233Z"
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 38,
+      "at": "2026-06-01T09:51:32.940Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 101,
+      "at": "2026-06-01T09:51:38.879Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 183,
+      "at": "2026-06-01T09:51:49.014Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 356,
+      "at": "2026-06-01T09:51:57.419Z"
     },
     {
       "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
       "action": "edit",
-      "tokens": 431,
-      "at": "2026-05-31T21:48:28.025Z"
+      "tokens": 56,
+      "at": "2026-06-01T09:52:17.046Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 188,
+      "at": "2026-06-01T09:52:30.009Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+      "action": "edit",
+      "tokens": 300,
+      "at": "2026-06-01T09:52:48.980Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+      "action": "edit",
+      "tokens": 233,
+      "at": "2026-06-01T09:52:57.098Z"
     },
     {
       "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
       "action": "edit",
-      "tokens": 23,
-      "at": "2026-05-31T21:51:06.830Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 105,
-      "at": "2026-05-31T21:51:12.426Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 535,
-      "at": "2026-05-31T21:51:25.376Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/app/cards/behavior/page.tsx",
-      "action": "create",
-      "tokens": 346,
-      "at": "2026-05-31T21:59:29.008Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010077_dies_and_attacks_triggers.sql",
-      "action": "create",
-      "tokens": 2035,
-      "at": "2026-05-31T22:03:24.312Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010077_dies_and_attacks_triggers.sql",
-      "action": "edit",
-      "tokens": 594,
-      "at": "2026-05-31T22:03:58.511Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 24,
-      "at": "2026-05-31T22:04:08.931Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 103,
-      "at": "2026-05-31T22:04:15.460Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 254,
-      "at": "2026-05-31T22:04:23.889Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
-      "action": "edit",
-      "tokens": 122,
-      "at": "2026-05-31T22:04:33.462Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
-      "action": "create",
-      "tokens": 2357,
-      "at": "2026-05-31T22:26:27.462Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
-      "action": "create",
-      "tokens": 2065,
-      "at": "2026-05-31T22:26:55.576Z"
+      "tokens": 116,
+      "at": "2026-06-01T09:55:11.597Z"
     }
   ],
   "edit_counts": {
-    "supabase/migrations/202605010074_zero_toughness_sba.sql": 1,
-    "README.md": 16,
-    "supabase/migrations/202605010075_card_script_authoring.sql": 1,
-    "scripts/import-scryfall-cards.mjs": 1,
-    "lib/game/actions.ts": 2,
-    "lib/game/types.ts": 1,
-    "lib/game/data.ts": 1,
-    "components/CardBehaviorEditor.tsx": 1,
-    "app/cards/behavior/page.tsx": 2,
-    "supabase/migrations/202605010076_triggered_abilities.sql": 1,
-    "lib/game/card-behavior-schema.ts": 1,
-    "supabase/migrations/202605010077_dies_and_attacks_triggers.sql": 2,
-    "lib/game/card-behavior-builder.ts": 1,
-    "components/CardBehaviorForm.tsx": 1
+    "supabase/migrations/202605010079_more_spell_effects.sql": 1,
+    "lib/game/actions.ts": 1,
+    "components/ControllerListV4.tsx": 10,
+    "lib/game/card-behavior-schema.ts": 2,
+    "lib/game/card-behavior-llm.ts": 2,
+    "README.md": 1
   },
-  "anatomy_hits": 18,
+  "anatomy_hits": 10,
   "anatomy_misses": 2,
-  "repeated_reads_warned": 15,
+  "repeated_reads_warned": 8,
   "cerebrum_warnings": 0,
-  "stop_count": 8
+  "stop_count": 1
 }

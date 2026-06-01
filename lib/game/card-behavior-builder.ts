@@ -3,7 +3,7 @@
 // script JSON. Scripts using features the form does not model round-trip to
 // `null` from `parseScriptToForm`, signalling the editor to stay in JSON mode.
 
-import type { CardScript } from './types'
+import type { CardScript, ManaColor } from './types'
 
 // ─── Vocabulary ──────────────────────────────────────────────────────────────
 
@@ -36,18 +36,33 @@ export const BUILDER_RECIPIENTS = [
 ] as const
 export type BuilderRecipient = (typeof BUILDER_RECIPIENTS)[number]['value']
 
-// Auto-resolved effect types resolve_top_of_stack applies for triggered abilities.
+// Token names available to the create_token effect (matches the seeded catalog).
+export const BUILDER_TOKEN_NAMES = [
+  'Soldier Token',
+  'Saproling Token',
+  'Zombie Token',
+  'Goblin Token',
+  'Beast Token',
+  'Spirit Token',
+] as const
+export type BuilderTokenName = (typeof BUILDER_TOKEN_NAMES)[number]
+
+// Auto-resolved effect types apply_triggered_ability_effects applies for triggers.
 export type BuilderEffect =
   | { type: 'gain_life'; amount: number }
   | { type: 'lose_life'; amount: number; recipient: BuilderRecipient }
   | { type: 'deal_damage'; amount: number; recipient: BuilderRecipient }
   | { type: 'draw'; amount: number }
+  | { type: 'create_token'; token: string; count: number }
+  | { type: 'add_counters'; amount: number }
 
 export const BUILDER_EFFECT_TYPES = [
   { value: 'gain_life', label: 'You gain life' },
   { value: 'lose_life', label: 'Players lose life' },
   { value: 'deal_damage', label: 'Deal damage to players' },
   { value: 'draw', label: 'You draw cards' },
+  { value: 'create_token', label: 'Create token(s)' },
+  { value: 'add_counters', label: '+1/+1 counters on this' },
 ] as const
 export type BuilderEffectType = (typeof BUILDER_EFFECT_TYPES)[number]['value']
 
@@ -56,12 +71,54 @@ export type BuilderTrigger = {
   effects: BuilderEffect[]
 }
 
+// ─── Activated abilities ───────────────────────────────────────────────────────
+//
+// Two runtime-supported shapes:
+//   * mana    — a mana ability (is_mana_ability) that taps for one color. The V4
+//               controller executes it via tap-for-mana, not the stack.
+//   * damage  — a {tap}/{mana} cost that deals damage to a chosen target via
+//               activate_ability and the stack.
+
+export const BUILDER_MANA_COLORS: { value: ManaColor; label: string }[] = [
+  { value: 'W', label: 'White {W}' },
+  { value: 'U', label: 'Blue {U}' },
+  { value: 'B', label: 'Black {B}' },
+  { value: 'R', label: 'Red {R}' },
+  { value: 'G', label: 'Green {G}' },
+  { value: 'C', label: 'Colorless {C}' },
+]
+
+export const BUILDER_DAMAGE_TARGETS = [
+  { value: 'any', label: 'any target' },
+  { value: 'creature', label: 'target creature' },
+  { value: 'player', label: 'target player' },
+] as const
+export type BuilderDamageTarget = (typeof BUILDER_DAMAGE_TARGETS)[number]['value']
+
+export const BUILDER_ABILITY_KINDS = [
+  { value: 'mana', label: 'Tap for mana' },
+  { value: 'damage', label: 'Deal damage' },
+] as const
+export type BuilderAbilityKind = (typeof BUILDER_ABILITY_KINDS)[number]['value']
+
+export type BuilderActivatedAbility =
+  | { kind: 'mana'; tapSelf: boolean; color: ManaColor; amount: number }
+  | { kind: 'damage'; tapSelf: boolean; mana: string; amount: number; target: BuilderDamageTarget }
+
+export function defaultActivatedAbility(kind: BuilderAbilityKind): BuilderActivatedAbility {
+  if (kind === 'mana') {
+    return { kind: 'mana', tapSelf: true, color: 'C', amount: 1 }
+  }
+  return { kind: 'damage', tapSelf: true, mana: '', amount: 1, target: 'any' }
+}
+
 export type BuilderForm = {
   keywords: BuilderKeyword[]
   triggers: BuilderTrigger[]
+  activatedAbilities: BuilderActivatedAbility[]
 }
 
-export const EMPTY_BUILDER_FORM: BuilderForm = { keywords: [], triggers: [] }
+export const EMPTY_BUILDER_FORM: BuilderForm = { keywords: [], triggers: [], activatedAbilities: [] }
 
 // ─── Defaults / factories ──────────────────────────────────────────────────────
 
@@ -75,6 +132,10 @@ export function defaultEffect(type: BuilderEffectType): BuilderEffect {
       return { type: 'deal_damage', amount: 1, recipient: 'each_opponent' }
     case 'draw':
       return { type: 'draw', amount: 1 }
+    case 'create_token':
+      return { type: 'create_token', token: BUILDER_TOKEN_NAMES[0], count: 1 }
+    case 'add_counters':
+      return { type: 'add_counters', amount: 1 }
   }
 }
 
@@ -96,8 +157,14 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
     effects: trigger.effects.map(effectToJson),
   }))
 
+  const activatedAbilities = form.activatedAbilities.map(activatedAbilityToJson)
+
   // Nothing authored → no script (clears behavior).
-  if (continuousEffects.length === 0 && triggeredAbilities.length === 0) {
+  if (
+    continuousEffects.length === 0 &&
+    triggeredAbilities.length === 0 &&
+    activatedAbilities.length === 0
+  ) {
     return null
   }
 
@@ -108,8 +175,37 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
   if (triggeredAbilities.length > 0) {
     script.triggered_abilities = triggeredAbilities
   }
+  if (activatedAbilities.length > 0) {
+    script.activated_abilities = activatedAbilities
+  }
 
   return script as CardScript
+}
+
+function activatedAbilityToJson(ability: BuilderActivatedAbility): Record<string, unknown> {
+  if (ability.kind === 'mana') {
+    return {
+      is_mana_ability: true,
+      costs: ability.tapSelf ? [{ type: 'tap_self' }] : [],
+      effects: [{ type: 'add_mana', color: ability.color, amount: ability.amount }],
+    }
+  }
+
+  const costs: Record<string, unknown>[] = []
+  if (ability.tapSelf) {
+    costs.push({ type: 'tap_self' })
+  }
+  if (ability.mana.trim()) {
+    costs.push({ type: 'mana', amount: ability.mana.trim() })
+  }
+
+  const targetType =
+    ability.target === 'any' ? ['creature', 'player'] : ability.target
+
+  return {
+    costs,
+    effects: [{ type: 'deal_damage', amount: ability.amount, target_type: targetType }],
+  }
 }
 
 function effectToJson(effect: BuilderEffect): Record<string, unknown> {
@@ -121,6 +217,10 @@ function effectToJson(effect: BuilderEffect): Record<string, unknown> {
     case 'lose_life':
     case 'deal_damage':
       return { type: effect.type, amount: effect.amount, recipient: effect.recipient }
+    case 'create_token':
+      return { type: 'create_token', token: effect.token, count: effect.count }
+    case 'add_counters':
+      return { type: 'add_counters', amount: effect.amount }
   }
 }
 
@@ -137,7 +237,12 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
   }
 
   const s = script as Record<string, unknown>
-  const knownKeys = new Set(['schema_version', 'continuous_effects', 'triggered_abilities'])
+  const knownKeys = new Set([
+    'schema_version',
+    'continuous_effects',
+    'triggered_abilities',
+    'activated_abilities',
+  ])
   if (Object.keys(s).some((key) => !knownKeys.has(key))) {
     return null
   }
@@ -152,7 +257,107 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     return null
   }
 
-  return { keywords, triggers }
+  const activatedAbilities = parseActivatedAbilities(s.activated_abilities)
+  if (activatedAbilities === null) {
+    return null
+  }
+
+  return { keywords, triggers, activatedAbilities }
+}
+
+function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | null {
+  if (value == null) {
+    return []
+  }
+  if (!Array.isArray(value)) {
+    return null
+  }
+
+  const abilities: BuilderActivatedAbility[] = []
+  for (const entry of value) {
+    if (typeof entry !== 'object' || entry === null) {
+      return null
+    }
+    const e = entry as Record<string, unknown>
+
+    // Only event-free, default-zone abilities are form-representable. id/label are
+    // cosmetic and dropped; anything else (timing, source_zone_required, ...) → JSON.
+    if (
+      Object.keys(e).some(
+        (key) => !['id', 'label', 'costs', 'effects', 'is_mana_ability'].includes(key),
+      )
+    ) {
+      return null
+    }
+
+    const costs = Array.isArray(e.costs) ? (e.costs as Record<string, unknown>[]) : []
+    const effects = Array.isArray(e.effects) ? (e.effects as Record<string, unknown>[]) : []
+
+    // Costs must only be tap_self and/or a mana string.
+    let tapSelf = false
+    let mana = ''
+    for (const cost of costs) {
+      if (cost?.type === 'tap_self') {
+        tapSelf = true
+      } else if (cost?.type === 'mana' && typeof cost.amount === 'string') {
+        mana = cost.amount
+      } else {
+        return null
+      }
+    }
+
+    if (effects.length !== 1) {
+      return null
+    }
+    const effect = effects[0]
+
+    if (e.is_mana_ability === true) {
+      if (effect?.type !== 'add_mana' || mana) {
+        return null
+      }
+      const color = effect.color
+      if (typeof color !== 'string' || !['W', 'U', 'B', 'R', 'G', 'C'].includes(color)) {
+        return null
+      }
+      abilities.push({
+        kind: 'mana',
+        tapSelf,
+        color: color as ManaColor,
+        amount: typeof effect.amount === 'number' ? effect.amount : 1,
+      })
+    } else {
+      if (effect?.type !== 'deal_damage' || effect.target_ref !== undefined) {
+        return null
+      }
+      const target = parseDamageTarget(effect.target_type)
+      if (target === null) {
+        return null
+      }
+      abilities.push({
+        kind: 'damage',
+        tapSelf,
+        mana,
+        amount: typeof effect.amount === 'number' ? effect.amount : 1,
+        target,
+      })
+    }
+  }
+  return abilities
+}
+
+function parseDamageTarget(value: unknown): BuilderDamageTarget | null {
+  if (value === 'creature' || value === 'player') {
+    return value
+  }
+  if (
+    Array.isArray(value) &&
+    value.length === 2 &&
+    value.includes('creature') &&
+    value.includes('player')
+  ) {
+    return 'any'
+  }
+  return null
 }
 
 function parseKeywords(value: unknown): BuilderKeyword[] | null {
@@ -245,6 +450,17 @@ function parseEffects(value: unknown): BuilderEffect[] | null {
         return null
       }
       effects.push({ type: 'deal_damage', amount, recipient })
+    } else if (type === 'create_token') {
+      if (typeof e.token !== 'string') {
+        return null
+      }
+      effects.push({
+        type: 'create_token',
+        token: e.token,
+        count: typeof e.count === 'number' ? e.count : 1,
+      })
+    } else if (type === 'add_counters') {
+      effects.push({ type: 'add_counters', amount })
     } else {
       return null
     }

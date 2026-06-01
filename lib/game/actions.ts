@@ -363,6 +363,65 @@ export async function putPumpCreatureOnStack(
   return data as StackItem
 }
 
+export type TargetedCreatureActionType =
+  | 'destroy_creature'
+  | 'bounce_creature'
+  | 'tap_creature'
+  | 'untap_creature'
+
+export async function putTargetedCreatureActionOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  actionType: TargetedCreatureActionType,
+  targetCardId: string,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: actionType,
+    p_payload: {
+      target_card_id: targetCardId,
+      timing,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function putDrawCardsOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  amount: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'draw_cards',
+    p_payload: {
+      amount,
+      timing,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
 export async function activateAbility(
   supabase: SupabaseClient,
   sessionId: string,

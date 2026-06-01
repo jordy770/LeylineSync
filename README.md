@@ -812,7 +812,10 @@ Tokens are catalog `cards` rows flagged `is_token = true` (seeded set: Soldier, 
 
 Real imported cards arrive with no behavior: the Scryfall importer deliberately leaves `cards.script` empty and never writes that column, so the upsert's `ON CONFLICT DO UPDATE` preserves any authored script across reimports.
 
-- **Editor:** `/cards/behavior` (auth-gated). Pick a card, edit its JSON behavior script, and save. The draft is validated live with `validateCardScript` (the same V1/V2 Zod schema the game runtime uses); Save is blocked while invalid. An empty editor clears the card's behavior.
+- **Editor:** `/cards/behavior` (auth-gated). Pick a card, edit its behavior, and save. Two modes:
+  - **Form** (default when the script is representable) — a guided builder: keyword chips, triggered-ability rows (event + auto-resolved effects), and activated-ability rows (tap/mana cost → deal damage, or tap → add mana). Generates the JSON for you.
+  - **JSON** — raw editor for anything the form can't express. The draft is validated live with `validateCardScript` (the same V1/V2 Zod schema the game runtime uses); Save is blocked while invalid. An empty editor clears the card's behavior.
+  - **✨ Generate with AI** — drafts a script from the card's `oracle_text` via Claude, then loads it for review. Requires `ANTHROPIC_API_KEY` on the server (returns a clear "not configured" message otherwise). The route (`/api/cards/generate-behavior`) is auth-gated, validates the model output with `validateCardScript`, and retries once with the errors fed back. The AI prompt is generated from the same vocabulary the form uses (`lib/game/card-behavior-llm.ts`), so the form, the AI, and the validator stay in sync as new effect types are added.
 - **Write path:** `set_card_script(card_id, script)` stores the script onto `cards.script`. The V4/judge clients read `coalesce(game_cards.copied_script, cards.script)` at runtime, unchanged.
 - **`oracle_id`:** the importer now stores Scryfall's `oracle_id` (card identity) alongside `cards.id` (the printing id). Existing rows are backfilled on the next reimport.
 - **Relink:** if the representative printing chosen for an oracle changes between imports, the authored script would otherwise be stranded on the old printing id. `relink_card_scripts()` (a button in the editor) copies a non-empty script forward to sibling printings of the same `oracle_id` that have no script yet.
@@ -826,12 +829,14 @@ A card's behavior script may carry `triggered_abilities: [{ event, effects }]`. 
   - `beginning_of_upkeep` (alias `upkeep`) via a trigger on `game_turn_state` entering the upkeep step (fires for the active player's permanents).
   - `attacks` (aliases `declares_attack`, `attack`) via a trigger on inserts into `game_combat_assignments`.
   - Detection mirrors the token cease-to-exist trigger pattern. The zone-change trigger sorts before the cease trigger so a token's own `dies` ability is enqueued before it is removed; `game_stack_items.source_card_id` is `ON DELETE SET NULL` and the source card name is baked into the payload `label` (surfaced by `get_stack_items`), so the trigger still resolves and displays after its source disappears.
-- **Effects (auto-resolved, fixed recipients — no chosen target yet):**
+- **Effects (auto-resolved, fixed recipients — no chosen target yet).** Applied by `apply_triggered_ability_effects` (a shared helper `resolve_top_of_stack` calls — add new effect types there):
   - `{ "type": "gain_life", "amount": N }` — controller gains N.
   - `{ "type": "lose_life", "amount": N, "recipient": "each_opponent" | "controller" }` — recipients lose N (default `each_opponent`).
   - `{ "type": "deal_damage", "amount": N, "recipient": ... }` — same as lose_life for player recipients.
   - `{ "type": "draw", "amount": N }` — controller draws N (stops if the library is empty).
-- **Seeded test cards:** `Welcome Drain Test` ({1}{B} 2/2, ETB: each opponent loses 2, you gain 2); `Upkeep Scholar Test` ({2}{U} 1/3, upkeep: gain 1 life); `Parting Gift Test` ({1}{W} 2/2, dies: gain 2 life); `Raiding Berserker Test` ({1}{R} 2/2, attacks: deal 1 to each opponent).
+  - `{ "type": "create_token", "token": <token name>, "count": N }` — controller creates N tokens (from the seeded token catalog; registers their keyword continuous effects).
+  - `{ "type": "add_counters", "amount": N }` — puts N +1/+1 counters on the source permanent.
+- **Seeded test cards:** `Welcome Drain Test` ({1}{B} 2/2, ETB: each opponent loses 2, you gain 2); `Upkeep Scholar Test` ({2}{U} 1/3, upkeep: gain 1 life); `Parting Gift Test` ({1}{W} 2/2, dies: gain 2 life); `Raiding Berserker Test` ({1}{R} 2/2, attacks: deal 1 to each opponent); `Saproling Marshal Test` ({2}{G} 2/2, upkeep: make a Saproling); `Relentless Charger Test` ({1}{G} 2/2, attacks: +1/+1 counter on itself).
 - **Not yet:** targeted triggers (e.g. "destroy target creature") that require interactive target selection when the trigger goes on the stack.
 
 ## Realtime
@@ -987,6 +992,7 @@ Run migrations in order. Current migration list:
 202605010075_card_script_authoring.sql
 202605010076_triggered_abilities.sql
 202605010077_dies_and_attacks_triggers.sql
+202605010078_trigger_effect_vocabulary.sql
 ```
 
 ## Adding New Card Mechanics
@@ -1263,7 +1269,7 @@ mechanics matter, then add depth and ops.
 #### Phase 3 — Broaden behavior coverage on the platform
 
 - [~] Triggered abilities (ETB, dies, attack/upkeep) — biggest missing category. **Done:** enters-the-battlefield, beginning-of-upkeep, dies, and attacks events all fire and resolve through the stack with auto-resolved effects (gain/lose life, damage to each opponent/controller, draw). Remaining: targeted triggers (which need interactive target selection).
-- [ ] More spell effect types (draw, destroy, bounce, tap/untap, add counters).
+- [~] More spell effect types (draw, destroy, bounce, tap/untap, add counters). **Done:** `draw_cards` (untargeted), `destroy_creature`, `bounce_creature`, `tap_creature`, `untap_creature` cast from hand through the stack with the V4 creature target picker (migration 079). Remaining: add-counters as a targeted spell (counters already work via triggered abilities), and targeting non-creature permanents.
 - [ ] Real copy / control-change / suppression cards.
 - [ ] Real mana-retention cards.
 

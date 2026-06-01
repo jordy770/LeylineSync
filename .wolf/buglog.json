@@ -1313,6 +1313,189 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-31T22:04:33.465Z"
+    },
+    {
+      "id": "bug-082",
+      "timestamp": "2026-06-01T08:12:53.193Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T08:12:53.193Z"
+    },
+    {
+      "id": "bug-083",
+      "timestamp": "2026-06-01T08:13:45.259Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T08:13:45.259Z"
+    },
+    {
+      "id": "bug-084",
+      "timestamp": "2026-06-01T08:25:04.673Z",
+      "error_message": "Type error",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T08:25:04.673Z"
+    },
+    {
+      "id": "bug-085",
+      "timestamp": "2026-06-01T08:32:59.814Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/CardBehaviorEditor.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T08:32:59.814Z"
+    },
+    {
+      "id": "bug-086",
+      "timestamp": "2026-06-01T08:33:09.880Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/CardBehaviorEditor.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T08:33:09.880Z"
+    },
+    {
+      "id": "bug-087",
+      "timestamp": "2026-06-01T09:22:47.703Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Condition was: if (step === 'declare_attackers' && hasPriority && pla)",
+      "fix": "Changed to: if (\n      step === 'declare_attackers' &&\n      hasPr)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T09:22:47.703Z"
+    },
+    {
+      "id": "bug-081",
+      "timestamp": "2026-06-01T00:00:00Z",
+      "error_message": "V4 combat soft-locks after attacking with a creature that has an 'attacks' triggered ability: the trigger resolves mid declare_attackers, priority returns to the active player, and the declare-attackers picker re-appears with no way to advance.",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "layoutState showed 'declare_attackers' whenever step==declare_attackers && active player has priority. The new attacks trigger (migration 077) enqueues a triggered_ability on the stack at declaration; resolving it (pass_priority round) resets priority_player_id to the active player while still in declare_attackers, so the attacker picker re-rendered. Re-declaring the already-declared attacker 400s (unique constraint), and the picker offered no pass affordance -> stuck.",
+      "fix": "Compute myDeclaredAttackers = combatAssignments.filter(a => a.attacking_player_id === playerId) and require myDeclaredAttackers.length === 0 in the declare_attackers layoutState condition. Once attackers are declared, fall through to the default layout whose PriorityPanel exposes a Pass button, letting the step advance to declare_blockers.",
+      "tags": [
+        "v4",
+        "combat",
+        "declare-attackers",
+        "triggered-abilities",
+        "priority",
+        "layout",
+        "stuck",
+        "softlock"
+      ],
+      "related_bugs": [
+        "bug-045"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T00:00:00Z"
+    },
+    {
+      "id": "bug-089",
+      "timestamp": "2026-06-01T09:50:22.995Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T09:50:22.995Z"
+    },
+    {
+      "id": "bug-090",
+      "timestamp": "2026-06-01T09:50:56.060Z",
+      "error_message": "CSS fix: kind",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing → 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
+      "fix": "Changed kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing → 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T09:50:56.060Z"
+    },
+    {
+      "id": "bug-091",
+      "timestamp": "2026-06-01T09:51:03.056Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Condition was: if (plan.kind === 'damage' || plan.kind === 'pump')",
+      "fix": "Changed to: if (\n    plan.kind === 'damage' ||\n    plan.kind === ')",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T09:51:03.056Z"
+    },
+    {
+      "id": "bug-092",
+      "timestamp": "2026-06-01T09:52:30.013Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T09:52:30.013Z"
     }
   ]
 }

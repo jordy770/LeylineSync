@@ -121,6 +121,7 @@ const CardBehaviorCostSchema = z.union([
 
 const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
+  'create_token', 'add_counters', 'destroy', 'bounce', 'tap', 'untap', 'pump',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -165,6 +166,28 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('draw'),
     amount: z.number(),
     recipient: BehaviorRecipientSchema.optional(),
+  }),
+  z.object({
+    type: z.literal('create_token'),
+    token: z.string(),
+    count: z.number().optional(),
+  }),
+  z.object({
+    type: z.literal('add_counters'),
+    amount: z.number(),
+  }),
+  z.object({
+    type: z.literal('pump'),
+    power: z.number().optional(),
+    toughness: z.number().optional(),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+  }),
+  // Targeted creature effects cast as a spell (destroy/bounce/tap/untap).
+  z.object({
+    type: z.enum(['destroy', 'bounce', 'tap', 'untap']),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
   }),
   UnknownV2ActionSchema,
 ])

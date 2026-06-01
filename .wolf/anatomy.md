@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-31T22:26:55.559Z
-> Files: 306 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-01T09:55:11.562Z
+> Files: 310 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -14,7 +14,7 @@
 - `package.json` — Node.js package manifest (~352 tok)
 - `postcss.config.mjs` — Declares config (~45 tok)
 - `proxy.ts` — Exports proxy, config (~184 tok)
-- `README.md` — Project documentation (~13696 tok)
+- `README.md` — Project documentation (~14138 tok)
 - `tailwind.config.ts` — Tailwind CSS configuration (~558 tok)
 - `tsconfig.json` — TypeScript configuration (~218 tok)
 
@@ -46,6 +46,10 @@
 - `globals.css` — Styles: 6 rules, 49 vars, 2 media queries, 2 animations, 3 layers (~1108 tok)
 - `layout.tsx` — defaultUrl (~308 tok)
 - `page.tsx` — Home (~738 tok)
+
+## app/api/cards/generate-behavior/
+
+- `route.ts` — POST /api/cards/generate-behavior (~1333 tok)
 
 ## app/auth/confirm/
 
@@ -109,8 +113,8 @@
 
 - `ActionButtons.tsx` — ActionButtons (~4382 tok)
 - `auth-button.tsx` — AuthButton (~239 tok)
-- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~2338 tok)
-- `CardBehaviorForm.tsx` — inputClass (~2065 tok)
+- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~3943 tok)
+- `CardBehaviorForm.tsx` — inputClass (~3965 tok)
 - `CardCatalogPicker.tsx` — cardTypeFilters — uses useMemo, useState, useEffect (~2316 tok)
 - `CardController.tsx` — CardController — uses useMemo (~221 tok)
 - `CardZoneControls.tsx` — CardZoneControls — uses useMemo, useState (~2178 tok)
@@ -119,7 +123,7 @@
 - `ControllerList.tsx` — components/ControllerList.tsx (~20457 tok)
 - `ControllerListV2.tsx` — ControllerListV2 — uses useState, useMemo (~10088 tok)
 - `ControllerListV3.tsx` — manaColors — uses useMemo (~6422 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~30812 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~32035 tok)
 - `DeckManager.tsx` — DeckManager — uses useMemo, useState, useEffect (~3880 tok)
 - `deploy-button.tsx` — DeployButton (~385 tok)
 - `DevAdminPanel.tsx` — DevAdminPanel (~3316 tok)
@@ -198,11 +202,12 @@
 ## lib/game/
 
 - `action-selectors.ts` — Exports CardWithScript, getActionTiming, isPlayerDamageAction, isRetainManaAction + 3 more (~652 tok)
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 28 more (~6322 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 26 more (~6724 tok)
 - `blueprint.ts` — Exports GameViewStep, BoardLayoutKey, PriorityRole, StackActionType + 21 more (~3457 tok)
 - `board-selectors.ts` — Exports BoardSeat, BoardConnection, buildBoardSeats, getCombatCardIds + 2 more (~812 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~2357 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2393 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~4336 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~2334 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2628 tok)
 - `card-behavior.ts` — Exports CardBehaviorSchemaVersion, CardBehaviorStatus, CardBehaviorZone, CardBehaviorTargetType + 14 (~2557 tok)
 - `controller-selectors.ts` — Exports selectControllerViewModel, getCanQuickCast, canCardRespond, doesCardRequireStackTarget + 2 more (~1459 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5401 tok)
@@ -326,6 +331,8 @@
 - `202605010075_card_script_authoring.sql` — Card script authoring (Phase 2 — lightweight approach). (~963 tok)
 - `202605010076_triggered_abilities.sql` — Triggered abilities (Phase 3, first slice): enters-the-battlefield and (~4548 tok)
 - `202605010077_dies_and_attacks_triggers.sql` — Triggered abilities (Phase 3, second slice): dies and attacks events. (~2018 tok)
+- `202605010078_trigger_effect_vocabulary.sql` — Widen the triggered-ability effect vocabulary, and refactor resolution so (~3552 tok)
+- `202605010079_more_spell_effects.sql` — Phase 3: broaden spell_effect coverage with more effect types. (~6059 tok)
 
 ## vercel/
 

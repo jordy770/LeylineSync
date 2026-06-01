@@ -1,0 +1,184 @@
+// LLM-facing description of the card behavior script format.
+//
+// This is the single source of truth that keeps three things in sync: the
+// guided form (card-behavior-builder.ts), the validator (card-behavior-schema.ts),
+// and the AI generator (app/api/cards/generate-behavior). The guide below is
+// derived from the same vocabulary constants the form uses, so adding a new
+// keyword / trigger event / effect type to the builder automatically teaches the
+// AI about it too.
+
+import {
+  BUILDER_DAMAGE_TARGETS,
+  BUILDER_EFFECT_TYPES,
+  BUILDER_KEYWORDS,
+  BUILDER_RECIPIENTS,
+  BUILDER_TOKEN_NAMES,
+  BUILDER_TRIGGER_EVENTS,
+  KEYWORD_LABELS,
+} from './card-behavior-builder'
+
+// A few worked examples grounding the schema in real cards. Keep these valid
+// against card-behavior-schema.ts (validateCardScript).
+const EXAMPLES: { oracle_text: string; script: unknown }[] = [
+  {
+    oracle_text: 'Flying, vigilance',
+    script: {
+      schema_version: 2,
+      continuous_effects: [
+        { type: 'flying', affected: 'source', source_zone_required: 'battlefield' },
+        { type: 'vigilance', affected: 'source', source_zone_required: 'battlefield' },
+      ],
+    },
+  },
+  {
+    oracle_text: 'When CARDNAME enters the battlefield, each opponent loses 2 life and you gain 2 life.',
+    script: {
+      schema_version: 2,
+      triggered_abilities: [
+        {
+          event: 'enters_the_battlefield',
+          effects: [
+            { type: 'lose_life', amount: 2, recipient: 'each_opponent' },
+            { type: 'gain_life', amount: 2 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    oracle_text: 'At the beginning of your upkeep, draw a card.',
+    script: {
+      schema_version: 2,
+      triggered_abilities: [
+        { event: 'beginning_of_upkeep', effects: [{ type: 'draw', amount: 1 }] },
+      ],
+    },
+  },
+  {
+    oracle_text: 'Whenever CARDNAME attacks, put a +1/+1 counter on it.',
+    script: {
+      schema_version: 2,
+      triggered_abilities: [
+        { event: 'attacks', effects: [{ type: 'add_counters', amount: 1 }] },
+      ],
+    },
+  },
+  {
+    oracle_text: 'At the beginning of your upkeep, create a 1/1 green Saproling creature token.',
+    script: {
+      schema_version: 2,
+      triggered_abilities: [
+        {
+          event: 'beginning_of_upkeep',
+          effects: [{ type: 'create_token', token: 'Saproling Token', count: 1 }],
+        },
+      ],
+    },
+  },
+  {
+    oracle_text: '{T}: CARDNAME deals 1 damage to any target.',
+    script: {
+      schema_version: 2,
+      activated_abilities: [
+        {
+          costs: [{ type: 'tap_self' }],
+          effects: [{ type: 'deal_damage', amount: 1, target_type: ['creature', 'player'] }],
+        },
+      ],
+    },
+  },
+  {
+    oracle_text: '{T}: Add {G}.',
+    script: {
+      schema_version: 2,
+      activated_abilities: [
+        {
+          is_mana_ability: true,
+          costs: [{ type: 'tap_self' }],
+          effects: [{ type: 'add_mana', color: 'G', amount: 1 }],
+        },
+      ],
+    },
+  },
+  {
+    oracle_text: 'CARDNAME deals 3 damage to any target. (instant)',
+    script: {
+      schema_version: 2,
+      spell_effect: {
+        actions: [{ type: 'deal_damage', amount: 3, target_type: ['creature', 'player'] }],
+      },
+    },
+  },
+  {
+    oracle_text: 'Destroy target creature. (instant)',
+    script: {
+      schema_version: 2,
+      spell_effect: { actions: [{ type: 'destroy', target_type: 'creature' }] },
+    },
+  },
+  {
+    oracle_text: "Return target creature to its owner's hand. (instant)",
+    script: {
+      schema_version: 2,
+      spell_effect: { actions: [{ type: 'bounce', target_type: 'creature' }] },
+    },
+  },
+  {
+    oracle_text: 'Draw two cards. (sorcery)',
+    script: {
+      schema_version: 2,
+      spell_effect: { actions: [{ type: 'draw', amount: 2 }] },
+    },
+  },
+]
+
+export function buildBehaviorAuthoringGuide(): string {
+  const keywords = BUILDER_KEYWORDS.map((k) => `"${k}" (${KEYWORD_LABELS[k]})`).join(', ')
+  const events = BUILDER_TRIGGER_EVENTS.map((e) => `"${e.value}" (${e.label})`).join(', ')
+  const triggerEffects = BUILDER_EFFECT_TYPES.map((e) => `"${e.value}" (${e.label})`).join(', ')
+  const recipients = BUILDER_RECIPIENTS.map((r) => `"${r.value}" (${r.label})`).join(', ')
+  const damageTargets = BUILDER_DAMAGE_TARGETS.map((t) => `"${t.value}" (${t.label})`).join(', ')
+
+  return `You convert a Magic: The Gathering card's rules text into a behavior script JSON for the LeylineSync engine.
+
+Output ONLY a single JSON object (no markdown fences, no prose). Use \`"schema_version": 2\`. Include only the sections the card needs; omit empty arrays. If the card has no mechanical behavior the engine supports, output \`{}\`.
+
+The engine supports these sections:
+
+1. continuous_effects — static keyword abilities. Each entry: { "type": <keyword>, "affected": "source", "source_zone_required": "battlefield" }.
+   Supported keywords: ${keywords}.
+
+2. triggered_abilities — "when/whenever/at" abilities. Each entry: { "event": <event>, "effects": [ ... ] }.
+   Supported events: ${events}.
+   Effects here are auto-resolved (no chosen target). Supported effect types: ${triggerEffects}.
+   - gain_life: { "type": "gain_life", "amount": N } — the controller gains N.
+   - draw:      { "type": "draw", "amount": N } — the controller draws N.
+   - lose_life / deal_damage: { "type": ..., "amount": N, "recipient": <recipient> }.
+     Recipients: ${recipients}. Default recipient is "each_opponent". "deal damage to each opponent" and "each opponent loses N life" are both modeled here.
+   - create_token: { "type": "create_token", "token": <token name>, "count": N } — the controller creates N tokens. Allowed token names: ${BUILDER_TOKEN_NAMES.join(', ')}. Pick the closest match by creature type; if none matches, omit this effect.
+   - add_counters: { "type": "add_counters", "amount": N } — put N +1/+1 counters on this permanent (the source). Use only for "put a +1/+1 counter on it/CARDNAME".
+
+3. activated_abilities — "{cost}: effect" abilities. Each entry: { "costs": [ ... ], "effects": [ ... ], "is_mana_ability"?: true }.
+   Costs: { "type": "tap_self" } for {T}; { "type": "mana", "amount": "{2}{R}" } for a mana cost string.
+   Effects: deal_damage with a chosen target — { "type": "deal_damage", "amount": N, "target_type": <target> }; or, for mana abilities only, add_mana — { "type": "add_mana", "color": "W|U|B|R|G|C", "amount": N } with "is_mana_ability": true.
+   deal_damage target_type values: ${damageTargets}. "any target" -> ["creature","player"].
+
+4. spell_effect — for Instants and Sorceries (the effect when the spell resolves): { "actions": [ ... ] }.
+   Actions:
+   - deal_damage { "type": "deal_damage", "amount": N, "target_type": ... } — "any target" -> ["creature","player"].
+   - pump      { "type": "pump", "power": N, "toughness": N, "target_type": "creature" } — until end of turn.
+   - destroy   { "type": "destroy", "target_type": "creature" } — "destroy target creature" (to its owner's graveyard).
+   - bounce    { "type": "bounce", "target_type": "creature" } — "return target creature to its owner's hand".
+   - tap       { "type": "tap", "target_type": "creature" } / untap { "type": "untap", "target_type": "creature" }.
+   - draw      { "type": "draw", "amount": N } — the caster draws N (untargeted).
+   - counter   { "type": "counter", "target_type": "spell" }; add_mana { "type": "add_mana", "color": ..., "amount": N }.
+   Targeted creature effects (destroy/bounce/tap/untap) only target creatures right now — if the card targets a non-creature permanent, omit that action.
+
+Rules:
+- Only emit behavior the lists above support. If part of the card isn't expressible (targeted destroy, exile, +1/+1 counters via triggers, conditional effects, etc.), omit that part rather than inventing a field.
+- Prefer continuous_effects for plain keyword lines, triggered_abilities for when/whenever/at, activated_abilities for "{cost}:" lines, spell_effect for instant/sorcery resolution.
+- Use the card's printed numbers.
+
+Examples (oracle text -> script):
+${EXAMPLES.map((e) => `${e.oracle_text}\n${JSON.stringify(e.script)}`).join('\n\n')}`
+}

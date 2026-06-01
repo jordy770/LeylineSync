@@ -30,6 +30,7 @@ type EditorMode = 'form' | 'json'
 const emptyBuilderForm = (): BuilderForm => ({
   keywords: [...EMPTY_BUILDER_FORM.keywords],
   triggers: [...EMPTY_BUILDER_FORM.triggers],
+  activatedAbilities: [...EMPTY_BUILDER_FORM.activatedAbilities],
 })
 
 const scriptToText = (script: CardScript | null | undefined) =>
@@ -48,6 +49,7 @@ export default function CardBehaviorEditor() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isRelinking, setIsRelinking] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
@@ -183,6 +185,44 @@ export default function CardBehaviorEditor() {
     }
   }
 
+  const handleGenerate = async () => {
+    if (!card) {
+      return
+    }
+
+    setIsGenerating(true)
+    setErrorMessage(null)
+    setSuccessMessage(null)
+
+    try {
+      const response = await fetch('/api/cards/generate-behavior', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: card.name,
+          type_line: card.type_line,
+          oracle_text: card.oracle_text,
+        }),
+      })
+
+      const payload = (await response.json()) as { script?: CardScript; error?: string }
+      if (!response.ok || !payload.script) {
+        throw new Error(payload.error ?? 'Generation failed')
+      }
+
+      const text = scriptToText(payload.script)
+      const parsedForm = parseScriptToForm(payload.script)
+      setDraft(text)
+      setFormValue(parsedForm ?? emptyBuilderForm())
+      setEditorMode(parsedForm ? 'form' : 'json')
+      setSuccessMessage('Generated a draft from the rules text — review it, then Save.')
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error))
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   const handleFormat = () => {
     const trimmed = draft.trim()
     if (!trimmed) {
@@ -214,9 +254,23 @@ export default function CardBehaviorEditor() {
 
         <button
           type="button"
+          onClick={handleGenerate}
+          disabled={isGenerating || !card || !card.oracle_text}
+          className="mt-2 rounded bg-indigo-400 px-3 py-2 text-xs font-semibold text-indigo-950 disabled:cursor-not-allowed disabled:opacity-50"
+          title={
+            card?.oracle_text
+              ? 'Use AI to draft a behavior script from this card’s rules text. Review before saving.'
+              : 'This card has no rules text to generate from.'
+          }
+        >
+          {isGenerating ? 'Generating…' : '✨ Generate with AI'}
+        </button>
+
+        <button
+          type="button"
           onClick={handleRelink}
           disabled={isRelinking}
-          className="mt-2 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
           title="Copy authored scripts forward to other printings sharing the same oracle_id that have no script yet."
         >
           {isRelinking ? 'Relinking…' : 'Relink scripts across printings'}

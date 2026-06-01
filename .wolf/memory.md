@@ -505,3 +505,81 @@
 | 00:07 | Session end: 30 writes across 12 files (202605010074_zero_toughness_sba.sql, README.md, 202605010075_card_script_authoring.sql, import-scryfall-cards.mjs, actions.ts) | 19 reads | ~98498 tok |
 | 00:26 | Created lib/game/card-behavior-builder.ts | — | ~2357 |
 | 00:26 | Created components/CardBehaviorForm.tsx | — | ~2065 |
+
+## Session: 2026-06-01 09:54
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-01 09:54
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:57 | Reviewed codex guided form editor (CardBehaviorForm + card-behavior-builder + editor Form/JSON toggle): tsc+lint clean, generated script shapes match runtime (keywords->067 register, triggers->076/077 resolve), round-trip parse correct | components/CardBehaviorForm.tsx, lib/game/card-behavior-builder.ts, components/CardBehaviorEditor.tsx | verified good | ~5k |
+| 10:12 | Edited lib/game/card-behavior-builder.ts | 3→3 lines | ~39 |
+| 10:12 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~576 |
+| 10:13 | Edited lib/game/card-behavior-builder.ts | added 4 condition(s) | ~442 |
+| 10:13 | Edited lib/game/card-behavior-builder.ts | added optional chaining | ~913 |
+| 10:13 | Edited components/CardBehaviorEditor.tsx | CSS: activatedAbilities | ~60 |
+| 10:14 | Edited components/CardBehaviorForm.tsx | expanded (+8 lines) | ~172 |
+| 10:20 | Edited components/CardBehaviorForm.tsx | expanded (+11 lines) | ~145 |
+| 10:21 | Edited components/CardBehaviorForm.tsx | CSS: activatedAbilities, disabled | ~525 |
+| 10:25 | Edited components/CardBehaviorForm.tsx | modified ActivatedAbilityEditor() | ~1111 |
+| 10:25 | Edited components/CardBehaviorForm.tsx | 5→4 lines | ~27 |
+| 10:32 | Created lib/game/card-behavior-llm.ts | — | ~1691 |
+| 10:32 | Created app/api/cards/generate-behavior/route.ts | — | ~1333 |
+| 10:32 | Edited components/CardBehaviorEditor.tsx | 3→4 lines | ~62 |
+| 10:32 | Edited components/CardBehaviorEditor.tsx | added error handling | ~330 |
+| 10:33 | Edited components/CardBehaviorEditor.tsx | added optional chaining | ~316 |
+| 10:34 | Edited README.md | 1→4 lines | ~305 |
+| 10:35 | Guided form: added activated abilities (mana + damage kinds). AI generation: @anthropic-ai/sdk, /api/cards/generate-behavior route (claude-opus-4-8, adaptive thinking, cached vocab prompt, validateCardScript+retry), Generate-with-AI button | lib/game/card-behavior-{builder,llm}.ts, components/CardBehaviorForm.tsx, components/CardBehaviorEditor.tsx, app/api/cards/generate-behavior/route.ts, README.md | done; tsc+lint clean; needs ANTHROPIC_API_KEY for AI | ~20k |
+| 10:35 | Session end: 16 writes across 6 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-llm.ts, route.ts) | 4 reads | ~45234 tok |
+| 10:42 | Session end: 16 writes across 6 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-llm.ts, route.ts) | 4 reads | ~45234 tok |
+| 10:51 | Created supabase/migrations/202605010078_trigger_effect_vocabulary.sql | — | ~3552 |
+| 10:51 | Edited lib/game/card-behavior-schema.ts | 3→4 lines | ~43 |
+| 10:51 | Edited lib/game/card-behavior-schema.ts | expanded (+9 lines) | ~98 |
+| 10:51 | Edited lib/game/card-behavior-builder.ts | expanded (+15 lines) | ~345 |
+| 10:51 | Edited lib/game/card-behavior-builder.ts | 6→10 lines | ~98 |
+| 10:51 | Edited lib/game/card-behavior-builder.ts | modified effectToJson() | ~165 |
+| 10:52 | Edited lib/game/card-behavior-builder.ts | added 3 condition(s) | ~266 |
+| 10:52 | Edited components/CardBehaviorForm.tsx | 3→4 lines | ~26 |
+| 10:52 | Edited components/CardBehaviorForm.tsx | CSS: count, token | ~639 |
+| 10:52 | Edited lib/game/card-behavior-llm.ts | 4→6 lines | ~231 |
+| 10:52 | Edited lib/game/card-behavior-llm.ts | 8→9 lines | ~58 |
+| 10:52 | Edited lib/game/card-behavior-llm.ts | expanded (+21 lines) | ~235 |
+| 10:56 | Edited README.md | 2→3 lines | ~24 |
+| 10:56 | Edited README.md | 5→7 lines | ~230 |
+| 10:56 | Edited README.md | inline fix | ~113 |
+| 10:56 | Effect vocabulary: extracted apply_triggered_ability_effects helper; added create_token + add_counters trigger effects; wired into schema, builder (model/form/codec), LLM guide; seeded 2 test cards | migrations/...078, lib/game/card-behavior-{schema,builder,llm}.ts, components/CardBehaviorForm.tsx, README.md | done; tsc+lint clean | ~16k |
+| 10:57 | Session end: 31 writes across 8 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-llm.ts, route.ts) | 4 reads | ~51637 tok |
+| 11:05 | Session end: 31 writes across 8 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-llm.ts, route.ts) | 4 reads | ~51637 tok |
+| 11:22 | Edited components/ControllerListV4.tsx | 1→5 lines | ~124 |
+| 11:22 | Edited components/ControllerListV4.tsx | expanded (+6 lines) | ~61 |
+| 11:22 | Edited components/ControllerListV4.tsx | inline fix | ~29 |
+| 11:25 | Fixed V4 combat softlock with attacks-trigger creatures: gate declare_attackers layout on myDeclaredAttackers.length===0 so picker does not re-show after the trigger resolves | components/ControllerListV4.tsx | fixed; tsc+lint clean | ~4k |
+| 11:25 | Session end: 34 writes across 9 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-llm.ts, route.ts) | 4 reads | ~51975 tok |
+
+## Session: 2026-06-01 11:29
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:49 | Created supabase/migrations/202605010079_more_spell_effects.sql | — | ~6059 |
+| 11:50 | Edited lib/game/actions.ts | added nullish coalescing | ~396 |
+| 11:50 | Edited components/ControllerListV4.tsx | 6→9 lines | ~84 |
+| 11:50 | Edited components/ControllerListV4.tsx | expanded (+10 lines) | ~253 |
+| 11:50 | Edited components/ControllerListV4.tsx | added 2 condition(s) | ~234 |
+| 11:51 | Edited components/ControllerListV4.tsx | modified if() | ~102 |
+| 11:51 | Edited components/ControllerListV4.tsx | CSS: creatureEffect, drawCards | ~344 |
+| 11:51 | Edited components/ControllerListV4.tsx | 2→4 lines | ~121 |
+| 11:51 | Edited components/ControllerListV4.tsx | 6→8 lines | ~38 |
+| 11:51 | Edited components/ControllerListV4.tsx | CSS: onCreatureEffect, onDrawCards | ~101 |
+| 11:51 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~183 |
+| 11:51 | Edited components/ControllerListV4.tsx | CSS: active, active | ~356 |
+| 11:52 | Edited lib/game/card-behavior-schema.ts | 4→4 lines | ~56 |
+| 11:52 | Edited lib/game/card-behavior-schema.ts | expanded (+13 lines) | ~188 |
+| 11:52 | Edited lib/game/card-behavior-llm.ts | modified Sorceries() | ~300 |
+| 11:52 | Edited lib/game/card-behavior-llm.ts | expanded (+21 lines) | ~233 |
+| 11:55 | Edited README.md | inline fix | ~108 |
+
+| --:-- | Phase 3: added spell effect types draw/destroy/bounce/tap/untap | migration 079, actions.ts, ControllerListV4.tsx, card-behavior-schema.ts, card-behavior-llm.ts | tsc+lint clean; user applies migration manually | ~? |
+| 11:56 | Session end: 17 writes across 6 files (202605010079_more_spell_effects.sql, actions.ts, ControllerListV4.tsx, card-behavior-schema.ts, card-behavior-llm.ts) | 12 reads | ~79021 tok |
