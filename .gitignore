@@ -47,3 +47,6 @@ next-env.d.ts
 /components/default-cards-20260429211148.json
 # claude code local settings
 .claude/settings.local.json
+
+# Supabase scratch schema dump (local baseline authoring only)
+supabase/_hosted_schema.sql

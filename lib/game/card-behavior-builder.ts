@@ -24,9 +24,14 @@ export type BuilderKeyword = (typeof BUILDER_KEYWORDS)[number]
 // Trigger events wired in migrations 076–077.
 export const BUILDER_TRIGGER_EVENTS = [
   { value: 'enters_the_battlefield', label: 'When it enters the battlefield' },
-  { value: 'beginning_of_upkeep', label: 'At the beginning of your upkeep' },
+  { value: 'leaves_the_battlefield', label: 'When it leaves the battlefield' },
   { value: 'dies', label: 'When it dies' },
   { value: 'attacks', label: 'When it attacks' },
+  { value: 'blocks', label: 'When it blocks' },
+  { value: 'becomes_targeted', label: 'When it becomes the target of a spell or ability' },
+  { value: 'beginning_of_upkeep', label: 'At the beginning of your upkeep' },
+  { value: 'beginning_of_draw_step', label: 'At the beginning of your draw step' },
+  { value: 'beginning_of_end_step', label: 'At the beginning of your end step' },
 ] as const
 export type BuilderTriggerEvent = (typeof BUILDER_TRIGGER_EVENTS)[number]['value']
 
@@ -460,6 +465,9 @@ function parseEffects(value: unknown): BuilderEffect[] | null {
         count: typeof e.count === 'number' ? e.count : 1,
       })
     } else if (type === 'add_counters') {
+      if (e.target_type !== undefined || e.target_ref !== undefined) {
+        return null
+      }
       effects.push({ type: 'add_counters', amount })
     } else {
       return null

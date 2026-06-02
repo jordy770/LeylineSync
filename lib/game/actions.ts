@@ -305,6 +305,8 @@ export async function putDealDamagePlayerOnStack(
   return data as StackItem
 }
 
+export type TargetController = 'any' | 'opponent' | 'you'
+
 export async function putDealDamageCreatureOnStack(
   supabase: SupabaseClient,
   sessionId: string,
@@ -313,6 +315,7 @@ export async function putDealDamageCreatureOnStack(
   timing: 'instant' | 'sorcery',
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -321,6 +324,7 @@ export async function putDealDamageCreatureOnStack(
       target_card_id: targetCardId,
       amount,
       timing,
+      target_controller: targetController ?? null,
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
@@ -342,6 +346,7 @@ export async function putPumpCreatureOnStack(
   timing: 'instant' | 'sorcery',
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -351,6 +356,7 @@ export async function putPumpCreatureOnStack(
       power,
       toughness,
       timing,
+      target_controller: targetController ?? null,
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
@@ -368,6 +374,8 @@ export type TargetedCreatureActionType =
   | 'bounce_creature'
   | 'tap_creature'
   | 'untap_creature'
+  | 'add_counters_creature'
+  | 'exile_creature'
 
 export async function putTargetedCreatureActionOnStack(
   supabase: SupabaseClient,
@@ -377,6 +385,7 @@ export async function putTargetedCreatureActionOnStack(
   timing: 'instant' | 'sorcery',
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -384,9 +393,59 @@ export async function putTargetedCreatureActionOnStack(
     p_payload: {
       target_card_id: targetCardId,
       timing,
+      target_controller: targetController ?? null,
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function putAddCountersCreatureOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  amount: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'add_counters_creature',
+    p_payload: {
+      target_card_id: targetCardId,
+      amount,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function chooseTriggeredAbilityCreatureTarget(
+  supabase: SupabaseClient,
+  sessionId: string,
+  stackItemId: string,
+  targetCardId: string,
+) {
+  const { data, error } = await supabase.rpc('choose_triggered_ability_creature_target', {
+    p_session_id: sessionId,
+    p_stack_item_id: stackItemId,
+    p_target_card_id: targetCardId,
   })
 
   if (error) {

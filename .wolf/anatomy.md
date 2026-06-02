@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-01T09:55:11.562Z
-> Files: 310 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-02T09:30:32.287Z
+> Files: 336 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -11,10 +11,10 @@
 - `eslint.config.mjs` — ESLint flat configuration (~135 tok)
 - `next.config.ts` — Next.js configuration (~99 tok)
 - `package-lock.json` — npm lock file (~75642 tok)
-- `package.json` — Node.js package manifest (~352 tok)
+- `package.json` — Node.js package manifest (~437 tok)
 - `postcss.config.mjs` — Declares config (~45 tok)
 - `proxy.ts` — Exports proxy, config (~184 tok)
-- `README.md` — Project documentation (~14138 tok)
+- `README.md` — Project documentation (~15476 tok)
 - `tailwind.config.ts` — Tailwind CSS configuration (~558 tok)
 - `tsconfig.json` — TypeScript configuration (~218 tok)
 
@@ -123,7 +123,7 @@
 - `ControllerList.tsx` — components/ControllerList.tsx (~20457 tok)
 - `ControllerListV2.tsx` — ControllerListV2 — uses useState, useMemo (~10088 tok)
 - `ControllerListV3.tsx` — manaColors — uses useMemo (~6422 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~32035 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~34788 tok)
 - `DeckManager.tsx` — DeckManager — uses useMemo, useState, useEffect (~3880 tok)
 - `deploy-button.tsx` — DeployButton (~385 tok)
 - `DevAdminPanel.tsx` — DevAdminPanel (~3316 tok)
@@ -194,6 +194,7 @@
 ## docs/
 
 - `design-conversation-summary.md` — LeylineSync Design Conversation Summary (~2946 tok)
+- `test-plan-079-086.md` — Test plan — migrations 079–086 (~2178 tok)
 
 ## lib/
 
@@ -202,12 +203,12 @@
 ## lib/game/
 
 - `action-selectors.ts` — Exports CardWithScript, getActionTiming, isPlayerDamageAction, isRetainManaAction + 3 more (~652 tok)
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 26 more (~6724 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~7189 tok)
 - `blueprint.ts` — Exports GameViewStep, BoardLayoutKey, PriorityRole, StackActionType + 21 more (~3457 tok)
 - `board-selectors.ts` — Exports BoardSeat, BoardConnection, buildBoardSeats, getCombatCardIds + 2 more (~812 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~4336 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~2334 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2628 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~4475 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~2893 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2835 tok)
 - `card-behavior.ts` — Exports CardBehaviorSchemaVersion, CardBehaviorStatus, CardBehaviorZone, CardBehaviorTargetType + 14 (~2557 tok)
 - `controller-selectors.ts` — Exports selectControllerViewModel, getCanQuickCast, canCardRespond, doesCardRequireStackTarget + 2 more (~1459 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5401 tok)
@@ -253,6 +254,8 @@
 
 ## supabase/migrations/
 
+- `00000000000000_baseline.sql` — Baseline bootstrap for local / from-scratch builds. (~1071 tok)
+- `00000000000001_local_test_relax_fks.sql` — LOCAL TEST DB ONLY (sorts right after the baseline). Do NOT apply to hosted. (~285 tok)
 - `202605010000_move_card_to_zone.sql` — SQL: 2 alter(s), 1 function(s) (~299 tok)
 - `202605010001_add_mana_from_card.sql` — SQL: 1 function(s) (~713 tok)
 - `202605010002_draw_card.sql` — SQL: 1 alter(s), 1 function(s) (~483 tok)
@@ -266,6 +269,7 @@
 - `202605010010_session_membership_hardening.sql` — SQL: 2 function(s) (~1210 tok)
 - `202605010011_finish_game_session.sql` — SQL: 1 function(s) (~202 tok)
 - `202605010012_session_read_policies.sql` — SQL: 2 alter(s), 1 function(s) (~470 tok)
+- `202605010012_zzzz_replayfix_get_session_players.sql` — Replay fix for clean/from-scratch builds (sorts between 012 and 013). (~172 tok)
 - `202605010013_session_player_usernames.sql` — SQL: 1 function(s) (~281 tok)
 - `202605010014_turn_rotation.sql` — SQL: 1 function(s) (~1479 tok)
 - `202605010015_turn_state_realtime.sql` (~86 tok)
@@ -285,7 +289,9 @@
 - `202605010029_priority_passing.sql` — SQL: 4 alter(s), 2 function(s) (~2916 tok)
 - `202605010030_stack_action_layer.sql` — SQL: tables: public, 1 alter(s), 4 function(s) (~3688 tok)
 - `202605010031_stack_action_timing.sql` — SQL: 1 function(s) (~1547 tok)
+- `202605010031_zzzz_replayfix_get_stack_items.sql` — Replay fix for clean builds (sorts between 031 and 032). get_stack_items' (~125 tok)
 - `202605010032_stack_item_display_details.sql` — SQL: 1 function(s) (~580 tok)
+- `202605010032_zzzz_replayfix_get_stack_items.sql` — Replay fix for clean builds (sorts between 032 and 033). See the 031 shim; (~106 tok)
 - `202605010033_stack_item_player_name_fallback.sql` — SQL: 1 function(s) (~547 tok)
 - `202605010034_mana_cost_and_casting.sql` — SQL: 1 alter(s), 3 function(s) (~3497 tok)
 - `202605010035_fix_cast_card_from_hand_row_select.sql` — SQL: 1 function(s) (~888 tok)
@@ -295,6 +301,7 @@
 - `202605010039_chosen_generic_mana_payment.sql` — SQL: 3 function(s) (~4042 tok)
 - `202605010040_turn_state_display_rpc.sql` — SQL: 1 function(s) (~517 tok)
 - `202605010041_permanent_spells_use_stack.sql` — SQL: 4 alter(s), 2 function(s) (~2534 tok)
+- `202605010041_zzzz_replayfix_get_turn_state.sql` — Replay fix for clean builds (sorts between 041 and 042). get_turn_state's (~108 tok)
 - `202605010042_battlefield_static_effects_land_limit.sql` — SQL: 5 alter(s), 4 function(s) (~3120 tok)
 - `202605010043_scripted_continuous_effect_cards.sql` — SQL: 4 function(s) (~4117 tok)
 - `202605010044_static_effect_lifecycle_rebuild.sql` — SQL: 3 alter(s), 7 function(s) (~4153 tok)
@@ -302,6 +309,7 @@
 - `202605010046_summoning_sickness_and_haste.sql` — SQL: 3 alter(s), 5 function(s) (~5776 tok)
 - `202605010047_dev_admin_tools.sql` — SQL: 3 function(s) (~1794 tok)
 - `202605010048_vigilance.sql` — SQL: 2 alter(s), 3 function(s) (~2756 tok)
+- `202605010048_zzzz_replayfix_get_combat_assignments.sql` — Replay fix for clean builds (sorts between 048 and 049). get_combat_assignments' (~112 tok)
 - `202605010049_combat_keywords_and_multiple_blockers.sql` — SQL: tables: public, 3 alter(s), 5 function(s) (~8633 tok)
 - `202605010050_first_strike_double_strike.sql` — SQL: 3 alter(s), 5 function(s) (~6235 tok)
 - `202605010051_sync_gemini_card_seed.sql` — SQL: 8 alter(s) (~3058 tok)
@@ -322,6 +330,7 @@
 - `202605010066_exile_face_down.sql` — Adds is_face_down boolean column to game_cards for face-down exile tracking (~40 tok) — Judge tool: zero out entered_battlefield_turn_number so the creature (~369 tok)
 - `202605010067_deathtouch.sql` — Deathtouch support. (~6295 tok)
 - `202605010068_plus_one_counters.sql` — +1/+1 counters. (~4392 tok)
+- `202605010068_zzzz_replayfix_get_combat_assignments.sql` — Replay fix for clean builds (sorts between 068 and 069). get_combat_assignments (~111 tok)
 - `202605010069_until_end_of_turn_pumps.sql` — Until-end-of-turn power/toughness pumps (Giant Growth style). (~2374 tok)
 - `202605010070_tokens.sql` — Token creation. (~1291 tok)
 - `202605010071_creature_targeting_spells.sql` — Creature-targeting spells through the stack. (~4577 tok)
@@ -330,9 +339,41 @@
 - `202605010074_zero_toughness_sba.sql` — State-based action: creatures with 0 or less toughness are put into the (~880 tok)
 - `202605010075_card_script_authoring.sql` — Card script authoring (Phase 2 — lightweight approach). (~963 tok)
 - `202605010076_triggered_abilities.sql` — Triggered abilities (Phase 3, first slice): enters-the-battlefield and (~4548 tok)
+- `202605010076_zzzz_replayfix_get_stack_items.sql` — Replay fix for clean builds (sorts between 076 and 077). get_stack_items is (~108 tok)
 - `202605010077_dies_and_attacks_triggers.sql` — Triggered abilities (Phase 3, second slice): dies and attacks events. (~2018 tok)
 - `202605010078_trigger_effect_vocabulary.sql` — Widen the triggered-ability effect vocabulary, and refactor resolution so (~3552 tok)
-- `202605010079_more_spell_effects.sql` — Phase 3: broaden spell_effect coverage with more effect types. (~6059 tok)
+- `202605010079_more_spell_effects.sql` — Phase 3: broaden spell_effect coverage with more effect types (adds add_counters_creature too). (~6300 tok)
+- `202605010080_targeted_etb_triggers.sql` — Phase 3: first targeted triggered abilities. triggered_ability stack items can carry target_required/target_card_id; controller picks creature via choose_triggered_ability_creature_target before resolve. Redefines enqueue_triggered_ability + resolve_top_of_stack. (~5200 tok)
+- `202605010081_trigger_target_refinements.sql` — Phase 3: refine targeted-creature triggers and spells. (1) creature-ONLY target_type required for a chosen creature target (any-target damage triggers fall through to each_opponent). (2) target_controller (any|opponent|you) enforced via helpers session_has_targetable_creature / creature_target_controller_ok in enqueue/choose/resolve guard/put_action_on_stack. Redefines those 4 fns. (~8240 tok)
+- `202605010082_more_trigger_events.sql` — Phase 3: broaden detectable trigger events (all reuse fire_card_triggers). Adds leaves_the_battlefield (fire_zone_change_triggers); beginning_of_draw_step/beginning_of_end_step via new generic fire_turn_step_triggers (replaces fire_upkeep_triggers); blocks (fire_block_triggers on game_combat_blockers insert); becomes_targeted (fire_target_triggers on game_stack_items insert for creature-target actions, lands above targeting item, INSERT-only = loop-free). (~2089 tok)
+- `202605010083_exile_and_mill_effects.sql` — Phase 3, Tier 1 effects. exile = targeted creature effect (spell `exile_creature` + triggered `exile`), mirrors destroy to the exile zone; added to constraint, trigger_effect_requires_creature_target, apply_targeted_triggered_ability_effects, put_action_on_stack, resolve_top_of_stack, client CREATURE_EFFECT_MAP. mill = auto trigger effect (recipient controller/each_opponent/each_player) in apply_triggered_ability_effects; trigger-only (no spell-side yet). (~9825 tok)
+- `202605010084_put_in_graveyard_chokepoint.sql` — Phase 0 (rules-engine cleanup): single `put_in_graveyard(session, game_card)` primitive for the battlefield→graveyard transition (returns bool; standard leave-battlefield cleanup incl. controller→owner). All three death sites route through it: move_lethal_damaged_creatures_to_graveyard (now snapshots dying set then loops), resolve_top_of_stack destroy_creature, apply_targeted_triggered_ability_effects destroy. The seam for the future finality/death-replacement layer. (~5109 tok)
+- `202605010085_effective_script_accessor.sql` — Phase 0 (rules-engine cleanup): single accessor `effective_script(session, game_card)` returning `coalesce(copied_script, cards.script)` (STABLE, SECURITY DEFINER). Routes the 3 live callers through it: register_card_continuous_effects (067), activate_ability (072), fire_card_triggers (077) — each reproduced verbatim with only the inline script-fetch swapped. Behavior-preserving; the one place DFC active-face script selection will later live. (~3663 tok)
+- `202605010086_apply_creature_effect.sql` — Phase 0 (rules-engine cleanup): single primitive `apply_creature_effect(session, kind, target, params)` owns every creature mutation (deal_damage/destroy/exile/bounce/tap/untap/add_counters/pump). Collapses the duplicated switch in apply_targeted_triggered_ability_effects (now delegates by effect type) and resolve_top_of_stack (8 `*_creature` branches collapsed into one that strips the `_creature` suffix via regexp and passes the payload). destroy still routes through put_in_graveyard. Behavior-preserving. (~3735 tok)
+
+## tests/
+
+- `README.md` — Project documentation (~1150 tok)
+
+## tests/feature/
+
+- `exile-mill.test.ts` — Feature group 083 — exile (spell + targeted trigger) and mill. (~829 tok)
+- `targeted-triggers.test.ts` — Feature group 080/081 — targeted ETB triggers, controller (ownership) (~1132 tok)
+- `trigger-events.test.ts` — Feature group 082 — the new trigger events: leaves_the_battlefield, (~1320 tok)
+
+## tests/fixtures/
+
+- `test-cards.json` (~2866 tok)
+
+## tests/harness/
+
+- `db.ts` — Run `fn` inside a transaction and ALWAYS roll back, so a test leaves no trace. (~1015 tok)
+- `scenario.ts` — Create a 2-player session. Seat A is the creator + active player. (~3146 tok)
+- `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~418 tok)
+
+## tests/regression/
+
+- `group1.test.ts` — Group 1 — regression that proves migrations 084/085/086 are behavior-preserving. (~2722 tok)
 
 ## vercel/
 

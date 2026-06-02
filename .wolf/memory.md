@@ -583,3 +583,146 @@
 
 | --:-- | Phase 3: added spell effect types draw/destroy/bounce/tap/untap | migration 079, actions.ts, ControllerListV4.tsx, card-behavior-schema.ts, card-behavior-llm.ts | tsc+lint clean; user applies migration manually | ~? |
 | 11:56 | Session end: 17 writes across 6 files (202605010079_more_spell_effects.sql, actions.ts, ControllerListV4.tsx, card-behavior-schema.ts, card-behavior-llm.ts) | 12 reads | ~79021 tok |
+
+## Session: 2026-06-01 14:57
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:07 | reviewed codex impl: migration 080 targeted ETB triggers + add_counters_creature spell | migrations 079/080, ControllerListV4, actions.ts, schema/builder/llm | clean tsc+eslint; flagged any-target trigger drop + ownership not enforced | ~9k |
+| 15:49 | Edited lib/game/card-behavior-schema.ts | 2→6 lines | ~117 |
+| 15:49 | Edited lib/game/card-behavior-llm.ts | modified restriction() | ~158 |
+| 15:49 | Edited lib/game/card-behavior-llm.ts | expanded (+12 lines) | ~150 |
+| 15:49 | Edited lib/game/card-behavior-schema.ts | 7→8 lines | ~90 |
+| 15:49 | Edited lib/game/card-behavior-schema.ts | 19→22 lines | ~260 |
+| 15:51 | Created supabase/migrations/202605010081_trigger_target_refinements.sql | — | ~8248 |
+| 15:52 | Edited lib/game/actions.ts | modified putDealDamageCreatureOnStack() | ~211 |
+| 15:52 | Edited lib/game/actions.ts | 18→20 lines | ~166 |
+| 15:52 | Edited lib/game/actions.ts | 16→18 lines | ~164 |
+| 15:52 | Edited lib/game/actions.ts | 17→19 lines | ~165 |
+| 15:52 | Edited components/ControllerListV4.tsx | added optional chaining | ~486 |
+| 15:52 | Edited components/ControllerListV4.tsx | inline fix | ~25 |
+| 15:53 | Edited components/ControllerListV4.tsx | CSS: targetController, targetController, targetController | ~372 |
+| 15:53 | Edited components/ControllerListV4.tsx | CSS: targetController | ~214 |
+| 15:53 | Edited components/ControllerListV4.tsx | 3→3 lines | ~62 |
+| 15:53 | Edited components/ControllerListV4.tsx | 3→3 lines | ~64 |
+| 15:53 | Edited components/ControllerListV4.tsx | 3→3 lines | ~64 |
+| 15:53 | Edited components/ControllerListV4.tsx | 3→3 lines | ~66 |
+| 15:53 | Edited components/ControllerListV4.tsx | 4→8 lines | ~90 |
+| 15:54 | Edited components/ControllerListV4.tsx | 3→7 lines | ~78 |
+| 15:54 | Edited components/ControllerListV4.tsx | CSS: spellTargetController, targetController | ~212 |
+| 15:58 | Edited supabase/migrations/202605010081_trigger_target_refinements.sql | 4→3 lines | ~27 |
+| 15:58 | Edited README.md | 3→3 lines | ~312 |
+| 15:59 | Edited README.md | picker() → restriction() | ~176 |
+| 15:59 | Edited README.md | 3→6 lines | ~56 |
+| 16:15 | addressed review edges: creature-only trigger targets + target_controller (any/opponent/you) end-to-end | migration 081, ControllerListV4, actions.ts, schema/llm | clean tsc+eslint | ~14k |
+| 16:16 | Session end: 25 writes across 6 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 12 reads | ~89850 tok |
+| 16:20 | Session end: 25 writes across 6 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 12 reads | ~89850 tok |
+| 16:46 | Edited lib/game/card-behavior-builder.ts | 6→11 lines | ~197 |
+| 16:46 | Created supabase/migrations/202605010082_more_trigger_events.sql | — | ~2089 |
+| 16:54 | Edited README.md | 5→6 lines | ~459 |
+| 16:54 | Edited README.md | inline fix | ~232 |
+| 16:54 | Edited README.md | 3→4 lines | ~33 |
+| 17:05 | added 5 trigger events: leaves_the_battlefield, draw_step, end_step, blocks, becomes_targeted | migration 082, card-behavior-builder.ts | clean tsc+eslint; all reuse fire_card_triggers | ~6k |
+| 17:06 | Session end: 30 writes across 8 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 15 reads | ~108079 tok |
+| 17:08 | Session end: 30 writes across 8 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 15 reads | ~108079 tok |
+| 17:15 | Edited README.md | expanded (+32 lines) | ~611 |
+| 17:31 | Created supabase/migrations/202605010083_exile_and_mill_effects.sql | — | ~9825 |
+| 17:31 | Edited lib/game/actions.ts | 6→7 lines | ~50 |
+| 17:31 | Edited components/ControllerListV4.tsx | CSS: exile | ~82 |
+| 17:31 | Edited lib/game/card-behavior-schema.ts | 4→5 lines | ~62 |
+| 17:31 | Edited lib/game/card-behavior-schema.ts | 5→10 lines | ~70 |
+| 17:32 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~46 |
+| 17:32 | Edited lib/game/card-behavior-llm.ts | 2→3 lines | ~162 |
+| 17:32 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~68 |
+| 17:32 | Edited lib/game/card-behavior-llm.ts | inline fix | ~50 |
+| 17:32 | Edited lib/game/card-behavior-llm.ts | expanded (+19 lines) | ~250 |
+| 20:55 | Edited README.md | 5→5 lines | ~228 |
+| 20:55 | Edited README.md | 2→3 lines | ~115 |
+| 20:56 | Edited README.md | inline fix | ~76 |
+| 20:56 | Edited README.md | 2→3 lines | ~22 |
+| 21:04 | Tier 1 effects: exile (spell+trigger) + mill (auto trigger effect) | migration 083, ControllerListV4, actions.ts, schema/llm; README effect roadmap (expandable details) | clean tsc+eslint | ~16k |
+| 21:04 | Session end: 45 writes across 9 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 16 reads | ~129107 tok |
+| 23:12 | Session end: 45 writes across 9 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 16 reads | ~129107 tok |
+| 23:21 | Session end: 45 writes across 9 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 16 reads | ~129107 tok |
+| 23:29 | Session end: 45 writes across 9 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 16 reads | ~129107 tok |
+| 23:34 | Session end: 45 writes across 9 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 16 reads | ~129107 tok |
+| 23:40 | Created supabase/migrations/202605010084_put_in_graveyard_chokepoint.sql | — | ~5109 |
+| 23:40 | Edited README.md | 2→3 lines | ~24 |
+| 23:41 | Phase 0 rules cleanup: put_in_graveyard chokepoint; routed move_lethal + destroy (resolve + targeted trigger) through it | migration 084 | behavior-preserving refactor; seam for finality/death-replacement | ~7k |
+| 23:41 | Session end: 47 writes across 10 files (card-behavior-schema.ts, card-behavior-llm.ts, 202605010081_trigger_target_refinements.sql, actions.ts, ControllerListV4.tsx) | 18 reads | ~135487 tok |
+
+## Session: 2026-06-01 23:46
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 23:52 | Created supabase/migrations/202605010085_effective_script_accessor.sql | — | ~3663 |
+| 23:52 | Edited README.md | 1→2 lines | ~24 |
+| 23:52 | Phase 0 step 2: effective_script accessor; routed register_card_continuous_effects/activate_ability/fire_card_triggers through it | migrations/202605010085_effective_script_accessor.sql, anatomy.md, README.md, cerebrum.md | done, behavior-preserving | ~9k |
+| 23:53 | Session end: 2 writes across 2 files (202605010085_effective_script_accessor.sql, README.md) | 6 reads | ~29200 tok |
+| 00:00 | Created supabase/migrations/202605010086_apply_creature_effect.sql | — | ~3735 |
+| 00:00 | Edited README.md | 1→2 lines | ~22 |
+| 00:00 | Phase 0 step 3: apply_creature_effect primitive; collapsed creature-effect switch in apply_targeted_triggered_ability_effects + resolve_top_of_stack (8 branches -> 1) | migrations/202605010086_apply_creature_effect.sql, anatomy.md, README.md, cerebrum.md | done, behavior-preserving | ~12k |
+| 00:01 | Session end: 4 writes across 3 files (202605010085_effective_script_accessor.sql, README.md, 202605010086_apply_creature_effect.sql) | 7 reads | ~38334 tok |
+| 00:06 | Session end: 4 writes across 3 files (202605010085_effective_script_accessor.sql, README.md, 202605010086_apply_creature_effect.sql) | 7 reads | ~38334 tok |
+
+## Session: 2026-06-02 09:03
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-02 09:03
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:25 | Created docs/test-plan-079-086.md | — | ~2324 |
+| 09:25 | Wrote test plan for migrations 079-086 (regression + feature groups); flagged Giant Growth/Lightning Strike Test malformed scripts (actions not under spell_effect) | docs/test-plan-079-086.md | done | ~3k |
+| 09:26 | Session end: 1 writes across 1 files (test-plan-079-086.md) | 0 reads | ~2490 tok |
+| 09:37 | Created tests/harness/db.ts | — | ~940 |
+| 09:37 | Created tests/harness/scenario.ts | — | ~2063 |
+| 09:38 | Created tests/regression/group1.test.ts | — | ~1064 |
+| 09:39 | Created tests/README.md | — | ~727 |
+| 09:39 | Edited package.json | 3→4 lines | ~62 |
+| 09:39 | Edited package.json | 3→6 lines | ~43 |
+| 09:40 | Built rules-engine test harness (Option A): pg+claim-trick auth, tx-rollback isolation, Scenario API, proving trio R1/R8/R11; test script + pg/tsx deps | tests/harness/db.ts, tests/harness/scenario.ts, tests/regression/group1.test.ts, tests/README.md, package.json, cerebrum.md | scaffold done, unrun (needs supabase start) | ~10k |
+| 09:40 | Session end: 7 writes across 6 files (test-plan-079-086.md, db.ts, scenario.ts, group1.test.ts, README.md) | 4 reads | ~16706 tok |
+| 09:55 | Session end: 7 writes across 6 files (test-plan-079-086.md, db.ts, scenario.ts, group1.test.ts, README.md) | 5 reads | ~16706 tok |
+| 10:01 | Created supabase/migrations/00000000000000_baseline.sql | — | ~1071 |
+| 10:08 | Created supabase/migrations/202605010012_zzzz_replayfix_get_session_players.sql | — | ~172 |
+| 10:08 | Created supabase/migrations/202605010031_zzzz_replayfix_get_stack_items.sql | — | ~125 |
+| 10:08 | Created supabase/migrations/202605010032_zzzz_replayfix_get_stack_items.sql | — | ~106 |
+| 10:08 | Created supabase/migrations/202605010076_zzzz_replayfix_get_stack_items.sql | — | ~108 |
+| 10:08 | Created supabase/migrations/202605010041_zzzz_replayfix_get_turn_state.sql | — | ~108 |
+| 10:08 | Created supabase/migrations/202605010048_zzzz_replayfix_get_combat_assignments.sql | — | ~112 |
+| 10:08 | Created supabase/migrations/202605010068_zzzz_replayfix_get_combat_assignments.sql | — | ~111 |
+| 10:30 | Created tests/fixtures/test-cards.json | — | ~2866 |
+| 10:30 | Created tests/harness/seed.ts | — | ~418 |
+| 10:30 | Edited tests/regression/group1.test.ts | 4→9 lines | ~80 |
+| 10:35 | Edited package.json | inline fix | ~21 |
+| 10:40 | Edited tests/harness/db.ts | added error handling | ~136 |
+| 10:40 | Edited tests/regression/group1.test.ts | "precombat_main" → "main_1" | ~27 |
+| 10:43 | Edited tests/harness/scenario.ts | expanded (+9 lines) | ~157 |
+| 10:44 | Created supabase/migrations/00000000000001_local_test_relax_fks.sql | — | ~285 |
+| 10:44 | Edited tests/harness/scenario.ts | reduced (-6 lines) | ~94 |
+| 10:48 | Created tests/README.md | — | ~1083 |
+| 10:53 | Test harness GREEN: squashed local schema (dump baseline + relax-FK migration, archived 88 incrementals), seeded test cards, fixed phase vocab/asPlayer masking/FK chain; proving trio R1/R8/R11 pass | supabase/migrations/0000*, supabase/migrations_archive/, tests/**, package.json, buglog(104 resolved), cerebrum | done | ~30k |
+| 10:53 | Session end: 25 writes across 17 files (test-plan-079-086.md, db.ts, scenario.ts, group1.test.ts, README.md) | 7 reads | ~39498 tok |
+| 10:57 | Edited tests/harness/scenario.ts | modified resolveStack() | ~403 |
+| 10:57 | Edited tests/harness/scenario.ts | added optional chaining | ~448 |
+| 10:58 | Edited tests/regression/group1.test.ts | expanded (+142 lines) | ~1838 |
+| 11:00 | Edited tests/regression/group1.test.ts | 4→4 lines | ~53 |
+| 11:00 | Edited tests/regression/group1.test.ts | cardBool() → continuousEffectCount() | ~86 |
+| 11:10 | Edited tests/README.md | 9→9 lines | ~132 |
+| 11:12 | Group 1 regression complete: 12/12 green (R1-R12). Added combat/effective-PT/keyword/stack inspectors to Scenario; fixed R3 priority + R9 to assert continuous-effect registration | tests/regression/group1.test.ts, tests/harness/scenario.ts, tests/README.md | done | ~12k |
+| 11:12 | Session end: 31 writes across 17 files (test-plan-079-086.md, db.ts, scenario.ts, group1.test.ts, README.md) | 7 reads | ~42467 tok |
+| 11:18 | Edited tests/harness/scenario.ts | added nullish coalescing | ~297 |
+| 11:19 | Created tests/feature/targeted-triggers.test.ts | — | ~1132 |
+| 11:19 | Edited package.json | inline fix | ~32 |
+| 11:25 | Created tests/feature/trigger-events.test.ts | — | ~1314 |
+| 11:25 | Created tests/feature/exile-mill.test.ts | — | ~829 |
+| 11:25 | Edited package.json | inline fix | ~52 |
+| 11:27 | Edited tests/feature/trigger-events.test.ts | 2→2 lines | ~45 |
+| 11:29 | Edited tests/README.md | modified covered() | ~188 |
+| 11:30 | Feature test groups 080/081 (targeted triggers + bug-098), 082 (events), 083 (exile/mill) added; full suite 24/24 green | tests/feature/targeted-triggers.test.ts, tests/feature/trigger-events.test.ts, tests/feature/exile-mill.test.ts, tests/harness/scenario.ts, package.json | done | ~14k |
+| 11:30 | Edited tests/README.md | 2→3 lines | ~28 |
+| 11:30 | Session end: 40 writes across 20 files (test-plan-079-086.md, db.ts, scenario.ts, group1.test.ts, README.md) | 8 reads | ~47471 tok |
+| 11:31 | Session end: 40 writes across 20 files (test-plan-079-086.md, db.ts, scenario.ts, group1.test.ts, README.md) | 8 reads | ~47471 tok |

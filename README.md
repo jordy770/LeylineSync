@@ -729,9 +729,10 @@ Supported targeted stack actions:
 - `deal_damage_player` — burn to a player (payload `{ target_player_id, amount }`).
 - `deal_damage_creature` — burn/removal to a creature (`{ target_card_id, amount }`); on resolution it marks damage and re-checks lethal.
 - `pump_creature` — combat trick (`{ target_card_id, power, toughness }`); on resolution it creates an until-end-of-turn pump on the target.
+- `add_counters_creature` — puts +1/+1 counters on a creature (`{ target_card_id, amount }`).
 - `counter_spell` — targets a pending stack item.
 
-A spell's script `actions` decide which targets the V4 controller offers: `deal_damage` with `target_type` including `player`/`creature`/`any` shows the matching choices, and a `pump` action shows creature targets. If the target has left the battlefield by resolution the spell fizzles harmlessly. Seeded test spells: `Lightning Strike Test` (`{1}{R}`, 3 damage any target) and `Giant Growth Test` (`{G}`, +3/+3 to target creature).
+A spell's script `actions` decide which targets the V4 controller offers: `deal_damage` with `target_type` including `player`/`creature`/`any` shows the matching choices, and `pump` / targeted `add_counters` actions show creature targets. If the target has left the battlefield by resolution the spell fizzles harmlessly. Seeded test spells: `Lightning Strike Test` (`{1}{R}`, 3 damage any target), `Giant Growth Test` (`{G}`, +3/+3 to target creature), and `Battlegrowth Test` (`{G}`, put a +1/+1 counter on target creature).
 
 Non-mana **activated abilities** use `activate_ability(session, source_card_id, ability_index, target_player_id?, target_card_id?, generic_payment?)`. It pays the ability's `tap_self` and `mana` costs (the source stays on the battlefield), then puts the effect on the stack by reusing `put_action_on_stack`, so targeting and resolution are shared with creature-targeting spells. Today only `deal_damage` effects are supported. The V4 `CardActionSheet` lists each non-mana ability with its cost; tapping one opens the same player/creature target picker. Seeded test card: `Prodigal Sorcerer Test` (`{2}{U}` 1/1, `{T}: deal 1 damage to any target`). Mana abilities still use the dedicated tap-for-mana flow.
 
@@ -825,19 +826,54 @@ Real imported cards arrive with no behavior: the Scryfall importer deliberately 
 A card's behavior script may carry `triggered_abilities: [{ event, effects }]`. When a matching event fires, each ability is enqueued onto the stack as a `triggered_ability` item (its effects and controller baked into the payload, so resolution does not depend on the source surviving) and resolves like any other stack item — players pass priority, then `resolve_top_of_stack` applies it.
 
 - **Events wired so far:**
-  - `enters_the_battlefield` (aliases `etb`, `enters`) and `dies` (alias `death`, battlefield → graveyard) via a single database trigger on `game_cards` zone changes (`fire_zone_change_triggers`).
-  - `beginning_of_upkeep` (alias `upkeep`) via a trigger on `game_turn_state` entering the upkeep step (fires for the active player's permanents).
-  - `attacks` (aliases `declares_attack`, `attack`) via a trigger on inserts into `game_combat_assignments`.
+  - `enters_the_battlefield` (aliases `etb`, `enters`), `dies` (alias `death`, battlefield → graveyard), and `leaves_the_battlefield` (aliases `ltb`, `leaves`, battlefield → any other zone — fires alongside `dies`) via a single database trigger on `game_cards` zone changes (`fire_zone_change_triggers`).
+  - `beginning_of_upkeep` (alias `upkeep`), `beginning_of_draw_step` (alias `draw_step`), and `beginning_of_end_step` (aliases `end_step`, `beginning_of_end`) via a trigger on `game_turn_state` entering the matching step (`fire_turn_step_triggers`, fires for the active player's permanents).
+  - `attacks` (aliases `declares_attack`, `attack`) via a trigger on inserts into `game_combat_assignments`; `blocks` (aliases `declares_block`, `block`) via a trigger on inserts into `game_combat_blockers`.
+  - `becomes_targeted` (aliases `targeted`, `becomes_target`) when a creature-targeting action (`deal_damage_creature` / `pump_creature` / `destroy`/`bounce`/`tap`/`untap`/`add_counters_creature`) is put on the stack against it (`fire_target_triggers` on `game_stack_items` insert). The trigger lands above the targeting item (resolves first), matching MTG ordering. Triggered-ability targets (chosen after the item is enqueued) do not fire it, which keeps the detector loop-free.
   - Detection mirrors the token cease-to-exist trigger pattern. The zone-change trigger sorts before the cease trigger so a token's own `dies` ability is enqueued before it is removed; `game_stack_items.source_card_id` is `ON DELETE SET NULL` and the source card name is baked into the payload `label` (surfaced by `get_stack_items`), so the trigger still resolves and displays after its source disappears.
-- **Effects (auto-resolved, fixed recipients — no chosen target yet).** Applied by `apply_triggered_ability_effects` (a shared helper `resolve_top_of_stack` calls — add new effect types there):
+- **Effects.** Auto-resolved fixed-recipient effects are applied by `apply_triggered_ability_effects`; targeted creature effects use the V4 trigger target picker before resolution:
   - `{ "type": "gain_life", "amount": N }` — controller gains N.
   - `{ "type": "lose_life", "amount": N, "recipient": "each_opponent" | "controller" }` — recipients lose N (default `each_opponent`).
   - `{ "type": "deal_damage", "amount": N, "recipient": ... }` — same as lose_life for player recipients.
   - `{ "type": "draw", "amount": N }` — controller draws N (stops if the library is empty).
   - `{ "type": "create_token", "token": <token name>, "count": N }` — controller creates N tokens (from the seeded token catalog; registers their keyword continuous effects).
   - `{ "type": "add_counters", "amount": N }` — puts N +1/+1 counters on the source permanent.
-- **Seeded test cards:** `Welcome Drain Test` ({1}{B} 2/2, ETB: each opponent loses 2, you gain 2); `Upkeep Scholar Test` ({2}{U} 1/3, upkeep: gain 1 life); `Parting Gift Test` ({1}{W} 2/2, dies: gain 2 life); `Raiding Berserker Test` ({1}{R} 2/2, attacks: deal 1 to each opponent); `Saproling Marshal Test` ({2}{G} 2/2, upkeep: make a Saproling); `Relentless Charger Test` ({1}{G} 2/2, attacks: +1/+1 counter on itself).
-- **Not yet:** targeted triggers (e.g. "destroy target creature") that require interactive target selection when the trigger goes on the stack.
+  - `{ "type": "mill", "amount": N, "recipient": "controller" | "each_opponent" }` — a player mills N cards from the top of their library to their graveyard (default recipient `controller`).
+  - Targeted creature triggers: `deal_damage`, `destroy`, `exile`, `bounce`, `tap`, `untap`, and `add_counters` with `"target_type": "creature"`. The `target_type` must be **creature-only** to single out a creature — a `deal_damage` trigger whose target_type also allows a player ("any target") is auto-resolved against each opponent instead. An optional `"target_controller": "opponent" | "you"` restricts the choosable creature (default any); enforced both client-side (picker filtering) and server-side (migration 081).
+- **Seeded test cards:** `Welcome Drain Test` ({1}{B} 2/2, ETB: each opponent loses 2, you gain 2); `Upkeep Scholar Test` ({2}{U} 1/3, upkeep: gain 1 life); `Parting Gift Test` ({1}{W} 2/2, dies: gain 2 life); `Raiding Berserker Test` ({1}{R} 2/2, attacks: deal 1 to each opponent); `Saproling Marshal Test` ({2}{G} 2/2, upkeep: make a Saproling); `Relentless Charger Test` ({1}{G} 2/2, attacks: +1/+1 counter on itself); `Ravenous Chupacabra Test` (ETB: destroy target creature an opponent controls); `Ivy Gift Test` (ETB: +1/+1 counter on target creature); `Farewell Token Test` ({2}{W} 2/2, leaves: gain 3 life); `Dawn Tithe Test` ({1}{W} 1/2, end step: gain 1 life); `Morning Insight Test` ({2}{U} 1/3, draw step: draw a card); `Vengeful Wall Test` ({1}{R} 0/4, blocks: deal 1 to each opponent); `Spiteful Sentry Test` ({1}{B} 2/2, becomes targeted: draw a card); `Banishing Bolt Test` ({1}{W} instant, exile target creature); `Banisher Priest Test` ({1}{W} 2/2, ETB: exile target creature an opponent controls); `Grinding Scholar Test` ({2}{U} 1/3, ETB: each opponent mills 3).
+- **Not yet:** targeted player/permanent/non-creature trigger targets and multi-target triggers.
+
+### Effect roadmap
+
+The effect vocabulary above (`gain_life`, `lose_life`, `deal_damage`, `draw`, `create_token`, `add_counters`, and the targeted-creature set `destroy`/`bounce`/`tap`/`untap`, plus `counter`/`add_mana`/`pump` on the spell side) covers a slice of Magic. The list below tracks common effects we don't have yet, grouped by how well they fit the current architecture. It is **not exhaustive** — Magic has hundreds of effect templates; this is the near-term backlog.
+
+<details>
+<summary><strong>Planned / candidate effect types</strong> (click to expand)</summary>
+
+**Tier 1 — easy, mirror an existing helper (low risk).** Slot into `apply_triggered_ability_effects` / `apply_targeted_triggered_ability_effects` / `put_action_on_stack` like the current effects.
+
+- ✅ `exile` — target creature to `zone='exile'` (clones `destroy`; fires `leaves_the_battlefield` but not `dies`). Spell (`exile_creature`) + targeted trigger, via the V4 creature picker, with `target_controller` support (migration 083).
+- ✅ `mill` — auto-resolved trigger effect: a recipient mills N cards from the top of their library to their graveyard. `recipient`: `controller` (default) / `each_opponent` / `each_player` (migration 083). _Spell-side / player-targeted mill still pending (needs a player target picker)._
+- `gain_life` / `lose_life` for **each player** / **all players** — new recipient value alongside `controller` / `each_opponent`.
+- Mass `add_counters` — "+1/+1 counter on each creature you control."
+- `tap_all` / `untap_all` — e.g. "untap all creatures you control."
+
+**Tier 2 — medium, needs a target in another zone or a player choice.**
+
+- Return from graveyard (`return_to_hand` / reanimate to battlefield) — needs a graveyard target picker.
+- `discard` — target player / each opponent; random vs. chosen.
+- `sacrifice` — the sacrificing player chooses.
+- Gain control / control-change ("threaten"), optionally until end of turn — flips `controller_player_id`.
+- `fight` — two creatures damage each other (first **multi-target** effect).
+- Temporary keyword grant — "+2/+2 and gains flying until end of turn" (pump + an expiring continuous effect).
+
+**Tier 3 — higher effort, interactive / hidden-zone UI.**
+
+- `scry` / `surveil` N — look at top N, reorder / bottom / to graveyard (interactive picker; can't auto-resolve).
+- Search library (tutor) — hidden zone + picker + shuffle.
+- Modal effects ("choose one —") and X spells (variable amounts).
+
+</details>
 
 ## Realtime
 
@@ -993,6 +1029,14 @@ Run migrations in order. Current migration list:
 202605010076_triggered_abilities.sql
 202605010077_dies_and_attacks_triggers.sql
 202605010078_trigger_effect_vocabulary.sql
+202605010079_more_spell_effects.sql
+202605010080_targeted_etb_triggers.sql
+202605010081_trigger_target_refinements.sql
+202605010082_more_trigger_events.sql
+202605010083_exile_and_mill_effects.sql
+202605010084_put_in_graveyard_chokepoint.sql
+202605010085_effective_script_accessor.sql
+202605010086_apply_creature_effect.sql
 ```
 
 ## Adding New Card Mechanics
@@ -1268,8 +1312,8 @@ mechanics matter, then add depth and ops.
 
 #### Phase 3 — Broaden behavior coverage on the platform
 
-- [~] Triggered abilities (ETB, dies, attack/upkeep) — biggest missing category. **Done:** enters-the-battlefield, beginning-of-upkeep, dies, and attacks events all fire and resolve through the stack with auto-resolved effects (gain/lose life, damage to each opponent/controller, draw). Remaining: targeted triggers (which need interactive target selection).
-- [~] More spell effect types (draw, destroy, bounce, tap/untap, add counters). **Done:** `draw_cards` (untargeted), `destroy_creature`, `bounce_creature`, `tap_creature`, `untap_creature` cast from hand through the stack with the V4 creature target picker (migration 079). Remaining: add-counters as a targeted spell (counters already work via triggered abilities), and targeting non-creature permanents.
+- [~] Triggered abilities (ETB, dies, attack/upkeep) — biggest missing category. **Done:** enters-the-battlefield, beginning-of-upkeep, dies, and attacks events all fire and resolve through the stack with auto-resolved effects (gain/lose life, damage to each opponent/controller, draw), plus first-pass targeted creature triggers for damage/destroy/bounce/tap/untap/add-counters with optional `target_controller` (you/opponent) restriction (migrations 080–081). Remaining: targeted player/permanent/non-creature targets and multi-target triggers.
+- [~] More spell effect types (draw, destroy, bounce, tap/untap, add counters). **Done:** `draw_cards` (untargeted), `destroy_creature`, `bounce_creature`, `tap_creature`, `untap_creature`, and `add_counters_creature` cast from hand through the stack with the V4 creature target picker, including `target_controller` restriction (migrations 079, 081). Remaining: targeting non-creature permanents.
 - [ ] Real copy / control-change / suppression cards.
 - [ ] Real mana-retention cards.
 

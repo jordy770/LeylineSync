@@ -7,11 +7,13 @@ import {
   addManaFromCard,
   advanceStep,
   castCardFromHand,
+  chooseTriggeredAbilityCreatureTarget,
   declareAttacker as declareAttackerAction,
   declareBlocker as declareBlockerAction,
   getErrorMessage,
   moveCardToZone,
   passPriority as passPriorityAction,
+  putAddCountersCreatureOnStack,
   putCounterSpellOnStack,
   putDealDamageCreatureOnStack,
   putDealDamagePlayerOnStack,
@@ -21,7 +23,7 @@ import {
   resolveCombatDamage,
   setCombatBlockerOrder,
 } from '@/lib/game/actions'
-import type { TargetedCreatureActionType } from '@/lib/game/actions'
+import type { TargetController, TargetedCreatureActionType } from '@/lib/game/actions'
 import type { CardBehaviorAction, CardBehaviorCost } from '@/lib/game/card-behavior'
 import {
   isAddManaBehaviorAction,
@@ -175,16 +177,39 @@ function getEffectivePT(card: ControllerCard): string | null {
 }
 
 type SpellPlan =
-  | { kind: 'damage'; amount: number; timing: 'instant' | 'sorcery'; canTargetPlayer: boolean; canTargetCreature: boolean }
-  | { kind: 'pump'; power: number; toughness: number; timing: 'instant' | 'sorcery' }
-  | { kind: 'creature_effect'; effect: TargetedCreatureActionType; label: string; timing: 'instant' | 'sorcery' }
+  | { kind: 'damage'; amount: number; timing: 'instant' | 'sorcery'; canTargetPlayer: boolean; canTargetCreature: boolean; targetController: TargetController }
+  | { kind: 'pump'; power: number; toughness: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
+  | { kind: 'add_counters'; amount: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
+  | { kind: 'creature_effect'; effect: TargetedCreatureActionType; label: string; timing: 'instant' | 'sorcery'; targetController: TargetController }
   | { kind: 'draw'; amount: number; timing: 'instant' | 'sorcery' }
   | { kind: 'counterspell' }
   | { kind: 'normal' }
 
+// Normalises an effect's target_controller to the engine's three values.
+function readTargetController(action: { target_controller?: unknown } | undefined): TargetController {
+  const raw = typeof action?.target_controller === 'string' ? action.target_controller.toLowerCase() : ''
+  if (raw === 'opponent') return 'opponent'
+  if (raw === 'you' || raw === 'self' || raw === 'controller') return 'you'
+  return 'any'
+}
+
+// Does a board creature satisfy the spell/trigger's controller restriction,
+// from the perspective of the player who controls the effect?
+function creatureMatchesController(
+  card: BoardCard,
+  controllerId: string | null,
+  targetController: TargetController | string | null | undefined,
+): boolean {
+  const tc = typeof targetController === 'string' ? targetController.toLowerCase() : 'any'
+  if (tc === 'opponent') return card.controller_player_id !== controllerId
+  if (tc === 'you' || tc === 'self' || tc === 'controller') return card.controller_player_id === controllerId
+  return true
+}
+
 // Maps a spell_effect action type to a targeted-creature stack action + a picker label.
 const CREATURE_EFFECT_MAP: Record<string, { effect: TargetedCreatureActionType; label: string }> = {
   destroy: { effect: 'destroy_creature', label: 'Destroy' },
+  exile: { effect: 'exile_creature', label: 'Exile' },
   bounce: { effect: 'bounce_creature', label: 'Return to hand' },
   tap: { effect: 'tap_creature', label: 'Tap' },
   untap: { effect: 'untap_creature', label: 'Untap' },
@@ -224,16 +249,29 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
     : 'instant'
 
   const pump = actions.find((a) => a.type === 'pump') as
-    | (CardBehaviorAction & { power?: number; toughness?: number })
+    | (CardBehaviorAction & { power?: number; toughness?: number; target_controller?: unknown })
     | undefined
   if (pump && (typeof pump.power === 'number' || typeof pump.toughness === 'number')) {
-    return { kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing }
+    return { kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing, targetController: readTargetController(pump) }
   }
 
-  const creatureEffect = actions.find((a) => a.type in CREATURE_EFFECT_MAP)
+  const addCounters = actions.find((a) => a.type === 'add_counters') as
+    | (CardBehaviorAction & { amount?: number; target_type?: unknown; target?: unknown; target_controller?: unknown })
+    | undefined
+  if (
+    addCounters &&
+    typeof addCounters.amount === 'number' &&
+    targetTypeMatches(addCounters.target_type ?? addCounters.target ?? 'creature', 'creature')
+  ) {
+    return { kind: 'add_counters', amount: addCounters.amount, timing, targetController: readTargetController(addCounters) }
+  }
+
+  const creatureEffect = actions.find((a) => a.type in CREATURE_EFFECT_MAP) as
+    | (CardBehaviorAction & { target_controller?: unknown })
+    | undefined
   if (creatureEffect) {
     const mapped = CREATURE_EFFECT_MAP[creatureEffect.type]
-    return { kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing }
+    return { kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect) }
   }
 
   const draw = actions.find((a) => a.type === 'draw') as
@@ -244,7 +282,7 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
   }
 
   const damage = actions.find((a) => a.type === 'deal_damage' || a.type === 'deal_damage_player') as
-    | (CardBehaviorAction & { amount?: number; target_type?: unknown; target?: unknown })
+    | (CardBehaviorAction & { amount?: number; target_type?: unknown; target?: unknown; target_controller?: unknown })
     | undefined
   if (damage && typeof damage.amount === 'number') {
     const tt = damage.target_type ?? damage.target
@@ -252,7 +290,7 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
     const canTargetPlayer = !tt || targetTypeMatches(tt, 'player')
     const canTargetCreature = targetTypeMatches(tt, 'creature')
     if (canTargetPlayer || canTargetCreature) {
-      return { kind: 'damage', amount: damage.amount, timing, canTargetPlayer, canTargetCreature }
+      return { kind: 'damage', amount: damage.amount, timing, canTargetPlayer, canTargetCreature, targetController: readTargetController(damage) }
     }
   }
 
@@ -279,6 +317,7 @@ function canCastHandSpell(
   if (
     plan.kind === 'damage' ||
     plan.kind === 'pump' ||
+    plan.kind === 'add_counters' ||
     plan.kind === 'creature_effect' ||
     plan.kind === 'draw'
   ) {
@@ -343,6 +382,19 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
   ).length
   const floatingManaTotal = manaColors.reduce((sum, c) => sum + (manaPool[c] ?? 0), 0)
   const availableMana = untappedLandCount + floatingManaTotal
+  const topStackItem = pendingStackItems.slice().sort((a, b) => b.position - a.position)[0] ?? null
+  const mustChooseTriggerTarget = Boolean(
+    playerId &&
+    topStackItem?.action_type === 'triggered_ability' &&
+    topStackItem.controller_player_id === playerId &&
+    topStackItem.payload?.target_required === true &&
+    !topStackItem.payload?.target_card_id &&
+    boardCards.some(
+      (c) =>
+        c.type_line?.toLowerCase().includes('creature') &&
+        creatureMatchesController(c, playerId, topStackItem.payload?.target_controller as string | undefined),
+    ),
+  )
 
   // Land play limit — normally 1 per turn
   const canPlayLand =
@@ -442,14 +494,21 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'damage') return
-      await putDealDamageCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId)
+      await putDealDamageCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
     pumpCreature: async (cardId: string, targetCardId: string) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'pump') return
-      await putPumpCreatureOnStack(supabase, sessionId, targetCardId, plan.power, plan.toughness, plan.timing, cardId)
+      await putPumpCreatureOnStack(supabase, sessionId, targetCardId, plan.power, plan.toughness, plan.timing, cardId, undefined, plan.targetController)
+      await refresh()
+    },
+    addCountersCreature: async (cardId: string, targetCardId: string) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const plan = card ? getSpellPlan(card) : null
+      if (!card || plan?.kind !== 'add_counters') return
+      await putAddCountersCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
     // Targeted creature effect — destroy / bounce / tap / untap
@@ -457,7 +516,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'creature_effect') return
-      await putTargetedCreatureActionOnStack(supabase, sessionId, plan.effect, targetCardId, plan.timing, cardId)
+      await putTargetedCreatureActionOnStack(supabase, sessionId, plan.effect, targetCardId, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
     // Untargeted card-draw spell (Divination etc.)
@@ -501,6 +560,10 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     },
     setBlockerOrder: async (assignmentId: string, orderedBlockerIds: string[]) => {
       await setCombatBlockerOrder(supabase, sessionId, assignmentId, orderedBlockerIds)
+      await refresh()
+    },
+    chooseTriggerTarget: async (stackItemId: string, targetCardId: string) => {
+      await chooseTriggeredAbilityCreatureTarget(supabase, sessionId, stackItemId, targetCardId)
       await refresh()
     },
   }
@@ -560,6 +623,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 supabase={supabase}
                 sessionId={sessionId}
                 opponentPlayers={opponentPlayers}
+                playerId={playerId}
                 boardCards={boardCards}
                 battlefieldCards={battlefieldCards}
                 handCards={handCards}
@@ -579,12 +643,14 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 onTapForMana={actions.tapForMana}
                 onDiscardCard={actions.discardCard}
                 onSetBlockerOrder={actions.setBlockerOrder}
+                onChooseTriggerTarget={actions.chooseTriggerTarget}
               />
               <PriorityPanel
                 hasPriority={hasPriority}
                 isSessionFinished={isSessionFinished}
                 canResolveCombatDamage={canResolveCombatDamage}
                 combatDamageStage={combatDamageStage}
+                blockPassReason={mustChooseTriggerTarget ? 'Choose trigger target' : null}
                 onResolveCombatDamage={actions.resolveCombatDamage}
                 onPassPriority={actions.passPriority}
               />
@@ -610,6 +676,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onDealDamageToPlayer={async (cardId, targetPlayerId) => { await actions.dealDamageToPlayer(cardId, targetPlayerId) }}
             onDealDamageToCreature={async (cardId, targetCardId) => { await actions.dealDamageToCreature(cardId, targetCardId) }}
             onPumpCreature={async (cardId, targetCardId) => { await actions.pumpCreature(cardId, targetCardId) }}
+            onAddCountersCreature={async (cardId, targetCardId) => { await actions.addCountersCreature(cardId, targetCardId) }}
             onCreatureEffect={async (cardId, targetCardId) => { await actions.creatureEffect(cardId, targetCardId) }}
             onDrawCards={async (cardId) => { await actions.drawCards(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
@@ -711,6 +778,7 @@ function MainArea({
   supabase,
   sessionId,
   opponentPlayers,
+  playerId,
   boardCards,
   battlefieldCards,
   handCards,
@@ -730,10 +798,12 @@ function MainArea({
   onTapForMana,
   onDiscardCard,
   onSetBlockerOrder,
+  onChooseTriggerTarget,
 }: {
   supabase: ReturnType<typeof import('@/lib/supabase/client').createClient>
   sessionId: string
   opponentPlayers: GameSessionPlayer[]
+  playerId: string | null
   boardCards: BoardCard[]
   battlefieldCards: ControllerCard[]
   handCards: ControllerCard[]
@@ -753,6 +823,7 @@ function MainArea({
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
   onDiscardCard: (cardId: string) => Promise<void>
   onSetBlockerOrder: (assignmentId: string, orderedBlockerIds: string[]) => Promise<void>
+  onChooseTriggerTarget: (stackItemId: string, targetCardId: string) => Promise<void>
 }) {
   const [focusedOpponentId, setFocusedOpponentId] = useState<string | null>(null)
   const [myZoneTab, setMyZoneTab] = useState<MyZoneTab>('graveyard')
@@ -837,6 +908,13 @@ function MainArea({
       {pendingStackItems.length > 0 && (
         <StackStrip items={pendingStackItems} />
       )}
+
+      <TargetedTriggerPrompt
+        pendingStackItems={pendingStackItems}
+        boardCards={boardCards}
+        playerId={playerId}
+        onChooseTarget={onChooseTriggerTarget}
+      />
 
       {/* ── Combat damage strip ──────────────────────────────────────── */}
       {(turnState?.step === 'combat_damage' || turnState?.step === 'end_of_combat') &&
@@ -1030,11 +1108,81 @@ function MainArea({
 
 // ─── Priority Panel ───────────────────────────────────────────────────────────
 
+function TargetedTriggerPrompt({
+  pendingStackItems,
+  boardCards,
+  playerId,
+  onChooseTarget,
+}: {
+  pendingStackItems: StackItem[]
+  boardCards: BoardCard[]
+  playerId: string | null
+  onChooseTarget: (stackItemId: string, targetCardId: string) => Promise<void>
+}) {
+  const [isPending, setIsPending] = useState(false)
+  const topItem = pendingStackItems.slice().sort((a, b) => b.position - a.position)[0] ?? null
+  const needsMyTarget = Boolean(
+    playerId &&
+    topItem?.action_type === 'triggered_ability' &&
+    topItem.controller_player_id === playerId &&
+    topItem.payload?.target_required === true &&
+    !topItem.payload?.target_card_id,
+  )
+
+  if (!topItem || !needsMyTarget) return null
+
+  const targetableCreatures = boardCards.filter(
+    (c) =>
+      c.type_line?.toLowerCase().includes('creature') &&
+      creatureMatchesController(c, playerId, topItem.payload?.target_controller as string | undefined),
+  )
+  const choose = async (targetCardId: string) => {
+    setIsPending(true)
+    try {
+      await onChooseTarget(topItem.id, targetCardId)
+    } finally {
+      setIsPending(false)
+    }
+  }
+
+  return (
+    <div className="border-b border-emerald-500/20 bg-emerald-950/30 px-3 py-2">
+      <div className="mb-2 min-w-0">
+        <p className="truncate text-[11px] font-black uppercase tracking-widest text-emerald-300">
+          Choose trigger target
+        </p>
+        <p className="truncate text-[10px] text-slate-400">
+          {topItem.source_card_name ?? 'Triggered ability'}
+        </p>
+      </div>
+      {targetableCreatures.length > 0 ? (
+        <div className="flex gap-2 overflow-x-auto">
+          {targetableCreatures.map((card) => (
+            <button
+              key={card.id}
+              type="button"
+              disabled={isPending}
+              onClick={() => { void choose(card.id) }}
+              className="flex shrink-0 items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-left transition active:scale-95 disabled:opacity-50"
+            >
+              <span className="max-w-28 truncate text-xs font-bold text-white">{card.name}</span>
+              <span className="text-[10px] font-black text-emerald-300">{effectiveBoardPT(card)}</span>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="text-[10px] text-slate-500">No creature targets remain. Passing priority will let it fizzle.</p>
+      )}
+    </div>
+  )
+}
+
 function PriorityPanel({
   hasPriority,
   isSessionFinished,
   canResolveCombatDamage,
   combatDamageStage,
+  blockPassReason,
   onResolveCombatDamage,
   onPassPriority,
 }: {
@@ -1042,11 +1190,12 @@ function PriorityPanel({
   isSessionFinished: boolean
   canResolveCombatDamage: boolean
   combatDamageStage: string | null
+  blockPassReason?: string | null
   onResolveCombatDamage: () => Promise<void>
   onPassPriority: () => Promise<void>
 }) {
   const [isPending, setIsPending] = useState(false)
-  const canPass = hasPriority && !isSessionFinished
+  const canPass = hasPriority && !isSessionFinished && !blockPassReason
 
   const run = async (fn: () => Promise<void>) => {
     setIsPending(true)
@@ -1080,7 +1229,9 @@ function PriorityPanel({
         </button>
       ) : (
         <div className="flex h-[72px] w-full flex-col items-center justify-center gap-1 rounded-2xl border border-[#1E2230]">
-          <span className="text-[9px] font-black uppercase tracking-widest text-slate-700">Wait</span>
+          <span className="text-[9px] font-black uppercase tracking-widest text-slate-700">
+            {blockPassReason ? 'Target' : 'Wait'}
+          </span>
           <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-800" />
         </div>
       )}
@@ -1113,6 +1264,7 @@ function CardActionSheet({
   onDealDamageToPlayer,
   onDealDamageToCreature,
   onPumpCreature,
+  onAddCountersCreature,
   onCreatureEffect,
   onDrawCards,
   onCounterSpell,
@@ -1132,6 +1284,7 @@ function CardActionSheet({
   onDealDamageToPlayer: (cardId: string, targetPlayerId: string) => Promise<void>
   onDealDamageToCreature: (cardId: string, targetCardId: string) => Promise<void>
   onPumpCreature: (cardId: string, targetCardId: string) => Promise<void>
+  onAddCountersCreature: (cardId: string, targetCardId: string) => Promise<void>
   onCreatureEffect: (cardId: string, targetCardId: string) => Promise<void>
   onDrawCards: (cardId: string) => Promise<void>
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
@@ -1169,11 +1322,25 @@ function CardActionSheet({
   >(null)
 
   const spellPlan = getSpellPlan(card)
-  const targetableCreatures = boardCards.filter((c) => c.type_line?.toLowerCase().includes('creature'))
+  // Controller restriction for the chosen creature target ("an opponent controls"
+  // / "you control"), relative to the caster. Defaults to any for untargeted plans.
+  const spellTargetController: TargetController =
+    spellPlan.kind === 'damage' ||
+    spellPlan.kind === 'pump' ||
+    spellPlan.kind === 'add_counters' ||
+    spellPlan.kind === 'creature_effect'
+      ? spellPlan.targetController
+      : 'any'
+  const targetableCreatures = boardCards.filter(
+    (c) =>
+      c.type_line?.toLowerCase().includes('creature') &&
+      creatureMatchesController(c, playerId, spellTargetController),
+  )
   const canCast = canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackCount)
   const hasCreatureTargets = targetableCreatures.length > 0
   const requiresCreatureTarget =
     spellPlan.kind === 'pump' ||
+    spellPlan.kind === 'add_counters' ||
     spellPlan.kind === 'creature_effect' ||
     (spellPlan.kind === 'damage' && spellPlan.canTargetCreature && !spellPlan.canTargetPlayer)
   const requiresStackTarget = spellPlan.kind === 'counterspell'
@@ -1185,6 +1352,7 @@ function CardActionSheet({
     canCast &&
     ((spellPlan.kind === 'damage' && (spellPlan.canTargetPlayer || (spellPlan.canTargetCreature && hasCreatureTargets))) ||
       (spellPlan.kind === 'pump' && hasCreatureTargets) ||
+      (spellPlan.kind === 'add_counters' && hasCreatureTargets) ||
       (spellPlan.kind === 'creature_effect' && hasCreatureTargets) ||
       (spellPlan.kind === 'counterspell' && pendingStackItems.length > 0))
   const castLabel = !hasRequiredTargets
@@ -1391,6 +1559,32 @@ function CardActionSheet({
               >
                 <span className="truncate font-bold text-white">{c.name}</span>
                 <span className="ml-2 shrink-0 text-xs font-black text-violet-300">{effectiveBoardPT(c)}</span>
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPicking(false)}
+              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
+            >
+              Back
+            </button>
+          </div>
+        )}
+
+        {picking && spellPlan.kind === 'add_counters' && (
+          <div className="mb-3 space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              Put {spellPlan.amount} +1/+1 counter{spellPlan.amount === 1 ? '' : 's'} on
+            </p>
+            {targetableCreatures.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { void onAddCountersCreature(card.id, c.id); onClose() }}
+                className="flex w-full items-center justify-between rounded-2xl border border-emerald-400/40 bg-emerald-400/10 px-4 py-2.5 transition active:scale-95"
+              >
+                <span className="truncate font-bold text-white">{c.name}</span>
+                <span className="ml-2 shrink-0 text-xs font-black text-emerald-300">{effectiveBoardPT(c)}</span>
               </button>
             ))}
             <button

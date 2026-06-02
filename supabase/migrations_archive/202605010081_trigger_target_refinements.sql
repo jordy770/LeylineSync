@@ -1,39 +1,290 @@
--- Phase 3: broaden spell_effect coverage with more effect types.
+-- Phase 3: refine targeted-creature triggers and spells.
 --
--- Adds five stack action types so instants/sorceries can do more than burn and
--- pump:
---   draw_cards       payload { amount }                 -> controller draws N
---   destroy_creature payload { target_card_id }         -> target creature to graveyard
---   bounce_creature  payload { target_card_id }         -> target creature to owner's hand
---   tap_creature     payload { target_card_id }         -> tap target creature
---   untap_creature   payload { target_card_id }         -> untap target creature
+-- Two fixes layered on migrations 079 (spell effects) + 080 (targeted ETB):
 --
--- The four creature-targeted types share the existing target-validation pattern
--- (target must be a creature on the battlefield) and reuse the V4 creature target
--- picker. draw_cards is untargeted and resolves by reusing
--- apply_triggered_ability_effects' draw loop for the controller.
+--   1. "Any target" damage triggers are no longer dropped. A triggered effect
+--      only counts as a chosen creature target when its target_type is *exactly*
+--      "creature" (creature-only). "deal damage to any target" (target_type
+--      includes player/any) now falls through to the auto-resolved each_opponent
+--      path instead of requiring — and, when no creature exists, silently
+--      discarding — the trigger.
 --
--- Reproduces put_action_on_stack (migration 071) and resolve_top_of_stack
--- (migration 078) verbatim except for the new branches.
+--   2. Controller restriction ("an opponent controls" / "you control"). Targeted
+--      creature effects may carry "target_controller": opponent|you (default any).
+--      Enforced in enqueue (existence check), choose_triggered_ability_creature_target,
+--      resolve_top_of_stack's fizzle guard, and put_action_on_stack (spell casts).
 
-alter table public.game_stack_items
-drop constraint if exists game_stack_items_action_type_check;
+-- ─── Target-type / controller helpers ────────────────────────────────────────
 
-alter table public.game_stack_items
-add constraint game_stack_items_action_type_check
-check (action_type in (
-  'deal_damage_player',
-  'deal_damage_creature',
-  'pump_creature',
-  'cast_permanent',
-  'counter_spell',
-  'triggered_ability',
-  'draw_cards',
-  'destroy_creature',
-  'bounce_creature',
-  'tap_creature',
-  'untap_creature'
-));
+-- A creature-only target_type: the single string "creature", or an array whose
+-- every element is "creature". "any" / arrays containing player/any do not match.
+create or replace function public.behavior_target_type_is_creature_only(
+  p_target_type jsonb
+)
+returns boolean
+language sql
+immutable
+as $$
+  select
+    case
+      when p_target_type is null then false
+      when jsonb_typeof(p_target_type) = 'string' then
+        lower(trim(both '"' from p_target_type::text)) = 'creature'
+      when jsonb_typeof(p_target_type) = 'array' then
+        jsonb_array_length(p_target_type) > 0
+        and not exists (
+          select 1
+          from jsonb_array_elements_text(p_target_type) as t(value)
+          where lower(t.value) <> 'creature'
+        )
+      else false
+    end;
+$$;
+
+-- Normalise an effect's target_controller to 'any' | 'opponent' | 'you'.
+create or replace function public.behavior_target_controller(
+  p_effect jsonb
+)
+returns text
+language sql
+immutable
+as $$
+  select case lower(coalesce(p_effect ->> 'target_controller', ''))
+    when 'opponent' then 'opponent'
+    when 'you' then 'you'
+    when 'self' then 'you'
+    when 'controller' then 'you'
+    else 'any'
+  end;
+$$;
+
+-- Redefine: a trigger effect requires a chosen creature target only when it is a
+-- creature-targeting effect type AND its target_type is creature-only.
+create or replace function public.trigger_effect_requires_creature_target(
+  p_effect jsonb
+)
+returns boolean
+language sql
+immutable
+as $$
+  select
+    lower(coalesce(p_effect ->> 'type', '')) in (
+      'deal_damage',
+      'destroy',
+      'bounce',
+      'tap',
+      'untap',
+      'add_counters'
+    )
+    and public.behavior_target_type_is_creature_only(p_effect -> 'target_type');
+$$;
+
+-- The target_controller for a trigger = controller of its first creature-target
+-- effect (the engine resolves one shared creature target per trigger).
+create or replace function public.trigger_effects_target_controller(
+  p_effects jsonb
+)
+returns text
+language sql
+immutable
+as $$
+  select public.behavior_target_controller(effects.effect)
+  from jsonb_array_elements(coalesce(p_effects, '[]'::jsonb)) as effects(effect)
+  where public.trigger_effect_requires_creature_target(effects.effect)
+  limit 1;
+$$;
+
+-- Does the session contain at least one battlefield creature this controller may
+-- legally target, given the controller restriction?
+create or replace function public.session_has_targetable_creature(
+  p_session_id uuid,
+  p_controller_id uuid,
+  p_target_controller text
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.game_cards gc
+    join public.cards c on c.id = gc.card_id
+    where gc.session_id = p_session_id
+      and gc.zone = 'battlefield'
+      and c.type_line ilike '%creature%'
+      and (
+        coalesce(p_target_controller, 'any') = 'any'
+        or (p_target_controller = 'opponent' and gc.controller_player_id is distinct from p_controller_id)
+        or (p_target_controller = 'you' and gc.controller_player_id = p_controller_id)
+      )
+  );
+$$;
+
+-- Is a specific card a legal creature target for this controller + restriction?
+create or replace function public.creature_target_controller_ok(
+  p_session_id uuid,
+  p_target_card_id uuid,
+  p_controller_id uuid,
+  p_target_controller text
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.game_cards gc
+    join public.cards c on c.id = gc.card_id
+    where gc.id = p_target_card_id
+      and gc.session_id = p_session_id
+      and gc.zone = 'battlefield'
+      and c.type_line ilike '%creature%'
+      and (
+        coalesce(p_target_controller, 'any') = 'any'
+        or (p_target_controller = 'opponent' and gc.controller_player_id is distinct from p_controller_id)
+        or (p_target_controller = 'you' and gc.controller_player_id = p_controller_id)
+      )
+  );
+$$;
+
+-- ─── enqueue_triggered_ability: store + honour target_controller ──────────────
+
+create or replace function public.enqueue_triggered_ability(
+  p_session_id uuid,
+  p_controller_id uuid,
+  p_source_card_id uuid,
+  p_label text,
+  p_effects jsonb
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_next_position integer;
+  v_requires_creature_target boolean;
+  v_target_controller text;
+begin
+  if p_effects is null or jsonb_typeof(p_effects) <> 'array' or jsonb_array_length(p_effects) = 0 then
+    return;
+  end if;
+
+  v_requires_creature_target := public.trigger_effects_require_creature_target(p_effects);
+
+  if v_requires_creature_target then
+    v_target_controller := coalesce(public.trigger_effects_target_controller(p_effects), 'any');
+
+    if not public.session_has_targetable_creature(p_session_id, p_controller_id, v_target_controller) then
+      return;
+    end if;
+  end if;
+
+  select coalesce(max(position), -1) + 1
+  into v_next_position
+  from public.game_stack_items
+  where session_id = p_session_id;
+
+  insert into public.game_stack_items (
+    session_id,
+    controller_player_id,
+    source_card_id,
+    action_type,
+    payload,
+    position
+  )
+  values (
+    p_session_id,
+    p_controller_id,
+    p_source_card_id,
+    'triggered_ability',
+    jsonb_build_object(
+      'label', p_label,
+      'controller_player_id', p_controller_id,
+      'effects', p_effects,
+      'target_required', v_requires_creature_target,
+      'target_type', case when v_requires_creature_target then 'creature' else null end,
+      'target_controller', case when v_requires_creature_target then v_target_controller else null end,
+      'timing', 'triggered'
+    ),
+    v_next_position
+  );
+end;
+$$;
+
+-- ─── choose_triggered_ability_creature_target: controller-aware validation ────
+
+create or replace function public.choose_triggered_ability_creature_target(
+  p_session_id uuid,
+  p_stack_item_id uuid,
+  p_target_card_id uuid
+)
+returns public.game_stack_items
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_stack_item public.game_stack_items;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select *
+  into v_stack_item
+  from public.game_stack_items
+  where id = p_stack_item_id
+    and session_id = p_session_id
+    and status = 'pending'
+  for update;
+
+  if not found then
+    raise exception 'Triggered ability stack item not found';
+  end if;
+
+  if v_stack_item.action_type <> 'triggered_ability'
+    or coalesce((v_stack_item.payload ->> 'target_required')::boolean, false) is not true
+  then
+    raise exception 'Stack item does not require a trigger target';
+  end if;
+
+  if v_stack_item.controller_player_id <> auth.uid() then
+    raise exception 'Only the trigger controller can choose its target';
+  end if;
+
+  if not public.creature_target_controller_ok(
+    p_session_id,
+    p_target_card_id,
+    v_stack_item.controller_player_id,
+    coalesce(v_stack_item.payload ->> 'target_controller', 'any')
+  ) then
+    raise exception 'Target is not a legal creature for this ability';
+  end if;
+
+  update public.game_stack_items
+  set payload = payload || jsonb_build_object(
+    'target_card_id', p_target_card_id,
+    'target_chosen', true
+  )
+  where id = v_stack_item.id
+  returning * into v_stack_item;
+
+  return v_stack_item;
+end;
+$$;
+
+-- ─── put_action_on_stack: enforce target_controller on creature-target casts ──
+-- Reproduces migration 079's body; adds a controller check to the creature-
+-- targeting branches and records target_controller in the payload.
 
 create or replace function public.put_action_on_stack(
   p_session_id uuid,
@@ -51,13 +302,13 @@ declare
   v_turn_state public.game_turn_state;
   v_target_player_id uuid;
   v_target_card_id uuid;
-  v_target_type_line text;
   v_target_stack_item public.game_stack_items;
   v_target_stack_label text;
   v_amount integer;
   v_pump_power integer;
   v_pump_toughness integer;
   v_action_timing text;
+  v_target_controller text;
   v_source_type_line text;
   v_source_zone text;
   v_source_mana_cost text;
@@ -112,7 +363,8 @@ begin
     'destroy_creature',
     'bounce_creature',
     'tap_creature',
-    'untap_creature'
+    'untap_creature',
+    'add_counters_creature'
   ) then
     raise exception 'Unsupported stack action type: %', p_action_type;
   end if;
@@ -173,6 +425,7 @@ begin
   end if;
 
   v_generic_payment := p_payload -> 'generic_payment';
+  v_target_controller := coalesce(lower(nullif(p_payload ->> 'target_controller', '')), 'any');
 
   if p_action_type = 'deal_damage_player' then
     v_target_player_id := nullif(p_payload ->> 'target_player_id', '')::uuid;
@@ -201,20 +454,8 @@ begin
       raise exception 'amount must be positive';
     end if;
 
-    select cards.type_line
-    into v_target_type_line
-    from public.game_cards
-    join public.cards on cards.id = game_cards.card_id
-    where game_cards.id = v_target_card_id
-      and game_cards.session_id = p_session_id
-      and game_cards.zone = 'battlefield';
-
-    if not found then
-      raise exception 'Target creature not found on battlefield';
-    end if;
-
-    if coalesce(v_target_type_line, '') not ilike '%creature%' then
-      raise exception 'Target must be a creature';
+    if not public.creature_target_controller_ok(p_session_id, v_target_card_id, auth.uid(), v_target_controller) then
+      raise exception 'Target is not a legal creature for this spell';
     end if;
   elsif p_action_type = 'pump_creature' then
     v_target_card_id := nullif(p_payload ->> 'target_card_id', '')::uuid;
@@ -225,43 +466,24 @@ begin
       raise exception 'target_card_id is required';
     end if;
 
-    select cards.type_line
-    into v_target_type_line
-    from public.game_cards
-    join public.cards on cards.id = game_cards.card_id
-    where game_cards.id = v_target_card_id
-      and game_cards.session_id = p_session_id
-      and game_cards.zone = 'battlefield';
-
-    if not found then
-      raise exception 'Target creature not found on battlefield';
+    if not public.creature_target_controller_ok(p_session_id, v_target_card_id, auth.uid(), v_target_controller) then
+      raise exception 'Target is not a legal creature for this spell';
     end if;
-
-    if coalesce(v_target_type_line, '') not ilike '%creature%' then
-      raise exception 'Target must be a creature';
-    end if;
-  elsif p_action_type in ('destroy_creature', 'bounce_creature', 'tap_creature', 'untap_creature') then
+  elsif p_action_type in ('destroy_creature', 'bounce_creature', 'tap_creature', 'untap_creature', 'add_counters_creature') then
     -- These all target a creature on the battlefield; identical validation.
     v_target_card_id := nullif(p_payload ->> 'target_card_id', '')::uuid;
+    v_amount := coalesce((p_payload ->> 'amount')::integer, 0);
 
     if v_target_card_id is null then
       raise exception 'target_card_id is required';
     end if;
 
-    select cards.type_line
-    into v_target_type_line
-    from public.game_cards
-    join public.cards on cards.id = game_cards.card_id
-    where game_cards.id = v_target_card_id
-      and game_cards.session_id = p_session_id
-      and game_cards.zone = 'battlefield';
-
-    if not found then
-      raise exception 'Target creature not found on battlefield';
+    if p_action_type = 'add_counters_creature' and v_amount <= 0 then
+      raise exception 'amount must be positive';
     end if;
 
-    if coalesce(v_target_type_line, '') not ilike '%creature%' then
-      raise exception 'Target must be a creature';
+    if not public.creature_target_controller_ok(p_session_id, v_target_card_id, auth.uid(), v_target_controller) then
+      raise exception 'Target is not a legal creature for this spell';
     end if;
   elsif p_action_type = 'draw_cards' then
     v_amount := coalesce((p_payload ->> 'amount')::integer, 0);
@@ -325,6 +547,7 @@ begin
         jsonb_build_object(
           'target_card_id', v_target_card_id,
           'amount', v_amount,
+          'target_controller', v_target_controller,
           'timing', v_action_timing
         )
       when p_action_type = 'pump_creature' then
@@ -332,11 +555,20 @@ begin
           'target_card_id', v_target_card_id,
           'power', v_pump_power,
           'toughness', v_pump_toughness,
+          'target_controller', v_target_controller,
           'timing', v_action_timing
         )
       when p_action_type in ('destroy_creature', 'bounce_creature', 'tap_creature', 'untap_creature') then
         jsonb_build_object(
           'target_card_id', v_target_card_id,
+          'target_controller', v_target_controller,
+          'timing', v_action_timing
+        )
+      when p_action_type = 'add_counters_creature' then
+        jsonb_build_object(
+          'target_card_id', v_target_card_id,
+          'amount', v_amount,
+          'target_controller', v_target_controller,
           'timing', v_action_timing
         )
       when p_action_type = 'draw_cards' then
@@ -381,6 +613,11 @@ begin
   return v_stack_item;
 end;
 $$;
+
+-- ─── resolve_top_of_stack: controller-aware trigger fizzle guard ──────────────
+-- Reproduces migration 080's body; the only change is the triggered_ability
+-- "requires a target" guard, which now uses session_has_targetable_creature so a
+-- trigger fizzles cleanly when no *legal* (controller-restricted) creature remains.
 
 create or replace function public.resolve_top_of_stack(
   p_session_id uuid
@@ -486,7 +723,6 @@ begin
       );
     end if;
   elsif v_stack_item.action_type = 'destroy_creature' then
-    -- Move target to its owner's graveyard. Fizzles if it already left.
     v_target_card_id := nullif(v_stack_item.payload ->> 'target_card_id', '')::uuid;
 
     select owner_id
@@ -516,7 +752,6 @@ begin
       where id = v_target_card_id;
     end if;
   elsif v_stack_item.action_type = 'bounce_creature' then
-    -- Return target to its owner's hand. Fizzles if it already left.
     v_target_card_id := nullif(v_stack_item.payload ->> 'target_card_id', '')::uuid;
 
     select owner_id
@@ -553,8 +788,18 @@ begin
     where id = v_target_card_id
       and session_id = p_session_id
       and zone = 'battlefield';
+  elsif v_stack_item.action_type = 'add_counters_creature' then
+    v_target_card_id := nullif(v_stack_item.payload ->> 'target_card_id', '')::uuid;
+    v_amount := coalesce((v_stack_item.payload ->> 'amount')::integer, 0);
+
+    if v_target_card_id is not null and v_amount > 0 then
+      update public.game_cards
+      set plus_one_counters = greatest(0, plus_one_counters + v_amount)
+      where id = v_target_card_id
+        and session_id = p_session_id
+        and zone = 'battlefield';
+    end if;
   elsif v_stack_item.action_type = 'draw_cards' then
-    -- Reuse the trigger effect helper's draw loop for the controller.
     perform public.apply_triggered_ability_effects(
       p_session_id,
       v_stack_item.controller_player_id,
@@ -633,11 +878,24 @@ begin
       raise exception 'Permanent spell source card not found on stack';
     end if;
   elsif v_stack_item.action_type = 'triggered_ability' then
-    perform public.apply_triggered_ability_effects(
+    if coalesce((v_stack_item.payload ->> 'target_required')::boolean, false)
+      and nullif(v_stack_item.payload ->> 'target_card_id', '') is null
+    then
+      if public.session_has_targetable_creature(
+        p_session_id,
+        nullif(v_stack_item.payload ->> 'controller_player_id', '')::uuid,
+        coalesce(v_stack_item.payload ->> 'target_controller', 'any')
+      ) then
+        raise exception 'Triggered ability requires a target';
+      end if;
+    end if;
+
+    perform public.apply_targeted_triggered_ability_effects(
       p_session_id,
       nullif(v_stack_item.payload ->> 'controller_player_id', '')::uuid,
       v_stack_item.source_card_id,
-      coalesce(v_stack_item.payload -> 'effects', '[]'::jsonb)
+      coalesce(v_stack_item.payload -> 'effects', '[]'::jsonb),
+      nullif(v_stack_item.payload ->> 'target_card_id', '')::uuid
     );
   else
     raise exception 'Unsupported stack action type: %', v_stack_item.action_type;
@@ -673,49 +931,19 @@ begin
 end;
 $$;
 
--- Seed test spells exercising each new effect.
-insert into public.cards (id, name, type_line, mana_cost, oracle_text, script)
-select gen_random_uuid(), v.name, v.type_line, v.mana_cost, v.oracle_text, v.script::jsonb
-from (values
-  (
-    'Doom Blade Test',
-    'Instant',
-    '{1}{B}',
-    'Destroy target creature.',
-    '{"schema_version":2,"spell_effect":{"actions":[{"type":"destroy","target_type":"creature"}]}}'
-  ),
-  (
-    'Unsummon Test',
-    'Instant',
-    '{U}',
-    'Return target creature to its owner''s hand.',
-    '{"schema_version":2,"spell_effect":{"actions":[{"type":"bounce","target_type":"creature"}]}}'
-  ),
-  (
-    'Sleep Ray Test',
-    'Instant',
-    '{U}',
-    'Tap target creature.',
-    '{"schema_version":2,"spell_effect":{"actions":[{"type":"tap","target_type":"creature"}]}}'
-  ),
-  (
-    'Wake Up Test',
-    'Instant',
-    '{U}',
-    'Untap target creature.',
-    '{"schema_version":2,"spell_effect":{"actions":[{"type":"untap","target_type":"creature"}]}}'
-  ),
-  (
-    'Divination Test',
-    'Sorcery',
-    '{2}{U}',
-    'Draw two cards.',
-    '{"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":2}]}}'
-  )
-) as v(name, type_line, mana_cost, oracle_text, script)
-where not exists (
-  select 1 from public.cards where lower(name) = lower(v.name)
-);
+-- Correct the seeded Chupacabra test so its ETB targets only opponent creatures,
+-- regardless of whether migration 080's seed already ran.
+update public.cards
+set script = '{"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"destroy","target_type":"creature","target_controller":"opponent"}]}]}'::jsonb
+where name = 'Ravenous Chupacabra Test';
 
+grant execute on function public.behavior_target_type_is_creature_only(jsonb) to authenticated;
+grant execute on function public.behavior_target_controller(jsonb) to authenticated;
+grant execute on function public.trigger_effect_requires_creature_target(jsonb) to authenticated;
+grant execute on function public.trigger_effects_target_controller(jsonb) to authenticated;
+grant execute on function public.session_has_targetable_creature(uuid, uuid, text) to authenticated;
+grant execute on function public.creature_target_controller_ok(uuid, uuid, uuid, text) to authenticated;
+grant execute on function public.enqueue_triggered_ability(uuid, uuid, uuid, text, jsonb) to authenticated;
+grant execute on function public.choose_triggered_ability_creature_target(uuid, uuid, uuid) to authenticated;
 grant execute on function public.put_action_on_stack(uuid, text, jsonb, uuid) to authenticated;
 grant execute on function public.resolve_top_of_stack(uuid) to authenticated;

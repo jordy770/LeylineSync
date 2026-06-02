@@ -1496,6 +1496,429 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-01T09:52:30.013Z"
+    },
+    {
+      "id": "bug-093",
+      "timestamp": "2026-06-01T13:52:43.634Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T13:52:43.634Z"
+    },
+    {
+      "id": "bug-094",
+      "timestamp": "2026-06-01T13:53:08.854Z",
+      "error_message": "CSS fix: kind",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing → 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect)",
+      "fix": "Changed kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing → 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect)",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-01T13:53:18.233Z"
+    },
+    {
+      "id": "bug-095",
+      "timestamp": "2026-06-01T13:53:31.299Z",
+      "error_message": "Wrong return value",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Was returning: await putDealDamageCreatureOnStack(supabase, sessi",
+      "fix": "Now returns: await putDealDamageCreatureOnStack(supabase, sessi",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-06-01T13:53:48.168Z"
+    },
+    {
+      "id": "bug-096",
+      "timestamp": "2026-06-01T13:53:59.184Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: const targetableCreatures = boardCards.filter(; (c) => | Also: // Controller restriction for the chosen creature target (\"a; // / \"you control\"), relative to the caster. Defaults to any",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-06-01T13:54:33.540Z"
+    },
+    {
+      "id": "bug-097",
+      "timestamp": "2026-06-01T13:58:58.125Z",
+      "error_message": "Incorrect value in code",
+      "file": "README.md",
+      "root_cause": "Had `.\n- **Seeded test cards:** `",
+      "fix": "Changed to `. The `",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-01T13:59:11.366Z"
+    },
+    {
+      "id": "bug-098",
+      "timestamp": "2026-06-01T14:05:00.000Z",
+      "error_message": "An 'any target' damage trigger was silently dropped when no creature was on the battlefield; and 'destroy target creature an opponent controls' let you destroy your own creature.",
+      "file": "supabase/migrations/202605010081_trigger_target_refinements.sql",
+      "root_cause": "Migration 080's trigger_effect_requires_creature_target used behavior_target_type_matches, which returns true for 'any'/['creature','player']. So any-target damage triggers were classified as needing a creature target and dropped by enqueue when no creature existed. Separately, targeted triggers/spells ignored 'an opponent controls' / 'you control' restrictions.",
+      "fix": "Added behavior_target_type_is_creature_only (creature-only check) so any-target triggers fall through to apply_triggered_ability_effects' each_opponent default. Added target_controller (any|opponent|you) enforced via session_has_targetable_creature + creature_target_controller_ok in enqueue, choose_triggered_ability_creature_target, resolve_top_of_stack guard, and put_action_on_stack; mirrored client-side (creatureMatchesController/readTargetController filter pickers, SpellPlan.targetController, put-on-stack targetController param).",
+      "tags": [
+        "mtg",
+        "triggered-ability",
+        "targeting",
+        "sql",
+        "spell-effects"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T14:05:00.000Z"
+    },
+    {
+      "id": "bug-099",
+      "timestamp": "2026-06-01T14:54:21.276Z",
+      "error_message": "Significant refactor of ",
+      "file": "README.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→6 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T14:54:21.276Z"
+    },
+    {
+      "id": "bug-100",
+      "timestamp": "2026-06-01T15:32:06.501Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Had 'bounce'",
+      "fix": "Changed to 'exile'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T15:32:06.501Z"
+    },
+    {
+      "id": "bug-101",
+      "timestamp": "2026-06-01T15:32:16.706Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"target_type\"",
+      "fix": "Changed to \"type\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T15:32:16.706Z"
+    },
+    {
+      "id": "bug-102",
+      "timestamp": "2026-06-01T18:55:46.817Z",
+      "error_message": "Significant refactor of ",
+      "file": "README.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T18:55:46.817Z"
+    },
+    {
+      "id": "bug-103",
+      "timestamp": "2026-06-01T18:55:54.287Z",
+      "error_message": "Incorrect value in code",
+      "file": "README.md",
+      "root_cause": "Had `deal_damage`",
+      "fix": "Changed to `{ \"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-01T18:55:54.287Z"
+    },
+    {
+      "id": "bug-104",
+      "timestamp": "2026-06-02T00:00:00.000Z",
+      "error_message": "ERROR: relation \"public.game_cards\" does not exist (SQLSTATE 42P01) during `npx supabase start` / `db reset`, at statement 0 of 202605010000_move_card_to_zone.sql (`update public.game_cards`)",
+      "file": "supabase/migrations/ (missing baseline)",
+      "root_cause": "The migration set is incomplete: base tables public.cards, public.game_cards, and public.game_players are never created by any migration (no `create table`, no `alter ... add column`). They were created out-of-band on the hosted project (dashboard/bootstrap), so migrations assume they already exist. A clean local `db reset` from zero has no such tables, so the first migration that touches game_cards fails. Independent of migrations 079-086.",
+      "fix": "RESOLVED. A surgical baseline of just the missing tables was NOT enough: the incremental chain also can't replay from scratch (get_session_players/get_stack_items/get_combat_assignments/get_turn_state change return type via create-or-replace -> 42P13; and Supabase keys migrations by leading version digits, so mid-chain drop-shims collide on schema_migrations PK and can't sort between consecutive versions). Final fix = SQUASH for local: `npx supabase db dump --schema public` -> supabase/migrations/00000000000000_baseline.sql (full schema, reproduces prod incl. 079-086); moved the 88 incremental files to supabase/migrations_archive/ (Supabase ignores them, kept as history); added local-only 00000000000001_local_test_relax_fks.sql dropping the auth.users/profiles FK chain so the harness uses throwaway UUIDs. `supabase db reset` now succeeds and the harness proving trio passes.",
+      "tags": [
+        "supabase",
+        "migrations",
+        "baseline",
+        "local-dev",
+        "test-harness",
+        "schema",
+        "resolved"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T00:00:00.000Z",
+      "resolved": true
+    },
+    {
+      "id": "bug-105",
+      "timestamp": "2026-06-02T08:30:45.548Z",
+      "error_message": "Missing await",
+      "file": "tests/regression/group1.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T08:30:45.549Z"
+    },
+    {
+      "id": "bug-106",
+      "timestamp": "2026-06-02T08:35:51.125Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"node --import tsx --test \\\"",
+      "fix": "Changed to \"node --import tsx --test tests/regression/group1.",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T08:35:51.125Z"
+    },
+    {
+      "id": "bug-107",
+      "timestamp": "2026-06-02T08:40:07.635Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "tests/harness/db.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T08:40:07.635Z"
+    },
+    {
+      "id": "bug-108",
+      "timestamp": "2026-06-02T08:40:42.587Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/regression/group1.test.ts",
+      "root_cause": "Had 'precombat_main'",
+      "fix": "Changed to 'main_1'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T08:40:42.587Z"
+    },
+    {
+      "id": "bug-109",
+      "timestamp": "2026-06-02T08:43:26.438Z",
+      "error_message": "Type error",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T08:43:26.439Z"
+    },
+    {
+      "id": "bug-110",
+      "timestamp": "2026-06-02T08:44:35.035Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "8 lines replaced/restructured",
+      "fix": "Rewrote 12→6 lines (8 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T08:44:35.035Z"
+    },
+    {
+      "id": "bug-111",
+      "timestamp": "2026-06-02T08:57:40.886Z",
+      "error_message": "Type error",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T08:57:40.886Z"
+    },
+    {
+      "id": "bug-112",
+      "timestamp": "2026-06-02T08:57:52.597Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T08:57:52.597Z"
+    },
+    {
+      "id": "bug-113",
+      "timestamp": "2026-06-02T08:58:24.635Z",
+      "error_message": "Missing await",
+      "file": "tests/regression/group1.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T08:58:24.635Z"
+    },
+    {
+      "id": "bug-114",
+      "timestamp": "2026-06-02T09:18:46.211Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T09:18:46.211Z"
+    },
+    {
+      "id": "bug-115",
+      "timestamp": "2026-06-02T09:19:12.478Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"node --import tsx --test tests/regression/group1.",
+      "fix": "Changed to \"node --import tsx --test tests/regression/group1.",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T09:19:12.478Z"
+    },
+    {
+      "id": "bug-116",
+      "timestamp": "2026-06-02T09:25:24.348Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"node --import tsx --test tests/regression/group1.",
+      "fix": "Changed to \"node --import tsx --test tests/regression/group1.",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T09:25:24.348Z"
+    },
+    {
+      "id": "bug-117",
+      "timestamp": "2026-06-02T09:27:07.105Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/feature/trigger-events.test.ts",
+      "root_cause": "Had ')\n    const wall = await s.spawnCreature('",
+      "fix": "Changed to ') // ground, no flying\n    const wall = await s.s",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T09:27:07.105Z"
+    },
+    {
+      "id": "bug-118",
+      "timestamp": "2026-06-02T09:29:21.948Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/README.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→12 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T09:29:21.948Z"
     }
   ]
 }

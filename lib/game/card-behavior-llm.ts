@@ -130,6 +130,37 @@ const EXAMPLES: { oracle_text: string; script: unknown }[] = [
       spell_effect: { actions: [{ type: 'draw', amount: 2 }] },
     },
   },
+  {
+    oracle_text: 'When CARDNAME enters the battlefield, destroy target creature an opponent controls.',
+    script: {
+      schema_version: 2,
+      triggered_abilities: [
+        {
+          event: 'enters_the_battlefield',
+          effects: [{ type: 'destroy', target_type: 'creature', target_controller: 'opponent' }],
+        },
+      ],
+    },
+  },
+  {
+    oracle_text: 'Exile target creature. (instant)',
+    script: {
+      schema_version: 2,
+      spell_effect: { actions: [{ type: 'exile', target_type: 'creature' }] },
+    },
+  },
+  {
+    oracle_text: 'When CARDNAME enters the battlefield, each opponent mills three cards.',
+    script: {
+      schema_version: 2,
+      triggered_abilities: [
+        {
+          event: 'enters_the_battlefield',
+          effects: [{ type: 'mill', amount: 3, recipient: 'each_opponent' }],
+        },
+      ],
+    },
+  },
 ]
 
 export function buildBehaviorAuthoringGuide(): string {
@@ -150,13 +181,16 @@ The engine supports these sections:
 
 2. triggered_abilities — "when/whenever/at" abilities. Each entry: { "event": <event>, "effects": [ ... ] }.
    Supported events: ${events}.
-   Effects here are auto-resolved (no chosen target). Supported effect types: ${triggerEffects}.
+   Effects here are auto-resolved unless they explicitly target a creature. Supported effect types: ${triggerEffects}.
    - gain_life: { "type": "gain_life", "amount": N } — the controller gains N.
    - draw:      { "type": "draw", "amount": N } — the controller draws N.
    - lose_life / deal_damage: { "type": ..., "amount": N, "recipient": <recipient> }.
      Recipients: ${recipients}. Default recipient is "each_opponent". "deal damage to each opponent" and "each opponent loses N life" are both modeled here.
    - create_token: { "type": "create_token", "token": <token name>, "count": N } — the controller creates N tokens. Allowed token names: ${BUILDER_TOKEN_NAMES.join(', ')}. Pick the closest match by creature type; if none matches, omit this effect.
    - add_counters: { "type": "add_counters", "amount": N } — put N +1/+1 counters on this permanent (the source). Use only for "put a +1/+1 counter on it/CARDNAME".
+   - mill: { "type": "mill", "amount": N, "recipient": "controller" | "each_opponent" } — a player puts the top N cards of their library into their graveyard. Default recipient is "controller" ("mill N cards" = you); use "each_opponent" for "each opponent mills N".
+   - Targeted creature triggers may use deal_damage, destroy, exile, bounce, tap, untap, or add_counters with "target_type": "creature". The target_type must be exactly "creature" (not "any") — a trigger that deals damage to "any target" is auto-resolved against each opponent instead of singling out a creature.
+   - Controller restriction (triggers and spells): add "target_controller": "opponent" for "a creature an opponent controls", or "target_controller": "you" for "a creature you control". Omit it when there is no restriction.
 
 3. activated_abilities — "{cost}: effect" abilities. Each entry: { "costs": [ ... ], "effects": [ ... ], "is_mana_ability"?: true }.
    Costs: { "type": "tap_self" } for {T}; { "type": "mana", "amount": "{2}{R}" } for a mana cost string.
@@ -168,14 +202,16 @@ The engine supports these sections:
    - deal_damage { "type": "deal_damage", "amount": N, "target_type": ... } — "any target" -> ["creature","player"].
    - pump      { "type": "pump", "power": N, "toughness": N, "target_type": "creature" } — until end of turn.
    - destroy   { "type": "destroy", "target_type": "creature" } — "destroy target creature" (to its owner's graveyard).
-   - bounce    { "type": "bounce", "target_type": "creature" } — "return target creature to its owner's hand".
-   - tap       { "type": "tap", "target_type": "creature" } / untap { "type": "untap", "target_type": "creature" }.
-   - draw      { "type": "draw", "amount": N } — the caster draws N (untargeted).
-   - counter   { "type": "counter", "target_type": "spell" }; add_mana { "type": "add_mana", "color": ..., "amount": N }.
-   Targeted creature effects (destroy/bounce/tap/untap) only target creatures right now — if the card targets a non-creature permanent, omit that action.
+   - exile     { "type": "exile", "target_type": "creature" } — "exile target creature" (to its owner's exile zone).
+    - bounce    { "type": "bounce", "target_type": "creature" } — "return target creature to its owner's hand".
+    - tap       { "type": "tap", "target_type": "creature" } / untap { "type": "untap", "target_type": "creature" }.
+    - add_counters { "type": "add_counters", "amount": N, "target_type": "creature" } — put N +1/+1 counters on target creature.
+    - draw      { "type": "draw", "amount": N } — the caster draws N (untargeted).
+    - counter   { "type": "counter", "target_type": "spell" }; add_mana { "type": "add_mana", "color": ..., "amount": N }.
+    Targeted creature effects (destroy/exile/bounce/tap/untap/add_counters) only target creatures right now — if the card targets a non-creature permanent, omit that action.
 
 Rules:
-- Only emit behavior the lists above support. If part of the card isn't expressible (targeted destroy, exile, +1/+1 counters via triggers, conditional effects, etc.), omit that part rather than inventing a field.
+- Only emit behavior the lists above support. If part of the card isn't expressible (targeted exile, non-creature trigger targets, conditional effects, etc.), omit that part rather than inventing a field.
 - Prefer continuous_effects for plain keyword lines, triggered_abilities for when/whenever/at, activated_abilities for "{cost}:" lines, spell_effect for instant/sorcery resolution.
 - Use the card's printed numbers.
 
