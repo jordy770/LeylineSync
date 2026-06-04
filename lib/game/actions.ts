@@ -481,6 +481,88 @@ export async function putDrawCardsOnStack(
   return data as StackItem
 }
 
+// Untargeted scry spell (Tier-B resolution-time decision). Announces the scry;
+// it parks on resolution awaiting the caster's reorder (submit_decision).
+export async function castScrySpell(
+  supabase: SupabaseClient,
+  sessionId: string,
+  amount: number,
+  sourceCardId?: string | null,
+) {
+  const { data, error } = await supabase.rpc('cast_scry', {
+    p_session_id: sessionId,
+    p_amount: amount,
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Untargeted surveil spell (Tier-B). Parks on resolution awaiting the caster's
+// graveyard/top split (submit_decision).
+export async function castSurveilSpell(
+  supabase: SupabaseClient,
+  sessionId: string,
+  amount: number,
+  sourceCardId?: string | null,
+) {
+  const { data, error } = await supabase.rpc('cast_surveil', {
+    p_session_id: sessionId,
+    p_amount: amount,
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Cast a non-permanent spell whose resolution is an untargeted effect program
+// (e.g. Opt: scry 1, then draw a card). Runs each action in order, parking on a
+// scry/surveil, and moves the source instant/sorcery to the graveyard on cast.
+export async function castSpellEffect(
+  supabase: SupabaseClient,
+  sessionId: string,
+  actions: unknown[],
+  sourceCardId?: string | null,
+) {
+  const { data, error } = await supabase.rpc('cast_spell_effect', {
+    p_session_id: sessionId,
+    p_actions: actions,
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Submit a pending decision's result (choose_mode / scry / surveil).
+export async function submitDecision(
+  supabase: SupabaseClient,
+  decisionId: string,
+  result: Record<string, unknown>,
+) {
+  const { data, error } = await supabase.rpc('submit_decision', {
+    p_decision_id: decisionId,
+    p_result: result,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
 export async function activateAbility(
   supabase: SupabaseClient,
   sessionId: string,

@@ -12,6 +12,7 @@ import {
   getCurrentPlayerId,
   getGameSession,
   getGameSessionPlayers,
+  getPendingDecisions,
   getPlayerManaPool,
   getStackItems,
   getTurnState,
@@ -26,6 +27,7 @@ import type {
   GameSessionPlayer,
   GameTurnState,
   ManaPool,
+  PendingDecision,
   StackItem,
 } from './types'
 
@@ -38,6 +40,7 @@ export function useControllerGameState(sessionId: string) {
   const [combatActionState, setCombatActionState] = useState<CombatActionState | null>(null)
   const [combatAssignments, setCombatAssignments] = useState<CombatAssignment[]>([])
   const [stackItems, setStackItems] = useState<StackItem[]>([])
+  const [pendingDecisions, setPendingDecisions] = useState<PendingDecision[]>([])
   const [manaPool, setManaPool] = useState<ManaPool>(() => normalizeManaPool(null))
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [isSessionFinished, setIsSessionFinished] = useState(false)
@@ -66,6 +69,7 @@ export function useControllerGameState(sessionId: string) {
         nextCombatActionState,
         nextCombatAssignments,
         nextStackItems,
+        nextPendingDecisions,
         nextManaPool,
         pumpTotals,
       ] = await Promise.all([
@@ -77,6 +81,7 @@ export function useControllerGameState(sessionId: string) {
         getCombatActionState(supabase, sessionId),
         getCombatAssignments(supabase, sessionId),
         getStackItems(supabase, sessionId),
+        getPendingDecisions(supabase, sessionId),
         getPlayerManaPool(supabase, sessionId, currentPlayerId),
         getActivePumpTotals(supabase, sessionId),
       ])
@@ -96,6 +101,7 @@ export function useControllerGameState(sessionId: string) {
       setCombatActionState(nextCombatActionState)
       setCombatAssignments(nextCombatAssignments)
       setStackItems(nextStackItems)
+      setPendingDecisions(nextPendingDecisions)
       setManaPool(nextManaPool)
       setIsSessionFinished(session?.status === 'finished')
       setErrorMessage(null)
@@ -121,6 +127,7 @@ export function useControllerGameState(sessionId: string) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_session_players', filter: `session_id=eq.${sessionId}` }, loadControllerState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_turn_state', filter: `session_id=eq.${sessionId}` }, loadControllerState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_stack_items', filter: `session_id=eq.${sessionId}` }, loadControllerState)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_pending_decisions', filter: `session_id=eq.${sessionId}` }, loadControllerState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, loadControllerState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers' }, loadControllerState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, loadControllerState)
@@ -152,6 +159,7 @@ export function useControllerGameState(sessionId: string) {
     combatActionState,
     combatAssignments,
     stackItems,
+    pendingDecisions,
     manaPool,
     playerId,
     isSessionFinished,

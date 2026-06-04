@@ -140,6 +140,89 @@ export class Scenario {
     )
   }
 
+  /** Announce a modal spell as the acting seat; returns the stack item. */
+  async castModal(
+    modes: { label?: string; actions: unknown[] }[],
+    choose = 1,
+    sourceCardId: string | null = null,
+  ): Promise<{ id: string }> {
+    return this.run(() =>
+      rpc(this.client, 'cast_modal_spell', {
+        p_session_id: this.sessionId,
+        p_modes: JSON.stringify(modes),
+        p_choose: choose,
+        p_source_card_id: sourceCardId,
+      }),
+    )
+  }
+
+  /** Announce a scry as the acting seat; returns the stack item. */
+  async castScry(amount = 1, sourceCardId: string | null = null): Promise<{ id: string }> {
+    return this.run(() =>
+      rpc(this.client, 'cast_scry', {
+        p_session_id: this.sessionId,
+        p_amount: amount,
+        p_source_card_id: sourceCardId,
+      }),
+    )
+  }
+
+  /** Cast an untargeted multi-action spell (effect program) as the acting seat. */
+  async castSpellEffect(
+    actions: unknown[],
+    sourceCardId: string | null = null,
+  ): Promise<{ id: string }> {
+    return this.run(() =>
+      rpc(this.client, 'cast_spell_effect', {
+        p_session_id: this.sessionId,
+        p_actions: JSON.stringify(actions),
+        p_source_card_id: sourceCardId,
+      }),
+    )
+  }
+
+  /** Announce a surveil as the acting seat; returns the stack item. */
+  async castSurveil(amount = 1, sourceCardId: string | null = null): Promise<{ id: string }> {
+    return this.run(() =>
+      rpc(this.client, 'cast_surveil', {
+        p_session_id: this.sessionId,
+        p_amount: amount,
+        p_source_card_id: sourceCardId,
+      }),
+    )
+  }
+
+  /** The oldest pending decision in the session (or null). */
+  async pendingDecision(): Promise<{
+    id: string
+    deciding_player_id: string
+    source_stack_item_id: string
+    decision_type: string
+    options: unknown
+    min_choices: number
+    max_choices: number
+  } | null> {
+    const res = await this.client.query(
+      `select id, deciding_player_id, source_stack_item_id, decision_type,
+              options, min_choices, max_choices
+       from public.game_pending_decisions
+       where session_id = $1 and status = 'pending'
+       order by created_at limit 1`,
+      [this.sessionId],
+    )
+    return (res.rows[0] as never) ?? null
+  }
+
+  /** Submit a decision result as the acting seat. */
+  async submitDecision(decisionId: string, result: unknown): Promise<unknown> {
+    return this.run(() =>
+      rpc(this.client, 'submit_decision', {
+        p_decision_id: decisionId,
+        p_result: JSON.stringify(result),
+      }),
+    )
+  }
+
   /** Activate ability `index` on a source the acting seat controls. */
   async activate(
     sourceCardId: string,
@@ -231,6 +314,17 @@ export class Scenario {
       [this.sessionId, this.players[seat], zone],
     )
     return Number(res.rows[0]?.n ?? 0)
+  }
+
+  /** Library card ids for a seat, ordered top-to-bottom (lowest zone_position first). */
+  async libraryIds(seat: Seat): Promise<string[]> {
+    const res = await this.client.query<{ id: string }>(
+      `select id from public.game_cards
+       where session_id = $1 and owner_id = $2 and zone = 'library'
+       order by zone_position asc, id asc`,
+      [this.sessionId, this.players[seat]],
+    )
+    return res.rows.map((r) => r.id)
   }
 
   /** Call a public boolean accessor of shape fn(session, game_card) -> bool. */

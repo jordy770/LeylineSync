@@ -7,11 +7,13 @@ import {
   BUILDER_KEYWORDS,
   BUILDER_MANA_COLORS,
   BUILDER_RECIPIENTS,
+  BUILDER_SPELL_EFFECT_TYPES,
   BUILDER_TOKEN_NAMES,
   BUILDER_TRIGGER_EVENTS,
   KEYWORD_LABELS,
   defaultActivatedAbility,
   defaultEffect,
+  defaultSpellEffect,
   defaultTrigger,
   type BuilderActivatedAbility,
   type BuilderDamageTarget,
@@ -20,6 +22,8 @@ import {
   type BuilderForm,
   type BuilderKeyword,
   type BuilderRecipient,
+  type BuilderSpellEffect,
+  type BuilderSpellEffectType,
   type BuilderTrigger,
   type BuilderTriggerEvent,
 } from '@/lib/game/card-behavior-builder'
@@ -64,6 +68,14 @@ export default function CardBehaviorForm({
 
   const removeAbility = (index: number) => {
     onChange({ ...value, activatedAbilities: value.activatedAbilities.filter((_, i) => i !== index) })
+  }
+
+  const updateSpellAction = (index: number, next: BuilderSpellEffect) => {
+    onChange({ ...value, spellEffect: value.spellEffect.map((a, i) => (i === index ? next : a)) })
+  }
+
+  const removeSpellAction = (index: number) => {
+    onChange({ ...value, spellEffect: value.spellEffect.filter((_, i) => i !== index) })
   }
 
   return (
@@ -164,6 +176,63 @@ export default function CardBehaviorForm({
               onChange={(next) => updateAbility(index, next)}
               onRemove={() => removeAbility(index)}
             />
+          ))
+        )}
+      </section>
+
+      {/* Spell effect (instant / sorcery) */}
+      <section className="grid gap-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Spell effect <span className="font-normal normal-case text-slate-500">(instant / sorcery)</span>
+          </h3>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange({ ...value, spellEffect: [...value.spellEffect, defaultSpellEffect('scry')] })}
+            className="rounded border border-slate-700 px-2 py-1 text-xs font-semibold text-slate-200 disabled:opacity-50"
+          >
+            + Add spell action
+          </button>
+        </div>
+
+        {value.spellEffect.length === 0 ? (
+          <p className="text-xs text-slate-500">No spell effect. Actions resolve in order (e.g. Scry 1, then Draw 1).</p>
+        ) : (
+          value.spellEffect.map((action, index) => (
+            <div key={index} className="flex flex-wrap items-center gap-2">
+              <select
+                value={action.type}
+                disabled={disabled}
+                onChange={(event) =>
+                  updateSpellAction(index, defaultSpellEffect(event.target.value as BuilderSpellEffectType))
+                }
+                className={inputClass}
+              >
+                {BUILDER_SPELL_EFFECT_TYPES.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                min={1}
+                max={99}
+                value={action.amount}
+                disabled={disabled}
+                onChange={(event) => updateSpellAction(index, { ...action, amount: Math.max(1, Number(event.target.value)) })}
+                className={`${inputClass} w-20`}
+              />
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={() => removeSpellAction(index)}
+                className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+              >
+                ✕
+              </button>
+            </div>
           ))
         )}
       </section>

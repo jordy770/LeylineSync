@@ -16,6 +16,7 @@ import type {
   GameZone,
   LinkedCard,
   ManaPool,
+  PendingDecision,
   TokenCard,
   StackItem,
   TurnPhase,
@@ -397,6 +398,18 @@ export async function getStackItems(supabase: SupabaseClient, sessionId: string)
   }
 
   return (data ?? []) as StackItem[]
+}
+
+export async function getPendingDecisions(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('get_pending_decisions', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []) as PendingDecision[]
 }
 
 export async function getCurrentPlayerSessions(supabase: SupabaseClient) {

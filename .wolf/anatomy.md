@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-02T09:30:32.287Z
-> Files: 336 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-03T14:36:31.443Z
+> Files: 350 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -11,7 +11,7 @@
 - `eslint.config.mjs` — ESLint flat configuration (~135 tok)
 - `next.config.ts` — Next.js configuration (~99 tok)
 - `package-lock.json` — npm lock file (~75642 tok)
-- `package.json` — Node.js package manifest (~437 tok)
+- `package.json` — Node.js package manifest (~512 tok)
 - `postcss.config.mjs` — Declares config (~45 tok)
 - `proxy.ts` — Exports proxy, config (~184 tok)
 - `README.md` — Project documentation (~15476 tok)
@@ -40,6 +40,9 @@
 ## .git/
 
 - `COMMITMSG.tmp` (~108 tok)
+
+## Phase 1 Tier-B scry (added 2026-06-02)
+
 
 ## app/
 
@@ -113,8 +116,8 @@
 
 - `ActionButtons.tsx` — ActionButtons (~4382 tok)
 - `auth-button.tsx` — AuthButton (~239 tok)
-- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~3943 tok)
-- `CardBehaviorForm.tsx` — inputClass (~3965 tok)
+- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~3958 tok)
+- `CardBehaviorForm.tsx` — inputClass (~4757 tok)
 - `CardCatalogPicker.tsx` — cardTypeFilters — uses useMemo, useState, useEffect (~2316 tok)
 - `CardController.tsx` — CardController — uses useMemo (~221 tok)
 - `CardZoneControls.tsx` — CardZoneControls — uses useMemo, useState (~2178 tok)
@@ -123,7 +126,7 @@
 - `ControllerList.tsx` — components/ControllerList.tsx (~20457 tok)
 - `ControllerListV2.tsx` — ControllerListV2 — uses useState, useMemo (~10088 tok)
 - `ControllerListV3.tsx` — manaColors — uses useMemo (~6422 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~34788 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~38043 tok)
 - `DeckManager.tsx` — DeckManager — uses useMemo, useState, useEffect (~3880 tok)
 - `deploy-button.tsx` — DeployButton (~385 tok)
 - `DevAdminPanel.tsx` — DevAdminPanel (~3316 tok)
@@ -203,23 +206,23 @@
 ## lib/game/
 
 - `action-selectors.ts` — Exports CardWithScript, getActionTiming, isPlayerDamageAction, isRetainManaAction + 3 more (~652 tok)
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~7189 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~7788 tok)
 - `blueprint.ts` — Exports GameViewStep, BoardLayoutKey, PriorityRole, StackActionType + 21 more (~3457 tok)
 - `board-selectors.ts` — Exports BoardSeat, BoardConnection, buildBoardSeats, getCombatCardIds + 2 more (~812 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~4475 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~2893 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2835 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5388 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~3082 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2967 tok)
 - `card-behavior.ts` — Exports CardBehaviorSchemaVersion, CardBehaviorStatus, CardBehaviorZone, CardBehaviorTargetType + 14 (~2557 tok)
 - `controller-selectors.ts` — Exports selectControllerViewModel, getCanQuickCast, canCardRespond, doesCardRequireStackTarget + 2 more (~1459 tok)
-- `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5401 tok)
+- `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5490 tok)
 - `dev.ts` — Exports showDevControls, enableFallbackRefresh, fallbackRefreshIntervalMs (~86 tok)
 - `judge-selectors.ts` — Exports PlayerJudgeStats, buildPlayerJudgeStats, getEmptyPlayerJudgeStats (~235 tok)
 - `legacy-controller-selectors.ts` — Exports LegacyControllerViewFocus, orderCardsByIds, selectLegacyControllerViewModel (~1119 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 4 more (~600 tok)
-- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 26 more (~2097 tok)
+- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2317 tok)
 - `use-board-game-state.ts` — Exports useBoardGameState (~1008 tok)
 - `use-card-action-handlers.ts` — Exports useCardActionHandlers (~1286 tok)
-- `use-controller-game-state.ts` — Exports useControllerGameState (~1851 tok)
+- `use-controller-game-state.ts` — Exports useControllerGameState (~1976 tok)
 - `use-game-loop-state.ts` — Exports UseGameLoopStateResult, useGameLoopState, fetchGameLoopState (~1580 tok)
 - `use-judge-action-log.ts` — Exports useJudgeActionLog (~281 tok)
 - `use-judge-card-tools.ts` — Exports useJudgeCardTools (~1465 tok)
@@ -239,6 +242,7 @@
 ## scripts/
 
 - `import-scryfall-cards.mjs` — defaultInputFile: flushBatch, upsertBatchWithRetry, getSupabaseErrorMessage + 15 more (~3063 tok)
+- `setup-local-test-db.mjs` — Rebuilds the LOCAL test-harness database from scratch. (~721 tok)
 - `test-board-setup.sql` — Test board setup for the new mechanics (deathtouch, +1/+1 counters, pumps, (~1705 tok)
 - `validate-card-scripts.ts` — Audit script — validates all card scripts in the database against the Zod schema. (~559 tok)
 
@@ -350,25 +354,38 @@
 - `202605010084_put_in_graveyard_chokepoint.sql` — Phase 0 (rules-engine cleanup): single `put_in_graveyard(session, game_card)` primitive for the battlefield→graveyard transition (returns bool; standard leave-battlefield cleanup incl. controller→owner). All three death sites route through it: move_lethal_damaged_creatures_to_graveyard (now snapshots dying set then loops), resolve_top_of_stack destroy_creature, apply_targeted_triggered_ability_effects destroy. The seam for the future finality/death-replacement layer. (~5109 tok)
 - `202605010085_effective_script_accessor.sql` — Phase 0 (rules-engine cleanup): single accessor `effective_script(session, game_card)` returning `coalesce(copied_script, cards.script)` (STABLE, SECURITY DEFINER). Routes the 3 live callers through it: register_card_continuous_effects (067), activate_ability (072), fire_card_triggers (077) — each reproduced verbatim with only the inline script-fetch swapped. Behavior-preserving; the one place DFC active-face script selection will later live. (~3663 tok)
 - `202605010086_apply_creature_effect.sql` — Phase 0 (rules-engine cleanup): single primitive `apply_creature_effect(session, kind, target, params)` owns every creature mutation (deal_damage/destroy/exile/bounce/tap/untap/add_counters/pump). Collapses the duplicated switch in apply_targeted_triggered_ability_effects (now delegates by effect type) and resolve_top_of_stack (8 `*_creature` branches collapsed into one that strips the `_creature` suffix via regexp and passes the payload). destroy still routes through put_in_graveyard. Behavior-preserving. (~3735 tok)
+- `202605010087_finalize_stack_resolution.sql` — Phase 1, slice 1 (prerequisite refactor): extract finalize_stack_resolution. (~2149 tok)
+- `202605010088_pending_decisions.sql` — Phase 1, slice 2: the generic "pending decision" state machine + a modal (~4167 tok)
+- `202605010089_scry_resolution_decisions.sql` — Phase 1, slice 3: Tier-B resolution-time decisions — scry. (~4752 tok)
+- `202605010090_surveil_resolution_decisions.sql` — Phase 1, slice 4: Tier-B resolution-time decision — surveil. (~5159 tok)
+- `202605010091_targeted_modal_modes.sql` — Phase 1, slice 5: targeted modal modes. (~5236 tok)
+- `202605010092_pending_decisions_realtime.sql` — Phase 1: make game_pending_decisions a realtime source. (~186 tok)
+- `202605010093_trigger_scry_surveil.sql` — Phase 1, slice 6: scry / surveil from inside a triggered ability. (~5768 tok)
+- `202605010094_spell_effect_program.sql` — Phase 1, slice 7: generic multi-action untargeted spell resolution + the (~6282 tok)
 
 ## tests/
 
-- `README.md` — Project documentation (~1150 tok)
+- `README.md` — Project documentation (~1405 tok)
 
 ## tests/feature/
 
 - `exile-mill.test.ts` — Feature group 083 — exile (spell + targeted trigger) and mill. (~829 tok)
+- `modal-decisions.test.ts` — Phase 1, slice 2 — pending-decision machinery + modal "choose one". (~1628 tok)
+- `scry-decisions.test.ts` — Phase 1, slice 3 — Tier-B resolution-time decisions: scry. (~1272 tok)
+- `spell-effect-program.test.ts` — Phase 1, slice 7 — multi-action untargeted spell program (e.g. Opt). (~661 tok)
+- `surveil-decisions.test.ts` — Phase 1, slice 4 — Tier-B resolution-time decision: surveil. (~1089 tok)
 - `targeted-triggers.test.ts` — Feature group 080/081 — targeted ETB triggers, controller (ownership) (~1132 tok)
 - `trigger-events.test.ts` — Feature group 082 — the new trigger events: leaves_the_battlefield, (~1320 tok)
+- `trigger-scry-surveil.test.ts` — Phase 1, slice 6 — scry / surveil from inside a triggered ability. (~1037 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~2866 tok)
+- `test-cards.json` (~3234 tok)
 
 ## tests/harness/
 
 - `db.ts` — Run `fn` inside a transaction and ALWAYS roll back, so a test leaves no trace. (~1015 tok)
-- `scenario.ts` — Create a 2-player session. Seat A is the creator + active player. (~3146 tok)
+- `scenario.ts` — Create a 2-player session. Seat A is the creator + active player. (~4004 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~418 tok)
 
 ## tests/regression/

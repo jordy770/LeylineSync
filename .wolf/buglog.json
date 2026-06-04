@@ -1919,6 +1919,566 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-02T09:29:21.948Z"
+    },
+    {
+      "id": "bug-119",
+      "timestamp": "2026-06-02T09:38:28.502Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T09:38:28.503Z"
+    },
+    {
+      "id": "bug-120",
+      "timestamp": "2026-06-02T09:38:52.535Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"node --import tsx --test tests/regression/group1.",
+      "fix": "Changed to \"node --import tsx --test tests/regression/group1.",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T09:38:52.535Z"
+    },
+    {
+      "id": "bug-121",
+      "timestamp": "2026-06-02T09:41:12.276Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/modal-decisions.test.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 21→31 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T09:41:12.276Z"
+    },
+    {
+      "id": "bug-122",
+      "timestamp": "2026-06-02T12:04:13.344Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier | Also: /** Library card ids for a seat, ordered top-to-bottom (lowe; async libraryIds(seat: Seat): Promise<string[]> {",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-02T12:04:19.647Z"
+    },
+    {
+      "id": "bug-123",
+      "timestamp": "2026-06-02T12:39:48.889Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"counter\"",
+      "fix": "Changed to \"scry\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:39:48.889Z"
+    },
+    {
+      "id": "bug-124",
+      "timestamp": "2026-06-02T12:40:01.807Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:40:01.807Z"
+    },
+    {
+      "id": "bug-125",
+      "timestamp": "2026-06-02T12:40:16.253Z",
+      "error_message": "CSS fix: kind",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "kind: 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing → 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing",
+      "fix": "Changed kind: 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing → 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:40:16.253Z"
+    },
+    {
+      "id": "bug-126",
+      "timestamp": "2026-06-02T12:40:30.890Z",
+      "error_message": "Wrong reference: chooseTriggeredAbilityCreatureTarget should be castScrySpell",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Used \"chooseTriggeredAbilityCreatureTarget\" instead of \"castScrySpell\"",
+      "fix": "Changed chooseTriggeredAbilityCreatureTarget → castScrySpell",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:40:30.890Z"
+    },
+    {
+      "id": "bug-127",
+      "timestamp": "2026-06-02T12:40:40.009Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:40:40.009Z"
+    },
+    {
+      "id": "bug-128",
+      "timestamp": "2026-06-02T12:47:58.787Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:47:58.787Z"
+    },
+    {
+      "id": "bug-129",
+      "timestamp": "2026-06-02T12:48:05.557Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had 'counterspell'",
+      "fix": "Changed to 'surveil'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:48:05.557Z"
+    },
+    {
+      "id": "bug-130",
+      "timestamp": "2026-06-02T12:48:11.784Z",
+      "error_message": "CSS fix: kind",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "kind: 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing → 'surveil', amount: typeof surveil.amount === 'number' ? surveil.amount : 1, timing",
+      "fix": "Changed kind: 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing → 'surveil', amount: typeof surveil.amount === 'number' ? surveil.amount : 1, timing",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:48:11.784Z"
+    },
+    {
+      "id": "bug-131",
+      "timestamp": "2026-06-02T12:48:27.863Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:48:27.863Z"
+    },
+    {
+      "id": "bug-132",
+      "timestamp": "2026-06-02T12:49:00.321Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:49:00.321Z"
+    },
+    {
+      "id": "bug-133",
+      "timestamp": "2026-06-02T12:54:35.654Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/modal-decisions.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T12:54:35.654Z"
+    },
+    {
+      "id": "bug-134",
+      "timestamp": "2026-06-02T15:31:11.014Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/README.md",
+      "root_cause": "11 lines replaced/restructured",
+      "fix": "Rewrote 34→52 lines (11 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T15:31:11.014Z"
+    },
+    {
+      "id": "bug-135",
+      "timestamp": "2026-06-02T19:24:55.853Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/data.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T19:24:55.853Z"
+    },
+    {
+      "id": "bug-136",
+      "timestamp": "2026-06-02T19:25:15.070Z",
+      "error_message": "Missing await",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T19:25:15.070Z"
+    },
+    {
+      "id": "bug-137",
+      "timestamp": "2026-06-02T19:26:10.962Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: // Action types whose creature-target variant routes through; const CREATURE_TARGET_ACTION_TYPES = [",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-02T19:28:47.079Z"
+    },
+    {
+      "id": "bug-138",
+      "timestamp": "2026-06-02T20:14:52.346Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Gain Then Scry Test\"",
+      "fix": "Changed to \"Scry Then Gain Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T20:14:52.346Z"
+    },
+    {
+      "id": "bug-139",
+      "timestamp": "2026-06-02T20:18:34.470Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T20:18:34.470Z"
+    },
+    {
+      "id": "bug-140",
+      "timestamp": "2026-06-02T20:19:05.816Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T20:19:05.816Z"
+    },
+    {
+      "id": "bug-141",
+      "timestamp": "2026-06-02T20:19:31.483Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T20:19:31.483Z"
+    },
+    {
+      "id": "bug-142",
+      "timestamp": "2026-06-02T20:37:59.860Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T20:37:59.860Z"
+    },
+    {
+      "id": "bug-143",
+      "timestamp": "2026-06-02T20:38:24.679Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T20:38:24.679Z"
+    },
+    {
+      "id": "bug-144",
+      "timestamp": "2026-06-02T20:38:32.108Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T20:38:32.108Z"
+    },
+    {
+      "id": "bug-145",
+      "timestamp": "2026-06-02T20:38:55.200Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "8 lines replaced/restructured",
+      "fix": "Rewrote 16→9 lines (8 removed) | Also: } else if (spellPlan.kind === 'scry') {; void onScry(card.id)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-02T20:39:40.220Z"
+    },
+    {
+      "id": "bug-146",
+      "timestamp": "2026-06-02T20:39:28.882Z",
+      "error_message": "Wrong reference: onScry should be onSpellEffect",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Used \"onScry\" instead of \"onSpellEffect\"",
+      "fix": "Changed onScry → onSpellEffect",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-02T20:39:34.834Z"
+    },
+    {
+      "id": "bug-147",
+      "timestamp": "2026-06-02T20:39:46.976Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T20:39:46.976Z"
+    },
+    {
+      "id": "bug-148",
+      "timestamp": "2026-06-02T20:50:35.843Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→12 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-02T20:50:35.843Z"
+    },
+    {
+      "id": "bug-149",
+      "timestamp": "2026-06-03T14:34:58.752Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 13→15 lines (2 removed) | Also: // A spell_effect key the form can't represent (an; // scry/surveil action) bails to JSON mode.",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-03T14:35:18.920Z"
+    },
+    {
+      "id": "bug-150",
+      "timestamp": "2026-06-03T14:35:50.789Z",
+      "error_message": "Wrong reference: BuilderSpellEffectType should be BuilderSpellEffect",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Used \"BuilderSpellEffectType\" instead of \"BuilderSpellEffect\"",
+      "fix": "Changed BuilderSpellEffectType → BuilderSpellEffect",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-03T14:35:50.789Z"
+    },
+    {
+      "id": "bug-151",
+      "timestamp": "2026-06-03T14:36:06.137Z",
+      "error_message": "CSS fix: spellEffect",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "spellEffect: { type: value.spellEffect!.type, amount: Math.max(1, Number(event.target.value)) → [...value.spellEffect, defaultSpellEffect('scry')]",
+      "fix": "Changed spellEffect: { type: value.spellEffect!.type, amount: Math.max(1, Number(event.target.value)) → [...value.spellEffect, defaultSpellEffect('scry')]",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-03T14:36:06.137Z"
+    },
+    {
+      "id": "bug-152",
+      "timestamp": "2026-06-03T14:36:12.530Z",
+      "error_message": "CSS fix: spellEffect",
+      "file": "components/CardBehaviorEditor.tsx",
+      "root_cause": "spellEffect: EMPTY_BUILDER_FORM.spellEffect, → [...EMPTY_BUILDER_FORM.spellEffect],",
+      "fix": "Changed spellEffect: EMPTY_BUILDER_FORM.spellEffect, → [...EMPTY_BUILDER_FORM.spellEffect],",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-03T14:36:12.530Z"
+    },
+    {
+      "id": "bug-153",
+      "timestamp": "2026-06-03T14:36:31.482Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Condition was: if (actions.length > 0 && hasScrySurveil && allUntarge)",
+      "fix": "Changed to: if (actions.length > 0 && allUntargeted && (hasScrySur)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-03T14:36:31.482Z"
     }
   ]
 }

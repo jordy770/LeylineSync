@@ -160,6 +160,32 @@ export type StackItem = {
   resolved_at?: string | null
 }
 
+// A resolution-time / announcement-time choice a player must make before a stack
+// item can (continue to) resolve. Mirrors public.get_pending_decisions.
+export type PendingDecision = {
+  id: string
+  deciding_player_id: string
+  source_stack_item_id: string | null
+  decision_type: 'choose_mode' | 'scry' | 'surveil' | string
+  prompt: string | null
+  options: unknown
+  min_choices: number
+  max_choices: number
+}
+
+// One revealed card in a scry / surveil decision's options array.
+export type ScryOption = {
+  game_card_id: string
+  name: string
+  library_position: number
+}
+
+// One mode in a choose_mode decision's options array.
+export type ModalModeOption = {
+  label?: string
+  actions?: { type?: string; target_type?: unknown }[]
+}
+
 export type GameActionLog = {
   id: string
   session_id: string

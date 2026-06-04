@@ -7,6 +7,7 @@ import {
   addManaFromCard,
   advanceStep,
   castCardFromHand,
+  castSpellEffect,
   chooseTriggeredAbilityCreatureTarget,
   declareAttacker as declareAttackerAction,
   declareBlocker as declareBlockerAction,
@@ -22,6 +23,7 @@ import {
   putTargetedCreatureActionOnStack,
   resolveCombatDamage,
   setCombatBlockerOrder,
+  submitDecision,
 } from '@/lib/game/actions'
 import type { TargetController, TargetedCreatureActionType } from '@/lib/game/actions'
 import type { CardBehaviorAction, CardBehaviorCost } from '@/lib/game/card-behavior'
@@ -44,6 +46,9 @@ import type {
   GameTurnState,
   ManaColor,
   ManaPool,
+  ModalModeOption,
+  PendingDecision,
+  ScryOption,
   StackItem,
 } from '@/lib/game/types'
 import MotionCard from './MotionCard'
@@ -182,6 +187,7 @@ type SpellPlan =
   | { kind: 'add_counters'; amount: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   | { kind: 'creature_effect'; effect: TargetedCreatureActionType; label: string; timing: 'instant' | 'sorcery'; targetController: TargetController }
   | { kind: 'draw'; amount: number; timing: 'instant' | 'sorcery' }
+  | { kind: 'spell_effect'; actions: unknown[]; timing: 'instant' | 'sorcery' }
   | { kind: 'counterspell' }
   | { kind: 'normal' }
 
@@ -205,6 +211,10 @@ function creatureMatchesController(
   if (tc === 'you' || tc === 'self' || tc === 'controller') return card.controller_player_id === controllerId
   return true
 }
+
+// Untargeted spell actions that resolve as a server-side effect program (no
+// target picker). A spell mixing only these can run as one multi-action cast.
+const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token']
 
 // Maps a spell_effect action type to a targeted-creature stack action + a picker label.
 const CREATURE_EFFECT_MAP: Record<string, { effect: TargetedCreatureActionType; label: string }> = {
@@ -281,6 +291,18 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
     return { kind: 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing }
   }
 
+  // A spell whose effects include a scry/surveil (a resolution-time decision) and
+  // are all untargeted runs as a multi-action effect program (e.g. Opt: scry,
+  // then draw). The whole action list is resolved in order, server-side.
+  const hasScrySurveil = actions.some((a) => a.type === 'scry' || a.type === 'surveil')
+  const allUntargeted = actions.every((a) => UNTARGETED_SPELL_ACTION_TYPES.includes(a.type ?? ''))
+  // Route through the program path when a resolution-time decision is involved
+  // (scry/surveil) or when there are multiple untargeted effects to run in order
+  // (a single draw keeps its existing dedicated path).
+  if (actions.length > 0 && allUntargeted && (hasScrySurveil || actions.length > 1)) {
+    return { kind: 'spell_effect', actions, timing }
+  }
+
   const damage = actions.find((a) => a.type === 'deal_damage' || a.type === 'deal_damage_player') as
     | (CardBehaviorAction & { amount?: number; target_type?: unknown; target?: unknown; target_controller?: unknown })
     | undefined
@@ -319,7 +341,8 @@ function canCastHandSpell(
     plan.kind === 'pump' ||
     plan.kind === 'add_counters' ||
     plan.kind === 'creature_effect' ||
-    plan.kind === 'draw'
+    plan.kind === 'draw' ||
+    plan.kind === 'spell_effect'
   ) {
     const isSorcerySpeed = card.cards?.type_line?.toLowerCase().includes('sorcery') ?? false
     return card.zone === 'hand' && (isSorcerySpeed ? canCastSorceries : canCastInstants)
@@ -343,6 +366,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     turnState,
     combatAssignments,
     stackItems,
+    pendingDecisions,
     manaPool,
     playerId,
     isSessionFinished,
@@ -351,6 +375,9 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     setErrorMessage,
     refresh,
   } = useControllerGameState(sessionId)
+
+  // The oldest pending decision this player must act on (one at a time).
+  const myPendingDecision = pendingDecisions.find((d) => d.deciding_player_id === playerId) ?? null
 
   const currentPlayer = players.find((p) => p.player_id === playerId) ?? null
   const opponentPlayers = players.filter((p) => p.player_id !== playerId)
@@ -527,6 +554,15 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       await putDrawCardsOnStack(supabase, sessionId, plan.amount, plan.timing, cardId)
       await refresh()
     },
+    // Untargeted multi-action spell (scry/surveil/draw program, e.g. Opt) — runs
+    // the effects in order server-side, parking on a scry/surveil decision.
+    spellEffect: async (cardId: string) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const plan = card ? getSpellPlan(card) : null
+      if (!card || plan?.kind !== 'spell_effect') return
+      await castSpellEffect(supabase, sessionId, plan.actions, cardId)
+      await refresh()
+    },
     // Counterspell targeting a specific pending stack item
     counterSpell: async (cardId: string, stackItemId: string) => {
       await putCounterSpellOnStack(supabase, sessionId, stackItemId, cardId)
@@ -564,6 +600,11 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     },
     chooseTriggerTarget: async (stackItemId: string, targetCardId: string) => {
       await chooseTriggeredAbilityCreatureTarget(supabase, sessionId, stackItemId, targetCardId)
+      await refresh()
+    },
+    // Submit a pending decision (modal mode + target / scry / surveil).
+    submitDecision: async (decisionId: string, result: Record<string, unknown>) => {
+      await submitDecision(supabase, decisionId, result)
       await refresh()
     },
   }
@@ -644,6 +685,8 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 onDiscardCard={actions.discardCard}
                 onSetBlockerOrder={actions.setBlockerOrder}
                 onChooseTriggerTarget={actions.chooseTriggerTarget}
+                pendingDecision={myPendingDecision}
+                onSubmitDecision={actions.submitDecision}
               />
               <PriorityPanel
                 hasPriority={hasPriority}
@@ -679,6 +722,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onAddCountersCreature={async (cardId, targetCardId) => { await actions.addCountersCreature(cardId, targetCardId) }}
             onCreatureEffect={async (cardId, targetCardId) => { await actions.creatureEffect(cardId, targetCardId) }}
             onDrawCards={async (cardId) => { await actions.drawCards(cardId) }}
+            onSpellEffect={async (cardId) => { await actions.spellEffect(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
             onClose={() => setSelectedCard(null)}
@@ -799,6 +843,8 @@ function MainArea({
   onDiscardCard,
   onSetBlockerOrder,
   onChooseTriggerTarget,
+  pendingDecision,
+  onSubmitDecision,
 }: {
   supabase: ReturnType<typeof import('@/lib/supabase/client').createClient>
   sessionId: string
@@ -824,6 +870,8 @@ function MainArea({
   onDiscardCard: (cardId: string) => Promise<void>
   onSetBlockerOrder: (assignmentId: string, orderedBlockerIds: string[]) => Promise<void>
   onChooseTriggerTarget: (stackItemId: string, targetCardId: string) => Promise<void>
+  pendingDecision: PendingDecision | null
+  onSubmitDecision: (decisionId: string, result: Record<string, unknown>) => Promise<void>
 }) {
   const [focusedOpponentId, setFocusedOpponentId] = useState<string | null>(null)
   const [myZoneTab, setMyZoneTab] = useState<MyZoneTab>('graveyard')
@@ -915,6 +963,14 @@ function MainArea({
         playerId={playerId}
         onChooseTarget={onChooseTriggerTarget}
       />
+
+      {pendingDecision && (
+        <PendingDecisionPrompt
+          decision={pendingDecision}
+          boardCards={boardCards}
+          onSubmit={onSubmitDecision}
+        />
+      )}
 
       {/* ── Combat damage strip ──────────────────────────────────────── */}
       {(turnState?.step === 'combat_damage' || turnState?.step === 'end_of_combat') &&
@@ -1177,6 +1233,226 @@ function TargetedTriggerPrompt({
   )
 }
 
+// Action types whose creature-target variant routes through apply_creature_effect.
+const CREATURE_TARGET_ACTION_TYPES = [
+  'deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap', 'add_counters', 'pump',
+]
+
+function modalModeIsTargeted(mode: ModalModeOption): boolean {
+  return (mode.actions ?? []).some(
+    (a) => CREATURE_TARGET_ACTION_TYPES.includes(a.type ?? '') && targetTypeMatches(a.target_type, 'creature'),
+  )
+}
+
+// The in-game prompt for a pending decision the current player must make:
+// modal mode (+ creature target), scry, or surveil. Mirrors the engine's
+// submit_decision result shapes.
+function PendingDecisionPrompt({
+  decision,
+  boardCards,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  boardCards: BoardCard[]
+  onSubmit: (decisionId: string, result: Record<string, unknown>) => Promise<void>
+}) {
+  const [isPending, setIsPending] = useState(false)
+
+  const submit = async (result: Record<string, unknown>) => {
+    setIsPending(true)
+    try {
+      await onSubmit(decision.id, result)
+    } finally {
+      setIsPending(false)
+    }
+  }
+
+  return (
+    <div className="border-b border-indigo-500/20 bg-indigo-950/30 px-3 py-2">
+      <p className="mb-2 truncate text-[11px] font-black uppercase tracking-widest text-indigo-300">
+        {decision.prompt ?? 'Make a choice'}
+      </p>
+      {decision.decision_type === 'choose_mode' ? (
+        <ChooseModeBody decision={decision} boardCards={boardCards} isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'scry' || decision.decision_type === 'surveil' ? (
+        <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} isPending={isPending} onSubmit={submit} />
+      ) : (
+        <p className="text-[10px] text-slate-500">Unsupported decision: {decision.decision_type}</p>
+      )}
+    </div>
+  )
+}
+
+function ChooseModeBody({
+  decision,
+  boardCards,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  boardCards: BoardCard[]
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const modes = (Array.isArray(decision.options) ? decision.options : []) as ModalModeOption[]
+  const [selected, setSelected] = useState<number[]>([])
+  const [target, setTarget] = useState<string | null>(null)
+
+  const toggle = (idx: number) => {
+    setSelected((prev) => {
+      if (prev.includes(idx)) return prev.filter((i) => i !== idx)
+      if (prev.length >= decision.max_choices) {
+        return decision.max_choices === 1 ? [idx] : prev
+      }
+      return [...prev, idx]
+    })
+  }
+
+  const needsTarget = selected.some((i) => modes[i] && modalModeIsTargeted(modes[i]))
+  const creatures = boardCards.filter((c) => c.type_line?.toLowerCase().includes('creature'))
+  const canConfirm =
+    !isPending &&
+    selected.length >= decision.min_choices &&
+    selected.length <= decision.max_choices &&
+    (!needsTarget || Boolean(target && creatures.some((c) => c.id === target)))
+
+  const confirm = () => {
+    const result: Record<string, unknown> = { chosen: selected }
+    if (needsTarget && target) result.target_card_id = target
+    void onSubmit(result)
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1.5">
+        {modes.map((mode, idx) => {
+          const on = selected.includes(idx)
+          return (
+            <button
+              key={idx}
+              type="button"
+              disabled={isPending}
+              onClick={() => toggle(idx)}
+              className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-xs font-bold transition active:scale-95 disabled:opacity-50 ${
+                on
+                  ? 'border-indigo-400 bg-indigo-400/20 text-white'
+                  : 'border-indigo-400/30 bg-indigo-400/5 text-slate-200'
+              }`}
+            >
+              <span className={`grid h-4 w-4 shrink-0 place-items-center rounded-full border ${on ? 'border-indigo-300 bg-indigo-300 text-indigo-950' : 'border-slate-500'}`}>
+                {on ? '✓' : ''}
+              </span>
+              <span className="truncate">{mode.label ?? `Mode ${idx + 1}`}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {needsTarget && (
+        <div>
+          <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-indigo-300">Choose a creature</p>
+          {creatures.length > 0 ? (
+            <div className="flex gap-2 overflow-x-auto">
+              {creatures.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  disabled={isPending}
+                  onClick={() => setTarget(c.id)}
+                  className={`flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 transition active:scale-95 disabled:opacity-50 ${
+                    target === c.id ? 'border-indigo-400 bg-indigo-400/20' : 'border-indigo-400/30 bg-indigo-400/5'
+                  }`}
+                >
+                  <span className="max-w-28 truncate text-xs font-bold text-white">{c.name}</span>
+                  <span className="text-[10px] font-black text-indigo-300">{effectiveBoardPT(c)}</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-[10px] text-slate-500">No creatures on the battlefield to target.</p>
+          )}
+        </div>
+      )}
+
+      <button
+        type="button"
+        disabled={!canConfirm}
+        onClick={confirm}
+        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+      >
+        Confirm
+      </button>
+    </div>
+  )
+}
+
+function ScrySurveilBody({
+  decision,
+  surveil,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  surveil: boolean
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const cards = (Array.isArray(decision.options) ? decision.options : []) as ScryOption[]
+  // 'top' = keep on top; 'away' = bottom of library (scry) / graveyard (surveil).
+  const [placement, setPlacement] = useState<Record<string, 'top' | 'away'>>(() =>
+    Object.fromEntries(cards.map((c) => [c.game_card_id, 'top'])),
+  )
+  const awayLabel = surveil ? 'Graveyard' : 'Bottom'
+
+  const confirm = () => {
+    const top = cards.filter((c) => placement[c.game_card_id] === 'top').map((c) => c.game_card_id)
+    const away = cards.filter((c) => placement[c.game_card_id] === 'away').map((c) => c.game_card_id)
+    void onSubmit(surveil ? { graveyard: away, top } : { top, bottom: away })
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-[10px] text-slate-400">Top of library is first. Choose where each card goes.</p>
+      <div className="flex flex-col gap-1.5">
+        {cards.map((c) => {
+          const where = placement[c.game_card_id] ?? 'top'
+          return (
+            <div key={c.game_card_id} className="flex items-center gap-2 rounded-xl border border-indigo-400/20 bg-indigo-400/5 px-2 py-1.5">
+              <span className="min-w-0 flex-1 truncate text-xs font-bold text-white">{c.name}</span>
+              <div className="flex shrink-0 overflow-hidden rounded-lg border border-indigo-400/30">
+                <button
+                  type="button"
+                  disabled={isPending}
+                  onClick={() => setPlacement((p) => ({ ...p, [c.game_card_id]: 'top' }))}
+                  className={`px-2.5 py-1 text-[10px] font-black uppercase ${where === 'top' ? 'bg-indigo-400 text-indigo-950' : 'text-slate-300'}`}
+                >
+                  Top
+                </button>
+                <button
+                  type="button"
+                  disabled={isPending}
+                  onClick={() => setPlacement((p) => ({ ...p, [c.game_card_id]: 'away' }))}
+                  className={`px-2.5 py-1 text-[10px] font-black uppercase ${where === 'away' ? 'bg-indigo-400 text-indigo-950' : 'text-slate-300'}`}
+                >
+                  {awayLabel}
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <button
+        type="button"
+        disabled={isPending}
+        onClick={confirm}
+        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+      >
+        Confirm
+      </button>
+    </div>
+  )
+}
+
 function PriorityPanel({
   hasPriority,
   isSessionFinished,
@@ -1267,6 +1543,7 @@ function CardActionSheet({
   onAddCountersCreature,
   onCreatureEffect,
   onDrawCards,
+  onSpellEffect,
   onCounterSpell,
   onActivateAbility,
   onClose,
@@ -1287,6 +1564,7 @@ function CardActionSheet({
   onAddCountersCreature: (cardId: string, targetCardId: string) => Promise<void>
   onCreatureEffect: (cardId: string, targetCardId: string) => Promise<void>
   onDrawCards: (cardId: string) => Promise<void>
+  onSpellEffect: (cardId: string) => Promise<void>
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
   onActivateAbility: (
     sourceId: string,
@@ -1370,6 +1648,9 @@ function CardActionSheet({
       setPicking(true)
     } else if (spellPlan.kind === 'draw') {
       void onDrawCards(card.id)
+      onClose()
+    } else if (spellPlan.kind === 'spell_effect') {
+      void onSpellEffect(card.id)
       onClose()
     } else {
       void onCastCard(card.id)

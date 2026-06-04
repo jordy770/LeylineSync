@@ -122,7 +122,7 @@ const CardBehaviorCostSchema = z.union([
 const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
-  'pump', 'mill',
+  'pump', 'mill', 'scry', 'surveil',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -177,6 +177,18 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('mill'),
     amount: z.number(),
     recipient: BehaviorRecipientSchema.optional(),
+  }),
+  // Scry N — a resolution-time (Tier-B) decision: look at the top N of your
+  // library, then reorder/bottom them. Untargeted (acts on the caster's library).
+  z.object({
+    type: z.literal('scry'),
+    amount: z.number(),
+  }),
+  // Surveil N — Tier-B: look at the top N of your library, put any number into
+  // your graveyard, the rest back on top. Untargeted.
+  z.object({
+    type: z.literal('surveil'),
+    amount: z.number(),
   }),
   z.object({
     type: z.literal('create_token'),

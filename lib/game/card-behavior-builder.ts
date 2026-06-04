@@ -60,6 +60,8 @@ export type BuilderEffect =
   | { type: 'draw'; amount: number }
   | { type: 'create_token'; token: string; count: number }
   | { type: 'add_counters'; amount: number }
+  | { type: 'scry'; amount: number }
+  | { type: 'surveil'; amount: number }
 
 export const BUILDER_EFFECT_TYPES = [
   { value: 'gain_life', label: 'You gain life' },
@@ -68,12 +70,33 @@ export const BUILDER_EFFECT_TYPES = [
   { value: 'draw', label: 'You draw cards' },
   { value: 'create_token', label: 'Create token(s)' },
   { value: 'add_counters', label: '+1/+1 counters on this' },
+  { value: 'scry', label: 'Scry N' },
+  { value: 'surveil', label: 'Surveil N' },
 ] as const
 export type BuilderEffectType = (typeof BUILDER_EFFECT_TYPES)[number]['value']
 
 export type BuilderTrigger = {
   event: BuilderTriggerEvent
   effects: BuilderEffect[]
+}
+
+// ─── Spell effect (instant / sorcery) ───────────────────────────────────────────
+//
+// The form currently models the untargeted self-library spell effects (scry /
+// surveil). A spell using anything else (targeted destroy/exile, damage, …)
+// round-trips to null so the editor stays in JSON mode.
+
+export type BuilderSpellEffectType = 'scry' | 'surveil' | 'draw'
+export type BuilderSpellEffect = { type: BuilderSpellEffectType; amount: number }
+
+export const BUILDER_SPELL_EFFECT_TYPES = [
+  { value: 'scry', label: 'Scry N' },
+  { value: 'surveil', label: 'Surveil N' },
+  { value: 'draw', label: 'Draw N' },
+] as const
+
+export function defaultSpellEffect(type: BuilderSpellEffectType): BuilderSpellEffect {
+  return { type, amount: 1 }
 }
 
 // ─── Activated abilities ───────────────────────────────────────────────────────
@@ -121,9 +144,17 @@ export type BuilderForm = {
   keywords: BuilderKeyword[]
   triggers: BuilderTrigger[]
   activatedAbilities: BuilderActivatedAbility[]
+  // An ordered list of untargeted spell actions (instant/sorcery resolution),
+  // e.g. Opt = [scry 1, draw 1]. Empty = no spell effect.
+  spellEffect: BuilderSpellEffect[]
 }
 
-export const EMPTY_BUILDER_FORM: BuilderForm = { keywords: [], triggers: [], activatedAbilities: [] }
+export const EMPTY_BUILDER_FORM: BuilderForm = {
+  keywords: [],
+  triggers: [],
+  activatedAbilities: [],
+  spellEffect: [],
+}
 
 // ─── Defaults / factories ──────────────────────────────────────────────────────
 
@@ -141,6 +172,10 @@ export function defaultEffect(type: BuilderEffectType): BuilderEffect {
       return { type: 'create_token', token: BUILDER_TOKEN_NAMES[0], count: 1 }
     case 'add_counters':
       return { type: 'add_counters', amount: 1 }
+    case 'scry':
+      return { type: 'scry', amount: 1 }
+    case 'surveil':
+      return { type: 'surveil', amount: 1 }
   }
 }
 
@@ -164,11 +199,14 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
 
   const activatedAbilities = form.activatedAbilities.map(activatedAbilityToJson)
 
+  const spellEffectActions = form.spellEffect.map((a) => ({ type: a.type, amount: a.amount }))
+
   // Nothing authored → no script (clears behavior).
   if (
     continuousEffects.length === 0 &&
     triggeredAbilities.length === 0 &&
-    activatedAbilities.length === 0
+    activatedAbilities.length === 0 &&
+    spellEffectActions.length === 0
   ) {
     return null
   }
@@ -182,6 +220,9 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
   }
   if (activatedAbilities.length > 0) {
     script.activated_abilities = activatedAbilities
+  }
+  if (spellEffectActions.length > 0) {
+    script.spell_effect = { actions: spellEffectActions }
   }
 
   return script as CardScript
@@ -226,6 +267,9 @@ function effectToJson(effect: BuilderEffect): Record<string, unknown> {
       return { type: 'create_token', token: effect.token, count: effect.count }
     case 'add_counters':
       return { type: 'add_counters', amount: effect.amount }
+    case 'scry':
+    case 'surveil':
+      return { type: effect.type, amount: effect.amount }
   }
 }
 
@@ -247,6 +291,7 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     'continuous_effects',
     'triggered_abilities',
     'activated_abilities',
+    'spell_effect',
   ])
   if (Object.keys(s).some((key) => !knownKeys.has(key))) {
     return null
@@ -267,7 +312,54 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     return null
   }
 
-  return { keywords, triggers, activatedAbilities }
+  // A spell_effect the form can't represent (any action that isn't a plain
+  // scry/surveil/draw) bails to JSON mode.
+  let spellEffect: BuilderSpellEffect[] = []
+  if (s.spell_effect !== undefined) {
+    const parsed = parseSpellEffect(s.spell_effect)
+    if (parsed === null) {
+      return null
+    }
+    spellEffect = parsed
+  }
+
+  return { keywords, triggers, activatedAbilities, spellEffect }
+}
+
+// Returns the form model for a spell_effect built from plain scry/surveil/draw
+// actions, or null for anything the form cannot represent (so the editor stays in
+// JSON mode — e.g. targeted destroy/exile, recipient draws, unknown fields).
+function parseSpellEffect(value: unknown): BuilderSpellEffect[] | null {
+  if (typeof value !== 'object' || value === null) {
+    return null
+  }
+  const e = value as Record<string, unknown>
+  if (Object.keys(e).some((key) => key !== 'actions')) {
+    return null
+  }
+  if (!Array.isArray(e.actions)) {
+    return null
+  }
+
+  const result: BuilderSpellEffect[] = []
+  for (const entry of e.actions) {
+    if (typeof entry !== 'object' || entry === null) {
+      return null
+    }
+    const a = entry as Record<string, unknown>
+    if (Object.keys(a).some((key) => key !== 'type' && key !== 'amount')) {
+      return null
+    }
+    if (
+      (a.type === 'scry' || a.type === 'surveil' || a.type === 'draw') &&
+      typeof a.amount === 'number'
+    ) {
+      result.push({ type: a.type, amount: a.amount })
+    } else {
+      return null
+    }
+  }
+  return result
 }
 
 function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | null {
@@ -469,6 +561,10 @@ function parseEffects(value: unknown): BuilderEffect[] | null {
         return null
       }
       effects.push({ type: 'add_counters', amount })
+    } else if (type === 'scry') {
+      effects.push({ type: 'scry', amount })
+    } else if (type === 'surveil') {
+      effects.push({ type: 'surveil', amount })
     } else {
       return null
     }

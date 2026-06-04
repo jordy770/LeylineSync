@@ -21,26 +21,35 @@ The incremental migrations in `supabase/migrations_archive/` were authored on to
 of a base schema created out-of-band on the hosted project, and several functions
 change their return type via `create or replace` — so the chain **cannot be
 replayed from scratch** (and Supabase's version-keying makes mid-chain fix-shims
-impossible). Instead local uses a **squashed baseline**:
+impossible). Local therefore boots from a **squashed baseline + the real
+incrementals**, split across two locations:
 
-- `supabase/migrations/00000000000000_baseline.sql` — full hosted schema dump
-  (reproduces prod exactly, incl. migrations 079–086).
-- `supabase/migrations/00000000000001_local_test_relax_fks.sql` — **LOCAL ONLY**:
-  drops the `auth.users` / `profiles` FKs so the harness can use throwaway player
-  UUIDs without seeding auth users. **Do not apply this one to hosted.**
+- `supabase/local-bootstrap/00_baseline.sql` — full hosted schema dump (reproduces
+  prod exactly, incl. migrations 079–086).
+- `supabase/local-bootstrap/01_relax_fks.sql` — **LOCAL ONLY**: drops the
+  `auth.users` / `profiles` FKs so the harness can use throwaway player UUIDs
+  without seeding auth users. **Never apply this to hosted.**
+- `supabase/migrations/` — the real incremental migrations **only** (087+). This
+  folder is the `supabase db push` payload, so it must stay safe to apply to
+  hosted (the bootstrap files are deliberately kept *out* of it: the baseline
+  would collide with the existing hosted schema and the relax-FK would drop prod
+  foreign keys).
 
-The 88 original incremental files live in `supabase/migrations_archive/` as history
-(Supabase does not apply them). New migrations still go in `supabase/migrations/`.
-The `% Test` cards are seeded from `tests/fixtures/test-cards.json` by the harness
+Because the incrementals assume the base tables already exist, `supabase db reset`
+**cannot** build local on its own — use `npm run test:db:setup` instead (it drops
+`public`, applies the bootstrap, then the migrations, in order). The 88 original
+incremental files live in `supabase/migrations_archive/` as history. The `% Test`
+cards are seeded from `tests/fixtures/test-cards.json` by the harness
 (`ensureTestCards`) — the dump is schema-only, so the catalog starts empty.
 
 ## One-time setup
 
 1. **Start Docker Desktop** (the engine must be running).
-2. Start the local stack + apply the baseline (Supabase CLI runs via `npx`):
+2. Start the local stack, then build the schema with the setup script (NOT
+   `supabase db reset` — see above):
    ```sh
    npx supabase start
-   npx supabase db reset    # rebuilds from the baseline; re-run after migration changes
+   npm run test:db:setup    # rebuilds local from bootstrap + migrations; re-run after migration changes
    ```
 3. Install dev deps (`pg`, `@types/pg`, `tsx`):
    ```sh
@@ -49,6 +58,15 @@ The `% Test` cards are seeded from `tests/fixtures/test-cards.json` by the harne
 
 Local DB defaults to `postgresql://postgres:postgres@127.0.0.1:54322/postgres`.
 Override with `TEST_DATABASE_URL` if `supabase start` reports a different port.
+
+## Deploying migrations to hosted
+
+`supabase/migrations/` now holds only safe incrementals, so hosted can be updated
+with `supabase db push` (after `supabase link`). Run `supabase migration list`
+first to see the local-vs-remote diff; if 087/088 are already on hosted (applied
+by hand earlier), `supabase migration repair --status applied <version>` marks them
+done so push only sends the genuinely-new ones. The bootstrap files are never part
+of a push.
 
 ## Running
 

@@ -726,3 +726,167 @@
 | 11:30 | Edited tests/README.md | 2→3 lines | ~28 |
 | 11:30 | Session end: 40 writes across 20 files (test-plan-079-086.md, db.ts, scenario.ts, group1.test.ts, README.md) | 8 reads | ~47471 tok |
 | 11:31 | Session end: 40 writes across 20 files (test-plan-079-086.md, db.ts, scenario.ts, group1.test.ts, README.md) | 8 reads | ~47471 tok |
+| 11:33 | Created supabase/migrations/202605010087_finalize_stack_resolution.sql | — | ~2149 |
+| 11:38 | Created supabase/migrations/202605010088_pending_decisions.sql | — | ~4017 |
+| 11:38 | Edited tests/harness/scenario.ts | added nullish coalescing | ~430 |
+| 11:38 | Created tests/feature/modal-decisions.test.ts | — | ~900 |
+| 11:38 | Edited package.json | inline fix | ~63 |
+| 11:39 | Edited supabase/migrations/202605010088_pending_decisions.sql | expanded (+12 lines) | ~165 |
+| 11:41 | Edited tests/feature/modal-decisions.test.ts | expanded (+10 lines) | ~356 |
+| 11:42 | Phase 1 slices 1-2: finalize_stack_resolution (087) + pending-decision machinery + modal Tier-A (088); 5 modal tests; suite 29/29 green | supabase/migrations/202605010087*, 202605010088*, tests/feature/modal-decisions.test.ts, tests/harness/scenario.ts, cerebrum | done | ~20k |
+| 11:42 | Session end: 47 writes across 23 files (test-plan-079-086.md, db.ts, scenario.ts, group1.test.ts, README.md) | 9 reads | ~56003 tok |
+
+## Session: 2026-06-02 13:48
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:04 | Created supabase/migrations/202605010089_scry_resolution_decisions.sql | — | ~4752 |
+| 14:04 | Edited tests/harness/scenario.ts | modified castScry() | ~118 |
+| 14:04 | Edited tests/harness/scenario.ts | modified libraryIds() | ~150 |
+| 14:04 | Created tests/feature/scry-decisions.test.ts | — | ~1242 |
+| 14:04 | Edited package.json | inline fix | ~32 |
+| 14:08 | Edited tests/feature/scry-decisions.test.ts | 3→4 lines | ~46 |
+| 14:08 | Edited tests/feature/scry-decisions.test.ts | 3→4 lines | ~66 |
+| 14:08 | Edited tests/feature/scry-decisions.test.ts | 3→4 lines | ~47 |
+| 14:20 | Phase 1 slice 3: Tier-B scry resolution-time decision (089) park/resume via finalize_stack_resolution; 5 tests | 202605010089_*.sql, scry-decisions.test.ts, scenario.ts, package.json | 34/34 green | ~14k |
+| 14:20 | Session end: 8 writes across 4 files (202605010089_scry_resolution_decisions.sql, scenario.ts, scry-decisions.test.ts, package.json) | 4 reads | ~14179 tok |
+| 14:39 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~64 |
+| 14:39 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~102 |
+| 14:39 | Edited lib/game/card-behavior-llm.ts | 2→3 lines | ~106 |
+| 14:39 | Edited lib/game/card-behavior-llm.ts | expanded (+7 lines) | ~72 |
+| 14:40 | Edited lib/game/actions.ts | added nullish coalescing | ~188 |
+| 14:40 | Edited components/ControllerListV4.tsx | 3→4 lines | ~54 |
+| 14:40 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~100 |
+| 14:40 | Edited components/ControllerListV4.tsx | 4→5 lines | ~55 |
+| 14:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~22 |
+| 14:40 | Edited components/ControllerListV4.tsx | added optional chaining | ~160 |
+| 14:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~76 |
+| 14:41 | Edited components/ControllerListV4.tsx | 5→6 lines | ~23 |
+| 14:41 | Edited components/ControllerListV4.tsx | CSS: onScry | ~48 |
+| 14:41 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~55 |
+| 14:45 | Make scry authorable: V2 schema action + LLM guide/example + getSpellPlan/onScry/castScrySpell cast plumbing | card-behavior-schema.ts, card-behavior-llm.ts, ControllerListV4.tsx, actions.ts | tsc clean; validator accepts scry spell+trigger | ~10k |
+| 14:47 | Created supabase/migrations/202605010090_surveil_resolution_decisions.sql | — | ~5159 |
+| 14:47 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~14 |
+| 14:47 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~81 |
+| 14:47 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~98 |
+| 14:47 | Edited lib/game/card-behavior-llm.ts | expanded (+7 lines) | ~92 |
+| 14:47 | Edited lib/game/actions.ts | added nullish coalescing | ~180 |
+| 14:48 | Edited components/ControllerListV4.tsx | 2→3 lines | ~48 |
+| 14:48 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~105 |
+| 14:48 | Edited components/ControllerListV4.tsx | 3→4 lines | ~26 |
+| 14:48 | Edited components/ControllerListV4.tsx | 3→4 lines | ~28 |
+| 14:48 | Edited components/ControllerListV4.tsx | added optional chaining | ~158 |
+| 14:48 | Edited components/ControllerListV4.tsx | 2→3 lines | ~77 |
+| 14:48 | Edited components/ControllerListV4.tsx | 6→7 lines | ~27 |
+| 14:48 | Edited components/ControllerListV4.tsx | CSS: onSurveil | ~47 |
+| 14:48 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~55 |
+| 14:49 | Edited tests/harness/scenario.ts | modified castSurveil() | ~121 |
+| 14:49 | Created tests/feature/surveil-decisions.test.ts | — | ~1089 |
+| 14:49 | Edited package.json | inline fix | ~23 |
+| 14:54 | Created supabase/migrations/202605010091_targeted_modal_modes.sql | — | ~5236 |
+| 14:54 | Edited tests/feature/modal-decisions.test.ts | expanded (+6 lines) | ~138 |
+| 14:54 | Edited tests/feature/modal-decisions.test.ts | expanded (+45 lines) | ~598 |
+| 15:30 | Implemented both: surveil (090, Tier-B) + targeted modal modes (091, apply_modal_spell extraction); surveil authoring+plumbing | 202605010090/091_*.sql, schema/llm/actions/ControllerListV4, scenario.ts, surveil+modal tests | 41/41 green; tsc clean | ~30k |
+| 15:30 | Session end: 43 writes across 12 files (202605010089_scry_resolution_decisions.sql, scenario.ts, scry-decisions.test.ts, package.json, card-behavior-schema.ts) | 9 reads | ~81856 tok |
+| 17:07 | Created scripts/setup-local-test-db.mjs | — | ~721 |
+| 17:07 | Edited package.json | 1→2 lines | ~37 |
+| 17:31 | Edited tests/README.md | modified script() | ~710 |
+| 17:31 | Restructured for safe db push: moved baseline+relax_fks to supabase/local-bootstrap/, migrations/ now only 087-091, added test:db:setup script | local-bootstrap/, scripts/setup-local-test-db.mjs, package.json, tests/README.md | rebuilt local + 41/41 green | ~12k |
+| 17:31 | Session end: 46 writes across 14 files (202605010089_scry_resolution_decisions.sql, scenario.ts, scry-decisions.test.ts, package.json, card-behavior-schema.ts) | 10 reads | ~98902 tok |
+
+## Session: 2026-06-02 21:13
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-02 21:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:24 | Edited lib/game/types.ts | expanded (+26 lines) | ~230 |
+| 21:24 | Edited lib/game/data.ts | added nullish coalescing | ~116 |
+| 21:25 | Edited lib/game/data.ts | 4→5 lines | ~20 |
+| 21:25 | Edited lib/game/actions.ts | added 1 condition(s) | ~146 |
+| 21:25 | Edited lib/game/use-controller-game-state.ts | 7→8 lines | ~45 |
+| 21:25 | Edited lib/game/use-controller-game-state.ts | 5→6 lines | ~28 |
+| 21:25 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~66 |
+| 21:25 | Edited lib/game/use-controller-game-state.ts | 15→17 lines | ~199 |
+| 21:25 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~33 |
+| 21:25 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~88 |
+| 21:25 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~19 |
+| 21:26 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~113 |
+| 21:26 | Edited components/ControllerListV4.tsx | 3→4 lines | ~27 |
+| 21:26 | Edited components/ControllerListV4.tsx | 5→8 lines | ~38 |
+| 21:26 | Edited components/ControllerListV4.tsx | CSS: submitDecision, decisionId, result | ~130 |
+| 21:26 | Edited components/ControllerListV4.tsx | expanded (+9 lines) | ~118 |
+| 21:27 | Edited components/ControllerListV4.tsx | 3→5 lines | ~64 |
+| 21:27 | Edited components/ControllerListV4.tsx | 4→6 lines | ~48 |
+| 21:27 | Edited components/ControllerListV4.tsx | 3→5 lines | ~88 |
+| 21:27 | Edited components/ControllerListV4.tsx | 8→8 lines | ~62 |
+| 21:28 | Edited components/ControllerListV4.tsx | added optional chaining | ~2478 |
+| 21:28 | Edited components/ControllerListV4.tsx | inline fix | ~32 |
+| 21:29 | Edited components/ControllerListV4.tsx | modified ChooseModeBody() | ~64 |
+| 21:29 | Edited components/ControllerListV4.tsx | modified PendingDecisionPrompt() | ~62 |
+| 21:29 | Edited components/ControllerListV4.tsx | 6→5 lines | ~43 |
+| 21:31 | Created supabase/migrations/202605010092_pending_decisions_realtime.sql | — | ~186 |
+| 21:40 | Pending-decision client UI: PendingDecisionPrompt (modal+target/scry/surveil) + hook/data/action wiring + 092 realtime publication | ControllerListV4.tsx, use-controller-game-state.ts, data.ts, actions.ts, types.ts, 092_*.sql | tsc+lint clean; 41/41; not yet app-verified | ~16k |
+| 21:40 | Session end: 26 writes across 6 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 4 reads | ~49576 tok |
+| 22:00 | Session end: 26 writes across 6 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 4 reads | ~49576 tok |
+| 22:12 | Created supabase/migrations/202605010093_trigger_scry_surveil.sql | — | ~5768 |
+| 22:14 | Edited tests/fixtures/test-cards.json | 2→5 lines | ~365 |
+| 22:14 | Edited tests/fixtures/test-cards.json | inline fix | ~111 |
+| 22:15 | Created tests/feature/trigger-scry-surveil.test.ts | — | ~1037 |
+| 22:15 | Edited package.json | inline fix | ~35 |
+| 22:17 | Edited lib/game/card-behavior-builder.ts | 17→21 lines | ~278 |
+| 22:17 | Edited lib/game/card-behavior-builder.ts | 6→10 lines | ~88 |
+| 22:17 | Edited lib/game/card-behavior-builder.ts | 6→9 lines | ~84 |
+| 22:18 | Edited lib/game/card-behavior-builder.ts | added 2 condition(s) | ~113 |
+| 22:18 | Edited lib/game/card-behavior-builder.ts | expanded (+15 lines) | ~204 |
+| 22:18 | Edited lib/game/card-behavior-builder.ts | expanded (+6 lines) | ~88 |
+| 22:18 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~266 |
+| 22:19 | Edited lib/game/card-behavior-builder.ts | added optional chaining | ~501 |
+| 22:19 | Edited components/CardBehaviorForm.tsx | 4→5 lines | ~34 |
+| 22:19 | Edited components/CardBehaviorForm.tsx | 4→5 lines | ~43 |
+| 22:19 | Edited components/CardBehaviorForm.tsx | added optional chaining | ~472 |
+| 22:19 | Edited components/CardBehaviorEditor.tsx | CSS: spellEffect | ~73 |
+| 22:23 | Both: trigger scry/surveil engine (093 park/resume via apply_trigger_effects) + form support (trigger dropdown + new Spell effect section) | 093_*.sql, card-behavior-builder.ts, CardBehaviorForm.tsx, CardBehaviorEditor.tsx, fixtures, trigger-scry tests | 44/44; tsc+lint clean; round-trips verified | ~34k |
+| 22:23 | Session end: 43 writes across 13 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 8 reads | ~70339 tok |
+| 22:28 | Session end: 43 writes across 13 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 8 reads | ~70339 tok |
+| 22:37 | Created supabase/migrations/202605010094_spell_effect_program.sql | — | ~6282 |
+| 22:37 | Edited lib/game/actions.ts | added nullish coalescing | ~198 |
+| 22:38 | Edited components/ControllerListV4.tsx | CSS: actions | ~51 |
+| 22:38 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~184 |
+| 22:38 | Edited components/ControllerListV4.tsx | 2→6 lines | ~132 |
+| 22:38 | Edited components/ControllerListV4.tsx | 5→4 lines | ~46 |
+| 22:38 | Edited components/ControllerListV4.tsx | CSS: spellEffect | ~136 |
+| 22:39 | Edited components/ControllerListV4.tsx | 4→3 lines | ~23 |
+| 22:39 | Edited components/ControllerListV4.tsx | 3→2 lines | ~56 |
+| 22:39 | Edited components/ControllerListV4.tsx | 2→1 lines | ~5 |
+| 22:39 | Edited components/ControllerListV4.tsx | CSS: onSpellEffect | ~15 |
+| 22:39 | Edited components/ControllerListV4.tsx | modified if() | ~33 |
+| 22:39 | Edited tests/harness/scenario.ts | modified castSpellEffect() | ~140 |
+| 22:39 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~184 |
+| 22:40 | Created tests/feature/spell-effect-program.test.ts | — | ~661 |
+| 22:40 | Edited package.json | inline fix | ~25 |
+| 22:42 | Fix scry/surveil not going to graveyard + enable multi-action untargeted spells (Opt); migration 094 cast_spell_effect program path, client getSpellPlan->spell_effect kind | 094_*.sql, actions.ts, ControllerListV4.tsx, scenario.ts, fixtures, SE1 test | 45/45; tsc+lint clean | ~22k |
+| 22:42 | Session end: 59 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 9 reads | ~87149 tok |
+| 22:50 | Edited lib/game/card-behavior-builder.ts | modified defaultSpellEffect() | ~126 |
+| 16:34 | Edited lib/game/card-behavior-builder.ts | 13→15 lines | ~126 |
+| 16:35 | Edited lib/game/card-behavior-builder.ts | 3→1 lines | ~27 |
+| 16:35 | Edited lib/game/card-behavior-builder.ts | added 2 condition(s) | ~432 |
+| 16:35 | Edited components/CardBehaviorForm.tsx | 3→4 lines | ~24 |
+| 16:35 | Edited components/CardBehaviorForm.tsx | expanded (+8 lines) | ~136 |
+| 16:35 | Edited components/CardBehaviorForm.tsx | 2→3 lines | ~24 |
+| 16:36 | Edited components/CardBehaviorForm.tsx | CSS: disabled, hover, disabled | ~672 |
+| 16:36 | Edited components/CardBehaviorEditor.tsx | 3→3 lines | ~35 |
+| 16:36 | Edited components/ControllerListV4.tsx | 5→8 lines | ~157 |
+| 09:12 | Form Spell-effect section -> multi-action list (scry/surveil/draw); Opt clickable; getSpellPlan routes multi-action untargeted to program path | card-behavior-builder.ts, CardBehaviorForm.tsx, CardBehaviorEditor.tsx, ControllerListV4.tsx | 45/45; tsc+lint clean; round-trips verified | ~9k |
+| 09:12 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 9 reads | ~88908 tok |
+| 09:23 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
+| 09:27 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
+| 09:30 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
+| 09:40 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
+| 09:49 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
+| 09:52 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
+| 10:29 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
+| 10:34 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |

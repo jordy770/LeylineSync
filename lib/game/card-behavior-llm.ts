@@ -150,6 +150,20 @@ const EXAMPLES: { oracle_text: string; script: unknown }[] = [
     },
   },
   {
+    oracle_text: 'Scry 2. (instant)',
+    script: {
+      schema_version: 2,
+      spell_effect: { actions: [{ type: 'scry', amount: 2 }] },
+    },
+  },
+  {
+    oracle_text: 'Surveil 1. (instant)',
+    script: {
+      schema_version: 2,
+      spell_effect: { actions: [{ type: 'surveil', amount: 1 }] },
+    },
+  },
+  {
     oracle_text: 'When CARDNAME enters the battlefield, each opponent mills three cards.',
     script: {
       schema_version: 2,
@@ -207,6 +221,8 @@ The engine supports these sections:
     - tap       { "type": "tap", "target_type": "creature" } / untap { "type": "untap", "target_type": "creature" }.
     - add_counters { "type": "add_counters", "amount": N, "target_type": "creature" } — put N +1/+1 counters on target creature.
     - draw      { "type": "draw", "amount": N } — the caster draws N (untargeted).
+    - scry      { "type": "scry", "amount": N } — "Scry N": the caster looks at the top N cards of their library and may put any number on the bottom (untargeted).
+    - surveil   { "type": "surveil", "amount": N } — "Surveil N": the caster looks at the top N cards of their library and may put any number into their graveyard (untargeted).
     - counter   { "type": "counter", "target_type": "spell" }; add_mana { "type": "add_mana", "color": ..., "amount": N }.
     Targeted creature effects (destroy/exile/bounce/tap/untap/add_counters) only target creatures right now — if the card targets a non-creature permanent, omit that action.
 
