@@ -890,3 +890,136 @@
 | 09:52 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
 | 10:29 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
 | 10:34 | Session end: 69 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~88974 tok |
+| 10:45 | Edited components/ControllerListV4.tsx | modified if() | ~280 |
+| 10:45 | Fix getSpellPlan ordering: spell_effect (scry/Opt) detection now BEFORE single-action draw — Opt was dropping scry and only drawing | components/ControllerListV4.tsx, .wolf/buglog.json (bug-155) | tsc+lint clean | ~4k |
+| 10:46 | Session end: 70 writes across 16 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~89287 tok |
+| 11:45 | Created supabase/migrations/202605010095_block_priority_during_decision.sql | — | ~1316 |
+| 11:45 | Edited components/ControllerListV4.tsx | expanded (+10 lines) | ~116 |
+| 11:45 | Edited components/ControllerListV4.tsx | inline fix | ~14 |
+| 11:46 | Edited components/ControllerListV4.tsx | "Target" → "Waiting for a decision" | ~27 |
+| 11:47 | Edited tests/feature/scry-decisions.test.ts | 2→2 lines | ~32 |
+| 11:47 | Edited tests/feature/scry-decisions.test.ts | expanded (+14 lines) | ~260 |
+| 11:47 | Fix: pending decision now freezes priority (095 pass_priority guard + client passBlockReason); was advancing round with open scry decision | 095_*.sql, ControllerListV4.tsx, scry-decisions.test.ts (SC6), buglog bug-156 | 46/46; tsc clean | ~7k |
+| 11:48 | Session end: 76 writes across 18 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~91194 tok |
+| 12:04 | Created supabase/migrations/202605010096_more_decisions.sql | — | ~5658 |
+| 12:04 | Edited tests/fixtures/test-cards.json | 1→4 lines | ~412 |
+| 12:05 | Created tests/feature/more-decisions.test.ts | — | ~1251 |
+| 12:05 | Edited package.json | inline fix | ~24 |
+| 12:05 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~24 |
+| 12:06 | Edited lib/game/card-behavior-schema.ts | expanded (+19 lines) | ~272 |
+| 12:06 | Edited lib/game/card-behavior-schema.ts | 5→7 lines | ~82 |
+| 12:06 | Edited components/ControllerListV4.tsx | 7→11 lines | ~232 |
+| 12:06 | Edited components/ControllerListV4.tsx | added 2 condition(s) | ~925 |
+| 12:07 | Edited components/ControllerListV4.tsx | 1→4 lines | ~113 |
+| 12:07 | Edited components/ControllerListV4.tsx | 5→5 lines | ~99 |
+| 12:07 | Edited lib/game/card-behavior-llm.ts | modified search_library() | ~267 |
+| 12:08 | Add tutor/discard/may on shared decision system (096: params col + resume_or_finalize + search_library/choose_cards/confirm); schema+LLM+client prompts; choose_player deferred | 096_*.sql, schema/llm/ControllerListV4, fixtures, more-decisions tests | 51/51; tsc+lint clean | ~30k |
+| 12:08 | Session end: 88 writes across 22 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~100957 tok |
+| 12:53 | Created supabase/migrations/202605010097_choose_player.sql | — | ~5642 |
+| 12:54 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~29 |
+| 12:54 | Edited lib/game/card-behavior-schema.ts | expanded (+7 lines) | ~176 |
+| 12:54 | Edited components/ControllerListV4.tsx | 4→4 lines | ~123 |
+| 12:54 | Edited components/ControllerListV4.tsx | 3→5 lines | ~78 |
+| 12:54 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~272 |
+| 12:54 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~180 |
+| 12:54 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~240 |
+| 12:55 | Edited tests/feature/more-decisions.test.ts | added optional chaining | ~577 |
+| 12:56 | Add choose_player (097): pick a player, inner effects via chosen-player-as-controller + recipient=controller; client ChoosePlayerBody; all 4 choices done | 097_*.sql, schema/llm/ControllerListV4, fixtures, CP tests | 53/53; tsc+lint clean | ~16k |
+| 12:56 | Session end: 97 writes across 23 files (types.ts, data.ts, actions.ts, use-controller-game-state.ts, ControllerListV4.tsx) | 10 reads | ~108677 tok |
+
+## Session: 2026-06-04 14:08
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:50 | Created tests/unit/card-behavior-builder.test.ts | — | ~3804 |
+| 14:50 | Edited package.json | inline fix | ~43 |
+| 14:55 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+10 lines) | ~402 |
+| 14:56 | Created lib/game/card-behavior-registry.ts | — | ~1926 |
+| 14:56 | Edited lib/game/card-behavior-builder.ts | expanded (+8 lines) | ~67 |
+| 14:57 | Edited lib/game/card-behavior-builder.ts | reduced (-8 lines) | ~138 |
+| 14:57 | Edited lib/game/card-behavior-builder.ts | token() → effectsForContext() | ~52 |
+| 14:57 | Edited lib/game/card-behavior-builder.ts | modified defaultSpellEffect() | ~120 |
+| 14:57 | Edited lib/game/card-behavior-builder.ts | removed 20 lines | ~34 |
+| 14:57 | Edited lib/game/card-behavior-builder.ts | removed 18 lines | ~32 |
+| 14:57 | Edited lib/game/card-behavior-builder.ts | modified parseSpellEffect() | ~163 |
+| 14:57 | Edited lib/game/card-behavior-builder.ts | form() → effectFromJson() | ~101 |
+| 14:59 | Edited components/CardBehaviorForm.tsx | added 1 import(s) | ~266 |
+| 14:59 | Edited components/CardBehaviorForm.tsx | 35→31 lines | ~347 |
+| 14:59 | Edited components/CardBehaviorForm.tsx | added nullish coalescing | ~792 |
+
+| 2026-06-04 | Step 1 of card-behavior form refactor: introduced declarative EFFECT_REGISTRY driving defaults/serialize/parse/form-render; delegated builder + made parsing uniformly strict | lib/game/card-behavior-registry.ts (new), lib/game/card-behavior-builder.ts, components/CardBehaviorForm.tsx, tests/unit/card-behavior-builder.test.ts (new), package.json | 82/82 characterization tests green, tsc + lint clean | ~9k |
+| 15:01 | Session end: 15 writes across 5 files (card-behavior-builder.test.ts, package.json, card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorForm.tsx) | 8 reads | ~29932 tok |
+
+## Session: 2026-06-04 15:05
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:12 | Edited lib/game/card-behavior-registry.ts | expanded (+9 lines) | ~413 |
+| 15:12 | Edited lib/game/card-behavior-registry.ts | expanded (+13 lines) | ~210 |
+| 15:12 | Edited lib/game/card-behavior-registry.ts | expanded (+40 lines) | ~451 |
+| 15:13 | Edited lib/game/card-behavior-registry.ts | added 1 condition(s) | ~1478 |
+| 15:13 | Edited lib/game/card-behavior-builder.ts | 10→14 lines | ~222 |
+| 15:13 | Edited components/CardBehaviorForm.tsx | 25→29 lines | ~196 |
+| 15:13 | Edited components/CardBehaviorForm.tsx | 11→12 lines | ~122 |
+| 15:13 | Edited components/CardBehaviorForm.tsx | CSS: row, context | ~342 |
+| 15:14 | Edited components/CardBehaviorForm.tsx | added 3 condition(s) | ~999 |
+| 15:14 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+9 lines) | ~694 |
+| 15:14 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+16 lines) | ~314 |
+| 15:14 | Edited tests/unit/card-behavior-builder.test.ts | 3→7 lines | ~157 |
+| 15:15 | Step 2: added search_library/discard/may/choose_player to effect registry; new field kinds text/object/effect-list (recursive) | card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-builder.test.ts | 92/92 tests, tsc+lint clean | ~9k |
+| 15:16 | Session end: 12 writes across 4 files (card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-builder.test.ts) | 5 reads | ~22428 tok |
+| 15:27 | Session end: 12 writes across 4 files (card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-builder.test.ts) | 5 reads | ~22428 tok |
+| 15:31 | Session end: 12 writes across 4 files (card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-builder.test.ts) | 7 reads | ~26732 tok |
+| 15:36 | Edited lib/game/card-behavior-registry.ts | 4→4 lines | ~30 |
+| 15:36 | Edited lib/game/card-behavior-builder.ts | 2→6 lines | ~86 |
+| 15:36 | Edited lib/game/card-behavior-builder.ts | 1→3 lines | ~68 |
+| 15:36 | Edited tests/unit/card-behavior-builder.test.ts | modified representable() | ~240 |
+| 15:36 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+10 lines) | ~177 |
+| 15:37 | Enabled search_library as a spell effect (Demonic Tutor); fixed spell-action serialization to use registry (was dropping count/to/filter) | card-behavior-registry.ts, card-behavior-builder.ts, card-behavior-builder.test.ts | 97/97 tests, tsc+lint clean | ~6k |
+| 15:37 | Session end: 17 writes across 4 files (card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-builder.test.ts) | 8 reads | ~32991 tok |
+| 15:40 | Session end: 17 writes across 4 files (card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-builder.test.ts) | 8 reads | ~32991 tok |
+| 15:45 | Edited lib/game/card-behavior-registry.ts | 1→2 lines | ~66 |
+| 15:45 | Edited lib/game/card-behavior-registry.ts | 19→19 lines | ~171 |
+| 15:45 | Edited lib/game/card-behavior-registry.ts | modified isEmptyValue() | ~261 |
+| 15:45 | Edited lib/game/card-behavior-registry.ts | added 1 condition(s) | ~109 |
+| 15:45 | Edited lib/game/card-behavior-builder.ts | 6→7 lines | ~116 |
+| 15:45 | Edited lib/game/card-behavior-builder.ts | 6→10 lines | ~154 |
+| 15:46 | Edited tests/unit/card-behavior-builder.test.ts | 3→5 lines | ~165 |
+| 15:46 | Edited tests/unit/card-behavior-builder.test.ts | 3→8 lines | ~353 |
+| 15:46 | Edited tests/unit/card-behavior-builder.test.ts | save() → JSON() | ~156 |
+| 15:46 | Edited tests/unit/card-behavior-builder.test.ts | 3→4 lines | ~108 |
+| 15:47 | Edited lib/game/card-behavior-llm.ts | 2→6 lines | ~242 |
+| 15:48 | Quick wins: mill effect + discard/may/choose_player/search_library as spell effects; empty optional text/object fields omitted from saved JSON; AI-guide spell prose updated | card-behavior-registry.ts, card-behavior-builder.ts, card-behavior-llm.ts, card-behavior-builder.test.ts | 106/106 tests, tsc+lint clean | ~8k |
+| 15:48 | Session end: 28 writes across 5 files (card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-builder.test.ts, card-behavior-llm.ts) | 10 reads | ~43917 tok |
+| 16:01 | Edited lib/game/card-behavior-registry.ts | expanded (+11 lines) | ~156 |
+| 16:01 | Edited lib/game/card-behavior-registry.ts | 9→13 lines | ~337 |
+| 16:01 | Edited lib/game/card-behavior-registry.ts | expanded (+14 lines) | ~230 |
+| 16:02 | Edited lib/game/card-behavior-registry.ts | expanded (+16 lines) | ~378 |
+| 16:02 | Edited lib/game/card-behavior-registry.ts | added 4 condition(s) | ~338 |
+| 16:02 | Edited lib/game/card-behavior-registry.ts | modified fieldToJson() | ~78 |
+| 16:02 | Edited lib/game/card-behavior-registry.ts | modified switch() | ~54 |
+| 16:02 | Edited lib/game/card-behavior-registry.ts | 4→6 lines | ~62 |
+| 16:02 | Edited lib/game/card-behavior-registry.ts | added 3 condition(s) | ~190 |
+| 16:02 | Edited lib/game/card-behavior-registry.ts | added 2 condition(s) | ~251 |
+| 16:03 | Edited lib/game/card-behavior-registry.ts | map() → add() | ~130 |
+| 16:03 | Edited lib/game/card-behavior-builder.ts | expanded (+6 lines) | ~142 |
+| 16:03 | Edited lib/game/card-behavior-builder.ts | expanded (+6 lines) | ~143 |
+| 16:03 | Edited tests/unit/card-behavior-builder.test.ts | 4→7 lines | ~258 |
+| 16:03 | Edited tests/unit/card-behavior-builder.test.ts | 7→12 lines | ~423 |
+| 16:04 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+24 lines) | ~364 |
+| 16:04 | Edited tests/unit/card-behavior-builder.test.ts | 3→6 lines | ~138 |
+| 16:04 | Edited tests/unit/card-behavior-builder.test.ts | 2→4 lines | ~201 |
+| 16:05 | Targeted single-creature effects (destroy/exile/bounce/tap/untap/pump) in form via composite `target` field kind; combined target dropdown, inline target_type+target_controller JSON | card-behavior-registry.ts, card-behavior-builder.ts, card-behavior-builder.test.ts | 121/121 tests, tsc+lint clean | ~12k |
+| 16:05 | Session end: 46 writes across 5 files (card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-builder.test.ts, card-behavior-llm.ts) | 10 reads | ~47790 tok |
+
+## Session: 2026-06-04 16:10
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:17 | Created .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | — | ~1558 |
+| 16:17 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified 1() | ~15 |
+| 16:17 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified 2() | ~18 |
+| 16:17 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified 3() | ~15 |
+| 16:17 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified reach() | ~14 |
+| 16:17 | Session end: 5 writes across 1 files (project_roadmap.md) | 5 reads | ~17918 tok |
+| 16:19 | Session end: 5 writes across 1 files (project_roadmap.md) | 5 reads | ~17918 tok |

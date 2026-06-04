@@ -2479,6 +2479,452 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-03T14:36:31.482Z"
+    },
+    {
+      "id": "bug-154",
+      "timestamp": "2026-06-04T08:45:02.518Z",
+      "error_message": "CSS fix: kind",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "kind: 'spell_effect', actions, timing → 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
+      "fix": "Changed kind: 'spell_effect', actions, timing → 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T08:45:02.518Z"
+    },
+    {
+      "id": "bug-155",
+      "timestamp": "2026-06-04T08:45:42.847Z",
+      "error_message": "In-game scry/Opt spell did nothing (no scry decision); a scry+draw spell created a draw_cards stack item and only drew.",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "getSpellPlan checked the single-action draw case before the spell_effect (scry/surveil/multi-action) case, so Opt = [scry,draw] matched draw first and returned kind:\"draw\", dropping the scry. The engine/DB were correct; the client mis-classified the spell.",
+      "fix": "Moved the spell_effect detection (allUntargeted && (hasScrySurveil || actions.length>1)) ABOVE the draw single-action check in getSpellPlan so multi-action/scry spells route to cast_spell_effect.",
+      "tags": [
+        "scry",
+        "surveil",
+        "opt",
+        "getSpellPlan",
+        "spell_effect",
+        "ControllerListV4",
+        "ordering",
+        "client"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T08:45:42.847Z"
+    },
+    {
+      "id": "bug-156",
+      "timestamp": "2026-06-04T09:45:44.476Z",
+      "error_message": "Wrong reference: mustChooseTriggerTarget should be passBlockReason",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Used \"mustChooseTriggerTarget\" instead of \"passBlockReason\"",
+      "fix": "Changed mustChooseTriggerTarget → passBlockReason",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T09:45:44.476Z"
+    },
+    {
+      "id": "bug-157",
+      "timestamp": "2026-06-04T09:46:25.455Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had 'Target'",
+      "fix": "Changed to 'Waiting for a decision'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T09:46:25.455Z"
+    },
+    {
+      "id": "bug-158",
+      "timestamp": "2026-06-04T09:47:21.332Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/scry-decisions.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T09:47:21.332Z"
+    },
+    {
+      "id": "bug-156",
+      "timestamp": "2026-06-04T09:47:46.156Z",
+      "error_message": "After a scry/surveil parked for a decision, passing priority advanced the step/round and players kept passing — the game moved on with an unresolved decision.",
+      "file": "supabase/migrations/202605010095_block_priority_during_decision.sql, components/ControllerListV4.tsx",
+      "root_cause": "A parked stack item is status=awaiting_decision (not pending). pass_priority counts only pending items, so it saw an empty stack and called advance_step, and the client pass button was not blocked for pending decisions.",
+      "fix": "pass_priority now raises if any game_pending_decisions row is pending for the session (guard added at top). Client computes passBlockReason (Resolve your decision / Waiting for a decision / Choose trigger target) and disables Pass. submit_decision finalizes and resets priority cleanly.",
+      "tags": [
+        "scry",
+        "surveil",
+        "decision",
+        "pass_priority",
+        "priority",
+        "awaiting_decision",
+        "ControllerListV4",
+        "turn-flow"
+      ],
+      "related_bugs": [
+        "bug-155"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T09:47:46.156Z"
+    },
+    {
+      "id": "bug-160",
+      "timestamp": "2026-06-04T10:06:48.615Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'd; // Effects that open a resolution-time choice — a spell cont",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-04T10:07:03.217Z"
+    },
+    {
+      "id": "bug-161",
+      "timestamp": "2026-06-04T10:07:10.784Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Condition was: if (actions.length > 0 && allUntargeted && (hasScrySur)",
+      "fix": "Changed to: if (actions.length > 0 && allUntargeted && (hasDecisio)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T10:07:10.784Z"
+    },
+    {
+      "id": "bug-162",
+      "timestamp": "2026-06-04T10:54:34.683Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T10:54:34.683Z"
+    },
+    {
+      "id": "bug-163",
+      "timestamp": "2026-06-04T10:55:06.848Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/more-decisions.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T10:55:06.848Z"
+    },
+    {
+      "id": "bug-164",
+      "timestamp": "2026-06-04T12:56:57.500Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: return effectDefault(type) as BuilderEffect",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-04T12:57:29.734Z"
+    },
+    {
+      "id": "bug-165",
+      "timestamp": "2026-06-04T12:57:14.631Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "11 lines replaced/restructured",
+      "fix": "Rewrote 11→3 lines (11 removed) | Also: switch (effect.type) {; case 'gain_life': | Also: if (typeof entry !== 'object' || entry === null) {; const a = entry as Record<string, unknown> | Also: if (typeof entry !== 'object' || entry === null) {; const e = entry as Record<string, unknown>",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-06-04T12:57:59.964Z"
+    },
+    {
+      "id": "bug-166",
+      "timestamp": "2026-06-04T12:59:18.114Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 28→30 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T12:59:18.114Z"
+    },
+    {
+      "id": "bug-167",
+      "timestamp": "2026-06-04T12:59:55.627Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T12:59:55.627Z"
+    },
+    {
+      "id": "bug-168",
+      "timestamp": "2026-06-04T13:12:17.076Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 12→21 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T13:12:17.076Z"
+    },
+    {
+      "id": "bug-169",
+      "timestamp": "2026-06-04T13:13:07.288Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T13:13:07.288Z"
+    },
+    {
+      "id": "bug-170",
+      "timestamp": "2026-06-04T13:13:40.514Z",
+      "error_message": "Type error",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T13:13:40.514Z"
+    },
+    {
+      "id": "bug-171",
+      "timestamp": "2026-06-04T13:13:51.885Z",
+      "error_message": "CSS fix: effect, onChange",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "effect: BuilderEffect → FlatEffect; onChange: (next: BuilderEffect) => void → (next: FlatEffect) => void",
+      "fix": "Changed effect: BuilderEffect → FlatEffect; onChange: (next: BuilderEffect) => void → (next: FlatEffect) => void",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-04T13:14:09.927Z"
+    },
+    {
+      "id": "bug-172",
+      "timestamp": "2026-06-04T13:14:35.609Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/unit/card-behavior-builder.test.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 7→16 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T13:14:35.609Z"
+    },
+    {
+      "id": "bug-173",
+      "timestamp": "2026-06-04T13:36:34.464Z",
+      "error_message": "Type error",
+      "file": "tests/unit/card-behavior-builder.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: // Demonic Tutor: a no-filter tutor sorcery. Pins that the o; // materializes to an empty type_line on save (the engine tr",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-04T13:36:41.974Z"
+    },
+    {
+      "id": "bug-174",
+      "timestamp": "2026-06-04T13:37:30.592Z",
+      "error_message": "search_library / multi-field spell effects saved as {type,amount} — count/to/filter silently dropped",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "buildScriptFromForm hardcoded spell action serialization as {type:a.type,amount:a.amount}, a leftover from when spell effects were only amount-only (scry/surveil/draw); it did not use the registry serializer like trigger effects do.",
+      "fix": "Serialize spell actions via registryEffectToJson(a) so all declared fields emit; also enabled search_library spell context for Demonic Tutor.",
+      "tags": [
+        "card-behavior",
+        "registry",
+        "spell-effect",
+        "serialization",
+        "search_library"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T13:37:30.593Z"
+    },
+    {
+      "id": "bug-175",
+      "timestamp": "2026-06-04T13:45:36.977Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T13:45:36.977Z"
+    },
+    {
+      "id": "bug-176",
+      "timestamp": "2026-06-04T13:47:41.104Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T13:47:41.104Z"
+    },
+    {
+      "id": "bug-177",
+      "timestamp": "2026-06-04T14:01:41.243Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T14:01:41.243Z"
+    },
+    {
+      "id": "bug-178",
+      "timestamp": "2026-06-04T14:02:45.675Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Condition was: if (raw === undefined)",
+      "fix": "Changed to: if (field.kind === 'target')",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-04T14:03:03.109Z"
+    },
+    {
+      "id": "bug-179",
+      "timestamp": "2026-06-04T14:02:53.914Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T14:02:53.914Z"
+    },
+    {
+      "id": "bug-180",
+      "timestamp": "2026-06-04T14:03:51.017Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/unit/card-behavior-builder.test.ts",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 7→12 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T14:03:51.017Z"
     }
   ]
 }

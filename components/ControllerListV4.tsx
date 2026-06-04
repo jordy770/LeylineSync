@@ -214,7 +214,10 @@ function creatureMatchesController(
 
 // Untargeted spell actions that resolve as a server-side effect program (no
 // target picker). A spell mixing only these can run as one multi-action cast.
-const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token']
+const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'search_library', 'discard', 'may', 'choose_player']
+// Effects that open a resolution-time choice — a spell containing one must run as a
+// program (single dedicated cast kinds can't surface the prompt).
+const DECISION_SPELL_ACTION_TYPES = ['scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player']
 
 // Maps a spell_effect action type to a targeted-creature stack action + a picker label.
 const CREATURE_EFFECT_MAP: Record<string, { effect: TargetedCreatureActionType; label: string }> = {
@@ -284,23 +287,21 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
     return { kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect) }
   }
 
+  // A spell whose effects include a scry/surveil (a resolution-time decision) or
+  // is a multi-action untargeted combo runs as an effect program (e.g. Opt: scry,
+  // then draw). This MUST be checked before the single-action `draw` case below,
+  // otherwise Opt matches `draw` first and the scry is dropped.
+  const hasDecisionEffect = actions.some((a) => DECISION_SPELL_ACTION_TYPES.includes(a.type ?? ''))
+  const allUntargeted = actions.every((a) => UNTARGETED_SPELL_ACTION_TYPES.includes(a.type ?? ''))
+  if (actions.length > 0 && allUntargeted && (hasDecisionEffect || actions.length > 1)) {
+    return { kind: 'spell_effect', actions, timing }
+  }
+
   const draw = actions.find((a) => a.type === 'draw') as
     | (CardBehaviorAction & { amount?: number })
     | undefined
   if (draw) {
     return { kind: 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing }
-  }
-
-  // A spell whose effects include a scry/surveil (a resolution-time decision) and
-  // are all untargeted runs as a multi-action effect program (e.g. Opt: scry,
-  // then draw). The whole action list is resolved in order, server-side.
-  const hasScrySurveil = actions.some((a) => a.type === 'scry' || a.type === 'surveil')
-  const allUntargeted = actions.every((a) => UNTARGETED_SPELL_ACTION_TYPES.includes(a.type ?? ''))
-  // Route through the program path when a resolution-time decision is involved
-  // (scry/surveil) or when there are multiple untargeted effects to run in order
-  // (a single draw keeps its existing dedicated path).
-  if (actions.length > 0 && allUntargeted && (hasScrySurveil || actions.length > 1)) {
-    return { kind: 'spell_effect', actions, timing }
   }
 
   const damage = actions.find((a) => a.type === 'deal_damage' || a.type === 'deal_damage_player') as
@@ -422,6 +423,16 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
         creatureMatchesController(c, playerId, topStackItem.payload?.target_controller as string | undefined),
     ),
   )
+
+  // A pending decision suspends the game (server blocks pass_priority too). The
+  // decider must submit; everyone else waits.
+  const passBlockReason = myPendingDecision
+    ? 'Resolve your decision'
+    : pendingDecisions.length > 0
+      ? 'Waiting for a decision'
+      : mustChooseTriggerTarget
+        ? 'Choose trigger target'
+        : null
 
   // Land play limit — normally 1 per turn
   const canPlayLand =
@@ -693,7 +704,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 isSessionFinished={isSessionFinished}
                 canResolveCombatDamage={canResolveCombatDamage}
                 combatDamageStage={combatDamageStage}
-                blockPassReason={mustChooseTriggerTarget ? 'Choose trigger target' : null}
+                blockPassReason={passBlockReason}
                 onResolveCombatDamage={actions.resolveCombatDamage}
                 onPassPriority={actions.passPriority}
               />
@@ -1276,6 +1287,12 @@ function PendingDecisionPrompt({
         <ChooseModeBody decision={decision} boardCards={boardCards} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'scry' || decision.decision_type === 'surveil' ? (
         <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'search_library' || decision.decision_type === 'choose_cards' ? (
+        <CardPickBody decision={decision} isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'confirm' ? (
+        <ConfirmBody isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'choose_player' ? (
+        <ChoosePlayerBody decision={decision} isPending={isPending} onSubmit={submit} />
       ) : (
         <p className="text-[10px] text-slate-500">Unsupported decision: {decision.decision_type}</p>
       )}
@@ -1453,6 +1470,124 @@ function ScrySurveilBody({
   )
 }
 
+// Pick N cards from an offered list (tutor search_library / discard choose_cards).
+function CardPickBody({
+  decision,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const cards = (Array.isArray(decision.options) ? decision.options : []) as { game_card_id: string; name: string }[]
+  const [selected, setSelected] = useState<string[]>([])
+
+  const toggle = (id: string) => {
+    setSelected((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id)
+      if (prev.length >= decision.max_choices) {
+        return decision.max_choices === 1 ? [id] : prev
+      }
+      return [...prev, id]
+    })
+  }
+
+  const canConfirm = !isPending && selected.length >= decision.min_choices && selected.length <= decision.max_choices
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-[10px] text-slate-400">
+        Choose {decision.min_choices === decision.max_choices ? decision.max_choices : `${decision.min_choices}–${decision.max_choices}`}.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {cards.map((c) => {
+          const on = selected.includes(c.game_card_id)
+          return (
+            <button
+              key={c.game_card_id}
+              type="button"
+              disabled={isPending}
+              onClick={() => toggle(c.game_card_id)}
+              className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition active:scale-95 disabled:opacity-50 ${
+                on ? 'border-indigo-400 bg-indigo-400/20 text-white' : 'border-indigo-400/30 bg-indigo-400/5 text-slate-200'
+              }`}
+            >
+              <span className="max-w-32 truncate">{c.name}</span>
+            </button>
+          )
+        })}
+      </div>
+      <button
+        type="button"
+        disabled={!canConfirm}
+        onClick={() => void onSubmit({ chosen: selected })}
+        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+      >
+        Confirm{decision.min_choices === 0 ? ` (${selected.length})` : ''}
+      </button>
+    </div>
+  )
+}
+
+// Optional "you may" — a yes/no gate.
+function ConfirmBody({
+  isPending,
+  onSubmit,
+}: {
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  return (
+    <div className="flex gap-2">
+      <button
+        type="button"
+        disabled={isPending}
+        onClick={() => void onSubmit({ confirmed: true })}
+        className="rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+      >
+        Yes
+      </button>
+      <button
+        type="button"
+        disabled={isPending}
+        onClick={() => void onSubmit({ confirmed: false })}
+        className="rounded-xl border border-slate-600 px-4 py-2 text-xs font-black uppercase tracking-wide text-slate-300 transition active:scale-95 disabled:opacity-40"
+      >
+        No
+      </button>
+    </div>
+  )
+}
+
+// Choose one player from the offered list.
+function ChoosePlayerBody({
+  decision,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const players = (Array.isArray(decision.options) ? decision.options : []) as { player_id: string; username: string | null }[]
+  return (
+    <div className="flex flex-wrap gap-2">
+      {players.map((p) => (
+        <button
+          key={p.player_id}
+          type="button"
+          disabled={isPending}
+          onClick={() => void onSubmit({ player_id: p.player_id })}
+          className="rounded-xl border border-indigo-400/30 bg-indigo-400/10 px-4 py-2 text-xs font-bold text-white transition active:scale-95 disabled:opacity-50"
+        >
+          {p.username ?? 'Player'}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function PriorityPanel({
   hasPriority,
   isSessionFinished,
@@ -1506,7 +1641,7 @@ function PriorityPanel({
       ) : (
         <div className="flex h-[72px] w-full flex-col items-center justify-center gap-1 rounded-2xl border border-[#1E2230]">
           <span className="text-[9px] font-black uppercase tracking-widest text-slate-700">
-            {blockPassReason ? 'Target' : 'Wait'}
+            {blockPassReason && blockPassReason !== 'Waiting for a decision' ? 'Act' : 'Wait'}
           </span>
           <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-800" />
         </div>

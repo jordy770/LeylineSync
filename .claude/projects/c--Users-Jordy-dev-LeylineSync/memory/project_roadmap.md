@@ -1,35 +1,95 @@
 ---
 name: project-roadmap
-description: LeylineSync implemented features and high-value next work items as of 2026-05-27
+description: LeylineSync combined roadmap — shipped features and remaining work, reconciled across all sources as of 2026-06-04
 metadata:
   type: project
 ---
 
-**Currently implemented (as of 2026-05-27):**
-- Sessions, membership, locking, finishing, win/loss state
-- Deck import from text, deck editor, randomized library spawn (Edge Function)
-- Zones (library, hand, stack, battlefield, graveyard, exile) with manual and rule-driven movement
-- Mana pool with player-chosen generic payment and effect-aware clearing
-- Turn structure: phases, steps, active player rotation, automatic untap and draw
-- Priority passing with stack resolution and step advancement
-- Stack model: cast spells, counterspell cancellation, permanent spells using the stack
-- Combat: declare attackers/blockers, multiple blockers with ordered damage, lethal-damage-to-graveyard
-- Keywords: vigilance, trample, indestructible, first strike, double strike, haste (flying not yet)
-- Summoning sickness
-- Continuous effects: additional land plays; mana retention infrastructure (deferred full rules)
-- Static-effect lifecycle rebuild for copies, control changes, suppression
-- Dev admin panel (`NEXT_PUBLIC_SHOW_DEV_CONTROLS=true`)
+# LeylineSync — Combined Roadmap (as of 2026-06-04)
 
-**High-value next work (prioritized):**
-1. Script schema validation — Zod or JSON Schema for `cards.script` (high-leverage, catch typo/hallucination bugs early)
-2. Flying and reach — blocker legality
-3. +1/+1 counters
-4. Until-end-of-turn power/toughness effects
-5. Token creation
-6. Cleanup-step hand-size discard
-7. Player-chosen combat damage over-assignment
-8. Card script override system separate from Scryfall metadata
+> Single source of truth. Consolidates the old `project_roadmap.md` (2026-05-27),
+> the README "Effect roadmap" (Tier 1/2/3) and "## Roadmap"/Phased plan, and the
+> cerebrum Decision Log "next item" notes. Status reconciled against the engine
+> through **migration 097** and the registry-driven card-behavior form.
 
-**Why:** Roadmap from design conversation with the project owner, 2026-05-27.
+## ✅ Shipped (foundation — don't re-plan)
 
-**How to apply:** Suggest next work items from this list when the user asks what to work on. Script schema validation is the highest-leverage item to do before scaling card behaviors.
+- Sessions, membership, locking, finishing, win/loss
+- Deck text-import, deck editor, randomized library spawn
+- Zones (library/hand/stack/battlefield/graveyard/exile); manual + rule-driven movement
+- Mana pool, player-chosen generic payment, effect-aware clearing
+- Turn structure (phases/steps/rotation), auto untap + draw
+- Priority passing, stack model, counterspell cancellation, permanent spells via stack
+- Combat: declare attackers/blockers, multi-block ordered damage, lethal→graveyard, SBA 0-toughness sweep
+- Keywords: vigilance, trample, indestructible, first/double strike, deathtouch, haste, **flying/reach**; summoning sickness
+- +1/+1 counters, until-end-of-turn pumps, token creation
+- Continuous-effect lifecycle rebuild (copies, control change, suppression)
+- Cleanup-step hand-size discard (V4 controller)
+- **Zod script validation** (V1+V2) + `npm run validate:scripts`
+- **Card-behavior authoring** at `/cards/behavior`: registry-driven guided form, JSON mode, AI generate
+- **Triggered abilities:** ETB, dies, leaves, upkeep/draw/end-step, attacks, blocks, becomes-targeted — auto-resolve + targeted-creature triggers w/ `target_controller`
+- **Spell effects via stack:** deal_damage, pump, destroy, exile, bounce, tap, untap, draw, counter, add_mana
+- **Decision/interactive effects (pending-decision state machine):** scry, surveil, search_library (tutor), discard, may, choose_player, modal spells — all with in-game decision-prompt UI
+- **Targeted-creature effects in the guided form** (destroy/exile/bounce/tap/untap/pump via composite `target` field)
+- **Test chamber:** programmatic harness vs local Supabase (53 engine tests) + 121 form characterization tests
+- **SQL Phase-0 centralizations:** `put_in_graveyard`, `effective_script`, `apply_creature_effect`, `finalize_stack_resolution`, `apply_trigger_effects`, `resume_or_finalize`
+
+## 🔜 Near-term — authoring & form gaps (low risk, high value)
+
+1. **Dual-shape variant mechanism** — targeted `deal_damage` (Lightning Bolt) and targeted `add_counters` in the form. Blocked because those `type`s already have auto-resolve registry entries; needs a per-type disambiguator (registry is one-entry-per-`type`). *Next item if Lightning-Bolt-class cards are wanted in the form.*
+2. **Modal spells authorable** — engine + targeted modes done (mig 091), but not authorable: needs a `spell_effect.modes` script shape + a mode/target cast UI.
+3. **Player-targeted / spell-side effects** needing a **player picker** (shared infra unlocks several below):
+   - spell-side / player-targeted `mill`
+   - player-targeted `discard` (chosen vs random)
+
+## 🟡 Mid-term — effect vocabulary (README Tier 1/2/3 backlog)
+
+**Tier 1 (mirror an existing helper):**
+
+- `gain_life`/`lose_life` for **each/all players** (new recipient value)
+- Mass `add_counters` ("+1/+1 on each creature you control")
+- `tap_all` / `untap_all`
+
+**Tier 2 (target in another zone or a player choice):**
+
+- Return from graveyard (`return_to_hand` / reanimate) — needs graveyard picker
+- `sacrifice` (sacrificing player chooses)
+- Gain control / control-change ("threaten"), optional until-end-of-turn
+- `fight` — first **multi-target** effect
+- Temporary keyword grant ("gains flying until end of turn")
+
+**Tier 3 (higher effort / variable):**
+
+- **X spells** (variable amounts)
+- Search-library variants beyond current tutor
+
+**Targeting reach (Phase 3 leftovers):**
+
+- Targeted **player / permanent / non-creature** trigger targets
+- **Multi-target** triggers
+- Spell effects targeting non-creature permanents
+
+## 🟠 Longer-term — rules-engine depth (Phase 4)
+
+- Player-chosen combat damage **over-assignment** amounts
+- Richer **mana model** (hybrid, X, Phyrexian)
+- Fuller **priority/APNAP**, replacement / prevention / **protection** (incl. "can't be countered")
+- Real **copy / control-change / suppression** cards
+- Real **mana-retention** cards
+- Activated abilities beyond `deal_damage` (others currently render "Soon")
+
+## 🔵 Architecture frontier (deferred by design — cerebrum Decision Log 2026-06-01)
+
+- **`effective_characteristics`** accessor (one face/script accessor) — unlocks DFCs (Jill // Shiva); the seam already reserved in `effective_script`
+- Broader **`apply_effect`** unification (one effect switch shared by spells/abilities/triggers) — `apply_creature_effect` is the first slice
+- **Pure-TS `reduce(state, action)` rules core** — only at the replacement-effect / layer-system frontier (Noctis-class: cast-from-graveyard, additional costs, finality counters). Justified there by shared client/server optimistic UI + deterministic replay. **Not a rewrite-now.**
+
+## ⚪ Operational (Phase 5)
+
+- Scheduled cleanup of finished-game runtime data (explicit RPC/job, not in `maybe_finish_game_session`)
+- Hidden-zone RLS hardening if private decklists matter
+- Silence the stray parent `package-lock.json` build warning (`turbopack.root`)
+
+---
+**Why:** Consolidated at the user's request from four drifted roadmap sources so there's one current view.
+**How to apply:** When the user asks "what's next," pull from Near-term first, then Mid-term. The dual-shape variant and player-picker infra are the two highest-leverage unlocks. Keep this reconciled with cerebrum Decision Log as work ships.

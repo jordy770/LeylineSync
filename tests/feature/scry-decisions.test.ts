@@ -6,7 +6,7 @@
 
 import { test, before } from 'node:test'
 import assert from 'node:assert/strict'
-import { withRolledBackTx } from '../harness/db'
+import { withRolledBackTx, asPlayer, rpc } from '../harness/db'
 import { Scenario } from '../harness/scenario'
 import { ensureTestCards } from '../harness/seed'
 
@@ -102,5 +102,19 @@ test('SC5 scry rejects a result that does not place every revealed card', async 
     const decision = await s.pendingDecision()
     // Only places one of the two revealed cards.
     await assert.rejects(() => s.as('A').submitDecision(decision!.id, { top: [before[0]], bottom: [] }))
+  })
+})
+
+// SC6 — a pending decision freezes priority: pass_priority is rejected until it's submitted.
+test('SC6 cannot pass priority while a scry decision is pending', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    await fillLibrary(s, 2)
+
+    await s.as('A').castScry(1)
+    await s.as('A').resolveStack() // parks; a scry decision is now pending
+
+    await assert.rejects(() => asPlayer(client, s.players.A, () => rpc(client, 'pass_priority', { p_session_id: s.sessionId })))
   })
 })

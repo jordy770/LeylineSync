@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-03T14:36:31.443Z
-> Files: 350 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-04T14:17:22.158Z
+> Files: 356 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -11,7 +11,7 @@
 - `eslint.config.mjs` — ESLint flat configuration (~135 tok)
 - `next.config.ts` — Next.js configuration (~99 tok)
 - `package-lock.json` — npm lock file (~75642 tok)
-- `package.json` — Node.js package manifest (~512 tok)
+- `package.json` — Node.js package manifest (~534 tok)
 - `postcss.config.mjs` — Declares config (~45 tok)
 - `proxy.ts` — Exports proxy, config (~184 tok)
 - `README.md` — Project documentation (~15476 tok)
@@ -29,7 +29,7 @@
 - `project_architecture.md` (~472 tok)
 - `project_hard_rules.md` — Declares in (~392 tok)
 - `project_overview.md` — Declares in (~290 tok)
-- `project_roadmap.md` (~471 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~1462 tok)
 - `project_styling.md` (~401 tok)
 - `reference_pencil_designs.md` (~283 tok)
 
@@ -117,7 +117,7 @@
 - `ActionButtons.tsx` — ActionButtons (~4382 tok)
 - `auth-button.tsx` — AuthButton (~239 tok)
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~3958 tok)
-- `CardBehaviorForm.tsx` — inputClass (~4757 tok)
+- `CardBehaviorForm.tsx` — inputClass (~5621 tok)
 - `CardCatalogPicker.tsx` — cardTypeFilters — uses useMemo, useState, useEffect (~2316 tok)
 - `CardController.tsx` — CardController — uses useMemo (~221 tok)
 - `CardZoneControls.tsx` — CardZoneControls — uses useMemo, useState (~2178 tok)
@@ -126,7 +126,7 @@
 - `ControllerList.tsx` — components/ControllerList.tsx (~20457 tok)
 - `ControllerListV2.tsx` — ControllerListV2 — uses useState, useMemo (~10088 tok)
 - `ControllerListV3.tsx` — manaColors — uses useMemo (~6422 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~38043 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~39473 tok)
 - `DeckManager.tsx` — DeckManager — uses useMemo, useState, useEffect (~3880 tok)
 - `deploy-button.tsx` — DeployButton (~385 tok)
 - `DevAdminPanel.tsx` — DevAdminPanel (~3316 tok)
@@ -209,9 +209,10 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~7788 tok)
 - `blueprint.ts` — Exports GameViewStep, BoardLayoutKey, PriorityRole, StackActionType + 21 more (~3457 tok)
 - `board-selectors.ts` — Exports BoardSeat, BoardConnection, buildBoardSeats, getCombatCardIds + 2 more (~812 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5388 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~3082 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~2967 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~4909 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~3540 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~5053 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~3322 tok)
 - `card-behavior.ts` — Exports CardBehaviorSchemaVersion, CardBehaviorStatus, CardBehaviorZone, CardBehaviorTargetType + 14 (~2557 tok)
 - `controller-selectors.ts` — Exports selectControllerViewModel, getCanQuickCast, canCardRespond, doesCardRequireStackTarget + 2 more (~1459 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5490 tok)
@@ -362,6 +363,9 @@
 - `202605010092_pending_decisions_realtime.sql` — Phase 1: make game_pending_decisions a realtime source. (~186 tok)
 - `202605010093_trigger_scry_surveil.sql` — Phase 1, slice 6: scry / surveil from inside a triggered ability. (~5768 tok)
 - `202605010094_spell_effect_program.sql` — Phase 1, slice 7: generic multi-action untargeted spell resolution + the (~6282 tok)
+- `202605010095_block_priority_during_decision.sql` — Phase 1, slice 8: a pending decision freezes priority. (~1316 tok)
+- `202605010096_more_decisions.sql` — Phase 1, slice 9: more resolution-time choices on the shared decision system — (~5658 tok)
+- `202605010097_choose_player.sql` — Phase 1, slice 10: choose_player — pick a player at resolution, then run inner (~5642 tok)
 
 ## tests/
 
@@ -371,7 +375,8 @@
 
 - `exile-mill.test.ts` — Feature group 083 — exile (spell + targeted trigger) and mill. (~829 tok)
 - `modal-decisions.test.ts` — Phase 1, slice 2 — pending-decision machinery + modal "choose one". (~1628 tok)
-- `scry-decisions.test.ts` — Phase 1, slice 3 — Tier-B resolution-time decisions: scry. (~1272 tok)
+- `more-decisions.test.ts` — Phase 1, slice 9 — more resolution-time choices: tutor (search_library), (~1660 tok)
+- `scry-decisions.test.ts` — Phase 1, slice 3 — Tier-B resolution-time decisions: scry. (~1456 tok)
 - `spell-effect-program.test.ts` — Phase 1, slice 7 — multi-action untargeted spell program (e.g. Opt). (~661 tok)
 - `surveil-decisions.test.ts` — Phase 1, slice 4 — Tier-B resolution-time decision: surveil. (~1089 tok)
 - `targeted-triggers.test.ts` — Feature group 080/081 — targeted ETB triggers, controller (ownership) (~1132 tok)
@@ -380,7 +385,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~3234 tok)
+- `test-cards.json` (~3698 tok)
 
 ## tests/harness/
 
@@ -391,6 +396,10 @@
 ## tests/regression/
 
 - `group1.test.ts` — Group 1 — regression that proves migrations 084/085/086 are behavior-preserving. (~2722 tok)
+
+## tests/unit/
+
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~6198 tok)
 
 ## vercel/
 

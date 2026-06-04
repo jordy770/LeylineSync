@@ -3,12 +3,9 @@
 import {
   BUILDER_ABILITY_KINDS,
   BUILDER_DAMAGE_TARGETS,
-  BUILDER_EFFECT_TYPES,
   BUILDER_KEYWORDS,
   BUILDER_MANA_COLORS,
-  BUILDER_RECIPIENTS,
   BUILDER_SPELL_EFFECT_TYPES,
-  BUILDER_TOKEN_NAMES,
   BUILDER_TRIGGER_EVENTS,
   KEYWORD_LABELS,
   defaultActivatedAbility,
@@ -18,16 +15,25 @@ import {
   type BuilderActivatedAbility,
   type BuilderDamageTarget,
   type BuilderEffect,
-  type BuilderEffectType,
   type BuilderForm,
   type BuilderKeyword,
-  type BuilderRecipient,
   type BuilderSpellEffect,
   type BuilderSpellEffectType,
   type BuilderTrigger,
   type BuilderTriggerEvent,
 } from '@/lib/game/card-behavior-builder'
+import {
+  effectDef,
+  effectDefault,
+  effectsForContext,
+  type EffectContext,
+  type FieldDescriptor,
+} from '@/lib/game/card-behavior-registry'
 import type { ManaColor } from '@/lib/game/types'
+
+// A flat registry effect ({ type, ...fields }) — the shape both trigger effects
+// and spell actions share, rendered generically by EffectFields.
+type FlatEffect = Record<string, unknown> & { type: string }
 
 const inputClass =
   'rounded border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-white disabled:opacity-50'
@@ -215,14 +221,10 @@ export default function CardBehaviorForm({
                   </option>
                 ))}
               </select>
-              <input
-                type="number"
-                min={1}
-                max={99}
-                value={action.amount}
+              <EffectFields
+                effect={action}
                 disabled={disabled}
-                onChange={(event) => updateSpellAction(index, { ...action, amount: Math.max(1, Number(event.target.value)) })}
-                className={`${inputClass} w-20`}
+                onChange={(next) => updateSpellAction(index, next as BuilderSpellEffect)}
               />
               <button
                 type="button"
@@ -285,8 +287,9 @@ function TriggerEditor({
           <EffectEditor
             key={index}
             effect={effect}
+            context="trigger"
             disabled={disabled}
-            onChange={(next) => updateEffect(index, next)}
+            onChange={(next) => updateEffect(index, next as BuilderEffect)}
             onRemove={() =>
               onChange({ ...trigger, effects: trigger.effects.filter((_, i) => i !== index) })
             }
@@ -305,87 +308,38 @@ function TriggerEditor({
   )
 }
 
+// One effect row: a type dropdown (the effect types valid in `context`) plus its
+// declared fields. Used both for trigger effects and, recursively, for the inner
+// effects of `may`/`choose_player` (via EffectListControl).
 function EffectEditor({
   effect,
+  context,
   onChange,
   onRemove,
   disabled,
 }: {
-  effect: BuilderEffect
-  onChange: (next: BuilderEffect) => void
+  effect: FlatEffect
+  context: EffectContext
+  onChange: (next: FlatEffect) => void
   onRemove: () => void
   disabled: boolean
 }) {
-  const hasRecipient = effect.type === 'lose_life' || effect.type === 'deal_damage'
-
   return (
     <div className="flex flex-wrap items-center gap-2">
       <select
         value={effect.type}
         disabled={disabled}
-        onChange={(event) => onChange(defaultEffect(event.target.value as BuilderEffectType))}
+        onChange={(event) => onChange(effectDefault(event.target.value))}
         className={inputClass}
       >
-        {BUILDER_EFFECT_TYPES.map((option) => (
+        {effectsForContext(context).map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
       </select>
 
-      {effect.type === 'create_token' ? (
-        <>
-          <input
-            type="number"
-            min={1}
-            max={20}
-            value={effect.count}
-            disabled={disabled}
-            onChange={(event) => onChange({ ...effect, count: Math.max(1, Number(event.target.value)) })}
-            className={`${inputClass} w-16`}
-          />
-          <span className="text-slate-400">×</span>
-          <select
-            value={effect.token}
-            disabled={disabled}
-            onChange={(event) => onChange({ ...effect, token: event.target.value })}
-            className={inputClass}
-          >
-            {BUILDER_TOKEN_NAMES.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </>
-      ) : (
-        <input
-          type="number"
-          min={1}
-          max={99}
-          value={effect.amount}
-          disabled={disabled}
-          onChange={(event) => onChange({ ...effect, amount: Math.max(0, Number(event.target.value)) })}
-          className={`${inputClass} w-20`}
-        />
-      )}
-
-      {hasRecipient ? (
-        <select
-          value={(effect as { recipient: BuilderRecipient }).recipient}
-          disabled={disabled}
-          onChange={(event) =>
-            onChange({ ...effect, recipient: event.target.value as BuilderRecipient } as BuilderEffect)
-          }
-          className={inputClass}
-        >
-          {BUILDER_RECIPIENTS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      ) : null}
+      <EffectFields effect={effect} disabled={disabled} onChange={onChange} />
 
       <button
         type="button"
@@ -394,6 +348,168 @@ function EffectEditor({
         className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
       >
         ✕
+      </button>
+    </div>
+  )
+}
+
+// Renders the input widgets for an effect's declared fields, driven entirely by
+// the registry — so a new effect type's fields appear with no per-type JSX.
+function EffectFields({
+  effect,
+  onChange,
+  disabled,
+}: {
+  effect: FlatEffect
+  onChange: (next: FlatEffect) => void
+  disabled: boolean
+}) {
+  const def = effectDef(effect.type)
+  if (!def) {
+    return null
+  }
+  return (
+    <>
+      {def.fields.map((field) => (
+        <FieldControl
+          key={field.name}
+          field={field}
+          value={effect[field.name]}
+          disabled={disabled}
+          onChange={(next) => onChange({ ...effect, [field.name]: next })}
+        />
+      ))}
+    </>
+  )
+}
+
+function FieldControl({
+  field,
+  value,
+  onChange,
+  disabled,
+}: {
+  field: FieldDescriptor
+  value: unknown
+  onChange: (next: unknown) => void
+  disabled: boolean
+}) {
+  if (field.kind === 'number') {
+    const min = field.min ?? 0
+    return (
+      <input
+        type="number"
+        min={min}
+        max={field.max ?? 99}
+        value={typeof value === 'number' ? value : field.default}
+        disabled={disabled}
+        title={field.label}
+        onChange={(event) => onChange(Math.max(min, Number(event.target.value)))}
+        className={`${inputClass} w-20`}
+      />
+    )
+  }
+
+  if (field.kind === 'text') {
+    return (
+      <input
+        type="text"
+        value={typeof value === 'string' ? value : field.default}
+        disabled={disabled}
+        placeholder={field.label}
+        title={field.label}
+        onChange={(event) => onChange(event.target.value)}
+        className={`${inputClass} w-44`}
+      />
+    )
+  }
+
+  // Nested record — render its sub-fields inline, writing back into the object.
+  if (field.kind === 'object') {
+    const v = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>
+    return (
+      <>
+        {field.fields.map((sub) => (
+          <FieldControl
+            key={sub.name}
+            field={sub}
+            value={v[sub.name]}
+            disabled={disabled}
+            onChange={(next) => onChange({ ...v, [sub.name]: next })}
+          />
+        ))}
+      </>
+    )
+  }
+
+  // Recursive list of effects (may / choose_player).
+  if (field.kind === 'effect-list') {
+    return (
+      <EffectListControl
+        field={field}
+        value={Array.isArray(value) ? (value as FlatEffect[]) : []}
+        disabled={disabled}
+        onChange={onChange}
+      />
+    )
+  }
+
+  // enum | select — both render as a dropdown of the field's options.
+  return (
+    <select
+      value={typeof value === 'string' ? value : field.default}
+      disabled={disabled}
+      title={field.label}
+      onChange={(event) => onChange(event.target.value)}
+      className={inputClass}
+    >
+      {field.options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  )
+}
+
+// A bordered, indented block holding a list of nested effect rows plus an add
+// button — the UI for an `effect-list` field. Each row recurses into EffectEditor
+// (which recurses back into EffectFields), so arbitrarily nested effects work.
+function EffectListControl({
+  field,
+  value,
+  onChange,
+  disabled,
+}: {
+  field: Extract<FieldDescriptor, { kind: 'effect-list' }>
+  value: FlatEffect[]
+  onChange: (next: FlatEffect[]) => void
+  disabled: boolean
+}) {
+  const types = effectsForContext(field.itemContext)
+  return (
+    <div className="grid w-full gap-2 rounded border border-slate-800 bg-slate-900/40 p-2">
+      {value.length === 0 ? (
+        <p className="text-xs text-slate-500">No effects.</p>
+      ) : (
+        value.map((item, index) => (
+          <EffectEditor
+            key={index}
+            effect={item}
+            context={field.itemContext}
+            disabled={disabled}
+            onChange={(next) => onChange(value.map((e, i) => (i === index ? next : e)))}
+            onRemove={() => onChange(value.filter((_, i) => i !== index))}
+          />
+        ))
+      )}
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => onChange([...value, effectDefault(types[0].value)])}
+        className="justify-self-start rounded border border-slate-700 px-2 py-1 text-xs text-slate-300 disabled:opacity-50"
+      >
+        + Add effect
       </button>
     </div>
   )

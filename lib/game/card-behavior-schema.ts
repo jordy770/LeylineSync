@@ -122,7 +122,7 @@ const CardBehaviorCostSchema = z.union([
 const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
-  'pump', 'mill', 'scry', 'surveil',
+  'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -183,6 +183,34 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('scry'),
     amount: z.number(),
+  }),
+  // Tutor — search your library for up to `count` cards (optional type filter),
+  // put them to `to`, then shuffle.
+  z.object({
+    type: z.literal('search_library'),
+    count: z.number().optional(),
+    to: z.enum(['hand', 'battlefield', 'top']).optional(),
+    filter: z.object({ type_line: z.string().optional() }).optional(),
+  }),
+  // Discard `count` cards (the controller chooses from their hand).
+  z.object({
+    type: z.literal('discard'),
+    count: z.number().optional(),
+  }),
+  // Optional "you may": a yes/no gate that, if accepted, runs the inner effects.
+  z.object({
+    type: z.literal('may'),
+    prompt: z.string().optional(),
+    // Inner effects kept loose to avoid a self-referential schema; the engine
+    // applies them (untargeted / creature-target) at confirm time.
+    effects: z.array(z.record(z.string(), z.unknown())),
+  }),
+  // Choose a player at resolution, then apply the inner (player-directed) effects
+  // to them. filter: "opponent" or "any". Inner effects kept loose (see may).
+  z.object({
+    type: z.literal('choose_player'),
+    filter: z.enum(['opponent', 'any']).optional(),
+    effects: z.array(z.record(z.string(), z.unknown())),
   }),
   // Surveil N — Tier-B: look at the top N of your library, put any number into
   // your graveyard, the rest back on top. Untargeted.

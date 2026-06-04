@@ -203,6 +203,10 @@ The engine supports these sections:
    - create_token: { "type": "create_token", "token": <token name>, "count": N } — the controller creates N tokens. Allowed token names: ${BUILDER_TOKEN_NAMES.join(', ')}. Pick the closest match by creature type; if none matches, omit this effect.
    - add_counters: { "type": "add_counters", "amount": N } — put N +1/+1 counters on this permanent (the source). Use only for "put a +1/+1 counter on it/CARDNAME".
    - mill: { "type": "mill", "amount": N, "recipient": "controller" | "each_opponent" } — a player puts the top N cards of their library into their graveyard. Default recipient is "controller" ("mill N cards" = you); use "each_opponent" for "each opponent mills N".
+   - search_library (tutor): { "type": "search_library", "count": N, "to": "hand" | "battlefield" | "top", "filter": { "type_line": "creature" } } — search YOUR library for up to N cards (optional type_line filter), put them to the destination (default "hand"), then shuffle. The controller chooses at resolution.
+   - discard: { "type": "discard", "count": N } — the controller chooses N cards in their hand to discard.
+   - may: { "type": "may", "prompt": "Do X?", "effects": [ ... ] } — an optional "you may": the controller is asked yes/no; on yes the inner effects run. Use for "you may" abilities. Inner effects should be simple (no nested scry/search/discard).
+   - choose_player: { "type": "choose_player", "filter": "opponent" | "any", "effects": [ ... ] } — the controller chooses a player, then the inner effects apply to that player. Use for "target player of your choice" / "an opponent you choose". Inner effects should be simple player-directed effects (lose_life / gain_life / draw / mill), e.g. [{ "type": "lose_life", "amount": 3 }].
    - Targeted creature triggers may use deal_damage, destroy, exile, bounce, tap, untap, or add_counters with "target_type": "creature". The target_type must be exactly "creature" (not "any") — a trigger that deals damage to "any target" is auto-resolved against each opponent instead of singling out a creature.
    - Controller restriction (triggers and spells): add "target_controller": "opponent" for "a creature an opponent controls", or "target_controller": "you" for "a creature you control". Omit it when there is no restriction.
 
@@ -224,6 +228,10 @@ The engine supports these sections:
     - scry      { "type": "scry", "amount": N } — "Scry N": the caster looks at the top N cards of their library and may put any number on the bottom (untargeted).
     - surveil   { "type": "surveil", "amount": N } — "Surveil N": the caster looks at the top N cards of their library and may put any number into their graveyard (untargeted).
     - counter   { "type": "counter", "target_type": "spell" }; add_mana { "type": "add_mana", "color": ..., "amount": N }.
+    - mill      { "type": "mill", "amount": N, "recipient": "each_opponent" | "controller" } — top N of a library to its graveyard.
+    - search_library { "type": "search_library", "count": N, "to": "hand" | "battlefield" | "top", "filter": { "type_line": "..." } } — tutor; omit "filter" to search for ANY card (Demonic Tutor = count 1, to "hand", no filter).
+    - discard   { "type": "discard", "count": N } — the controller discards N.
+    - may / choose_player — same shapes as in the triggered-ability notes above; valid as spell actions too.
     Targeted creature effects (destroy/exile/bounce/tap/untap/add_counters) only target creatures right now — if the card targets a non-creature permanent, omit that action.
 
 Rules:

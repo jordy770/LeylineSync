@@ -4,6 +4,14 @@
 // `null` from `parseScriptToForm`, signalling the editor to stay in JSON mode.
 
 import type { CardScript, ManaColor } from './types'
+import {
+  EFFECT_RECIPIENTS,
+  EFFECT_TOKEN_NAMES,
+  effectDefault,
+  effectFromJson,
+  effectToJson as registryEffectToJson,
+  effectsForContext,
+} from './card-behavior-registry'
 
 // ─── Vocabulary ──────────────────────────────────────────────────────────────
 
@@ -35,21 +43,13 @@ export const BUILDER_TRIGGER_EVENTS = [
 ] as const
 export type BuilderTriggerEvent = (typeof BUILDER_TRIGGER_EVENTS)[number]['value']
 
-export const BUILDER_RECIPIENTS = [
-  { value: 'each_opponent', label: 'each opponent' },
-  { value: 'controller', label: 'you' },
-] as const
+// Recipient / token vocab now lives in the effect registry (single source of
+// truth); re-exported here so existing form/guide imports keep working.
+export const BUILDER_RECIPIENTS = EFFECT_RECIPIENTS
 export type BuilderRecipient = (typeof BUILDER_RECIPIENTS)[number]['value']
 
 // Token names available to the create_token effect (matches the seeded catalog).
-export const BUILDER_TOKEN_NAMES = [
-  'Soldier Token',
-  'Saproling Token',
-  'Zombie Token',
-  'Goblin Token',
-  'Beast Token',
-  'Spirit Token',
-] as const
+export const BUILDER_TOKEN_NAMES = EFFECT_TOKEN_NAMES
 export type BuilderTokenName = (typeof BUILDER_TOKEN_NAMES)[number]
 
 // Auto-resolved effect types apply_triggered_ability_effects applies for triggers.
@@ -62,18 +62,21 @@ export type BuilderEffect =
   | { type: 'add_counters'; amount: number }
   | { type: 'scry'; amount: number }
   | { type: 'surveil'; amount: number }
+  | { type: 'mill'; amount: number; recipient: BuilderRecipient }
+  | { type: 'search_library'; count: number; to: string; filter: { type_line: string } }
+  | { type: 'discard'; count: number }
+  | { type: 'may'; prompt: string; effects: BuilderEffect[] }
+  | { type: 'choose_player'; filter: string; effects: BuilderEffect[] }
+  | { type: 'destroy'; target: string }
+  | { type: 'exile'; target: string }
+  | { type: 'bounce'; target: string }
+  | { type: 'tap'; target: string }
+  | { type: 'untap'; target: string }
+  | { type: 'pump'; power: number; toughness: number; target: string }
 
-export const BUILDER_EFFECT_TYPES = [
-  { value: 'gain_life', label: 'You gain life' },
-  { value: 'lose_life', label: 'Players lose life' },
-  { value: 'deal_damage', label: 'Deal damage to players' },
-  { value: 'draw', label: 'You draw cards' },
-  { value: 'create_token', label: 'Create token(s)' },
-  { value: 'add_counters', label: '+1/+1 counters on this' },
-  { value: 'scry', label: 'Scry N' },
-  { value: 'surveil', label: 'Surveil N' },
-] as const
-export type BuilderEffectType = (typeof BUILDER_EFFECT_TYPES)[number]['value']
+// Trigger-context effect options, derived from the registry.
+export const BUILDER_EFFECT_TYPES = effectsForContext('trigger')
+export type BuilderEffectType = BuilderEffect['type']
 
 export type BuilderTrigger = {
   event: BuilderTriggerEvent
@@ -86,17 +89,28 @@ export type BuilderTrigger = {
 // surveil). A spell using anything else (targeted destroy/exile, damage, …)
 // round-trips to null so the editor stays in JSON mode.
 
-export type BuilderSpellEffectType = 'scry' | 'surveil' | 'draw'
-export type BuilderSpellEffect = { type: BuilderSpellEffectType; amount: number }
+export type BuilderSpellEffect =
+  | { type: 'scry'; amount: number }
+  | { type: 'surveil'; amount: number }
+  | { type: 'draw'; amount: number }
+  | { type: 'mill'; amount: number; recipient: BuilderRecipient }
+  | { type: 'search_library'; count: number; to: string; filter: { type_line: string } }
+  | { type: 'discard'; count: number }
+  | { type: 'may'; prompt: string; effects: BuilderEffect[] }
+  | { type: 'choose_player'; filter: string; effects: BuilderEffect[] }
+  | { type: 'destroy'; target: string }
+  | { type: 'exile'; target: string }
+  | { type: 'bounce'; target: string }
+  | { type: 'tap'; target: string }
+  | { type: 'untap'; target: string }
+  | { type: 'pump'; power: number; toughness: number; target: string }
+export type BuilderSpellEffectType = BuilderSpellEffect['type']
 
-export const BUILDER_SPELL_EFFECT_TYPES = [
-  { value: 'scry', label: 'Scry N' },
-  { value: 'surveil', label: 'Surveil N' },
-  { value: 'draw', label: 'Draw N' },
-] as const
+// Spell-context effect options, derived from the registry.
+export const BUILDER_SPELL_EFFECT_TYPES = effectsForContext('spell')
 
 export function defaultSpellEffect(type: BuilderSpellEffectType): BuilderSpellEffect {
-  return { type, amount: 1 }
+  return effectDefault(type) as BuilderSpellEffect
 }
 
 // ─── Activated abilities ───────────────────────────────────────────────────────
@@ -159,24 +173,7 @@ export const EMPTY_BUILDER_FORM: BuilderForm = {
 // ─── Defaults / factories ──────────────────────────────────────────────────────
 
 export function defaultEffect(type: BuilderEffectType): BuilderEffect {
-  switch (type) {
-    case 'gain_life':
-      return { type: 'gain_life', amount: 1 }
-    case 'lose_life':
-      return { type: 'lose_life', amount: 1, recipient: 'each_opponent' }
-    case 'deal_damage':
-      return { type: 'deal_damage', amount: 1, recipient: 'each_opponent' }
-    case 'draw':
-      return { type: 'draw', amount: 1 }
-    case 'create_token':
-      return { type: 'create_token', token: BUILDER_TOKEN_NAMES[0], count: 1 }
-    case 'add_counters':
-      return { type: 'add_counters', amount: 1 }
-    case 'scry':
-      return { type: 'scry', amount: 1 }
-    case 'surveil':
-      return { type: 'surveil', amount: 1 }
-  }
+  return effectDefault(type) as BuilderEffect
 }
 
 export function defaultTrigger(): BuilderTrigger {
@@ -199,7 +196,9 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
 
   const activatedAbilities = form.activatedAbilities.map(activatedAbilityToJson)
 
-  const spellEffectActions = form.spellEffect.map((a) => ({ type: a.type, amount: a.amount }))
+  // Serialize spell actions through the registry so multi-field effects
+  // (e.g. search_library's count/to/filter) keep all their data, not just amount.
+  const spellEffectActions = form.spellEffect.map((a) => registryEffectToJson(a))
 
   // Nothing authored → no script (clears behavior).
   if (
@@ -255,22 +254,7 @@ function activatedAbilityToJson(ability: BuilderActivatedAbility): Record<string
 }
 
 function effectToJson(effect: BuilderEffect): Record<string, unknown> {
-  switch (effect.type) {
-    case 'gain_life':
-      return { type: 'gain_life', amount: effect.amount }
-    case 'draw':
-      return { type: 'draw', amount: effect.amount }
-    case 'lose_life':
-    case 'deal_damage':
-      return { type: effect.type, amount: effect.amount, recipient: effect.recipient }
-    case 'create_token':
-      return { type: 'create_token', token: effect.token, count: effect.count }
-    case 'add_counters':
-      return { type: 'add_counters', amount: effect.amount }
-    case 'scry':
-    case 'surveil':
-      return { type: effect.type, amount: effect.amount }
-  }
+  return registryEffectToJson(effect)
 }
 
 // ─── Script JSON → form (best-effort) ──────────────────────────────────────────
@@ -343,21 +327,11 @@ function parseSpellEffect(value: unknown): BuilderSpellEffect[] | null {
 
   const result: BuilderSpellEffect[] = []
   for (const entry of e.actions) {
-    if (typeof entry !== 'object' || entry === null) {
+    const parsed = effectFromJson(entry, 'spell')
+    if (parsed === null) {
       return null
     }
-    const a = entry as Record<string, unknown>
-    if (Object.keys(a).some((key) => key !== 'type' && key !== 'amount')) {
-      return null
-    }
-    if (
-      (a.type === 'scry' || a.type === 'surveil' || a.type === 'draw') &&
-      typeof a.amount === 'number'
-    ) {
-      result.push({ type: a.type, amount: a.amount })
-    } else {
-      return null
-    }
+    result.push(parsed as BuilderSpellEffect)
   }
   return result
 }
@@ -527,47 +501,11 @@ function parseEffects(value: unknown): BuilderEffect[] | null {
 
   const effects: BuilderEffect[] = []
   for (const entry of value) {
-    if (typeof entry !== 'object' || entry === null) {
+    const parsed = effectFromJson(entry, 'trigger')
+    if (parsed === null) {
       return null
     }
-    const e = entry as Record<string, unknown>
-    const type = e.type as string | undefined
-    const amount = typeof e.amount === 'number' ? e.amount : 0
-    const recipient = e.recipient === 'controller' ? 'controller' : 'each_opponent'
-
-    if (type === 'gain_life') {
-      effects.push({ type: 'gain_life', amount })
-    } else if (type === 'draw') {
-      effects.push({ type: 'draw', amount })
-    } else if (type === 'lose_life') {
-      effects.push({ type: 'lose_life', amount, recipient })
-    } else if (type === 'deal_damage') {
-      // Only the recipient form (no chosen target) is representable in the form.
-      if (e.target_type !== undefined || e.target_ref !== undefined) {
-        return null
-      }
-      effects.push({ type: 'deal_damage', amount, recipient })
-    } else if (type === 'create_token') {
-      if (typeof e.token !== 'string') {
-        return null
-      }
-      effects.push({
-        type: 'create_token',
-        token: e.token,
-        count: typeof e.count === 'number' ? e.count : 1,
-      })
-    } else if (type === 'add_counters') {
-      if (e.target_type !== undefined || e.target_ref !== undefined) {
-        return null
-      }
-      effects.push({ type: 'add_counters', amount })
-    } else if (type === 'scry') {
-      effects.push({ type: 'scry', amount })
-    } else if (type === 'surveil') {
-      effects.push({ type: 'surveil', amount })
-    } else {
-      return null
-    }
+    effects.push(parsed as BuilderEffect)
   }
   return effects
 }
