@@ -1,35 +1,24 @@
 'use client' // Cruciaal voor het gebruik van de client en hooks
 
-import { useMemo, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import {
-  addManaFromCard,
-  createManaRetentionEffect,
-  getErrorMessage,
-  putCounterSpellOnStack,
-  putDealDamagePlayerOnStack,
-} from '@/lib/game/actions'
+  formatStackTargetLabel,
+  getActionTiming,
+  getRetainedManaColors,
+  isCounterSpellAction,
+  isPlayerDamageAction,
+  isRetainManaAction,
+  type CardWithScript,
+} from '@/lib/game/action-selectors'
+import { useCardActionHandlers } from '@/lib/game/use-card-action-handlers'
 import {
   decrementPaymentColor,
   getPaymentTotal,
   incrementPaymentColor,
   manaColors,
-  normalizeManaPayment,
   parseManaCost,
   type ManaPayment,
 } from '@/lib/game/mana'
-import type { CardAction, CardScript, GameSessionPlayer, GameZone, StackItem } from '@/lib/game/types'
-
-type CardWithScript = {
-  id: string
-  is_tapped: boolean
-  zone: GameZone
-  cards?: {
-    script?: CardScript | null
-    type_line?: string | null
-    mana_cost?: string | null
-  } | null
-}
+import type { GameSessionPlayer, StackItem } from '@/lib/game/types'
 
 interface ActionButtonsProps {
   card: CardWithScript;      // De kaart data inclusief het script
@@ -52,131 +41,31 @@ export default function ActionButtons({
   canUseInstantActions = false,
   canUseSorceryActions = false,
 }: ActionButtonsProps) {
-  const supabase = useMemo(() => createClient(), [])
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [pendingActionIndex, setPendingActionIndex] = useState<number | null>(null)
-  const [selectedTargets, setSelectedTargets] = useState<Record<number, string>>({})
-  const [selectedStackTargets, setSelectedStackTargets] = useState<Record<number, string>>({})
-  const [genericPayments, setGenericPayments] = useState<Record<number, ManaPayment>>({})
-  
   // Haal het script op uit de gejoinde 'cards' tabel
   const script = card.cards?.script;
   const requiresManualTap = script?.triggers?.includes('manual_tap') ?? false
+  const {
+    errorMessage,
+    pendingActionIndex,
+    selectedTargets,
+    selectedStackTargets,
+    genericPayments,
+    setSelectedTargets,
+    setSelectedStackTargets,
+    setGenericPayments,
+    handleManaAction,
+    handleStackDamageAction,
+    handleRetainManaAction,
+    handleCounterSpellAction,
+  } = useCardActionHandlers({
+    card,
+    sessionId,
+    playerId,
+    requiresManualTap,
+  })
 
   // Stop als er geen script of acties zijn
   if (!script || !script.actions) return null;
-
-  const handleManaAction = async (color: string, amount: number) => {
-    setErrorMessage(null)
-
-    if (requiresManualTap && card.is_tapped) {
-      return
-    }
-
-    try {
-      await addManaFromCard({
-        supabase,
-        cardId: card.id,
-        sessionId,
-        playerId,
-        color,
-        amount,
-        shouldTapCard: requiresManualTap,
-      })
-      
-      console.log(`Mana toegevoegd: ${amount}x ${color}`);
-    } catch (err) {
-      const message = getErrorMessage(err)
-      console.error('Fout bij bijwerken mana:', message, err);
-      setErrorMessage(message)
-    }
-  };
-
-  const handleStackDamageAction = async (
-    actionIndex: number,
-    targetPlayerId: string,
-    amount: number,
-    timing: 'instant' | 'sorcery',
-    genericPayment?: ManaPayment,
-  ) => {
-    setErrorMessage(null)
-    setPendingActionIndex(actionIndex)
-
-    try {
-      await putDealDamagePlayerOnStack(
-        supabase,
-        sessionId,
-        targetPlayerId,
-        amount,
-        timing,
-        card.id,
-        genericPayment ? normalizeManaPayment(genericPayment) : undefined,
-      )
-      setGenericPayments((current) => ({
-        ...current,
-        [actionIndex]: {},
-      }))
-    } catch (err) {
-      const message = getErrorMessage(err)
-      console.error('Fout bij stack actie:', message, err)
-      setErrorMessage(message)
-    } finally {
-      setPendingActionIndex(null)
-    }
-  }
-
-  const handleRetainManaAction = async (actionIndex: number, action: CardAction) => {
-    setErrorMessage(null)
-    setPendingActionIndex(actionIndex)
-
-    try {
-      await createManaRetentionEffect({
-        supabase,
-        sessionId,
-        sourceCardId: card.id,
-        playerId,
-        colors: getRetainedManaColors(action),
-        expiresAtPhase: action.expires_at_phase ?? 'ending',
-        expiresAtStep: action.expires_at_step ?? 'cleanup',
-        shouldTapCard: requiresManualTap,
-      })
-    } catch (err) {
-      const message = getErrorMessage(err)
-      console.error('Fout bij mana-retentie effect:', message, err)
-      setErrorMessage(message)
-    } finally {
-      setPendingActionIndex(null)
-    }
-  }
-
-  const handleCounterSpellAction = async (
-    actionIndex: number,
-    targetStackItemId: string,
-    genericPayment?: ManaPayment,
-  ) => {
-    setErrorMessage(null)
-    setPendingActionIndex(actionIndex)
-
-    try {
-      await putCounterSpellOnStack(
-        supabase,
-        sessionId,
-        targetStackItemId,
-        card.id,
-        genericPayment ? normalizeManaPayment(genericPayment) : undefined,
-      )
-      setGenericPayments((current) => ({
-        ...current,
-        [actionIndex]: {},
-      }))
-    } catch (err) {
-      const message = getErrorMessage(err)
-      console.error('Fout bij counterspell actie:', message, err)
-      setErrorMessage(message)
-    } finally {
-      setPendingActionIndex(null)
-    }
-  }
 
   return (
     <div className="space-y-2 p-4">
@@ -426,76 +315,6 @@ export default function ActionButtons({
       {errorMessage ? <p className="text-xs text-red-300">{errorMessage}</p> : null}
     </div>
   );
-}
-
-function getActionTiming(action: CardAction, typeLine?: string | null) {
-  if (action.timing) {
-    return action.timing === 'instant' || action.timing === 'sorcery' ? action.timing : null
-  }
-
-  const normalizedTypeLine = typeLine?.toLowerCase() ?? ''
-
-  if (normalizedTypeLine.includes('instant')) {
-    return 'instant'
-  }
-
-  if (normalizedTypeLine.includes('sorcery')) {
-    return 'sorcery'
-  }
-
-  return null
-}
-
-function isPlayerDamageAction(action: CardAction) {
-  if (action.type !== 'deal_damage_player' && action.type !== 'deal_damage') {
-    return false
-  }
-
-  return !action.target || action.target === 'player'
-}
-
-function isRetainManaAction(action: CardAction) {
-  return action.type === 'retain_mana' || action.type === 'mana_does_not_empty'
-}
-
-function isCounterSpellAction(action: CardAction) {
-  return (
-    action.type === 'counter_spell' ||
-    action.type === 'counter_target_spell' ||
-    (action.type === 'counter' && (action.target === 'spell' || action.target_type === 'spell'))
-  )
-}
-
-function formatStackTargetLabel(item: StackItem) {
-  if (item.action_type === 'cast_permanent') {
-    return `Cast ${item.source_card_name ?? 'Unknown permanent'}`
-  }
-
-  if (item.action_type === 'deal_damage_player') {
-    return `${item.source_card_name ?? 'Unknown source'} damage`
-  }
-
-  if (item.action_type === 'counter_spell') {
-    return `${item.source_card_name ?? 'Counterspell'} counter`
-  }
-
-  return item.source_card_name ?? item.action_type
-}
-
-function getRetainedManaColors(action: CardAction) {
-  if (Array.isArray(action.colors)) {
-    return action.colors
-      .map((color) => color.toUpperCase())
-      .filter((color) => ['W', 'U', 'B', 'R', 'G', 'C'].includes(color))
-  }
-
-  if (action.color) {
-    return [action.color.toUpperCase()].filter((color) =>
-      ['W', 'U', 'B', 'R', 'G', 'C'].includes(color),
-    )
-  }
-
-  return []
 }
 
 function GenericManaPaymentPicker({

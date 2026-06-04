@@ -1,0 +1,326 @@
+import { z } from 'zod'
+
+// ─── Shared primitives ───────────────────────────────────────────────────────
+
+const ManaColorSchema = z.enum(['W', 'U', 'B', 'R', 'G', 'C'])
+
+const GameZoneSchema = z.enum(['library', 'hand', 'stack', 'battlefield', 'graveyard', 'exile'])
+
+const BehaviorZoneSchema = z.union([GameZoneSchema, z.enum(['command', 'any'])])
+
+// Shared by both V1 and V2 — kept permissive (no .strict()) because
+// continuous effects carry payload data and are extended incrementally.
+export const CardContinuousEffectSchema = z.object({
+  type: z.string().optional(),
+  effect_type: z.string().optional(),
+  affected: z.string().optional(),
+  source_zone_required: z.string().optional(),
+  amount: z.number().optional(),
+  colors: z.array(z.string()).optional(),
+  payload: z.record(z.string(), z.unknown()).optional(),
+  expires_at_turn_number: z.number().optional(),
+  expires_at_phase: z.string().optional(),
+  expires_at_step: z.string().optional(),
+})
+
+// ─── V1 schemas ──────────────────────────────────────────────────────────────
+
+const KNOWN_V1_ACTION_TYPES = ['add_mana', 'deal_damage', 'counter_spell'] as const
+
+// The catch-all only matches action types we haven't explicitly modelled,
+// preventing known types with typo'd fields from silently passing.
+// target_type may be a single type or a list (e.g. "any target" -> creature + player).
+const TargetTypeSchema = z.union([z.string(), z.array(z.string())]).optional()
+
+const UnknownV1ActionSchema = z.object({
+  type: z.string().refine(
+    (t) => !(KNOWN_V1_ACTION_TYPES as readonly string[]).includes(t),
+    { message: 'Known V1 action type with invalid fields — check required fields for this type' },
+  ),
+  color: z.string().optional(),
+  colors: z.array(z.string()).optional(),
+  amount: z.number().optional(),
+  power: z.number().optional(),
+  toughness: z.number().optional(),
+  target: z.string().optional(),
+  target_type: TargetTypeSchema,
+  timing: z.string().optional(),
+  expires_at_phase: z.string().optional(),
+  expires_at_step: z.string().optional(),
+})
+
+export const CardActionSchema = z.union([
+  z.object({
+    type: z.literal('add_mana'),
+    color: ManaColorSchema,
+    amount: z.number().int().positive(),
+  }),
+  z.object({
+    type: z.literal('deal_damage'),
+    amount: z.number().int().positive(),
+    target: z.string().optional(),
+    target_type: TargetTypeSchema,
+    timing: z.string().optional(),
+    expires_at_phase: z.string().optional(),
+    expires_at_step: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal('counter_spell'),
+    target: z.string().optional(),
+    target_type: TargetTypeSchema,
+    timing: z.string().optional(),
+  }),
+  UnknownV1ActionSchema,
+])
+
+// .strict() at the top level catches hallucinated top-level keys —
+// the most common mistake when writing scripts by hand or with an LLM.
+export const CardScriptV1Schema = z.object({
+  actions: z.array(CardActionSchema).optional(),
+  continuous_effects: z.array(CardContinuousEffectSchema).optional(),
+  triggers: z.array(z.string()).optional(),
+}).strict()
+
+// ─── V2 schemas ──────────────────────────────────────────────────────────────
+
+const BehaviorTargetTypeSchema = z.enum([
+  'any',
+  'artifact',
+  'battle',
+  'creature',
+  'enchantment',
+  'opponent',
+  'permanent',
+  'planeswalker',
+  'player',
+  'spell',
+])
+
+const KNOWN_V2_COST_TYPES = [
+  'tap_self', 'untap_self', 'mana', 'pay_life',
+  'sacrifice_self', 'discard', 'exile_self',
+] as const
+
+const UnknownCostSchema = z.object({
+  type: z.string().refine(
+    (t) => !(KNOWN_V2_COST_TYPES as readonly string[]).includes(t),
+    { message: 'Known cost type with invalid fields — check required fields for this type' },
+  ),
+}).passthrough()
+
+const CardBehaviorCostSchema = z.union([
+  z.object({ type: z.literal('tap_self') }),
+  z.object({ type: z.literal('untap_self') }),
+  z.object({ type: z.literal('mana'), amount: z.string() }),
+  z.object({ type: z.literal('pay_life'), amount: z.number() }),
+  z.object({ type: z.literal('sacrifice_self') }),
+  z.object({ type: z.literal('discard'), amount: z.number() }),
+  z.object({ type: z.literal('exile_self'), from_zone: BehaviorZoneSchema.optional() }),
+  UnknownCostSchema,
+])
+
+const KNOWN_V2_ACTION_TYPES = [
+  'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
+  'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
+  'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player',
+] as const
+
+const UnknownV2ActionSchema = z.object({
+  type: z.string().refine(
+    (t) => !(KNOWN_V2_ACTION_TYPES as readonly string[]).includes(t),
+    { message: 'Known V2 action type with invalid fields — check required fields for this type' },
+  ),
+}).passthrough()
+
+// Fixed (non-chosen) recipient for auto-resolving triggered-ability effects.
+const BehaviorRecipientSchema = z.enum(['controller', 'each_opponent', 'active_player'])
+
+// Optional controller restriction on a chosen creature target.
+// "an opponent controls" -> opponent; "you control" -> you/controller/self.
+const TargetControllerSchema = z.enum(['any', 'opponent', 'you', 'controller', 'self']).optional()
+
+const CardBehaviorActionSchema = z.union([
+  z.object({
+    type: z.literal('add_mana'),
+    color: ManaColorSchema,
+    amount: z.number(),
+  }),
+  z.object({
+    type: z.literal('deal_damage'),
+    amount: z.number(),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+    recipient: BehaviorRecipientSchema.optional(),
+  }),
+  z.object({
+    type: z.literal('counter'),
+    target_ref: z.string().optional(),
+    target_type: z.literal('spell').optional(),
+  }),
+  z.object({
+    type: z.literal('gain_life'),
+    amount: z.number(),
+    recipient: BehaviorRecipientSchema.optional(),
+  }),
+  z.object({
+    type: z.literal('lose_life'),
+    amount: z.number(),
+    recipient: BehaviorRecipientSchema.optional(),
+  }),
+  z.object({
+    type: z.literal('draw'),
+    amount: z.number(),
+    recipient: BehaviorRecipientSchema.optional(),
+  }),
+  z.object({
+    type: z.literal('mill'),
+    amount: z.number(),
+    recipient: BehaviorRecipientSchema.optional(),
+  }),
+  // Scry N — a resolution-time (Tier-B) decision: look at the top N of your
+  // library, then reorder/bottom them. Untargeted (acts on the caster's library).
+  z.object({
+    type: z.literal('scry'),
+    amount: z.number(),
+  }),
+  // Tutor — search your library for up to `count` cards (optional type filter),
+  // put them to `to`, then shuffle.
+  z.object({
+    type: z.literal('search_library'),
+    count: z.number().optional(),
+    to: z.enum(['hand', 'battlefield', 'top']).optional(),
+    filter: z.object({ type_line: z.string().optional() }).optional(),
+  }),
+  // Discard `count` cards (the controller chooses from their hand).
+  z.object({
+    type: z.literal('discard'),
+    count: z.number().optional(),
+  }),
+  // Optional "you may": a yes/no gate that, if accepted, runs the inner effects.
+  z.object({
+    type: z.literal('may'),
+    prompt: z.string().optional(),
+    // Inner effects kept loose to avoid a self-referential schema; the engine
+    // applies them (untargeted / creature-target) at confirm time.
+    effects: z.array(z.record(z.string(), z.unknown())),
+  }),
+  // Choose a player at resolution, then apply the inner (player-directed) effects
+  // to them. filter: "opponent" or "any". Inner effects kept loose (see may).
+  z.object({
+    type: z.literal('choose_player'),
+    filter: z.enum(['opponent', 'any']).optional(),
+    effects: z.array(z.record(z.string(), z.unknown())),
+  }),
+  // Surveil N — Tier-B: look at the top N of your library, put any number into
+  // your graveyard, the rest back on top. Untargeted.
+  z.object({
+    type: z.literal('surveil'),
+    amount: z.number(),
+  }),
+  z.object({
+    type: z.literal('create_token'),
+    token: z.string(),
+    count: z.number().optional(),
+  }),
+  z.object({
+    type: z.literal('add_counters'),
+    amount: z.number(),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  z.object({
+    type: z.literal('pump'),
+    power: z.number().optional(),
+    toughness: z.number().optional(),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Targeted creature effects cast as a spell (destroy/exile/bounce/tap/untap).
+  z.object({
+    type: z.enum(['destroy', 'exile', 'bounce', 'tap', 'untap']),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  UnknownV2ActionSchema,
+])
+
+const CardBehaviorTargetSchema = z.object({
+  id: z.string(),
+  type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]),
+  controller: z.enum(['any', 'controller', 'opponent']).optional(),
+  required_zone: BehaviorZoneSchema.optional(),
+  optional: z.boolean().optional(),
+})
+
+const CardBehaviorSpellEffectSchema = z.object({
+  targets: z.array(CardBehaviorTargetSchema).optional(),
+  actions: z.array(CardBehaviorActionSchema),
+})
+
+const CardBehaviorActivatedAbilitySchema = z.object({
+  id: z.string().optional(),
+  label: z.string().optional(),
+  costs: z.array(CardBehaviorCostSchema),
+  effects: z.array(CardBehaviorActionSchema),
+  is_mana_ability: z.boolean().optional(),
+  timing: z.string().optional(),
+  source_zone_required: BehaviorZoneSchema.optional(),
+})
+
+const CardBehaviorTriggeredAbilitySchema = z.object({
+  id: z.string().optional(),
+  event: z.string(),
+  source_zone_required: BehaviorZoneSchema.optional(),
+  condition: z.record(z.string(), z.unknown()).optional(),
+  targets: z.array(CardBehaviorTargetSchema).optional(),
+  effects: z.array(CardBehaviorActionSchema),
+})
+
+export const CardBehaviorScriptV2Schema = z.object({
+  schema_version: z.literal(2),
+  keywords: z.array(z.string()).optional(),
+  spell_effect: CardBehaviorSpellEffectSchema.optional(),
+  activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
+  triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
+  continuous_effects: z.array(CardContinuousEffectSchema).optional(),
+}).strict()
+
+// ─── Version detection (mirrors getCardBehaviorVersion in card-behavior.ts) ──
+
+function isV2Script(script: unknown): boolean {
+  if (typeof script !== 'object' || script === null) return false
+  const s = script as Record<string, unknown>
+  return (
+    s['schema_version'] === 2 ||
+    'spell_effect' in s ||
+    'activated_abilities' in s ||
+    'triggered_abilities' in s
+  )
+}
+
+// ─── Public API ──────────────────────────────────────────────────────────────
+
+export type CardScriptValidationResult =
+  | { success: true; version: 1 | 2 }
+  | { success: false; version: 1 | 2; errors: string[] }
+
+export function validateCardScript(script: unknown): CardScriptValidationResult {
+  const version: 1 | 2 = isV2Script(script) ? 2 : 1
+  const schema = version === 2 ? CardBehaviorScriptV2Schema : CardScriptV1Schema
+  const result = schema.safeParse(script)
+
+  if (result.success) {
+    return { success: true, version }
+  }
+
+  const errors = result.error.issues.map((e) => {
+    const path = e.path.length > 0 ? e.path.join('.') + ': ' : ''
+    return `${path}${e.message}`
+  })
+
+  return { success: false, version, errors }
+}

@@ -11,10 +11,13 @@ import type {
   GameSession,
   GameSessionPlayer,
   GameSessionStatus,
+  GameActionLog,
   GameTurnState,
   GameZone,
   LinkedCard,
   ManaPool,
+  PendingDecision,
+  TokenCard,
   StackItem,
   TurnPhase,
   TurnStep,
@@ -63,7 +66,8 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       is_tapped,
       damage_marked,
       zone,
-      controller_player_id
+      controller_player_id,
+      plus_one_counters
     `)
     .eq('session_id', sessionId)
     .eq('zone', 'battlefield')
@@ -76,7 +80,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
   const linkedCardsById = await getLinkedCardsById(
     supabase,
     gameCardRows.map((card) => card.card_id),
-    'id, name, image_url',
+    'id, name, image_url, type_line, power_toughness',
   )
 
   return gameCardRows.map<BoardCard>((item) => {
@@ -92,9 +96,86 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       zone: normalizeGameZone(item.zone),
       name: linkedCard?.name || 'Unknown',
       image_url: linkedCard?.image_url ?? null,
+      type_line: linkedCard?.type_line ?? null,
+      power_toughness: linkedCard?.power_toughness ?? null,
       controller_player_id: item.controller_player_id ?? null,
+      plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
     }
   })
+}
+
+export type OpponentZoneData = {
+  graveyard: BoardCard[]
+  exile: BoardCard[]
+  handCount: number
+  libraryCount: number
+}
+
+export async function getOpponentZoneData(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+): Promise<OpponentZoneData> {
+  const [graveyardResult, exileResult, handCountResult, libraryCountResult] = await Promise.all([
+    supabase
+      .from('game_cards')
+      .select('id, card_id, is_tapped, damage_marked, zone, controller_player_id, is_face_down')
+      .eq('session_id', sessionId)
+      .eq('controller_player_id', playerId)
+      .eq('zone', 'graveyard'),
+    supabase
+      .from('game_cards')
+      .select('id, card_id, is_tapped, damage_marked, zone, controller_player_id, is_face_down')
+      .eq('session_id', sessionId)
+      .eq('controller_player_id', playerId)
+      .eq('zone', 'exile'),
+    supabase
+      .from('game_cards')
+      .select('*', { count: 'exact', head: true })
+      .eq('session_id', sessionId)
+      .eq('controller_player_id', playerId)
+      .eq('zone', 'hand'),
+    supabase
+      .from('game_cards')
+      .select('*', { count: 'exact', head: true })
+      .eq('session_id', sessionId)
+      .eq('controller_player_id', playerId)
+      .eq('zone', 'library'),
+  ])
+
+  const graveyardRows = (graveyardResult.data ?? []) as GameCardInstanceRow[]
+  const exileRows = (exileResult.data ?? []) as GameCardInstanceRow[]
+  const allCardIds = [...graveyardRows, ...exileRows].map((r) => r.card_id)
+
+  const linkedCards = allCardIds.length > 0
+    ? await getLinkedCardsById(supabase, allCardIds, 'id, name, image_url, type_line')
+    : new Map<string, LinkedCard>()
+
+  const toZoneCard = (item: GameCardInstanceRow): BoardCard => {
+    const linked = linkedCards.get(item.card_id) ?? null
+    const faceDown = (item as Record<string, unknown>).is_face_down === true
+    return {
+      id: item.id,
+      card_id: item.card_id,
+      position_x: 0,
+      position_y: 0,
+      is_tapped: item.is_tapped,
+      damage_marked: item.damage_marked ?? 0,
+      zone: normalizeGameZone(item.zone),
+      name: faceDown ? 'Hidden card' : (linked?.name ?? 'Unknown'),
+      image_url: faceDown ? null : (linked?.image_url ?? null),
+      type_line: faceDown ? null : (linked?.type_line ?? null),
+      controller_player_id: item.controller_player_id ?? null,
+      is_face_down: faceDown,
+    }
+  }
+
+  return {
+    graveyard: graveyardRows.map(toZoneCard),
+    exile: exileRows.map(toZoneCard),
+    handCount: handCountResult.count ?? 0,
+    libraryCount: libraryCountResult.count ?? 0,
+  }
 }
 
 export async function getControllerCards(
@@ -114,7 +195,8 @@ export async function getControllerCards(
       controller_player_id,
       copied_script,
       static_effects_suppressed,
-      entered_battlefield_turn_number
+      entered_battlefield_turn_number,
+      plus_one_counters
     `)
     .eq('session_id', sessionId)
     .eq('owner_id', playerId)
@@ -127,7 +209,7 @@ export async function getControllerCards(
     const linkedCardsById = await getLinkedCardsById(
       supabase,
       gameCardRows.map((card) => card.card_id),
-      'id, name, image_url, script, type_line, mana_cost, keywords, power, toughness, power_toughness',
+      'id, name, image_url, script, type_line, mana_cost, oracle_text, keywords, power, toughness, power_toughness, is_token',
     )
 
   const missingCardIds = getUniqueCardIds(gameCardRows.map((card) => card.card_id)).filter(
@@ -148,6 +230,7 @@ export async function getControllerCards(
       copied_script: card.copied_script ?? null,
       static_effects_suppressed: card.static_effects_suppressed ?? false,
       entered_battlefield_turn_number: card.entered_battlefield_turn_number ?? null,
+      plus_one_counters: card.plus_one_counters ?? 0,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,
       cards: linkedCard,
     }
@@ -219,6 +302,68 @@ export async function getGameSessionPlayers(supabase: SupabaseClient, sessionId:
   return (data ?? []) as GameSessionPlayer[]
 }
 
+export async function getGameActionLogs(
+  supabase: SupabaseClient,
+  sessionId: string,
+  limit = 12,
+) {
+  const { data, error } = await supabase
+    .from('game_action_log')
+    .select('id, session_id, actor_player_id, target_player_id, action_type, description, before_state, after_state, created_at, undone_at, undone_by')
+    .eq('session_id', sessionId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []) as GameActionLog[]
+}
+
+/** Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. */
+export async function getActivePumpTotals(supabase: SupabaseClient, sessionId: string) {
+  const totals: Record<string, { power: number; toughness: number }> = {}
+
+  const { data, error } = await supabase
+    .from('game_continuous_effects')
+    .select('affected_card_id, payload')
+    .eq('session_id', sessionId)
+    .eq('effect_type', 'pump')
+
+  if (error) {
+    console.error('Failed to load pump effects:', error.message)
+    return totals
+  }
+
+  for (const row of (data ?? []) as { affected_card_id: string | null; payload: Record<string, unknown> | null }[]) {
+    const id = row.affected_card_id
+    if (!id) continue
+    const power = Number(row.payload?.power ?? 0)
+    const toughness = Number(row.payload?.toughness ?? 0)
+    const entry = totals[id] ?? { power: 0, toughness: 0 }
+    entry.power += Number.isFinite(power) ? power : 0
+    entry.toughness += Number.isFinite(toughness) ? toughness : 0
+    totals[id] = entry
+  }
+
+  return totals
+}
+
+export async function getTokenCards(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('cards')
+    .select('id, name, type_line, power_toughness')
+    .eq('is_token', true)
+    .order('name')
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []) as TokenCard[]
+}
+
 export async function getCombatAssignments(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('get_combat_assignments', {
     p_session_id: sessionId,
@@ -253,6 +398,18 @@ export async function getStackItems(supabase: SupabaseClient, sessionId: string)
   }
 
   return (data ?? []) as StackItem[]
+}
+
+export async function getPendingDecisions(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('get_pending_decisions', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []) as PendingDecision[]
 }
 
 export async function getCurrentPlayerSessions(supabase: SupabaseClient) {
@@ -398,6 +555,24 @@ export async function getCardCatalog(
   }
 
   return (data ?? []) as LinkedCard[]
+}
+
+// Full catalog detail for a single card, including its behavior script and
+// oracle_id. Used by the card-behavior authoring editor.
+export async function getCardDetail(supabase: SupabaseClient, cardId: string) {
+  const { data, error } = await supabase
+    .from('cards')
+    .select(
+      'id, oracle_id, name, image_url, type_line, mana_cost, oracle_text, keywords, power, toughness, power_toughness, script',
+    )
+    .eq('id', cardId)
+    .maybeSingle()
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? null) as LinkedCard | null
 }
 
 export function normalizeManaPool(pool: ManaPool | null | undefined): ManaPool {

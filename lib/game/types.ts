@@ -93,6 +93,8 @@ export type CombatAssignment = {
   turn_number: number
   attacker_card_id: string
   attacker_name: string
+  attacker_power?: number
+  attacker_toughness?: number
   attacking_player_id: string
   attacking_username: string
   defending_player_id: string
@@ -158,6 +160,46 @@ export type StackItem = {
   resolved_at?: string | null
 }
 
+// A resolution-time / announcement-time choice a player must make before a stack
+// item can (continue to) resolve. Mirrors public.get_pending_decisions.
+export type PendingDecision = {
+  id: string
+  deciding_player_id: string
+  source_stack_item_id: string | null
+  decision_type: 'choose_mode' | 'scry' | 'surveil' | string
+  prompt: string | null
+  options: unknown
+  min_choices: number
+  max_choices: number
+}
+
+// One revealed card in a scry / surveil decision's options array.
+export type ScryOption = {
+  game_card_id: string
+  name: string
+  library_position: number
+}
+
+// One mode in a choose_mode decision's options array.
+export type ModalModeOption = {
+  label?: string
+  actions?: { type?: string; target_type?: unknown }[]
+}
+
+export type GameActionLog = {
+  id: string
+  session_id: string
+  actor_player_id: string
+  target_player_id?: string | null
+  action_type: string
+  description?: string | null
+  before_state: Record<string, unknown>
+  after_state: Record<string, unknown>
+  created_at: string
+  undone_at?: string | null
+  undone_by?: string | null
+}
+
 export type CardAction = {
   type: string
   color?: string
@@ -196,10 +238,23 @@ export type LinkedCard = {
   script?: CardScript | null
   type_line?: string | null
   mana_cost?: string | null
+  oracle_text?: string | null
+  oracle_id?: string | null
   keywords?: string[] | null
   power?: number | null
   toughness?: number | null
   power_toughness?: string | null
+  is_token?: boolean | null
+}
+
+// A full catalog card row, as returned by set_card_script.
+export type CardCatalogEntry = LinkedCard
+
+export type TokenCard = {
+  id: string
+  name: string | null
+  type_line: string | null
+  power_toughness: string | null
 }
 
 export type CardCatalogFilters = {
@@ -220,7 +275,13 @@ export type BoardCard = {
   position_y: number
   zone: GameZone
   image_url: string | null
+  type_line?: string | null
+  power_toughness?: string | null
   controller_player_id?: string | null
+  is_face_down?: boolean | null
+  plus_one_counters?: number
+  pump_power?: number
+  pump_toughness?: number
 }
 
 export type ControllerCard = {
@@ -235,6 +296,9 @@ export type ControllerCard = {
   copied_script?: CardScript | null
   static_effects_suppressed?: boolean
   entered_battlefield_turn_number?: number | null
+  plus_one_counters?: number
+  pump_power?: number
+  pump_toughness?: number
   cards: LinkedCard | null
 }
 
@@ -251,6 +315,7 @@ export type GameCardInstanceRow = {
   copied_script?: CardScript | null
   static_effects_suppressed?: boolean
   entered_battlefield_turn_number?: number | null
+  plus_one_counters?: number
 }
 
 export type SupabaseErrorLike = {

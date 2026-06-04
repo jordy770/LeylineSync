@@ -4,7 +4,7 @@ import { Layers } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { getErrorMessage } from '@/lib/game/actions'
 import { getStackItems } from '@/lib/game/data'
-import { enableFallbackRefresh } from '@/lib/game/dev'
+import { enableFallbackRefresh, fallbackRefreshIntervalMs } from '@/lib/game/dev'
 import { createClient } from '@/lib/supabase/client'
 import type { StackItem } from '@/lib/game/types'
 
@@ -54,7 +54,7 @@ export default function StackPanel({ sessionId }: { sessionId: string }) {
         }
       })
 
-    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadStack, 2000) : null
+    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadStack, fallbackRefreshIntervalMs) : null
 
     return () => {
       isMounted = false

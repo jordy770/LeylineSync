@@ -2,7 +2,7 @@ import { createReadStream, existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { createClient } from '@supabase/supabase-js'
 
-const defaultInputFile = 'lib/default-cards-20260429211148.json'
+const defaultInputFile = 'lib/oracle-cards-20260531210653.json'
 const defaultBatchSize = 100
 const maxAttempts = 4
 
@@ -257,6 +257,7 @@ function mapScryfallCardToRow(card) {
 
   return removeUndefinedValues({
     id: card.id,
+    oracle_id: card.oracle_id,
     name: card.name,
     mana_cost: getManaCost(card),
     type_line: getTypeLine(card),

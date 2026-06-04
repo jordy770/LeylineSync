@@ -1,0 +1,71 @@
+{
+  "session_id": "session-2026-06-04-1610",
+  "started": "2026-06-04T14:10:07.363Z",
+  "files_read": {
+    "c:/Users/Jordy/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-04T14:15:34.389Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/.wolf/cerebrum.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-04T14:15:34.708Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": {
+      "count": 1,
+      "tokens": 471,
+      "first_read": "2026-06-04T14:15:48.496Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/MEMORY.md": {
+      "count": 1,
+      "tokens": 235,
+      "first_read": "2026-06-04T14:15:55.969Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/README.md": {
+      "count": 3,
+      "tokens": 15476,
+      "first_read": "2026-06-04T14:15:59.813Z"
+    }
+  },
+  "files_written": [
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "create",
+      "tokens": 1670,
+      "at": "2026-06-04T14:17:04.929Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 16,
+      "at": "2026-06-04T14:17:13.380Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 19,
+      "at": "2026-06-04T14:17:16.156Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 16,
+      "at": "2026-06-04T14:17:18.889Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 15,
+      "at": "2026-06-04T14:17:22.174Z"
+    }
+  ],
+  "edit_counts": {
+    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 5
+  },
+  "anatomy_hits": 4,
+  "anatomy_misses": 1,
+  "repeated_reads_warned": 2,
+  "cerebrum_warnings": 0,
+  "stop_count": 2
+}

@@ -4,7 +4,7 @@ import { Trophy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { getErrorMessage } from '@/lib/game/actions'
 import { getGameSession, getGameSessionPlayers } from '@/lib/game/data'
-import { enableFallbackRefresh } from '@/lib/game/dev'
+import { enableFallbackRefresh, fallbackRefreshIntervalMs } from '@/lib/game/dev'
 import { createClient } from '@/lib/supabase/client'
 import type { GameSession, GameSessionPlayer } from '@/lib/game/types'
 
@@ -69,7 +69,7 @@ export default function GameStatusPanel({ sessionId }: { sessionId: string }) {
         }
       })
 
-    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadStatus, 2000) : null
+    const refreshInterval = enableFallbackRefresh ? window.setInterval(loadStatus, fallbackRefreshIntervalMs) : null
 
     return () => {
       isMounted = false

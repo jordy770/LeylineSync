@@ -81,6 +81,19 @@ export default function CombatManager({
     <div className="pointer-events-none absolute inset-0 z-50">
       <svg className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
         <defs>
+          <filter id="combat-arrow-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feColorMatrix
+              in="blur"
+              type="matrix"
+              values="1 0 0 0 0.9 0 0.55 0 0 0.28 0 0 0.2 0 0.08 0 0 0 0.9 0"
+              result="glow"
+            />
+            <feMerge>
+              <feMergeNode in="glow" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
           <marker
             id="combat-arrowhead"
             markerHeight="10"
@@ -90,6 +103,16 @@ export default function CombatManager({
             refY="5"
           >
             <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+          </marker>
+          <marker
+            id="blocked-combat-arrowhead"
+            markerHeight="10"
+            markerWidth="10"
+            orient="auto"
+            refX="8"
+            refY="5"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#f97316" />
           </marker>
         </defs>
         <AnimatePresence>
@@ -105,10 +128,12 @@ export default function CombatManager({
                 pathLength: { duration: 0.5, ease: 'easeOut' },
               }}
               fill="none"
-              markerEnd="url(#combat-arrowhead)"
+              filter="url(#combat-arrow-glow)"
+              markerEnd={arrow.isBlocked ? 'url(#blocked-combat-arrowhead)' : 'url(#combat-arrowhead)'}
               stroke={arrow.isBlocked ? '#f97316' : '#ef4444'}
               strokeLinecap="round"
-              strokeWidth="5"
+              strokeDasharray={arrow.isBlocked ? '10 8' : undefined}
+              strokeWidth={arrow.isBlocked ? '3.5' : '4.5'}
             />
           ))}
         </AnimatePresence>
@@ -116,11 +141,14 @@ export default function CombatManager({
 
       <motion.section
         layout
-        className="absolute left-1/2 top-[52%] w-[min(38rem,46vw)] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-red-400/40 bg-red-950/20 p-3 shadow-[0_0_34px_rgba(239,68,68,0.22)] backdrop-blur-sm"
+        className="leyline-glass-panel absolute left-1/2 top-[52%] w-[min(38rem,46vw)] -translate-x-1/2 -translate-y-1/2 rounded-lg border-red-300/30 p-3"
       >
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-red-100">Combat Zone</h2>
-          <span className="rounded bg-red-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-red-200">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-red-200/80">Board Overlay</p>
+            <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-red-100">Combat Zone</h2>
+          </div>
+          <span className="rounded-md border border-red-300/20 bg-red-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-red-200">
             {assignments.length} incoming
           </span>
         </div>
@@ -143,8 +171,23 @@ export default function CombatManager({
                   initial={{ opacity: 0, y: 24, scale: 0.92 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 24, scale: 0.92 }}
-                  className="relative rounded-md border border-red-300/25 bg-black/55 p-2"
+                  className="relative overflow-hidden rounded-md border border-white/10 bg-slate-950/70 p-2 shadow-[0_16px_30px_rgba(0,0,0,0.28)]"
                 >
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(248,113,113,0.18),transparent_52%)]" />
+                  <div className="relative mb-2 flex items-center justify-between gap-2">
+                    <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-red-100">
+                      {assignment.attacker_name}
+                    </span>
+                    <span
+                      className={`shrink-0 rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase ${
+                        blockers && blockers.length > 0
+                          ? 'border-orange-300/25 bg-orange-500/15 text-orange-200'
+                          : 'border-red-300/25 bg-red-500/15 text-red-200'
+                      }`}
+                    >
+                      {blockers && blockers.length > 0 ? 'Blocked' : 'Open'}
+                    </span>
+                  </div>
                   <div
                     ref={(element) => {
                       if (element) {
@@ -153,7 +196,7 @@ export default function CombatManager({
                         attackerRefs.current.delete(assignment.attacker_card_id)
                       }
                     }}
-                    className="mx-auto max-w-28 rotate-90"
+                    className="relative mx-auto max-w-28 rotate-90"
                   >
                     <MotionCard
                       card={{
@@ -165,11 +208,11 @@ export default function CombatManager({
                         zone: 'combat',
                       }}
                       size="board"
-                      className="shadow-[0_0_22px_rgba(239,68,68,0.3)]"
+                      visualClassName="shadow-[0_0_22px_rgba(239,68,68,0.26)]"
                     />
                   </div>
                   {blockers && blockers.length > 0 ? (
-                    <div className="mt-3 flex justify-center gap-1">
+                    <div className="relative mt-3 flex justify-center gap-1">
                       {blockers.map((blocker) => (
                         <div key={blocker.id} className="max-w-14">
                           <MotionCard
@@ -182,13 +225,13 @@ export default function CombatManager({
                               zone: 'combat',
                             }}
                             size="thumb"
-                            className="border-orange-300/40"
+                            visualClassName="border-orange-300/40"
                           />
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="mt-3 text-center text-[10px] font-semibold uppercase tracking-[0.12em] text-red-200">
+                    <p className="relative mt-3 rounded-md border border-red-300/15 bg-red-500/10 py-1 text-center text-[10px] font-semibold uppercase tracking-[0.12em] text-red-200">
                       Unblocked
                     </p>
                   )}

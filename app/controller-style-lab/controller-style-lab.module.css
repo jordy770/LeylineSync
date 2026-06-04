@@ -1,0 +1,596 @@
+.page {
+  height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 20%, rgb(39 86 104 / 34%), transparent 22rem),
+    radial-gradient(circle at 86% 78%, rgb(103 53 40 / 34%), transparent 24rem),
+    linear-gradient(135deg, #090b10 0%, #141820 48%, #08090d 100%);
+  color: #f6f3eb;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.portraitNotice {
+  display: none;
+}
+
+.lab {
+  display: flex;
+  height: 100svh;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.65rem;
+}
+
+.labHeader {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.kicker,
+.headerNote,
+.prototypeHeader p,
+.boardRow > span,
+.selectedMini span,
+.selectedMini small,
+.stackItem span,
+.stackItem small {
+  color: rgb(246 243 235 / 64%);
+}
+
+.kicker {
+  margin: 0 0 0.15rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.labHeader h1,
+.prototypeHeader h2,
+.contextPanel h3 {
+  margin: 0;
+}
+
+.labHeader h1 {
+  font-size: clamp(1rem, 2.6vw, 1.45rem);
+  line-height: 1;
+}
+
+.headerNote {
+  max-width: 18rem;
+  margin: 0;
+  text-align: right;
+  font-size: 0.72rem;
+}
+
+.prototypeGrid {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  gap: 0.75rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.35rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+
+.prototype {
+  position: relative;
+  display: grid;
+  flex: 0 0 min(calc(100vw - 1.3rem), calc((100svh - 4.2rem) * 2.16));
+  width: min(calc(100vw - 1.3rem), calc((100svh - 4.2rem) * 2.16));
+  height: 100%;
+  min-height: 0;
+  margin-inline: auto;
+  grid-template-rows: auto 1fr;
+  gap: 0.55rem;
+  overflow: hidden;
+  border: 1px solid rgb(246 243 235 / 12%);
+  border-radius: 1.25rem;
+  background: rgb(10 12 16 / 58%);
+  box-shadow: 0 2rem 5rem rgb(0 0 0 / 32%);
+  scroll-snap-align: center;
+}
+
+.prototypeHeader {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.55rem;
+  padding: 0.55rem 0.75rem 0;
+}
+
+.prototypeHeader > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 999px;
+  background: rgb(246 243 235 / 12%);
+  font-weight: 900;
+}
+
+.prototypeHeader h2 {
+  font-size: 0.9rem;
+}
+
+.prototypeHeader p {
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.hudShell,
+.tableShell,
+.stackShell {
+  display: grid;
+  min-height: 0;
+  gap: 0.55rem;
+  padding: 0 0.75rem 0.75rem;
+}
+
+.hudShell {
+  grid-template-columns: 5.2rem minmax(0, 1fr) 7rem;
+}
+
+.tableShell {
+  grid-template-columns: minmax(0, 1fr) 7.4rem;
+}
+
+.stackShell {
+  grid-template-columns: 8rem minmax(0, 1fr) 7rem;
+}
+
+.slimRail,
+.actionDock,
+.contextPanel,
+.priorityDock,
+.stackInbox {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.handStage,
+.tableBoard,
+.reactionStage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.phaseBar,
+.tableTop,
+.priorityHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  padding: 0 0.6rem;
+  border-radius: 1rem;
+  background: rgb(246 243 235 / 8%);
+}
+
+.phaseBar span,
+.phasePill,
+.priorityHeader span {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.handFan {
+  position: absolute;
+  right: 0;
+  bottom: 0.5rem;
+  left: 0;
+  display: flex;
+  height: min(13rem, calc(100% - 2.4rem));
+  align-items: end;
+  justify-content: center;
+}
+
+.cardThumb {
+  --card-index: 0;
+  display: grid;
+  width: clamp(4.9rem, 11vw, 6.2rem);
+  height: clamp(6.9rem, 28svh, 8.8rem);
+  margin-inline: clamp(-0.85rem, -1.7vw, -0.45rem);
+  align-content: space-between;
+  transform: translateY(calc(abs(var(--card-index) - 2) * 0.35rem)) rotate(calc((var(--card-index) - 2) * 4deg));
+  transform-origin: bottom center;
+  border: 1px solid rgb(246 243 235 / 14%);
+  border-radius: 0.8rem;
+  background:
+    linear-gradient(180deg, rgb(246 243 235 / 16%), transparent 36%),
+    #20232b;
+  color: inherit;
+  padding: 0.55rem;
+  text-align: left;
+  box-shadow: 0 1.4rem 2rem rgb(0 0 0 / 30%);
+  user-select: none;
+  touch-action: none;
+}
+
+.cardThumb strong {
+  font-size: 0.72rem;
+  line-height: 1.05;
+}
+
+.cardThumb span,
+.cardThumb small {
+  font-size: 0.64rem;
+  font-weight: 800;
+  opacity: 0.72;
+}
+
+.flatCard {
+  width: clamp(4.15rem, 9vw, 5.1rem);
+  height: clamp(5.8rem, 23svh, 7.05rem);
+  margin-inline: 0;
+  transform: none;
+}
+
+.playerBadge,
+.zoneButton,
+.selectedMini,
+.stackItem,
+.boardCard,
+.actionDock button,
+.contextPanel button,
+.priorityDock button {
+  border: 1px solid rgb(246 243 235 / 12%);
+  border-radius: 0.85rem;
+  background: rgb(246 243 235 / 7%);
+  color: inherit;
+}
+
+.playerBadge {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.55rem;
+}
+
+.playerBadge span,
+.zoneButton span {
+  font-size: 0.66rem;
+  font-weight: 800;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.playerBadge strong {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.activePlayer {
+  background: rgb(248 190 88 / 15%);
+}
+
+.manaLine {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.3rem;
+}
+
+.manaLine span {
+  display: grid;
+  min-height: 1.75rem;
+  place-items: center;
+  border-radius: 999px;
+  background: rgb(246 243 235 / 10%);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.zoneButton,
+.actionDock button,
+.contextPanel button,
+.priorityDock button {
+  min-height: 2.75rem;
+  padding: 0.48rem 0.62rem;
+  text-align: left;
+}
+
+.zoneButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.primaryAction {
+  background: linear-gradient(135deg, #f05d2f, #f4b44d) !important;
+  color: #150c05 !important;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.selectedMini {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: auto;
+  padding: 0.6rem;
+}
+
+.selectedMini strong {
+  font-size: 0.9rem;
+}
+
+.actionModalBackdrop,
+.inspectOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: rgb(5 6 9 / 68%);
+  backdrop-filter: blur(10px);
+}
+
+.actionModal {
+  display: grid;
+  width: min(28rem, calc(100% - 2rem));
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: 0.85rem;
+  border: 1px solid rgb(246 243 235 / 16%);
+  border-radius: 1rem;
+  background: #141820;
+  padding: 0.85rem;
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 45%);
+}
+
+.modalCardPreview,
+.inspectCard {
+  display: grid;
+  align-content: space-between;
+  border: 1px solid rgb(246 243 235 / 16%);
+  border-radius: 0.9rem;
+  background:
+    linear-gradient(180deg, rgb(246 243 235 / 16%), transparent 36%),
+    #20232b;
+  padding: 0.75rem;
+}
+
+.modalCardPreview {
+  height: 11rem;
+}
+
+.modalCardPreview span,
+.modalCardPreview small,
+.inspectCard span,
+.inspectCard small {
+  font-size: 0.68rem;
+  font-weight: 900;
+  opacity: 0.72;
+}
+
+.modalCardPreview strong,
+.inspectCard strong {
+  font-size: 1rem;
+  line-height: 1.05;
+}
+
+.modalActions {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 0.45rem;
+}
+
+.modalActions span {
+  font-size: 0.66rem;
+  font-weight: 900;
+  opacity: 0.68;
+  text-transform: uppercase;
+}
+
+.modalActions h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.modalActions button {
+  min-height: 2.45rem;
+  border: 1px solid rgb(246 243 235 / 12%);
+  border-radius: 0.7rem;
+  background: rgb(246 243 235 / 7%);
+  color: inherit;
+  padding: 0.45rem 0.65rem;
+  text-align: left;
+}
+
+.inspectOverlay {
+  background: rgb(5 6 9 / 78%);
+}
+
+.inspectCard {
+  width: min(14rem, 36vw);
+  aspect-ratio: 2 / 3;
+  transform: scale(1.02);
+  box-shadow: 0 2rem 5rem rgb(0 0 0 / 55%);
+}
+
+.inspectCard strong {
+  font-size: 1.25rem;
+}
+
+.inspectCard p {
+  margin: 0;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  opacity: 0.7;
+}
+
+.tableTop {
+  margin-bottom: 0.55rem;
+}
+
+.phasePill {
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  background: rgb(246 243 235 / 10%);
+}
+
+.boardRows {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.boardRow {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.boardRow > span {
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.boardRow > div {
+  display: flex;
+  gap: 0.4rem;
+  overflow: hidden;
+}
+
+.boardCard {
+  width: clamp(4.1rem, 9.5vw, 4.9rem);
+  height: clamp(3rem, 11svh, 3.45rem);
+  flex: 0 0 auto;
+  padding: 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-align: left;
+}
+
+.boardCard[data-tapped='true'] {
+  transform: rotate(8deg);
+  opacity: 0.58;
+}
+
+.opponentCard {
+  background: rgb(211 97 76 / 11%);
+}
+
+.tableHand,
+.reactionHand {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  gap: 0.45rem;
+  align-items: end;
+  justify-content: center;
+}
+
+.contextPanel h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.stackInbox {
+  overflow: hidden;
+}
+
+.priorityHeader {
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+}
+
+.stackItem {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.58rem;
+}
+
+.stackItem strong {
+  font-size: 0.82rem;
+}
+
+.reactionStage {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.targetStrip {
+  align-self: end;
+  margin-bottom: clamp(6.5rem, 24svh, 8rem);
+}
+
+@supports not (width: abs(1px)) {
+  .cardThumb {
+    transform: rotate(calc((var(--card-index) - 2) * 4deg));
+  }
+}
+
+@media (orientation: portrait) {
+  .lab {
+    display: none;
+  }
+
+  .portraitNotice {
+    display: grid;
+    min-height: 100svh;
+    place-content: center;
+    padding: 2rem;
+    text-align: center;
+  }
+}
+
+@media (max-height: 430px) and (orientation: landscape) {
+  .page {
+    font-size: 13px;
+  }
+
+  .lab {
+    gap: 0.45rem;
+    padding: 0.45rem;
+  }
+
+  .prototype {
+    flex-basis: calc(100vw - 0.9rem);
+    width: calc(100vw - 0.9rem);
+    border-radius: 0.9rem;
+  }
+
+  .labHeader h1 {
+    font-size: 1rem;
+  }
+
+  .headerNote {
+    display: none;
+  }
+
+  .prototypeHeader p {
+    display: none;
+  }
+
+  .hudShell {
+    grid-template-columns: 4.7rem minmax(0, 1fr) 6.2rem;
+  }
+
+  .tableShell {
+    grid-template-columns: minmax(0, 1fr) 6.8rem;
+  }
+
+  .stackShell {
+    grid-template-columns: 7rem minmax(0, 1fr) 6.2rem;
+  }
+}

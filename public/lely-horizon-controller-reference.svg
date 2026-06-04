@@ -1,0 +1,244 @@
+<svg width="1408" height="768" viewBox="0 0 1408 768" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1408" y2="768" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B121B"/>
+      <stop offset="0.42" stop-color="#132433"/>
+      <stop offset="0.72" stop-color="#1B1517"/>
+      <stop offset="1" stop-color="#090B10"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="84" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#182332" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#070A0F" stop-opacity="0.92"/>
+    </linearGradient>
+    <linearGradient id="button" x1="0" y1="0" x2="0" y2="86" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#354454"/>
+      <stop offset="1" stop-color="#151B25"/>
+    </linearGradient>
+    <linearGradient id="blueButton" x1="0" y1="0" x2="400" y2="86" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#126ED8"/>
+      <stop offset="0.5" stop-color="#1D9BFF"/>
+      <stop offset="1" stop-color="#086BC4"/>
+    </linearGradient>
+    <linearGradient id="cardRed" x1="0" y1="0" x2="0" y2="350" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9E3D2A"/>
+      <stop offset="0.45" stop-color="#33191A"/>
+      <stop offset="1" stop-color="#15161C"/>
+    </linearGradient>
+    <linearGradient id="cardBlue" x1="0" y1="0" x2="0" y2="310" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5EA8C8"/>
+      <stop offset="0.5" stop-color="#123246"/>
+      <stop offset="1" stop-color="#10151D"/>
+    </linearGradient>
+    <linearGradient id="cardWhite" x1="0" y1="0" x2="0" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E8D9A8"/>
+      <stop offset="0.45" stop-color="#8E826A"/>
+      <stop offset="1" stop-color="#15151A"/>
+    </linearGradient>
+    <filter id="blueGlow" x="-30%" y="-80%" width="160%" height="260%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#27A7FF" flood-opacity="0.85"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="#27A7FF" flood-opacity="0.45"/>
+    </filter>
+    <filter id="redGlow" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#FF5D65" flood-opacity="0.95"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="26" flood-color="#FF373D" flood-opacity="0.55"/>
+    </filter>
+    <filter id="cardShadow" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="12" flood-color="#000000" flood-opacity="0.65"/>
+    </filter>
+    <filter id="textShadow" x="-20%" y="-60%" width="140%" height="220%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.9"/>
+    </filter>
+    <style>
+      .ui { font-family: Inter, Arial, Helvetica, sans-serif; fill: #F3F6F8; filter: url(#textShadow); }
+      .muted { fill: #B9C0C8; opacity: .9; }
+      .thin { font-weight: 500; }
+      .bold { font-weight: 900; }
+      .label28 { font-size: 28px; letter-spacing: .02em; }
+      .label32 { font-size: 32px; letter-spacing: .02em; }
+      .label36 { font-size: 36px; letter-spacing: .01em; }
+      .label40 { font-size: 40px; letter-spacing: .02em; }
+      .small { font-size: 16px; }
+      .micro { font-size: 12px; opacity: .72; }
+      .cardText { font-family: Georgia, serif; fill: #111; font-size: 13px; font-weight: 700; }
+      .cardSmall { font-family: Georgia, serif; fill: #111; font-size: 10px; }
+    </style>
+  </defs>
+
+  <rect width="1408" height="768" fill="url(#bg)"/>
+  <rect width="1408" height="768" fill="#000814" opacity=".22"/>
+  <circle cx="705" cy="230" r="440" fill="#1B82B8" opacity=".10"/>
+  <circle cx="1190" cy="240" r="280" fill="#9A3E2F" opacity=".10"/>
+
+  <g id="topbar">
+    <rect width="1408" height="84" fill="url(#panel)" stroke="#2D4A5D" stroke-opacity=".75"/>
+    <line x1="82" y1="0" x2="82" y2="84" stroke="#405469" stroke-opacity=".55"/>
+    <line x1="0" y1="84" x2="1408" y2="84" stroke="#1EA7F7" stroke-opacity=".55"/>
+    <g transform="translate(22 23)" stroke="#B9C4CD" stroke-width="6" stroke-linecap="round">
+      <line x1="2" y1="4" x2="36" y2="4"/>
+      <line x1="2" y1="18" x2="36" y2="18"/>
+      <line x1="2" y1="32" x2="36" y2="32"/>
+    </g>
+    <text class="ui thin label36" x="100" y="52">PHASE:</text>
+    <text class="ui bold label36" x="224" y="52">MAIN 1</text>
+    <text class="ui thin label36" x="566" y="52" fill="#A9D9FF">PLAYER A'S TURN</text>
+    <rect x="1106" y="9" width="61" height="61" rx="10" fill="url(#button)" stroke="#5F7186" stroke-width="2"/>
+    <text class="ui bold label40" x="1123" y="52">−</text>
+    <text class="ui thin label32" x="1188" y="34">PLAYER A</text>
+    <text class="ui thin label32" x="1188" y="68">LIFE:</text>
+    <text class="ui bold label36" x="1280" y="68">20</text>
+    <rect x="1333" y="9" width="61" height="61" rx="10" fill="url(#button)" stroke="#5F7186" stroke-width="2"/>
+    <text class="ui bold label40" x="1348" y="53">+</text>
+  </g>
+
+  <g id="opponent">
+    <rect y="84" width="1408" height="108" fill="#132333" opacity=".72"/>
+    <line x1="0" y1="192" x2="1408" y2="192" stroke="#C9D8E5" stroke-opacity=".42" stroke-width="2"/>
+    <text class="ui label32 thin" x="30" y="130">OPPONENT (PLAYER B)</text>
+    <text class="ui label28 thin muted" x="30" y="168">LIFE: 18</text>
+    <text class="ui label28 thin muted" x="150" y="168">|</text>
+    <text class="ui label28 thin muted" x="176" y="168">HAND: 5 CARDS</text>
+  </g>
+
+  <g id="hand-label">
+    <text class="ui label32 thin muted" x="30" y="238">YOUR HAND</text>
+  </g>
+
+  <g id="hand-fan" filter="url(#cardShadow)">
+    <g transform="translate(146 346) rotate(-18)">
+      <rect width="132" height="220" rx="10" fill="url(#cardWhite)" stroke="#050505" stroke-width="7"/>
+      <rect x="12" y="14" width="108" height="70" rx="4" fill="#D9E6F4"/>
+      <rect x="12" y="94" width="108" height="74" rx="3" fill="#F1EAD2"/>
+      <text class="cardText" x="18" y="110">Stubborn Denial</text>
+      <text class="cardSmall" x="18" y="144">Instant</text>
+    </g>
+    <g transform="translate(252 310) rotate(-15)">
+      <rect width="132" height="244" rx="10" fill="url(#cardBlue)" stroke="#050505" stroke-width="7"/>
+      <rect x="12" y="14" width="108" height="72" rx="4" fill="#A64B35"/>
+      <rect x="12" y="100" width="108" height="82" rx="3" fill="#D7EAF3"/>
+      <text class="cardText" x="18" y="116">Lightning Strike</text>
+      <text class="cardSmall" x="18" y="154">Instant</text>
+    </g>
+    <g transform="translate(363 276) rotate(-12)">
+      <rect width="132" height="276" rx="10" fill="url(#cardWhite)" stroke="#050505" stroke-width="7"/>
+      <rect x="12" y="14" width="108" height="92" rx="4" fill="#C48D67"/>
+      <rect x="12" y="120" width="108" height="96" rx="3" fill="#F2E4C1"/>
+      <text class="cardText" x="18" y="136">Thievelins of Doack</text>
+      <text class="cardSmall" x="18" y="176">Instant</text>
+    </g>
+    <g transform="translate(476 246) rotate(-8)">
+      <rect width="132" height="306" rx="10" fill="url(#cardBlue)" stroke="#050505" stroke-width="7"/>
+      <rect x="12" y="14" width="108" height="110" rx="4" fill="#47A9C8"/>
+      <rect x="12" y="138" width="108" height="108" rx="3" fill="#D9EEF5"/>
+      <text class="cardText" x="18" y="154">Lightning Striose</text>
+      <text class="cardSmall" x="18" y="194">Instant</text>
+    </g>
+    <g transform="translate(782 240) rotate(8)">
+      <rect width="132" height="310" rx="10" fill="url(#cardBlue)" stroke="#050505" stroke-width="7"/>
+      <rect x="12" y="14" width="108" height="112" rx="4" fill="#459EC1"/>
+      <rect x="12" y="140" width="108" height="110" rx="3" fill="#DCEFF5"/>
+      <text class="cardText" x="18" y="156">Aether Gust</text>
+      <text class="cardSmall" x="18" y="198">Instant</text>
+    </g>
+    <g transform="translate(896 258) rotate(12)">
+      <rect width="132" height="292" rx="10" fill="url(#cardBlue)" stroke="#050505" stroke-width="7"/>
+      <rect x="12" y="14" width="108" height="100" rx="4" fill="#38A99D"/>
+      <rect x="12" y="128" width="108" height="104" rx="3" fill="#D9EEF5"/>
+      <text class="cardText" x="18" y="144">Merfolk Trickster</text>
+      <text class="cardSmall" x="18" y="184">Creature</text>
+    </g>
+    <g transform="translate(1006 290) rotate(16)">
+      <rect width="132" height="260" rx="10" fill="url(#cardWhite)" stroke="#050505" stroke-width="7"/>
+      <rect x="12" y="14" width="108" height="84" rx="4" fill="#D4B168"/>
+      <rect x="12" y="112" width="108" height="92" rx="3" fill="#F1EAD2"/>
+      <text class="cardText" x="18" y="128">Kraul Harpooner</text>
+      <text class="cardSmall" x="18" y="166">Creature</text>
+    </g>
+    <g transform="translate(1115 328) rotate(19)">
+      <rect width="132" height="224" rx="10" fill="#BCA75A" stroke="#050505" stroke-width="7"/>
+      <rect x="12" y="14" width="108" height="72" rx="4" fill="#C69A54"/>
+      <rect x="12" y="100" width="108" height="80" rx="3" fill="#EDE2B7"/>
+      <text class="cardText" x="18" y="116">Grace Blade</text>
+      <text class="cardSmall" x="18" y="154">Instant</text>
+    </g>
+  </g>
+
+  <g id="selected-card" filter="url(#redGlow)">
+    <rect x="579" y="159" width="251" height="356" rx="14" fill="#1D0D0B" stroke="#FFD0C4" stroke-width="5"/>
+    <rect x="595" y="176" width="219" height="180" rx="6" fill="url(#cardRed)" stroke="#000" stroke-width="2"/>
+    <path d="M610 282 C650 235, 670 318, 704 260 C734 212, 750 292, 798 235" stroke="#FFB0AA" stroke-width="4" fill="none"/>
+    <path d="M620 322 C660 290, 695 330, 744 300 C770 284, 788 295, 806 280" stroke="#FF6D67" stroke-width="3" fill="none"/>
+    <rect x="595" y="362" width="219" height="122" rx="5" fill="#F1D8C9"/>
+    <text class="cardText" x="604" y="196">Lightning Bolt</text>
+    <text class="cardSmall" x="604" y="383">Instant</text>
+    <text class="cardSmall" x="604" y="420">Lightning Bolt deals 3 damage</text>
+    <text class="cardSmall" x="604" y="438">to any target.</text>
+  </g>
+
+  <g id="cast-arrow">
+    <path d="M707 354 L766 430 H729 C719 487 672 526 627 544 C661 510 674 472 673 430 H648 L707 354Z" fill="white" opacity=".92" filter="url(#textShadow)"/>
+  </g>
+
+  <text class="ui label28 thin" x="1184" y="538">SWIPE UP TO CAST</text>
+
+  <g id="action-bar">
+    <rect y="548" width="1408" height="113" fill="url(#panel)" stroke="#2D4A5D" stroke-opacity=".75"/>
+    <text class="ui label32 thin" x="30" y="615">ACTION BAR</text>
+    <g transform="translate(252 562)">
+      <rect width="221" height="84" rx="10" fill="url(#button)" stroke="#5F7186" stroke-width="2"/>
+      <text class="ui label28 thin" x="56" y="615" transform="translate(0 -562)">RESPOND</text>
+    </g>
+    <g transform="translate(486 562)">
+      <rect width="214" height="84" rx="10" fill="url(#button)" stroke="#5F7186" stroke-width="2"/>
+      <text class="ui label28 thin" x="38" y="53">LIBRARY (42)</text>
+    </g>
+    <g transform="translate(713 562)">
+      <rect width="257" height="84" rx="10" fill="url(#button)" stroke="#5F7186" stroke-width="2"/>
+      <text class="ui label28 thin" x="34" y="53">GRAVEYARD (5)</text>
+    </g>
+    <g transform="translate(984 562)" filter="url(#blueGlow)">
+      <rect width="397" height="84" rx="42" fill="url(#blueButton)" stroke="#4CC9FF" stroke-width="4"/>
+      <text class="ui bold label32" x="38" y="52">PASS PRIORITY / OK</text>
+      <text class="ui small thin" x="202" y="74">RIGHT-THUMB ACCESS</text>
+    </g>
+  </g>
+
+  <g id="mana-pool">
+    <rect y="661" width="1408" height="107" fill="#06070A" opacity=".75"/>
+    <text class="ui label32 thin" x="29" y="725">MANA POOL</text>
+    <text class="ui small thin muted" x="30" y="747">TAP/HOLD</text>
+    <g transform="translate(320 678)">
+      <g>
+        <circle cx="34" cy="34" r="29" fill="#F7F0CE" stroke="#FFF9D7" stroke-width="5"/>
+        <rect x="58" y="12" width="46" height="40" rx="15" fill="#28313C" stroke="#536171"/>
+        <text class="ui label28 thin" x="80" y="44">0</text>
+      </g>
+      <g transform="translate(183 0)">
+        <circle cx="34" cy="34" r="29" fill="#8DD1FF" stroke="#54B4F5" stroke-width="5"/>
+        <rect x="58" y="12" width="46" height="40" rx="15" fill="#28313C" stroke="#536171"/>
+        <text class="ui label28 thin" x="80" y="44">0</text>
+      </g>
+      <g transform="translate(316 0)">
+        <circle cx="34" cy="34" r="29" fill="#B5AAA1" stroke="#8A817B" stroke-width="5"/>
+        <rect x="58" y="12" width="46" height="40" rx="15" fill="#28313C" stroke="#536171"/>
+        <text class="ui label28 thin" x="80" y="44">0</text>
+      </g>
+      <g transform="translate(450 0)">
+        <circle cx="34" cy="34" r="29" fill="#F39A82" stroke="#FF685E" stroke-width="5"/>
+        <rect x="58" y="12" width="46" height="40" rx="15" fill="#28313C" stroke="#536171"/>
+        <text class="ui label28 thin" x="80" y="44">0</text>
+      </g>
+      <g transform="translate(585 0)">
+        <circle cx="34" cy="34" r="29" fill="#8CD58B" stroke="#57B467" stroke-width="5"/>
+        <rect x="58" y="12" width="46" height="40" rx="15" fill="#28313C" stroke="#536171"/>
+        <text class="ui label28 thin" x="80" y="44">0</text>
+      </g>
+      <g transform="translate(730 0)">
+        <circle cx="34" cy="34" r="29" fill="#E1DCDD" stroke="#B5B0B4" stroke-width="5"/>
+        <rect x="58" y="12" width="46" height="40" rx="15" fill="#28313C" stroke="#536171"/>
+        <text class="ui label28 thin" x="80" y="44">0</text>
+      </g>
+    </g>
+    <path d="M1352 688 L1364 716 L1392 728 L1364 740 L1352 768 L1340 740 L1312 728 L1340 716 Z" fill="#E8E8E8" opacity=".75"/>
+    <text class="ui small thin muted" x="1262" y="760">LELY HORIZON v0.1</text>
+  </g>
+</svg>

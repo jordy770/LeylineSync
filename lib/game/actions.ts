@@ -1,10 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
+  CardCatalogEntry,
   CardScript,
   CombatAssignment,
   CombatDamageResult,
   DeckImportResult,
   GameSessionPlayer,
+  GameActionLog,
   GameTurnState,
   GameZone,
   ManaPool,
@@ -92,6 +94,40 @@ export async function drawCard(
   return data as string
 }
 
+export async function devDrawCard(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_draw_card', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as string
+}
+
+export async function devUndoLastDraw(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_undo_last_draw', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as string
+}
+
 export async function untapAll(
   supabase: SupabaseClient,
   sessionId: string,
@@ -115,6 +151,40 @@ export async function clearManaPool(
   playerId: string,
 ) {
   const { data, error } = await supabase.rpc('clear_mana_pool', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as ManaPool
+}
+
+export async function devUntapAll(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_untap_all', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
+export async function devClearManaPool(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_clear_mana_pool', {
     p_session_id: sessionId,
     p_player_id: playerId,
   })
@@ -167,6 +237,46 @@ export async function passPriority(supabase: SupabaseClient, sessionId: string) 
   return data as GameTurnState
 }
 
+// Judge tool: pass priority on behalf of all players (resolve the stack or advance the step).
+export async function devPassPriority(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('dev_pass_priority', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as GameTurnState
+}
+
+export async function setCardScript(
+  supabase: SupabaseClient,
+  cardId: string,
+  script: CardScript | null,
+) {
+  const { data, error } = await supabase.rpc('set_card_script', {
+    p_card_id: cardId,
+    p_script: script,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as CardCatalogEntry
+}
+
+export async function relinkCardScripts(supabase: SupabaseClient) {
+  const { data, error } = await supabase.rpc('relink_card_scripts')
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? 0) as number
+}
+
 export async function putDealDamagePlayerOnStack(
   supabase: SupabaseClient,
   sessionId: string,
@@ -186,6 +296,288 @@ export async function putDealDamagePlayerOnStack(
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export type TargetController = 'any' | 'opponent' | 'you'
+
+export async function putDealDamageCreatureOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  amount: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'deal_damage_creature',
+    p_payload: {
+      target_card_id: targetCardId,
+      amount,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function putPumpCreatureOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  power: number,
+  toughness: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'pump_creature',
+    p_payload: {
+      target_card_id: targetCardId,
+      power,
+      toughness,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export type TargetedCreatureActionType =
+  | 'destroy_creature'
+  | 'bounce_creature'
+  | 'tap_creature'
+  | 'untap_creature'
+  | 'add_counters_creature'
+  | 'exile_creature'
+
+export async function putTargetedCreatureActionOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  actionType: TargetedCreatureActionType,
+  targetCardId: string,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: actionType,
+    p_payload: {
+      target_card_id: targetCardId,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function putAddCountersCreatureOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  amount: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'add_counters_creature',
+    p_payload: {
+      target_card_id: targetCardId,
+      amount,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function chooseTriggeredAbilityCreatureTarget(
+  supabase: SupabaseClient,
+  sessionId: string,
+  stackItemId: string,
+  targetCardId: string,
+) {
+  const { data, error } = await supabase.rpc('choose_triggered_ability_creature_target', {
+    p_session_id: sessionId,
+    p_stack_item_id: stackItemId,
+    p_target_card_id: targetCardId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+export async function putDrawCardsOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  amount: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'draw_cards',
+    p_payload: {
+      amount,
+      timing,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Untargeted scry spell (Tier-B resolution-time decision). Announces the scry;
+// it parks on resolution awaiting the caster's reorder (submit_decision).
+export async function castScrySpell(
+  supabase: SupabaseClient,
+  sessionId: string,
+  amount: number,
+  sourceCardId?: string | null,
+) {
+  const { data, error } = await supabase.rpc('cast_scry', {
+    p_session_id: sessionId,
+    p_amount: amount,
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Untargeted surveil spell (Tier-B). Parks on resolution awaiting the caster's
+// graveyard/top split (submit_decision).
+export async function castSurveilSpell(
+  supabase: SupabaseClient,
+  sessionId: string,
+  amount: number,
+  sourceCardId?: string | null,
+) {
+  const { data, error } = await supabase.rpc('cast_surveil', {
+    p_session_id: sessionId,
+    p_amount: amount,
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Cast a non-permanent spell whose resolution is an untargeted effect program
+// (e.g. Opt: scry 1, then draw a card). Runs each action in order, parking on a
+// scry/surveil, and moves the source instant/sorcery to the graveyard on cast.
+export async function castSpellEffect(
+  supabase: SupabaseClient,
+  sessionId: string,
+  actions: unknown[],
+  sourceCardId?: string | null,
+) {
+  const { data, error } = await supabase.rpc('cast_spell_effect', {
+    p_session_id: sessionId,
+    p_actions: actions,
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Submit a pending decision's result (choose_mode / scry / surveil).
+export async function submitDecision(
+  supabase: SupabaseClient,
+  decisionId: string,
+  result: Record<string, unknown>,
+) {
+  const { data, error } = await supabase.rpc('submit_decision', {
+    p_decision_id: decisionId,
+    p_result: result,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function activateAbility(
+  supabase: SupabaseClient,
+  sessionId: string,
+  sourceCardId: string,
+  abilityIndex: number,
+  target?: { targetCardId?: string | null; targetPlayerId?: string | null },
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('activate_ability', {
+    p_session_id: sessionId,
+    p_source_card_id: sourceCardId,
+    p_ability_index: abilityIndex,
+    p_target_player_id: target?.targetPlayerId ?? null,
+    p_target_card_id: target?.targetCardId ?? null,
+    p_generic_payment: genericPayment ?? null,
   })
 
   if (error) {
@@ -444,6 +836,65 @@ export async function setCombatBlockerOrder(
   return data as number
 }
 
+export async function adjustCardCounters(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  delta: number,
+) {
+  const { data, error } = await supabase.rpc('adjust_card_counters', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_delta: delta,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
+export async function applyPtPump(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  power: number,
+  toughness: number,
+) {
+  const { error } = await supabase.rpc('create_pt_pump', {
+    p_session_id: sessionId,
+    p_target_card_id: targetCardId,
+    p_power: power,
+    p_toughness: toughness,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
+export async function createToken(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+  tokenCardId: string,
+  count = 1,
+) {
+  const { data, error } = await supabase.rpc('create_token', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+    p_token_card_id: tokenCardId,
+    p_count: count,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
 export async function clearCombatAssignments(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('clear_combat_assignments', {
     p_session_id: sessionId,
@@ -641,6 +1092,146 @@ export async function devSetTurnState({
   }
 
   return data as GameTurnState
+}
+
+export async function devMoveCardToZone(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  zone: GameZone,
+) {
+  const { data, error } = await supabase.rpc('dev_move_card_to_zone', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_zone: zone,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devSetCardTapped(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  isTapped: boolean,
+) {
+  const { data, error } = await supabase.rpc('dev_set_card_tapped', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_is_tapped: isTapped,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devSetCardDamage(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  damageMarked: number,
+) {
+  const { data, error } = await supabase.rpc('dev_set_card_damage', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_damage_marked: damageMarked,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devShuffleLibrary(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_shuffle_library', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number
+}
+
+export async function devPutCardOnTop(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_put_card_on_top', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devPutCardOnBottom(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_put_card_on_bottom', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devClearSummoningSickness(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_clear_summoning_sickness', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function devUndoAction(
+  supabase: SupabaseClient,
+  actionId: string,
+) {
+  const { data, error } = await supabase.rpc('dev_undo_action', {
+    p_action_id: actionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as GameActionLog
 }
 
 function isSupabaseErrorLike(error: unknown): error is SupabaseErrorLike {
