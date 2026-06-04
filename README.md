@@ -854,9 +854,9 @@ The effect vocabulary above (`gain_life`, `lose_life`, `deal_damage`, `draw`, `c
 
 - ✅ `exile` — target creature to `zone='exile'` (clones `destroy`; fires `leaves_the_battlefield` but not `dies`). Spell (`exile_creature`) + targeted trigger, via the V4 creature picker, with `target_controller` support (migration 083).
 - ✅ `mill` — auto-resolved trigger effect: a recipient mills N cards from the top of their library to their graveyard. `recipient`: `controller` (default) / `each_opponent` / `each_player` (migration 083). _Spell-side / player-targeted mill still pending (needs a player target picker)._
-- `gain_life` / `lose_life` for **each player** / **all players** — new recipient value alongside `controller` / `each_opponent`.
-- Mass `add_counters` — "+1/+1 counter on each creature you control."
-- `tap_all` / `untap_all` — e.g. "untap all creatures you control."
+- ✅ `gain_life` / `lose_life` for **each player** / **all players** — recipients `each_player` / `all_players` (migration 098).
+- ✅ Mass `add_counters` — `add_counters_all`, "+1/+1 counter on each creature" with a `target_controller` scope (migration 098).
+- ✅ `tap_all` / `untap_all` — tap/untap creatures with a `target_controller` scope (migration 098).
 
 **Tier 2 — medium, needs a target in another zone or a player choice.**
 
@@ -864,8 +864,8 @@ The effect vocabulary above (`gain_life`, `lose_life`, `deal_damage`, `draw`, `c
 - `discard` — target player / each opponent; random vs. chosen.
 - `sacrifice` — the sacrificing player chooses.
 - Gain control / control-change ("threaten"), optionally until end of turn — flips `controller_player_id`.
-- `fight` — two creatures damage each other (first **multi-target** effect).
-- Temporary keyword grant — "+2/+2 and gains flying until end of turn" (pump + an expiring continuous effect).
+- ✅ `fight` — two creatures each deal damage equal to their power to the other (first **multi-target** effect; migration 101). `apply_fight` reads both effective powers up front (simultaneous) then deals via `apply_creature_effect('deal_damage')`; cast via the `cast_fight` RPC. Fully shipped end-to-end: Zod/registry/builder authoring (the FOUGHT creature uses the composite target field; the fighter is implicitly one you control), a two-step in-app picker, and the `Prey Upon Test` fixture. The **trigger path** ("when this enters, it fights target creature"; migration 102) is also shipped — the source creature is the fighter and the player picks the fought creature through the existing trigger target picker (no new UI); `apply_targeted_triggered_ability_effects` dispatches `fight` to `apply_fight(session, source, target)`, and `apply_fight` carries a self-fight guard (fixture `Pit Brawler Test`). **Deathtouch** (migration 103): `apply_creature_effect`'s `deal_damage` honours an optional `deathtouch` flag (OR-ing `dealt_deathtouch_damage`, the same flag combat uses), and `apply_fight` captures both creatures' deathtouch up front — so a deathtouch creature's nonzero fight damage is lethal (CR 702.2). **Generic mana** (migration 103): `cast_fight` accepts and forwards a `generic_payment` jsonb to `pay_mana_cost`, on par with `put_action_on_stack`. Fully complete end-to-end.
+- ✅ Temporary keyword grant — `grant_keyword` gives a target creature a keyword (flying/reach/trample/vigilance/haste/first&double strike/deathtouch/indestructible) until end of turn, via an expiring `game_continuous_effects` row. Works as a **triggered ability** (migration 099) and as an **instant/sorcery combat trick** (migration 100, `grant_keyword_creature` stack action through `put_action_on_stack`). The keyword is fixed by the card, so casting needs only a creature target. Authorable in both trigger and spell contexts.
 
 **Tier 3 — higher effort, interactive / hidden-zone UI.**
 

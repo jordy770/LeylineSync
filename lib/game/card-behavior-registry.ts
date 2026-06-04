@@ -38,8 +38,8 @@ export type EffectContext = 'trigger' | 'spell'
 //                  option's `value`, but serialized/parsed as the two engine keys
 //                  `target_type` (+ optional `target_controller`). Always required.
 export type FieldDescriptor =
-  | { name: string; kind: 'number'; label?: string; default: number; min?: number; max?: number; optional?: boolean }
-  | { name: string; kind: 'enum'; label?: string; default: string; options: readonly FieldOption[]; optional?: boolean }
+  | { name: string; kind: 'number'; label?: string; default: number; min?: number; max?: number; optional?: boolean; materializeDefault?: boolean; omitDefault?: boolean }
+  | { name: string; kind: 'enum'; label?: string; default: string; options: readonly FieldOption[]; optional?: boolean; materializeDefault?: boolean; omitDefault?: boolean }
   | { name: string; kind: 'select'; label?: string; default: string; options: readonly FieldOption[]; optional?: boolean }
   | { name: string; kind: 'text'; label?: string; default: string; optional?: boolean }
   | { name: string; kind: 'object'; label?: string; fields: readonly FieldDescriptor[]; optional?: boolean }
@@ -58,6 +58,8 @@ export type EffectDef = {
 export const EFFECT_RECIPIENTS = [
   { value: 'each_opponent', label: 'each opponent' },
   { value: 'controller', label: 'you' },
+  { value: 'each_player', label: 'each player' },
+  { value: 'all_players', label: 'all players' },
 ] as const
 
 export const EFFECT_TOKEN_NAMES = [
@@ -72,11 +74,24 @@ export const EFFECT_TOKEN_NAMES = [
 const TOKEN_OPTIONS: readonly FieldOption[] = EFFECT_TOKEN_NAMES.map((n) => ({ value: n, label: n }))
 
 const amountField = (label: string): FieldDescriptor => ({ name: 'amount', kind: 'number', label, default: 1, min: 0, max: 99 })
-const recipientField: FieldDescriptor = {
+const recipientField = (defaultRecipient = 'each_opponent', opts: Pick<Extract<FieldDescriptor, { kind: 'enum' }>, 'materializeDefault' | 'omitDefault'> = {}): FieldDescriptor => ({
   name: 'recipient',
   kind: 'enum',
-  default: 'each_opponent',
+  default: defaultRecipient,
   options: EFFECT_RECIPIENTS,
+  optional: true,
+  ...opts,
+})
+const controllerField: FieldDescriptor = {
+  name: 'target_controller',
+  kind: 'enum',
+  label: 'Creatures',
+  default: 'you',
+  options: [
+    { value: 'you', label: 'creatures you control' },
+    { value: 'opponent', label: 'creatures opponents control' },
+    { value: 'any', label: 'all creatures' },
+  ],
   optional: true,
 }
 
@@ -91,6 +106,20 @@ const SEARCH_DESTINATIONS: readonly FieldOption[] = [
 const CHOOSE_PLAYER_FILTERS: readonly FieldOption[] = [
   { value: 'opponent', label: 'an opponent' },
   { value: 'any', label: 'any player' },
+]
+
+// Keywords grantable until end of turn (must be members of the
+// game_continuous_effects effect_type CHECK / a card_has_<keyword> accessor).
+const KEYWORD_OPTIONS: readonly FieldOption[] = [
+  { value: 'flying', label: 'flying' },
+  { value: 'reach', label: 'reach' },
+  { value: 'trample', label: 'trample' },
+  { value: 'vigilance', label: 'vigilance' },
+  { value: 'haste', label: 'haste' },
+  { value: 'first_strike', label: 'first strike' },
+  { value: 'double_strike', label: 'double strike' },
+  { value: 'deathtouch', label: 'deathtouch' },
+  { value: 'indestructible', label: 'indestructible' },
 ]
 
 // The engine currently resolves these single-target effects against a creature
@@ -110,11 +139,11 @@ const creatureTargetField: FieldDescriptor = {
 // ─── The registry ───────────────────────────────────────────────────────────────
 
 export const EFFECT_REGISTRY: readonly EffectDef[] = [
-  { type: 'gain_life', label: 'You gain life', contexts: ['trigger'], fields: [amountField('Amount')] },
-  { type: 'lose_life', label: 'Players lose life', contexts: ['trigger'], fields: [amountField('Amount'), recipientField] },
-  { type: 'deal_damage', label: 'Deal damage to players', contexts: ['trigger'], fields: [amountField('Amount'), recipientField] },
+  { type: 'gain_life', label: 'Players gain life', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField('controller', { materializeDefault: false, omitDefault: true })] },
+  { type: 'lose_life', label: 'Players lose life', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField()] },
+  { type: 'deal_damage', label: 'Deal damage to players', contexts: ['trigger'], fields: [amountField('Amount'), recipientField()] },
   { type: 'draw', label: 'You draw cards', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
-  { type: 'mill', label: 'Mill cards', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField] },
+  { type: 'mill', label: 'Mill cards', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField()] },
   {
     type: 'create_token',
     label: 'Create token(s)',
@@ -125,6 +154,9 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     ],
   },
   { type: 'add_counters', label: '+1/+1 counters on this', contexts: ['trigger'], fields: [amountField('Amount')] },
+  { type: 'add_counters_all', label: '+1/+1 counters on creatures', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), controllerField] },
+  { type: 'tap_all', label: 'Tap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
+  { type: 'untap_all', label: 'Untap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
   { type: 'scry', label: 'Scry N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   { type: 'surveil', label: 'Surveil N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   {
@@ -173,6 +205,10 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   { type: 'bounce', label: 'Return creature to hand', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
   { type: 'tap', label: 'Tap creature', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
   { type: 'untap', label: 'Untap creature', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
+  // Fight: a creature you control fights a target creature. The target field
+  // describes the FOUGHT creature (the fighter is implicit — the source creature
+  // as a trigger, or a creature you control as a spell).
+  { type: 'fight', label: 'Fight (your creature fights a target creature)', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
   {
     type: 'pump',
     label: 'Pump creature (+X/+X)',
@@ -180,6 +216,17 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     fields: [
       { name: 'power', kind: 'number', label: 'Power', default: 1, min: -20, max: 20 },
       { name: 'toughness', kind: 'number', label: 'Toughness', default: 1, min: -20, max: 20 },
+      creatureTargetField,
+    ],
+  },
+  // Grant a keyword until end of turn — authorable both as a triggered ability
+  // and as an instant/sorcery combat trick (mig 100). target_type stays creature-only.
+  {
+    type: 'grant_keyword',
+    label: 'Grant keyword until end of turn',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      { name: 'keyword', kind: 'enum', label: 'Keyword', default: 'flying', options: KEYWORD_OPTIONS },
       creatureTargetField,
     ],
   },
@@ -364,7 +411,9 @@ function parseFields(fields: readonly FieldDescriptor[], obj: Record<string, unk
     const raw = obj[field.name]
     if (raw === undefined) {
       if (field.kind !== 'effect-list' && field.optional) {
-        out[field.name] = fieldDefault(field)
+        if (!('materializeDefault' in field) || field.materializeDefault !== false) {
+          out[field.name] = fieldDefault(field)
+        }
         continue
       }
       return null
@@ -385,6 +434,15 @@ export function effectDefault(type: string): RegistryEffect {
   }
   const result: RegistryEffect = { type }
   for (const field of def.fields) {
+    if (
+      field.kind !== 'effect-list' &&
+      'optional' in field &&
+      field.optional &&
+      'materializeDefault' in field &&
+      field.materializeDefault === false
+    ) {
+      continue
+    }
     result[field.name] = fieldDefault(field)
   }
   return result
@@ -411,7 +469,21 @@ export function effectToJson(effect: RegistryEffect): Record<string, unknown> {
       continue
     }
     // Drop optional fields that carry no information (blank text, empty object).
-    if (field.kind !== 'effect-list' && field.optional && isEmptyValue(field, effect[field.name])) {
+    if (field.kind !== 'effect-list' && 'optional' in field && field.optional && isEmptyValue(field, effect[field.name])) {
+      continue
+    }
+    if (
+      field.kind !== 'effect-list' &&
+      'optional' in field &&
+      field.optional &&
+      'omitDefault' in field &&
+      field.omitDefault &&
+      'default' in field &&
+      effect[field.name] === field.default
+    ) {
+      continue
+    }
+    if (field.kind !== 'effect-list' && 'optional' in field && field.optional && effect[field.name] === undefined) {
       continue
     }
     out[field.name] = fieldToJson(field, effect[field.name])

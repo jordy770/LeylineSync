@@ -192,6 +192,24 @@ export class Scenario {
     )
   }
 
+  /** Cast a fight (fighter you control vs. another creature) as the acting seat. */
+  async castFight(
+    fighterCardId: string,
+    foughtCardId: string,
+    sourceCardId: string | null = null,
+    foughtController = 'any',
+  ): Promise<{ id: string }> {
+    return this.run(() =>
+      rpc(this.client, 'cast_fight', {
+        p_session_id: this.sessionId,
+        p_fighter_card_id: fighterCardId,
+        p_fought_card_id: foughtCardId,
+        p_source_card_id: sourceCardId,
+        p_fought_controller: foughtController,
+      }),
+    )
+  }
+
   /** The oldest pending decision in the session (or null). */
   async pendingDecision(): Promise<{
     id: string
@@ -277,6 +295,18 @@ export class Scenario {
 
   async resolveCombat(): Promise<unknown> {
     return this.run(() => rpc(this.client, 'resolve_combat_damage', { p_session_id: this.sessionId }))
+  }
+
+  /** Run the continuous-effect expiry sweep for a step (as the acting seat). */
+  async expireEffects(phase: string, step: string, turnNumber = 1): Promise<number> {
+    return this.run(() =>
+      rpc<number>(this.client, 'expire_continuous_effects_for_step', {
+        p_session_id: this.sessionId,
+        p_turn_number: turnNumber,
+        p_phase: phase,
+        p_step: step,
+      }),
+    )
   }
 
   // --- Inspection (runs as postgres → RLS bypassed) -----------------------

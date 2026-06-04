@@ -7,7 +7,7 @@
     "import:cards": "node scripts/import-scryfall-cards.mjs",
     "validate:scripts": "npx tsx scripts/validate-card-scripts.ts",
     "test:db:setup": "node scripts/setup-local-test-db.mjs",
-    "test": "node --import tsx --test tests/unit/card-behavior-builder.test.ts tests/regression/group1.test.ts tests/feature/targeted-triggers.test.ts tests/feature/trigger-events.test.ts tests/feature/exile-mill.test.ts tests/feature/modal-decisions.test.ts tests/feature/scry-decisions.test.ts tests/feature/surveil-decisions.test.ts tests/feature/trigger-scry-surveil.test.ts tests/feature/spell-effect-program.test.ts tests/feature/more-decisions.test.ts",
+    "test": "node --import tsx --test tests/unit/card-behavior-builder.test.ts tests/regression/group1.test.ts tests/feature/targeted-triggers.test.ts tests/feature/trigger-events.test.ts tests/feature/exile-mill.test.ts tests/feature/modal-decisions.test.ts tests/feature/scry-decisions.test.ts tests/feature/surveil-decisions.test.ts tests/feature/trigger-scry-surveil.test.ts tests/feature/spell-effect-program.test.ts tests/feature/more-decisions.test.ts tests/feature/tier1-effect-vocabulary.test.ts tests/feature/grant-keyword.test.ts tests/feature/grant-keyword-spell.test.ts tests/feature/fight.test.ts",
     "lint": "eslint ."
   },
   "dependencies": {

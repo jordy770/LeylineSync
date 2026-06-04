@@ -9,12 +9,14 @@ import {
   castCardFromHand,
   castSpellEffect,
   chooseTriggeredAbilityCreatureTarget,
+  castFight,
   declareAttacker as declareAttackerAction,
   declareBlocker as declareBlockerAction,
   getErrorMessage,
   moveCardToZone,
   passPriority as passPriorityAction,
   putAddCountersCreatureOnStack,
+  putGrantKeywordCreatureOnStack,
   putCounterSpellOnStack,
   putDealDamageCreatureOnStack,
   putDealDamagePlayerOnStack,
@@ -185,7 +187,8 @@ type SpellPlan =
   | { kind: 'damage'; amount: number; timing: 'instant' | 'sorcery'; canTargetPlayer: boolean; canTargetCreature: boolean; targetController: TargetController }
   | { kind: 'pump'; power: number; toughness: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   | { kind: 'add_counters'; amount: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
-  | { kind: 'creature_effect'; effect: TargetedCreatureActionType; label: string; timing: 'instant' | 'sorcery'; targetController: TargetController }
+  | { kind: 'creature_effect'; effect: TargetedCreatureActionType; label: string; keyword?: string; timing: 'instant' | 'sorcery'; targetController: TargetController }
+  | { kind: 'fight'; timing: 'instant' | 'sorcery'; foughtController: TargetController }
   | { kind: 'draw'; amount: number; timing: 'instant' | 'sorcery' }
   | { kind: 'spell_effect'; actions: unknown[]; timing: 'instant' | 'sorcery' }
   | { kind: 'counterspell' }
@@ -214,7 +217,7 @@ function creatureMatchesController(
 
 // Untargeted spell actions that resolve as a server-side effect program (no
 // target picker). A spell mixing only these can run as one multi-action cast.
-const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'search_library', 'discard', 'may', 'choose_player']
+const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'add_counters_all', 'tap_all', 'untap_all', 'search_library', 'discard', 'may', 'choose_player']
 // Effects that open a resolution-time choice — a spell containing one must run as a
 // program (single dedicated cast kinds can't surface the prompt).
 const DECISION_SPELL_ACTION_TYPES = ['scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player']
@@ -277,6 +280,33 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
     targetTypeMatches(addCounters.target_type ?? addCounters.target ?? 'creature', 'creature')
   ) {
     return { kind: 'add_counters', amount: addCounters.amount, timing, targetController: readTargetController(addCounters) }
+  }
+
+  // Grant-keyword combat trick (e.g. "target creature gains flying until EOT").
+  // The keyword is fixed by the card; only a creature target is chosen, so it rides
+  // the same picker as the other creature effects — carrying `keyword` in the plan.
+  const grantKeyword = actions.find((a) => a.type === 'grant_keyword') as
+    | (CardBehaviorAction & { keyword?: string; target_controller?: unknown })
+    | undefined
+  if (grantKeyword && typeof grantKeyword.keyword === 'string') {
+    return {
+      kind: 'creature_effect',
+      effect: 'grant_keyword_creature',
+      label: `Grant ${grantKeyword.keyword.replace(/_/g, ' ')}`,
+      keyword: grantKeyword.keyword,
+      timing,
+      targetController: readTargetController(grantKeyword),
+    }
+  }
+
+  // Fight: a creature you control fights a target creature. The action's
+  // target_type/target_controller describe the FOUGHT creature; the fighter is
+  // implicitly one you control (chosen first in the picker).
+  const fight = actions.find((a) => a.type === 'fight') as
+    | (CardBehaviorAction & { target_controller?: unknown })
+    | undefined
+  if (fight) {
+    return { kind: 'fight', timing, foughtController: readTargetController(fight) }
   }
 
   const creatureEffect = actions.find((a) => a.type in CREATURE_EFFECT_MAP) as
@@ -554,7 +584,19 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'creature_effect') return
-      await putTargetedCreatureActionOnStack(supabase, sessionId, plan.effect, targetCardId, plan.timing, cardId, undefined, plan.targetController)
+      if (plan.keyword) {
+        await putGrantKeywordCreatureOnStack(supabase, sessionId, targetCardId, plan.keyword, plan.timing, cardId, undefined, plan.targetController)
+      } else {
+        await putTargetedCreatureActionOnStack(supabase, sessionId, plan.effect, targetCardId, plan.timing, cardId, undefined, plan.targetController)
+      }
+      await refresh()
+    },
+    // Fight spell — a creature you control (fighter) fights another creature (fought).
+    fight: async (cardId: string, fighterCardId: string, foughtCardId: string) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const plan = card ? getSpellPlan(card) : null
+      if (!card || plan?.kind !== 'fight') return
+      await castFight(supabase, sessionId, fighterCardId, foughtCardId, cardId, plan.foughtController)
       await refresh()
     },
     // Untargeted card-draw spell (Divination etc.)
@@ -732,6 +774,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onPumpCreature={async (cardId, targetCardId) => { await actions.pumpCreature(cardId, targetCardId) }}
             onAddCountersCreature={async (cardId, targetCardId) => { await actions.addCountersCreature(cardId, targetCardId) }}
             onCreatureEffect={async (cardId, targetCardId) => { await actions.creatureEffect(cardId, targetCardId) }}
+            onFight={async (cardId, fighterCardId, foughtCardId) => { await actions.fight(cardId, fighterCardId, foughtCardId) }}
             onDrawCards={async (cardId) => { await actions.drawCards(cardId) }}
             onSpellEffect={async (cardId) => { await actions.spellEffect(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
@@ -1677,6 +1720,7 @@ function CardActionSheet({
   onPumpCreature,
   onAddCountersCreature,
   onCreatureEffect,
+  onFight,
   onDrawCards,
   onSpellEffect,
   onCounterSpell,
@@ -1698,6 +1742,7 @@ function CardActionSheet({
   onPumpCreature: (cardId: string, targetCardId: string) => Promise<void>
   onAddCountersCreature: (cardId: string, targetCardId: string) => Promise<void>
   onCreatureEffect: (cardId: string, targetCardId: string) => Promise<void>
+  onFight: (cardId: string, fighterCardId: string, foughtCardId: string) => Promise<void>
   onDrawCards: (cardId: string) => Promise<void>
   onSpellEffect: (cardId: string) => Promise<void>
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
@@ -1729,6 +1774,9 @@ function CardActionSheet({
   const [zoomed, setZoomed] = useState(false)
   // 'target' = showing the target picker for a targeted spell
   const [picking, setPicking] = useState(false)
+  // Fight is a two-step pick: the chosen fighter (a creature you control), then
+  // the fought creature. null = still choosing the fighter.
+  const [fightFighterId, setFightFighterId] = useState<string | null>(null)
   // When set, showing the target picker for an activated ability.
   const [abilityPick, setAbilityPick] = useState<
     { index: number; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null
@@ -1749,16 +1797,30 @@ function CardActionSheet({
       c.type_line?.toLowerCase().includes('creature') &&
       creatureMatchesController(c, playerId, spellTargetController),
   )
+  // Fight target lists: the fighter is a creature you control; the fought creature
+  // matches the action's controller restriction and can't be the fighter itself.
+  const isCreature = (c: BoardCard) => c.type_line?.toLowerCase().includes('creature') ?? false
+  const fightFighters = boardCards.filter((c) => isCreature(c) && c.controller_player_id === playerId)
+  const fightFoughtFor = (fighterId: string | null) =>
+    boardCards.filter(
+      (c) =>
+        isCreature(c) &&
+        c.id !== fighterId &&
+        creatureMatchesController(c, playerId, spellPlan.kind === 'fight' ? spellPlan.foughtController : 'any'),
+    )
+  const hasFightTargets = fightFighters.some((f) => fightFoughtFor(f.id).length > 0)
   const canCast = canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackCount)
   const hasCreatureTargets = targetableCreatures.length > 0
   const requiresCreatureTarget =
     spellPlan.kind === 'pump' ||
     spellPlan.kind === 'add_counters' ||
     spellPlan.kind === 'creature_effect' ||
+    spellPlan.kind === 'fight' ||
     (spellPlan.kind === 'damage' && spellPlan.canTargetCreature && !spellPlan.canTargetPlayer)
   const requiresStackTarget = spellPlan.kind === 'counterspell'
   const hasRequiredTargets =
-    (!requiresCreatureTarget || hasCreatureTargets) &&
+    (!requiresCreatureTarget ||
+      (spellPlan.kind === 'fight' ? hasFightTargets : hasCreatureTargets)) &&
     (!requiresStackTarget || pendingStackItems.length > 0)
   const needsTarget =
     hasRequiredTargets &&
@@ -1767,6 +1829,7 @@ function CardActionSheet({
       (spellPlan.kind === 'pump' && hasCreatureTargets) ||
       (spellPlan.kind === 'add_counters' && hasCreatureTargets) ||
       (spellPlan.kind === 'creature_effect' && hasCreatureTargets) ||
+      (spellPlan.kind === 'fight' && hasFightTargets) ||
       (spellPlan.kind === 'counterspell' && pendingStackItems.length > 0))
   const castLabel = !hasRequiredTargets
     ? requiresCreatureTarget
@@ -1984,6 +2047,60 @@ function CardActionSheet({
             >
               Back
             </button>
+          </div>
+        )}
+
+        {picking && spellPlan.kind === 'fight' && (
+          <div className="mb-3 space-y-2">
+            {fightFighterId === null ? (
+              <>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Your creature that fights
+                </p>
+                {fightFighters.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setFightFighterId(c.id)}
+                    className="flex w-full items-center justify-between rounded-2xl border border-rose-400/40 bg-rose-400/10 px-4 py-2.5 transition active:scale-95"
+                  >
+                    <span className="truncate font-bold text-white">{c.name}</span>
+                    <span className="ml-2 shrink-0 text-xs font-black text-rose-300">{effectiveBoardPT(c)}</span>
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setPicking(false)}
+                  className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
+                >
+                  Back
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Fights which creature?
+                </p>
+                {fightFoughtFor(fightFighterId).map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => { void onFight(card.id, fightFighterId, c.id); onClose() }}
+                    className="flex w-full items-center justify-between rounded-2xl border border-rose-400/40 bg-rose-400/10 px-4 py-2.5 transition active:scale-95"
+                  >
+                    <span className="truncate font-bold text-white">{c.name}</span>
+                    <span className="ml-2 shrink-0 text-xs font-black text-rose-300">{effectiveBoardPT(c)}</span>
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setFightFighterId(null)}
+                  className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
+                >
+                  Back
+                </button>
+              </>
+            )}
           </div>
         )}
 

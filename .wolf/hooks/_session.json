@@ -1,71 +1,240 @@
 {
-  "session_id": "session-2026-06-04-1610",
-  "started": "2026-06-04T14:10:07.363Z",
+  "session_id": "session-2026-06-04-2302",
+  "started": "2026-06-04T21:02:56.930Z",
   "files_read": {
-    "c:/Users/Jordy/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": {
+    "c:/Users/Jordy/dev/LeylineSync/.wolf/anatomy.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-04T14:15:34.389Z"
+      "first_read": "2026-06-04T21:11:45.531Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010099_grant_keyword.sql": {
+      "count": 1,
+      "tokens": 2051,
+      "first_read": "2026-06-04T21:11:49.934Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010101_fight.sql": {
+      "count": 1,
+      "tokens": 4739,
+      "first_read": "2026-06-04T21:11:50.371Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010094_spell_effect_program.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-04T21:12:10.072Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts": {
+      "count": 1,
+      "tokens": 3792,
+      "first_read": "2026-06-04T21:12:35.861Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts": {
+      "count": 1,
+      "tokens": 5260,
+      "first_read": "2026-06-04T21:12:52.717Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010093_trigger_scry_surveil.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-04T21:13:12.034Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql": {
+      "count": 4,
+      "tokens": 0,
+      "first_read": "2026-06-04T21:13:55.934Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/feature/targeted-triggers.test.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-04T21:14:27.924Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts": {
+      "count": 1,
+      "tokens": 6146,
+      "first_read": "2026-06-04T21:15:12.625Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts": {
+      "count": 1,
+      "tokens": 4082,
+      "first_read": "2026-06-04T21:15:42.515Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json": {
+      "count": 1,
+      "tokens": 3928,
+      "first_read": "2026-06-04T21:16:06.829Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts": {
+      "count": 1,
+      "tokens": 7607,
+      "first_read": "2026-06-04T21:16:42.772Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/.wolf/cerebrum.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-04T14:15:34.708Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": {
-      "count": 1,
-      "tokens": 471,
-      "first_read": "2026-06-04T14:15:48.496Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/MEMORY.md": {
-      "count": 1,
-      "tokens": 235,
-      "first_read": "2026-06-04T14:15:55.969Z"
+      "first_read": "2026-06-04T21:18:07.762Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/README.md": {
+      "count": 2,
+      "tokens": 15828,
+      "first_read": "2026-06-04T21:18:34.752Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts": {
+      "count": 1,
+      "tokens": 8320,
+      "first_read": "2026-06-04T21:42:57.903Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx": {
+      "count": 1,
+      "tokens": 42155,
+      "first_read": "2026-06-04T21:43:15.606Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/scripts/setup-local-test-db.mjs": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-04T21:47:56.019Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/feature/fight.test.ts": {
+      "count": 1,
+      "tokens": 2636,
+      "first_read": "2026-06-04T21:51:37.051Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/.wolf/buglog.json": {
       "count": 3,
-      "tokens": 15476,
-      "first_read": "2026-06-04T14:15:59.813Z"
+      "tokens": 0,
+      "first_read": "2026-06-04T21:53:14.936Z"
     }
   },
   "files_written": [
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010102_fight_trigger.sql",
       "action": "create",
-      "tokens": 1670,
-      "at": "2026-06-04T14:17:04.929Z"
+      "tokens": 1537,
+      "at": "2026-06-04T21:15:08.471Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 103,
+      "at": "2026-06-04T21:15:18.558Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 67,
+      "at": "2026-06-04T21:15:24.400Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+      "action": "edit",
+      "tokens": 144,
+      "at": "2026-06-04T21:15:49.513Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+      "action": "edit",
+      "tokens": 132,
+      "at": "2026-06-04T21:15:56.554Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 206,
+      "at": "2026-06-04T21:16:13.773Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/fight.test.ts",
+      "action": "edit",
+      "tokens": 845,
+      "at": "2026-06-04T21:16:31.302Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+      "action": "edit",
+      "tokens": 134,
+      "at": "2026-06-04T21:16:54.927Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+      "action": "edit",
+      "tokens": 59,
+      "at": "2026-06-04T21:17:00.665Z"
     },
     {
       "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
       "action": "edit",
-      "tokens": 16,
-      "at": "2026-06-04T14:17:13.380Z"
+      "tokens": 179,
+      "at": "2026-06-04T21:17:58.681Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+      "action": "edit",
+      "tokens": 156,
+      "at": "2026-06-04T21:18:43.793Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010103_fight_deathtouch_and_mana.sql",
+      "action": "create",
+      "tokens": 3965,
+      "at": "2026-06-04T21:45:41.814Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+      "action": "edit",
+      "tokens": 125,
+      "at": "2026-06-04T21:45:50.469Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/fight.test.ts",
+      "action": "edit",
+      "tokens": 328,
+      "at": "2026-06-04T21:46:05.869Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/fight.test.ts",
+      "action": "edit",
+      "tokens": 607,
+      "at": "2026-06-04T21:46:21.277Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/fight.test.ts",
+      "action": "edit",
+      "tokens": 67,
+      "at": "2026-06-04T21:51:46.728Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/fight.test.ts",
+      "action": "edit",
+      "tokens": 185,
+      "at": "2026-06-04T21:51:56.162Z"
     },
     {
       "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
       "action": "edit",
-      "tokens": 19,
-      "at": "2026-06-04T14:17:16.156Z"
+      "tokens": 186,
+      "at": "2026-06-04T21:54:04.736Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
       "action": "edit",
-      "tokens": 16,
-      "at": "2026-06-04T14:17:18.889Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
-      "action": "edit",
-      "tokens": 15,
-      "at": "2026-06-04T14:17:22.174Z"
+      "tokens": 160,
+      "at": "2026-06-04T21:54:39.949Z"
     }
   ],
   "edit_counts": {
-    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 5
+    "supabase/migrations/202605010102_fight_trigger.sql": 1,
+    "lib/game/card-behavior-registry.ts": 1,
+    "lib/game/card-behavior-builder.ts": 1,
+    "lib/game/card-behavior-llm.ts": 2,
+    "tests/fixtures/test-cards.json": 1,
+    "tests/feature/fight.test.ts": 5,
+    "tests/unit/card-behavior-builder.test.ts": 2,
+    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 2,
+    "README.md": 2,
+    "supabase/migrations/202605010103_fight_deathtouch_and_mana.sql": 1,
+    "lib/game/actions.ts": 1
   },
-  "anatomy_hits": 4,
-  "anatomy_misses": 1,
-  "repeated_reads_warned": 2,
+  "anatomy_hits": 12,
+  "anatomy_misses": 8,
+  "repeated_reads_warned": 7,
   "cerebrum_warnings": 0,
-  "stop_count": 2
+  "stop_count": 5
 }

@@ -54,12 +54,15 @@ export type BuilderTokenName = (typeof BUILDER_TOKEN_NAMES)[number]
 
 // Auto-resolved effect types apply_triggered_ability_effects applies for triggers.
 export type BuilderEffect =
-  | { type: 'gain_life'; amount: number }
+  | { type: 'gain_life'; amount: number; recipient?: BuilderRecipient }
   | { type: 'lose_life'; amount: number; recipient: BuilderRecipient }
   | { type: 'deal_damage'; amount: number; recipient: BuilderRecipient }
   | { type: 'draw'; amount: number }
   | { type: 'create_token'; token: string; count: number }
   | { type: 'add_counters'; amount: number }
+  | { type: 'add_counters_all'; amount: number; target_controller: string }
+  | { type: 'tap_all'; target_controller: string }
+  | { type: 'untap_all'; target_controller: string }
   | { type: 'scry'; amount: number }
   | { type: 'surveil'; amount: number }
   | { type: 'mill'; amount: number; recipient: BuilderRecipient }
@@ -73,6 +76,8 @@ export type BuilderEffect =
   | { type: 'tap'; target: string }
   | { type: 'untap'; target: string }
   | { type: 'pump'; power: number; toughness: number; target: string }
+  | { type: 'grant_keyword'; keyword: string; target: string }
+  | { type: 'fight'; target: string }
 
 // Trigger-context effect options, derived from the registry.
 export const BUILDER_EFFECT_TYPES = effectsForContext('trigger')
@@ -90,10 +95,15 @@ export type BuilderTrigger = {
 // round-trips to null so the editor stays in JSON mode.
 
 export type BuilderSpellEffect =
+  | { type: 'gain_life'; amount: number; recipient?: BuilderRecipient }
+  | { type: 'lose_life'; amount: number; recipient: BuilderRecipient }
   | { type: 'scry'; amount: number }
   | { type: 'surveil'; amount: number }
   | { type: 'draw'; amount: number }
   | { type: 'mill'; amount: number; recipient: BuilderRecipient }
+  | { type: 'add_counters_all'; amount: number; target_controller: string }
+  | { type: 'tap_all'; target_controller: string }
+  | { type: 'untap_all'; target_controller: string }
   | { type: 'search_library'; count: number; to: string; filter: { type_line: string } }
   | { type: 'discard'; count: number }
   | { type: 'may'; prompt: string; effects: BuilderEffect[] }
@@ -104,6 +114,8 @@ export type BuilderSpellEffect =
   | { type: 'tap'; target: string }
   | { type: 'untap'; target: string }
   | { type: 'pump'; power: number; toughness: number; target: string }
+  | { type: 'grant_keyword'; keyword: string; target: string }
+  | { type: 'fight'; target: string }
 export type BuilderSpellEffectType = BuilderSpellEffect['type']
 
 // Spell-context effect options, derived from the registry.

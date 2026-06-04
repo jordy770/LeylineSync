@@ -376,6 +376,7 @@ export type TargetedCreatureActionType =
   | 'untap_creature'
   | 'add_counters_creature'
   | 'exile_creature'
+  | 'grant_keyword_creature'
 
 export async function putTargetedCreatureActionOnStack(
   supabase: SupabaseClient,
@@ -427,6 +428,67 @@ export async function putAddCountersCreatureOnStack(
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Combat-trick / instant: "target creature gains <keyword> until end of turn".
+// The keyword is fixed by the card's script; the payload carries it to
+// apply_creature_effect's grant_keyword branch (which inserts the until-EOT row).
+export async function putGrantKeywordCreatureOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  keyword: string,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'grant_keyword_creature',
+    p_payload: {
+      target_card_id: targetCardId,
+      keyword,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Fight (Prey Upon / Pit Fight): a creature you control fights another creature.
+// fighterCardId is yours; foughtCardId is the target. foughtController restricts
+// the fought creature server-side (e.g. 'opponent' for "you don't control").
+export async function castFight(
+  supabase: SupabaseClient,
+  sessionId: string,
+  fighterCardId: string,
+  foughtCardId: string,
+  sourceCardId?: string | null,
+  foughtController?: TargetController | null,
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('cast_fight', {
+    p_session_id: sessionId,
+    p_fighter_card_id: fighterCardId,
+    p_fought_card_id: foughtCardId,
+    p_source_card_id: sourceCardId ?? null,
+    p_fought_controller: foughtController ?? 'any',
+    p_generic_payment: genericPayment ?? null,
   })
 
   if (error) {

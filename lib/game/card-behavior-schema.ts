@@ -123,6 +123,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player',
+  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -133,7 +134,7 @@ const UnknownV2ActionSchema = z.object({
 }).passthrough()
 
 // Fixed (non-chosen) recipient for auto-resolving triggered-ability effects.
-const BehaviorRecipientSchema = z.enum(['controller', 'each_opponent', 'active_player'])
+const BehaviorRecipientSchema = z.enum(['controller', 'each_opponent', 'active_player', 'each_player', 'all_players'])
 
 // Optional controller restriction on a chosen creature target.
 // "an opponent controls" -> opponent; "you control" -> you/controller/self.
@@ -231,6 +232,15 @@ const CardBehaviorActionSchema = z.union([
     target_controller: TargetControllerSchema,
   }),
   z.object({
+    type: z.literal('add_counters_all'),
+    amount: z.number(),
+    target_controller: TargetControllerSchema,
+  }),
+  z.object({
+    type: z.enum(['tap_all', 'untap_all']),
+    target_controller: TargetControllerSchema,
+  }),
+  z.object({
     type: z.literal('pump'),
     power: z.number().optional(),
     toughness: z.number().optional(),
@@ -241,6 +251,26 @@ const CardBehaviorActionSchema = z.union([
   // Targeted creature effects cast as a spell (destroy/exile/bounce/tap/untap).
   z.object({
     type: z.enum(['destroy', 'exile', 'bounce', 'tap', 'untap']),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Grant a keyword to a target creature until end of turn (trigger-only today).
+  z.object({
+    type: z.literal('grant_keyword'),
+    keyword: z.enum([
+      'flying', 'reach', 'trample', 'vigilance', 'haste',
+      'first_strike', 'double_strike', 'deathtouch', 'indestructible',
+    ]),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Fight: a creature you control fights a target creature. target_type/
+  // target_controller describe the FOUGHT creature (the fighter is implicitly
+  // one you control). Each deals damage equal to its power to the other.
+  z.object({
+    type: z.literal('fight'),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,

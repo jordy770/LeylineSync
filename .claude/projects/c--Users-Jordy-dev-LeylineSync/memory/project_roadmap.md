@@ -44,19 +44,19 @@ metadata:
 
 ## 🟡 Mid-term — effect vocabulary (README Tier 1/2/3 backlog)
 
-**Tier 1 (mirror an existing helper):**
+**Tier 1 (mirror an existing helper):** ✅ **shipped** (mig 098, by Codex)
 
-- `gain_life`/`lose_life` for **each/all players** (new recipient value)
-- Mass `add_counters` ("+1/+1 on each creature you control")
-- `tap_all` / `untap_all`
+- ~~`gain_life`/`lose_life` for **each/all players**~~ ✅ (new recipients each_player/all_players)
+- ~~Mass `add_counters`~~ ✅ (`add_counters_all`, controller-scoped)
+- ~~`tap_all` / `untap_all`~~ ✅ (controller-scoped)
 
 **Tier 2 (target in another zone or a player choice):**
 
 - Return from graveyard (`return_to_hand` / reanimate) — needs graveyard picker
 - `sacrifice` (sacrificing player chooses)
 - Gain control / control-change ("threaten"), optional until-end-of-turn
-- `fight` — first **multi-target** effect
-- Temporary keyword grant ("gains flying until end of turn")
+- ~~`fight`~~ — ✅ **fully shipped, end-to-end** (mig 101). Engine: `apply_fight` reads both creatures' `card_effective_power` then deals each one's power to the other via `apply_creature_effect('deal_damage')`; cast via `cast_fight(session, fighter, fought, source, fought_controller)`; `fight_creatures` resolve branch; fizzles if either left the field. Authoring: Zod `fight` action + KNOWN_V2, registry/builder entry (reuses the composite creature-target field for the FOUGHT creature; fighter implicit), LLM prose. Client: `castFight` wrapper + a **two-step picker** in ControllerListV4 (pick your fighter, then the fought creature). Fixture `Prey Upon Test`. First multi-target effect. **Trigger path also shipped** (mig 102): "when this enters, it fights target creature" — `trigger_effect_requires_creature_target` learns `fight`, `apply_targeted_triggered_ability_effects` dispatches `fight` to `apply_fight(session, SOURCE, picked target)` (source = fighter), reusing the existing trigger target picker (no new client UI); `apply_fight` gained a self-fight guard; registry contexts `['trigger','spell']`; BuilderEffect `fight`; fixture `Pit Brawler Test`. **Tail finished (mig 103):** deathtouch — `apply_creature_effect` deal_damage honours an optional `deathtouch` param (mirrors combat's `dealt_deathtouch_damage`), `apply_fight` captures both creatures' `card_has_deathtouch` up front; generic-mana — `cast_fight` now accepts/forwards `p_generic_payment` to `pay_mana_cost` (parity with put_action_on_stack; the client wrapper forwards null like every other creature cast — a generic-mana picker is a shared app-wide UI feature, not fight-specific). `fight` is now **fully complete, no remaining follow-ups.**
+- ~~Temporary keyword grant~~ — ✅ **fully shipped** (mig 099 trigger path + mig 100 instant/combat-trick spell path: `grant_keyword_creature` stack action through `put_action_on_stack`/`resolve_top_of_stack`, client `putGrantKeywordCreatureOnStack` + `creature_effect` plan carrying `keyword`, authorable in both trigger & spell contexts). Keyword is fixed by the card, so cast only needs a creature target — no keyword picker.
 
 **Tier 3 (higher effort / variable):**
 

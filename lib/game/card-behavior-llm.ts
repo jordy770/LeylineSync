@@ -196,18 +196,21 @@ The engine supports these sections:
 2. triggered_abilities — "when/whenever/at" abilities. Each entry: { "event": <event>, "effects": [ ... ] }.
    Supported events: ${events}.
    Effects here are auto-resolved unless they explicitly target a creature. Supported effect types: ${triggerEffects}.
-   - gain_life: { "type": "gain_life", "amount": N } — the controller gains N.
+   - gain_life: { "type": "gain_life", "amount": N, "recipient"?: <recipient> } — default is the controller; use "each_player"/"all_players" when every player gains life.
    - draw:      { "type": "draw", "amount": N } — the controller draws N.
    - lose_life / deal_damage: { "type": ..., "amount": N, "recipient": <recipient> }.
-     Recipients: ${recipients}. Default recipient is "each_opponent". "deal damage to each opponent" and "each opponent loses N life" are both modeled here.
+      Recipients: ${recipients}. Default recipient is "each_opponent". "deal damage to each opponent" and "each opponent loses N life" are both modeled here; use "each_player"/"all_players" when every player loses life.
    - create_token: { "type": "create_token", "token": <token name>, "count": N } — the controller creates N tokens. Allowed token names: ${BUILDER_TOKEN_NAMES.join(', ')}. Pick the closest match by creature type; if none matches, omit this effect.
    - add_counters: { "type": "add_counters", "amount": N } — put N +1/+1 counters on this permanent (the source). Use only for "put a +1/+1 counter on it/CARDNAME".
-   - mill: { "type": "mill", "amount": N, "recipient": "controller" | "each_opponent" } — a player puts the top N cards of their library into their graveyard. Default recipient is "controller" ("mill N cards" = you); use "each_opponent" for "each opponent mills N".
+   - add_counters_all: { "type": "add_counters_all", "amount": N, "target_controller": "you" } — put N +1/+1 counters on each creature the controller controls.
+   - tap_all / untap_all: { "type": "tap_all" | "untap_all", "target_controller": "you" } — tap/untap each creature the controller controls.
+   - mill: { "type": "mill", "amount": N, "recipient": "controller" | "each_opponent" | "each_player" | "all_players" } — a player puts the top N cards of their library into their graveyard. Default recipient is "controller" ("mill N cards" = you); use "each_opponent" for "each opponent mills N".
    - search_library (tutor): { "type": "search_library", "count": N, "to": "hand" | "battlefield" | "top", "filter": { "type_line": "creature" } } — search YOUR library for up to N cards (optional type_line filter), put them to the destination (default "hand"), then shuffle. The controller chooses at resolution.
    - discard: { "type": "discard", "count": N } — the controller chooses N cards in their hand to discard.
    - may: { "type": "may", "prompt": "Do X?", "effects": [ ... ] } — an optional "you may": the controller is asked yes/no; on yes the inner effects run. Use for "you may" abilities. Inner effects should be simple (no nested scry/search/discard).
    - choose_player: { "type": "choose_player", "filter": "opponent" | "any", "effects": [ ... ] } — the controller chooses a player, then the inner effects apply to that player. Use for "target player of your choice" / "an opponent you choose". Inner effects should be simple player-directed effects (lose_life / gain_life / draw / mill), e.g. [{ "type": "lose_life", "amount": 3 }].
-   - Targeted creature triggers may use deal_damage, destroy, exile, bounce, tap, untap, or add_counters with "target_type": "creature". The target_type must be exactly "creature" (not "any") — a trigger that deals damage to "any target" is auto-resolved against each opponent instead of singling out a creature.
+   - grant_keyword: { "type": "grant_keyword", "keyword": "flying", "target_type": "creature", "target_controller": "you" } — a target creature gains the keyword until end of turn. Allowed keywords: flying, reach, trample, vigilance, haste, first_strike, double_strike, deathtouch, indestructible. Valid as a triggered ability or as an instant/sorcery combat trick. target_type must be exactly "creature".
+   - Targeted creature triggers may use deal_damage, destroy, exile, bounce, tap, untap, add_counters, grant_keyword, or fight with "target_type": "creature". The target_type must be exactly "creature" (not "any") — a trigger that deals damage to "any target" is auto-resolved against each opponent instead of singling out a creature. For a fight trigger ("when this enters, it fights target creature"), the SOURCE creature is the fighter and target_type/target_controller describe the fought creature.
    - Controller restriction (triggers and spells): add "target_controller": "opponent" for "a creature an opponent controls", or "target_controller": "you" for "a creature you control". Omit it when there is no restriction.
 
 3. activated_abilities — "{cost}: effect" abilities. Each entry: { "costs": [ ... ], "effects": [ ... ], "is_mana_ability"?: true }.
@@ -224,11 +227,14 @@ The engine supports these sections:
     - bounce    { "type": "bounce", "target_type": "creature" } — "return target creature to its owner's hand".
     - tap       { "type": "tap", "target_type": "creature" } / untap { "type": "untap", "target_type": "creature" }.
     - add_counters { "type": "add_counters", "amount": N, "target_type": "creature" } — put N +1/+1 counters on target creature.
+    - fight     { "type": "fight", "target_type": "creature", "target_controller": "opponent" } — "target creature you control fights target creature ...". The fighter is implicit (a creature you control as a spell, or the SOURCE creature as a trigger); target_type/target_controller describe the FOUGHT creature (use "opponent" for "you don't control", omit target_controller for "another target creature"). Each deals damage equal to its power to the other.
     - draw      { "type": "draw", "amount": N } — the caster draws N (untargeted).
     - scry      { "type": "scry", "amount": N } — "Scry N": the caster looks at the top N cards of their library and may put any number on the bottom (untargeted).
     - surveil   { "type": "surveil", "amount": N } — "Surveil N": the caster looks at the top N cards of their library and may put any number into their graveyard (untargeted).
     - counter   { "type": "counter", "target_type": "spell" }; add_mana { "type": "add_mana", "color": ..., "amount": N }.
-    - mill      { "type": "mill", "amount": N, "recipient": "each_opponent" | "controller" } — top N of a library to its graveyard.
+     - mill      { "type": "mill", "amount": N, "recipient": "each_opponent" | "controller" | "each_player" | "all_players" } — top N of a library to its graveyard.
+     - add_counters_all { "type": "add_counters_all", "amount": N, "target_controller": "you" } — put N +1/+1 counters on each creature the caster controls.
+     - tap_all / untap_all { "type": "tap_all" | "untap_all", "target_controller": "you" } — tap/untap each creature the caster controls.
     - search_library { "type": "search_library", "count": N, "to": "hand" | "battlefield" | "top", "filter": { "type_line": "..." } } — tutor; omit "filter" to search for ANY card (Demonic Tutor = count 1, to "hand", no filter).
     - discard   { "type": "discard", "count": N } — the controller discards N.
     - may / choose_player — same shapes as in the triggered-ability notes above; valid as spell actions too.
