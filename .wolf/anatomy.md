@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T18:24:08.690Z
-> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T19:34:11.633Z
+> Files: 67 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~761 tok)
+- `package.json` — Node.js package manifest (~781 tok)
 - `README.md` — Project documentation (~15932 tok)
 
 ## .claude/
@@ -13,7 +13,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~4651 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~4960 tok)
 
 ## .claude/rules/
 
@@ -105,9 +105,9 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 26 more (~10215 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5317 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6168 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6439 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~7593 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~4734 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~4982 tok)
 
 ## lib/supabase/
 
@@ -152,6 +152,11 @@
 - `202605010122_combat_over_assignment.sql` — Phase 4 — player-chosen combat damage OVER-ASSIGNMENT. (~4665 tok)
 - `202605010123_apnap_trigger_ordering.sql` — Phase 4 / F1 — APNAP ordering of SIMULTANEOUS triggered abilities (CR 603.3b). (~2526 tok)
 - `202605010124_reset_priority_round_on_stack_change.sql` — Phase 4 / F1b — restart the priority round when a new object enters the stack. (~548 tok)
+- `202605010125_damage_prevention_resolver.sql` — Phase 4 / F2.1a — DAMAGE PREVENTION: the first replacement-effect resolver. (~2040 tok)
+- `202605010126_prevent_damage_effect.sql` — Phase 4 / F2.1b — the `prevent_damage` card effect: real spells/abilities now (~3687 tok)
+- `202605010127_combat_damage_through_resolver.sql` — Phase 4 / F2.1c — route COMBAT damage to players through the prevention resolver. (~4455 tok)
+- `202605010128_set_pt_layer.sql` — Phase 4 / F2.2a — the LAYER resolver, slice 1: SET power/toughness (CR 613 7b). (~1753 tok)
+- `202605010129_set_pt_creature_spell.sql` — Phase 4 / F2.2b — "becomes X/Y until end of turn": a targeted set_pt creature (~3010 tok)
 
 ## tests/
 
@@ -162,12 +167,14 @@
 - `apnap-trigger-order.test.ts` — Phase 4 / F1 — APNAP ordering of simultaneous triggered abilities (mig 123). (~1112 tok)
 - `cant-be-countered.test.ts` — "Can't be countered": a counter that targets an uncounterable spell resolves (~644 tok)
 - `combat-over-assignment.test.ts` — Phase 4 — player-chosen combat damage OVER-ASSIGNMENT (mig 122). The attacker (~1582 tok)
+- `damage-prevention.test.ts` — Phase 4 / F2.1a — damage prevention resolver (mig 125). A shield consumes damage (~1888 tok)
 - `divided-damage.test.ts` — Phase 3, slice 4a — divided damage (mig 115): the `divided_damage` action type (~1279 tok)
 - `fight.test.ts` — Tier-2 effect: fight (migration 101) — the first multi-target effect. A (~2640 tok)
 - `gain-control.test.ts` — Tier-2 effect: gain_control (migration 106) — Threaten / Mind Control on the (~1860 tok)
 - `grant-keyword-spell.test.ts` — Tier-2 effect: grant_keyword spell/combat-trick path (migration 100). A (~789 tok)
 - `grant-keyword.test.ts` — Tier-2 effect: grant_keyword — a targeted trigger gives a creature a keyword (~696 tok)
 - `hybrid-phyrexian-mana.test.ts` — Phase 4 — richer mana: HYBRID and PHYREXIAN symbols (mig 121). pay_mana_cost (~1288 tok)
+- `layer-pt.test.ts` — Phase 4 / F2.2a — set-P/T layering (mig 128, CR 613 layer 7b). A set_pt effect (~1541 tok)
 - `modal-decisions.test.ts` — Phase 1, slice 2 — pending-decision machinery + modal "choose one". (~1917 tok)
 - `multi-target-trigger.test.ts` — Phase 3, slice 4b — multi-target triggered abilities (mig 116). "When this (~1053 tok)
 - `multi-target.test.ts` — Phase 3, slice 1 — general multi-target removal (mig 112): the (~1574 tok)
@@ -181,11 +188,11 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~5168 tok)
+- `test-cards.json` (~5333 tok)
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~5873 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~6176 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~449 tok)
 
 ## tests/regression/

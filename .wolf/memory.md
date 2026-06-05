@@ -1498,3 +1498,41 @@
 | 20:23 | Edited package.json | inline fix | ~24 |
 | 20:24 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~108 |
 | 20:24 | Session end: 34 writes across 13 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 10 reads | ~110445 tok |
+| 20:35 | Created supabase/migrations/202605010125_damage_prevention_resolver.sql | — | ~2040 |
+| 20:35 | Edited tests/harness/scenario.ts | modified addPrevention() | ~179 |
+| 20:35 | Created tests/feature/damage-prevention.test.ts | — | ~839 |
+| 20:36 | Edited package.json | inline fix | ~23 |
+| 20:37 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~132 |
+| 20:38 | Session end: 39 writes across 15 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 10 reads | ~113813 tok |
+| 21:07 | Created supabase/migrations/202605010126_prevent_damage_effect.sql | — | ~3687 |
+| 21:07 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~45 |
+| 21:07 | Edited lib/game/card-behavior-schema.ts | expanded (+8 lines) | ~171 |
+| 21:08 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~199 |
+| 21:08 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~160 |
+| 21:08 | Edited tests/feature/damage-prevention.test.ts | 4→9 lines | ~80 |
+| 21:08 | Edited tests/feature/damage-prevention.test.ts | expanded (+35 lines) | ~457 |
+| 21:09 | Edited tests/feature/damage-prevention.test.ts | 6→6 lines | ~56 |
+| 21:11 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~190 |
+| 21:11 | Session end: 48 writes across 19 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 14 reads | ~138852 tok |
+| 21:14 | Edited supabase/migrations/202605010127_combat_damage_through_resolver.sql | reduced (-13 lines) | ~211 |
+| 21:15 | Edited supabase/migrations/202605010127_combat_damage_through_resolver.sql | 10→9 lines | ~111 |
+| 21:15 | Edited supabase/migrations/202605010127_combat_damage_through_resolver.sql | greatest() → apply_damage_to_player() | ~98 |
+| 21:15 | Edited tests/feature/damage-prevention.test.ts | modified bolt() | ~216 |
+| 21:16 | Edited tests/feature/damage-prevention.test.ts | expanded (+45 lines) | ~615 |
+| 21:17 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~183 |
+| 21:17 | Session end: 54 writes across 20 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 17 reads | ~146396 tok |
+| 21:23 | Created supabase/migrations/202605010128_set_pt_layer.sql | — | ~1750 |
+| 21:24 | Edited tests/harness/scenario.ts | modified setBasePT() | ~163 |
+| 21:24 | Created tests/feature/layer-pt.test.ts | — | ~936 |
+| 21:24 | Edited package.json | inline fix | ~21 |
+| 21:25 | Edited supabase/migrations/202605010128_set_pt_layer.sql | 5→5 lines | ~66 |
+| 21:26 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~130 |
+| 21:26 | Session end: 60 writes across 22 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 17 reads | ~149601 tok |
+| 21:31 | Created supabase/migrations/202605010129_set_pt_creature_spell.sql | — | ~3010 |
+| 21:32 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~23 |
+| 21:32 | Edited lib/game/card-behavior-schema.ts | expanded (+10 lines) | ~150 |
+| 21:32 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~147 |
+| 21:32 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~164 |
+| 21:33 | Edited tests/feature/layer-pt.test.ts | expanded (+49 lines) | ~643 |
+| 21:34 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~178 |
+| 21:34 | Session end: 67 writes across 23 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 19 reads | ~159138 tok |

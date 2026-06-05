@@ -4613,6 +4613,191 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-05T18:22:38.422Z"
+    },
+    {
+      "id": "bug-285",
+      "timestamp": "2026-06-05T18:35:41.806Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T18:35:41.806Z"
+    },
+    {
+      "id": "bug-286",
+      "timestamp": "2026-06-05T19:08:11.575Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"grant_keyword\"",
+      "fix": "Changed to \"prevent_damage\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T19:08:11.575Z"
+    },
+    {
+      "id": "bug-287",
+      "timestamp": "2026-06-05T19:08:44.087Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/damage-prevention.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-05T19:08:56.433Z"
+    },
+    {
+      "id": "bug-282",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "npm run validate:scripts crashes: Transform failed — Top-level await is currently not supported with the cjs output format (scripts/validate-card-scripts.ts:31)",
+      "file": "scripts/validate-card-scripts.ts",
+      "root_cause": "PRE-EXISTING tooling breakage (not card-related): the script uses top-level await, but tsx/esbuild transforms it as CJS where top-level await is unsupported. Discovered while adding the prevent_damage fixture; unrelated to any card script.",
+      "fix": "Not fixed (out of scope). To repair: run the script as ESM (add a local package.json {\"type\":\"module\"} for scripts, or rename to .mts, or wrap the body in an async main() instead of top-level await). Zod validity of fixtures is currently covered indirectly by the engine tests that cast them.",
+      "tags": [
+        "tooling",
+        "validate-scripts",
+        "tsx",
+        "esbuild",
+        "top-level-await",
+        "pre-existing"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-289",
+      "timestamp": "2026-06-05T19:14:54.908Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010127_combat_damage_through_resolver.sql",
+      "root_cause": "21 lines replaced/restructured",
+      "fix": "Rewrote 26→13 lines (21 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T19:14:54.908Z"
+    },
+    {
+      "id": "bug-290",
+      "timestamp": "2026-06-05T19:16:16.601Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/damage-prevention.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T19:16:16.601Z"
+    },
+    {
+      "id": "bug-291",
+      "timestamp": "2026-06-05T19:24:15.691Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T19:24:15.691Z"
+    },
+    {
+      "id": "bug-283",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "GC1/GC4 gain_control tests failed after mig 128 (control continuous-effect insert violated game_continuous_effects_effect_type_check)",
+      "file": "supabase/migrations/202605010128_set_pt_layer.sql",
+      "root_cause": "mig 128 rebuilt the effect_type CHECK from the STALE baseline list (which lacks control), dropping control which mig 106 had added — so gain_control end_of_turn could no longer insert its control effect. Same stale-baseline class as bug-281, but for a CHECK constraint: the baseline constraint is a snapshot, later migrations extend it.",
+      "fix": "Added both control AND set_pt to the CHECK array (the current list = baseline + control from mig 106). 331/331.",
+      "tags": [
+        "migration",
+        "check-constraint",
+        "stale-baseline",
+        "game_continuous_effects",
+        "effect_type",
+        "set_pt",
+        "gain_control"
+      ],
+      "related_bugs": [
+        "bug-281"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-293",
+      "timestamp": "2026-06-05T19:32:13.785Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T19:32:13.785Z"
+    },
+    {
+      "id": "bug-294",
+      "timestamp": "2026-06-05T19:32:23.350Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"prevent_damage\"",
+      "fix": "Changed to \"set_pt\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T19:32:23.350Z"
+    },
+    {
+      "id": "bug-295",
+      "timestamp": "2026-06-05T19:33:11.582Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/layer-pt.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T19:33:11.582Z"
     }
   ]
 }

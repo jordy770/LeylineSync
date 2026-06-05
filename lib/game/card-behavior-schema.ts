@@ -124,7 +124,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player',
   'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
-  'sacrifice', 'return_from_graveyard',
+  'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -322,6 +322,24 @@ const CardBehaviorActionSchema = z.union([
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+  }),
+  // Set a target creature's BASE power/toughness until end of turn ("becomes a
+  // 0/1", Turn to Frog). Counters and pumps then layer on top (CR 613 7b).
+  z.object({
+    type: z.literal('set_pt'),
+    power: z.number(),
+    toughness: z.number(),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Prevent the next `amount` damage that would be dealt to YOU this turn (amount
+  // omitted = prevent all). `combat_only` restricts it to combat damage (Fog-like).
+  // A replacement effect: it consumes damage before it reaches your life.
+  z.object({
+    type: z.literal('prevent_damage'),
+    amount: AmountSchema.optional(),
+    combat_only: z.boolean().optional(),
   }),
   UnknownV2ActionSchema,
 ])
