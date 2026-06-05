@@ -225,6 +225,40 @@ export class Scenario {
     )
   }
 
+  /**
+   * Cast a permanent (creature/enchantment/artifact/aura) from hand as the acting
+   * seat. For an Aura, pass `target` (the creature to enchant). Returns the card row.
+   */
+  async castPermanent(
+    gameCardId: string,
+    opts: { target?: string; generic?: Record<string, number> } = {},
+  ): Promise<{ id: string }> {
+    return this.run(() =>
+      rpc(this.client, 'cast_card_from_hand', {
+        p_session_id: this.sessionId,
+        p_game_card_id: gameCardId,
+        p_generic_payment: opts.generic ? JSON.stringify(opts.generic) : null,
+        p_target_card_id: opts.target ?? null,
+      }),
+    )
+  }
+
+  /** Equip an Equipment you control onto a creature you control, as the acting seat. */
+  async equip(
+    equipmentCardId: string,
+    targetCardId: string,
+    opts: { generic?: Record<string, number> } = {},
+  ): Promise<{ id: string }> {
+    return this.run(() =>
+      rpc(this.client, 'equip', {
+        p_session_id: this.sessionId,
+        p_equipment_card_id: equipmentCardId,
+        p_target_card_id: targetCardId,
+        p_generic_payment: opts.generic ? JSON.stringify(opts.generic) : null,
+      }),
+    )
+  }
+
   /** Announce a modal spell as the acting seat; returns the stack item. */
   async castModal(
     modes: { label?: string; actions: unknown[] }[],

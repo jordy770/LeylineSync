@@ -4830,6 +4830,317 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-05T20:09:09.497Z"
+    },
+    {
+      "id": "bug-298",
+      "timestamp": "2026-06-05T20:43:27.259Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/feature/protection.test.ts",
+      "root_cause": "Had ', { target_card_id: ward, target_controller: '",
+      "fix": "Changed to ', { target_card_id: ward, amount: 3, target_contr",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-05T20:43:32.715Z"
+    },
+    {
+      "id": "bug-299",
+      "timestamp": "2026-06-05T20:43:46.219Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/protection.test.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 22→37 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T20:43:46.219Z"
+    },
+    {
+      "id": "bug-300",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "protection.test.ts: 'amount must be positive' (P0001) then 'current transaction is aborted' (25P02)",
+      "file": "tests/feature/protection.test.ts",
+      "root_cause": "Two test-authoring mistakes: (1) put_action_on_stack's deal_damage_creature builder reads the effect amount from the PAYLOAD, not the card script, so omitting amount raised before the protection check ran. (2) An expected-rejection RPC aborts the whole withRolledBackTx transaction (25P02), so follow-up commands after assert.rejects fail.",
+      "fix": "(1) Pass amount in the putOnStack payload. (2) Split the 'legal target still works' assertion into its own test (PT5) so nothing runs after the rejection in PT4.",
+      "tags": [
+        "test",
+        "protection",
+        "put_action_on_stack",
+        "payload-amount",
+        "tx-abort",
+        "25P02"
+      ],
+      "related_bugs": [
+        "bug-281"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-301",
+      "timestamp": "2026-06-05T20:56:42.197Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/protection.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T20:56:42.197Z"
+    },
+    {
+      "id": "bug-302",
+      "timestamp": "2026-06-05T20:57:57.392Z",
+      "error_message": "Incorrect value in code",
+      "file": "README.md",
+      "root_cause": "Had 't be **targeted** by a spell/ability of that colo",
+      "fix": "Changed to 't be **targeted** by a spell/ability of that colo",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T20:57:57.392Z"
+    },
+    {
+      "id": "bug-303",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "DG2 protection test: expected damage_marked 2, got 0 on a creature that took lethal combat damage",
+      "file": "tests/feature/protection.test.ts",
+      "root_cause": "Asserted damage_marked on a victim that took LETHAL combat damage. move_lethal_damaged_creatures_to_graveyard -> put_in_graveyard resets damage_marked to 0 when the creature dies, so a dead creature always reads 0 marked damage.",
+      "fix": "Assert the graveyard move (proof it took the damage) instead of damage_marked. Only assert damage_marked=0 on a SURVIVOR whose damage was prevented by protection (DG1/DG3).",
+      "tags": [
+        "test",
+        "protection",
+        "combat",
+        "damage_marked",
+        "put_in_graveyard"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-304",
+      "timestamp": "2026-06-05T21:01:01.586Z",
+      "error_message": "Wrong reference: authenticated should be anon",
+      "file": "supabase/migrations/202605010133_protection_cant_be_blocked.sql",
+      "root_cause": "Used \"authenticated\" instead of \"anon\"",
+      "fix": "Changed authenticated → anon",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:01:01.586Z"
+    },
+    {
+      "id": "bug-305",
+      "timestamp": "2026-06-05T21:01:28.787Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/protection.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:01:28.787Z"
+    },
+    {
+      "id": "bug-306",
+      "timestamp": "2026-06-05T21:02:05.736Z",
+      "error_message": "Type error",
+      "file": "tests/feature/protection.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:02:05.736Z"
+    },
+    {
+      "id": "bug-307",
+      "timestamp": "2026-06-05T21:02:57.393Z",
+      "error_message": "Incorrect value in code",
+      "file": "README.md",
+      "root_cause": "Had 't be **targeted** by a spell/ability of that colo",
+      "fix": "Changed to 't be targeted by a spell/ability of that colour, ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:02:57.393Z"
+    },
+    {
+      "id": "bug-308",
+      "timestamp": "2026-06-05T21:18:54.189Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010134_auras_and_attachment.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 9→13 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:18:54.189Z"
+    },
+    {
+      "id": "bug-309",
+      "timestamp": "2026-06-05T21:19:44.959Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:19:44.959Z"
+    },
+    {
+      "id": "bug-310",
+      "timestamp": "2026-06-05T21:21:29.401Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:21:29.401Z"
+    },
+    {
+      "id": "bug-311",
+      "timestamp": "2026-06-05T21:21:44.364Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/auras.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:21:44.364Z"
+    },
+    {
+      "id": "bug-312",
+      "timestamp": "2026-06-05T21:23:53.275Z",
+      "error_message": "Incorrect value in code",
+      "file": "README.md",
+      "root_cause": "Had 't be targeted by a spell/ability of that colour, ",
+      "fix": "Changed to 't be **D**amaged, **E**nchanted/equipped, **B**lo",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:23:53.275Z"
+    },
+    {
+      "id": "bug-313",
+      "timestamp": "2026-06-05T21:52:50.000Z",
+      "error_message": "Missing guard clause",
+      "file": "lib/game/data.ts",
+      "root_cause": "No early return/throw for edge case: error",
+      "fix": "Added guard clause: if (error)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:52:50.000Z"
+    },
+    {
+      "id": "bug-314",
+      "timestamp": "2026-06-05T21:54:32.456Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: // Auras (cast from hand targeting a creature) and Equipment; // control). Colour comes from the card's mana cost; creatur",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-05T21:56:12.017Z"
+    },
+    {
+      "id": "bug-315",
+      "timestamp": "2026-06-05T21:56:54.089Z",
+      "error_message": "CSS fix: active",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "active: scale-95 ${ → scale-95\"",
+      "fix": "Changed active: scale-95 ${ → scale-95\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:56:54.089Z"
+    },
+    {
+      "id": "bug-316",
+      "timestamp": "2026-06-05T21:58:50.827Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 20→26 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T21:58:50.827Z"
     }
   ]
 }

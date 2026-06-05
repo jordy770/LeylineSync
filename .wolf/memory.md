@@ -1544,3 +1544,83 @@
 | 22:08 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 2→3 lines | ~35 |
 | 22:09 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~27 |
 | 22:09 | Session end: 74 writes across 24 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 21 reads | ~166351 tok |
+| 22:31 | Session end: 74 writes across 24 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 21 reads | ~166351 tok |
+
+## Session: 2026-06-05 22:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:39 | Created supabase/migrations/202605010131_protection_color_and_targeting.sql | — | ~5652 |
+| 22:42 | Created tests/feature/protection.test.ts | — | ~1044 |
+| 22:43 | Edited tests/feature/protection.test.ts | 6→6 lines | ~54 |
+| 22:43 | Edited tests/feature/protection.test.ts | 2→2 lines | ~59 |
+| 22:43 | Edited tests/feature/protection.test.ts | 2→2 lines | ~48 |
+| 22:43 | Edited tests/feature/protection.test.ts | expanded (+15 lines) | ~451 |
+| 22:44 | Edited package.json | inline fix | ~30 |
+| 22:45 | Edited lib/game/card-behavior-schema.ts | 4→6 lines | ~78 |
+| 22:45 | Edited lib/game/card-behavior-llm.ts | 2→3 lines | ~160 |
+| 22:46 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified F3() | ~382 |
+
+| 2026-06-05 | F3 slice 1 � Protection colour model + T (can't-be-targeted) gate: mig 131 (card_color_set, protection effect_type+accessors, put_action_on_stack + choose_triggered_ability_creature_target reproduced w/ protection check), Zod `from` field + LLM guide, fixtures (Ember/Frost Ward, Searing Spear {R}, Flame Mage {R}), tests PT1-PT5. | supabase/migrations/202605010131_protection_color_and_targeting.sql, tests/feature/protection.test.ts, tests/fixtures/test-cards.json, lib/game/card-behavior-schema.ts, lib/game/card-behavior-llm.ts, package.json | 340/340, tsc+lint clean | ~9000 |
+| 22:47 | Edited README.md | 2→2 lines | ~116 |
+| 22:48 | Session end: 11 writes across 7 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 11 reads | ~58593 tok |
+| 22:56 | Created supabase/migrations/202605010132_protection_combat_damage.sql | — | ~4982 |
+| 22:56 | Edited tests/feature/protection.test.ts | modified block() | ~880 |
+| 22:57 | Edited tests/feature/protection.test.ts | damageOf() → graveyard() | ~53 |
+| 22:57 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 1→3 lines | ~255 |
+| 22:57 | Edited README.md | inline fix | ~95 |
+
+| 2026-06-05 | F3 slice 2 — Protection D (can't-be-Damaged) gate for COMBAT: mig 132 (resolve_combat_damage reproduced + protection skip at both creature-damage sites; damage still ASSIGNED so trample math unchanged; game_card_color_set helper), fixture Goblin Raider {R}, tests DG1-DG3. | supabase/migrations/202605010132_protection_combat_damage.sql, tests/feature/protection.test.ts, tests/fixtures/test-cards.json | 343/343, tsc+lint clean | ~6000 |
+| 22:58 | Session end: 16 writes across 8 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 14 reads | ~72491 tok |
+| 23:00 | Created supabase/migrations/202605010133_protection_cant_be_blocked.sql | — | ~1357 |
+| 23:01 | Edited supabase/migrations/202605010133_protection_cant_be_blocked.sql | inline fix | ~28 |
+| 23:01 | Edited tests/feature/protection.test.ts | added optional chaining | ~648 |
+| 23:02 | Edited tests/feature/protection.test.ts | reduced (-10 lines) | ~83 |
+| 23:02 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified F3() | ~325 |
+| 23:02 | Edited README.md | inline fix | ~130 |
+
+| 2026-06-05 | F3 slice 3 — Protection B (can't-be-Blocked) gate: mig 133 (declare_blocker reproduced + reject when attacker has protection from blocker's colour, CR 509.1b). F3 functional gates T/D/B COMPLETE (E deferred). Removed DG3 (unreachable once B gate exists). Tests BG1/BG2. | supabase/migrations/202605010133_protection_cant_be_blocked.sql, tests/feature/protection.test.ts | 344/344, tsc+lint clean | ~4000 |
+| 23:03 | Session end: 22 writes across 9 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 14 reads | ~76034 tok |
+| 23:18 | Created supabase/migrations/202605010134_auras_and_attachment.sql | — | ~5801 |
+| 23:18 | Edited supabase/migrations/202605010134_auras_and_attachment.sql | 9→13 lines | ~139 |
+| 23:19 | Edited tests/harness/scenario.ts | added nullish coalescing | ~200 |
+| 23:20 | Created tests/feature/auras.test.ts | — | ~953 |
+| 23:21 | Created supabase/migrations/202605010135_equipment_and_equip.sql | — | ~1296 |
+| 23:21 | Edited tests/harness/scenario.ts | modified equip() | ~172 |
+| 23:21 | Edited tests/feature/auras.test.ts | expanded (+60 lines) | ~794 |
+| 23:22 | Edited package.json | inline fix | ~27 |
+| 23:22 | Edited lib/game/card-behavior-schema.ts | 4→6 lines | ~79 |
+| 23:22 | Edited lib/game/card-behavior-schema.ts | 5→7 lines | ~114 |
+| 23:23 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~288 |
+| 23:23 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified Auras() | ~492 |
+| 23:23 | Edited README.md | inline fix | ~155 |
+
+| 2026-06-05 | F3 slice 4 (E gate + ATTACHMENT subsystem) — Auras (mig 134) + Equipment (mig 135): game_cards.attached_to, affected:attached host effects, attach_permanent, cast_card_from_hand aura target, equip RPC, cleanup trigger, E protection gate on both. F3 protection COMPLETE (T/D/B/E). Tests EA1-3/EQ1-3. | supabase/migrations/202605010134_auras_and_attachment.sql, 202605010135_equipment_and_equip.sql, tests/feature/auras.test.ts, tests/harness/scenario.ts, tests/fixtures/test-cards.json, lib/game/card-behavior-schema.ts, lib/game/card-behavior-llm.ts, package.json | 350/350, tsc+lint clean | ~14000 |
+| 23:24 | Session end: 35 writes across 13 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 14 reads | ~87140 tok |
+| 23:49 | Edited lib/game/actions.ts | added 1 condition(s) | ~282 |
+| 23:52 | Edited lib/game/data.ts | added 3 condition(s) | ~566 |
+| 23:52 | Edited lib/game/types.ts | 10→13 lines | ~111 |
+| 23:53 | Edited lib/game/use-controller-game-state.ts | expanded (+6 lines) | ~394 |
+| 23:53 | Edited lib/game/use-controller-game-state.ts | 5→6 lines | ~33 |
+| 23:54 | Edited components/ControllerListV4.tsx | 4→5 lines | ~41 |
+| 23:54 | Edited components/ControllerListV4.tsx | expanded (+10 lines) | ~196 |
+| 23:54 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~360 |
+| 23:54 | Edited components/ControllerListV4.tsx | 3→5 lines | ~145 |
+| 23:54 | Edited components/ControllerListV4.tsx | 4→6 lines | ~23 |
+| 23:54 | Edited components/ControllerListV4.tsx | 7→9 lines | ~96 |
+| 23:56 | Edited components/ControllerListV4.tsx | CSS: picker | ~132 |
+| 23:56 | Edited components/ControllerListV4.tsx | added optional chaining | ~262 |
+| 23:56 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~60 |
+| 23:56 | Edited components/ControllerListV4.tsx | CSS: enchantTargets, enchantTargets | ~922 |
+| 23:57 | Edited components/ControllerListV4.tsx | inline fix | ~29 |
+| 23:57 | Edited components/ControllerListV4.tsx | 5→9 lines | ~132 |
+| 23:57 | Edited components/ControllerListV4.tsx | 7→6 lines | ~119 |
+| 23:58 | Edited components/ControllerListV4.tsx | CSS: gate, blocker | ~182 |
+| 23:58 | Edited components/ControllerListV4.tsx | CSS: Protection, undefined | ~406 |
+| 23:59 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 1→3 lines | ~337 |
+
+| 2026-06-05 | F3 slice 5 — CLIENT wiring (V4 controller): castCardFromHand target arg + equip wrapper; getProtectionColors + mana_cost on BoardCard folded as protection_colors; Aura cast enchant-picker, Equipment Equip button + picker, protection pre-filter in spell-target + declare-blockers pickers. | lib/game/actions.ts, lib/game/data.ts, lib/game/types.ts, lib/game/use-controller-game-state.ts, components/ControllerListV4.tsx | tsc+lint clean; 350/350 engine tests unaffected | ~12000 |
+| 00:00 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |
+| 00:17 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |
+| 00:31 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |
+| 01:03 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |

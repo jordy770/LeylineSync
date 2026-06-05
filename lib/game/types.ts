@@ -276,12 +276,15 @@ export type BoardCard = {
   zone: GameZone
   image_url: string | null
   type_line?: string | null
+  mana_cost?: string | null
   power_toughness?: string | null
   controller_player_id?: string | null
   is_face_down?: boolean | null
   plus_one_counters?: number
   pump_power?: number
   pump_toughness?: number
+  // Colours this card has protection from (white|blue|black|red|green).
+  protection_colors?: string[]
 }
 
 export type ControllerCard = {

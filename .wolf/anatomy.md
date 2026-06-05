@@ -1,19 +1,19 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T20:09:09.481Z
-> Files: 68 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T21:59:39.288Z
+> Files: 78 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~781 tok)
-- `README.md` — Project documentation (~15932 tok)
+- `package.json` — Node.js package manifest (~799 tok)
+- `README.md` — Project documentation (~16065 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~5416 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~6975 tok)
 
 ## .claude/rules/
 
@@ -75,7 +75,7 @@
 ## components/
 
 - `CardBehaviorForm.tsx` — inputClass (~5786 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~50145 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~52078 tok)
 
 ## components/board/
 
@@ -103,11 +103,14 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 26 more (~10215 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 26 more (~10394 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5317 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6439 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6727 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~7593 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~4982 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~5075 tok)
+- `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5834 tok)
+- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2355 tok)
+- `use-controller-game-state.ts` — Exports useControllerGameState (~2048 tok)
 
 ## lib/supabase/
 
@@ -158,6 +161,11 @@
 - `202605010128_set_pt_layer.sql` — Phase 4 / F2.2a — the LAYER resolver, slice 1: SET power/toughness (CR 613 7b). (~1753 tok)
 - `202605010129_set_pt_creature_spell.sql` — Phase 4 / F2.2b — "becomes X/Y until end of turn": a targeted set_pt creature (~3010 tok)
 - `202605010130_set_pt_trigger_path.sql` — Phase 4 / F2.2c — set_pt on the TRIGGER path ("when ~ enters, target creature (~423 tok)
+- `202605010131_protection_color_and_targeting.sql` — F3 — Protection (DEBT), slice 1: colour model + the "can't be Targeted" (T) gate. (~5652 tok)
+- `202605010132_protection_combat_damage.sql` — F3 — Protection (DEBT), slice 2: the "can't be Damaged" (D) gate for COMBAT. (~4982 tok)
+- `202605010133_protection_cant_be_blocked.sql` — F3 — Protection (DEBT), slice 3: the "can't be Blocked" (B) gate. (~1362 tok)
+- `202605010134_auras_and_attachment.sql` — F3 — Protection (DEBT), slice 4a: AURAS + the attachment substrate (the basis (~5838 tok)
+- `202605010135_equipment_and_equip.sql` — F3 — Protection (DEBT), slice 4b: EQUIPMENT + the equip ability. (~1296 tok)
 
 ## tests/
 
@@ -166,6 +174,7 @@
 
 - `activated-abilities.test.ts` — Phase 4 — activated abilities beyond deal_damage (mig 119). "{cost}: effect" (~1012 tok)
 - `apnap-trigger-order.test.ts` — Phase 4 / F1 — APNAP ordering of simultaneous triggered abilities (mig 123). (~1112 tok)
+- `auras.test.ts` — F3 slice 4a — Auras + attachment (mig 134). An Aura is cast targeting a creature, (~1715 tok)
 - `cant-be-countered.test.ts` — "Can't be countered": a counter that targets an uncounterable spell resolves (~644 tok)
 - `combat-over-assignment.test.ts` — Phase 4 — player-chosen combat damage OVER-ASSIGNMENT (mig 122). The attacker (~1582 tok)
 - `damage-prevention.test.ts` — Phase 4 / F2.1a — damage prevention resolver (mig 125). A shield consumes damage (~1888 tok)
@@ -183,6 +192,7 @@
 - `permanent-trigger-target.test.ts` — Phase 3, slice 3 — non-creature permanent targets for TRIGGERED abilities (~1123 tok)
 - `player-discard.test.ts` — Near-term authoring — player-targeted discard (mig 118). `discard` gains (~1141 tok)
 - `priority-round.test.ts` — Phase 4 / F1b — a new stack object restarts the priority round (mig 124). Until (~626 tok)
+- `protection.test.ts` — F3 — Protection (DEBT), slice 1: the "can't be Targeted" (T) gate (mig 131). (~2532 tok)
 - `sacrifice-reanimate.test.ts` — Phase 1, slice 11 — sacrifice and return_from_graveyard (raise dead / (~2740 tok)
 - `search-library-variants.test.ts` — Phase 1, slice 14 — search_library variants (mig 111): graveyard destination, (~1560 tok)
 - `x-spells.test.ts` — Phase 1, slice 12 — X spells (variable amount paid as {X} generic mana). (~1339 tok)
@@ -193,7 +203,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~6176 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~6515 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~449 tok)
 
 ## tests/regression/

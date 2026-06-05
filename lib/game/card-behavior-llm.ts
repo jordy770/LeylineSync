@@ -208,6 +208,8 @@ The engine supports these sections:
 
 1. continuous_effects — static keyword abilities. Each entry: { "type": <keyword>, "affected": "source", "source_zone_required": "battlefield" }.
    Supported keywords: ${keywords}.
+   - protection: { "type": "protection", "from": <colour>, "affected": "source", "source_zone_required": "battlefield" } — "Protection from <colour>". A creature with this can't be targeted, damaged, or blocked by sources of that colour (DEBT, minus the equip/enchant case). Colour is one of white, blue, black, red, green; emit one entry per colour for multi-colour protection.
+   - Auras & Equipment grant an effect to the permanent they are attached to: author the granted effect with "affected": "attached" (instead of "source"). Use type "pump" with "payload": { "power": N, "toughness": N } for a +N/+N bonus, or a keyword type for a granted keyword. An Aura is type_line "Enchantment — Aura" (cast targeting a creature; it enters attached). An Equipment is type_line "Artifact — Equipment" (enters unattached; add a top-level "equip_cost": "{N}" for its equip ability). Example Aura: { "continuous_effects": [ { "type": "pump", "affected": "attached", "payload": { "power": 2, "toughness": 2 } } ] }.
 
 2. triggered_abilities — "when/whenever/at" abilities. Each entry: { "event": <event>, "effects": [ ... ] }.
    Supported events: ${events}.

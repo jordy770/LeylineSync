@@ -787,7 +787,7 @@ Current combat support:
 
 Current limitations:
 
-- No protection/prevention/replacement effects.
+- Damage prevention shields exist (spell/ability/combat). Protection from a colour is fully wired (DEBT): a creature with `protection from <colour>` can't be **D**amaged, **E**nchanted/equipped, **B**locked, or **T**argeted by sources of that colour (colour derived from mana cost). Auras and Equipment are modelled (an Aura is cast targeting a creature and grants an `affected:'attached'` effect to its host; Equipment uses an `equip {cost}` ability; both fall off / die via the attachment-cleanup trigger when the host leaves). No general replacement effects beyond prevention.
 - Multiple-blocker damage amounts are still automatic; there is no player-chosen over-assignment yet.
 - No planeswalker/battle targets.
 - Flying legality is enforced by `declare_blocker`. If the attacker has a `flying` continuous effect, only blockers with `flying` or `reach` are accepted. Make sure to call `Rebuild Effects` (or `register_card_continuous_effects`) after a flying or reach card enters the battlefield so the effect is registered before combat.

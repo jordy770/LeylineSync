@@ -14,6 +14,7 @@ import {
   getGameSessionPlayers,
   getPendingDecisions,
   getPlayerManaPool,
+  getProtectionColors,
   getStackItems,
   getTurnState,
   normalizeManaPool,
@@ -72,6 +73,7 @@ export function useControllerGameState(sessionId: string) {
         nextPendingDecisions,
         nextManaPool,
         pumpTotals,
+        protectionColors,
       ] = await Promise.all([
         getGameSession(supabase, sessionId),
         getControllerCards(supabase, sessionId, currentPlayerId),
@@ -84,6 +86,7 @@ export function useControllerGameState(sessionId: string) {
         getPendingDecisions(supabase, sessionId),
         getPlayerManaPool(supabase, sessionId, currentPlayerId),
         getActivePumpTotals(supabase, sessionId),
+        getProtectionColors(supabase, sessionId),
       ])
 
       // Fold active until-end-of-turn pumps onto each card so effective P/T shows
@@ -95,7 +98,11 @@ export function useControllerGameState(sessionId: string) {
 
       setPlayerId(currentPlayerId)
       setCards(controllerResult.cards.map(withPump))
-      setBoardCards(allBoardCards.map(withPump))
+      setBoardCards(
+        allBoardCards.map(withPump).map((card) =>
+          protectionColors[card.id] ? { ...card, protection_colors: protectionColors[card.id] } : card,
+        ),
+      )
       setPlayers(sessionPlayers)
       setTurnState(nextTurnState)
       setCombatActionState(nextCombatActionState)

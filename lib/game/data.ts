@@ -80,7 +80,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
   const linkedCardsById = await getLinkedCardsById(
     supabase,
     gameCardRows.map((card) => card.card_id),
-    'id, name, image_url, type_line, power_toughness',
+    'id, name, image_url, type_line, mana_cost, power_toughness',
   )
 
   return gameCardRows.map<BoardCard>((item) => {
@@ -97,11 +97,41 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       name: linkedCard?.name || 'Unknown',
       image_url: linkedCard?.image_url ?? null,
       type_line: linkedCard?.type_line ?? null,
+      mana_cost: linkedCard?.mana_cost ?? null,
       power_toughness: linkedCard?.power_toughness ?? null,
       controller_player_id: item.controller_player_id ?? null,
       plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
     }
   })
+}
+
+// Per-card protection colours (effect_type 'protection', payload.from), keyed by the
+// affected game_card id. Lets the controller pre-filter targets/blocks a creature's
+// protection forbids (the server is authoritative either way).
+export async function getProtectionColors(supabase: SupabaseClient, sessionId: string) {
+  const colorsByCard: Record<string, string[]> = {}
+
+  const { data, error } = await supabase
+    .from('game_continuous_effects')
+    .select('affected_card_id, payload')
+    .eq('session_id', sessionId)
+    .eq('effect_type', 'protection')
+
+  if (error) {
+    console.error('Failed to load protection effects:', error.message)
+    return colorsByCard
+  }
+
+  for (const row of (data ?? []) as { affected_card_id: string | null; payload: Record<string, unknown> | null }[]) {
+    const id = row.affected_card_id
+    const from = typeof row.payload?.from === 'string' ? (row.payload.from as string).toLowerCase() : null
+    if (!id || !from) continue
+    const list = colorsByCard[id] ?? []
+    if (!list.includes(from)) list.push(from)
+    colorsByCard[id] = list
+  }
+
+  return colorsByCard
 }
 
 export type OpponentZoneData = {

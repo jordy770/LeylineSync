@@ -63,10 +63,34 @@ export async function castCardFromHand(
   sessionId: string,
   cardId: string,
   genericPayment?: Record<string, number>,
+  targetCardId?: string,
 ) {
   const { data, error } = await supabase.rpc('cast_card_from_hand', {
     p_session_id: sessionId,
     p_game_card_id: cardId,
+    p_generic_payment: genericPayment ?? null,
+    p_target_card_id: targetCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+// Attach an Equipment you control onto a creature you control (sorcery-speed equip).
+export async function equip(
+  supabase: SupabaseClient,
+  sessionId: string,
+  equipmentCardId: string,
+  targetCardId: string,
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('equip', {
+    p_session_id: sessionId,
+    p_equipment_card_id: equipmentCardId,
+    p_target_card_id: targetCardId,
     p_generic_payment: genericPayment ?? null,
   })
 

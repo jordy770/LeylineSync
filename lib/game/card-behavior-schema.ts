@@ -17,6 +17,8 @@ export const CardContinuousEffectSchema = z.object({
   source_zone_required: z.string().optional(),
   amount: z.number().optional(),
   colors: z.array(z.string()).optional(),
+  // protection: the colour this card is protected from (white|blue|black|red|green).
+  from: z.string().optional(),
   payload: z.record(z.string(), z.unknown()).optional(),
   expires_at_turn_number: z.number().optional(),
   expires_at_phase: z.string().optional(),
@@ -79,6 +81,8 @@ export const CardScriptV1Schema = z.object({
   actions: z.array(CardActionSchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),
   triggers: z.array(z.string()).optional(),
+  // Equipment: the mana cost of its equip ability (e.g. "{1}").
+  equip_cost: z.string().optional(),
 }).strict()
 
 // ─── V2 schemas ──────────────────────────────────────────────────────────────
@@ -395,6 +399,8 @@ export const CardBehaviorScriptV2Schema = z.object({
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),
+  // Equipment: the mana cost of its equip ability (e.g. "{1}").
+  equip_cost: z.string().optional(),
 }).strict()
 
 // ─── Version detection (mirrors getCardBehaviorVersion in card-behavior.ts) ──

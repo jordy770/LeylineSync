@@ -13,6 +13,7 @@ import {
   castFight,
   declareAttacker as declareAttackerAction,
   declareBlocker as declareBlockerAction,
+  equip as equipAction,
   getErrorMessage,
   moveCardToZone,
   passPriority as passPriorityAction,
@@ -144,6 +145,30 @@ const KEYWORD_LABELS: Record<string, string> = {
   first_strike: 'First Strike',
   double_strike: 'Double Strike',
   deathtouch: 'Deathtouch',
+}
+
+// The colours a mana cost contains (mirrors the server's card_color_set): full
+// colour words so they line up with a protection effect's `from`.
+function manaCostColors(manaCost?: string | null): string[] {
+  const mc = (manaCost ?? '').toUpperCase()
+  const out: string[] = []
+  if (mc.includes('W')) out.push('white')
+  if (mc.includes('U')) out.push('blue')
+  if (mc.includes('B')) out.push('black')
+  if (mc.includes('R')) out.push('red')
+  if (mc.includes('G')) out.push('green')
+  return out
+}
+
+const cardIsAura = (typeLine?: string | null) => (typeLine ?? '').toLowerCase().includes('aura')
+const cardIsEquipment = (typeLine?: string | null) => (typeLine ?? '').toLowerCase().includes('equipment')
+
+// Whether a board creature has protection from any of the given source colours
+// (matches the server's can't-be-targeted/damaged/blocked gate, so the picker can
+// drop creatures the server would reject).
+function creatureProtectedFrom(card: BoardCard, sourceColors: string[]): boolean {
+  const prot = card.protection_colors ?? []
+  return sourceColors.some((c) => prot.includes(c))
 }
 
 /** Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. */
@@ -688,6 +713,16 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       await castCardFromHand(supabase, sessionId, cardId)
       await refresh()
     },
+    // Aura cast — a permanent that enters attached to the chosen creature.
+    castAura: async (cardId: string, targetCardId: string) => {
+      await castCardFromHand(supabase, sessionId, cardId, undefined, targetCardId)
+      await refresh()
+    },
+    // Equip — attach an Equipment you control onto a creature you control.
+    equip: async (equipmentCardId: string, targetCardId: string) => {
+      await equipAction(supabase, sessionId, equipmentCardId, targetCardId)
+      await refresh()
+    },
     // Targeted player-damage spell (Lightning Bolt etc.)
     dealDamageToPlayer: async (cardId: string, targetPlayerId: string) => {
       const card = cards.find((c) => c.id === cardId) ?? null
@@ -985,6 +1020,8 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
+            onCastAura={async (cardId, targetCardId) => { await actions.castAura(cardId, targetCardId) }}
+            onEquip={async (cardId, targetCardId) => { await actions.equip(cardId, targetCardId) }}
             onClose={() => setSelectedCard(null)}
           />
         )}
@@ -1989,6 +2026,8 @@ function CardActionSheet({
   onModalSpell,
   onCounterSpell,
   onActivateAbility,
+  onCastAura,
+  onEquip,
   onClose,
 }: {
   card: ControllerCard
@@ -2019,6 +2058,8 @@ function CardActionSheet({
     abilityIndex: number,
     target?: { targetCardId?: string | null; targetPlayerId?: string | null },
   ) => Promise<void>
+  onCastAura: (cardId: string, targetCardId: string) => Promise<void>
+  onEquip: (cardId: string, targetCardId: string) => Promise<void>
   onClose: () => void
 }) {
   const script = normalizeCardBehaviorToV2(
@@ -2055,6 +2096,9 @@ function CardActionSheet({
   const [abilityPick, setAbilityPick] = useState<
     { index: number; type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null
   >(null)
+  // Attachment picker: 'aura' = choose the creature an Aura enters enchanting;
+  // 'equip' = choose the creature to equip this Equipment onto.
+  const [attachPick, setAttachPick] = useState<null | 'aura' | 'equip'>(null)
 
   const spellPlan = getSpellPlan(card)
   // Controller restriction for the chosen creature target ("an opponent controls"
@@ -2068,10 +2112,14 @@ function CardActionSheet({
     spellPlan.kind === 'divided_damage'
       ? spellPlan.targetController
       : 'any'
+  // A targeted spell can't choose a creature with protection from its colour (the
+  // server rejects it too); the colour comes from the spell card's mana cost.
+  const spellColors = manaCostColors(card.cards?.mana_cost)
   const targetableCreatures = boardCards.filter(
     (c) =>
       c.type_line?.toLowerCase().includes('creature') &&
-      creatureMatchesController(c, playerId, spellTargetController),
+      creatureMatchesController(c, playerId, spellTargetController) &&
+      !creatureProtectedFrom(c, spellColors),
   )
   // Permanent targets for a permanent_effect spell: any board card whose type line
   // matches the effect's target_type, under the same controller restriction.
@@ -2096,6 +2144,17 @@ function CardActionSheet({
         creatureMatchesController(c, playerId, spellPlan.kind === 'fight' ? spellPlan.foughtController : 'any'),
     )
   const hasFightTargets = fightFighters.some((f) => fightFoughtFor(f.id).length > 0)
+
+  // Auras (cast from hand targeting a creature) and Equipment (equip a creature you
+  // control). Colour comes from the card's mana cost; creatures with protection from
+  // that colour are dropped from the picker (the server enforces it regardless).
+  const isAura = cardIsAura(card.cards?.type_line) && zone === 'hand'
+  const isEquipment = cardIsEquipment(card.cards?.type_line) && zone === 'battlefield'
+  const enchantTargets = boardCards.filter((c) => isCreature(c) && !creatureProtectedFrom(c, spellColors))
+  const equipTargets = boardCards.filter(
+    (c) => isCreature(c) && c.controller_player_id === playerId && !creatureProtectedFrom(c, spellColors),
+  )
+
   const canCast = canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackCount)
   const hasCreatureTargets = targetableCreatures.length > 0
   const requiresCreatureTarget =
@@ -2137,7 +2196,9 @@ function CardActionSheet({
   const handleCast = () => {
     if (!hasRequiredTargets) return
 
-    if (needsTarget) {
+    if (isAura) {
+      setAttachPick('aura')
+    } else if (needsTarget) {
       setPicking(true)
     } else if (spellPlan.kind === 'draw') {
       void onDrawCards(card.id)
@@ -2154,7 +2215,7 @@ function CardActionSheet({
     }
   }
 
-  const hasActions = canCast || manaAbilities.length > 0 || otherAbilities.length > 0
+  const hasActions = canCast || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0
 
   return (
     <>
@@ -2236,10 +2297,10 @@ function CardActionSheet({
         </div>
 
         {/* Cast button (hand cards) */}
-        {canCast && !picking && (
+        {canCast && !picking && !attachPick && (
           <button
             type="button"
-            aria-label={castLabel}
+            aria-label={isAura ? 'Cast - enchant a creature' : castLabel}
             disabled={!hasRequiredTargets}
             onClick={handleCast}
             className={`mb-3 flex w-full items-center justify-between rounded-2xl px-4 py-3.5 transition active:scale-95 ${
@@ -2247,10 +2308,61 @@ function CardActionSheet({
             }`}
           >
             <span className={`font-black ${hasRequiredTargets ? 'text-amber-950' : 'text-slate-300'}`}>
-              {castLabel}
+              {isAura ? 'Cast - enchant a creature' : castLabel}
             </span>
             <ManaCostDisplay manaCost={card.cards?.mana_cost} dark={hasRequiredTargets} />
           </button>
+        )}
+
+        {/* Equip button (battlefield Equipment) */}
+        {isEquipment && !attachPick && (
+          <button
+            type="button"
+            aria-label="Equip"
+            disabled={equipTargets.length === 0}
+            onClick={() => setAttachPick('equip')}
+            className={`mb-3 flex w-full items-center justify-between rounded-2xl px-4 py-3.5 transition active:scale-95 ${
+              equipTargets.length > 0 ? 'bg-amber-400' : 'cursor-not-allowed bg-slate-700 opacity-70'
+            }`}
+          >
+            <span className={`font-black ${equipTargets.length > 0 ? 'text-amber-950' : 'text-slate-300'}`}>
+              {equipTargets.length > 0 ? 'Equip a creature' : 'No creatures to equip'}
+            </span>
+          </button>
+        )}
+
+        {/* Attachment picker (Aura enchant target / Equipment equip target) */}
+        {attachPick && (
+          <div className="mb-3 space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              {attachPick === 'aura' ? 'Enchant which creature' : 'Equip which creature'}
+            </p>
+            {(attachPick === 'aura' ? enchantTargets : equipTargets).map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => {
+                  if (attachPick === 'aura') void onCastAura(card.id, c.id)
+                  else void onEquip(card.id, c.id)
+                  onClose()
+                }}
+                className="flex w-full items-center justify-between rounded-2xl border border-amber-400/40 bg-amber-400/10 px-4 py-2.5 transition active:scale-95"
+              >
+                <span className="truncate font-bold text-white">{c.name}</span>
+                <span className="ml-2 shrink-0 text-xs font-black text-slate-300">{effectiveBoardPT(c)}</span>
+              </button>
+            ))}
+            {(attachPick === 'aura' ? enchantTargets : equipTargets).length === 0 && (
+              <p className="px-1 text-xs text-slate-500">No legal creatures.</p>
+            )}
+            <button
+              type="button"
+              onClick={() => setAttachPick(null)}
+              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
+            >
+              Back
+            </button>
+          </div>
         )}
 
         {/* Target picker */}
@@ -3814,6 +3926,13 @@ function DeclareBlockersLayout({
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     incomingAttackers[0]?.attacker_card_id ?? null,
   )
+  // B gate: a creature can't block an attacker that has protection from its colour.
+  const selectedAttackerCard = selectedAttackerId
+    ? boardCards.find((c) => c.id === selectedAttackerId)
+    : null
+  const attackerProtection = selectedAttackerCard?.protection_colors ?? []
+  const cannotBlockSelected = (blocker: ControllerCard) =>
+    manaCostColors(blocker.cards?.mana_cost).some((col) => attackerProtection.includes(col))
   const [blockAssignments, setBlockAssignments] = useState<Record<string, string>>({})
   const [isPending, setIsPending] = useState(false)
   const [localError, setLocalError] = useState<string | null>(null)
@@ -3938,19 +4057,25 @@ function DeclareBlockersLayout({
             const blockingTarget = isBlocking
               ? incomingAttackers.find((a) => a.attacker_card_id === blockAssignments[card.id])
               : null
+            // Protection: this creature can't block the selected attacker (its colour).
+            const cannotBlock = !isBlocking && Boolean(selectedAttackerId) && cannotBlockSelected(card)
 
             return (
               <motion.button
                 key={card.id}
                 type="button"
-                onClick={() => assignBlocker(card.id)}
-                whileTap={{ scale: 0.94 }}
+                disabled={cannotBlock}
+                onClick={() => { if (!cannotBlock) assignBlocker(card.id) }}
+                whileTap={cannotBlock ? undefined : { scale: 0.94 }}
+                title={cannotBlock ? 'Has protection — can’t be blocked by this creature' : undefined}
                 className={`flex w-16 shrink-0 flex-col items-center gap-1 rounded-xl border-2 p-1.5 transition-colors ${
                   isBlocking
                     ? 'border-cyan-400 bg-cyan-400/10'
-                    : selectedAttackerId
-                      ? 'border-[#2A2D38] bg-[#0A0C14] hover:border-slate-500'
-                      : 'border-[#2A2D38] bg-[#0A0C14] opacity-50'
+                    : cannotBlock
+                      ? 'cursor-not-allowed border-[#2A2D38] bg-[#0A0C14] opacity-30'
+                      : selectedAttackerId
+                        ? 'border-[#2A2D38] bg-[#0A0C14] hover:border-slate-500'
+                        : 'border-[#2A2D38] bg-[#0A0C14] opacity-50'
                 }`}
               >
                 <MotionCard
