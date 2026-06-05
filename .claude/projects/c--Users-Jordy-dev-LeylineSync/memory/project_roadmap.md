@@ -36,11 +36,13 @@ metadata:
 
 ## 🔜 Near-term — authoring & form gaps (low risk, high value)
 
-1. **Dual-shape variant mechanism** — targeted `deal_damage` (Lightning Bolt) and targeted `add_counters` in the form. Blocked because those `type`s already have auto-resolve registry entries; needs a per-type disambiguator (registry is one-entry-per-`type`). *Next item if Lightning-Bolt-class cards are wanted in the form.*
-2. **Modal spells authorable** — engine + targeted modes done (mig 091), but not authorable: needs a `spell_effect.modes` script shape + a mode/target cast UI.
-3. **Player-targeted / spell-side effects** needing a **player picker** (shared infra unlocks several below):
-   - spell-side / player-targeted `mill`
-   - player-targeted `discard` (chosen vs random)
+1. ~~**Dual-shape variant mechanism**~~ — ✅ **shipped (form-only, no migration)**. Targeted `deal_damage` (Lightning Bolt) + targeted `add_counters` now authorable in the guided form. EffectDef gained optional `variant` (form key = `variant ?? type`); `resolveEffectDef`/`effectKeyOf` pick the def by the effect's fields; `effectFromJson` tries all defs per type. New `deal_damage_target` (spell) + `add_counters_target` (spell+trigger) defs + `damageTargetField`. NO engine/Zod change — the engine already cast these; only the form couldn't author them. **Reusable: add a def with a unique `variant` + a discriminating field for any future dual-shape.**
+2. ~~**Modal spells authorable**~~ — ✅ **shipped (JSON/AI authoring + playable, mig 117)**. spell_effect gained `modes` + `choose` (Zod); getSpellPlan → modal plan → castModalSpell; the existing ChooseModeBody resolves mode+target. **mig 117 fixed cast_modal_spell to pay mana + graveyard the source (was free + stayed in hand, bug-262).** LLM documents the Charm shape + the "simple effects only in a mode" engine limit. NO guided-form modes editor (user chose the smaller scope) and NO decision effects inside modes — both are the open follow-ups.
+3. ~~**Player-targeted / spell-side effects**~~ — ✅ **shipped**:
+   - ~~spell-side / player-targeted `mill`~~ — ✅ **already covered** by `choose_player` + `mill` ("target player mills N"). Documented; nothing built.
+   - ~~player-targeted `discard` (chosen vs random)~~ — ✅ **shipped (mig 118)**. `discard` gained `who: 'you'|'opponent'` (Mind Rot) + `random: true` (Hymn). Chosen → choose_cards decision lands on the discarding player; random → N random hand cards to graveyard, no decision. No client change (generic decision UI). Tests PD1–PD4. *Follow-up: each_opponent discard + multiplayer target-opponent pick.*
+
+**✅ All near-term authoring/form-gap items shipped** (dual-shape variant, modal spells, player-picker effects).
 
 ## 🟡 Mid-term — effect vocabulary (README Tier 1/2/3 backlog)
 

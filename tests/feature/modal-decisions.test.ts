@@ -37,6 +37,23 @@ test('MD1-guard modal spell cannot resolve before the mode is chosen', async () 
   })
 })
 
+// MD-SRC — a modal spell cast from HAND pays its mana cost and goes to the
+// graveyard (mig 117 source handling — was previously free + stayed in hand).
+test('MD-SRC modal spell cast from hand pays mana and goes to the graveyard', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    await s.setMana('A', { W: 5 }) // Charm Test costs {1}{W} → 2 white pays it
+    const charm = await s.spawn('A', 'Charm Test', 'hand')
+
+    await s.as('A').castModal(MODES, 1, charm)
+
+    assert.equal((await s.manaOf('A')).W, 3) // {W} + {1} both paid from white
+    assert.equal(await s.zoneOf(charm), 'graveyard') // left hand on cast
+    assert.equal((await s.pendingDecision())?.decision_type, 'choose_mode')
+  })
+})
+
 // MD1 — happy path: after submit_decision the chosen mode resolves.
 test('MD1 modal spell resolves the chosen mode', async () => {
   await withRolledBackTx(async (client) => {

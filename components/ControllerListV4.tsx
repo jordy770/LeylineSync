@@ -28,11 +28,12 @@ import {
   castMultiCreatureEffect,
   castPermanentEffect,
   castDividedDamage,
+  castModalSpell,
   resolveCombatDamage,
   setCombatBlockerOrder,
   submitDecision,
 } from '@/lib/game/actions'
-import type { TargetController, TargetedCreatureActionType, MultiCreatureKind, DamageAllocation } from '@/lib/game/actions'
+import type { TargetController, TargetedCreatureActionType, MultiCreatureKind, DamageAllocation, ModalMode } from '@/lib/game/actions'
 import type { CardBehaviorAction, CardBehaviorCost } from '@/lib/game/card-behavior'
 import {
   isAddManaBehaviorAction,
@@ -204,6 +205,8 @@ type SpellPlan =
   | { kind: 'fight'; timing: 'instant' | 'sorcery'; foughtController: TargetController }
   | { kind: 'draw'; amount: number; timing: 'instant' | 'sorcery'; xRequired?: boolean }
   | { kind: 'spell_effect'; actions: unknown[]; timing: 'instant' | 'sorcery'; xRequired?: boolean }
+  // Modal "choose one —": cast the modes; the choose_mode decision UI picks them.
+  | { kind: 'modal'; modes: ModalMode[]; choose: number; timing: 'instant' | 'sorcery' }
   | { kind: 'counterspell' }
   | { kind: 'normal' }
 
@@ -315,6 +318,14 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
   const timing: 'instant' | 'sorcery' = card.cards?.type_line?.toLowerCase().includes('sorcery')
     ? 'sorcery'
     : 'instant'
+
+  // A modal spell ("choose one —") carries `modes` instead of `actions`. Casting
+  // it creates a choose_mode decision the existing ChooseModeBody resolves.
+  const modal = (script.spell_effect as { modes?: ModalMode[]; choose?: number } | undefined)?.modes
+  if (Array.isArray(modal) && modal.length > 0) {
+    const choose = Math.max(1, Number((script.spell_effect as { choose?: number }).choose ?? 1))
+    return { kind: 'modal', modes: modal, choose, timing }
+  }
 
   const pump = actions.find((a) => a.type === 'pump') as
     | (CardBehaviorAction & { power?: number; toughness?: number; target_controller?: unknown })
@@ -477,7 +488,8 @@ function canCastHandSpell(
     plan.kind === 'add_counters' ||
     plan.kind === 'creature_effect' ||
     plan.kind === 'draw' ||
-    plan.kind === 'spell_effect'
+    plan.kind === 'spell_effect' ||
+    plan.kind === 'modal'
   ) {
     const isSorcerySpeed = card.cards?.type_line?.toLowerCase().includes('sorcery') ?? false
     return card.zone === 'hand' && (isSorcerySpeed ? canCastSorceries : canCastInstants)
@@ -756,6 +768,14 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       await castSpellEffect(supabase, sessionId, plan.actions, cardId, x)
       await refresh()
     },
+    // Modal spell — cast the card's modes; the choose_mode decision UI does the rest.
+    modalSpell: async (cardId: string) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const plan = card ? getSpellPlan(card) : null
+      if (!card || plan?.kind !== 'modal') return
+      await castModalSpell(supabase, sessionId, plan.modes, plan.choose, cardId)
+      await refresh()
+    },
     // Counterspell targeting a specific pending stack item
     counterSpell: async (cardId: string, stackItemId: string) => {
       await putCounterSpellOnStack(supabase, sessionId, stackItemId, cardId)
@@ -925,6 +945,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onFight={async (cardId, fighterCardId, foughtCardId) => { await actions.fight(cardId, fighterCardId, foughtCardId) }}
             onDrawCards={async (cardId) => { await actions.drawCards(cardId) }}
             onSpellEffect={async (cardId) => { await actions.spellEffect(cardId) }}
+            onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
             onClose={() => setSelectedCard(null)}
@@ -1922,6 +1943,7 @@ function CardActionSheet({
   onFight,
   onDrawCards,
   onSpellEffect,
+  onModalSpell,
   onCounterSpell,
   onActivateAbility,
   onClose,
@@ -1947,6 +1969,7 @@ function CardActionSheet({
   onFight: (cardId: string, fighterCardId: string, foughtCardId: string) => Promise<void>
   onDrawCards: (cardId: string) => Promise<void>
   onSpellEffect: (cardId: string) => Promise<void>
+  onModalSpell: (cardId: string) => Promise<void>
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
   onActivateAbility: (
     sourceId: string,
@@ -2078,6 +2101,9 @@ function CardActionSheet({
       onClose()
     } else if (spellPlan.kind === 'spell_effect') {
       void onSpellEffect(card.id)
+      onClose()
+    } else if (spellPlan.kind === 'modal') {
+      void onModalSpell(card.id)
       onClose()
     } else {
       void onCastCard(card.id)

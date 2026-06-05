@@ -23,9 +23,10 @@ import {
   type BuilderTriggerEvent,
 } from '@/lib/game/card-behavior-builder'
 import {
-  effectDef,
   effectDefault,
+  effectKeyOf,
   effectsForContext,
+  resolveEffectDef,
   type EffectContext,
   type FieldDescriptor,
 } from '@/lib/game/card-behavior-registry'
@@ -208,7 +209,7 @@ export default function CardBehaviorForm({
           value.spellEffect.map((action, index) => (
             <div key={index} className="flex flex-wrap items-center gap-2">
               <select
-                value={action.type}
+                value={effectKeyOf(action)}
                 disabled={disabled}
                 onChange={(event) =>
                   updateSpellAction(index, defaultSpellEffect(event.target.value as BuilderSpellEffectType))
@@ -327,7 +328,7 @@ function EffectEditor({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <select
-        value={effect.type}
+        value={effectKeyOf(effect)}
         disabled={disabled}
         onChange={(event) => onChange(effectDefault(event.target.value))}
         className={inputClass}
@@ -364,7 +365,7 @@ function EffectFields({
   onChange: (next: FlatEffect) => void
   disabled: boolean
 }) {
-  const def = effectDef(effect.type)
+  const def = resolveEffectDef(effect)
   if (!def) {
     return null
   }

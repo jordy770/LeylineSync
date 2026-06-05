@@ -62,7 +62,7 @@ const CASES: Case[] = [
   // search_library with no filter / no destination → optional defaults materialize, still Form.
   { name: 'trigger search_library minimal', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'search_library' }] }] }, form: true },
   // may whose inner effect is itself non-representable → whole thing bails to JSON.
-  { name: 'trigger may with targeted-add_counters inner → json', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'may', effects: [{ type: 'add_counters', amount: 1, target_type: 'creature' }] }] }] }, form: false },
+  { name: 'trigger may with targeted-add_counters inner → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'may', effects: [{ type: 'add_counters', amount: 1, target_type: 'creature' }] }] }] }, form: true },
   // may with a representable targeted inner (destroy) → Form (recursion works).
   { name: 'trigger may with destroy inner → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'may', prompt: 'Destroy it?', effects: [{ type: 'destroy', target_type: 'creature' }] }] }] }, form: true },
   // may with an unknown sub-key in filter → json (strict nested keys).
@@ -83,8 +83,8 @@ const CASES: Case[] = [
   { name: 'trigger gain_control (until EOT)', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'gain_control', duration: 'end_of_turn', target_type: 'creature', target_controller: 'opponent' }] }] }, form: true },
 
   // Triggered abilities — NOT form-representable → JSON
-  // add_counters has no targeted registry variant (only on-self), so a targeted one bails.
-  { name: 'trigger add_counters target', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'add_counters', amount: 1, target_type: 'creature' }] }] }, form: false },
+  // add_counters now has a targeted variant (mig: dual-shape), so a targeted one is Form.
+  { name: 'trigger add_counters target', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'add_counters', amount: 1, target_type: 'creature' }] }] }, form: true },
 
   // Spell effects — form-representable (scry/surveil/draw/search_library)
   { name: 'spell draw 2', script: { schema_version: 2, spell_effect: { actions: [{ type: 'draw', amount: 2 }] } }, form: true },
@@ -115,7 +115,12 @@ const CASES: Case[] = [
   { name: 'spell fight no controller (Pit Fight)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'fight', target_type: 'creature' }] } }, form: true },
 
   // Spell effects — NOT form-representable → JSON
-  { name: 'spell add_counters target', script: { schema_version: 2, spell_effect: { actions: [{ type: 'add_counters', amount: 1, target_type: 'creature' }] } }, form: false },
+  { name: 'spell add_counters target (dual-shape)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'add_counters', amount: 1, target_type: 'creature' }] } }, form: true },
+  { name: 'spell deal_damage target (Lightning Bolt)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'deal_damage', amount: 3, target_type: ['creature', 'player'] }] } }, form: true },
+  { name: 'spell deal_damage target creature only', script: { schema_version: 2, spell_effect: { actions: [{ type: 'deal_damage', amount: 2, target_type: 'creature' }] } }, form: true },
+  { name: 'spell deal_damage each_opponent stays recipient form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'deal_damage', amount: 1, recipient: 'each_opponent' }] } }, form: false },
+  // Modal spells are JSON/AI-authored (no guided-form modes editor) → JSON mode.
+  { name: 'spell modal (Charm) → json', script: { schema_version: 2, spell_effect: { choose: 1, modes: [{ label: 'Gain 3 life', actions: [{ type: 'gain_life', amount: 3 }] }, { label: 'Destroy target creature', actions: [{ type: 'destroy', target_type: 'creature' }] }] } }, form: false },
   // target_ref (explicit targets[] wiring) isn't modeled → JSON.
   { name: 'spell destroy via target_ref', script: { schema_version: 2, spell_effect: { targets: [{ id: 't', type: 'creature' }], actions: [{ type: 'destroy', target_ref: 't' }] } }, form: false },
   // scry action with an extra field → JSON
@@ -242,6 +247,32 @@ test('exact build: Giant Growth (pump +3/+3 on target creature)', () => {
     schema_version: 2,
     spell_effect: { actions: [{ type: 'pump', power: 3, toughness: 3, target_type: 'creature' }] },
   })
+})
+
+// Dual-shape: a single `type` (deal_damage / add_counters) has both an untargeted
+// (recipient/self) form and a targeted form, resolved by the fields present.
+test('exact build: Lightning Bolt (targeted deal_damage, any target) round-trips', () => {
+  const form = parseScriptToForm({ schema_version: 2, spell_effect: { actions: [{ type: 'deal_damage', amount: 3, target_type: ['creature', 'player'] }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'deal_damage', amount: 3, target_type: ['creature', 'player'] }] },
+  })
+})
+
+test('exact build: targeted add_counters round-trips (not the on-self shape)', () => {
+  const form = parseScriptToForm({ schema_version: 2, spell_effect: { actions: [{ type: 'add_counters', amount: 2, target_type: 'creature', target_controller: 'opponent' }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'add_counters', amount: 2, target_type: 'creature', target_controller: 'opponent' }] },
+  })
+})
+
+test('dual-shape defaults: the targeted variants build their target field', () => {
+  assert.deepEqual(defaultEffect('deal_damage_target'), { type: 'deal_damage', amount: 1, target: 'any' })
+  assert.deepEqual(defaultEffect('add_counters_target'), { type: 'add_counters', amount: 1, target: 'creature_any' })
+  // The bare type still yields the untargeted (recipient / on-self) shape.
+  assert.deepEqual(defaultEffect('deal_damage'), { type: 'deal_damage', amount: 1, recipient: 'each_opponent' })
+  assert.deepEqual(defaultEffect('add_counters'), { type: 'add_counters', amount: 1 })
 })
 
 test('exact build: flying keyword (adds schema_version)', () => {

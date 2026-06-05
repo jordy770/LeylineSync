@@ -448,6 +448,31 @@ export async function castMultiCreatureEffect(
   return data as StackItem
 }
 
+// Modal spell ("choose one —"): cast a card's modes; the engine creates a
+// choose_mode decision the caster resolves (mode selection + any creature target).
+export type ModalMode = { label?: string; actions: unknown[] }
+
+export async function castModalSpell(
+  supabase: SupabaseClient,
+  sessionId: string,
+  modes: ModalMode[],
+  choose: number,
+  sourceCardId?: string | null,
+) {
+  const { data, error } = await supabase.rpc('cast_modal_spell', {
+    p_session_id: sessionId,
+    p_modes: modes,
+    p_choose: choose,
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
 // Divided damage — deal `amount` split across targets as the caster allocates
 // (Forked Bolt). Each allocation targets a creature OR a player; amounts sum to total.
 export type DamageAllocation =

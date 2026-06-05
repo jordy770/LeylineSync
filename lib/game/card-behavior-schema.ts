@@ -204,10 +204,14 @@ const CardBehaviorActionSchema = z.union([
     reveal: z.boolean().optional(),
     filter: z.object({ type_line: z.string().optional(), name: z.string().optional() }).optional(),
   }),
-  // Discard `count` cards (the controller chooses from their hand).
+  // Discard `count` cards. `who` is the discarding player — 'you' (controller,
+  // default) or 'opponent' (Mind Rot). `random: true` discards at random (no
+  // choice); otherwise the discarding player chooses.
   z.object({
     type: z.literal('discard'),
     count: z.number().optional(),
+    who: z.enum(['you', 'opponent']).optional(),
+    random: z.boolean().optional(),
   }),
   // Optional "you may": a yes/no gate that, if accepted, runs the inner effects.
   z.object({
@@ -330,9 +334,18 @@ const CardBehaviorTargetSchema = z.object({
   optional: z.boolean().optional(),
 })
 
+// A modal spell ("choose one —"): the caster picks `choose` of the `modes` at
+// cast; each mode's actions resolve. Use modes XOR actions on a spell_effect.
+const CardBehaviorModeSchema = z.object({
+  label: z.string().optional(),
+  actions: z.array(CardBehaviorActionSchema),
+})
+
 const CardBehaviorSpellEffectSchema = z.object({
   targets: z.array(CardBehaviorTargetSchema).optional(),
-  actions: z.array(CardBehaviorActionSchema),
+  actions: z.array(CardBehaviorActionSchema).optional(),
+  modes: z.array(CardBehaviorModeSchema).optional(),
+  choose: z.number().int().positive().optional(),
 })
 
 const CardBehaviorActivatedAbilitySchema = z.object({

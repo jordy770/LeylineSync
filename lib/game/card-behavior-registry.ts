@@ -51,6 +51,11 @@ export type EffectDef = {
   label: string
   contexts: readonly EffectContext[]
   fields: readonly FieldDescriptor[]
+  // A `type` can have more than one form shape (e.g. deal_damage "to each opponent"
+  // vs "to a target"). Each non-default shape gets a unique `variant` id, used as
+  // its form-list key; the right def is resolved from an effect's fields. Omitted →
+  // the default shape, keyed by `type`.
+  variant?: string
 }
 
 // ─── Shared field vocab ────────────────────────────────────────────────────────
@@ -143,12 +148,31 @@ const creatureTargetField: FieldDescriptor = {
   ],
 }
 
+// Damage can target a creature OR a player (Lightning Bolt's "any target"); the
+// engine routes each to its cast path (deal_damage_creature / deal_damage_player).
+const damageTargetField: FieldDescriptor = {
+  name: 'target',
+  kind: 'target',
+  label: 'Target',
+  default: 'any',
+  options: [
+    { value: 'any', label: 'any target', target_type: ['creature', 'player'] },
+    { value: 'creature_any', label: 'target creature', target_type: 'creature' },
+    { value: 'creature_opponent', label: 'a creature an opponent controls', target_type: 'creature', target_controller: 'opponent' },
+    { value: 'player_any', label: 'target player', target_type: 'player' },
+    { value: 'player_opponent', label: 'target opponent', target_type: 'player', target_controller: 'opponent' },
+  ],
+}
+
 // ─── The registry ───────────────────────────────────────────────────────────────
 
 export const EFFECT_REGISTRY: readonly EffectDef[] = [
   { type: 'gain_life', label: 'Players gain life', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField('controller', { materializeDefault: false, omitDefault: true })] },
   { type: 'lose_life', label: 'Players lose life', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField()] },
   { type: 'deal_damage', label: 'Deal damage to players', contexts: ['trigger'], fields: [amountField('Amount'), recipientField()] },
+  // Targeted deal_damage (Lightning Bolt) — spell only; the engine routes a trigger
+  // "deal damage to any target" against each opponent, so triggers use the shape above.
+  { type: 'deal_damage', variant: 'deal_damage_target', label: 'Deal damage to a target', contexts: ['spell'], fields: [amountField('Amount'), damageTargetField] },
   { type: 'draw', label: 'You draw cards', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   { type: 'mill', label: 'Mill cards', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField()] },
   {
@@ -161,6 +185,8 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     ],
   },
   { type: 'add_counters', label: '+1/+1 counters on this', contexts: ['trigger'], fields: [amountField('Amount')] },
+  // Targeted +1/+1 counters — put N counters on a target creature (spell or trigger).
+  { type: 'add_counters', variant: 'add_counters_target', label: '+1/+1 counters on a target creature', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), creatureTargetField] },
   { type: 'add_counters_all', label: '+1/+1 counters on creatures', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), controllerField] },
   { type: 'tap_all', label: 'Tap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
   { type: 'untap_all', label: 'Untap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
@@ -256,16 +282,51 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   },
 ] as const
 
+// `type` may map to several defs (variants); `key` (variant ?? type) is unique.
+const effectKey = (def: EffectDef): string => def.variant ?? def.type
 const REGISTRY_BY_TYPE = new Map(EFFECT_REGISTRY.map((def) => [def.type, def]))
+const REGISTRY_BY_KEY = new Map(EFFECT_REGISTRY.map((def) => [effectKey(def), def]))
 
-export function effectDef(type: string): EffectDef | undefined {
-  return REGISTRY_BY_TYPE.get(type)
+function defsForType(type: string): EffectDef[] {
+  return EFFECT_REGISTRY.filter((def) => def.type === type)
 }
 
-// Effect types available in a given form context, as {value,label} for dropdowns.
+// Field keys a def "owns" on an effect (a target field is stored under 'target').
+function defFieldKeys(def: EffectDef): string[] {
+  return def.fields.map((f) => (f.kind === 'target' ? 'target' : f.name))
+}
+
+// Resolve which variant def an in-memory effect uses, by the fields it carries.
+// Among defs whose field keys are all present, the most specific (most fields)
+// wins; a single-variant type falls straight through.
+export function resolveEffectDef(effect: RegistryEffect): EffectDef | undefined {
+  const defs = defsForType(effect.type)
+  if (defs.length <= 1) {
+    return defs[0]
+  }
+  const candidates = defs.filter((def) => defFieldKeys(def).every((k) => k in effect))
+  if (candidates.length === 0) {
+    return defs[0]
+  }
+  return candidates.reduce((best, def) => (def.fields.length > best.fields.length ? def : best))
+}
+
+// The form-list key for an in-memory effect (which variant is selected).
+export function effectKeyOf(effect: RegistryEffect): string {
+  const def = resolveEffectDef(effect)
+  return def ? effectKey(def) : effect.type
+}
+
+// Look up by form key (variant id) first, then by bare type for back-compat.
+export function effectDef(keyOrType: string): EffectDef | undefined {
+  return REGISTRY_BY_KEY.get(keyOrType) ?? REGISTRY_BY_TYPE.get(keyOrType)
+}
+
+// Effect variants available in a given form context, as {value,label} for dropdowns.
+// `value` is the variant key, so two shapes of one type are distinct options.
 export function effectsForContext(context: EffectContext): { value: string; label: string }[] {
   return EFFECT_REGISTRY.filter((def) => def.contexts.includes(context)).map((def) => ({
-    value: def.type,
+    value: effectKey(def),
     label: def.label,
   }))
 }
@@ -451,12 +512,14 @@ function parseFields(fields: readonly FieldDescriptor[], obj: Record<string, unk
   return out
 }
 
-export function effectDefault(type: string): RegistryEffect {
-  const def = REGISTRY_BY_TYPE.get(type)
+// `keyOrType` is a form-list value: a variant key (e.g. 'deal_damage_target') or a
+// bare type. The built effect carries the def's real `type`, not the key.
+export function effectDefault(keyOrType: string): RegistryEffect {
+  const def = REGISTRY_BY_KEY.get(keyOrType) ?? REGISTRY_BY_TYPE.get(keyOrType)
   if (!def) {
-    throw new Error(`Unknown effect type: ${type}`)
+    throw new Error(`Unknown effect type: ${keyOrType}`)
   }
-  const result: RegistryEffect = { type }
+  const result: RegistryEffect = { type: def.type }
   for (const field of def.fields) {
     if (
       field.kind !== 'effect-list' &&
@@ -475,7 +538,7 @@ export function effectDefault(type: string): RegistryEffect {
 // Serialize an in-memory effect to its JSON form: { type, ...declared fields }.
 // Optional fields are always materialized (the in-memory effect carries them).
 export function effectToJson(effect: RegistryEffect): Record<string, unknown> {
-  const def = REGISTRY_BY_TYPE.get(effect.type)
+  const def = resolveEffectDef(effect)
   if (!def) {
     return { ...effect }
   }
@@ -526,29 +589,35 @@ export function effectFromJson(value: unknown, context: EffectContext): Registry
   if (typeof type !== 'string') {
     return null
   }
-  const def = REGISTRY_BY_TYPE.get(type)
-  if (!def || !def.contexts.includes(context)) {
-    return null
-  }
 
-  // Strict keys: `type` + declared field names; a target field owns the two
-  // engine keys target_type/target_controller instead of its own name.
-  const allowed = new Set<string>(['type'])
-  for (const f of def.fields) {
-    if (f.kind === 'target') {
-      allowed.add('target_type')
-      allowed.add('target_controller')
-    } else {
-      allowed.add(f.name)
+  // A type may have several variant defs; try each (in context) and return the
+  // first that strict-parses. Variants are key-disjoint (recipient vs target_type),
+  // so at most one matches a given JSON object.
+  for (const def of defsForType(type)) {
+    if (!def.contexts.includes(context)) {
+      continue
+    }
+
+    // Strict keys: `type` + declared field names; a target field owns the two
+    // engine keys target_type/target_controller instead of its own name.
+    const allowed = new Set<string>(['type'])
+    for (const f of def.fields) {
+      if (f.kind === 'target') {
+        allowed.add('target_type')
+        allowed.add('target_controller')
+      } else {
+        allowed.add(f.name)
+      }
+    }
+    if (Object.keys(obj).some((key) => !allowed.has(key))) {
+      continue
+    }
+
+    const parsed = parseFields(def.fields, obj)
+    if (parsed !== null) {
+      return { type, ...parsed }
     }
   }
-  if (Object.keys(obj).some((key) => !allowed.has(key))) {
-    return null
-  }
 
-  const parsed = parseFields(def.fields, obj)
-  if (parsed === null) {
-    return null
-  }
-  return { type, ...parsed }
+  return null
 }

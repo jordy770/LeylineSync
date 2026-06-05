@@ -123,8 +123,9 @@ export type BuilderSpellEffectType = BuilderSpellEffect['type']
 // Spell-context effect options, derived from the registry.
 export const BUILDER_SPELL_EFFECT_TYPES = effectsForContext('spell')
 
-export function defaultSpellEffect(type: BuilderSpellEffectType): BuilderSpellEffect {
-  return effectDefault(type) as BuilderSpellEffect
+// `key` is a form-list value: a bare type or a variant key (e.g. 'deal_damage_target').
+export function defaultSpellEffect(key: BuilderSpellEffectType | string): BuilderSpellEffect {
+  return effectDefault(key) as BuilderSpellEffect
 }
 
 // ─── Activated abilities ───────────────────────────────────────────────────────
@@ -186,8 +187,9 @@ export const EMPTY_BUILDER_FORM: BuilderForm = {
 
 // ─── Defaults / factories ──────────────────────────────────────────────────────
 
-export function defaultEffect(type: BuilderEffectType): BuilderEffect {
-  return effectDefault(type) as BuilderEffect
+// `key` is a form-list value: a bare type or a variant key (e.g. 'add_counters_target').
+export function defaultEffect(key: BuilderEffectType | string): BuilderEffect {
+  return effectDefault(key) as BuilderEffect
 }
 
 export function defaultTrigger(): BuilderTrigger {
