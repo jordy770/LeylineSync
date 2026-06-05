@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T13:07:22.001Z
-> Files: 48 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T18:24:08.690Z
+> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~690 tok)
+- `package.json` — Node.js package manifest (~761 tok)
 - `README.md` — Project documentation (~15932 tok)
 
 ## .claude/
@@ -13,7 +13,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~4036 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~4651 tok)
 
 ## .claude/rules/
 
@@ -74,8 +74,8 @@
 
 ## components/
 
-- `CardBehaviorForm.tsx` — inputClass (~5812 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~48307 tok)
+- `CardBehaviorForm.tsx` — inputClass (~5786 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~50145 tok)
 
 ## components/board/
 
@@ -103,11 +103,11 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 26 more (~10053 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5364 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~5983 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 26 more (~10215 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5317 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6168 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~7593 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~4675 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~4734 tok)
 
 ## lib/supabase/
 
@@ -146,34 +146,46 @@
 - `202605010116_multi_target_triggers.sql` — Phase 3, slice 4b — MULTI-target triggered abilities. "When this enters, (~5619 tok)
 - `202605010117_modal_spell_source_cost.sql` — Near-term authoring — make modal spells PLAYABLE from a hand card. The engine (~1482 tok)
 - `202605010118_player_targeted_discard.sql` — Near-term authoring — player-targeted DISCARD (chosen vs random). Until now (~3648 tok)
+- `202605010119_activated_ability_effects.sql` — Phase 4 — activated abilities beyond deal_damage. "{cost}: effect" abilities can (~2211 tok)
+- `202605010120_cant_be_countered.sql` — "Can't be countered": a static spell property authored as a top-level (~799 tok)
+- `202605010121_hybrid_phyrexian_mana.sql` — Phase 4 — richer mana model: HYBRID and PHYREXIAN symbols. (X already shipped, (~2950 tok)
+- `202605010122_combat_over_assignment.sql` — Phase 4 — player-chosen combat damage OVER-ASSIGNMENT. (~4665 tok)
+- `202605010123_apnap_trigger_ordering.sql` — Phase 4 / F1 — APNAP ordering of SIMULTANEOUS triggered abilities (CR 603.3b). (~2526 tok)
+- `202605010124_reset_priority_round_on_stack_change.sql` — Phase 4 / F1b — restart the priority round when a new object enters the stack. (~548 tok)
 
 ## tests/
 
 
 ## tests/feature/
 
+- `activated-abilities.test.ts` — Phase 4 — activated abilities beyond deal_damage (mig 119). "{cost}: effect" (~1012 tok)
+- `apnap-trigger-order.test.ts` — Phase 4 / F1 — APNAP ordering of simultaneous triggered abilities (mig 123). (~1112 tok)
+- `cant-be-countered.test.ts` — "Can't be countered": a counter that targets an uncounterable spell resolves (~644 tok)
+- `combat-over-assignment.test.ts` — Phase 4 — player-chosen combat damage OVER-ASSIGNMENT (mig 122). The attacker (~1582 tok)
 - `divided-damage.test.ts` — Phase 3, slice 4a — divided damage (mig 115): the `divided_damage` action type (~1279 tok)
 - `fight.test.ts` — Tier-2 effect: fight (migration 101) — the first multi-target effect. A (~2640 tok)
 - `gain-control.test.ts` — Tier-2 effect: gain_control (migration 106) — Threaten / Mind Control on the (~1860 tok)
 - `grant-keyword-spell.test.ts` — Tier-2 effect: grant_keyword spell/combat-trick path (migration 100). A (~789 tok)
 - `grant-keyword.test.ts` — Tier-2 effect: grant_keyword — a targeted trigger gives a creature a keyword (~696 tok)
+- `hybrid-phyrexian-mana.test.ts` — Phase 4 — richer mana: HYBRID and PHYREXIAN symbols (mig 121). pay_mana_cost (~1288 tok)
 - `modal-decisions.test.ts` — Phase 1, slice 2 — pending-decision machinery + modal "choose one". (~1917 tok)
 - `multi-target-trigger.test.ts` — Phase 3, slice 4b — multi-target triggered abilities (mig 116). "When this (~1053 tok)
 - `multi-target.test.ts` — Phase 3, slice 1 — general multi-target removal (mig 112): the (~1574 tok)
 - `permanent-target.test.ts` — Phase 3, slice 2 — non-creature permanent targets (mig 113): the (~1370 tok)
 - `permanent-trigger-target.test.ts` — Phase 3, slice 3 — non-creature permanent targets for TRIGGERED abilities (~1123 tok)
 - `player-discard.test.ts` — Near-term authoring — player-targeted discard (mig 118). `discard` gains (~1141 tok)
+- `priority-round.test.ts` — Phase 4 / F1b — a new stack object restarts the priority round (mig 124). Until (~626 tok)
 - `sacrifice-reanimate.test.ts` — Phase 1, slice 11 — sacrifice and return_from_graveyard (raise dead / (~2740 tok)
 - `search-library-variants.test.ts` — Phase 1, slice 14 — search_library variants (mig 111): graveyard destination, (~1560 tok)
 - `x-spells.test.ts` — Phase 1, slice 12 — X spells (variable amount paid as {X} generic mana). (~1339 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~4807 tok)
+- `test-cards.json` (~5168 tok)
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~4996 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~5873 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~449 tok)
 
 ## tests/regression/
@@ -181,7 +193,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~8637 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~8972 tok)
 
 ## vercel/
 

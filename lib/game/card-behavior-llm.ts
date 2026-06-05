@@ -202,6 +202,8 @@ export function buildBehaviorAuthoringGuide(): string {
 
 Output ONLY a single JSON object (no markdown fences, no prose). Use \`"schema_version": 2\`. Include only the sections the card needs; omit empty arrays. If the card has no mechanical behavior the engine supports, output \`{}\`.
 
+Top-level flags: if the card says "this spell can't be countered" (or "can't be countered by spells or abilities"), add \`"cant_be_countered": true\` at the top level of the object (alongside schema_version). It applies to any spell type.
+
 The engine supports these sections:
 
 1. continuous_effects — static keyword abilities. Each entry: { "type": <keyword>, "affected": "source", "source_zone_required": "battlefield" }.
@@ -234,7 +236,7 @@ The engine supports these sections:
 
 3. activated_abilities — "{cost}: effect" abilities. Each entry: { "costs": [ ... ], "effects": [ ... ], "is_mana_ability"?: true }.
    Costs: { "type": "tap_self" } for {T}; { "type": "mana", "amount": "{2}{R}" } for a mana cost string.
-   Effects: deal_damage with a chosen target — { "type": "deal_damage", "amount": N, "target_type": <target> }; or, for mana abilities only, add_mana — { "type": "add_mana", "color": "W|U|B|R|G|C", "amount": N } with "is_mana_ability": true.
+   The ability has ONE effect. Supported: deal_damage ({ "type": "deal_damage", "amount": N, "target_type": <target> }), the creature-target effects destroy/exile/bounce/tap/untap/add_counters/pump/grant_keyword/gain_control (with "target_type": "creature", e.g. "{T}: Destroy target creature" = { "type": "destroy", "target_type": "creature" }), and untargeted draw ({ "type": "draw", "amount": N }, e.g. "{2}: Draw a card"). For a MANA ability use add_mana — { "type": "add_mana", "color": "W|U|B|R|G|C", "amount": N } with "is_mana_ability": true. Do NOT put decision effects (scry/search/sacrifice/may/choose_player) in an activated ability.
    deal_damage target_type values: ${damageTargets}. "any target" -> ["creature","player"].
 
 4. spell_effect — for Instants and Sorceries (the effect when the spell resolves): { "actions": [ ... ] }.

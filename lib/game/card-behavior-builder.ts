@@ -11,6 +11,7 @@ import {
   effectFromJson,
   effectToJson as registryEffectToJson,
   effectsForContext,
+  type RegistryEffect,
 } from './card-behavior-registry'
 
 // ─── Vocabulary ──────────────────────────────────────────────────────────────
@@ -154,19 +155,22 @@ export type BuilderDamageTarget = (typeof BUILDER_DAMAGE_TARGETS)[number]['value
 
 export const BUILDER_ABILITY_KINDS = [
   { value: 'mana', label: 'Tap for mana' },
-  { value: 'damage', label: 'Deal damage' },
+  { value: 'effect', label: 'Effect' },
 ] as const
 export type BuilderAbilityKind = (typeof BUILDER_ABILITY_KINDS)[number]['value']
 
+// `effect` is the generic "{cost}: <effect>" ability — the effect is any registry
+// effect (deal_damage / destroy / draw / pump / …), edited via the shared effect
+// editor. (Replaces the old bespoke `damage` kind; deal_damage is now just an effect.)
 export type BuilderActivatedAbility =
   | { kind: 'mana'; tapSelf: boolean; color: ManaColor; amount: number }
-  | { kind: 'damage'; tapSelf: boolean; mana: string; amount: number; target: BuilderDamageTarget }
+  | { kind: 'effect'; tapSelf: boolean; mana: string; effect: RegistryEffect }
 
 export function defaultActivatedAbility(kind: BuilderAbilityKind): BuilderActivatedAbility {
   if (kind === 'mana') {
     return { kind: 'mana', tapSelf: true, color: 'C', amount: 1 }
   }
-  return { kind: 'damage', tapSelf: true, mana: '', amount: 1, target: 'any' }
+  return { kind: 'effect', tapSelf: true, mana: '', effect: effectDefault('deal_damage_target') }
 }
 
 export type BuilderForm = {
@@ -260,12 +264,9 @@ function activatedAbilityToJson(ability: BuilderActivatedAbility): Record<string
     costs.push({ type: 'mana', amount: ability.mana.trim() })
   }
 
-  const targetType =
-    ability.target === 'any' ? ['creature', 'player'] : ability.target
-
   return {
     costs,
-    effects: [{ type: 'deal_damage', amount: ability.amount, target_type: targetType }],
+    effects: [registryEffectToJson(ability.effect)],
   }
 }
 
@@ -413,38 +414,17 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
         amount: typeof effect.amount === 'number' ? effect.amount : 1,
       })
     } else {
-      if (effect?.type !== 'deal_damage' || effect.target_ref !== undefined) {
+      // Generic "{cost}: <effect>" — the single effect must be a registry effect
+      // the form can represent (parsed in spell context, where the targeted
+      // creature effects + draw live). Otherwise the whole script stays in JSON mode.
+      const parsed = effectFromJson(effect, 'spell')
+      if (parsed === null) {
         return null
       }
-      const target = parseDamageTarget(effect.target_type)
-      if (target === null) {
-        return null
-      }
-      abilities.push({
-        kind: 'damage',
-        tapSelf,
-        mana,
-        amount: typeof effect.amount === 'number' ? effect.amount : 1,
-        target,
-      })
+      abilities.push({ kind: 'effect', tapSelf, mana, effect: parsed })
     }
   }
   return abilities
-}
-
-function parseDamageTarget(value: unknown): BuilderDamageTarget | null {
-  if (value === 'creature' || value === 'player') {
-    return value
-  }
-  if (
-    Array.isArray(value) &&
-    value.length === 2 &&
-    value.includes('creature') &&
-    value.includes('player')
-  ) {
-    return 'any'
-  }
-  return null
 }
 
 function parseKeywords(value: unknown): BuilderKeyword[] | null {

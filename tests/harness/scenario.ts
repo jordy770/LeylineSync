@@ -148,6 +148,30 @@ export class Scenario {
     )
   }
 
+  /**
+   * Pay a mana cost as the acting seat (direct pay_mana_cost call). Returns the
+   * resulting mana pool. `hybrid` is the per-symbol choice array for {W/U}/{2/W}/
+   * {W/P} symbols (colour letter, 'LIFE', or 'GENERIC'); omit it to auto-resolve.
+   */
+  async payMana(
+    seat: Seat,
+    cost: string,
+    opts: { generic?: Record<string, number>; xValue?: number; hybrid?: string[] } = {},
+  ): Promise<Record<string, number>> {
+    return this.run(
+      () =>
+        rpc(this.client, 'pay_mana_cost', {
+          p_session_id: this.sessionId,
+          p_player_id: this.players[seat],
+          p_mana_cost: cost,
+          p_generic_payment: opts.generic ? JSON.stringify(opts.generic) : null,
+          p_x_value: opts.xValue ?? 0,
+          p_hybrid_payment: opts.hybrid ? JSON.stringify(opts.hybrid) : null,
+        }),
+      seat,
+    )
+  }
+
   // --- Actions -------------------------------------------------------------
 
   /** Put an action on the stack as the acting seat. Returns the stack item. */
@@ -287,6 +311,29 @@ export class Scenario {
     )
   }
 
+  /** Pass priority as the acting seat (rotates priority; resolves/advances once all pass). */
+  async passPriority(seat: Seat = this.acting): Promise<unknown> {
+    return this.run(() => rpc(this.client, 'pass_priority', { p_session_id: this.sessionId }), seat)
+  }
+
+  /** Current priority holder + consecutive-pass count. */
+  async priorityState(): Promise<{ priority_player_id: string; priority_pass_count: number }> {
+    const res = await this.client.query<{ priority_player_id: string; priority_pass_count: number }>(
+      'select priority_player_id, priority_pass_count from public.game_turn_state where session_id = $1',
+      [this.sessionId],
+    )
+    return res.rows[0]
+  }
+
+  /** Count of pending stack items. */
+  async pendingCount(): Promise<number> {
+    const res = await this.client.query<{ n: number }>(
+      `select count(*)::int as n from public.game_stack_items where session_id = $1 and status = 'pending'`,
+      [this.sessionId],
+    )
+    return res.rows[0]?.n ?? 0
+  }
+
   /** Resolve the top of the stack (as the acting seat). */
   async resolveStack(): Promise<Record<string, unknown>> {
     return this.run(() => rpc(this.client, 'resolve_top_of_stack', { p_session_id: this.sessionId }))
@@ -321,8 +368,40 @@ export class Scenario {
     )
   }
 
-  async resolveCombat(): Promise<unknown> {
-    return this.run(() => rpc(this.client, 'resolve_combat_damage', { p_session_id: this.sessionId }))
+  /**
+   * Resolve combat damage as the acting seat. Pass `assignments` (attacker id ->
+   * { blockers: [{blocker_card_id, amount}], trample? }) for player-chosen
+   * over-assignment; omit it for the engine's auto minimum-lethal distribution.
+   */
+  /** Fire the given trigger events on a card (enqueues matching triggered abilities). */
+  async fireTriggers(seat: Seat, cardId: string, events: string[]): Promise<unknown> {
+    return this.run(() =>
+      rpc(this.client, 'fire_card_triggers', {
+        p_session_id: this.sessionId,
+        p_game_card_id: cardId,
+        p_events: events,
+      }),
+      seat,
+    )
+  }
+
+  /** Settle the pending simultaneous-trigger batch into APNAP order. */
+  async orderTriggers(seat: Seat = 'A'): Promise<unknown> {
+    return this.run(() =>
+      rpc(this.client, 'order_pending_triggers', { p_session_id: this.sessionId }),
+      seat,
+    )
+  }
+
+  async resolveCombat(
+    assignments?: Record<string, { blockers?: { blocker_card_id: string; amount: number }[]; trample?: number }>,
+  ): Promise<Record<string, unknown>> {
+    return this.run(() =>
+      rpc(this.client, 'resolve_combat_damage', {
+        p_session_id: this.sessionId,
+        p_assignments: assignments ? JSON.stringify(assignments) : null,
+      }),
+    )
   }
 
   /** Run the continuous-effect expiry sweep for a step (as the acting seat). */

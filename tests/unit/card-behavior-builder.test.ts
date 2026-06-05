@@ -333,7 +333,27 @@ test('defaultSpellEffect shapes', () => {
 
 test('defaultActivatedAbility shapes', () => {
   assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, color: 'C', amount: 1 })
-  assert.deepEqual(defaultActivatedAbility('damage'), { kind: 'damage', tapSelf: true, mana: '', amount: 1, target: 'any' })
+  // The generic 'effect' kind defaults to a targeted deal_damage (the old 'damage' kind).
+  assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
+})
+
+// An activated ability of a non-damage effect (a new capability) is Form-representable.
+test('activated destroy ability round-trips through the form', () => {
+  const form = parseScriptToForm({ schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }], effects: [{ type: 'destroy', target_type: 'creature' }] }] })
+  assert.notEqual(form, null)
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    activated_abilities: [{ costs: [{ type: 'tap_self' }], effects: [{ type: 'destroy', target_type: 'creature' }] }],
+  })
+})
+
+test('activated draw ability ({2}: draw) round-trips through the form', () => {
+  const form = parseScriptToForm({ schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}' }], effects: [{ type: 'draw', amount: 1 }] }] })
+  assert.notEqual(form, null)
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}' }], effects: [{ type: 'draw', amount: 1 }] }],
+  })
 })
 
 test('defaultTrigger shape', () => {

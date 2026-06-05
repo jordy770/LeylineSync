@@ -2,7 +2,6 @@
 
 import {
   BUILDER_ABILITY_KINDS,
-  BUILDER_DAMAGE_TARGETS,
   BUILDER_KEYWORDS,
   BUILDER_MANA_COLORS,
   BUILDER_SPELL_EFFECT_TYPES,
@@ -13,7 +12,6 @@ import {
   defaultSpellEffect,
   defaultTrigger,
   type BuilderActivatedAbility,
-  type BuilderDamageTarget,
   type BuilderEffect,
   type BuilderForm,
   type BuilderKeyword,
@@ -531,7 +529,7 @@ function ActivatedAbilityEditor({
     <div className="grid gap-3 rounded-lg border border-slate-800 bg-slate-900/60 p-3">
       <div className="flex items-center justify-between gap-2">
         <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-300">
-          {ability.kind === 'mana' ? 'Tap for mana' : 'Deal damage'}
+          {ability.kind === 'mana' ? 'Tap for mana' : 'Effect'}
         </span>
         <button
           type="button"
@@ -555,7 +553,7 @@ function ActivatedAbilityEditor({
           Tap {'{T}'}
         </label>
 
-        {ability.kind === 'damage' ? (
+        {ability.kind === 'effect' ? (
           <label className="flex items-center gap-1.5">
             Mana cost
             <input
@@ -597,30 +595,26 @@ function ActivatedAbilityEditor({
           </select>
         </div>
       ) : (
+        // Generic effect: a registry effect editor (type dropdown + its fields),
+        // resolved in spell context (the targeted creature effects + draw, etc.).
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
-          <span>Deal</span>
-          <input
-            type="number"
-            min={1}
-            max={99}
-            value={ability.amount}
-            disabled={disabled}
-            onChange={(event) => onChange({ ...ability, amount: Math.max(1, Number(event.target.value)) })}
-            className={`${inputClass} w-16`}
-          />
-          <span>damage to</span>
           <select
-            value={ability.target}
+            value={effectKeyOf(ability.effect)}
             disabled={disabled}
-            onChange={(event) => onChange({ ...ability, target: event.target.value as BuilderDamageTarget })}
+            onChange={(event) => onChange({ ...ability, effect: effectDefault(event.target.value) })}
             className={inputClass}
           >
-            {BUILDER_DAMAGE_TARGETS.map((option) => (
+            {effectsForContext('spell').map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
           </select>
+          <EffectFields
+            effect={ability.effect}
+            disabled={disabled}
+            onChange={(next) => onChange({ ...ability, effect: next })}
+          />
         </div>
       )}
     </div>

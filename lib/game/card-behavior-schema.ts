@@ -370,6 +370,9 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
 export const CardBehaviorScriptV2Schema = z.object({
   schema_version: z.literal(2),
   keywords: z.array(z.string()).optional(),
+  // "This spell can't be countered." A static property read at counter-resolution
+  // time: an uncounterable spell's counter resolves but fails to cancel it.
+  cant_be_countered: z.boolean().optional(),
   spell_effect: CardBehaviorSpellEffectSchema.optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),

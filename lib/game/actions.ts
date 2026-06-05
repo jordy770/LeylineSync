@@ -1168,9 +1168,25 @@ export async function clearCombatAssignments(supabase: SupabaseClient, sessionId
   return data as number
 }
 
-export async function resolveCombatDamage(supabase: SupabaseClient, sessionId: string) {
+/**
+ * Player-chosen combat damage over-assignment. `assignments` maps an attacker
+ * game_card id to its distribution: per-blocker amounts and an optional trample
+ * amount to the defending player. Omit it for the engine's auto minimum-lethal
+ * distribution (the server validates lethal-before-later-blocker ordering).
+ */
+export type CombatDamageAssignments = Record<
+  string,
+  { blockers?: { blocker_card_id: string; amount: number }[]; trample?: number }
+>
+
+export async function resolveCombatDamage(
+  supabase: SupabaseClient,
+  sessionId: string,
+  assignments?: CombatDamageAssignments,
+) {
   const { data, error } = await supabase.rpc('resolve_combat_damage', {
     p_session_id: sessionId,
+    p_assignments: assignments ?? null,
   })
 
   if (error) {

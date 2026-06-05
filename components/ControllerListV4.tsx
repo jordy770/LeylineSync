@@ -33,7 +33,7 @@ import {
   setCombatBlockerOrder,
   submitDecision,
 } from '@/lib/game/actions'
-import type { TargetController, TargetedCreatureActionType, MultiCreatureKind, DamageAllocation, ModalMode } from '@/lib/game/actions'
+import type { TargetController, TargetedCreatureActionType, MultiCreatureKind, DamageAllocation, ModalMode, CombatDamageAssignments } from '@/lib/game/actions'
 import type { CardBehaviorAction, CardBehaviorCost } from '@/lib/game/card-behavior'
 import {
   isAddManaBehaviorAction,
@@ -275,20 +275,35 @@ function cardMatchesTargetType(typeLine: string | null | undefined, tt: string |
   })
 }
 
-/** Damage info for an activated ability, or null if it isn't a (supported) damage ability. */
-function getAbilityDamage(
+// Activated-ability effects the client can invoke (the engine's activate_ability
+// vocabulary). draw is untargeted; the rest target a creature (deal_damage also a
+// player). Returns null for anything else → the ability renders "Soon".
+const ABILITY_EFFECT_TYPES = [
+  'deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap', 'add_counters', 'pump', 'grant_keyword', 'gain_control', 'draw',
+]
+function getAbilityEffect(
   effects: CardBehaviorAction[],
-): { amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null {
-  const dmg = effects.find((e) => e.type === 'deal_damage') as
+): { type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean; needsTarget: boolean } | null {
+  const e = effects.find((x) => ABILITY_EFFECT_TYPES.includes(x.type ?? '')) as
     | (CardBehaviorAction & { amount?: number; target_type?: unknown })
     | undefined
-  if (!dmg || typeof dmg.amount !== 'number') return null
-  const tt = dmg.target_type
-  return {
-    amount: dmg.amount,
-    canTargetPlayer: !tt || targetTypeMatches(tt, 'player'),
-    canTargetCreature: targetTypeMatches(tt, 'creature'),
+  if (!e || !e.type) return null
+  if (e.type === 'draw') {
+    return { type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false }
   }
+  if (e.type === 'deal_damage') {
+    if (typeof e.amount !== 'number') return null
+    const tt = e.target_type
+    return { type: 'deal_damage', amount: e.amount, canTargetPlayer: !tt || targetTypeMatches(tt, 'player'), canTargetCreature: targetTypeMatches(tt, 'creature'), needsTarget: true }
+  }
+  // The creature-target effects: destroy/exile/bounce/tap/untap/add_counters/pump/grant_keyword/gain_control.
+  return { type: e.type, amount: typeof e.amount === 'number' ? e.amount : 0, canTargetPlayer: false, canTargetCreature: true, needsTarget: true }
+}
+
+// Verb shown in the activated-ability target picker prompt.
+const ABILITY_VERB: Record<string, string> = {
+  destroy: 'Destroy', exile: 'Exile', bounce: 'Return to hand', tap: 'Tap', untap: 'Untap',
+  add_counters: 'Add counters to', pump: 'Pump', grant_keyword: 'Grant keyword to', gain_control: 'Gain control of',
 }
 
 /**
@@ -504,6 +519,10 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
   // Tracks the last resolved combat damage pass ('first_strike' | 'regular') so the
   // resolve button knows whether a second (regular) pass is still pending.
   const [combatDamageStage, setCombatDamageStage] = useState<string | null>(null)
+  // Player-chosen combat damage over-assignment, keyed by attacker game_card id.
+  // Empty => the server auto-assigns (minimum lethal). Populated only for attackers
+  // the player explicitly configures via the damage-assignment sheet.
+  const [damageAssignments, setDamageAssignments] = useState<CombatDamageAssignments>({})
 
   const {
     supabase,
@@ -615,7 +634,10 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
 
   // Reset combat-damage resolution tracking whenever we leave the combat damage step
   useEffect(() => {
-    if (turnState?.step !== 'combat_damage') setCombatDamageStage(null)
+    if (turnState?.step !== 'combat_damage') {
+      setCombatDamageStage(null)
+      setDamageAssignments({})
+    }
   }, [turnState?.step])
 
   // Combat damage is fully resolved once the 'regular' pass has run
@@ -803,8 +825,20 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       await refresh()
     },
     resolveCombatDamage: async () => {
-      const result = await resolveCombatDamage(supabase, sessionId)
-      setCombatDamageStage(result.damage_stage ?? 'regular')
+      try {
+        const result = await resolveCombatDamage(
+          supabase,
+          sessionId,
+          Object.keys(damageAssignments).length ? damageAssignments : undefined,
+        )
+        const stage = result.damage_stage ?? 'regular'
+        setCombatDamageStage(stage)
+        // Keep the chosen distribution for the regular pass after first strike;
+        // clear it only once combat damage is fully resolved.
+        if (stage === 'regular') setDamageAssignments({})
+      } catch (error) {
+        setErrorMessage(getErrorMessage(error))
+      }
       await refresh()
     },
     setBlockerOrder: async (assignmentId: string, orderedBlockerIds: string[]) => {
@@ -901,6 +935,9 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 onTapForMana={actions.tapForMana}
                 onDiscardCard={actions.discardCard}
                 onSetBlockerOrder={actions.setBlockerOrder}
+                onSetDamageAssignment={(attackerCardId, distribution) =>
+                  setDamageAssignments((prev) => ({ ...prev, [attackerCardId]: distribution }))
+                }
                 onChooseTriggerTarget={actions.chooseTriggerTarget}
                 onChooseTriggerTargets={actions.chooseTriggerTargets}
                 pendingDecision={myPendingDecision}
@@ -1065,6 +1102,7 @@ function MainArea({
   onTapForMana,
   onDiscardCard,
   onSetBlockerOrder,
+  onSetDamageAssignment,
   onChooseTriggerTarget,
   onChooseTriggerTargets,
   pendingDecision,
@@ -1093,6 +1131,10 @@ function MainArea({
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
   onDiscardCard: (cardId: string) => Promise<void>
   onSetBlockerOrder: (assignmentId: string, orderedBlockerIds: string[]) => Promise<void>
+  onSetDamageAssignment: (
+    attackerCardId: string,
+    distribution: { blockers: { blocker_card_id: string; amount: number }[]; trample?: number },
+  ) => void
   onChooseTriggerTarget: (stackItemId: string, targetCardId: string) => Promise<void>
   onChooseTriggerTargets: (stackItemId: string, targetCardIds: string[]) => Promise<void>
   pendingDecision: PendingDecision | null
@@ -1375,8 +1417,9 @@ function MainArea({
           <BlockerOrderSheet
             assignment={orderingAssignmentLive}
             boardCards={boardCards}
-            onConfirm={async (orderedIds) => {
+            onConfirm={async (orderedIds, distribution) => {
               await onSetBlockerOrder(orderingAssignmentLive.id, orderedIds)
+              onSetDamageAssignment(orderingAssignmentLive.attacker_card_id, distribution)
               setOrderingAssignment(null)
             }}
             onClose={() => setOrderingAssignment(null)}
@@ -2010,7 +2053,7 @@ function CardActionSheet({
   const [dmgAlloc, setDmgAlloc] = useState<Record<string, number>>({})
   // When set, showing the target picker for an activated ability.
   const [abilityPick, setAbilityPick] = useState<
-    { index: number; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null
+    { index: number; type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null
   >(null)
 
   const spellPlan = getSpellPlan(card)
@@ -2582,11 +2625,11 @@ function CardActionSheet({
           <div className="space-y-1.5">
             <p className="mb-1 text-[9px] uppercase tracking-widest text-slate-700">Abilities</p>
             {otherAbilities.map(({ ability, index }) => {
-              const dmg = getAbilityDamage(ability.effects)
+              const eff = getAbilityEffect(ability.effects)
               const hasTap = ability.costs.some((c) => c.type === 'tap_self')
-              const supported = Boolean(dmg)
+              const supported = Boolean(eff)
               const targetAvailable = Boolean(
-                dmg && (dmg.canTargetPlayer || (dmg.canTargetCreature && targetableCreatures.length > 0)),
+                eff && (!eff.needsTarget || eff.canTargetPlayer || (eff.canTargetCreature && targetableCreatures.length > 0)),
               )
               const available = supported && canCastInstants && (!hasTap || !card.is_tapped) && targetAvailable
               return (
@@ -2595,7 +2638,13 @@ function CardActionSheet({
                   type="button"
                   disabled={!available}
                   onClick={() => {
-                    if (dmg) setAbilityPick({ index, amount: dmg.amount, canTargetPlayer: dmg.canTargetPlayer, canTargetCreature: dmg.canTargetCreature })
+                    if (!eff) return
+                    if (eff.needsTarget) {
+                      setAbilityPick({ index, type: eff.type, amount: eff.amount, canTargetPlayer: eff.canTargetPlayer, canTargetCreature: eff.canTargetCreature })
+                    } else {
+                      void onActivateAbility(card.id, index)
+                      onClose()
+                    }
                   }}
                   className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 transition active:scale-95 ${
                     available ? 'border-white/15 bg-[#0F1117]' : 'border-white/5 bg-[#0F1117]/60 opacity-50'
@@ -2617,7 +2666,9 @@ function CardActionSheet({
         {abilityPick && (
           <div className="mb-3 space-y-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              Deal {abilityPick.amount} damage to
+              {abilityPick.type === 'deal_damage'
+                ? `Deal ${abilityPick.amount} damage to`
+                : `${ABILITY_VERB[abilityPick.type] ?? 'Affect'} which target?`}
             </p>
             {abilityPick.canTargetPlayer && players.map((p) => (
               <button
@@ -2908,6 +2959,12 @@ function CombatDamageStrip({
   )
 }
 
+// Parse the numbers out of a "P/T" label; falls back to 0 power / 1 toughness.
+function parsePT(pt?: string | null): { power: number; toughness: number } {
+  const m = (pt ?? '').match(/^(\d+)\s*\/\s*(\d+)$/)
+  return m ? { power: Number(m[1]), toughness: Number(m[2]) } : { power: 0, toughness: 1 }
+}
+
 function BlockerOrderSheet({
   assignment,
   boardCards,
@@ -2916,12 +2973,34 @@ function BlockerOrderSheet({
 }: {
   assignment: CombatAssignment
   boardCards: BoardCard[]
-  onConfirm: (orderedBlockerIds: string[]) => Promise<void>
+  onConfirm: (
+    orderedBlockerIds: string[],
+    distribution: { blockers: { blocker_card_id: string; amount: number }[]; trample?: number },
+  ) => Promise<void>
   onClose: () => void
 }) {
   const [order, setOrder] = useState<CombatBlocker[]>(assignment.blockers ?? [])
   const [isPending, setIsPending] = useState(false)
   const attackerCard = boardCards.find((c) => c.id === assignment.attacker_card_id)
+
+  // Attacker's combat damage to spread. Prefer the server-computed effective power;
+  // fall back to the printed/effective P/T from the board card.
+  const attackerPower =
+    assignment.attacker_power ?? parsePT(attackerCard ? effectiveBoardPT(attackerCard) : '').power
+
+  const lethalOf = (blockerCardId: string) => {
+    const bc = boardCards.find((c) => c.id === blockerCardId)
+    return Math.max(1, parsePT(bc ? effectiveBoardPT(bc) : '').toughness)
+  }
+
+  // Default each blocker to its lethal (matches the engine's auto-assignment).
+  const [amounts, setAmounts] = useState<Record<string, number>>(() =>
+    Object.fromEntries((assignment.blockers ?? []).map((b) => [b.blocker_card_id, lethalOf(b.blocker_card_id)])),
+  )
+  const [trample, setTrample] = useState(0)
+
+  const sum = order.reduce((acc, b) => acc + (amounts[b.blocker_card_id] ?? 0), 0)
+  const remaining = attackerPower - sum - trample
 
   const move = (index: number, dir: -1 | 1) => {
     setOrder((prev) => {
@@ -2933,14 +3012,49 @@ function BlockerOrderSheet({
     })
   }
 
+  const bump = (id: string, delta: number) =>
+    setAmounts((prev) => ({
+      ...prev,
+      [id]: Math.max(0, Math.min(attackerPower, (prev[id] ?? 0) + delta)),
+    }))
+
+  const bumpTrample = (delta: number) =>
+    setTrample((prev) => Math.max(0, Math.min(prev + delta, prev + Math.max(0, remaining))))
+
   const confirm = async () => {
     setIsPending(true)
     try {
-      await onConfirm(order.map((b) => b.blocker_card_id))
+      await onConfirm(
+        order.map((b) => b.blocker_card_id),
+        {
+          blockers: order.map((b) => ({ blocker_card_id: b.blocker_card_id, amount: amounts[b.blocker_card_id] ?? 0 })),
+          trample: trample > 0 ? trample : undefined,
+        },
+      )
     } finally {
       setIsPending(false)
     }
   }
+
+  const stepper = (value: number, onMinus: () => void, onPlus: () => void) => (
+    <div className="flex shrink-0 items-center gap-1.5">
+      <button
+        type="button"
+        onClick={onMinus}
+        className="h-6 w-6 rounded-md bg-white/10 text-xs font-black text-white active:scale-90"
+      >
+        −
+      </button>
+      <span className="w-5 text-center text-sm font-black text-white">{value}</span>
+      <button
+        type="button"
+        onClick={onPlus}
+        className="h-6 w-6 rounded-md bg-white/10 text-xs font-black text-white active:scale-90"
+      >
+        +
+      </button>
+    </div>
+  )
 
   return (
     <>
@@ -2970,17 +3084,20 @@ function BlockerOrderSheet({
           </div>
           <div className="min-w-0">
             <p className="truncate text-base font-black text-white">{assignment.attacker_name}</p>
-            <p className="text-[11px] text-[#D4591A]">Order damage assignment</p>
+            <p className="text-[11px] text-[#D4591A]">Assign {attackerPower} combat damage</p>
           </div>
         </div>
-        <p className="mb-3 text-[10px] text-slate-500">Top of the list takes lethal damage first.</p>
+        <p className="mb-3 text-[10px] text-slate-500">
+          Assign lethal to a blocker before any later blocker (or the player). Over-assigning is allowed.
+          {' '}Unassigned: <span className={remaining < 0 ? 'text-red-400' : 'text-slate-300'}>{remaining}</span>
+        </p>
 
-        {/* Ordered blocker list */}
+        {/* Ordered blocker list with per-blocker damage steppers */}
         <div className="space-y-2">
           {order.map((b, i) => {
             const blockerCard = boardCards.find((c) => c.id === b.blocker_card_id)
             return (
-              <div key={b.id} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0F1117] p-2">
+              <div key={b.id} className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#0F1117] p-2">
                 <span className="w-5 text-center text-sm font-black text-[#D4591A]">{i + 1}</span>
                 <div className="h-[48px] w-[34px] shrink-0 overflow-hidden rounded-md">
                   <MotionCard
@@ -2988,13 +3105,14 @@ function BlockerOrderSheet({
                     size="board" useLayoutId={false} className="w-full"
                   />
                 </div>
-                <span className="min-w-0 flex-1 truncate text-sm font-bold text-white">{b.blocker_name}</span>
+                <span className="min-w-0 flex-1 truncate text-xs font-bold text-white">{b.blocker_name}</span>
+                {stepper(amounts[b.blocker_card_id] ?? 0, () => bump(b.blocker_card_id, -1), () => bump(b.blocker_card_id, 1))}
                 <div className="flex shrink-0 flex-col gap-1">
                   <button
                     type="button"
                     disabled={i === 0}
                     onClick={() => move(i, -1)}
-                    className="rounded-md bg-white/10 px-2 py-0.5 text-xs font-black text-white disabled:opacity-30"
+                    className="rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-black text-white disabled:opacity-30"
                   >
                     ▲
                   </button>
@@ -3002,7 +3120,7 @@ function BlockerOrderSheet({
                     type="button"
                     disabled={i === order.length - 1}
                     onClick={() => move(i, 1)}
-                    className="rounded-md bg-white/10 px-2 py-0.5 text-xs font-black text-white disabled:opacity-30"
+                    className="rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-black text-white disabled:opacity-30"
                   >
                     ▼
                   </button>
@@ -3010,15 +3128,24 @@ function BlockerOrderSheet({
               </div>
             )
           })}
+
+          {/* Trample to the defending player (only legal if the attacker has trample;
+              the server rejects it otherwise). */}
+          <div className="flex items-center gap-2 rounded-2xl border border-[#D4591A]/30 bg-[#120905]/60 p-2">
+            <span className="min-w-0 flex-1 truncate text-xs font-bold text-[#D4591A]">
+              Trample → {assignment.defending_username ?? 'player'}
+            </span>
+            {stepper(trample, () => bumpTrample(-1), () => bumpTrample(1))}
+          </div>
         </div>
 
         <button
           type="button"
-          disabled={isPending}
+          disabled={isPending || remaining < 0}
           onClick={confirm}
           className="mt-4 w-full rounded-2xl bg-[#D4591A] py-3.5 text-sm font-black text-white transition active:scale-95 disabled:opacity-50"
         >
-          {isPending ? 'Saving…' : 'Confirm Order'}
+          {isPending ? 'Saving…' : 'Confirm Assignment'}
         </button>
       </motion.div>
     </>

@@ -77,12 +77,12 @@ metadata:
 
 ## 🟠 Longer-term — rules-engine depth (Phase 4)
 
-- Player-chosen combat damage **over-assignment** amounts
-- Richer **mana model** (hybrid, X, Phyrexian)
-- Fuller **priority/APNAP**, replacement / prevention / **protection** (incl. "can't be countered")
+- ~~Player-chosen combat damage **over-assignment** amounts~~ ✅ **shipped (mig 122)**: resolve_combat_damage gained optional `p_assignments` (attacker→{blockers:[{blocker_card_id,amount}], trample}); a validation pre-pass enforces CR 510.1c (lethal before later blockers / trample), then the loop applies the chosen distribution; null = byte-identical auto min-lethal (no regression). Client: per-blocker damage steppers + a trample stepper added to the existing multi-blocker sheet in ControllerListV4. Tests CO1–CO4.
+- ~~Richer **mana model** (hybrid, X, Phyrexian)~~ ✅ **shipped** — X (mig 109) + **hybrid/Phyrexian (mig 121)**: pay_mana_cost parses {W/U} (either colour), {2/W} (2 generic or colour), {W/P} (colour or **2 life**), auto-resolving each symbol (optional explicit choice via `p_hybrid_payment`). Casters unchanged (auto-default); a hybrid/life picker is a shared-UI follow-up. Tests HM1–HM6.
+- Fuller **priority/APNAP**, replacement / prevention / **protection** — **NOW IN PROGRESS as the "frontier" phase (incremental PL/pgSQL, isolated resolvers — see cerebrum 2026-06-05 F1a).** ~~APNAP ordering of simultaneous triggered abilities~~ ✅ **shipped (mig 123, F1a)**: enqueue stamps apnap_rank; order_pending_triggers settles the batch (active player's triggers resolve last); resolve_top_of_stack settles before picking the top. Tests AP1–AP3. ~~F1b priority_pass_count reset on cast~~ ✅ **shipped (mig 124)**: an AFTER INSERT trigger on game_stack_items restarts the priority round on any new stack object (fixes respond-then-pass short-circuit). Tests PR1/PR2. **F1 (priority/APNAP) now complete. Remaining frontier: F2 replacement/prevention engine (the layer resolver — continuous effects are currently flat-additive); F3 protection (DEBT).** — ~~"can't be countered"~~ ✅ **shipped (mig 120)**: top-level `cant_be_countered: true`; handle_counter_spell reads the target spell's source-card script at resolution and skips cancellation (counter resolves but does nothing). JSON/AI-authorable (no guided-form surface). Tests CC1/CC2.
 - Real **copy / control-change / suppression** cards
 - Real **mana-retention** cards
-- Activated abilities beyond `deal_damage` (others currently render "Soon")
+- ~~Activated abilities beyond `deal_damage`~~ — ✅ **shipped (mig 119 + builder/form refactor)**. "{cost}: effect" abilities resolve the full vocabulary (destroy/exile/bounce/tap/untap/add_counters/pump/grant_keyword/gain_control of a target creature + untargeted draw) and are guided-form authorable. activate_ability dispatches the effect → put_action_on_stack action_type (engine was 95% ready; only the deal_damage-only check blocked it). Builder's bespoke 'damage' kind → generic 'effect' kind reusing the shared registry effect editor. Controller 'Soon' gate cleared for supported effects; per-effect target picker. Tests AA1–AA4. **Extending = one more arm in activate_ability.**
 
 ## 🔵 Architecture frontier (deferred by design — cerebrum Decision Log 2026-06-01)
 

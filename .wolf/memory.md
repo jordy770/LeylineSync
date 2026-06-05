@@ -1420,3 +1420,81 @@
 | 15:06 | Edited package.json | inline fix | ~34 |
 | 15:07 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 3→5 lines | ~195 |
 | 15:07 | Session end: 139 writes across 28 files (202605010111_search_library_variants.sql, card-behavior-schema.ts, card-behavior-registry.ts, card-behavior-llm.ts, search-library-variants.test.ts) | 40 reads | ~296576 tok |
+| 15:29 | Created supabase/migrations/202605010119_activated_ability_effects.sql | — | ~2211 |
+| 15:30 | Edited tests/fixtures/test-cards.json | 1→4 lines | ~406 |
+| 15:30 | Created tests/feature/activated-abilities.test.ts | — | ~1012 |
+| 15:30 | Edited package.json | inline fix | ~36 |
+| 15:31 | Edited lib/game/card-behavior-builder.ts | 8→9 lines | ~59 |
+| 15:32 | Edited lib/game/card-behavior-builder.ts | modified defaultActivatedAbility() | ~271 |
+| 15:32 | Edited lib/game/card-behavior-builder.ts | modified if() | ~83 |
+| 15:32 | Edited lib/game/card-behavior-builder.ts | modified if() | ~128 |
+| 15:33 | Edited lib/game/card-behavior-builder.ts | removed 16 lines | ~19 |
+| 15:33 | Edited components/CardBehaviorForm.tsx | CSS: effect, effect, effect | ~944 |
+| 15:34 | Edited components/CardBehaviorForm.tsx | 3→2 lines | ~13 |
+| 15:34 | Edited components/CardBehaviorForm.tsx | 3→2 lines | ~16 |
+| 15:35 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~527 |
+| 15:35 | Edited components/ControllerListV4.tsx | CSS: type | ~50 |
+| 15:35 | Edited components/ControllerListV4.tsx | CSS: type | ~325 |
+| 15:36 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~104 |
+| 15:36 | Edited lib/game/card-behavior-llm.ts | 2→2 lines | ~211 |
+| 15:36 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+20 lines) | ~411 |
+| 15:38 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~183 |
+| 15:38 | Session end: 158 writes across 30 files (202605010111_search_library_variants.sql, card-behavior-schema.ts, card-behavior-registry.ts, card-behavior-llm.ts, search-library-variants.test.ts) | 41 reads | ~305619 tok |
+
+## Session: 2026-06-05 15:40
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:49 | Created supabase/migrations/202605010120_cant_be_countered.sql | — | ~799 |
+| 15:49 | Edited lib/game/card-behavior-schema.ts | 4→7 lines | ~112 |
+| 15:49 | Edited lib/game/card-behavior-llm.ts | 3→5 lines | ~145 |
+| 15:51 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~90 |
+| 15:52 | Created tests/feature/cant-be-countered.test.ts | — | ~644 |
+| 15:52 | Edited package.json | inline fix | ~24 |
+| 15:53 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~96 |
+| 15:54 | Session end: 7 writes across 7 files (202605010120_cant_be_countered.sql, card-behavior-schema.ts, card-behavior-llm.ts, test-cards.json, cant-be-countered.test.ts) | 12 reads | ~53985 tok |
+
+## Session: 2026-06-05 15:56
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:06 | Created supabase/migrations/202605010121_hybrid_phyrexian_mana.sql | — | ~2950 |
+| 16:07 | Edited tests/harness/scenario.ts | added nullish coalescing | ~268 |
+| 16:07 | Created tests/feature/hybrid-phyrexian-mana.test.ts | — | ~1252 |
+| 16:07 | Edited tests/feature/hybrid-phyrexian-mana.test.ts | 8→8 lines | ~118 |
+| 16:09 | Created supabase/migrations/202605010122_combat_over_assignment.sql | — | ~4665 |
+| 16:10 | Edited tests/harness/scenario.ts | modified resolveCombat() | ~182 |
+| 16:11 | Created tests/feature/combat-over-assignment.test.ts | — | ~1336 |
+| 16:13 | Edited lib/game/actions.ts | added nullish coalescing | ~235 |
+| 16:15 | Edited components/ControllerListV4.tsx | inline fix | ~46 |
+| 16:15 | Edited components/ControllerListV4.tsx | 2→6 lines | ~118 |
+| 16:15 | Edited components/ControllerListV4.tsx | modified if() | ~40 |
+| 16:15 | Edited components/ControllerListV4.tsx | added error handling | ~182 |
+| 16:16 | Edited components/ControllerListV4.tsx | 3→4 lines | ~25 |
+| 16:16 | Edited components/ControllerListV4.tsx | 2→6 lines | ~97 |
+| 16:16 | Edited components/ControllerListV4.tsx | 3→6 lines | ~105 |
+| 16:16 | Edited components/ControllerListV4.tsx | 9→10 lines | ~134 |
+| 16:17 | Edited components/ControllerListV4.tsx | modified parsePT() | ~2253 |
+| 16:17 | Edited package.json | inline fix | ~50 |
+| 16:20 | Edited tests/feature/combat-over-assignment.test.ts | modified blockerOrder() | ~244 |
+| 16:20 | Edited tests/feature/combat-over-assignment.test.ts | 10→11 lines | ~141 |
+| 16:20 | Edited tests/feature/combat-over-assignment.test.ts | 8→9 lines | ~106 |
+| 16:20 | Edited tests/feature/hybrid-phyrexian-mana.test.ts | 5→6 lines | ~91 |
+| 16:22 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 2→2 lines | ~243 |
+| 16:23 | Session end: 23 writes across 9 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 8 reads | ~90226 tok |
+| 16:47 | Session end: 23 writes across 9 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 8 reads | ~90226 tok |
+| 17:13 | Created supabase/migrations/202605010123_apnap_trigger_ordering.sql | — | ~3630 |
+| 17:13 | Edited tests/harness/scenario.ts | modified fireTriggers() | ~191 |
+| 17:14 | Created tests/feature/apnap-trigger-order.test.ts | — | ~1112 |
+| 17:14 | Edited package.json | inline fix | ~38 |
+| 17:16 | Session end: 27 writes across 11 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 8 reads | ~95456 tok |
+| 17:19 | Session end: 27 writes across 11 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 8 reads | ~95456 tok |
+| 20:13 | Created supabase/migrations/202605010123_apnap_trigger_ordering.sql | — | ~2526 |
+| 20:15 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | "can" → "frontier" | ~184 |
+| 20:15 | Session end: 29 writes across 11 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 10 reads | ~108790 tok |
+| 20:22 | Created supabase/migrations/202605010124_reset_priority_round_on_stack_change.sql | — | ~548 |
+| 20:22 | Edited tests/harness/scenario.ts | added optional chaining | ~303 |
+| 20:22 | Created tests/feature/priority-round.test.ts | — | ~626 |
+| 20:23 | Edited package.json | inline fix | ~24 |
+| 20:24 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~108 |
+| 20:24 | Session end: 34 writes across 13 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 10 reads | ~110445 tok |

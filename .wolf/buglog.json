@@ -4284,6 +4284,335 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-05T13:07:22.020Z"
+    },
+    {
+      "id": "bug-265",
+      "timestamp": "2026-06-05T13:32:06.734Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 16→19 lines (3 removed) | Also: const targetType =; ability.target === 'any' ? ['creature', 'player'] ",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-05T13:32:23.873Z"
+    },
+    {
+      "id": "bug-266",
+      "timestamp": "2026-06-05T13:34:20.932Z",
+      "error_message": "Wrong reference: BUILDER_DAMAGE_TARGETS should be BUILDER_KEYWORDS",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Used \"BUILDER_DAMAGE_TARGETS\" instead of \"BUILDER_KEYWORDS\"",
+      "fix": "Changed BUILDER_DAMAGE_TARGETS → BUILDER_KEYWORDS",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-05T13:34:27.613Z"
+    },
+    {
+      "id": "bug-267",
+      "timestamp": "2026-06-05T13:35:28.967Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {abilityPick.type === 'deal_damage'; ? `Deal ${abilityPick.amount} damage to`",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-05T13:36:04.364Z"
+    },
+    {
+      "id": "bug-268",
+      "timestamp": "2026-06-05T13:35:56.394Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "No early return/throw for edge case: !eff",
+      "fix": "Added guard clause: if (!eff)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T13:35:56.394Z"
+    },
+    {
+      "id": "bug-269",
+      "timestamp": "2026-06-05T13:36:28.336Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"type\"",
+      "fix": "Changed to \"target_type\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T13:36:28.336Z"
+    },
+    {
+      "id": "bug-270",
+      "timestamp": "2026-06-05T13:38:01.574Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had \"Soon\"",
+      "fix": "Changed to \"{cost}: effect\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T13:38:01.574Z"
+    },
+    {
+      "id": "bug-271",
+      "timestamp": "2026-06-05T14:07:02.397Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T14:07:02.397Z"
+    },
+    {
+      "id": "bug-272",
+      "timestamp": "2026-06-05T14:10:09.000Z",
+      "error_message": "Wrong return value",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Was returning: this.run(() => rpc(this.client, 'resolve_combat_da",
+      "fix": "Now returns: this.run(() =>",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T14:10:09.000Z"
+    },
+    {
+      "id": "bug-273",
+      "timestamp": "2026-06-05T14:13:09.792Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T14:13:09.792Z"
+    },
+    {
+      "id": "bug-274",
+      "timestamp": "2026-06-05T14:15:43.708Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T14:15:43.708Z"
+    },
+    {
+      "id": "bug-275",
+      "timestamp": "2026-06-05T14:16:17.392Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T14:16:17.392Z"
+    },
+    {
+      "id": "bug-276",
+      "timestamp": "2026-06-05T14:17:46.070Z",
+      "error_message": "CSS fix: onConfirm",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "onConfirm: (orderedBlockerIds: string[]) => Promise<void> → (",
+      "fix": "Changed onConfirm: (orderedBlockerIds: string[]) => Promise<void> → (",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T14:17:46.070Z"
+    },
+    {
+      "id": "bug-277",
+      "timestamp": "2026-06-05T14:20:32.703Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/combat-over-assignment.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T14:20:32.703Z"
+    },
+    {
+      "id": "bug-278",
+      "timestamp": "2026-06-05T14:20:55.955Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/hybrid-phyrexian-mana.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→6 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T14:20:55.955Z"
+    },
+    {
+      "id": "bug-279",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "CO1/CO2 combat over-assignment tests flaky: \"Must assign lethal damage to earlier blockers before later ones\" intermittently / reject test intermittently passes",
+      "file": "tests/feature/combat-over-assignment.test.ts",
+      "root_cause": "Two blockers declared in the same tx get equal damage_assignment_order AND equal created_at, so resolve_combat_damage orders them by the id tiebreak (random uuid). The test assumed declaration order == resolution order, so over-assigning 4/0 to b1/b2 landed on the wrong blocker ~half the time and tripped (or skipped) the CR 510.1c lethal-before-later validation.",
+      "fix": "Added blockerOrder(s,attacker) helper that queries game_combat_blockers ordered by (damage_assignment_order, created_at, id) — the exact order the engine uses — and assign by [first,second] from that, not declaration order.",
+      "tags": [
+        "combat",
+        "over-assignment",
+        "test",
+        "nondeterminism",
+        "ordering",
+        "uuid-tiebreak"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-280",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "HM3 monohybrid explicit-GENERIC test: expected pool.W 1, got 0",
+      "file": "tests/feature/hybrid-phyrexian-mana.test.ts",
+      "root_cause": "pay_mana_cost auto-distributes generic cost across the pool in order C,W,U,B,R,G. Paying {2/W} as 2 generic with pool {W:1,R:2} legitimately spent the W first, so the test asserting W untouched was wrong (engine behaved correctly).",
+      "fix": "Funded the 2 generic with colourless {W:1,C:2} so the auto-generic spends C before W; assert C=0 and W=1.",
+      "tags": [
+        "mana",
+        "hybrid",
+        "generic-payment",
+        "test",
+        "order"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-281",
+      "timestamp": "2026-06-05T15:13:47.216Z",
+      "error_message": "Type error",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T15:13:47.216Z"
+    },
+    {
+      "id": "bug-281",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "Unsupported stack action type: spell_effect (resolve_top_of_stack); many tests failed after mig 123",
+      "file": "supabase/migrations/202605010123_apnap_trigger_ordering.sql",
+      "root_cause": "mig 123 reproduced resolve_top_of_stack AND enqueue_triggered_ability from supabase/local-bootstrap/00_baseline.sql, but the LIVE versions come from later migrations: resolve_top_of_stack was refactored to the registry dispatcher in mig 104, and enqueue_triggered_ability gained multi-target reach in mig 114/116. Copying the baseline reverted both — dropping spell_effect (and every registry action_type) resolution and multi-target triggers.",
+      "fix": "Rebuilt mig 123 on the CURRENT definitions: enqueue from mig 116 + apnap_rank; resolve_top_of_stack from mig 104 (dispatcher) + the order_pending_triggers settle call. 316/316.",
+      "tags": [
+        "migration",
+        "reproduce",
+        "stale-baseline",
+        "resolve_top_of_stack",
+        "enqueue_triggered_ability",
+        "apnap",
+        "regression"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-283",
+      "timestamp": "2026-06-05T18:15:03.160Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had \"can'",
+      "fix": "Changed to \"frontier\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T18:15:03.160Z"
+    },
+    {
+      "id": "bug-284",
+      "timestamp": "2026-06-05T18:22:38.422Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T18:22:38.422Z"
     }
   ]
 }
