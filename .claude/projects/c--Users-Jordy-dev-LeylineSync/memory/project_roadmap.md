@@ -106,6 +106,16 @@ Reproduce each touched fn from its CURRENT migration (grep first — bug-281/283
 - Real **mana-retention** cards
 - ~~Activated abilities beyond `deal_damage`~~ — ✅ **shipped (mig 119 + builder/form refactor)**. "{cost}: effect" abilities resolve the full vocabulary (destroy/exile/bounce/tap/untap/add_counters/pump/grant_keyword/gain_control of a target creature + untargeted draw) and are guided-form authorable. activate_ability dispatches the effect → put_action_on_stack action_type (engine was 95% ready; only the deal_damage-only check blocked it). Builder's bespoke 'damage' kind → generic 'effect' kind reusing the shared registry effect editor. Controller 'Soon' gate cleared for supported effects; per-effect target picker. Tests AA1–AA4. **Extending = one more arm in activate_ability.**
 
+## 🟣 Commander (EDH) — IN PROGRESS (decided 2026-06-06: "in-game side first")
+
+**Slice 1 — in-game command zone ✅ (mig 136).** `'command'` zone; `game_cards.is_commander` + `command_zone_casts`; `game_sessions.format`. `cast_commander` (cast from command zone at sorcery speed, base cost + tax = 2×prior casts, → cast_permanent → battlefield). Commander returns to the command zone instead of the graveyard on death (put_in_graveyard redirect, auto for now). `set_commander_format` → format + 40 life. Tests CM1–CM5 (355/355). See cerebrum.
+**Remaining Commander slices:**
+- **Commander DAMAGE** — track combat damage per (defender, source-commander); 21 from one commander = that player loses. Needs a per-pair counter + a check in resolve_combat_damage / apply_damage_to_player.
+- **Return-to-command refinements** — owner CHOICE (pending-decision) instead of auto; cover the non-death zones (exile/bounce-to-hand/library); suppress the false 'dies' trigger on redirect.
+- **Deck side** (the other half of the original scoping Q) — designate a commander on a deck (the importer already parses a 'Commander' line), 100-card singleton + colour-identity legality, and seed the commander into the command zone at game start (spawn-deck / create flow + set_commander_format). No `color_identity` column yet (derive from mana_cost like protection, or add one).
+- **Multiplayer**: seating already supports 3+; confirm 4-player turn/priority + "last player standing" win.
+- **Client**: ✅ a **format selector** (Standard/Commander toggle) landed in GameSessionLobby — on Create it calls `set_commander_format` when Commander is picked. **KNOWN GAP:** set_commander_format sets all *current* players to 40, but at create only the host exists, so **late joiners start at 20**. Proper fix = thread `p_format` into create_game_session + have join_game_session set life from the session format (the deferred option #2; do it in the deck-side/seeding slice). Still TODO: a command-zone strip in V4 with a Cast button showing the live commander tax.
+
 ## 🔵 Architecture frontier (deferred by design — cerebrum Decision Log 2026-06-01)
 
 - **`effective_characteristics`** accessor (one face/script accessor) — unlocks DFCs (Jill // Shiva); the seam already reserved in `effective_script`

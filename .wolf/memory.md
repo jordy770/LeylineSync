@@ -1624,3 +1624,24 @@
 | 00:17 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |
 | 00:31 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |
 | 01:03 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |
+| 01:14 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |
+| 01:19 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |
+| 01:22 | Session end: 56 writes across 18 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~156054 tok |
+| 01:31 | Created supabase/migrations/202605010136_commander_command_zone.sql | — | ~2591 |
+| 01:32 | Edited tests/harness/scenario.ts | modified spawnCommander() | ~459 |
+| 01:33 | Created tests/feature/commander.test.ts | — | ~1170 |
+| 01:33 | Edited package.json | inline fix | ~27 |
+| 01:34 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | expanded (+10 lines) | ~436 |
+
+| 2026-06-06 | Commander slice 1 (in-game command zone): mig 136 — command zone, is_commander/command_zone_casts, format col; cast_commander (cost + tax 2x prior casts); commander returns to command zone on death (put_in_graveyard redirect); set_commander_format (40 life). Tests CM1-5. New branch: commander. | supabase/migrations/202605010136_commander_command_zone.sql, tests/feature/commander.test.ts, tests/harness/scenario.ts, package.json | 355/355, tsc+lint clean | ~9000 |
+| 01:34 | Session end: 61 writes across 20 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 19 reads | ~162512 tok |
+| 01:38 | Session end: 61 writes across 20 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 20 reads | ~162512 tok |
+| 01:39 | Edited lib/game/actions.ts | added 1 condition(s) | ~145 |
+| 01:39 | Edited components/GameSessionLobby.tsx | 7→8 lines | ~49 |
+| 01:39 | Edited components/GameSessionLobby.tsx | 3→4 lines | ~79 |
+| 01:39 | Edited components/GameSessionLobby.tsx | added 1 condition(s) | ~76 |
+| 01:40 | Edited components/GameSessionLobby.tsx | CSS: hover | ~302 |
+| 01:40 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~152 |
+
+| 2026-06-06 | Game-mode selector: Standard/Commander toggle in GameSessionLobby + setCommanderFormat action wrapper; calls set_commander_format on Create when Commander picked. KNOWN GAP: late joiners still get 20 life (proper fix = format in create/join, deferred). | components/GameSessionLobby.tsx, lib/game/actions.ts | tsc+lint clean | ~2500 |
+| 01:41 | Session end: 67 writes across 21 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 20 reads | ~163505 tok |

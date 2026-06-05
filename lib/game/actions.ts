@@ -1009,6 +1009,17 @@ export async function createGameSession(supabase: SupabaseClient) {
   return data as string
 }
 
+// Flip a session to the Commander format (40 life). Call right after creating it.
+export async function setCommanderFormat(supabase: SupabaseClient, sessionId: string) {
+  const { error } = await supabase.rpc('set_commander_format', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
 export async function joinGameSession(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('join_game_session', {
     p_session_id: sessionId,

@@ -9,6 +9,7 @@ import {
   getErrorMessage,
   joinGameSession,
   lockGameSession,
+  setCommanderFormat,
   spawnDeckForSession,
 } from '@/lib/game/actions'
 import {
@@ -30,6 +31,7 @@ export default function GameSessionLobby() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [isWorking, setIsWorking] = useState(false)
+  const [format, setFormat] = useState<'standard' | 'commander'>('standard')
 
   const refreshSession = async (sessionId: string) => {
     const [session, sessionPlayers] = await Promise.all([
@@ -90,6 +92,9 @@ export default function GameSessionLobby() {
 
     try {
       const sessionId = await createGameSession(supabase)
+      if (format === 'commander') {
+        await setCommanderFormat(supabase, sessionId)
+      }
       setSessionIdInput(sessionId)
       await refreshSession(sessionId)
       await refreshPlayerSessions()
@@ -243,6 +248,23 @@ export default function GameSessionLobby() {
         >
           Join
         </button>
+        {/* Format selector — Commander games start at 40 life with a command zone. */}
+        <div className="flex overflow-hidden rounded-md border border-slate-700" role="group" aria-label="Game format">
+          {(['standard', 'commander'] as const).map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setFormat(f)}
+              disabled={isWorking}
+              aria-pressed={format === f}
+              className={`px-3 py-2 text-sm font-semibold capitalize transition disabled:opacity-50 ${
+                format === f ? 'bg-slate-200 text-slate-950' : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           onClick={handleCreateSession}

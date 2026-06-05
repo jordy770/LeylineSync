@@ -243,6 +243,42 @@ export class Scenario {
     )
   }
 
+  /** Insert a commander into a seat's command zone; returns the game_card id. */
+  async spawnCommander(seat: Seat, name: string): Promise<string> {
+    const cardId = await this.cardId(name)
+    const res = await this.client.query<{ id: string }>(
+      `insert into public.game_cards
+         (session_id, card_id, owner_id, controller_player_id, zone, zone_position, is_commander)
+       values ($1, $2, $3, $3, 'command', 0, true)
+       returning id`,
+      [this.sessionId, cardId, this.players[seat]],
+    )
+    return res.rows[0]!.id
+  }
+
+  /** Cast the acting seat's commander from the command zone (pays cost + tax). */
+  async castCommander(cardId: string, opts: { generic?: Record<string, number> } = {}): Promise<{ id: string }> {
+    return this.run(() =>
+      rpc(this.client, 'cast_commander', {
+        p_session_id: this.sessionId,
+        p_game_card_id: cardId,
+        p_generic_payment: opts.generic ? JSON.stringify(opts.generic) : null,
+      }),
+    )
+  }
+
+  /** Mark the session as Commander (format + 40 life), as the acting seat. */
+  async setCommanderFormat(): Promise<void> {
+    return this.run(() => rpc(this.client, 'set_commander_format', { p_session_id: this.sessionId }))
+  }
+
+  /** Move a battlefield card to the graveyard via the engine chokepoint (commander-aware). */
+  async putInGraveyard(cardId: string): Promise<boolean> {
+    return this.run(() =>
+      rpc<boolean>(this.client, 'put_in_graveyard', { p_session_id: this.sessionId, p_game_card_id: cardId }),
+    )
+  }
+
   /** Equip an Equipment you control onto a creature you control, as the acting seat. */
   async equip(
     equipmentCardId: string,

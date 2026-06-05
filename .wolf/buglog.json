@@ -5141,6 +5141,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-05T21:58:50.827Z"
+    },
+    {
+      "id": "bug-317",
+      "timestamp": "2026-06-05T23:32:45.450Z",
+      "error_message": "Missing await",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T23:32:45.450Z"
+    },
+    {
+      "id": "bug-318",
+      "timestamp": "2026-06-05T23:40:00.350Z",
+      "error_message": "Type error",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T23:40:00.350Z"
     }
   ]
 }
