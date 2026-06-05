@@ -285,13 +285,17 @@ export async function putDealDamagePlayerOnStack(
   timing: 'instant' | 'sorcery',
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
+  xValue?: number | null,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
     p_action_type: 'deal_damage_player',
     p_payload: {
       target_player_id: targetPlayerId,
-      amount,
+      // X spell: send the literal "X" + the chosen x_value; the server resolves
+      // the amount from x_value (after charging {X} mana) so it can't be forged.
+      amount: xValue != null ? 'X' : amount,
+      x_value: xValue ?? null,
       timing,
       generic_payment: genericPayment ?? null,
     },
@@ -316,13 +320,15 @@ export async function putDealDamageCreatureOnStack(
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
   targetController?: TargetController | null,
+  xValue?: number | null,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
     p_action_type: 'deal_damage_creature',
     p_payload: {
       target_card_id: targetCardId,
-      amount,
+      amount: xValue != null ? 'X' : amount,
+      x_value: xValue ?? null,
       timing,
       target_controller: targetController ?? null,
       generic_payment: genericPayment ?? null,
@@ -377,6 +383,7 @@ export type TargetedCreatureActionType =
   | 'add_counters_creature'
   | 'exile_creature'
   | 'grant_keyword_creature'
+  | 'gain_control_creature'
 
 export async function putTargetedCreatureActionOnStack(
   supabase: SupabaseClient,
@@ -407,6 +414,110 @@ export async function putTargetedCreatureActionOnStack(
   return data as StackItem
 }
 
+// Multi-target removal: apply one kind (destroy/exile/bounce/tap/untap) to up to N
+// chosen creatures. Targets are locked at cast; the server validates each is legal.
+export type MultiCreatureKind = 'destroy' | 'exile' | 'bounce' | 'tap' | 'untap'
+
+export async function castMultiCreatureEffect(
+  supabase: SupabaseClient,
+  sessionId: string,
+  kind: MultiCreatureKind,
+  targetCardIds: string[],
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'multi_creature_effect',
+    p_payload: {
+      kind,
+      target_card_ids: targetCardIds,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Divided damage — deal `amount` split across targets as the caster allocates
+// (Forked Bolt). Each allocation targets a creature OR a player; amounts sum to total.
+export type DamageAllocation =
+  | { target_card_id: string; amount: number }
+  | { target_player_id: string; amount: number }
+
+export async function castDividedDamage(
+  supabase: SupabaseClient,
+  sessionId: string,
+  amount: number,
+  allocations: DamageAllocation[],
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'divided_damage',
+    p_payload: {
+      amount,
+      allocations,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Single-target removal of a non-creature (or any) permanent — destroy/exile/
+// bounce/tap/untap a target artifact/enchantment/land/planeswalker/permanent.
+export async function castPermanentEffect(
+  supabase: SupabaseClient,
+  sessionId: string,
+  kind: MultiCreatureKind,
+  targetCardId: string,
+  targetType: string | string[],
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'permanent_effect',
+    p_payload: {
+      kind,
+      target_card_id: targetCardId,
+      target_type: targetType,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
 export async function putAddCountersCreatureOnStack(
   supabase: SupabaseClient,
   sessionId: string,
@@ -416,13 +527,15 @@ export async function putAddCountersCreatureOnStack(
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
   targetController?: TargetController | null,
+  xValue?: number | null,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
     p_action_type: 'add_counters_creature',
     p_payload: {
       target_card_id: targetCardId,
-      amount,
+      amount: xValue != null ? 'X' : amount,
+      x_value: xValue ?? null,
       timing,
       target_controller: targetController ?? null,
       generic_payment: genericPayment ?? null,
@@ -456,6 +569,43 @@ export async function putGrantKeywordCreatureOnStack(
     p_payload: {
       target_card_id: targetCardId,
       keyword,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
+// Gain control of a target creature (Threaten / Act of Treason / Mind Control).
+// duration ('permanent'|'end_of_turn') and the threaten extras (untap, haste) are
+// fixed by the card's script; the resolve handler injects the acting controller.
+export async function putGainControlCreatureOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  duration: string,
+  untap: boolean,
+  haste: boolean,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'gain_control_creature',
+    p_payload: {
+      target_card_id: targetCardId,
+      duration,
+      untap,
+      haste,
       timing,
       target_controller: targetController ?? null,
       generic_payment: genericPayment ?? null,
@@ -517,6 +667,26 @@ export async function chooseTriggeredAbilityCreatureTarget(
   return data as StackItem
 }
 
+// Multi-target trigger: choose up to N targets for a triggered ability at once.
+export async function chooseTriggeredAbilityTargets(
+  supabase: SupabaseClient,
+  sessionId: string,
+  stackItemId: string,
+  targetCardIds: string[],
+) {
+  const { data, error } = await supabase.rpc('choose_triggered_ability_targets', {
+    p_session_id: sessionId,
+    p_stack_item_id: stackItemId,
+    p_target_card_ids: targetCardIds,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
 export async function putDrawCardsOnStack(
   supabase: SupabaseClient,
   sessionId: string,
@@ -524,12 +694,14 @@ export async function putDrawCardsOnStack(
   timing: 'instant' | 'sorcery',
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
+  xValue?: number | null,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
     p_action_type: 'draw_cards',
     p_payload: {
-      amount,
+      amount: xValue != null ? 'X' : amount,
+      x_value: xValue ?? null,
       timing,
       generic_payment: genericPayment ?? null,
     },
@@ -593,11 +765,13 @@ export async function castSpellEffect(
   sessionId: string,
   actions: unknown[],
   sourceCardId?: string | null,
+  xValue?: number | null,
 ) {
   const { data, error } = await supabase.rpc('cast_spell_effect', {
     p_session_id: sessionId,
     p_actions: actions,
     p_source_card_id: sourceCardId ?? null,
+    p_x_value: xValue ?? null,
   })
 
   if (error) {

@@ -100,12 +100,19 @@ const SEARCH_DESTINATIONS: readonly FieldOption[] = [
   { value: 'hand', label: 'to your hand' },
   { value: 'battlefield', label: 'onto the battlefield' },
   { value: 'top', label: 'on top of your library' },
+  { value: 'graveyard', label: 'into your graveyard' },
 ]
 
 // Which player choose_player targets.
 const CHOOSE_PLAYER_FILTERS: readonly FieldOption[] = [
   { value: 'opponent', label: 'an opponent' },
   { value: 'any', label: 'any player' },
+]
+
+// How long a gained control change lasts.
+const DURATION_OPTIONS: readonly FieldOption[] = [
+  { value: 'permanent', label: 'permanently' },
+  { value: 'end_of_turn', label: 'until end of turn' },
 ]
 
 // Keywords grantable until end of turn (must be members of the
@@ -171,6 +178,9 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
         kind: 'object',
         label: 'Filter',
         optional: true,
+        // Only type_line is form-exposed; filter.name is JSON/AI-authorable (like
+        // the tapped/reveal extras) — the object serializer can't drop an empty
+        // sub-field, so adding it here would leak name:'' into every tutor.
         fields: [{ name: 'type_line', kind: 'text', label: 'Type line', default: '' }],
       },
     ],
@@ -227,6 +237,20 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     contexts: ['trigger', 'spell'],
     fields: [
       { name: 'keyword', kind: 'enum', label: 'Keyword', default: 'flying', options: KEYWORD_OPTIONS },
+      creatureTargetField,
+    ],
+  },
+  // Gain control of a target creature (Threaten / Mind Control). The acting
+  // controller (the ability's controller / caster) takes control; `duration` is
+  // permanent or until end of turn (the latter reverts via the cleanup sweep).
+  // Authorable as a trigger or as an instant/sorcery (Act of Treason). The form
+  // models duration + target; the "threaten" extras (untap, haste) are JSON/AI.
+  {
+    type: 'gain_control',
+    label: 'Gain control of a creature',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      { name: 'duration', kind: 'enum', label: 'Duration', default: 'permanent', options: DURATION_OPTIONS },
       creatureTargetField,
     ],
   },

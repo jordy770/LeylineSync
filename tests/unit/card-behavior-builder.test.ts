@@ -80,6 +80,7 @@ const CASES: Case[] = [
   { name: 'trigger grant_keyword', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'grant_keyword', keyword: 'flying', target_type: 'creature', target_controller: 'you' }] }] }, form: true },
   { name: 'trigger grant_keyword no controller', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'grant_keyword', keyword: 'trample', target_type: 'creature' }] }] }, form: true },
   { name: 'trigger fight (Pit Brawler)', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'fight', target_type: 'creature', target_controller: 'opponent' }] }] }, form: true },
+  { name: 'trigger gain_control (until EOT)', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'gain_control', duration: 'end_of_turn', target_type: 'creature', target_controller: 'opponent' }] }] }, form: true },
 
   // Triggered abilities — NOT form-representable → JSON
   // add_counters has no targeted registry variant (only on-self), so a targeted one bails.
@@ -110,6 +111,7 @@ const CASES: Case[] = [
   { name: 'spell pump (Giant Growth)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'pump', power: 3, toughness: 3, target_type: 'creature' }] } }, form: true },
   { name: 'spell grant_keyword (combat trick)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'grant_keyword', keyword: 'flying', target_type: 'creature', target_controller: 'you' }] } }, form: true },
   { name: 'spell fight (Prey Upon)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'fight', target_type: 'creature', target_controller: 'opponent' }] } }, form: true },
+  { name: 'spell gain_control (Mind Control)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'gain_control', duration: 'permanent', target_type: 'creature', target_controller: 'opponent' }] } }, form: true },
   { name: 'spell fight no controller (Pit Fight)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'fight', target_type: 'creature' }] } }, form: true },
 
   // Spell effects — NOT form-representable → JSON
@@ -277,6 +279,7 @@ test('defaultEffect shapes', () => {
   assert.deepEqual(defaultEffect('pump'), { type: 'pump', power: 1, toughness: 1, target: 'creature_any' })
   assert.deepEqual(defaultEffect('grant_keyword'), { type: 'grant_keyword', keyword: 'flying', target: 'creature_any' })
   assert.deepEqual(defaultEffect('fight'), { type: 'fight', target: 'creature_any' })
+  assert.deepEqual(defaultEffect('gain_control'), { type: 'gain_control', duration: 'permanent', target: 'creature_any' })
 })
 
 test('exact build: grant_keyword (Windcaller — flying to a creature you control)', () => {

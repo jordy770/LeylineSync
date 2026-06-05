@@ -123,7 +123,8 @@ const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player',
-  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight',
+  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
+  'sacrifice', 'return_from_graveyard',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -140,6 +141,10 @@ const BehaviorRecipientSchema = z.enum(['controller', 'each_opponent', 'active_p
 // "an opponent controls" -> opponent; "you control" -> you/controller/self.
 const TargetControllerSchema = z.enum(['any', 'opponent', 'you', 'controller', 'self']).optional()
 
+// An effect amount: a fixed number, or the literal "X" for a variable spell. X is
+// chosen at cast time, paid as {X} generic mana, and substituted server-side.
+const AmountSchema = z.union([z.number(), z.literal('X')])
+
 const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('add_mana'),
@@ -148,11 +153,14 @@ const CardBehaviorActionSchema = z.union([
   }),
   z.object({
     type: z.literal('deal_damage'),
-    amount: z.number(),
+    amount: AmountSchema,
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
     recipient: BehaviorRecipientSchema.optional(),
+    // `divided: true` (spell only) — deal `amount` divided as the caster chooses
+    // among multiple target creatures/players (Forked Bolt).
+    divided: z.boolean().optional(),
   }),
   z.object({
     type: z.literal('counter'),
@@ -161,22 +169,22 @@ const CardBehaviorActionSchema = z.union([
   }),
   z.object({
     type: z.literal('gain_life'),
-    amount: z.number(),
+    amount: AmountSchema,
     recipient: BehaviorRecipientSchema.optional(),
   }),
   z.object({
     type: z.literal('lose_life'),
-    amount: z.number(),
+    amount: AmountSchema,
     recipient: BehaviorRecipientSchema.optional(),
   }),
   z.object({
     type: z.literal('draw'),
-    amount: z.number(),
+    amount: AmountSchema,
     recipient: BehaviorRecipientSchema.optional(),
   }),
   z.object({
     type: z.literal('mill'),
-    amount: z.number(),
+    amount: AmountSchema,
     recipient: BehaviorRecipientSchema.optional(),
   }),
   // Scry N — a resolution-time (Tier-B) decision: look at the top N of your
@@ -185,13 +193,16 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('scry'),
     amount: z.number(),
   }),
-  // Tutor — search your library for up to `count` cards (optional type filter),
-  // put them to `to`, then shuffle.
+  // Tutor — search your library for up to `count` cards (optional type/name
+  // filter), put them to `to`, then shuffle. `tapped` makes a permanent enter
+  // tapped (ramp/fetch); `reveal` records the found cards as decision metadata.
   z.object({
     type: z.literal('search_library'),
     count: z.number().optional(),
-    to: z.enum(['hand', 'battlefield', 'top']).optional(),
-    filter: z.object({ type_line: z.string().optional() }).optional(),
+    to: z.enum(['hand', 'battlefield', 'top', 'graveyard']).optional(),
+    tapped: z.boolean().optional(),
+    reveal: z.boolean().optional(),
+    filter: z.object({ type_line: z.string().optional(), name: z.string().optional() }).optional(),
   }),
   // Discard `count` cards (the controller chooses from their hand).
   z.object({
@@ -213,6 +224,22 @@ const CardBehaviorActionSchema = z.union([
     filter: z.enum(['opponent', 'any']).optional(),
     effects: z.array(z.record(z.string(), z.unknown())),
   }),
+  // Sacrifice `count` creatures: the sacrificing player (you, or the opponent for
+  // an edict) chooses among permanents they control. Default filter is creatures.
+  z.object({
+    type: z.literal('sacrifice'),
+    who: z.enum(['you', 'opponent', 'each_opponent']).optional(),
+    count: z.number().optional(),
+    filter: z.object({ type_line: z.string().optional() }).optional(),
+  }),
+  // Return up to `count` cards from your graveyard (default creatures) to your
+  // hand (Raise Dead) or the battlefield (Reanimate). The controller chooses.
+  z.object({
+    type: z.literal('return_from_graveyard'),
+    to: z.enum(['hand', 'battlefield']).optional(),
+    count: z.number().optional(),
+    filter: z.object({ type_line: z.string().optional() }).optional(),
+  }),
   // Surveil N — Tier-B: look at the top N of your library, put any number into
   // your graveyard, the rest back on top. Untargeted.
   z.object({
@@ -226,7 +253,7 @@ const CardBehaviorActionSchema = z.union([
   }),
   z.object({
     type: z.literal('add_counters'),
-    amount: z.number(),
+    amount: AmountSchema,
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
@@ -249,11 +276,14 @@ const CardBehaviorActionSchema = z.union([
     target_controller: TargetControllerSchema,
   }),
   // Targeted creature effects cast as a spell (destroy/exile/bounce/tap/untap).
+  // `targets` > 1 makes it a multi-target spell ("destroy up to N target
+  // creatures") — the full effect is applied to each chosen creature.
   z.object({
     type: z.enum(['destroy', 'exile', 'bounce', 'tap', 'untap']),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+    targets: z.number().optional(),
   }),
   // Grant a keyword to a target creature until end of turn (trigger-only today).
   z.object({
@@ -271,6 +301,20 @@ const CardBehaviorActionSchema = z.union([
   // one you control). Each deals damage equal to its power to the other.
   z.object({
     type: z.literal('fight'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Gain control of a target creature. duration: permanent (default) or until end
+  // of turn. target_type/target_controller describe the creature ("opponent" for
+  // "you don't control"). Trigger-only today.
+  z.object({
+    type: z.literal('gain_control'),
+    duration: z.enum(['permanent', 'end_of_turn']).optional(),
+    // Threaten extras: untap the creature and give it haste (so it can attack the
+    // turn you take it). JSON/AI-authored; the guided form models duration only.
+    untap: z.boolean().optional(),
+    haste: z.boolean().optional(),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,

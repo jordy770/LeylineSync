@@ -3317,10 +3317,811 @@
       "file": "tests/feature/fight.test.ts",
       "root_cause": "apply_fight delegated damage to apply_creature_effect('deal_damage'), which only marked damage_marked and never set dealt_deathtouch_damage. So fight ignored the dealer's deathtouch and a 4/4 survived a deathtouch 1/1. The tests were written against that incorrect behavior (used the Deathtouch Viper as a plain 1/1).",
       "fix": "mig 103: apply_creature_effect deal_damage honours an optional 'deathtouch' param (OR-ing dealt_deathtouch_damage, mirroring combat); apply_fight captures both creatures' card_has_deathtouch up front (like powers, since fight is simultaneous) and passes it per hit. Updated F1/F5/F6 to use Silhana Ledgewalker (non-deathtouch 1/1) for the survivor scenarios; added F9 (deathtouch 1/1 kills a 0/4 wall, survives) and F10 (deathtouch defender kills the 4/4 too).",
-      "tags": ["fight", "deathtouch", "sql", "test-correctness", "sba"],
+      "tags": [
+        "fight",
+        "deathtouch",
+        "sql",
+        "test-correctness",
+        "sba"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-04T22:05:00.000Z"
+    },
+    {
+      "id": "bug-206",
+      "timestamp": "2026-06-04T22:54:51.181Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T22:54:51.181Z"
+    },
+    {
+      "id": "bug-207",
+      "timestamp": "2026-06-04T22:55:36.069Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"target_type\"",
+      "fix": "Changed to \"type\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T22:55:36.069Z"
+    },
+    {
+      "id": "bug-208",
+      "timestamp": "2026-06-04T23:04:50.410Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/gain-control.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T23:04:50.410Z"
+    },
+    {
+      "id": "bug-209",
+      "timestamp": "2026-06-04T23:05:54.054Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T23:05:54.054Z"
+    },
+    {
+      "id": "bug-210",
+      "timestamp": "2026-06-04T23:06:15.092Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: if (plan.effect === 'gain_control_creature') {; await putGainControlCreatureOnStack(supabase, sessionId, tar",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-04T23:07:37.555Z"
+    },
+    {
+      "id": "bug-211",
+      "timestamp": "2026-06-04T23:07:48.729Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T23:07:48.729Z"
+    },
+    {
+      "id": "bug-212",
+      "timestamp": "2026-06-04T23:08:02.248Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had 's controller gains control of a target creature. ",
+      "fix": "Changed to 's controller/caster gains control of a target cre",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T23:08:02.248Z"
+    },
+    {
+      "id": "bug-213",
+      "timestamp": "2026-06-04T23:40:11.906Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 4→4 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T23:40:11.906Z"
+    },
+    {
+      "id": "bug-214",
+      "timestamp": "2026-06-05T00:10:43.309Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:10:43.309Z"
+    },
+    {
+      "id": "bug-215",
+      "timestamp": "2026-06-05T00:11:24.059Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:11:24.059Z"
+    },
+    {
+      "id": "bug-216",
+      "timestamp": "2026-06-05T00:11:39.269Z",
+      "error_message": "Missing await",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:11:39.269Z"
+    },
+    {
+      "id": "bug-217",
+      "timestamp": "2026-06-05T00:12:38.223Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/seed.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:12:38.223Z"
+    },
+    {
+      "id": "bug-218",
+      "timestamp": "2026-06-05T00:12:55.984Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:12:55.984Z"
+    },
+    {
+      "id": "bug-219",
+      "timestamp": "2026-06-05T09:28:15.552Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: xValue?: number | null,; amount: xValue != null ? 'X' : amount,",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-06-05T09:28:39.142Z"
+    },
+    {
+      "id": "bug-220",
+      "timestamp": "2026-06-05T09:29:00.084Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: | (CardBehaviorAction & { amount?: number | 'X'; target_type; (typeof addCounters.amount === 'number' || addCounters.amoun | Also: const xRequired = actions.some(; (a) => (a as { amount?: unknown }).amount === 'X' || (a as {",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-06-05T09:29:23.005Z"
+    },
+    {
+      "id": "bug-221",
+      "timestamp": "2026-06-05T09:29:35.067Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "No early return/throw for edge case: typeof window === 'undefined'",
+      "fix": "Added guard clause: if (typeof window === 'undefined')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T09:29:35.067Z"
+    },
+    {
+      "id": "bug-222",
+      "timestamp": "2026-06-05T09:31:38.710Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `); caster sends `",
+      "fix": "Changed to `); caster picks X at cast (ControllerListV4 `",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T09:31:38.710Z"
+    },
+    {
+      "id": "bug-223",
+      "timestamp": "2026-06-05T09:50:55.392Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"count\"",
+      "fix": "Changed to \"each_opponent\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-05T09:51:07.262Z"
+    },
+    {
+      "id": "bug-224",
+      "timestamp": "2026-06-05T09:51:20.090Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Had '\nexport type Zone = '",
+      "fix": "Changed to ' | '",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T09:51:20.090Z"
+    },
+    {
+      "id": "bug-225",
+      "timestamp": "2026-06-05T09:51:30.750Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 16→26 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T09:51:30.750Z"
+    },
+    {
+      "id": "bug-226",
+      "timestamp": "2026-06-05T09:52:14.148Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/sacrifice-reanimate.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T09:52:14.148Z"
+    },
+    {
+      "id": "bug-227",
+      "timestamp": "2026-06-05T10:25:20.408Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T10:25:20.408Z"
+    },
+    {
+      "id": "bug-228",
+      "timestamp": "2026-06-05T10:25:56.827Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"filter\"",
+      "fix": "Changed to \"graveyard\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-05T10:26:02.880Z"
+    },
+    {
+      "id": "bug-229",
+      "timestamp": "2026-06-05T10:29:21.672Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 14→14 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T10:29:21.672Z"
+    },
+    {
+      "id": "bug-230",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "5 builder characterization tests failed: parseScriptToForm returned null for search_library with filter:{type_line} (expected Form mode); exact-build crashed reading 'keywords' of null",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Added a 'name' sub-field to the search_library filter object in the registry. parseFields requires every non-optional sub-field to be present, so a filter carrying only type_line (no name) was rejected → JSON mode. The object serializer (fieldToJson) also emits EVERY sub-field with no empty-drop, so name:'' would leak into serialized tutors.",
+      "fix": "Kept filter.name OUT of the guided-form registry — it's JSON/AI-authorable only (engine + Zod + LLM support it), matching the gain_control untap/haste and search_library tapped/reveal precedent. Reverted the registry filter to type_line-only and the defaultEffect test expectation back to {type_line:''}. The graveyard destination (a clean enum extension) stayed in the form.",
+      "tags": [
+        "builder",
+        "registry",
+        "characterization-test",
+        "search_library",
+        "object-field",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-231",
+      "timestamp": "2026-06-05T10:56:50.163Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"type\"",
+      "fix": "Changed to \"targets\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T10:56:50.163Z"
+    },
+    {
+      "id": "bug-232",
+      "timestamp": "2026-06-05T10:58:04.481Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T10:58:04.481Z"
+    },
+    {
+      "id": "bug-233",
+      "timestamp": "2026-06-05T10:59:00.969Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: // Multi-target removal: the set of creatures chosen so far ; // capped at the plan's count, then confirm).",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-05T10:59:41.064Z"
+    },
+    {
+      "id": "bug-234",
+      "timestamp": "2026-06-05T10:59:10.916Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T10:59:10.916Z"
+    },
+    {
+      "id": "bug-235",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "new row for relation \"game_stack_items\" violates check constraint \"game_stack_items_action_type_check\" (23514) when casting the new multi_creature_effect action type",
+      "file": "supabase/migrations/202605010112_multi_creature_effect.sql",
+      "root_cause": "game_stack_items.action_type has a CHECK constraint whitelisting allowed action types (last redefined in mig 107). Registering a handler/builder in stack_action_handlers is NOT enough — a new castable action_type must ALSO be added to this CHECK or the INSERT in put_action_on_stack fails.",
+      "fix": "Added a drop+recreate of game_stack_items_action_type_check to mig 112, reproducing the mig 107 allow-list plus 'multi_creature_effect'.",
+      "tags": [
+        "migration",
+        "check-constraint",
+        "stack",
+        "action-type",
+        "multi-target"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-236",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "current transaction is aborted, commands ignored until end of transaction block (25P02) in a feature test, after asserting an expected rejection",
+      "file": "tests/feature/multi-target.test.ts",
+      "root_cause": "The harness runs each test in ONE Postgres transaction (withRolledBackTx). When an RPC raises (the expected rejection), the whole tx is poisoned — any subsequent query (e.g. a post-assertion zoneOf) fails with 25P02. Asserting state AFTER an expected-throw in the same tx is impossible.",
+      "fix": "Dropped the post-rejection state queries (MT5); the assert.rejects IS the assertion. Pattern: a test asserting a raise must not run further queries in the same tx (MT6 already followed this).",
+      "tags": [
+        "test",
+        "harness",
+        "transaction",
+        "25P02",
+        "assert-rejects"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-237",
+      "timestamp": "2026-06-05T11:03:09.308Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:03:09.308Z"
+    },
+    {
+      "id": "bug-238",
+      "timestamp": "2026-06-05T11:08:27.496Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:08:27.496Z"
+    },
+    {
+      "id": "bug-239",
+      "timestamp": "2026-06-05T11:08:35.606Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:08:35.606Z"
+    },
+    {
+      "id": "bug-240",
+      "timestamp": "2026-06-05T11:09:06.712Z",
+      "error_message": "CSS fix: removal, kind",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "removal: pick up to `count` creatures, apply `effectKind` to each. → destroy/exile/… a target of `targetType`.; kind: 'multi_creature' → 'permanent_effect'",
+      "fix": "Changed removal: pick up to `count` creatures, apply `effectKind` to each. → destroy/exile/… a target of `targetType`.; kind: 'multi_creature' → 'permanent_effect'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:09:06.712Z"
+    },
+    {
+      "id": "bug-241",
+      "timestamp": "2026-06-05T11:09:16.943Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: | (CardBehaviorAction & { target_controller?: unknown; targe; // A non-creature permanent target (artifact/enchantment/…)  | Also: // Non-creature permanent removal — destroy/exile/… a target; permanentEffect: async (cardId: string, targetCardId: string",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-06-05T11:09:35.341Z"
+    },
+    {
+      "id": "bug-242",
+      "timestamp": "2026-06-05T00:00:00.000Z",
+      "error_message": "Reminder (preventive): a new castable stack action_type ('permanent_effect') also needs adding to the game_stack_items_action_type_check CHECK, or the put_action_on_stack INSERT fails with 23514.",
+      "file": "supabase/migrations/202605010113_permanent_effect.sql",
+      "root_cause": "Same as bug-235: registering a handler/builder in stack_action_handlers is not enough; the action_type CHECK whitelist (last redefined mig 112) gates the INSERT.",
+      "fix": "mig 113 reproduces the mig 112 allow-list plus 'permanent_effect'. Applied + verified BEFORE running tests this time (no failure hit).",
+      "tags": [
+        "migration",
+        "check-constraint",
+        "stack",
+        "action-type",
+        "permanent-target"
+      ],
+      "related_bugs": [
+        "bug-235"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:00:00.000Z"
+    },
+    {
+      "id": "bug-243",
+      "timestamp": "2026-06-05T11:30:41.650Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:30:41.650Z"
+    },
+    {
+      "id": "bug-244",
+      "timestamp": "2026-06-05T11:30:50.387Z",
+      "error_message": "Wrong reference: creature should be legal",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Used \"creature\" instead of \"legal\"",
+      "fix": "Changed creature → legal",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:30:50.387Z"
+    },
+    {
+      "id": "bug-245",
+      "timestamp": "2026-06-05T11:45:12.409Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:45:12.409Z"
+    },
+    {
+      "id": "bug-246",
+      "timestamp": "2026-06-05T11:45:25.063Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"type\"",
+      "fix": "Changed to \"divided\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:45:25.063Z"
+    },
+    {
+      "id": "bug-247",
+      "timestamp": "2026-06-05T11:45:38.270Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:45:38.270Z"
+    },
+    {
+      "id": "bug-248",
+      "timestamp": "2026-06-05T11:46:01.127Z",
+      "error_message": "CSS fix: kind",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "kind: 'damage' → 'divided_damage'",
+      "fix": "Changed kind: 'damage' → 'divided_damage'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:46:01.127Z"
+    },
+    {
+      "id": "bug-249",
+      "timestamp": "2026-06-05T11:47:18.021Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:47:18.021Z"
+    },
+    {
+      "id": "bug-250",
+      "timestamp": "2026-06-05T11:48:04.297Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:48:04.297Z"
+    },
+    {
+      "id": "bug-251",
+      "timestamp": "2026-06-05T11:52:42.986Z",
+      "error_message": "Missing await",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:52:42.987Z"
+    },
+    {
+      "id": "bug-252",
+      "timestamp": "2026-06-05T11:53:14.352Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:53:14.352Z"
+    },
+    {
+      "id": "bug-253",
+      "timestamp": "2026-06-05T11:54:48.912Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "No early return/throw for edge case: prev.includes(id",
+      "fix": "Added guard clause: if (prev.includes(id)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:54:48.912Z"
+    },
+    {
+      "id": "bug-254",
+      "timestamp": "2026-06-05T11:56:08.920Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had \"destroy up to two target creatures when this ente",
+      "fix": "Changed to `divided_damage`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T11:56:08.920Z"
     }
   ]
 }

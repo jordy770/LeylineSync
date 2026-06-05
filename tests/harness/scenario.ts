@@ -15,7 +15,7 @@ import { randomUUID } from 'node:crypto'
 import type { Client } from 'pg'
 import { asPlayer, rpc } from './db'
 
-export type Seat = 'A' | 'B'
+export type Seat = 'A' | 'B' | 'C'
 export type Zone = 'library' | 'hand' | 'battlefield' | 'graveyard' | 'exile' | 'stack'
 
 export class Scenario {
@@ -26,9 +26,14 @@ export class Scenario {
     private acting: Seat = 'A',
   ) {}
 
-  /** Create a 2-player session. Seat A is the creator + active player. */
-  static async create(client: Client): Promise<Scenario> {
-    const players: Record<Seat, string> = { A: randomUUID(), B: randomUUID() }
+  /**
+   * Create a session. Seat A is the creator + active player; B (and C, when
+   * numPlayers is 3) join in seat order. Pass numPlayers: 3 for multi-opponent
+   * tests (e.g. "each opponent sacrifices"). C's UUID always exists for typing but
+   * is only a session player when joined.
+   */
+  static async create(client: Client, numPlayers: 2 | 3 = 2): Promise<Scenario> {
+    const players: Record<Seat, string> = { A: randomUUID(), B: randomUUID(), C: randomUUID() }
 
     // Note: the auth/profiles FKs are dropped locally by migration
     // 00000000000001_local_test_relax_fks.sql, so throwaway player UUIDs need no
@@ -39,6 +44,11 @@ export class Scenario {
     await asPlayer(client, players.B, () =>
       rpc(client, 'join_game_session', { p_session_id: sessionId }),
     )
+    if (numPlayers >= 3) {
+      await asPlayer(client, players.C, () =>
+        rpc(client, 'join_game_session', { p_session_id: sessionId }),
+      )
+    }
 
     return new Scenario(client, sessionId, players)
   }
@@ -47,6 +57,11 @@ export class Scenario {
   as(seat: Seat): this {
     this.acting = seat
     return this
+  }
+
+  /** The player UUID backing a seat (for asserting controller/owner ids). */
+  playerId(seat: Seat): string {
+    return this.players[seat]
   }
 
   private run<T>(fn: () => Promise<T>, seat: Seat = this.acting): Promise<T> {
@@ -122,6 +137,17 @@ export class Scenario {
     )
   }
 
+  /** Set a seat's mana pool directly (runs as postgres → RLS bypassed). */
+  async setMana(seat: Seat, pool: Partial<Record<'W' | 'U' | 'B' | 'R' | 'G' | 'C', number>>): Promise<void> {
+    const full = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, ...pool }
+    await this.client.query(
+      `insert into public.game_players (session_id, player_id, mana_pool)
+       values ($1, $2, $3::jsonb)
+       on conflict (session_id, player_id) do update set mana_pool = excluded.mana_pool`,
+      [this.sessionId, this.players[seat], JSON.stringify(full)],
+    )
+  }
+
   // --- Actions -------------------------------------------------------------
 
   /** Put an action on the stack as the acting seat. Returns the stack item. */
@@ -171,12 +197,14 @@ export class Scenario {
   async castSpellEffect(
     actions: unknown[],
     sourceCardId: string | null = null,
+    xValue: number | null = null,
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'cast_spell_effect', {
         p_session_id: this.sessionId,
         p_actions: JSON.stringify(actions),
         p_source_card_id: sourceCardId,
+        p_x_value: xValue,
       }),
     )
   }
@@ -329,6 +357,15 @@ export class Scenario {
     return res.rows[0]
   }
 
+  /** A seat's current mana pool (defaults to an all-zero pool if unset). */
+  async manaOf(seat: Seat): Promise<Record<string, number>> {
+    const res = await this.client.query<{ mana_pool: Record<string, number> }>(
+      'select mana_pool from public.game_players where session_id = $1 and player_id = $2',
+      [this.sessionId, this.players[seat]],
+    )
+    return res.rows[0]?.mana_pool ?? { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }
+  }
+
   async lifeOf(seat: Seat): Promise<number> {
     const res = await this.client.query<{ life_total: number }>(
       'select life_total from public.game_session_players where session_id = $1 and player_id = $2',
@@ -416,6 +453,17 @@ export class Scenario {
         p_session_id: this.sessionId,
         p_stack_item_id: stackItemId,
         p_target_card_id: targetCardId,
+      }),
+    )
+  }
+
+  /** Choose up to N targets for a pending multi-target trigger, as the acting seat. */
+  async chooseTriggerTargets(stackItemId: string, targetCardIds: string[]): Promise<unknown> {
+    return this.run(() =>
+      rpc(this.client, 'choose_triggered_ability_targets', {
+        p_session_id: this.sessionId,
+        p_stack_item_id: stackItemId,
+        p_target_card_ids: targetCardIds,
       }),
     )
   }

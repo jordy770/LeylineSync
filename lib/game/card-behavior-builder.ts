@@ -78,6 +78,7 @@ export type BuilderEffect =
   | { type: 'pump'; power: number; toughness: number; target: string }
   | { type: 'grant_keyword'; keyword: string; target: string }
   | { type: 'fight'; target: string }
+  | { type: 'gain_control'; duration: string; target: string }
 
 // Trigger-context effect options, derived from the registry.
 export const BUILDER_EFFECT_TYPES = effectsForContext('trigger')
@@ -116,6 +117,7 @@ export type BuilderSpellEffect =
   | { type: 'pump'; power: number; toughness: number; target: string }
   | { type: 'grant_keyword'; keyword: string; target: string }
   | { type: 'fight'; target: string }
+  | { type: 'gain_control'; duration: string; target: string }
 export type BuilderSpellEffectType = BuilderSpellEffect['type']
 
 // Spell-context effect options, derived from the registry.

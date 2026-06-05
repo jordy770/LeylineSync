@@ -1131,3 +1131,245 @@
 | 23:54 | Edited README.md | inline fix | ~150 |
 | 23:54 | Session end: 19 writes across 11 files (202605010102_fight_trigger.sql, card-behavior-registry.ts, card-behavior-builder.ts, card-behavior-llm.ts, test-cards.json) | 20 reads | ~115729 tok |
 | 00:12 | Session end: 19 writes across 11 files (202605010102_fight_trigger.sql, card-behavior-registry.ts, card-behavior-builder.ts, card-behavior-llm.ts, test-cards.json) | 20 reads | ~115729 tok |
+
+## Session: 2026-06-04 00:23
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:27 | Created supabase/migrations/202605010104_stack_action_handler_registry.sql | — | ~4812 |
+| 00:29 | Session end: 1 writes across 1 files (202605010104_stack_action_handler_registry.sql) | 2 reads | ~9895 tok |
+| 00:43 | Created supabase/migrations/202605010105_put_action_builder_registry.sql | — | ~5043 |
+| 00:44 | Session end: 2 writes across 2 files (202605010104_stack_action_handler_registry.sql, 202605010105_put_action_builder_registry.sql) | 3 reads | ~21196 tok |
+| 00:54 | Edited lib/game/card-behavior-registry.ts | expanded (+6 lines) | ~98 |
+| 00:55 | Edited lib/game/card-behavior-registry.ts | expanded (+13 lines) | ~207 |
+| 00:55 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~28 |
+| 00:55 | Edited lib/game/card-behavior-schema.ts | expanded (+10 lines) | ~222 |
+| 00:55 | Edited lib/game/card-behavior-builder.ts | 4→5 lines | ~65 |
+| 00:55 | Edited lib/game/card-behavior-llm.ts | 2→3 lines | ~285 |
+| 00:56 | Created supabase/migrations/202605010106_gain_control.sql | — | ~3472 |
+| 00:56 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~372 |
+| 00:57 | Created tests/feature/gain-control.test.ts | — | ~1224 |
+| 00:57 | Edited tests/unit/card-behavior-builder.test.ts | 1→2 lines | ~143 |
+| 00:57 | Edited tests/unit/card-behavior-builder.test.ts | 2→3 lines | ~61 |
+| 00:59 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~315 |
+| 00:59 | Session end: 14 writes across 11 files (202605010104_stack_action_handler_registry.sql, 202605010105_put_action_builder_registry.sql, card-behavior-registry.ts, card-behavior-schema.ts, card-behavior-builder.ts) | 13 reads | ~68591 tok |
+| 01:04 | Created supabase/migrations/202605010107_gain_control_spell_and_threaten.sql | — | ~3174 |
+| 01:04 | Edited lib/game/card-behavior-schema.ts | 7→11 lines | ~154 |
+| 01:04 | Edited tests/harness/scenario.ts | modified as() | ~82 |
+| 01:04 | Edited tests/feature/gain-control.test.ts | modified path() | ~667 |
+| 01:05 | Edited lib/game/actions.ts | modified putTargetedCreatureActionOnStack() | ~39 |
+| 01:05 | Edited lib/game/actions.ts | added nullish coalescing | ~350 |
+| 01:05 | Edited components/ControllerListV4.tsx | 1→2 lines | ~19 |
+| 01:06 | Edited components/ControllerListV4.tsx | inline fix | ~63 |
+| 01:06 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~299 |
+| 01:07 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~193 |
+| 01:07 | Edited lib/game/card-behavior-registry.ts | 8→9 lines | ~145 |
+| 01:07 | Edited lib/game/card-behavior-builder.ts | 3→4 lines | ~65 |
+| 01:08 | Edited lib/game/card-behavior-llm.ts | inline fix | ~173 |
+| 01:08 | Edited tests/unit/card-behavior-builder.test.ts | 1→2 lines | ~118 |
+| 01:09 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~39 |
+| 01:09 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~156 |
+| 01:09 | Session end: 30 writes across 15 files (202605010104_stack_action_handler_registry.sql, 202605010105_put_action_builder_registry.sql, card-behavior-registry.ts, card-behavior-schema.ts, card-behavior-builder.ts) | 15 reads | ~125181 tok |
+
+## Session: 2026-06-04 01:11
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-04 01:15
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-04 01:15
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-04 01:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-04 01:26
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-04 01:26
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-04 01:26
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 01:35 | Created supabase/migrations/202605010108_sacrifice_and_reanimate.sql | — | ~7394 |
+| 01:35 | Edited lib/game/card-behavior-schema.ts | 3→4 lines | ~66 |
+| 01:35 | Edited lib/game/card-behavior-schema.ts | expanded (+16 lines) | ~309 |
+| 01:35 | Edited lib/game/card-behavior-llm.ts | 1→3 lines | ~343 |
+| 01:36 | Edited lib/game/card-behavior-llm.ts | 2→4 lines | ~169 |
+| 01:36 | Edited lib/game/card-behavior-llm.ts | expanded (+14 lines) | ~226 |
+| 01:36 | Edited components/ControllerListV4.tsx | 4→4 lines | ~157 |
+| 01:36 | Edited components/ControllerListV4.tsx | 2→2 lines | ~81 |
+| 01:37 | Created tests/feature/sacrifice-reanimate.test.ts | — | ~1774 |
+| 01:37 | Edited package.json | inline fix | ~53 |
+| 01:40 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified 2() | ~281 |
+| 01:40 | Session end: 11 writes across 7 files (202605010108_sacrifice_and_reanimate.sql, card-behavior-schema.ts, card-behavior-llm.ts, ControllerListV4.tsx, sacrifice-reanimate.test.ts) | 14 reads | ~73909 tok |
+
+## Session: 2026-06-04 01:51
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 02:10 | Created supabase/migrations/202605010109_x_spells.sql | — | ~6323 |
+| 02:10 | Edited lib/game/card-behavior-schema.ts | 3→7 lines | ~132 |
+| 02:10 | Edited lib/game/card-behavior-schema.ts | 8→8 lines | ~91 |
+| 02:10 | Edited lib/game/card-behavior-schema.ts | 20→20 lines | ~146 |
+| 02:11 | Edited lib/game/card-behavior-schema.ts | 7→7 lines | ~77 |
+| 02:11 | Edited lib/game/card-behavior-llm.ts | 2→3 lines | ~191 |
+| 02:11 | Edited tests/harness/scenario.ts | modified castSpellEffect() | ~137 |
+| 02:11 | Edited tests/harness/scenario.ts | modified setMana() | ~182 |
+| 02:12 | Edited tests/harness/seed.ts | 7→8 lines | ~49 |
+| 02:12 | Edited tests/harness/seed.ts | added nullish coalescing | ~111 |
+| 02:12 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~288 |
+| 02:12 | Edited tests/harness/scenario.ts | added optional chaining | ~140 |
+| 02:13 | Created tests/feature/x-spells.test.ts | — | ~1339 |
+| 02:13 | Edited package.json | inline fix | ~32 |
+| 02:15 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified 3() | ~202 |
+| 02:15 | Session end: 15 writes across 9 files (202605010109_x_spells.sql, card-behavior-schema.ts, card-behavior-llm.ts, scenario.ts, seed.ts) | 12 reads | ~96152 tok |
+| 11:28 | Edited lib/game/actions.ts | modified putDealDamagePlayerOnStack() | ~238 |
+| 11:28 | Edited lib/game/actions.ts | 16→18 lines | ~169 |
+| 11:28 | Edited lib/game/actions.ts | 16→18 lines | ~169 |
+| 11:28 | Edited lib/game/actions.ts | modified putDrawCardsOnStack() | ~169 |
+| 11:28 | Edited lib/game/actions.ts | modified castSpellEffect() | ~107 |
+| 11:29 | Edited components/ControllerListV4.tsx | CSS: xRequired | ~320 |
+| 11:29 | Edited components/ControllerListV4.tsx | CSS: 0 | ~181 |
+| 11:29 | Edited components/ControllerListV4.tsx | CSS: 0, 0 | ~479 |
+| 11:29 | Edited components/ControllerListV4.tsx | added 3 condition(s) | ~225 |
+| 11:29 | Edited components/ControllerListV4.tsx | CSS: x, x | ~294 |
+| 11:29 | Edited components/ControllerListV4.tsx | CSS: x | ~152 |
+| 11:29 | Edited components/ControllerListV4.tsx | CSS: x | ~127 |
+| 11:30 | Edited components/ControllerListV4.tsx | CSS: x | ~122 |
+
+## Session: 2026-06-05 11:30
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:31 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~232 |
+| 11:31 | Session end: 1 writes across 1 files (project_roadmap.md) | 0 reads | ~248 tok |
+| 11:50 | Created supabase/migrations/202605010110_each_opponent_sacrifice.sql | — | ~8136 |
+| 11:50 | Edited lib/game/card-behavior-schema.ts | 6→6 lines | ~64 |
+| 11:50 | Edited lib/game/card-behavior-llm.ts | inline fix | ~89 |
+| 11:51 | Edited lib/game/card-behavior-llm.ts | inline fix | ~157 |
+| 11:51 | Edited tests/harness/scenario.ts | 2→2 lines | ~35 |
+| 11:51 | Edited tests/harness/scenario.ts | added 1 condition(s) | ~318 |
+| 11:52 | Edited tests/feature/sacrifice-reanimate.test.ts | modified opponent() | ~1068 |
+| 11:53 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~120 |
+| 11:54 | Session end: 9 writes across 6 files (project_roadmap.md, 202605010110_each_opponent_sacrifice.sql, card-behavior-schema.ts, card-behavior-llm.ts, scenario.ts) | 2 reads | ~22538 tok |
+
+## Session: 2026-06-05 12:07
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:25 | Created supabase/migrations/202605010111_search_library_variants.sql | — | ~7783 |
+| 12:25 | Edited lib/game/card-behavior-schema.ts | 8→11 lines | ~164 |
+| 12:25 | Edited lib/game/card-behavior-registry.ts | 11→14 lines | ~94 |
+| 12:25 | Edited lib/game/card-behavior-registry.ts | 5→6 lines | ~77 |
+| 12:25 | Edited lib/game/card-behavior-llm.ts | inline fix | ~186 |
+| 12:26 | Edited lib/game/card-behavior-llm.ts | inline fix | ~119 |
+| 12:26 | Created tests/feature/search-library-variants.test.ts | — | ~1560 |
+| 12:26 | Edited package.json | inline fix | ~35 |
+| 12:27 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~40 |
+| 12:29 | Edited lib/game/card-behavior-registry.ts | 14→14 lines | ~137 |
+| 12:29 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~37 |
+| 12:31 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~170 |
+| 12:32 | Session end: 12 writes across 8 files (202605010111_search_library_variants.sql, card-behavior-schema.ts, card-behavior-registry.ts, card-behavior-llm.ts, search-library-variants.test.ts) | 10 reads | ~53515 tok |
+| 12:38 | Session end: 12 writes across 8 files (202605010111_search_library_variants.sql, card-behavior-schema.ts, card-behavior-registry.ts, card-behavior-llm.ts, search-library-variants.test.ts) | 10 reads | ~53515 tok |
+| 12:54 | Created supabase/migrations/202605010112_multi_creature_effect.sql | — | ~1356 |
+| 12:54 | Created tests/feature/multi-target.test.ts | — | ~1598 |
+| 12:54 | Edited package.json | inline fix | ~33 |
+| 12:55 | Edited supabase/migrations/202605010112_multi_creature_effect.sql | expanded (+16 lines) | ~296 |
+| 12:56 | Edited tests/feature/multi-target.test.ts | 25→23 lines | ~274 |
+| 12:56 | Edited lib/game/card-behavior-schema.ts | 7→10 lines | ~152 |
+| 12:56 | Edited lib/game/card-behavior-llm.ts | modified TARGET() | ~178 |
+| 12:58 | Edited lib/game/actions.ts | added nullish coalescing | ~302 |
+| 12:58 | Edited components/ControllerListV4.tsx | 6→7 lines | ~75 |
+| 12:58 | Edited components/ControllerListV4.tsx | CSS: removal, effectKind, count | ~158 |
+| 12:59 | Edited components/ControllerListV4.tsx | CSS: effectKind, count | ~242 |
+| 12:59 | Edited components/ControllerListV4.tsx | added optional chaining | ~203 |
+| 12:59 | Edited components/ControllerListV4.tsx | 2→3 lines | ~108 |
+| 12:59 | Edited components/ControllerListV4.tsx | 3→4 lines | ~20 |
+| 12:59 | Edited components/ControllerListV4.tsx | CSS: onMultiCreatureEffect, targetCardIds | ~72 |
+| 12:59 | Edited components/ControllerListV4.tsx | CSS: removal | ~98 |
+| 12:59 | Edited components/ControllerListV4.tsx | 6→7 lines | ~69 |
+| 12:59 | Edited components/ControllerListV4.tsx | 6→7 lines | ~92 |
+| 13:00 | Edited components/ControllerListV4.tsx | 3→4 lines | ~78 |
+| 13:00 | Edited components/ControllerListV4.tsx | CSS: disabled | ~793 |
+| 13:03 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified reach() | ~259 |
+| 13:03 | Session end: 33 writes across 12 files (202605010111_search_library_variants.sql, card-behavior-schema.ts, card-behavior-registry.ts, card-behavior-llm.ts, search-library-variants.test.ts) | 27 reads | ~210186 tok |
+| 13:07 | Created supabase/migrations/202605010113_permanent_effect.sql | — | ~2078 |
+| 13:07 | Created tests/feature/permanent-target.test.ts | — | ~1370 |
+| 13:08 | Edited package.json | inline fix | ~35 |
+| 13:08 | Edited lib/game/card-behavior-llm.ts | inline fix | ~145 |
+| 13:08 | Edited lib/game/actions.ts | added nullish coalescing | ~290 |
+| 13:08 | Edited components/ControllerListV4.tsx | 3→4 lines | ~31 |
+| 13:09 | Edited components/ControllerListV4.tsx | CSS: targetType | ~143 |
+| 13:09 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~357 |
+| 13:09 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~286 |
+| 13:09 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~223 |
+| 13:09 | Edited components/ControllerListV4.tsx | 2→3 lines | ~109 |
+| 13:09 | Edited components/ControllerListV4.tsx | 4→5 lines | ~26 |
+| 13:09 | Edited components/ControllerListV4.tsx | CSS: onPermanentEffect, targetCardId | ~72 |
+| 13:10 | Edited components/ControllerListV4.tsx | CSS: spell | ~201 |
+| 13:10 | Edited components/ControllerListV4.tsx | 5→7 lines | ~112 |
+| 13:10 | Edited components/ControllerListV4.tsx | 3→4 lines | ~78 |
+| 13:10 | Edited components/ControllerListV4.tsx | 4→6 lines | ~49 |
+| 13:11 | Edited components/ControllerListV4.tsx | expanded (+26 lines) | ~445 |
+| 13:12 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 2→2 lines | ~172 |
+| 13:12 | Session end: 52 writes across 14 files (202605010111_search_library_variants.sql, card-behavior-schema.ts, card-behavior-registry.ts, card-behavior-llm.ts, search-library-variants.test.ts) | 28 reads | ~218377 tok |
+| 13:29 | Created supabase/migrations/202605010114_permanent_trigger_targets.sql | — | ~4087 |
+| 13:29 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~217 |
+| 13:30 | Created tests/feature/permanent-trigger-target.test.ts | — | ~1123 |
+| 13:30 | Edited package.json | inline fix | ~35 |
+| 13:30 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~200 |
+| 13:30 | Edited components/ControllerListV4.tsx | inline fix | ~33 |
+| 13:31 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~248 |
+| 13:31 | Edited lib/game/card-behavior-llm.ts | inline fix | ~36 |
+| 13:32 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 1→3 lines | ~258 |
+| 13:32 | Session end: 61 writes across 17 files (202605010111_search_library_variants.sql, card-behavior-schema.ts, card-behavior-registry.ts, card-behavior-llm.ts, search-library-variants.test.ts) | 31 reads | ~233302 tok |
+| 13:44 | Created supabase/migrations/202605010115_divided_damage.sql | — | ~1740 |
+| 13:44 | Created tests/feature/divided-damage.test.ts | — | ~1279 |
+| 13:44 | Edited package.json | inline fix | ~36 |
+| 13:45 | Edited lib/game/card-behavior-schema.ts | 7→10 lines | ~139 |
+| 13:45 | Edited lib/game/card-behavior-llm.ts | 2→2 lines | ~142 |
+| 13:45 | Edited lib/game/actions.ts | added nullish coalescing | ~336 |
+| 13:46 | Edited components/ControllerListV4.tsx | CSS: damage | ~123 |
+| 13:46 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~341 |
+| 13:46 | Edited components/ControllerListV4.tsx | 4→5 lines | ~37 |
+| 13:46 | Edited components/ControllerListV4.tsx | CSS: dividedDamage, allocations | ~299 |
+| 13:46 | Edited components/ControllerListV4.tsx | inline fix | ~36 |
+| 13:46 | Edited components/ControllerListV4.tsx | 2→3 lines | ~104 |
+| 13:46 | Edited components/ControllerListV4.tsx | 5→6 lines | ~32 |
+| 13:46 | Edited components/ControllerListV4.tsx | CSS: onDividedDamage, allocations | ~72 |
+| 13:47 | Edited components/ControllerListV4.tsx | CSS: damage, card, player | ~108 |
+| 13:47 | Edited components/ControllerListV4.tsx | 4→5 lines | ~50 |
+| 13:47 | Edited components/ControllerListV4.tsx | 3→4 lines | ~87 |
+| 13:48 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~1053 |
+| 13:51 | Created supabase/migrations/202605010116_multi_target_triggers.sql | — | ~5619 |
+| 13:51 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~220 |
+| 13:51 | Edited tests/harness/scenario.ts | modified chooseTriggerTarget() | ~234 |
+| 13:52 | Created tests/feature/multi-target-trigger.test.ts | — | ~1053 |
+| 13:52 | Edited package.json | inline fix | ~37 |
+| 13:52 | Edited lib/game/actions.ts | added 1 condition(s) | ~172 |
+| 13:53 | Edited components/ControllerListV4.tsx | CSS: onChooseTargets, targetCardIds | ~305 |
+| 13:53 | Edited components/ControllerListV4.tsx | 6→7 lines | ~69 |
+| 13:53 | Edited components/ControllerListV4.tsx | 2→3 lines | ~15 |
+| 13:53 | Edited components/ControllerListV4.tsx | CSS: onChooseTriggerTargets, targetCardIds | ~50 |
+| 13:54 | Edited components/ControllerListV4.tsx | CSS: chooseTriggerTargets, targetCardIds | ~117 |
+| 13:54 | Edited components/ControllerListV4.tsx | 1→2 lines | ~21 |
+| 13:54 | Edited components/ControllerListV4.tsx | 1→2 lines | ~40 |
+| 13:54 | Edited components/ControllerListV4.tsx | CSS: id | ~796 |
+| 13:54 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~171 |
+| 13:56 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 1→3 lines | ~251 |
+| 13:56 | Session end: 95 writes across 22 files (202605010111_search_library_variants.sql, card-behavior-schema.ts, card-behavior-registry.ts, card-behavior-llm.ts, search-library-variants.test.ts) | 32 reads | ~258768 tok |

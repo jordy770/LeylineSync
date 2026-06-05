@@ -175,6 +175,20 @@ const EXAMPLES: { oracle_text: string; script: unknown }[] = [
       ],
     },
   },
+  {
+    oracle_text: 'Target opponent sacrifices a creature. (instant)',
+    script: {
+      schema_version: 2,
+      spell_effect: { actions: [{ type: 'sacrifice', who: 'opponent', count: 1 }] },
+    },
+  },
+  {
+    oracle_text: 'Return target creature card from your graveyard to the battlefield. (sorcery)',
+    script: {
+      schema_version: 2,
+      spell_effect: { actions: [{ type: 'return_from_graveyard', to: 'battlefield', count: 1 }] },
+    },
+  },
 ]
 
 export function buildBehaviorAuthoringGuide(): string {
@@ -205,12 +219,17 @@ The engine supports these sections:
    - add_counters_all: { "type": "add_counters_all", "amount": N, "target_controller": "you" } — put N +1/+1 counters on each creature the controller controls.
    - tap_all / untap_all: { "type": "tap_all" | "untap_all", "target_controller": "you" } — tap/untap each creature the controller controls.
    - mill: { "type": "mill", "amount": N, "recipient": "controller" | "each_opponent" | "each_player" | "all_players" } — a player puts the top N cards of their library into their graveyard. Default recipient is "controller" ("mill N cards" = you); use "each_opponent" for "each opponent mills N".
-   - search_library (tutor): { "type": "search_library", "count": N, "to": "hand" | "battlefield" | "top", "filter": { "type_line": "creature" } } — search YOUR library for up to N cards (optional type_line filter), put them to the destination (default "hand"), then shuffle. The controller chooses at resolution.
+   - search_library (tutor): { "type": "search_library", "count": N, "to": "hand" | "battlefield" | "top" | "graveyard", "tapped": true, "reveal": true, "filter": { "type_line": "creature", "name": "..." } } — search YOUR library for up to N cards, put them to the destination (default "hand"), then shuffle. The controller chooses at resolution. Optional: "to":"graveyard" (Entomb/Buried Alive); "tapped":true makes a permanent enter tapped (Rampant Growth/fetchlands — only with "to":"battlefield"); "reveal":true records the found cards; "filter.name" matches by card name (alongside or instead of type_line). Omit "filter" to search for ANY card.
    - discard: { "type": "discard", "count": N } — the controller chooses N cards in their hand to discard.
    - may: { "type": "may", "prompt": "Do X?", "effects": [ ... ] } — an optional "you may": the controller is asked yes/no; on yes the inner effects run. Use for "you may" abilities. Inner effects should be simple (no nested scry/search/discard).
    - choose_player: { "type": "choose_player", "filter": "opponent" | "any", "effects": [ ... ] } — the controller chooses a player, then the inner effects apply to that player. Use for "target player of your choice" / "an opponent you choose". Inner effects should be simple player-directed effects (lose_life / gain_life / draw / mill), e.g. [{ "type": "lose_life", "amount": 3 }].
+   - sacrifice: { "type": "sacrifice", "who": "you" | "opponent" | "each_opponent", "count": N, "filter": { "type_line": "creature" } } — a player sacrifices N permanents they control. "who" is "you" (default — "sacrifice a creature"), "opponent" for a single-opponent edict (Diabolic Edict), or "each_opponent" for "each opponent sacrifices a creature" (every opponent, each choosing their own in turn). The sacrificing player chooses at resolution. Default filter is creatures; set "filter": { "type_line": "artifact" } etc. for other permanents.
+   - return_from_graveyard: { "type": "return_from_graveyard", "to": "hand" | "battlefield", "count": N, "filter": { "type_line": "creature" } } — return up to N cards from YOUR graveyard to "hand" (Raise Dead) or "battlefield" (Reanimate / Zombify — fires ETB triggers). Default destination "hand", default filter creatures. The controller chooses at resolution.
    - grant_keyword: { "type": "grant_keyword", "keyword": "flying", "target_type": "creature", "target_controller": "you" } — a target creature gains the keyword until end of turn. Allowed keywords: flying, reach, trample, vigilance, haste, first_strike, double_strike, deathtouch, indestructible. Valid as a triggered ability or as an instant/sorcery combat trick. target_type must be exactly "creature".
-   - Targeted creature triggers may use deal_damage, destroy, exile, bounce, tap, untap, add_counters, grant_keyword, or fight with "target_type": "creature". The target_type must be exactly "creature" (not "any") — a trigger that deals damage to "any target" is auto-resolved against each opponent instead of singling out a creature. For a fight trigger ("when this enters, it fights target creature"), the SOURCE creature is the fighter and target_type/target_controller describe the fought creature.
+   - gain_control: { "type": "gain_control", "duration": "permanent" | "end_of_turn", "target_type": "creature", "target_controller": "opponent" } — the ability's controller/caster gains control of a target creature. duration "permanent" (Mind Control) or "end_of_turn" (Threaten). Use "target_controller": "opponent" for "you don't control". Valid as a triggered ability or as an instant/sorcery (Act of Treason). Add "untap": true and/or "haste": true for the "threaten" combat extras (untap the creature and give it haste so it can attack the turn you take it). target_type must be exactly "creature".
+   - Targeted creature triggers may use deal_damage, destroy, exile, bounce, tap, untap, add_counters, grant_keyword, fight, or gain_control with "target_type": "creature". For these the target_type must be exactly "creature" (not "any") — a trigger that deals damage to "any target" is auto-resolved against each opponent instead of singling out a creature. For a fight trigger ("when this enters, it fights target creature"), the SOURCE creature is the fighter and target_type/target_controller describe the fought creature.
+   - NON-CREATURE PERMANENT triggers: destroy/exile/bounce/tap/untap may also target a non-creature permanent via "target_type" — "artifact", "enchantment", "land", "planeswalker", or "permanent" (any). E.g. "when this enters, destroy target artifact" = { "type": "destroy", "target_type": "artifact" }. (Spells support this too, mig 113.)
+   - MULTI-TARGET triggers: destroy/exile/bounce/tap/untap may add "targets": N to hit up to N targets — "when this enters, destroy up to two target creatures" = { "type": "destroy", "target_type": "creature", "target_controller": "opponent", "targets": 2 }.
    - Controller restriction (triggers and spells): add "target_controller": "opponent" for "a creature an opponent controls", or "target_controller": "you" for "a creature you control". Omit it when there is no restriction.
 
 3. activated_abilities — "{cost}: effect" abilities. Each entry: { "costs": [ ... ], "effects": [ ... ], "is_mana_ability"?: true }.
@@ -220,12 +239,13 @@ The engine supports these sections:
 
 4. spell_effect — for Instants and Sorceries (the effect when the spell resolves): { "actions": [ ... ] }.
    Actions:
-   - deal_damage { "type": "deal_damage", "amount": N, "target_type": ... } — "any target" -> ["creature","player"].
+   - deal_damage { "type": "deal_damage", "amount": N, "target_type": ... } — "any target" -> ["creature","player"]. Add "divided": true for "deal N damage divided as you choose among any number of target creatures and/or players" (Forked Bolt): { "type": "deal_damage", "amount": 2, "divided": true, "target_type": ["creature","player"] }. The caster allocates N across targets at cast.
    - pump      { "type": "pump", "power": N, "toughness": N, "target_type": "creature" } — until end of turn.
    - destroy   { "type": "destroy", "target_type": "creature" } — "destroy target creature" (to its owner's graveyard).
    - exile     { "type": "exile", "target_type": "creature" } — "exile target creature" (to its owner's exile zone).
     - bounce    { "type": "bounce", "target_type": "creature" } — "return target creature to its owner's hand".
     - tap       { "type": "tap", "target_type": "creature" } / untap { "type": "untap", "target_type": "creature" }.
+    - MULTI-TARGET (spell only): destroy/exile/bounce/tap/untap accept "targets": N to hit up to N creatures — "destroy up to N target creatures", Cone of Cold (tap), etc. The same removal is applied in full to each chosen creature. Add "targets": 2 to the action, e.g. { "type": "destroy", "target_type": "creature", "targets": 2 }. Omit "targets" (or 1) for a single target.
     - add_counters { "type": "add_counters", "amount": N, "target_type": "creature" } — put N +1/+1 counters on target creature.
     - fight     { "type": "fight", "target_type": "creature", "target_controller": "opponent" } — "target creature you control fights target creature ...". The fighter is implicit (a creature you control as a spell, or the SOURCE creature as a trigger); target_type/target_controller describe the FOUGHT creature (use "opponent" for "you don't control", omit target_controller for "another target creature"). Each deals damage equal to its power to the other.
     - draw      { "type": "draw", "amount": N } — the caster draws N (untargeted).
@@ -235,10 +255,13 @@ The engine supports these sections:
      - mill      { "type": "mill", "amount": N, "recipient": "each_opponent" | "controller" | "each_player" | "all_players" } — top N of a library to its graveyard.
      - add_counters_all { "type": "add_counters_all", "amount": N, "target_controller": "you" } — put N +1/+1 counters on each creature the caster controls.
      - tap_all / untap_all { "type": "tap_all" | "untap_all", "target_controller": "you" } — tap/untap each creature the caster controls.
-    - search_library { "type": "search_library", "count": N, "to": "hand" | "battlefield" | "top", "filter": { "type_line": "..." } } — tutor; omit "filter" to search for ANY card (Demonic Tutor = count 1, to "hand", no filter).
+    - search_library { "type": "search_library", "count": N, "to": "hand" | "battlefield" | "top" | "graveyard", "tapped": true, "reveal": true, "filter": { "type_line": "...", "name": "..." } } — tutor; omit "filter" to search for ANY card (Demonic Tutor = count 1, to "hand", no filter). "to":"graveyard" = Entomb; "tapped":true = enters tapped (with "to":"battlefield"); "filter.name" = search for a card by name.
     - discard   { "type": "discard", "count": N } — the controller discards N.
+    - sacrifice { "type": "sacrifice", "who": "you" | "opponent" | "each_opponent", "count": N } — a player sacrifices N creatures they control. "opponent" = an edict (one opponent); "each_opponent" = every opponent sacrifices (each chooses their own, in turn). Same shape as the triggered-ability note above.
+    - return_from_graveyard { "type": "return_from_graveyard", "to": "hand" | "battlefield", "count": N } — return up to N cards from your graveyard (Raise Dead / Reanimate). Same shape as above.
     - may / choose_player — same shapes as in the triggered-ability notes above; valid as spell actions too.
-    Targeted creature effects (destroy/exile/bounce/tap/untap/add_counters) only target creatures right now — if the card targets a non-creature permanent, omit that action.
+    Variable X: for a spell with {X} in its cost (Fireball, Mind Spring), write the scaling "amount" as the string "X" instead of a number — e.g. deal_damage { "amount": "X", "target_type": ["creature","player"] } or draw { "amount": "X" }. The caster picks X at cast and pays it as {X} generic mana. Only "amount" (deal_damage/draw/gain_life/lose_life/mill/add_counters) supports "X".
+    NON-CREATURE PERMANENTS (spell or trigger): destroy/exile/bounce/tap/untap can target any permanent type via "target_type" — "artifact" (Disenchant: { "type": "destroy", "target_type": "artifact" }), "enchantment" (Naturalize: target_type ["artifact","enchantment"]), "land", "planeswalker", or "permanent" (Beast Within / Vindicate: { "type": "destroy", "target_type": "permanent" } hits anything). Default target_type is "creature". add_counters/pump/fight/grant_keyword/gain_control remain creature-only.
 
 Rules:
 - Only emit behavior the lists above support. If part of the card isn't expressible (targeted exile, non-creature trigger targets, conditional effects, etc.), omit that part rather than inventing a field.
