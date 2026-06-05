@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T19:34:11.633Z
-> Files: 67 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T20:09:09.481Z
+> Files: 68 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -13,7 +13,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~4960 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~5416 tok)
 
 ## .claude/rules/
 
@@ -157,6 +157,7 @@
 - `202605010127_combat_damage_through_resolver.sql` — Phase 4 / F2.1c — route COMBAT damage to players through the prevention resolver. (~4455 tok)
 - `202605010128_set_pt_layer.sql` — Phase 4 / F2.2a — the LAYER resolver, slice 1: SET power/toughness (CR 613 7b). (~1753 tok)
 - `202605010129_set_pt_creature_spell.sql` — Phase 4 / F2.2b — "becomes X/Y until end of turn": a targeted set_pt creature (~3010 tok)
+- `202605010130_set_pt_trigger_path.sql` — Phase 4 / F2.2c — set_pt on the TRIGGER path ("when ~ enters, target creature (~423 tok)
 
 ## tests/
 
@@ -174,7 +175,7 @@
 - `grant-keyword-spell.test.ts` — Tier-2 effect: grant_keyword spell/combat-trick path (migration 100). A (~789 tok)
 - `grant-keyword.test.ts` — Tier-2 effect: grant_keyword — a targeted trigger gives a creature a keyword (~696 tok)
 - `hybrid-phyrexian-mana.test.ts` — Phase 4 — richer mana: HYBRID and PHYREXIAN symbols (mig 121). pay_mana_cost (~1288 tok)
-- `layer-pt.test.ts` — Phase 4 / F2.2a — set-P/T layering (mig 128, CR 613 layer 7b). A set_pt effect (~1541 tok)
+- `layer-pt.test.ts` — Phase 4 / F2.2a — set-P/T layering (mig 128, CR 613 layer 7b). A set_pt effect (~1829 tok)
 - `modal-decisions.test.ts` — Phase 1, slice 2 — pending-decision machinery + modal "choose one". (~1917 tok)
 - `multi-target-trigger.test.ts` — Phase 3, slice 4b — multi-target triggered abilities (mig 116). "When this (~1053 tok)
 - `multi-target.test.ts` — Phase 3, slice 1 — general multi-target removal (mig 112): the (~1574 tok)
@@ -188,7 +189,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~5333 tok)
+- `test-cards.json` (~5462 tok)
 
 ## tests/harness/
 

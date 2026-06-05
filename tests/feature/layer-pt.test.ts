@@ -128,3 +128,27 @@ test('SP3 a set_pt spell wears off at end of turn', async () => {
     assert.equal(await s.effectiveToughness(c), 4)
   })
 })
+
+// ST1 — F2.2c: set_pt on the trigger path. Frog Mage's ETB makes a chosen
+// opponent creature a 0/1, reverting at end of turn.
+test('ST1 a set_pt ETB trigger makes a target creature 0/1', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+
+    const target = await s.spawnCreature('B', 'Air Elemental Test') // 4/4, the opponent creature
+    await s.spawnCreature('A', 'Frog Mage Test') // ETB: target creature you don't control becomes 0/1
+
+    const trigger = await s.topStackItem()
+    assert.equal(trigger?.action_type, 'triggered_ability')
+
+    await s.as('A').chooseTriggerTarget(trigger!.id, target)
+    await s.resolveStack()
+
+    assert.equal(await s.effectivePower(target), 0)
+    assert.equal(await s.effectiveToughness(target), 1)
+
+    await s.as('A').expireEffects('ending', 'cleanup')
+    assert.equal(await s.effectivePower(target), 4)
+  })
+})

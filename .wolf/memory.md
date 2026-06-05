@@ -1536,3 +1536,11 @@
 | 21:33 | Edited tests/feature/layer-pt.test.ts | expanded (+49 lines) | ~643 |
 | 21:34 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~178 |
 | 21:34 | Session end: 67 writes across 23 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 19 reads | ~159138 tok |
+| 22:04 | Created supabase/migrations/202605010130_set_pt_trigger_path.sql | — | ~423 |
+| 22:04 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~213 |
+| 22:04 | Edited tests/feature/layer-pt.test.ts | added optional chaining | ~341 |
+| 22:05 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~94 |
+| 22:08 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified from() | ~489 |
+| 22:08 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 2→3 lines | ~35 |
+| 22:09 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~27 |
+| 22:09 | Session end: 74 writes across 24 files (202605010121_hybrid_phyrexian_mana.sql, scenario.ts, hybrid-phyrexian-mana.test.ts, 202605010122_combat_over_assignment.sql, combat-over-assignment.test.ts) | 21 reads | ~166351 tok |

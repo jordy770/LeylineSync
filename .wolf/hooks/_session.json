@@ -8,8 +8,8 @@
       "first_read": "2026-06-05T13:57:49.049Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": {
-      "count": 1,
-      "tokens": 4254,
+      "count": 2,
+      "tokens": 4985,
       "first_read": "2026-06-05T13:58:15.009Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts": {
@@ -96,6 +96,16 @@
       "count": 1,
       "tokens": 1740,
       "first_read": "2026-06-05T19:30:40.201Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010114_permanent_trigger_targets.sql": {
+      "count": 1,
+      "tokens": 4087,
+      "first_read": "2026-06-05T20:03:24.962Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/feature/grant-keyword.test.ts": {
+      "count": 1,
+      "tokens": 696,
+      "first_read": "2026-06-05T20:03:55.139Z"
     }
   },
   "files_written": [
@@ -500,6 +510,48 @@
       "action": "edit",
       "tokens": 190,
       "at": "2026-06-05T19:34:11.646Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010130_set_pt_trigger_path.sql",
+      "action": "create",
+      "tokens": 453,
+      "at": "2026-06-05T20:04:17.885Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 213,
+      "at": "2026-06-05T20:04:26.434Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/layer-pt.test.ts",
+      "action": "edit",
+      "tokens": 341,
+      "at": "2026-06-05T20:04:38.067Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 101,
+      "at": "2026-06-05T20:05:36.196Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 524,
+      "at": "2026-06-05T20:08:44.586Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 38,
+      "at": "2026-06-05T20:08:59.769Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 29,
+      "at": "2026-06-05T20:09:09.493Z"
     }
   ],
   "edit_counts": {
@@ -511,7 +563,7 @@
     "lib/game/actions.ts": 1,
     "components/ControllerListV4.tsx": 9,
     "package.json": 5,
-    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 8,
+    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 12,
     "supabase/migrations/202605010123_apnap_trigger_ordering.sql": 2,
     "tests/feature/apnap-trigger-order.test.ts": 1,
     "supabase/migrations/202605010124_reset_priority_round_on_stack_change.sql": 1,
@@ -521,15 +573,16 @@
     "supabase/migrations/202605010126_prevent_damage_effect.sql": 1,
     "lib/game/card-behavior-schema.ts": 4,
     "lib/game/card-behavior-llm.ts": 2,
-    "tests/fixtures/test-cards.json": 2,
+    "tests/fixtures/test-cards.json": 3,
     "supabase/migrations/202605010127_combat_damage_through_resolver.sql": 3,
     "supabase/migrations/202605010128_set_pt_layer.sql": 2,
-    "tests/feature/layer-pt.test.ts": 2,
-    "supabase/migrations/202605010129_set_pt_creature_spell.sql": 1
+    "tests/feature/layer-pt.test.ts": 3,
+    "supabase/migrations/202605010129_set_pt_creature_spell.sql": 1,
+    "supabase/migrations/202605010130_set_pt_trigger_path.sql": 1
   },
-  "anatomy_hits": 15,
+  "anatomy_hits": 17,
   "anatomy_misses": 4,
-  "repeated_reads_warned": 30,
+  "repeated_reads_warned": 31,
   "cerebrum_warnings": 0,
-  "stop_count": 11
+  "stop_count": 12
 }
