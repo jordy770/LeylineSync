@@ -9,7 +9,6 @@ import {
   getErrorMessage,
   joinGameSession,
   lockGameSession,
-  setCommanderFormat,
   spawnDeckForSession,
 } from '@/lib/game/actions'
 import {
@@ -91,10 +90,7 @@ export default function GameSessionLobby() {
     setIsWorking(true)
 
     try {
-      const sessionId = await createGameSession(supabase)
-      if (format === 'commander') {
-        await setCommanderFormat(supabase, sessionId)
-      }
+      const sessionId = await createGameSession(supabase, format)
       setSessionIdInput(sessionId)
       await refreshSession(sessionId)
       await refreshPlayerSessions()

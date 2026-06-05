@@ -1645,3 +1645,15 @@
 
 | 2026-06-06 | Game-mode selector: Standard/Commander toggle in GameSessionLobby + setCommanderFormat action wrapper; calls set_commander_format on Create when Commander picked. KNOWN GAP: late joiners still get 20 life (proper fix = format in create/join, deferred). | components/GameSessionLobby.tsx, lib/game/actions.ts | tsc+lint clean | ~2500 |
 | 01:41 | Session end: 67 writes across 21 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 20 reads | ~163505 tok |
+| 01:42 | Session end: 67 writes across 21 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 20 reads | ~163505 tok |
+| 01:49 | Created supabase/migrations/202605010137_commander_format_and_damage.sql | — | ~2185 |
+| 01:49 | Edited lib/game/actions.ts | modified createGameSession() | ~79 |
+| 01:49 | Edited components/GameSessionLobby.tsx | 5→2 lines | ~29 |
+| 01:49 | Edited components/GameSessionLobby.tsx | 5→4 lines | ~26 |
+| 01:50 | Edited tests/harness/scenario.ts | modified create() | ~170 |
+| 01:50 | Edited tests/harness/scenario.ts | added optional chaining | ~311 |
+| 01:50 | Edited tests/feature/commander.test.ts | expanded (+54 lines) | ~818 |
+| 01:51 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified apply_damage_to_player() | ~141 |
+
+| 2026-06-06 | Commander slice 2: mig 137 — format-aware create_game_session(p_format) + join_game_session (late joiners get 40, fixes slice-1 gap); game_commander_damage table + tracking in apply_damage_to_player (21 combat dmg from one commander = loss). Lobby create passes format. Tests CM6, CD1-3. | supabase/migrations/202605010137_commander_format_and_damage.sql, components/GameSessionLobby.tsx, lib/game/actions.ts, tests/feature/commander.test.ts, tests/harness/scenario.ts | 359/359, tsc+lint clean | ~9000 |
+| 01:51 | Session end: 75 writes across 22 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 22 reads | ~169470 tok |

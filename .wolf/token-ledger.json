@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-05-27T13:42:32.489Z",
   "lifetime": {
-    "total_tokens_estimated": 15440429,
-    "total_reads": 2167,
-    "total_writes": 8348,
+    "total_tokens_estimated": 15773404,
+    "total_reads": 2209,
+    "total_writes": 8490,
     "total_sessions": 43,
-    "anatomy_hits": 1774,
-    "anatomy_misses": 388,
-    "repeated_reads_blocked": 3040,
-    "estimated_savings_vs_bare_cli": 66548901
+    "anatomy_hits": 1805,
+    "anatomy_misses": 399,
+    "repeated_reads_blocked": 3102,
+    "estimated_savings_vs_bare_cli": 68078699
   },
   "sessions": [
     {
@@ -58220,6 +58220,1002 @@
         "writes_count": 67,
         "repeated_reads_blocked": 30,
         "anatomy_lookups": 15
+      }
+    },
+    {
+      "id": "session-2026-06-05-2232",
+      "started": "2026-06-05T20:32:18.253Z",
+      "ended": "2026-06-05T23:42:06.573Z",
+      "reads": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 6975,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010109_x_spells.sql",
+          "tokens_estimated": 6323,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/layer-pt.test.ts",
+          "tokens_estimated": 1829,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 6176,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/seed.ts",
+          "tokens_estimated": 449,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010128_set_pt_layer.sql",
+          "tokens_estimated": 1753,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 781,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 5016,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+          "tokens_estimated": 6439,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 15932,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010127_combat_damage_through_resolver.sql",
+          "tokens_estimated": 4455,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/combat-over-assignment.test.ts",
+          "tokens_estimated": 1582,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 2057,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+          "tokens_estimated": 10394,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 51806,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-controller-game-state.ts",
+          "tokens_estimated": 2041,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010131_protection_color_and_targeting.sql",
+          "tokens_estimated": 6055,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 1044,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 54,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 59,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 451,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+          "tokens_estimated": 160,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 410,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 124,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010132_protection_combat_damage.sql",
+          "tokens_estimated": 5337,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 880,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 53,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 273,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 102,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010133_protection_cant_be_blocked.sql",
+          "tokens_estimated": 1454,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010133_protection_cant_be_blocked.sql",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 648,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 83,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 348,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 139,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010134_auras_and_attachment.sql",
+          "tokens_estimated": 6215,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010134_auras_and_attachment.sql",
+          "tokens_estimated": 148,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 200,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/auras.test.ts",
+          "tokens_estimated": 953,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010135_equipment_and_equip.sql",
+          "tokens_estimated": 1389,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 172,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/auras.test.ts",
+          "tokens_estimated": 794,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 27,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 79,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 114,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+          "tokens_estimated": 288,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 527,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 166,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+          "tokens_estimated": 282,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
+          "tokens_estimated": 566,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
+          "tokens_estimated": 111,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-controller-game-state.ts",
+          "tokens_estimated": 394,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-controller-game-state.ts",
+          "tokens_estimated": 33,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 41,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 196,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 360,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 145,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 23,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 96,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 132,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 262,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 60,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 922,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 29,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 132,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 119,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 182,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 406,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 361,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010136_commander_command_zone.sql",
+          "tokens_estimated": 2776,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 459,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/commander.test.ts",
+          "tokens_estimated": 1170,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 27,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 467,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+          "tokens_estimated": 145,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 49,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 79,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 76,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 302,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 163,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 124008,
+        "output_tokens_estimated": 39497,
+        "reads_count": 20,
+        "writes_count": 67,
+        "repeated_reads_blocked": 30,
+        "anatomy_lookups": 15
+      }
+    },
+    {
+      "id": "session-2026-06-05-2232",
+      "started": "2026-06-05T20:32:18.253Z",
+      "ended": "2026-06-05T23:51:50.282Z",
+      "reads": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 6975,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010109_x_spells.sql",
+          "tokens_estimated": 6323,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/layer-pt.test.ts",
+          "tokens_estimated": 1829,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 6176,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/seed.ts",
+          "tokens_estimated": 449,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010128_set_pt_layer.sql",
+          "tokens_estimated": 1753,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 781,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 5016,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+          "tokens_estimated": 6439,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 15932,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010127_combat_damage_through_resolver.sql",
+          "tokens_estimated": 4455,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/combat-over-assignment.test.ts",
+          "tokens_estimated": 1582,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 2057,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+          "tokens_estimated": 10394,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 51806,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-controller-game-state.ts",
+          "tokens_estimated": 2041,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010125_damage_prevention_resolver.sql",
+          "tokens_estimated": 2040,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/db.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010131_protection_color_and_targeting.sql",
+          "tokens_estimated": 6055,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 1044,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 54,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 59,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 451,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+          "tokens_estimated": 160,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 410,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 124,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010132_protection_combat_damage.sql",
+          "tokens_estimated": 5337,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 880,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 53,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 273,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 102,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010133_protection_cant_be_blocked.sql",
+          "tokens_estimated": 1454,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010133_protection_cant_be_blocked.sql",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 648,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/protection.test.ts",
+          "tokens_estimated": 83,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 348,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 139,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010134_auras_and_attachment.sql",
+          "tokens_estimated": 6215,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010134_auras_and_attachment.sql",
+          "tokens_estimated": 148,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 200,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/auras.test.ts",
+          "tokens_estimated": 953,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010135_equipment_and_equip.sql",
+          "tokens_estimated": 1389,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 172,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/auras.test.ts",
+          "tokens_estimated": 794,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 27,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 79,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 114,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+          "tokens_estimated": 288,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 527,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/README.md",
+          "tokens_estimated": 166,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+          "tokens_estimated": 282,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
+          "tokens_estimated": 566,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
+          "tokens_estimated": 111,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-controller-game-state.ts",
+          "tokens_estimated": 394,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-controller-game-state.ts",
+          "tokens_estimated": 33,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 41,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 196,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 360,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 145,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 23,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 96,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 132,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 262,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 60,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 922,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 29,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 132,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 119,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 182,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 406,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 361,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010136_commander_command_zone.sql",
+          "tokens_estimated": 2776,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 459,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/commander.test.ts",
+          "tokens_estimated": 1170,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 27,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 467,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+          "tokens_estimated": 145,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 49,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 79,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 76,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 302,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 163,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010137_commander_format_and_damage.sql",
+          "tokens_estimated": 2341,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+          "tokens_estimated": 79,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 29,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/GameSessionLobby.tsx",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 170,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 311,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/commander.test.ts",
+          "tokens_estimated": 818,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 151,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 126048,
+        "output_tokens_estimated": 43422,
+        "reads_count": 22,
+        "writes_count": 75,
+        "repeated_reads_blocked": 32,
+        "anatomy_lookups": 16
       }
     }
   ],

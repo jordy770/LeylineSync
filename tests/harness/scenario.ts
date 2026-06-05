@@ -32,14 +32,18 @@ export class Scenario {
    * tests (e.g. "each opponent sacrifices"). C's UUID always exists for typing but
    * is only a session player when joined.
    */
-  static async create(client: Client, numPlayers: 2 | 3 = 2): Promise<Scenario> {
+  static async create(
+    client: Client,
+    numPlayers: 2 | 3 = 2,
+    opts: { format?: 'standard' | 'commander' } = {},
+  ): Promise<Scenario> {
     const players: Record<Seat, string> = { A: randomUUID(), B: randomUUID(), C: randomUUID() }
 
     // Note: the auth/profiles FKs are dropped locally by migration
     // 00000000000001_local_test_relax_fks.sql, so throwaway player UUIDs need no
     // auth.users / profiles rows.
     const sessionId = await asPlayer(client, players.A, () =>
-      rpc<string>(client, 'create_game_session'),
+      rpc<string>(client, 'create_game_session', opts.format ? { p_format: opts.format } : {}),
     )
     await asPlayer(client, players.B, () =>
       rpc(client, 'join_game_session', { p_session_id: sessionId }),
@@ -241,6 +245,34 @@ export class Scenario {
         p_target_card_id: opts.target ?? null,
       }),
     )
+  }
+
+  /** Deal damage to a player through the resolver (commander-aware), as the acting seat. */
+  async applyDamageToPlayer(
+    defender: Seat,
+    amount: number,
+    sourceCardId: string | null,
+    isCombat = false,
+  ): Promise<number> {
+    return this.run(() =>
+      rpc<number>(this.client, 'apply_damage_to_player', {
+        p_session_id: this.sessionId,
+        p_player_id: this.players[defender],
+        p_amount: amount,
+        p_source_card_id: sourceCardId,
+        p_is_combat: isCombat,
+      }),
+    )
+  }
+
+  /** Cumulative commander damage dealt to a seat by a given commander source. */
+  async commanderDamage(defender: Seat, sourceCardId: string): Promise<number> {
+    const res = await this.client.query<{ damage: number }>(
+      `select damage from public.game_commander_damage
+       where session_id = $1 and defender_player_id = $2 and source_card_id = $3`,
+      [this.sessionId, this.players[defender], sourceCardId],
+    )
+    return Number(res.rows[0]?.damage ?? 0)
   }
 
   /** Insert a commander into a seat's command zone; returns the game_card id. */

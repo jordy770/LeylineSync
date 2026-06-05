@@ -5173,6 +5173,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-05T23:40:00.350Z"
+    },
+    {
+      "id": "bug-319",
+      "timestamp": "2026-06-05T23:49:12.995Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 9→12 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T23:49:12.995Z"
+    },
+    {
+      "id": "bug-320",
+      "timestamp": "2026-06-05T23:50:13.338Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T23:50:13.338Z"
     }
   ]
 }

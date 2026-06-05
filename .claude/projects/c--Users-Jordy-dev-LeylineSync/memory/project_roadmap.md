@@ -109,8 +109,10 @@ Reproduce each touched fn from its CURRENT migration (grep first — bug-281/283
 ## 🟣 Commander (EDH) — IN PROGRESS (decided 2026-06-06: "in-game side first")
 
 **Slice 1 — in-game command zone ✅ (mig 136).** `'command'` zone; `game_cards.is_commander` + `command_zone_casts`; `game_sessions.format`. `cast_commander` (cast from command zone at sorcery speed, base cost + tax = 2×prior casts, → cast_permanent → battlefield). Commander returns to the command zone instead of the graveyard on death (put_in_graveyard redirect, auto for now). `set_commander_format` → format + 40 life. Tests CM1–CM5 (355/355). See cerebrum.
+**Slice 2 — format-aware game start + commander damage ✅ (mig 137).** create_game_session(p_format) sets host life; join_game_session reads the session format → late joiners get 40 (fixes the slice-1 gap). game_commander_damage table + tracking in apply_damage_to_player(is_combat): 21 cumulative from one commander → defender life 0 → loss. Lobby's create now passes the format. Tests CM6, CD1-3 (359/359).
+
 **Remaining Commander slices:**
-- **Commander DAMAGE** — track combat damage per (defender, source-commander); 21 from one commander = that player loses. Needs a per-pair counter + a check in resolve_combat_damage / apply_damage_to_player.
+- ~~Commander DAMAGE~~ ✅ shipped (slice 2). ~~late-joiner life~~ ✅ shipped (slice 2).
 - **Return-to-command refinements** — owner CHOICE (pending-decision) instead of auto; cover the non-death zones (exile/bounce-to-hand/library); suppress the false 'dies' trigger on redirect.
 - **Deck side** (the other half of the original scoping Q) — designate a commander on a deck (the importer already parses a 'Commander' line), 100-card singleton + colour-identity legality, and seed the commander into the command zone at game start (spawn-deck / create flow + set_commander_format). No `color_identity` column yet (derive from mana_cost like protection, or add one).
 - **Multiplayer**: seating already supports 3+; confirm 4-player turn/priority + "last player standing" win.

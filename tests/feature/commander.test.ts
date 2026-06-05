@@ -96,3 +96,57 @@ test('CM5 set_commander_format sets the format and 40 life', async () => {
     assert.equal(await s.lifeOf('B'), 40)
   })
 })
+
+// CM6 — creating with format 'commander' starts BOTH the host and a late joiner at
+// 40 (the late-joiner life fix: join reads the session format).
+test('CM6 a commander game starts every player at 40, including joiners', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client, 2, { format: 'commander' })
+    assert.equal(await s.lifeOf('A'), 40) // host
+    assert.equal(await s.lifeOf('B'), 40) // joined after create
+  })
+})
+
+// CD1 — 21 combat damage from one commander loses the game for that player.
+test('CD1 21 commander combat damage is lethal', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client, 2, { format: 'commander' })
+    const cmdr = await s.spawnCommander('A', 'Goblin Raider Test')
+
+    await s.as('A').applyDamageToPlayer('B', 21, cmdr, true)
+
+    assert.equal(await s.commanderDamage('B', cmdr), 21)
+    assert.equal(await s.lifeOf('B'), 0) // loses despite starting at 40
+  })
+})
+
+// CD2 — commander damage accumulates; it only becomes lethal once it reaches 21.
+test('CD2 commander damage accumulates to the lethal threshold', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client, 2, { format: 'commander' })
+    const cmdr = await s.spawnCommander('A', 'Goblin Raider Test')
+
+    await s.as('A').applyDamageToPlayer('B', 20, cmdr, true)
+    assert.equal(await s.commanderDamage('B', cmdr), 20)
+    assert.equal(await s.lifeOf('B'), 20) // 40 - 20, still alive
+
+    await s.as('A').applyDamageToPlayer('B', 1, cmdr, true) // → 21
+    assert.equal(await s.lifeOf('B'), 0)
+  })
+})
+
+// CD3 — only COMBAT damage from a COMMANDER counts toward commander damage.
+test('CD3 non-combat and non-commander damage is not tracked', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client, 2, { format: 'commander' })
+    const cmdr = await s.spawnCommander('A', 'Goblin Raider Test')
+    const plain = await s.spawnCreature('A', 'Air Elemental Test') // not a commander
+
+    await s.as('A').applyDamageToPlayer('B', 5, cmdr, false) // commander, but NOT combat
+    await s.as('A').applyDamageToPlayer('B', 5, plain, true) // combat, but NOT a commander
+
+    assert.equal(await s.commanderDamage('B', cmdr), 0)
+    assert.equal(await s.commanderDamage('B', plain), 0)
+    assert.equal(await s.lifeOf('B'), 30) // 40 - 5 - 5, just normal life loss
+  })
+})

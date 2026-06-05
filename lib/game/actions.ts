@@ -999,8 +999,11 @@ export async function setCardStaticEffectsSuppressed(
   return data
 }
 
-export async function createGameSession(supabase: SupabaseClient) {
-  const { data, error } = await supabase.rpc('create_game_session')
+export async function createGameSession(
+  supabase: SupabaseClient,
+  format: 'standard' | 'commander' = 'standard',
+) {
+  const { data, error } = await supabase.rpc('create_game_session', { p_format: format })
 
   if (error) {
     throw error
