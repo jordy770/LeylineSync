@@ -1806,3 +1806,13 @@
 | 21:37 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~107 |
 
 | 2026-06-06 | Commander deck legality — SERVER-SIDE enforcement (mig 141). commander_deck_legality(deck_id) PL/pgSQL verdict (exactly-100 + singleton + colour identity) mirroring the client; card_color_identity(card_id) reuses card_color_set on mana_cost + oracle {...} symbols. spawn_deck_for_session gained p_enforce_legality (default true), raises on an illegal Commander deck — production enforces with no client change (2-arg sig dropped); harness spawnDeck passes false. Added "Wastes Test" basic land to fixtures for a legal-100 acceptance test. Tests LEG1-5. | supabase/migrations/202605010141_commander_deck_legality.sql, tests/harness/scenario.ts, tests/feature/commander-deck.test.ts, tests/fixtures/test-cards.json | 390/390, tsc+lint+build clean | ~7000 |
+| 21:37 | Session end: 21 writes across 11 files (scenario.ts, multiplayer.test.ts, package.json, 202605010140_skip_eliminated_players.sql, project_roadmap.md) | 17 reads | ~62313 tok |
+| 21:43 | Created supabase/migrations/202605010142_commander_return_refinements.sql | — | ~1696 |
+| 21:43 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~135 |
+| 21:43 | Edited tests/harness/scenario.ts | modified spawnCommander() | ~263 |
+| 21:44 | Created tests/feature/commander-return.test.ts | — | ~1132 |
+| 21:44 | Edited package.json | inline fix | ~41 |
+| 21:46 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~59 |
+| 21:46 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~312 |
+
+| 2026-06-06 | Commander return-to-command refinements (mig 142). A BEFORE UPDATE OF zone trigger (redirect_commander_zone_change) rewrites a commander LEAVING THE BATTLEFIELD to graveyard/exile/hand/library → command zone, gated on per-player commander_redirect preference (default true). One seam covers every mover; fixes exile/bounce gap; dies-suppression falls out (BEFORE rewrite precedes the AFTER dies-fire). put_in_graveyard reproduced sans its commander branch. Owner choice = standing preference (not per-event decision — movers are synchronous). Scope: battlefield-source only. Fixture Reaper Commander Test (dies→draw). Tests RC1-6. | supabase/migrations/202605010142_commander_return_refinements.sql, tests/harness/scenario.ts, tests/feature/commander-return.test.ts, tests/fixtures/test-cards.json, package.json | 396/396, tsc+lint+build clean | ~6000 |

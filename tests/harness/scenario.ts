@@ -345,17 +345,29 @@ export class Scenario {
     return Number(res.rows[0]?.damage ?? 0)
   }
 
-  /** Insert a commander into a seat's command zone; returns the game_card id. */
-  async spawnCommander(seat: Seat, name: string): Promise<string> {
+  /** Insert a commander into a seat's command zone (or another zone); returns the id. */
+  async spawnCommander(seat: Seat, name: string, zone: Zone = 'command'): Promise<string> {
     const cardId = await this.cardId(name)
     const res = await this.client.query<{ id: string }>(
       `insert into public.game_cards
          (session_id, card_id, owner_id, controller_player_id, zone, zone_position, is_commander)
-       values ($1, $2, $3, $3, 'command', 0, true)
+       values ($1, $2, $3, $3, $4, 0, true)
        returning id`,
-      [this.sessionId, cardId, this.players[seat]],
+      [this.sessionId, cardId, this.players[seat], zone],
     )
     return res.rows[0]!.id
+  }
+
+  /** Set a seat's commander-return preference (acts as that seat). */
+  async setCommanderRedirect(seat: Seat, redirect: boolean): Promise<void> {
+    return this.run(
+      () =>
+        rpc(this.client, 'set_commander_redirect', {
+          p_session_id: this.sessionId,
+          p_redirect: redirect,
+        }),
+      seat,
+    )
   }
 
   /** Cast the acting seat's commander from the command zone (pays cost + tax). */

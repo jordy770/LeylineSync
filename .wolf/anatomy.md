@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T19:37:06.119Z
-> Files: 98 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T19:46:16.623Z
+> Files: 100 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~838 tok)
+- `package.json` — Node.js package manifest (~849 tok)
 - `README.md` — Project documentation (~16065 tok)
 
 ## .claude/
@@ -13,7 +13,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~8287 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~8552 tok)
 
 ## .claude/rules/
 
@@ -185,6 +185,7 @@
 - `202605010139_import_captures_commander.sql` — Commander (EDH) — importer auto-captures the Commander. (~1266 tok)
 - `202605010140_skip_eliminated_players.sql` — Commander (EDH) / multiplayer — skip ELIMINATED players in the turn + priority (~3412 tok)
 - `202605010141_commander_deck_legality.sql` — Commander (EDH) — SERVER-SIDE deck legality enforcement. (~2302 tok)
+- `202605010142_commander_return_refinements.sql` — Commander (EDH) — return-to-command refinements. (~1696 tok)
 
 ## tests/
 
@@ -197,6 +198,7 @@
 - `cant-be-countered.test.ts` — "Can't be countered": a counter that targets an uncounterable spell resolves (~644 tok)
 - `combat-over-assignment.test.ts` — Phase 4 — player-chosen combat damage OVER-ASSIGNMENT (mig 122). The attacker (~1582 tok)
 - `commander-deck.test.ts` — Commander (EDH) slice 3 — the deck side (mig 138). A deck can designate a (~2341 tok)
+- `commander-return.test.ts` — Commander (EDH) — return-to-command refinements (mig 142). A commander leaving (~1132 tok)
 - `commander.test.ts` — Commander (EDH) slice 1 — the in-game command zone (mig 136). A commander is (~1873 tok)
 - `damage-prevention.test.ts` — Phase 4 / F2.1a — damage prevention resolver (mig 125). A shield consumes damage (~1888 tok)
 - `divided-damage.test.ts` — Phase 3, slice 4a — divided damage (mig 115): the `divided_damage` action type (~1279 tok)
@@ -221,11 +223,11 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~6098 tok)
+- `test-cards.json` (~6191 tok)
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~8577 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~8687 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~449 tok)
 
 ## tests/regression/
