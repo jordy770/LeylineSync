@@ -26,6 +26,7 @@ import {
   putDealDamagePlayerOnStack,
   putDrawCardsOnStack,
   putPumpCreatureOnStack,
+  putSetPtCreatureOnStack,
   putTargetedCreatureActionOnStack,
   castMultiCreatureEffect,
   castPermanentEffect,
@@ -222,6 +223,7 @@ type SpellPlan =
   // Divided damage: allocate `amount` across multiple creature/player targets.
   | { kind: 'divided_damage'; amount: number; timing: 'instant' | 'sorcery'; canTargetPlayer: boolean; canTargetCreature: boolean; targetController: TargetController }
   | { kind: 'pump'; power: number; toughness: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
+  | { kind: 'set_pt'; power: number; toughness: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   | { kind: 'add_counters'; amount: number; timing: 'instant' | 'sorcery'; targetController: TargetController; xRequired?: boolean }
   | { kind: 'creature_effect'; effect: TargetedCreatureActionType; label: string; keyword?: string; duration?: string; untap?: boolean; haste?: boolean; timing: 'instant' | 'sorcery'; targetController: TargetController }
   // Multi-target removal: pick up to `count` creatures, apply `effectKind` to each.
@@ -375,6 +377,16 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
     return { kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing, targetController: readTargetController(pump) }
   }
 
+  // "Target creature becomes X/Y until end of turn" (Frogify) — sets P/T (layer 7b)
+  // rather than adding to it. Only a creature target is chosen; the values are fixed
+  // by the card and ride in the plan, like pump.
+  const setPt = actions.find((a) => a.type === 'set_pt') as
+    | (CardBehaviorAction & { power?: number; toughness?: number; target_controller?: unknown })
+    | undefined
+  if (setPt && (typeof setPt.power === 'number' || typeof setPt.toughness === 'number')) {
+    return { kind: 'set_pt', power: setPt.power ?? 0, toughness: setPt.toughness ?? 0, timing, targetController: readTargetController(setPt) }
+  }
+
   const addCounters = actions.find((a) => a.type === 'add_counters') as
     | (CardBehaviorAction & { amount?: number | 'X'; target_type?: unknown; target?: unknown; target_controller?: unknown })
     | undefined
@@ -526,6 +538,7 @@ function canCastHandSpell(
   if (
     plan.kind === 'damage' ||
     plan.kind === 'pump' ||
+    plan.kind === 'set_pt' ||
     plan.kind === 'add_counters' ||
     plan.kind === 'creature_effect' ||
     plan.kind === 'draw' ||
@@ -754,6 +767,13 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'pump') return
       await putPumpCreatureOnStack(supabase, sessionId, targetCardId, plan.power, plan.toughness, plan.timing, cardId, undefined, plan.targetController)
+      await refresh()
+    },
+    setPtCreature: async (cardId: string, targetCardId: string) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const plan = card ? getSpellPlan(card) : null
+      if (!card || plan?.kind !== 'set_pt') return
+      await putSetPtCreatureOnStack(supabase, sessionId, targetCardId, plan.power, plan.toughness, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
     addCountersCreature: async (cardId: string, targetCardId: string) => {
@@ -1043,6 +1063,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onDealDamageToPlayer={async (cardId, targetPlayerId) => { await actions.dealDamageToPlayer(cardId, targetPlayerId) }}
             onDealDamageToCreature={async (cardId, targetCardId) => { await actions.dealDamageToCreature(cardId, targetCardId) }}
             onPumpCreature={async (cardId, targetCardId) => { await actions.pumpCreature(cardId, targetCardId) }}
+            onSetPtCreature={async (cardId, targetCardId) => { await actions.setPtCreature(cardId, targetCardId) }}
             onAddCountersCreature={async (cardId, targetCardId) => { await actions.addCountersCreature(cardId, targetCardId) }}
             onCreatureEffect={async (cardId, targetCardId) => { await actions.creatureEffect(cardId, targetCardId) }}
             onMultiCreatureEffect={async (cardId, targetCardIds) => { await actions.multiCreatureEffect(cardId, targetCardIds) }}
@@ -2049,6 +2070,7 @@ function CardActionSheet({
   onDealDamageToPlayer,
   onDealDamageToCreature,
   onPumpCreature,
+  onSetPtCreature,
   onAddCountersCreature,
   onCreatureEffect,
   onMultiCreatureEffect,
@@ -2077,6 +2099,7 @@ function CardActionSheet({
   onDealDamageToPlayer: (cardId: string, targetPlayerId: string) => Promise<void>
   onDealDamageToCreature: (cardId: string, targetCardId: string) => Promise<void>
   onPumpCreature: (cardId: string, targetCardId: string) => Promise<void>
+  onSetPtCreature: (cardId: string, targetCardId: string) => Promise<void>
   onAddCountersCreature: (cardId: string, targetCardId: string) => Promise<void>
   onCreatureEffect: (cardId: string, targetCardId: string) => Promise<void>
   onMultiCreatureEffect: (cardId: string, targetCardIds: string[]) => Promise<void>
@@ -2140,6 +2163,7 @@ function CardActionSheet({
   const spellTargetController: TargetController =
     spellPlan.kind === 'damage' ||
     spellPlan.kind === 'pump' ||
+    spellPlan.kind === 'set_pt' ||
     spellPlan.kind === 'add_counters' ||
     spellPlan.kind === 'creature_effect' ||
     spellPlan.kind === 'multi_creature' ||
@@ -2193,6 +2217,7 @@ function CardActionSheet({
   const hasCreatureTargets = targetableCreatures.length > 0
   const requiresCreatureTarget =
     spellPlan.kind === 'pump' ||
+    spellPlan.kind === 'set_pt' ||
     spellPlan.kind === 'add_counters' ||
     spellPlan.kind === 'creature_effect' ||
     spellPlan.kind === 'multi_creature' ||
@@ -2210,6 +2235,7 @@ function CardActionSheet({
     canCast &&
     ((spellPlan.kind === 'damage' && (spellPlan.canTargetPlayer || (spellPlan.canTargetCreature && hasCreatureTargets))) ||
       (spellPlan.kind === 'pump' && hasCreatureTargets) ||
+      (spellPlan.kind === 'set_pt' && hasCreatureTargets) ||
       (spellPlan.kind === 'add_counters' && hasCreatureTargets) ||
       (spellPlan.kind === 'creature_effect' && hasCreatureTargets) ||
       (spellPlan.kind === 'multi_creature' && hasCreatureTargets) ||
@@ -2513,6 +2539,32 @@ function CardActionSheet({
               >
                 <span className="truncate font-bold text-white">{c.name}</span>
                 <span className="ml-2 shrink-0 text-xs font-black text-emerald-300">{effectiveBoardPT(c)}</span>
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPicking(false)}
+              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
+            >
+              Back
+            </button>
+          </div>
+        )}
+
+        {picking && spellPlan.kind === 'set_pt' && (
+          <div className="mb-3 space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              Make a creature {spellPlan.power}/{spellPlan.toughness} until end of turn
+            </p>
+            {targetableCreatures.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { void onSetPtCreature(card.id, c.id); onClose() }}
+                className="flex w-full items-center justify-between rounded-2xl border border-sky-400/40 bg-sky-400/10 px-4 py-2.5 transition active:scale-95"
+              >
+                <span className="truncate font-bold text-white">{c.name}</span>
+                <span className="ml-2 shrink-0 text-xs font-black text-sky-300">{effectiveBoardPT(c)} → {spellPlan.power}/{spellPlan.toughness}</span>
               </button>
             ))}
             <button

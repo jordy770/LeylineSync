@@ -1816,3 +1816,19 @@
 | 21:46 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~312 |
 
 | 2026-06-06 | Commander return-to-command refinements (mig 142). A BEFORE UPDATE OF zone trigger (redirect_commander_zone_change) rewrites a commander LEAVING THE BATTLEFIELD to graveyard/exile/hand/library → command zone, gated on per-player commander_redirect preference (default true). One seam covers every mover; fixes exile/bounce gap; dies-suppression falls out (BEFORE rewrite precedes the AFTER dies-fire). put_in_graveyard reproduced sans its commander branch. Owner choice = standing preference (not per-event decision — movers are synchronous). Scope: battlefield-source only. Fixture Reaper Commander Test (dies→draw). Tests RC1-6. | supabase/migrations/202605010142_commander_return_refinements.sql, tests/harness/scenario.ts, tests/feature/commander-return.test.ts, tests/fixtures/test-cards.json, package.json | 396/396, tsc+lint+build clean | ~6000 |
+| 21:47 | Session end: 28 writes across 13 files (scenario.ts, multiplayer.test.ts, package.json, 202605010140_skip_eliminated_players.sql, project_roadmap.md) | 17 reads | ~66136 tok |
+| 22:00 | Edited lib/game/actions.ts | added nullish coalescing | ~239 |
+| 22:00 | Edited components/ControllerListV4.tsx | 1→2 lines | ~15 |
+| 22:00 | Edited components/ControllerListV4.tsx | 1→2 lines | ~70 |
+| 22:00 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~247 |
+| 22:00 | Edited components/ControllerListV4.tsx | 10→11 lines | ~126 |
+| 22:01 | Edited components/ControllerListV4.tsx | CSS: setPtCreature | ~237 |
+| 22:01 | Edited components/ControllerListV4.tsx | 1→2 lines | ~66 |
+| 22:01 | Edited components/ControllerListV4.tsx | 1→2 lines | ~11 |
+| 22:01 | Edited components/ControllerListV4.tsx | CSS: onSetPtCreature | ~43 |
+| 22:02 | Edited components/ControllerListV4.tsx | 8→9 lines | ~102 |
+| 22:02 | Edited components/ControllerListV4.tsx | 7→8 lines | ~102 |
+| 22:02 | Edited components/ControllerListV4.tsx | 2→3 lines | ~54 |
+| 22:02 | Edited components/ControllerListV4.tsx | CSS: active, active | ~374 |
+
+| 2026-06-06 | Client drift #1a — set_pt wired into the controller (Frogify/"becomes X/Y" was uncastable; engine supported it since mig 129). putSetPtCreatureOnStack wrapper (action_type set_pt_creature) + getSpellPlan set_pt branch + plan kind + canCast/targetController/requiresCreatureTarget/needsTarget gates + a sky-coloured creature picker + setPtCreature handler + onSetPtCreature prop. Mirrors the pump path exactly. | lib/game/actions.ts, components/ControllerListV4.tsx | tsc+lint+build clean, 390/390 | ~3500 |

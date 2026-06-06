@@ -419,6 +419,38 @@ export async function putPumpCreatureOnStack(
   return data as StackItem
 }
 
+export async function putSetPtCreatureOnStack(
+  supabase: SupabaseClient,
+  sessionId: string,
+  targetCardId: string,
+  power: number,
+  toughness: number,
+  timing: 'instant' | 'sorcery',
+  sourceCardId?: string | null,
+  genericPayment?: Record<string, number>,
+  targetController?: TargetController | null,
+) {
+  const { data, error } = await supabase.rpc('put_action_on_stack', {
+    p_session_id: sessionId,
+    p_action_type: 'set_pt_creature',
+    p_payload: {
+      target_card_id: targetCardId,
+      power,
+      toughness,
+      timing,
+      target_controller: targetController ?? null,
+      generic_payment: genericPayment ?? null,
+    },
+    p_source_card_id: sourceCardId ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as StackItem
+}
+
 export type TargetedCreatureActionType =
   | 'destroy_creature'
   | 'bounce_creature'

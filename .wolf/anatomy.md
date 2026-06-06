@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T19:46:16.623Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T20:02:48.423Z
 > Files: 100 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -77,7 +77,7 @@
 
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4087 tok)
 - `CardBehaviorForm.tsx` — inputClass (~5786 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~52633 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~53454 tok)
 - `DeckInsights.tsx` — COLOR_DOT (~1885 tok)
 - `DeckManager.tsx` — DeckManager (~8188 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~4520 tok)
@@ -114,7 +114,7 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~10632 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~10861 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5317 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6727 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~7593 tok)

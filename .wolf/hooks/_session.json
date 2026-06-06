@@ -83,9 +83,14 @@
       "first_read": "2026-06-06T19:33:40.588Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts": {
-      "count": 1,
+      "count": 2,
       "tokens": 10632,
       "first_read": "2026-06-06T19:35:43.757Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx": {
+      "count": 11,
+      "tokens": 53090,
+      "first_read": "2026-06-06T19:58:45.802Z"
     }
   },
   "files_written": [
@@ -256,6 +261,84 @@
       "action": "edit",
       "tokens": 334,
       "at": "2026-06-06T19:46:16.636Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+      "action": "edit",
+      "tokens": 239,
+      "at": "2026-06-06T20:00:14.170Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 15,
+      "at": "2026-06-06T20:00:24.271Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 70,
+      "at": "2026-06-06T20:00:30.936Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 247,
+      "at": "2026-06-06T20:00:40.127Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 126,
+      "at": "2026-06-06T20:00:54.803Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 237,
+      "at": "2026-06-06T20:01:11.583Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 66,
+      "at": "2026-06-06T20:01:41.615Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 11,
+      "at": "2026-06-06T20:01:47.782Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 43,
+      "at": "2026-06-06T20:01:53.719Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 102,
+      "at": "2026-06-06T20:02:11.030Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 102,
+      "at": "2026-06-06T20:02:23.606Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 54,
+      "at": "2026-06-06T20:02:31.209Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 374,
+      "at": "2026-06-06T20:02:48.436Z"
     }
   ],
   "edit_counts": {
@@ -271,11 +354,13 @@
     "tests/fixtures/test-cards.json": 2,
     "tests/feature/commander-deck.test.ts": 2,
     "supabase/migrations/202605010142_commander_return_refinements.sql": 1,
-    "tests/feature/commander-return.test.ts": 1
+    "tests/feature/commander-return.test.ts": 1,
+    "lib/game/actions.ts": 1,
+    "components/ControllerListV4.tsx": 12
   },
-  "anatomy_hits": 14,
+  "anatomy_hits": 15,
   "anatomy_misses": 3,
-  "repeated_reads_warned": 5,
+  "repeated_reads_warned": 16,
   "cerebrum_warnings": 0,
-  "stop_count": 7
+  "stop_count": 8
 }
