@@ -11,6 +11,16 @@
       "count": 1,
       "tokens": 1753,
       "first_read": "2026-06-06T20:37:39.816Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/scripts/setup-local-test-db.mjs": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-06T21:11:57.999Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/harness/seed.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-06T21:12:54.910Z"
     }
   },
   "files_written": [
@@ -73,6 +83,12 @@
       "action": "edit",
       "tokens": 140,
       "at": "2026-06-06T20:53:32.575Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/seed.ts",
+      "action": "edit",
+      "tokens": 354,
+      "at": "2026-06-06T21:13:06.690Z"
     }
   ],
   "edit_counts": {
@@ -83,10 +99,11 @@
     ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 2,
     "supabase/migrations/202605010146_switch_pt_layer.sql": 1,
     "tests/harness/scenario.ts": 1,
-    "tests/feature/switch-pt.test.ts": 1
+    "tests/feature/switch-pt.test.ts": 1,
+    "tests/harness/seed.ts": 1
   },
   "anatomy_hits": 2,
-  "anatomy_misses": 0,
+  "anatomy_misses": 2,
   "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
   "stop_count": 4
