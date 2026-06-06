@@ -1,5 +1,5 @@
 # Krenko, Mob Boss — mono-red goblin aggro (100 cards)
-# Import this list, then click the ★ on "Krenko, Mob Boss" to set the commander.
+# The "Commander" header below makes Krenko the commander automatically on import.
 
 Commander
 1 Krenko, Mob Boss

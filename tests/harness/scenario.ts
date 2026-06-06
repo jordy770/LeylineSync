@@ -260,6 +260,16 @@ export class Scenario {
     return res.rows[0]!.id
   }
 
+  /** Import a deck from decklist text as the acting seat; returns the import result. */
+  async importDeck(
+    name: string,
+    decklist: string,
+  ): Promise<{ id: string | null; card_count: number; commander_card_id: string | null }> {
+    return this.run(() =>
+      rpc(this.client, 'import_deck_from_text', { p_name: name, p_decklist: decklist }),
+    )
+  }
+
   /** Set a deck's commander, as the acting seat. */
   async setDeckCommander(deckId: string, commanderName: string): Promise<void> {
     const cardId = await this.cardId(commanderName)

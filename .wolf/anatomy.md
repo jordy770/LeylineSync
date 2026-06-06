@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T00:21:01.214Z
-> Files: 88 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T16:45:00.969Z
+> Files: 89 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -13,7 +13,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~7918 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~7960 tok)
 
 ## .claude/rules/
 
@@ -102,9 +102,9 @@
 
 ## docs/commander-decks/
 
-- `atraxa-counters.txt` — Atraxa, Praetors' Voice — WUBG +1/+1 counters / proliferate (100 cards) (~407 tok)
+- `atraxa-counters.txt` — Atraxa, Praetors' Voice — WUBG +1/+1 counters / proliferate (100 cards) (~406 tok)
 - `krenko-goblins.txt` — Krenko, Mob Boss — mono-red goblin aggro (100 cards) (~355 tok)
-- `README.md` — Project documentation (~306 tok)
+- `README.md` — Project documentation (~302 tok)
 
 ## lib/
 
@@ -177,6 +177,7 @@
 - `202605010136_commander_command_zone.sql` — Commander (EDH), slice 1 — the IN-GAME command zone mechanics. (~2591 tok)
 - `202605010137_commander_format_and_damage.sql` — Commander (EDH), slice 2 — format-aware game start + COMMANDER DAMAGE. (~2185 tok)
 - `202605010138_commander_deck_seeding.sql` — Commander (EDH), slice 3 — the DECK side: designate a commander on a deck and (~1316 tok)
+- `202605010139_import_captures_commander.sql` — Commander (EDH) — importer auto-captures the Commander. (~1266 tok)
 
 ## tests/
 
@@ -188,7 +189,7 @@
 - `auras.test.ts` — F3 slice 4a — Auras + attachment (mig 134). An Aura is cast targeting a creature, (~1715 tok)
 - `cant-be-countered.test.ts` — "Can't be countered": a counter that targets an uncounterable spell resolves (~644 tok)
 - `combat-over-assignment.test.ts` — Phase 4 — player-chosen combat damage OVER-ASSIGNMENT (mig 122). The attacker (~1582 tok)
-- `commander-deck.test.ts` — Commander (EDH) slice 3 — the deck side (mig 138). A deck can designate a (~938 tok)
+- `commander-deck.test.ts` — Commander (EDH) slice 3 — the deck side (mig 138). A deck can designate a (~1498 tok)
 - `commander.test.ts` — Commander (EDH) slice 1 — the in-game command zone (mig 136). A commander is (~1873 tok)
 - `damage-prevention.test.ts` — Phase 4 / F2.1a — damage prevention resolver (mig 125). A shield consumes damage (~1888 tok)
 - `divided-damage.test.ts` — Phase 3, slice 4a — divided damage (mig 115): the `divided_damage` action type (~1279 tok)
@@ -216,7 +217,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~7770 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~7878 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~449 tok)
 
 ## tests/regression/

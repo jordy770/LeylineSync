@@ -1,5 +1,5 @@
 # Atraxa, Praetors' Voice — WUBG +1/+1 counters / proliferate (100 cards)
-# Import this list, then click the ★ on "Atraxa, Praetors' Voice" to set the commander.
+# The "Commander" header below makes Atraxa the commander automatically on import.
 
 Commander
 1 Atraxa, Praetors' Voice

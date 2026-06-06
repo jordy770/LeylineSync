@@ -9,10 +9,10 @@ section headers (`Commander`, `Deck`) ignored.
 1. Make sure your card catalog has these cards (the importer matches by **name** and
    lists any it can't find as "not accepted lines" — fix those and re-import).
 2. In the app: **Decks → Import a deck**, paste the file's contents, give it a name.
-3. Open the deck and click the **★** button on the commander row to designate it
-   (the importer doesn't yet auto-capture the `Commander` section — tracked as a
-   follow-up). The commander is excluded from the library and seeded into the
-   command zone when you start a **Commander** game.
+   The card under the `Commander` header is captured as the deck's commander
+   automatically (you can still change it with the **★** toggle on any card row).
+3. The commander is excluded from the library and seeded into the command zone when
+   you start a **Commander** game.
 4. In the lobby, create a game with the **Commander** format, then spawn this deck.
 
 ## Decks

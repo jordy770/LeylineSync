@@ -74,3 +74,49 @@ test('DK4 spawning a second deck is rejected', async () => {
     await assert.rejects(() => s.as('A').spawnDeck(deck), /already have a deck/i)
   })
 })
+
+// DK5 — the text importer captures the card under a "Commander" header as the
+// deck's commander (still counted in the 100).
+test('DK5 importing a decklist captures the Commander section', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    const result = await s.as('A').importDeck(
+      'Imported EDH',
+      ['Commander', '1 Goblin Raider Test', 'Deck', '1 Air Elemental Test', '1 Frost Ward Test'].join('\n'),
+    )
+
+    assert.equal(result.card_count, 3) // commander counts toward the deck
+    assert.equal(result.commander_card_id, await s.cardId('Goblin Raider Test'))
+    assert.equal(await s.deckCommander(result.id!), await s.cardId('Goblin Raider Test'))
+  })
+})
+
+// DK6 — a decklist with no Commander section imports with no commander (use ★).
+test('DK6 a decklist without a Commander section has no commander', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    const result = await s.as('A').importDeck(
+      'Plain deck',
+      ['1 Air Elemental Test', '1 Frost Ward Test'].join('\n'),
+    )
+
+    assert.equal(result.card_count, 2)
+    assert.equal(result.commander_card_id, null)
+  })
+})
+
+// DK7 — end-to-end: import a commander decklist, then spawn it into a Commander
+// game — the captured commander lands in the command zone, not the library.
+test('DK7 imported commander deck seeds the command zone', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client, 2, { format: 'commander' })
+    const result = await s.as('A').importDeck(
+      'EDH',
+      ['Commander', '1 Goblin Raider Test', 'Deck', '1 Air Elemental Test', '1 Frost Ward Test'].join('\n'),
+    )
+    await s.as('A').spawnDeck(result.id!)
+
+    assert.equal(await s.zoneCount('A', 'command'), 1) // the commander
+    assert.equal(await s.zoneCount('A', 'library'), 2) // the other two, not the commander
+  })
+})

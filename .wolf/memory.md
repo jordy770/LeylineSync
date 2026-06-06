@@ -1703,3 +1703,23 @@
 
 | 2026-06-06 | Commander decklists + seeding de-dup fix: spawn_deck_for_session now EXCLUDES the commander from the library seed (no double-seed when the decklist still lists it); DK2 updated. Added docs/commander-decks/ (Krenko mono-red, Atraxa WUBG, 100 cards each) for the paste-import flow + README. | supabase/migrations/202605010138_commander_deck_seeding.sql, tests/feature/commander-deck.test.ts, docs/commander-decks/* | 363/363 | ~6000 |
 | 02:21 | Session end: 111 writes across 27 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 23 reads | ~194660 tok |
+| 02:22 | Session end: 111 writes across 27 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 23 reads | ~194660 tok |
+
+## Session: 2026-06-06 18:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-06 18:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:42 | Created supabase/migrations/202605010139_import_captures_commander.sql | — | ~1266 |
+| 18:43 | Edited tests/harness/scenario.ts | modified importDeck() | ~120 |
+| 18:43 | Edited tests/feature/commander-deck.test.ts | expanded (+46 lines) | ~668 |
+| 18:44 | Edited docs/commander-decks/README.md | 6→6 lines | ~119 |
+| 18:44 | Edited docs/commander-decks/krenko-goblins.txt | 2→2 lines | ~37 |
+| 18:44 | Edited docs/commander-decks/atraxa-counters.txt | 2→2 lines | ~42 |
+| 18:45 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~77 |
+
+| 2026-06-06 | Importer auto-captures commander: mig 139 — import_deck_from_text tracks the Commander section header; first card under it -> deck.commander_card_id (still in list_data; spawn de-dups). Sample decklists ★-step removed. Tests DK5-7. | supabase/migrations/202605010139_import_captures_commander.sql, tests/feature/commander-deck.test.ts, tests/harness/scenario.ts, docs/commander-decks/* | 366/366, tsc+lint clean | ~5000 |

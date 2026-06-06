@@ -5381,6 +5381,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-06T00:17:19.057Z"
+    },
+    {
+      "id": "bug-332",
+      "timestamp": "2026-06-06T16:43:02.934Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T16:43:02.934Z"
+    },
+    {
+      "id": "bug-333",
+      "timestamp": "2026-06-06T16:43:17.129Z",
+      "error_message": "Type error",
+      "file": "tests/feature/commander-deck.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T16:43:17.129Z"
+    },
+    {
+      "id": "bug-334",
+      "timestamp": "2026-06-06T16:44:34.021Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/commander-decks/krenko-goblins.txt",
+      "root_cause": "Had \"Krenko, Mob Boss\"",
+      "fix": "Changed to \"Commander\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "txt"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T16:44:34.021Z"
+    },
+    {
+      "id": "bug-335",
+      "timestamp": "2026-06-06T16:44:44.295Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/commander-decks/atraxa-counters.txt",
+      "root_cause": "Had ' Voice — WUBG +1/+1 counters / proliferate (100 c",
+      "fix": "Changed to ' Voice — WUBG +1/+1 counters / proliferate (100 c",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "txt"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T16:44:44.296Z"
     }
   ]
 }

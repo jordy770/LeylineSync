@@ -115,7 +115,7 @@ Reproduce each touched fn from its CURRENT migration (grep first — bug-281/283
 
 **Remaining Commander slices:**
 - ~~Commander DAMAGE~~ ✅ slice 2. ~~late-joiner life~~ ✅ slice 2. ~~deck commander designation + seed to command zone~~ ✅ slice 3.
-- **Importer**: import_deck_from_text still ignores the 'Commander' section line — capture it into commander_card_id.
+- ~~**Importer**: capture the 'Commander' section into commander_card_id~~ ✅ (mig 139) — the first card under a 'Commander' header becomes the deck's commander on import (still counted in the 100; spawn de-dups from the library). Sample decklists' ★ step removed. Tests DK5-7 (366/366).
 - **Deck legality**: 100-card singleton + colour identity (needs a color_identity concept — derive from mana_cost or add a column).
 - ~~**Command-zone UI**~~ ✅ a command-zone strip in V4 (under the StatusBar) renders each command-zone card with a Cast button + live tax (2×command_zone_casts), gated on sorcery speed → castCommander RPC. Needed GameZone/gameZones + ControllerCard to learn 'command'/is_commander/command_zone_casts (getControllerCards already loaded all the player's cards, just not these fields; normalizeGameZone fell back to 'battlefield' for the unknown zone). tsc+lint+next build clean. (No automated UI test — same caveat as other client slices.)
 - **Return refinements**: owner CHOICE (vs auto) + non-death zones (exile/bounce/library); suppress the false 'dies' trigger on redirect.
