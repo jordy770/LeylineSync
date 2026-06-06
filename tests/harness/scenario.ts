@@ -196,6 +196,19 @@ export class Scenario {
     )
   }
 
+  /** Switch a creature's power and toughness (layer 7e). Returns the effect id. */
+  async addSwitchPt(card: string, seat: Seat = this.acting): Promise<string> {
+    return this.run(
+      () =>
+        rpc<string>(this.client, 'add_switch_pt_effect', {
+          p_session_id: this.sessionId,
+          p_affected_card_id: card,
+          p_source_card_id: null,
+        }),
+      seat,
+    )
+  }
+
   /** Create a damage-prevention shield protecting a player. amount null = prevent all. */
   async addPrevention(
     player: Seat,

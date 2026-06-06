@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T20:41:25.660Z
-> Files: 107 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T20:53:32.562Z
+> Files: 109 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~197 tok)
-- `package.json` — Node.js package manifest (~873 tok)
+- `package.json` — Node.js package manifest (~882 tok)
 - `README.md` — Project documentation (~16065 tok)
 
 ## .claude/
@@ -14,7 +14,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~8877 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~8957 tok)
 
 ## .claude/rules/
 
@@ -190,6 +190,7 @@
 - `202605010143_rls_scope_reads_to_session.sql` — Operational / security — scope game-state reads to SESSION MEMBERS. (~688 tok)
 - `202605010144_cleanup_finished_session.sql` — Operational — explicit cleanup of a FINISHED game's runtime data. (~724 tok)
 - `202605010145_anthem_static_pumps.sql` — Phase 4 / F2.2d — ANTHEMS: static, source-gated team pumps (CR 613 layer 7d). (~1663 tok)
+- `202605010146_switch_pt_layer.sql` — Phase 4 / F2.2e — the LAYER resolver, sublayer 7e: SWITCH power and toughness. (~2602 tok)
 
 ## tests/
 
@@ -226,6 +227,7 @@
 - `rls.test.ts` — Security — game-state reads are scoped to SESSION MEMBERS (mig 143). Two legacy (~732 tok)
 - `sacrifice-reanimate.test.ts` — Phase 1, slice 11 — sacrifice and return_from_graveyard (raise dead / (~2740 tok)
 - `search-library-variants.test.ts` — Phase 1, slice 14 — search_library variants (mig 111): graveyard destination, (~1560 tok)
+- `switch-pt.test.ts` — Phase 4 / F2.2e — P/T SWITCH, the last layer sublayer (mig 146, CR 613.7e). A (~726 tok)
 - `x-spells.test.ts` — Phase 1, slice 12 — X spells (variable amount paid as {X} generic mana). (~1339 tok)
 
 ## tests/fixtures/
@@ -234,7 +236,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~8843 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~8961 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~449 tok)
 
 ## tests/regression/

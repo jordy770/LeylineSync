@@ -1862,3 +1862,12 @@
 | 22:41 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~217 |
 
 | 2026-06-06 | Engine #3 — ANTHEMS (mig 145, F2.2d). card_effective_power/toughness now fold player-scoped (affected:'controller') + global (affected:'all') pump continuous effects onto creatures; registration already stored them, only the accessors were missing. Gated to creatures + source-zone (anthem ends with its source). Stacks with set/counters/per-card pumps. Fixtures Glorious Banner Test, Total War Banner Test. Tests AN1-5. Deferred: client board display, tribal/typed/"other" anthems. | supabase/migrations/202605010145_anthem_static_pumps.sql, tests/feature/anthem.test.ts, tests/fixtures/test-cards.json | 406/406, tsc+lint clean | ~4500 |
+| 22:42 | Session end: 5 writes across 5 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 2 reads | ~10900 tok |
+| 22:45 | Session end: 5 writes across 5 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 2 reads | ~10900 tok |
+| 22:52 | Created supabase/migrations/202605010146_switch_pt_layer.sql | — | ~2602 |
+| 22:52 | Edited tests/harness/scenario.ts | modified addSwitchPt() | ~140 |
+| 22:52 | Created tests/feature/switch-pt.test.ts | — | ~726 |
+| 22:52 | Edited package.json | inline fix | ~27 |
+| 22:53 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~130 |
+
+| 2026-06-06 | Engine #3 — P/T SWITCH layer 7e (mig 146, F2.2e). switch_pt effect swaps the fully-layered P/T; extracted card_layered_power/toughness (verbatim mig 145) + switch-aware card_effective_* wrappers via card_pt_switched (odd count = swap, even cancels). add_switch_pt_effect helper + harness addSwitchPt. Tests SW1-4. Layer/helper only; spell/trigger authoring deferred. | supabase/migrations/202605010146_switch_pt_layer.sql, tests/feature/switch-pt.test.ts, tests/harness/scenario.ts | 410/410, tsc+lint clean | ~4000 |
