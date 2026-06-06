@@ -525,7 +525,7 @@ export async function getDeckDetail(supabase: SupabaseClient, deckId: string) {
   const linkedCardsById = await getLinkedCardsById(
     supabase,
     cardIds,
-    'id, name, image_url, type_line, mana_cost, keywords, power, toughness, power_toughness',
+    'id, name, image_url, type_line, mana_cost, oracle_text, keywords, power, toughness, power_toughness, script',
   )
   const countsByCardId = new Map<string, number>()
 

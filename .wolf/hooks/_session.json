@@ -6,6 +6,26 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-06T16:42:03.530Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior.ts": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-06T17:30:17.546Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx": {
+      "count": 10,
+      "tokens": 6733,
+      "first_read": "2026-06-06T17:31:05.602Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorEditor.tsx": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-06T17:32:19.267Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/app/cards/behavior/page.tsx": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-06T17:32:29.697Z"
     }
   },
   "files_written": [
@@ -50,6 +70,204 @@
       "action": "edit",
       "tokens": 82,
       "at": "2026-06-06T16:45:00.981Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior.ts",
+      "action": "edit",
+      "tokens": 677,
+      "at": "2026-06-06T17:30:46.860Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
+      "action": "edit",
+      "tokens": 71,
+      "at": "2026-06-06T17:30:53.632Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 64,
+      "at": "2026-06-06T17:31:33.345Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 103,
+      "at": "2026-06-06T17:31:40.363Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 296,
+      "at": "2026-06-06T17:31:48.859Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 69,
+      "at": "2026-06-06T17:31:57.924Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 660,
+      "at": "2026-06-06T17:32:12.148Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorEditor.tsx",
+      "action": "edit",
+      "tokens": 65,
+      "at": "2026-06-06T17:32:45.297Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/app/cards/behavior/page.tsx",
+      "action": "edit",
+      "tokens": 379,
+      "at": "2026-06-06T17:32:57.057Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/deck-insights.ts",
+      "action": "create",
+      "tokens": 1193,
+      "at": "2026-06-06T17:49:01.572Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/deck-insights.test.ts",
+      "action": "create",
+      "tokens": 818,
+      "at": "2026-06-06T17:49:21.144Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 32,
+      "at": "2026-06-06T17:49:48.191Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckInsights.tsx",
+      "action": "create",
+      "tokens": 1331,
+      "at": "2026-06-06T17:50:11.028Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 108,
+      "at": "2026-06-06T17:50:28.785Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 70,
+      "at": "2026-06-06T17:50:48.365Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 482,
+      "at": "2026-06-06T17:51:26.952Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 150,
+      "at": "2026-06-06T17:51:38.568Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 349,
+      "at": "2026-06-06T17:51:53.041Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 414,
+      "at": "2026-06-06T17:52:16.927Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 572,
+      "at": "2026-06-06T17:52:33.417Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 234,
+      "at": "2026-06-06T17:52:47.965Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 550,
+      "at": "2026-06-06T17:53:07.192Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/deck-insights.ts",
+      "action": "edit",
+      "tokens": 515,
+      "at": "2026-06-06T18:07:36.606Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/deck-insights.test.ts",
+      "action": "edit",
+      "tokens": 67,
+      "at": "2026-06-06T18:07:44.085Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/deck-insights.test.ts",
+      "action": "edit",
+      "tokens": 359,
+      "at": "2026-06-06T18:07:54.583Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckInsights.tsx",
+      "action": "edit",
+      "tokens": 89,
+      "at": "2026-06-06T18:08:10.277Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckInsights.tsx",
+      "action": "edit",
+      "tokens": 150,
+      "at": "2026-06-06T18:08:20.212Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckInsights.tsx",
+      "action": "edit",
+      "tokens": 208,
+      "at": "2026-06-06T18:08:27.842Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 35,
+      "at": "2026-06-06T18:08:33.995Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 85,
+      "at": "2026-06-06T18:08:43.209Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 71,
+      "at": "2026-06-06T18:08:49.915Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 661,
+      "at": "2026-06-06T18:09:03.004Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 296,
+      "at": "2026-06-06T18:09:12.196Z"
     }
   ],
   "edit_counts": {
@@ -59,11 +277,20 @@
     "docs/commander-decks/README.md": 1,
     "docs/commander-decks/krenko-goblins.txt": 1,
     "docs/commander-decks/atraxa-counters.txt": 1,
-    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 1
+    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 1,
+    "lib/game/card-behavior.ts": 1,
+    "lib/game/data.ts": 1,
+    "components/DeckManager.tsx": 19,
+    "components/CardBehaviorEditor.tsx": 1,
+    "app/cards/behavior/page.tsx": 1,
+    "lib/game/deck-insights.ts": 2,
+    "tests/unit/deck-insights.test.ts": 3,
+    "package.json": 1,
+    "components/DeckInsights.tsx": 4
   },
-  "anatomy_hits": 0,
-  "anatomy_misses": 1,
-  "repeated_reads_warned": 0,
+  "anatomy_hits": 1,
+  "anatomy_misses": 4,
+  "repeated_reads_warned": 10,
   "cerebrum_warnings": 0,
-  "stop_count": 1
+  "stop_count": 6
 }

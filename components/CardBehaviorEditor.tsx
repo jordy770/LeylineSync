@@ -39,9 +39,9 @@ const scriptToText = (script: CardScript | null | undefined) =>
 
 const formToText = (form: BuilderForm) => scriptToText(buildScriptFromForm(form))
 
-export default function CardBehaviorEditor() {
+export default function CardBehaviorEditor({ initialCardId }: { initialCardId?: string } = {}) {
   const supabase = useMemo(() => createClient(), [])
-  const [selectedCardId, setSelectedCardId] = useState('')
+  const [selectedCardId, setSelectedCardId] = useState(initialCardId ?? '')
   const [card, setCard] = useState<LinkedCard | null>(null)
   const [draft, setDraft] = useState('')
   const [editorMode, setEditorMode] = useState<EditorMode>('form')

@@ -5445,6 +5445,246 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-06T16:44:44.296Z"
+    },
+    {
+      "id": "bug-336",
+      "timestamp": "2026-06-06T17:30:46.865Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/card-behavior.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T17:30:46.865Z"
+    },
+    {
+      "id": "bug-337",
+      "timestamp": "2026-06-06T17:31:33.351Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Had '@/lib/game/actions'",
+      "fix": "Changed to 'next/link'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T17:31:33.351Z"
+    },
+    {
+      "id": "bug-338",
+      "timestamp": "2026-06-06T17:31:48.863Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: const badge = BEHAVIOR_BADGE[getCardConfigStatus(line.card ?",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-06T17:31:57.928Z"
+    },
+    {
+      "id": "bug-339",
+      "timestamp": "2026-06-06T17:32:12.154Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 30→40 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T17:32:12.154Z"
+    },
+    {
+      "id": "bug-340",
+      "timestamp": "2026-06-06T17:32:45.303Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/CardBehaviorEditor.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T17:32:45.303Z"
+    },
+    {
+      "id": "bug-341",
+      "timestamp": "2026-06-06T17:32:57.062Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/cards/behavior/page.tsx",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 28→39 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T17:32:57.062Z"
+    },
+    {
+      "id": "bug-342",
+      "timestamp": "2026-06-06T17:51:26.957Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: // Copy the deck as importer-compatible text to the clipboar; const handleExport = async () => { | Also: {/* List controls */}; <div className=\"mt-4 flex flex-wrap items-center gap-2 text- | Also: {/* Sample opening hand */}; {sampleHand && (",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-06-06T17:53:07.196Z"
+    },
+    {
+      "id": "bug-343",
+      "timestamp": "2026-06-06T17:52:16.934Z",
+      "error_message": "Type error",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T17:52:16.934Z"
+    },
+    {
+      "id": "bug-344",
+      "timestamp": "2026-06-06T18:07:36.611Z",
+      "error_message": "Missing guard clause",
+      "file": "lib/game/deck-insights.ts",
+      "root_cause": "No early return/throw for edge case: (DECK_MANA_COLORS as string[]",
+      "fix": "Added guard clause: if ((DECK_MANA_COLORS as string[])",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T18:07:36.611Z"
+    },
+    {
+      "id": "bug-345",
+      "timestamp": "2026-06-06T18:07:54.588Z",
+      "error_message": "Type error",
+      "file": "tests/unit/deck-insights.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T18:07:54.588Z"
+    },
+    {
+      "id": "bug-346",
+      "timestamp": "2026-06-06T18:08:20.217Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/DeckInsights.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T18:08:20.217Z"
+    },
+    {
+      "id": "bug-347",
+      "timestamp": "2026-06-06T18:08:27.848Z",
+      "error_message": "Type error",
+      "file": "components/DeckInsights.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T18:08:27.848Z"
+    },
+    {
+      "id": "bug-348",
+      "timestamp": "2026-06-06T18:08:43.214Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T18:08:43.214Z"
+    },
+    {
+      "id": "bug-349",
+      "timestamp": "2026-06-06T18:08:49.921Z",
+      "error_message": "Type error",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T18:08:49.921Z"
+    },
+    {
+      "id": "bug-350",
+      "timestamp": "2026-06-06T18:09:03.008Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T18:09:03.008Z"
     }
   ]
 }

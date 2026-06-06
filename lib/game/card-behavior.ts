@@ -114,6 +114,62 @@ export function getCardBehaviorVersion(script: AnyCardBehaviorScript | null | un
   return 1
 }
 
+// Ability keywords the engine already handles from the catalog `keywords` array, so
+// a card whose only rules text is these needs no script (it's "vanilla").
+const HANDLED_KEYWORDS = new Set([
+  'flying', 'reach', 'trample', 'vigilance', 'haste', 'first strike', 'double strike',
+  'deathtouch', 'indestructible', 'menace', 'defender', 'lifelink', 'hexproof', 'flash',
+])
+
+// Whether a script actually defines engine behavior (vs. an empty/absent script).
+function scriptHasBehavior(script: AnyCardBehaviorScript | null | undefined): boolean {
+  if (!script || typeof script !== 'object') return false
+  const s = script as Record<string, unknown>
+  const nonEmptyArray = (key: string) => Array.isArray(s[key]) && (s[key] as unknown[]).length > 0
+  return (
+    nonEmptyArray('actions') ||
+    nonEmptyArray('continuous_effects') ||
+    nonEmptyArray('triggered_abilities') ||
+    nonEmptyArray('activated_abilities') ||
+    s['spell_effect'] != null
+  )
+}
+
+export type CardConfigStatus = 'scripted' | 'vanilla' | 'needs'
+
+/**
+ * Classify a catalog card's rules readiness for the deck editor:
+ *  - 'scripted' — has a behavior script.
+ *  - 'vanilla'  — no ability text (or only engine-handled keywords / a basic land):
+ *                 plays fine as-is, nothing to configure.
+ *  - 'needs'    — has ability text but no script (likely won't work until scripted).
+ * The vanilla/needs split is a heuristic on oracle_text and is approximate.
+ */
+export function getCardConfigStatus(card: {
+  script?: AnyCardBehaviorScript | null
+  oracle_text?: string | null
+  type_line?: string | null
+}): CardConfigStatus {
+  if (scriptHasBehavior(card.script)) return 'scripted'
+
+  const typeLine = (card.type_line ?? '').toLowerCase()
+  if (typeLine.includes('basic') && typeLine.includes('land')) return 'vanilla'
+
+  // Strip parenthetical reminder text, then split into clauses and drop the
+  // engine-handled keywords; anything left is unscripted ability text.
+  const text = (card.oracle_text ?? '').replace(/\([^)]*\)/g, '').trim()
+  if (!text) return 'vanilla'
+
+  const residual = text
+    .toLowerCase()
+    .split(/[\n,;.]+/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .filter((part) => !HANDLED_KEYWORDS.has(part) && !part.startsWith('protection from'))
+
+  return residual.length === 0 ? 'vanilla' : 'needs'
+}
+
 export function normalizeCardBehaviorToV2(
   script: AnyCardBehaviorScript | null | undefined,
   typeLine?: string | null,

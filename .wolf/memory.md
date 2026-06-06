@@ -1723,3 +1723,47 @@
 | 18:45 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~77 |
 
 | 2026-06-06 | Importer auto-captures commander: mig 139 — import_deck_from_text tracks the Commander section header; first card under it -> deck.commander_card_id (still in list_data; spawn de-dups). Sample decklists ★-step removed. Tests DK5-7. | supabase/migrations/202605010139_import_captures_commander.sql, tests/feature/commander-deck.test.ts, tests/harness/scenario.ts, docs/commander-decks/* | 366/366, tsc+lint clean | ~5000 |
+| 18:45 | Session end: 7 writes across 7 files (202605010139_import_captures_commander.sql, scenario.ts, commander-deck.test.ts, README.md, krenko-goblins.txt) | 1 reads | ~2439 tok |
+| 19:30 | Edited lib/game/card-behavior.ts | added nullish coalescing | ~677 |
+| 19:30 | Edited lib/game/data.ts | 6→6 lines | ~71 |
+| 19:31 | Edited components/DeckManager.tsx | added 2 import(s) | ~64 |
+| 19:31 | Edited components/DeckManager.tsx | modified expandDeckCardIds() | ~103 |
+| 19:31 | Edited components/DeckManager.tsx | added nullish coalescing | ~296 |
+| 19:31 | Edited components/DeckManager.tsx | added nullish coalescing | ~69 |
+| 19:32 | Edited components/DeckManager.tsx | CSS: hover | ~660 |
+| 19:32 | Edited components/CardBehaviorEditor.tsx | added nullish coalescing | ~65 |
+| 19:32 | Edited app/cards/behavior/page.tsx | CSS: searchParams, searchParams, card | ~379 |
+
+| 2026-06-06 | Deck-editor behavior readiness: getCardConfigStatus (scripted/vanilla/needs) helper; getDeckDetail loads script+oracle_text; DeckManager per-card badge + deck summary + Behavior deep-link to /cards/behavior?card=; editor seeds initialCardId from searchParams (server prop, no useSearchParams). Heuristic verified on 7 cases. | lib/game/card-behavior.ts, lib/game/data.ts, components/DeckManager.tsx, components/CardBehaviorEditor.tsx, app/cards/behavior/page.tsx | 366/366, tsc+lint+build clean | ~5000 |
+| 19:35 | Session end: 16 writes across 12 files (202605010139_import_captures_commander.sql, scenario.ts, commander-deck.test.ts, README.md, krenko-goblins.txt) | 5 reads | ~9199 tok |
+| 19:45 | Session end: 16 writes across 12 files (202605010139_import_captures_commander.sql, scenario.ts, commander-deck.test.ts, README.md, krenko-goblins.txt) | 5 reads | ~9199 tok |
+| 19:49 | Created lib/game/deck-insights.ts | — | ~1193 |
+| 19:49 | Created tests/unit/deck-insights.test.ts | — | ~818 |
+| 19:49 | Edited package.json | inline fix | ~32 |
+| 19:50 | Created components/DeckInsights.tsx | — | ~1331 |
+| 19:50 | Edited components/DeckManager.tsx | added 3 import(s) | ~108 |
+| 19:50 | Edited components/DeckManager.tsx | 5→4 lines | ~70 |
+| 19:51 | Edited components/DeckManager.tsx | added optional chaining | ~482 |
+| 19:51 | Edited components/DeckManager.tsx | 3→8 lines | ~150 |
+| 19:51 | Edited components/DeckManager.tsx | added nullish coalescing | ~349 |
+| 19:52 | Edited components/DeckManager.tsx | expanded (+29 lines) | ~414 |
+| 19:52 | Edited components/DeckManager.tsx | added optional chaining | ~572 |
+| 19:52 | Edited components/DeckManager.tsx | CSS: hover, disabled | ~234 |
+| 19:53 | Edited components/DeckManager.tsx | added optional chaining | ~550 |
+
+| 2026-06-06 | Deck-editor insights + ergonomics: lib/game/deck-insights.ts pure helpers (manaValue/curve/type+colour breakdown/avg/lands/singleton) + 6 unit tests; DeckInsights panel (curve bars, colour pips, types, singleton warnings); DeckManager filter-to-needs toggle, sort (name/cmc/type/behavior), copy-as-text, clone (import round-trip), sample opening hand, card image preview. | lib/game/deck-insights.ts, components/DeckInsights.tsx, components/DeckManager.tsx, tests/unit/deck-insights.test.ts, package.json | 372/372, tsc+lint+build clean | ~9000 |
+| 19:55 | Session end: 29 writes across 16 files (202605010139_import_captures_commander.sql, scenario.ts, commander-deck.test.ts, README.md, krenko-goblins.txt) | 5 reads | ~17859 tok |
+| 20:07 | Edited lib/game/deck-insights.ts | added 3 condition(s) | ~515 |
+| 20:07 | Edited tests/unit/deck-insights.test.ts | 9→11 lines | ~67 |
+| 20:07 | Edited tests/unit/deck-insights.test.ts | expanded (+26 lines) | ~359 |
+| 20:08 | Edited components/DeckInsights.tsx | 11→12 lines | ~89 |
+| 20:08 | Edited components/DeckInsights.tsx | added nullish coalescing | ~150 |
+| 20:08 | Edited components/DeckInsights.tsx | CSS: sm | ~208 |
+| 20:08 | Edited components/DeckManager.tsx | inline fix | ~35 |
+| 20:08 | Edited components/DeckManager.tsx | added optional chaining | ~85 |
+| 20:08 | Edited components/DeckManager.tsx | 2→3 lines | ~71 |
+| 20:09 | Edited components/DeckManager.tsx | added error handling | ~661 |
+| 20:09 | Edited components/DeckManager.tsx | CSS: disabled | ~296 |
+
+| 2026-06-06 | Deck-editor follow-ups: colour-identity legality (cardColorIdentity/deckColorIdentityViolations derived from mana_cost+oracle symbols, +3 tests; off-identity warning in DeckInsights) + batch AI behavior gen (DeckManager loops needs-cards -> /api/cards/generate-behavior -> setCardScript; confirm, sequential, progress, abort-if-unconfigured). | lib/game/deck-insights.ts, components/DeckInsights.tsx, components/DeckManager.tsx, tests/unit/deck-insights.test.ts | 375/375, tsc+lint+build clean | ~6000 |
+| 20:10 | Session end: 40 writes across 16 files (202605010139_import_captures_commander.sql, scenario.ts, commander-deck.test.ts, README.md, krenko-goblins.txt) | 5 reads | ~20395 tok |

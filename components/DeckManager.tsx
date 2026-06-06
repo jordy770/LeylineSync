@@ -2,10 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import CardCatalogPicker from '@/components/CardCatalogPicker'
-import { importDeckFromText, getErrorMessage, setDeckCommander, updateDeckList } from '@/lib/game/actions'
+import Link from 'next/link'
+import DeckInsights from '@/components/DeckInsights'
+import { importDeckFromText, getErrorMessage, setCardScript, setDeckCommander, updateDeckList } from '@/lib/game/actions'
+import { getCardConfigStatus, type CardConfigStatus } from '@/lib/game/card-behavior'
+import { manaValue } from '@/lib/game/deck-insights'
 import { getDeckDetail, getUserDecks } from '@/lib/game/data'
 import { createClient } from '@/lib/supabase/client'
-import type { DeckDetail, DeckSummary } from '@/lib/game/types'
+import type { DeckDetail, DeckSummary, LinkedCard } from '@/lib/game/types'
 
 export default function DeckManager() {
   const supabase = useMemo(() => createClient(), [])
@@ -20,6 +24,12 @@ export default function DeckManager() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [isWorking, setIsWorking] = useState(false)
+  // Deck-list view controls + ergonomics.
+  const [showNeedsOnly, setShowNeedsOnly] = useState(false)
+  const [sortKey, setSortKey] = useState<'name' | 'cmc' | 'type' | 'behavior'>('name')
+  const [sampleHand, setSampleHand] = useState<string[] | null>(null)
+  const [preview, setPreview] = useState<LinkedCard | null>(null)
+  const [batch, setBatch] = useState<{ done: number; total: number; ok: number; failed: number } | null>(null)
 
   const refreshDecks = async () => {
     const nextDecks = await getUserDecks(supabase)
@@ -207,6 +217,96 @@ export default function DeckManager() {
     }
   }
 
+  // Generate behavior scripts (via the AI route) for every deck card that still
+  // needs one. Sequential to be gentle on the API; saves each validated script.
+  const handleBatchGenerate = async () => {
+    if (!selectedDeck) return
+    const seen = new Set<string>()
+    const needs: LinkedCard[] = []
+    for (const line of selectedDeck.cards) {
+      const card = line.card
+      if (!card || seen.has(card.id) || getCardConfigStatus(card) !== 'needs') continue
+      seen.add(card.id)
+      needs.push(card)
+    }
+    if (needs.length === 0) {
+      setStatusMessage('No cards need behavior.')
+      return
+    }
+    if (!window.confirm(`Generate behavior for ${needs.length} card(s) with AI? This calls the AI once per card (uses tokens).`)) {
+      return
+    }
+
+    setErrorMessage(null)
+    setStatusMessage(null)
+    setIsWorking(true)
+    let ok = 0
+    let failed = 0
+    setBatch({ done: 0, total: needs.length, ok: 0, failed: 0 })
+    for (let i = 0; i < needs.length; i += 1) {
+      const card = needs[i]!
+      try {
+        const response = await fetch('/api/cards/generate-behavior', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: card.name, type_line: card.type_line, oracle_text: card.oracle_text }),
+        })
+        const payload = (await response.json()) as { script?: unknown; error?: string }
+        if (!response.ok || !payload.script) {
+          // Server not configured (no API key) → abort the whole batch.
+          if (response.status === 501 || /not configured/i.test(payload.error ?? '')) {
+            setErrorMessage(payload.error ?? 'AI generation is not configured.')
+            break
+          }
+          failed += 1
+        } else {
+          await setCardScript(supabase, card.id, payload.script as Parameters<typeof setCardScript>[2])
+          ok += 1
+        }
+      } catch {
+        failed += 1
+      }
+      setBatch({ done: i + 1, total: needs.length, ok, failed })
+    }
+    await refreshSelectedDeck(selectedDeck.id)
+    setBatch(null)
+    setIsWorking(false)
+    setStatusMessage(`Generated ${ok} / ${needs.length}.${failed ? ` ${failed} need manual editing.` : ''}`)
+  }
+
+  // Copy the deck as importer-compatible text to the clipboard.
+  const handleExport = async () => {
+    if (!selectedDeck) return
+    setErrorMessage(null)
+    try {
+      await navigator.clipboard.writeText(deckToText(selectedDeck))
+      setStatusMessage('Decklist copied to clipboard.')
+    } catch {
+      setErrorMessage('Could not copy to clipboard.')
+    }
+  }
+
+  // Clone the deck (round-trips through the importer, carrying the commander).
+  const handleClone = async () => {
+    if (!selectedDeck) return
+    setErrorMessage(null)
+    setStatusMessage(null)
+    setIsWorking(true)
+    try {
+      const result = await importDeckFromText(supabase, `${selectedDeck.name ?? 'Deck'} (copy)`, deckToText(selectedDeck))
+      await refreshDecks()
+      if (result.id) {
+        setSelectedDeckId(result.id)
+        await refreshSelectedDeck(result.id)
+      }
+      setStatusMessage('Deck cloned.')
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error))
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
   return (
     <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(360px,420px)]">
       <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
@@ -303,6 +403,67 @@ export default function DeckManager() {
             <p className="mt-1 text-xs text-slate-400">
               {selectedDeck.name || 'Untitled Deck'} - {selectedDeck.card_count} cards
             </p>
+            {(() => {
+              const counts = selectedDeck.cards.reduce(
+                (acc, line) => {
+                  acc[getCardConfigStatus(line.card ?? {})] += line.quantity
+                  return acc
+                },
+                { scripted: 0, vanilla: 0, needs: 0 } as Record<CardConfigStatus, number>,
+              )
+              return (
+                <p className="mt-1 text-xs text-slate-500">
+                  <span className="font-semibold text-emerald-300">{counts.scripted}</span> scripted ·{' '}
+                  <span className="font-semibold text-slate-300">{counts.vanilla}</span> vanilla ·{' '}
+                  <span className="font-semibold text-amber-300">{counts.needs}</span> need behavior
+                </p>
+              )
+            })()}
+
+            {/* Deck insights: curve, types, colours, singleton + colour-identity checks */}
+            <DeckInsights
+              cards={selectedDeck.cards}
+              commanderCard={selectedDeck.cards.find((l) => l.card_id === selectedDeck.commander_card_id)?.card ?? null}
+            />
+
+            {/* Deck-level tools */}
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handleBatchGenerate}
+                disabled={isWorking}
+                className="rounded-md bg-violet-500 px-3 py-1.5 text-xs font-semibold text-violet-950 hover:bg-violet-400 disabled:opacity-50"
+              >
+                ✨ Generate behavior (needs)
+              </button>
+              {batch && (
+                <span className="text-xs text-violet-300">
+                  {batch.done}/{batch.total} · {batch.ok} ok{batch.failed ? ` · ${batch.failed} failed` : ''}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setSampleHand(sampleOpeningHand(selectedDeck))}
+                className="rounded-md border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-800"
+              >
+                Sample hand
+              </button>
+              <button
+                type="button"
+                onClick={handleExport}
+                className="rounded-md border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-800"
+              >
+                Copy as text
+              </button>
+              <button
+                type="button"
+                onClick={handleClone}
+                disabled={isWorking}
+                className="rounded-md border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 disabled:opacity-50"
+              >
+                Clone deck
+              </button>
+            </div>
 
             <div className="mt-4 min-w-0 rounded-md border border-slate-800 bg-slate-900 p-3">
               <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Add Card</h4>
@@ -327,9 +488,43 @@ export default function DeckManager() {
               </div>
             </div>
 
-            <div className="mt-4 grid gap-2">
-              {selectedDeck.cards.map((line) => {
+            {/* List controls */}
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <label className="flex items-center gap-1.5 text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={showNeedsOnly}
+                  onChange={(event) => setShowNeedsOnly(event.target.checked)}
+                />
+                Needs behavior only
+              </label>
+              <span className="ml-auto text-slate-500">Sort</span>
+              <select
+                value={sortKey}
+                onChange={(event) => setSortKey(event.target.value as typeof sortKey)}
+                className="rounded border border-slate-700 bg-slate-950 px-2 py-1 text-slate-200"
+              >
+                <option value="name">Name</option>
+                <option value="cmc">Mana value</option>
+                <option value="type">Type</option>
+                <option value="behavior">Behavior</option>
+              </select>
+            </div>
+
+            <div className="mt-2 grid gap-2">
+              {[...selectedDeck.cards]
+                .filter((line) => !showNeedsOnly || getCardConfigStatus(line.card ?? {}) === 'needs')
+                .sort((a, b) => {
+                  if (sortKey === 'cmc') return manaValue(a.card?.mana_cost) - manaValue(b.card?.mana_cost)
+                  if (sortKey === 'type') return (a.card?.type_line ?? '').localeCompare(b.card?.type_line ?? '')
+                  if (sortKey === 'behavior') {
+                    return BEHAVIOR_RANK[getCardConfigStatus(a.card ?? {})] - BEHAVIOR_RANK[getCardConfigStatus(b.card ?? {})]
+                  }
+                  return (a.card?.name ?? a.card_id).localeCompare(b.card?.name ?? b.card_id)
+                })
+                .map((line) => {
                 const isCommander = selectedDeck.commander_card_id === line.card_id
+                const badge = BEHAVIOR_BADGE[getCardConfigStatus(line.card ?? {})]
                 return (
                   <div
                     key={line.card_id}
@@ -347,15 +542,33 @@ export default function DeckManager() {
                       className="rounded border border-slate-700 bg-slate-950 px-2 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
                     />
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-white">
-                        {line.card?.name || line.card_id}
-                        {isCommander && <span className="ml-2 text-xs font-bold text-amber-400">★ Commander</span>}
+                      <p className="flex items-center gap-2 truncate text-sm font-semibold text-white">
+                        <button
+                          type="button"
+                          onClick={() => line.card && setPreview(line.card)}
+                          disabled={!line.card?.image_url}
+                          className="truncate text-left hover:underline disabled:no-underline"
+                          title={line.card?.image_url ? 'Preview card' : undefined}
+                        >
+                          {line.card?.name || line.card_id}
+                        </button>
+                        <span className={`shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide ${badge.cls}`}>
+                          {badge.label}
+                        </span>
+                        {isCommander && <span className="shrink-0 text-xs font-bold text-amber-400">★ Commander</span>}
                       </p>
                       <p className="truncate text-xs text-slate-400">
                         {[line.card?.mana_cost, line.card?.type_line].filter(Boolean).join(' - ')}
                       </p>
                     </div>
                     <div className="flex gap-1">
+                      <Link
+                        href={`/cards/behavior?card=${line.card_id}`}
+                        title="Edit this card's behavior"
+                        className="rounded bg-sky-700 px-2 py-1 text-xs font-semibold text-sky-100 hover:bg-sky-600"
+                      >
+                        Behavior
+                      </Link>
                       <button
                         type="button"
                         onClick={() => handleSetCommander(isCommander ? null : line.card_id)}
@@ -383,8 +596,97 @@ export default function DeckManager() {
           </div>
         ) : null}
       </section>
+
+      {/* Sample opening hand */}
+      {sampleHand && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+          onClick={() => setSampleHand(null)}
+        >
+          <div className="w-full max-w-sm rounded-lg border border-slate-700 bg-slate-950 p-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="mb-2 text-sm font-bold text-white">Sample opening hand</h3>
+            <ul className="space-y-1 text-sm text-slate-200">
+              {sampleHand.map((name, i) => (
+                <li key={i} className="rounded bg-slate-900 px-2 py-1">{name}</li>
+              ))}
+            </ul>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() => selectedDeck && setSampleHand(sampleOpeningHand(selectedDeck))}
+                className="flex-1 rounded-md bg-sky-500 px-3 py-2 text-xs font-semibold text-sky-950"
+              >
+                Redraw
+              </button>
+              <button
+                type="button"
+                onClick={() => setSampleHand(null)}
+                className="flex-1 rounded-md border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Card image preview */}
+      {preview?.image_url && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setPreview(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={preview.image_url}
+            alt={preview.name ?? 'Card'}
+            className="max-h-[85vh] max-w-[90vw] rounded-xl shadow-2xl"
+          />
+        </div>
+      )}
     </div>
   )
+}
+
+const BEHAVIOR_BADGE: Record<CardConfigStatus, { label: string; cls: string }> = {
+  scripted: { label: 'Behavior', cls: 'bg-emerald-500/20 text-emerald-300' },
+  vanilla: { label: 'Vanilla', cls: 'bg-slate-600/40 text-slate-300' },
+  needs: { label: 'Needs behavior', cls: 'bg-amber-500/20 text-amber-300' },
+}
+
+const BEHAVIOR_RANK: Record<CardConfigStatus, number> = { needs: 0, vanilla: 1, scripted: 2 }
+
+// Render a deck as importer-compatible text (round-trips import_deck_from_text).
+// The commander goes under a "Commander" header so a re-import re-captures it.
+function deckToText(deck: DeckDetail): string {
+  const lines: string[] = []
+  const commander = deck.cards.find((line) => line.card_id === deck.commander_card_id)
+  if (commander) {
+    lines.push('Commander', `1 ${commander.card?.name ?? commander.card_id}`, '', 'Deck')
+  }
+  for (const line of deck.cards) {
+    const name = line.card?.name ?? line.card_id
+    if (commander && line.card_id === commander.card_id) {
+      if (line.quantity > 1) lines.push(`${line.quantity - 1} ${name}`)
+      continue
+    }
+    lines.push(`${line.quantity} ${name}`)
+  }
+  return lines.join('\n')
+}
+
+// Draw 7 random card names from the deck (a sample opening hand).
+function sampleOpeningHand(deck: DeckDetail): string[] {
+  const pool: string[] = []
+  for (const line of deck.cards) {
+    const name = line.card?.name ?? line.card_id
+    for (let i = 0; i < line.quantity; i += 1) pool.push(name)
+  }
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[pool[i], pool[j]] = [pool[j]!, pool[i]!]
+  }
+  return pool.slice(0, 7)
 }
 
 function expandDeckCardIds(deck: DeckDetail) {

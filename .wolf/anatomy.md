@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T16:45:00.969Z
-> Files: 89 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T18:09:12.184Z
+> Files: 95 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~818 tok)
+- `package.json` — Node.js package manifest (~828 tok)
 - `README.md` — Project documentation (~16065 tok)
 
 ## .claude/
@@ -56,6 +56,7 @@
 
 ## app/cards/behavior/
 
+- `page.tsx` — CardBehaviorPage (~448 tok)
 
 ## app/controller-style-lab/
 
@@ -74,9 +75,11 @@
 
 ## components/
 
+- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4087 tok)
 - `CardBehaviorForm.tsx` — inputClass (~5786 tok)
 - `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~52633 tok)
-- `DeckManager.tsx` — DeckManager (~4376 tok)
+- `DeckInsights.tsx` — COLOR_DOT (~1569 tok)
+- `DeckManager.tsx` — DeckManager (~8188 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~4520 tok)
 
 ## components/board/
@@ -116,7 +119,9 @@
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6727 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~7593 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~5075 tok)
-- `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5935 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3237 tok)
+- `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5941 tok)
+- `deck-insights.ts` — Mana value (converted mana cost) of a mana cost string like "{2}{W}{U}". (~1628 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2386 tok)
 - `use-controller-game-state.ts` — Exports useControllerGameState (~2048 tok)
 
@@ -226,6 +231,7 @@
 ## tests/unit/
 
 - `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~8972 tok)
+- `deck-insights.test.ts` — Unit tests for the pure deck-statistics helpers (no DB). (~1171 tok)
 
 ## vercel/
 
