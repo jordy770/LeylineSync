@@ -15,7 +15,7 @@ import { randomUUID } from 'node:crypto'
 import type { Client } from 'pg'
 import { asPlayer, rpc } from './db'
 
-export type Seat = 'A' | 'B' | 'C'
+export type Seat = 'A' | 'B' | 'C' | 'D'
 export type Zone = 'library' | 'hand' | 'battlefield' | 'graveyard' | 'exile' | 'stack' | 'command'
 
 export class Scenario {
@@ -27,17 +27,22 @@ export class Scenario {
   ) {}
 
   /**
-   * Create a session. Seat A is the creator + active player; B (and C, when
-   * numPlayers is 3) join in seat order. Pass numPlayers: 3 for multi-opponent
-   * tests (e.g. "each opponent sacrifices"). C's UUID always exists for typing but
-   * is only a session player when joined.
+   * Create a session. Seat A is the creator + active player; B/C/D join in seat
+   * order up to numPlayers. Pass numPlayers: 3 for multi-opponent tests (e.g.
+   * "each opponent sacrifices") or 4 for multiplayer Commander turn/priority/win
+   * tests. Unjoined seats' UUIDs always exist for typing but aren't session players.
    */
   static async create(
     client: Client,
-    numPlayers: 2 | 3 = 2,
+    numPlayers: 2 | 3 | 4 = 2,
     opts: { format?: 'standard' | 'commander' } = {},
   ): Promise<Scenario> {
-    const players: Record<Seat, string> = { A: randomUUID(), B: randomUUID(), C: randomUUID() }
+    const players: Record<Seat, string> = {
+      A: randomUUID(),
+      B: randomUUID(),
+      C: randomUUID(),
+      D: randomUUID(),
+    }
 
     // Note: the auth/profiles FKs are dropped locally by migration
     // 00000000000001_local_test_relax_fks.sql, so throwaway player UUIDs need no
@@ -45,11 +50,9 @@ export class Scenario {
     const sessionId = await asPlayer(client, players.A, () =>
       rpc<string>(client, 'create_game_session', opts.format ? { p_format: opts.format } : {}),
     )
-    await asPlayer(client, players.B, () =>
-      rpc(client, 'join_game_session', { p_session_id: sessionId }),
-    )
-    if (numPlayers >= 3) {
-      await asPlayer(client, players.C, () =>
+    const joinOrder: Seat[] = ['B', 'C', 'D']
+    for (const seat of joinOrder.slice(0, numPlayers - 1)) {
+      await asPlayer(client, players[seat], () =>
         rpc(client, 'join_game_session', { p_session_id: sessionId }),
       )
     }
@@ -498,6 +501,51 @@ export class Scenario {
   /** Pass priority as the acting seat (rotates priority; resolves/advances once all pass). */
   async passPriority(seat: Seat = this.acting): Promise<unknown> {
     return this.run(() => rpc(this.client, 'pass_priority', { p_session_id: this.sessionId }), seat)
+  }
+
+  /** Advance one turn step as the acting seat; returns the resulting turn-state row. */
+  async advanceStep(seat: Seat = this.acting): Promise<{ active_player_id: string; priority_player_id: string; phase: string; step: string; turn_number: number }> {
+    return this.run(
+      () => rpc(this.client, 'advance_step', { p_session_id: this.sessionId }),
+      seat,
+    )
+  }
+
+  /** Adjust a seat's life (acts as that seat); routes through the wired finish-check. */
+  async adjustLife(seat: Seat, delta: number): Promise<unknown> {
+    return this.run(
+      () =>
+        rpc(this.client, 'adjust_player_life', {
+          p_session_id: this.sessionId,
+          p_target_player_id: this.players[seat],
+          p_delta: delta,
+        }),
+      seat,
+    )
+  }
+
+  /** Eliminate a seat by dropping its life to 0 (acts as that seat). */
+  async eliminate(seat: Seat): Promise<void> {
+    const life = await this.lifeOf(seat)
+    if (life > 0) await this.adjustLife(seat, -life)
+  }
+
+  /** The current active player's UUID. */
+  async activePlayer(): Promise<string> {
+    const res = await this.client.query<{ active_player_id: string }>(
+      'select active_player_id from public.game_turn_state where session_id = $1',
+      [this.sessionId],
+    )
+    return res.rows[0]?.active_player_id
+  }
+
+  /** Session finished-state + winner (for last-player-standing assertions). */
+  async sessionResult(): Promise<{ status: string; winner_player_id: string | null }> {
+    const res = await this.client.query<{ status: string; winner_player_id: string | null }>(
+      'select status, winner_player_id from public.game_sessions where id = $1',
+      [this.sessionId],
+    )
+    return res.rows[0]
   }
 
   /** Current priority holder + consecutive-pass count. */
