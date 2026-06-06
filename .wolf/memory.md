@@ -1876,3 +1876,12 @@
 | 23:13 | Edited tests/harness/seed.ts | modified for() | ~354 |
 
 | 2026-06-06 | Merged commander -> master (fast-forward; not pushed). Post-merge fresh-DB test surfaced a flaky DK5: ensureTestCards races across node --test per-file worker processes -> duplicate test-card rows -> non-deterministic limit-1 lookups. Fixed with a pg_advisory_xact_lock around seeding (bug-367). Rebuilt DB (0 dupes); 410/410 stable across two runs, tsc clean. | tests/harness/seed.ts, .wolf/buglog.json | 410/410 x2, tsc clean | ~4000 |
+| 23:15 | Session end: 11 writes across 9 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 4 reads | ~15075 tok |
+| 23:21 | Session end: 11 writes across 9 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 4 reads | ~15075 tok |
+| 23:26 | Created supabase/migrations/202605010147_creature_damage_shields.sql | — | ~3423 |
+| 23:26 | Edited tests/harness/scenario.ts | modified addCreaturePrevention() | ~182 |
+| 23:26 | Created tests/feature/creature-shield.test.ts | — | ~1176 |
+| 23:26 | Edited package.json | inline fix | ~29 |
+| 23:27 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~184 |
+
+| 2026-06-06 | Engine — CREATURE damage shields (mig 147, F2.1d) on new branch creature-damage-shields. add_creature_damage_prevention + apply_damage_to_creature resolver (consume shields then mark remaining damage + deathtouch + lethal sweep), mirroring the player resolver (mig 125). apply_creature_effect deal_damage reproduced (from mig 129) to route through it. Targeted path only; combat + card-authoring deferred. Harness addCreaturePrevention. Tests CS1-5. | supabase/migrations/202605010147_creature_damage_shields.sql, tests/feature/creature-shield.test.ts, tests/harness/scenario.ts | 415/415, tsc+lint clean | ~5000 |

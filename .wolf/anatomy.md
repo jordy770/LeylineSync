@@ -1,16 +1,18 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T21:13:06.686Z
-> Files: 1 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T21:27:28.808Z
+> Files: 6 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
+- `package.json` — Node.js package manifest (~893 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~9088 tok)
 
 ## .claude/rules/
 
@@ -119,18 +121,21 @@
 
 ## supabase/migrations/
 
+- `202605010147_creature_damage_shields.sql` — Phase 4 / F2.1d — CREATURE damage shields (the creature analogue of mig 125). (~3423 tok)
 
 ## tests/
 
 
 ## tests/feature/
 
+- `creature-shield.test.ts` — Phase 4 / F2.1d — creature damage shields (mig 147). The creature analogue of the (~1176 tok)
 
 ## tests/fixtures/
 
 
 ## tests/harness/
 
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9126 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~657 tok)
 
 ## tests/regression/

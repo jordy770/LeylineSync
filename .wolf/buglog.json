@@ -5955,10 +5955,33 @@
       "file": "tests/harness/seed.ts",
       "root_cause": "node --test runs each test file in its own worker process, so ensureTestCards ran concurrently across ~30 workers. The where-not-exists guard races (workers pass the check before any insert commits) -> 11-13 duplicate rows per test-card name. Most tests tolerate dupes (copies are identical), but DK5 compares the importer's limit-1 pick against cardId()'s independent limit-1 pick -> different duplicate rows -> mismatch.",
       "fix": "Serialise seeding with a transaction-scoped advisory lock (pg_advisory_xact_lock) in ensureTestCards: exactly one worker fills the catalog, the rest wait then find rows present and insert nothing. Rebuilt the DB to clear accumulated dupes (now 0).",
-      "tags": ["test-harness", "flaky", "race-condition", "node-test", "seed", "duplicates"],
+      "tags": [
+        "test-harness",
+        "flaky",
+        "race-condition",
+        "node-test",
+        "seed",
+        "duplicates"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-06T22:30:00.000Z"
+    },
+    {
+      "id": "bug-368",
+      "timestamp": "2026-06-06T21:26:12.496Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T21:26:12.496Z"
     }
   ]
 }

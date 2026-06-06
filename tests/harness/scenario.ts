@@ -229,6 +229,26 @@ export class Scenario {
     )
   }
 
+  /** Create a damage-prevention shield protecting a CREATURE. amount null = prevent all. */
+  async addCreaturePrevention(
+    card: string,
+    amount: number | null = null,
+    combatOnly = false,
+    seat: Seat = this.acting,
+  ): Promise<string> {
+    return this.run(
+      () =>
+        rpc<string>(this.client, 'add_creature_damage_prevention', {
+          p_session_id: this.sessionId,
+          p_card_id: card,
+          p_amount: amount,
+          p_combat_only: combatOnly,
+          p_source_card_id: null,
+        }),
+      seat,
+    )
+  }
+
   /** Put an action on the stack as the acting seat. Returns the stack item. */
   async putOnStack(
     actionType: string,
