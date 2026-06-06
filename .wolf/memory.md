@@ -1871,3 +1871,5 @@
 | 22:53 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~130 |
 
 | 2026-06-06 | Engine #3 — P/T SWITCH layer 7e (mig 146, F2.2e). switch_pt effect swaps the fully-layered P/T; extracted card_layered_power/toughness (verbatim mig 145) + switch-aware card_effective_* wrappers via card_pt_switched (odd count = swap, even cancels). add_switch_pt_effect helper + harness addSwitchPt. Tests SW1-4. Layer/helper only; spell/trigger authoring deferred. | supabase/migrations/202605010146_switch_pt_layer.sql, tests/feature/switch-pt.test.ts, tests/harness/scenario.ts | 410/410, tsc+lint clean | ~4000 |
+| 22:54 | Session end: 10 writes across 8 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 2 reads | ~14721 tok |
+| 22:56 | Session end: 10 writes across 8 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 2 reads | ~14721 tok |

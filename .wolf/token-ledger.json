@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-05-27T13:42:32.489Z",
   "lifetime": {
-    "total_tokens_estimated": 17266296,
-    "total_reads": 2447,
-    "total_writes": 9260,
+    "total_tokens_estimated": 17295738,
+    "total_reads": 2451,
+    "total_writes": 9280,
     "total_sessions": 49,
-    "anatomy_hits": 1970,
+    "anatomy_hits": 1974,
     "anatomy_misses": 472,
-    "repeated_reads_blocked": 3378,
-    "estimated_savings_vs_bare_cli": 73960179
+    "repeated_reads_blocked": 3380,
+    "estimated_savings_vs_bare_cli": 73972655
   },
   "sessions": [
     {
@@ -64846,6 +64846,164 @@
         "output_tokens_estimated": 3309,
         "reads_count": 2,
         "writes_count": 5,
+        "repeated_reads_blocked": 1,
+        "anatomy_lookups": 2
+      }
+    },
+    {
+      "id": "session-2026-06-06-2233",
+      "started": "2026-06-06T20:33:19.486Z",
+      "ended": "2026-06-06T20:54:22.231Z",
+      "reads": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010134_auras_and_attachment.sql",
+          "tokens_estimated": 5838,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010128_set_pt_layer.sql",
+          "tokens_estimated": 1753,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010145_anthem_static_pumps.sql",
+          "tokens_estimated": 1781,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+          "tokens_estimated": 257,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/anthem.test.ts",
+          "tokens_estimated": 1013,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 25,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 233,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010146_switch_pt_layer.sql",
+          "tokens_estimated": 2788,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 140,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/switch-pt.test.ts",
+          "tokens_estimated": 726,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 27,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 140,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 7591,
+        "output_tokens_estimated": 7130,
+        "reads_count": 2,
+        "writes_count": 10,
+        "repeated_reads_blocked": 1,
+        "anatomy_lookups": 2
+      }
+    },
+    {
+      "id": "session-2026-06-06-2233",
+      "started": "2026-06-06T20:33:19.486Z",
+      "ended": "2026-06-06T20:56:11.745Z",
+      "reads": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010134_auras_and_attachment.sql",
+          "tokens_estimated": 5838,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010128_set_pt_layer.sql",
+          "tokens_estimated": 1753,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010145_anthem_static_pumps.sql",
+          "tokens_estimated": 1781,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+          "tokens_estimated": 257,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/anthem.test.ts",
+          "tokens_estimated": 1013,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 25,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 233,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010146_switch_pt_layer.sql",
+          "tokens_estimated": 2788,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 140,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/switch-pt.test.ts",
+          "tokens_estimated": 726,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 27,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+          "tokens_estimated": 140,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 7591,
+        "output_tokens_estimated": 7130,
+        "reads_count": 2,
+        "writes_count": 10,
         "repeated_reads_blocked": 1,
         "anatomy_lookups": 2
       }
