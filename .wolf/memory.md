@@ -1885,3 +1885,11 @@
 | 23:27 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~184 |
 
 | 2026-06-06 | Engine — CREATURE damage shields (mig 147, F2.1d) on new branch creature-damage-shields. add_creature_damage_prevention + apply_damage_to_creature resolver (consume shields then mark remaining damage + deathtouch + lethal sweep), mirroring the player resolver (mig 125). apply_creature_effect deal_damage reproduced (from mig 129) to route through it. Targeted path only; combat + card-authoring deferred. Harness addCreaturePrevention. Tests CS1-5. | supabase/migrations/202605010147_creature_damage_shields.sql, tests/feature/creature-shield.test.ts, tests/harness/scenario.ts | 415/415, tsc+lint clean | ~5000 |
+| 23:28 | Session end: 16 writes across 11 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 5 reads | ~20327 tok |
+| 23:34 | Session end: 16 writes across 11 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 5 reads | ~20327 tok |
+| 23:52 | Created supabase/migrations/202605010148_combat_creature_shields.sql | — | ~5302 |
+| 23:52 | Created tests/feature/combat-shield.test.ts | — | ~1004 |
+| 23:52 | Edited package.json | inline fix | ~22 |
+| 23:53 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~155 |
+
+| 2026-06-06 | Engine — COMBAT creature shields (mig 148, F2.1e). resolve_combat_damage (from mig 132) routes both creature-damage sites through apply_damage_to_creature; resolver gained p_run_sweep (combat=false to keep its single end-of-step lethal sweep = simultaneity). Dropped 6-arg version; targeted caller resolves to 7-arg default. Protection gate kept. Tests CB1-4; all combat tests green. | supabase/migrations/202605010148_combat_creature_shields.sql, tests/feature/combat-shield.test.ts | 419/419, tsc+lint clean | ~6000 |

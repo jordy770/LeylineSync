@@ -1,18 +1,18 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T21:27:28.808Z
-> Files: 6 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T21:53:49.596Z
+> Files: 8 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~893 tok)
+- `package.json` — Node.js package manifest (~903 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~9088 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~9191 tok)
 
 ## .claude/rules/
 
@@ -122,12 +122,14 @@
 ## supabase/migrations/
 
 - `202605010147_creature_damage_shields.sql` — Phase 4 / F2.1d — CREATURE damage shields (the creature analogue of mig 125). (~3423 tok)
+- `202605010148_combat_creature_shields.sql` — Phase 4 / F2.1e — route COMBAT creature damage through the prevention resolver. (~5302 tok)
 
 ## tests/
 
 
 ## tests/feature/
 
+- `combat-shield.test.ts` — Phase 4 / F2.1e — creature shields in COMBAT (mig 148). resolve_combat_damage now (~1004 tok)
 - `creature-shield.test.ts` — Phase 4 / F2.1d — creature damage shields (mig 147). The creature analogue of the (~1176 tok)
 
 ## tests/fixtures/
