@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T18:09:12.184Z
-> Files: 95 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T19:22:08.799Z
+> Files: 97 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~828 tok)
+- `package.json` — Node.js package manifest (~838 tok)
 - `README.md` — Project documentation (~16065 tok)
 
 ## .claude/
@@ -13,7 +13,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~7960 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~8249 tok)
 
 ## .claude/rules/
 
@@ -78,7 +78,7 @@
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4087 tok)
 - `CardBehaviorForm.tsx` — inputClass (~5786 tok)
 - `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~52633 tok)
-- `DeckInsights.tsx` — COLOR_DOT (~1569 tok)
+- `DeckInsights.tsx` — COLOR_DOT (~1885 tok)
 - `DeckManager.tsx` — DeckManager (~8188 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~4520 tok)
 
@@ -121,7 +121,7 @@
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~5075 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3237 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5941 tok)
-- `deck-insights.ts` — Mana value (converted mana cost) of a mana cost string like "{2}{W}{U}". (~1628 tok)
+- `deck-insights.ts` — Mana value (converted mana cost) of a mana cost string like "{2}{W}{U}". (~2139 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2386 tok)
 - `use-controller-game-state.ts` — Exports useControllerGameState (~2048 tok)
 
@@ -183,6 +183,7 @@
 - `202605010137_commander_format_and_damage.sql` — Commander (EDH), slice 2 — format-aware game start + COMMANDER DAMAGE. (~2185 tok)
 - `202605010138_commander_deck_seeding.sql` — Commander (EDH), slice 3 — the DECK side: designate a commander on a deck and (~1316 tok)
 - `202605010139_import_captures_commander.sql` — Commander (EDH) — importer auto-captures the Commander. (~1266 tok)
+- `202605010140_skip_eliminated_players.sql` — Commander (EDH) / multiplayer — skip ELIMINATED players in the turn + priority (~3412 tok)
 
 ## tests/
 
@@ -207,6 +208,7 @@
 - `modal-decisions.test.ts` — Phase 1, slice 2 — pending-decision machinery + modal "choose one". (~1917 tok)
 - `multi-target-trigger.test.ts` — Phase 3, slice 4b — multi-target triggered abilities (mig 116). "When this (~1053 tok)
 - `multi-target.test.ts` — Phase 3, slice 1 — general multi-target removal (mig 112): the (~1574 tok)
+- `multiplayer.test.ts` — Commander (EDH) — multiplayer turn/priority/win loop (mig 140). The turn and (~1316 tok)
 - `permanent-target.test.ts` — Phase 3, slice 2 — non-creature permanent targets (mig 113): the (~1370 tok)
 - `permanent-trigger-target.test.ts` — Phase 3, slice 3 — non-creature permanent targets for TRIGGERED abilities (~1123 tok)
 - `player-discard.test.ts` — Near-term authoring — player-targeted discard (mig 118). `discard` gains (~1141 tok)
@@ -222,7 +224,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~7878 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~8396 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~449 tok)
 
 ## tests/regression/
@@ -231,7 +233,7 @@
 ## tests/unit/
 
 - `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~8972 tok)
-- `deck-insights.test.ts` — Unit tests for the pure deck-statistics helpers (no DB). (~1171 tok)
+- `deck-insights.test.ts` — Unit tests for the pure deck-statistics helpers (no DB). (~1780 tok)
 
 ## vercel/
 

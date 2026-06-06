@@ -10,6 +10,7 @@ import {
   deckManaCurve,
   deckSingletonViolations,
   deckTypeBreakdown,
+  commanderDeckLegality,
   type DeckType,
 } from '@/lib/game/deck-insights'
 
@@ -50,9 +51,37 @@ export default function DeckInsights({
   const offIdentity = deckColorIdentityViolations(cards, commanderCard ?? null)
   const maxCurve = Math.max(1, ...curve.map((b) => b.count))
   const totalPips = DECK_MANA_COLORS.reduce((sum, c) => sum + pips[c], 0)
+  // Only a deck with a designated commander is a Commander deck to judge.
+  const legality = commanderCard ? commanderDeckLegality(cards, commanderCard) : null
 
   return (
     <div className="mt-4 grid gap-3 rounded-md border border-slate-800 bg-slate-900/50 p-3 text-xs sm:grid-cols-2">
+      {/* Commander legality verdict */}
+      {legality && (
+        <div
+          className={`rounded border p-2 sm:col-span-2 ${
+            legality.legal
+              ? 'border-emerald-500/40 bg-emerald-500/10'
+              : 'border-rose-500/40 bg-rose-500/10'
+          }`}
+        >
+          {legality.legal ? (
+            <p className="font-semibold text-emerald-300">✓ Commander-legal (100 cards, singleton, colour identity)</p>
+          ) : (
+            <>
+              <p className="font-semibold text-rose-300">
+                Not Commander-legal — {legality.issues.length} issue{legality.issues.length > 1 ? 's' : ''}
+              </p>
+              <ul className="mt-0.5 list-disc pl-4 text-rose-200/80">
+                {legality.issues.map((issue) => (
+                  <li key={issue}>{issue}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Headline numbers */}
       <div className="flex flex-wrap gap-4 sm:col-span-2">
         <Stat label="Cards" value={String(total)} />

@@ -12,6 +12,8 @@ import {
   deckSingletonViolations,
   cardColorIdentity,
   deckColorIdentityViolations,
+  deckCardCount,
+  commanderDeckLegality,
 } from '../../lib/game/deck-insights'
 import type { DeckCardLine, LinkedCard } from '../../lib/game/types'
 
@@ -109,4 +111,52 @@ test('deckSingletonViolations flags non-basic duplicates only', () => {
   ])
   assert.equal(v.length, 1)
   assert.equal(v[0]!.name, 'Sol Ring')
+})
+
+test('deckCardCount sums quantities', () => {
+  assert.equal(deckCardCount([line({ id: 'a' }, 1), line({ id: 'b' }, 99)]), 100)
+  assert.equal(deckCardCount([]), 0)
+})
+
+test('commanderDeckLegality: a 100-card, singleton, in-identity deck is legal', () => {
+  const commander = card({ name: 'Atraxa', mana_cost: '{G}{W}{U}{B}', type_line: 'Legendary Creature' })
+  const lines = [
+    line({ name: 'Atraxa', mana_cost: '{G}{W}{U}{B}', type_line: 'Legendary Creature' }, 1),
+    line({ name: 'Forest', type_line: 'Basic Land — Forest', oracle_text: '{T}: Add {G}.' }, 99), // basics may repeat
+  ]
+  const v = commanderDeckLegality(lines, commander)
+  assert.equal(v.cardCount, 100)
+  assert.equal(v.legal, true)
+  assert.deepEqual(v.issues, [])
+})
+
+test('commanderDeckLegality: wrong count is illegal', () => {
+  const commander = card({ mana_cost: '{R}' })
+  const v = commanderDeckLegality([line({ name: 'Commander', mana_cost: '{R}' }, 1)], commander)
+  assert.equal(v.legal, false)
+  assert.equal(v.cardCount, 1)
+  assert.equal(v.issues.length, 1)
+  assert.match(v.issues[0]!, /exactly 100/)
+})
+
+test('commanderDeckLegality: no commander is illegal', () => {
+  const v = commanderDeckLegality([line({ mana_cost: '{R}' }, 100)], null)
+  assert.equal(v.legal, false)
+  assert.match(v.issues[0]!, /No commander/)
+})
+
+test('commanderDeckLegality: reports count + singleton + colour-identity together', () => {
+  const commander = card({ name: 'Krenko', mana_cost: '{2}{R}' }) // mono-red
+  const lines = [
+    line({ name: 'Krenko', mana_cost: '{2}{R}' }, 1),
+    line({ name: 'Sol Ring', type_line: 'Artifact' }, 2), // singleton violation
+    line({ name: 'Counterspell', mana_cost: '{U}{U}' }, 1), // off-identity (blue)
+  ]
+  const v = commanderDeckLegality(lines, commander)
+  assert.equal(v.legal, false)
+  assert.equal(v.cardCount, 4)
+  assert.equal(v.issues.length, 3) // count, singleton, colour identity
+  assert.ok(v.issues.some((i) => /exactly 100/.test(i)))
+  assert.ok(v.issues.some((i) => /singleton/.test(i)))
+  assert.ok(v.issues.some((i) => /colour identity/.test(i)))
 })

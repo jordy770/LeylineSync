@@ -1767,3 +1767,34 @@
 
 | 2026-06-06 | Deck-editor follow-ups: colour-identity legality (cardColorIdentity/deckColorIdentityViolations derived from mana_cost+oracle symbols, +3 tests; off-identity warning in DeckInsights) + batch AI behavior gen (DeckManager loops needs-cards -> /api/cards/generate-behavior -> setCardScript; confirm, sequential, progress, abort-if-unconfigured). | lib/game/deck-insights.ts, components/DeckInsights.tsx, components/DeckManager.tsx, tests/unit/deck-insights.test.ts | 375/375, tsc+lint+build clean | ~6000 |
 | 20:10 | Session end: 40 writes across 16 files (202605010139_import_captures_commander.sql, scenario.ts, commander-deck.test.ts, README.md, krenko-goblins.txt) | 5 reads | ~20395 tok |
+
+## Session: 2026-06-06 20:38
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-06 20:38
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:07 | Edited tests/harness/scenario.ts | modified constructor() | ~462 |
+| 21:08 | Edited tests/harness/scenario.ts | added optional chaining | ~563 |
+| 21:08 | Created tests/feature/multiplayer.test.ts | — | ~1288 |
+| 21:09 | Edited tests/feature/multiplayer.test.ts | 2→2 lines | ~32 |
+| 21:09 | Edited tests/feature/multiplayer.test.ts | 2→2 lines | ~30 |
+| 21:09 | Edited package.json | 2→2 lines | ~37 |
+| 21:10 | Created supabase/migrations/202605010140_skip_eliminated_players.sql | — | ~3412 |
+| 21:11 | Edited tests/feature/multiplayer.test.ts | 4→9 lines | ~83 |
+
+| 2026-06-06 | Commander multiplayer slice — skip ELIMINATED players. Scoped "confirm 4-player" first: rotation (advance_step/pass_priority by seat_number) + win-check (maybe_finish, last-player-standing) were already N-player & wired; only gap = dead seats (life 0) not skipped. mig 140 adds `life_total > 0` filter to both rotations + pass-count threshold. Harness gained seat D / numPlayers:4 + advanceStep/adjustLife/eliminate/sessionResult verbs. Tests MP1-MP5. | supabase/migrations/202605010140_skip_eliminated_players.sql, tests/harness/scenario.ts, tests/feature/multiplayer.test.ts, package.json | 380/380, tsc+lint clean | ~9000 |
+| 21:14 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~162 |
+| 21:14 | Session end: 9 writes across 5 files (scenario.ts, multiplayer.test.ts, package.json, 202605010140_skip_eliminated_players.sql, project_roadmap.md) | 8 reads | ~24066 tok |
+| 21:20 | Edited lib/game/deck-insights.ts | added 4 condition(s) | ~727 |
+| 21:20 | Edited tests/unit/deck-insights.test.ts | 3→5 lines | ~38 |
+| 21:20 | Edited tests/unit/deck-insights.test.ts | expanded (+48 lines) | ~718 |
+| 21:20 | Edited components/DeckInsights.tsx | 4→5 lines | ~36 |
+| 21:21 | Edited components/DeckInsights.tsx | modified commanderDeckLegality() | ~430 |
+| 21:22 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~202 |
+
+| 2026-06-06 | Commander deck legality — editor verdict (client-only, no migration). commanderDeckLegality(lines,commander) in deck-insights.ts combines exactly-100 + singleton + colour identity into {legal,cardCount,issues}; DeckInsights shows green/red verdict banner gated on commanderCard. Builder guide only (not enforced at game-start). Pivoted here from return-to-command refinements after finding the auto-redirect already avoids the false dies trigger (zone->command never fires 'dies') — owner-choice/non-death-zone redirect is a heavy decision-parking change for marginal value. | lib/game/deck-insights.ts, components/DeckInsights.tsx, tests/unit/deck-insights.test.ts | 385/385, tsc+lint+build clean | ~5000 |
+| 21:22 | Session end: 15 writes across 8 files (scenario.ts, multiplayer.test.ts, package.json, 202605010140_skip_eliminated_players.sql, project_roadmap.md) | 12 reads | ~33190 tok |

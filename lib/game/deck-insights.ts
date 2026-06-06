@@ -143,3 +143,51 @@ export function deckColorIdentityViolations(
   }
   return out
 }
+
+/** Total card count across the deck's lines (the commander is counted in the 100). */
+export function deckCardCount(lines: DeckCardLine[]): number {
+  return lines.reduce((sum, line) => sum + line.quantity, 0)
+}
+
+export const COMMANDER_DECK_SIZE = 100
+
+export type CommanderLegality = {
+  legal: boolean
+  cardCount: number
+  /** Human-readable reasons the deck is illegal (empty when legal). */
+  issues: string[]
+}
+
+/**
+ * Whole-deck Commander legality verdict (CR 903.5): exactly 100 cards INCLUDING the
+ * commander, singleton (no duplicate non-basics), and every card within the
+ * commander's colour identity. Combines the individual checks into one pass/fail with
+ * reasons. `lines` include the commander line (it counts toward the 100). Colour
+ * identity is approximate (see cardColorIdentity), so treat it as a builder guide.
+ */
+export function commanderDeckLegality(
+  lines: DeckCardLine[],
+  commander: { mana_cost?: string | null; oracle_text?: string | null } | null,
+): CommanderLegality {
+  const cardCount = deckCardCount(lines)
+  const issues: string[] = []
+
+  if (!commander) issues.push('No commander designated')
+  if (cardCount !== COMMANDER_DECK_SIZE) {
+    issues.push(`${cardCount} cards (a Commander deck must be exactly ${COMMANDER_DECK_SIZE})`)
+  }
+
+  const singleton = deckSingletonViolations(lines)
+  if (singleton.length > 0) {
+    issues.push(`${singleton.length} card${singleton.length > 1 ? 's' : ''} listed more than once (singleton rule)`)
+  }
+
+  const offIdentity = deckColorIdentityViolations(lines, commander)
+  if (offIdentity.length > 0) {
+    issues.push(
+      `${offIdentity.length} card${offIdentity.length > 1 ? 's' : ''} outside the commander's colour identity`,
+    )
+  }
+
+  return { legal: issues.length === 0, cardCount, issues }
+}

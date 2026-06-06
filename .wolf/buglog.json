@@ -5685,6 +5685,108 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-06T18:09:03.008Z"
+    },
+    {
+      "id": "bug-351",
+      "timestamp": "2026-06-06T19:08:08.362Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T19:08:08.362Z"
+    },
+    {
+      "id": "bug-352",
+      "timestamp": "2026-06-06T19:09:28.883Z",
+      "error_message": "Wrong reference: in_progress should be open",
+      "file": "tests/feature/multiplayer.test.ts",
+      "root_cause": "Used \"in_progress\" instead of \"open\"",
+      "fix": "Changed in_progress → open",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-06T19:09:33.900Z"
+    },
+    {
+      "id": "bug-353",
+      "timestamp": "2026-06-06T19:11:51.889Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/multiplayer.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T19:11:51.889Z"
+    },
+    {
+      "id": "bug-354",
+      "timestamp": "2026-06-06T21:00:00.000Z",
+      "error_message": "Multiplayer (3-4p Commander): an eliminated player (life 0) was still handed priority and made active player — turn/priority rotations did not skip dead seats.",
+      "file": "supabase/migrations/202605010140_skip_eliminated_players.sql",
+      "root_cause": "advance_step and pass_priority rotate by seat_number but never filtered on life_total > 0. In 2p the game ends instantly at one death so it was invisible; in 3-4p the game continues and the dead seat stalled the round / untapped+drew on its turn. maybe_finish_game_session already did last-player-standing correctly.",
+      "fix": "Added life_total > 0 filter to the player COUNT (pass-count threshold) in pass_priority and to all four next-seat lookups (next-higher + wrap-to-lowest) across both functions. Reproduced pass_priority from mig 095, advance_step from baseline.",
+      "tags": [
+        "commander",
+        "multiplayer",
+        "priority",
+        "turn-rotation",
+        "elimination",
+        "sql"
+      ],
+      "related_bugs": [
+        "bug-281",
+        "bug-283"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T21:00:00.000Z"
+    },
+    {
+      "id": "bug-355",
+      "timestamp": "2026-06-06T19:20:05.167Z",
+      "error_message": "Type error",
+      "file": "lib/game/deck-insights.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T19:20:05.167Z"
+    },
+    {
+      "id": "bug-356",
+      "timestamp": "2026-06-06T19:21:02.524Z",
+      "error_message": "CSS fix: sm",
+      "file": "components/DeckInsights.tsx",
+      "root_cause": "sm: grid-cols-2\"> → col-span-2 ${",
+      "fix": "Changed sm: grid-cols-2\"> → col-span-2 ${",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T19:21:02.524Z"
     }
   ]
 }
