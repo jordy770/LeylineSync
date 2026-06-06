@@ -1844,3 +1844,21 @@
 | 22:26 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified DEFERRED() | ~256 |
 
 | 2026-06-06 | Ops + security (#2). RLS (mig 143): dropped two USING(true) SELECT policies (game_cards, game_players) that leaked every row to anon/non-members; reads now is_session_player-scoped. Cleanup (mig 144): cleanup_finished_session(id) deletes runtime rows for a finished session, keeps session+players. next.config.ts: turbopack.root pinned (silences stray-lockfile warning). DEFERRED: hiding hidden zones between members (conflicts with judge view + count display). | supabase/migrations/202605010143_rls_scope_reads_to_session.sql, 202605010144_cleanup_finished_session.sql, next.config.ts, tests/feature/rls.test.ts, tests/feature/cleanup.test.ts, tests/harness/scenario.ts | 401/401, tsc+lint+build clean | ~6000 |
+| 22:27 | Session end: 50 writes across 20 files (scenario.ts, multiplayer.test.ts, package.json, 202605010140_skip_eliminated_players.sql, project_roadmap.md) | 21 reads | ~130941 tok |
+
+## Session: 2026-06-06 22:33
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-06 22:33
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:39 | Created supabase/migrations/202605010145_anthem_static_pumps.sql | — | ~1663 |
+| 22:39 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~257 |
+| 22:40 | Created tests/feature/anthem.test.ts | — | ~1013 |
+| 22:40 | Edited package.json | inline fix | ~25 |
+| 22:41 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~217 |
+
+| 2026-06-06 | Engine #3 — ANTHEMS (mig 145, F2.2d). card_effective_power/toughness now fold player-scoped (affected:'controller') + global (affected:'all') pump continuous effects onto creatures; registration already stored them, only the accessors were missing. Gated to creatures + source-zone (anthem ends with its source). Stacks with set/counters/per-card pumps. Fixtures Glorious Banner Test, Total War Banner Test. Tests AN1-5. Deferred: client board display, tribal/typed/"other" anthems. | supabase/migrations/202605010145_anthem_static_pumps.sql, tests/feature/anthem.test.ts, tests/fixtures/test-cards.json | 406/406, tsc+lint clean | ~4500 |

@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T20:26:01.405Z
-> Files: 105 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T20:41:25.660Z
+> Files: 107 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~197 tok)
-- `package.json` — Node.js package manifest (~865 tok)
+- `package.json` — Node.js package manifest (~873 tok)
 - `README.md` — Project documentation (~16065 tok)
 
 ## .claude/
@@ -14,7 +14,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~8731 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~8877 tok)
 
 ## .claude/rules/
 
@@ -189,6 +189,7 @@
 - `202605010142_commander_return_refinements.sql` — Commander (EDH) — return-to-command refinements. (~1696 tok)
 - `202605010143_rls_scope_reads_to_session.sql` — Operational / security — scope game-state reads to SESSION MEMBERS. (~688 tok)
 - `202605010144_cleanup_finished_session.sql` — Operational — explicit cleanup of a FINISHED game's runtime data. (~724 tok)
+- `202605010145_anthem_static_pumps.sql` — Phase 4 / F2.2d — ANTHEMS: static, source-gated team pumps (CR 613 layer 7d). (~1663 tok)
 
 ## tests/
 
@@ -196,6 +197,7 @@
 ## tests/feature/
 
 - `activated-abilities.test.ts` — Phase 4 — activated abilities beyond deal_damage (mig 119). "{cost}: effect" (~1012 tok)
+- `anthem.test.ts` — Phase 4 / F2.2d — anthems: static team pumps (mig 145). A `pump` continuous effect (~1013 tok)
 - `apnap-trigger-order.test.ts` — Phase 4 / F1 — APNAP ordering of simultaneous triggered abilities (mig 123). (~1112 tok)
 - `auras.test.ts` — F3 slice 4a — Auras + attachment (mig 134). An Aura is cast targeting a creature, (~1715 tok)
 - `cant-be-countered.test.ts` — "Can't be countered": a counter that targets an uncounterable spell resolves (~644 tok)
@@ -228,7 +230,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~6191 tok)
+- `test-cards.json` (~6356 tok)
 
 ## tests/harness/
 
