@@ -1798,3 +1798,11 @@
 
 | 2026-06-06 | Commander deck legality — editor verdict (client-only, no migration). commanderDeckLegality(lines,commander) in deck-insights.ts combines exactly-100 + singleton + colour identity into {legal,cardCount,issues}; DeckInsights shows green/red verdict banner gated on commanderCard. Builder guide only (not enforced at game-start). Pivoted here from return-to-command refinements after finding the auto-redirect already avoids the false dies trigger (zone->command never fires 'dies') — owner-choice/non-death-zone redirect is a heavy decision-parking change for marginal value. | lib/game/deck-insights.ts, components/DeckInsights.tsx, tests/unit/deck-insights.test.ts | 385/385, tsc+lint+build clean | ~5000 |
 | 21:22 | Session end: 15 writes across 8 files (scenario.ts, multiplayer.test.ts, package.json, 202605010140_skip_eliminated_players.sql, project_roadmap.md) | 12 reads | ~33190 tok |
+| 21:33 | Created supabase/migrations/202605010141_commander_deck_legality.sql | — | ~2302 |
+| 21:33 | Edited tests/harness/scenario.ts | added nullish coalescing | ~269 |
+| 21:33 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~137 |
+| 21:34 | Edited tests/feature/commander-deck.test.ts | expanded (+61 lines) | ~964 |
+| 21:35 | Edited tests/feature/commander-deck.test.ts | expanded (+7 lines) | ~324 |
+| 21:37 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~107 |
+
+| 2026-06-06 | Commander deck legality — SERVER-SIDE enforcement (mig 141). commander_deck_legality(deck_id) PL/pgSQL verdict (exactly-100 + singleton + colour identity) mirroring the client; card_color_identity(card_id) reuses card_color_set on mana_cost + oracle {...} symbols. spawn_deck_for_session gained p_enforce_legality (default true), raises on an illegal Commander deck — production enforces with no client change (2-arg sig dropped); harness spawnDeck passes false. Added "Wastes Test" basic land to fixtures for a legal-100 acceptance test. Tests LEG1-5. | supabase/migrations/202605010141_commander_deck_legality.sql, tests/harness/scenario.ts, tests/feature/commander-deck.test.ts, tests/fixtures/test-cards.json | 390/390, tsc+lint+build clean | ~7000 |

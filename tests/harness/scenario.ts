@@ -290,10 +290,30 @@ export class Scenario {
     return res.rows[0]?.commander_card_id ?? null
   }
 
-  /** Seed a deck into the session for the acting seat (library + commander to command zone). */
-  async spawnDeck(deckId: string): Promise<{ library: number; commander_seeded: boolean }> {
+  /**
+   * Seed a deck into the session for the acting seat (library + commander to command
+   * zone). Legality enforcement defaults OFF so minimal test fixtures can seed; pass
+   * { enforceLegality: true } to exercise the Commander legality gate.
+   */
+  async spawnDeck(
+    deckId: string,
+    opts: { enforceLegality?: boolean } = {},
+  ): Promise<{ library: number; commander_seeded: boolean }> {
     return this.run(() =>
-      rpc(this.client, 'spawn_deck_for_session', { p_session_id: this.sessionId, p_deck_id: deckId }),
+      rpc(this.client, 'spawn_deck_for_session', {
+        p_session_id: this.sessionId,
+        p_deck_id: deckId,
+        p_enforce_legality: opts.enforceLegality ?? false,
+      }),
+    )
+  }
+
+  /** The server's Commander legality verdict for a deck, as the acting seat. */
+  async commanderDeckLegality(
+    deckId: string,
+  ): Promise<{ legal: boolean; card_count: number; issues: string[] }> {
+    return this.run(() =>
+      rpc(this.client, 'commander_deck_legality', { p_deck_id: deckId }),
     )
   }
 
