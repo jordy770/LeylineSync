@@ -1893,3 +1893,11 @@
 | 23:53 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~155 |
 
 | 2026-06-06 | Engine — COMBAT creature shields (mig 148, F2.1e). resolve_combat_damage (from mig 132) routes both creature-damage sites through apply_damage_to_creature; resolver gained p_run_sweep (combat=false to keep its single end-of-step lethal sweep = simultaneity). Dropped 6-arg version; targeted caller resolves to 7-arg default. Protection gate kept. Tests CB1-4; all combat tests green. | supabase/migrations/202605010148_combat_creature_shields.sql, tests/feature/combat-shield.test.ts | 419/419, tsc+lint clean | ~6000 |
+| 23:54 | Session end: 20 writes across 13 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 7 reads | ~27199 tok |
+| 23:59 | Created supabase/migrations/202605010149_cda_pt_layer.sql | — | ~2332 |
+| 23:59 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~181 |
+| 23:59 | Created tests/feature/cda-pt.test.ts | — | ~870 |
+| 23:59 | Edited package.json | inline fix | ~30 |
+| 00:01 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | "prevent damage to target " → "cda" | ~183 |
+
+| 2026-06-07 | Engine — CDA layer 7a (mig 149, F2.2f). card_cda_value reads a top-level script `cda` key (count creatures_you_control/lands_you_control/cards_in_graveyard + plus); card_layered_power/toughness base coalesce now set(7b)->cda(7a)->printed. No register/CHECK change (CDA is inherent, read from script). Fixture Wild Tracker Test (*/*); tests CD1-5. P/T LAYER SYSTEM 7a-7e COMPLETE. | supabase/migrations/202605010149_cda_pt_layer.sql, tests/feature/cda-pt.test.ts, tests/fixtures/test-cards.json | 424/424, tsc+lint clean | ~5000 |
