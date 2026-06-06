@@ -79,6 +79,26 @@ export async function castCardFromHand(
   return data
 }
 
+// Cast your commander from the command zone (pays its cost + commander tax).
+export async function castCommander(
+  supabase: SupabaseClient,
+  sessionId: string,
+  cardId: string,
+  genericPayment?: Record<string, number>,
+) {
+  const { data, error } = await supabase.rpc('cast_commander', {
+    p_session_id: sessionId,
+    p_game_card_id: cardId,
+    p_generic_payment: genericPayment ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
 // Attach an Equipment you control onto a creature you control (sorcery-speed equip).
 export async function equip(
   supabase: SupabaseClient,
@@ -1239,23 +1259,34 @@ export async function spawnDeckForSession(
   sessionId: string,
   deckId: string,
 ) {
-  const { data, error, response } = await supabase.functions.invoke('spawn-deck', {
-    body: {
-      sessionId,
-      deckId,
-    },
+  // Seeds the library and — in a Commander game — the commander into the command
+  // zone. The previous Deno edge function (spawn-deck) is superseded by this RPC.
+  const { data, error } = await supabase.rpc('spawn_deck_for_session', {
+    p_session_id: sessionId,
+    p_deck_id: deckId,
   })
 
   if (error) {
-    const functionErrorMessage = await getFunctionErrorMessage(response)
-    if (functionErrorMessage) {
-      throw new Error(functionErrorMessage)
-    }
-
     throw error
   }
 
-  return data as { message: string; count: number }
+  return data as { library: number; commander_seeded: boolean }
+}
+
+// Designate (or clear, with null) a deck's commander.
+export async function setDeckCommander(
+  supabase: SupabaseClient,
+  deckId: string,
+  cardId: string | null,
+) {
+  const { error } = await supabase.rpc('set_deck_commander', {
+    p_deck_id: deckId,
+    p_card_id: cardId,
+  })
+
+  if (error) {
+    throw error
+  }
 }
 
 export async function importDeckFromText(
@@ -1551,22 +1582,4 @@ export async function devUndoAction(
 
 function isSupabaseErrorLike(error: unknown): error is SupabaseErrorLike {
   return typeof error === 'object' && error !== null && 'message' in error
-}
-
-async function getFunctionErrorMessage(response: Response | undefined) {
-  if (!response) {
-    return null
-  }
-
-  try {
-    const payload = (await response.clone().json()) as { error?: string }
-    return payload.error ?? null
-  } catch {
-    try {
-      const text = await response.clone().text()
-      return text || null
-    } catch {
-      return null
-    }
-  }
 }

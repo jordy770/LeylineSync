@@ -207,7 +207,10 @@ export default function GameSessionLobby() {
 
     try {
       const result = await spawnDeckForSession(supabase, activeSession.id, deckId)
-      setStatusMessage(`${result.count} card(s) spawned into your library`)
+      setStatusMessage(
+        `${result.library} card(s) spawned into your library` +
+          (result.commander_seeded ? ' · commander placed in the command zone' : ''),
+      )
     } catch (error) {
       const message = getErrorMessage(error)
       console.error('Failed to spawn deck:', message, error)

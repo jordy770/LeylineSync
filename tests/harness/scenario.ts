@@ -16,7 +16,7 @@ import type { Client } from 'pg'
 import { asPlayer, rpc } from './db'
 
 export type Seat = 'A' | 'B' | 'C'
-export type Zone = 'library' | 'hand' | 'battlefield' | 'graveyard' | 'exile' | 'stack'
+export type Zone = 'library' | 'hand' | 'battlefield' | 'graveyard' | 'exile' | 'stack' | 'command'
 
 export class Scenario {
   private constructor(
@@ -244,6 +244,43 @@ export class Scenario {
         p_generic_payment: opts.generic ? JSON.stringify(opts.generic) : null,
         p_target_card_id: opts.target ?? null,
       }),
+    )
+  }
+
+  /** Create a deck for a seat (list_data + optional commander); returns the deck id. */
+  async createDeck(seat: Seat, cardNames: string[], commanderName?: string): Promise<string> {
+    const ids = await Promise.all(cardNames.map((n) => this.cardId(n)))
+    const commanderId = commanderName ? await this.cardId(commanderName) : null
+    const res = await this.client.query<{ id: string }>(
+      `insert into public.decks (owner_id, name, list_data, commander_card_id, created_by)
+       values ($1, $2, $3::jsonb, $4, $1)
+       returning id`,
+      [this.players[seat], 'Test Deck', JSON.stringify(ids), commanderId],
+    )
+    return res.rows[0]!.id
+  }
+
+  /** Set a deck's commander, as the acting seat. */
+  async setDeckCommander(deckId: string, commanderName: string): Promise<void> {
+    const cardId = await this.cardId(commanderName)
+    return this.run(() =>
+      rpc(this.client, 'set_deck_commander', { p_deck_id: deckId, p_card_id: cardId }),
+    )
+  }
+
+  /** Read a deck's commander_card_id (or null). */
+  async deckCommander(deckId: string): Promise<string | null> {
+    const res = await this.client.query<{ commander_card_id: string | null }>(
+      'select commander_card_id from public.decks where id = $1',
+      [deckId],
+    )
+    return res.rows[0]?.commander_card_id ?? null
+  }
+
+  /** Seed a deck into the session for the acting seat (library + commander to command zone). */
+  async spawnDeck(deckId: string): Promise<{ library: number; commander_seeded: boolean }> {
+    return this.run(() =>
+      rpc(this.client, 'spawn_deck_for_session', { p_session_id: this.sessionId, p_deck_id: deckId }),
     )
   }
 

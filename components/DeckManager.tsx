@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import CardCatalogPicker from '@/components/CardCatalogPicker'
-import { importDeckFromText, getErrorMessage, updateDeckList } from '@/lib/game/actions'
+import { importDeckFromText, getErrorMessage, setDeckCommander, updateDeckList } from '@/lib/game/actions'
 import { getDeckDetail, getUserDecks } from '@/lib/game/data'
 import { createClient } from '@/lib/supabase/client'
 import type { DeckDetail, DeckSummary } from '@/lib/game/types'
@@ -190,6 +190,23 @@ export default function DeckManager() {
     await saveDeckCards(selectedDeck.id, cardIds, quantity === 0 ? 'Removed card.' : 'Updated quantity.')
   }
 
+  // Designate (or clear) the deck's commander for Commander games.
+  const handleSetCommander = async (cardId: string | null) => {
+    if (!selectedDeck) return
+    setErrorMessage(null)
+    setStatusMessage(null)
+    setIsWorking(true)
+    try {
+      await setDeckCommander(supabase, selectedDeck.id, cardId)
+      await refreshSelectedDeck(selectedDeck.id)
+      setStatusMessage(cardId ? 'Commander set.' : 'Commander cleared.')
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error))
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
   return (
     <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(360px,420px)]">
       <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
@@ -311,38 +328,57 @@ export default function DeckManager() {
             </div>
 
             <div className="mt-4 grid gap-2">
-              {selectedDeck.cards.map((line) => (
-                <div
-                  key={line.card_id}
-                  className="grid grid-cols-[72px_1fr_auto] items-center gap-2 rounded-md border border-slate-800 bg-slate-900 p-2"
-                >
-                  <input
-                    type="number"
-                    min={0}
-                    max={99}
-                    value={line.quantity}
-                    onChange={(event) => handleSetQuantity(line.card_id, Number(event.target.value))}
-                    disabled={isWorking}
-                    className="rounded border border-slate-700 bg-slate-950 px-2 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-white">
-                      {line.card?.name || line.card_id}
-                    </p>
-                    <p className="truncate text-xs text-slate-400">
-                      {[line.card?.mana_cost, line.card?.type_line].filter(Boolean).join(' - ')}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleSetQuantity(line.card_id, 0)}
-                    disabled={isWorking}
-                    className="rounded bg-red-500 px-2 py-1 text-xs font-semibold text-red-950 disabled:cursor-not-allowed disabled:opacity-50"
+              {selectedDeck.cards.map((line) => {
+                const isCommander = selectedDeck.commander_card_id === line.card_id
+                return (
+                  <div
+                    key={line.card_id}
+                    className={`grid grid-cols-[72px_1fr_auto] items-center gap-2 rounded-md border p-2 ${
+                      isCommander ? 'border-amber-500 bg-amber-500/10' : 'border-slate-800 bg-slate-900'
+                    }`}
                   >
-                    Remove
-                  </button>
-                </div>
-              ))}
+                    <input
+                      type="number"
+                      min={0}
+                      max={99}
+                      value={line.quantity}
+                      onChange={(event) => handleSetQuantity(line.card_id, Number(event.target.value))}
+                      disabled={isWorking}
+                      className="rounded border border-slate-700 bg-slate-950 px-2 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-white">
+                        {line.card?.name || line.card_id}
+                        {isCommander && <span className="ml-2 text-xs font-bold text-amber-400">★ Commander</span>}
+                      </p>
+                      <p className="truncate text-xs text-slate-400">
+                        {[line.card?.mana_cost, line.card?.type_line].filter(Boolean).join(' - ')}
+                      </p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => handleSetCommander(isCommander ? null : line.card_id)}
+                        disabled={isWorking}
+                        title={isCommander ? 'Clear commander' : 'Set as commander'}
+                        className={`rounded px-2 py-1 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${
+                          isCommander ? 'bg-amber-500 text-amber-950' : 'bg-slate-700 text-slate-200'
+                        }`}
+                      >
+                        ★
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSetQuantity(line.card_id, 0)}
+                        disabled={isWorking}
+                        className="rounded bg-red-500 px-2 py-1 text-xs font-semibold text-red-950 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         ) : null}

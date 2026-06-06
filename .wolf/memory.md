@@ -1657,3 +1657,49 @@
 
 | 2026-06-06 | Commander slice 2: mig 137 — format-aware create_game_session(p_format) + join_game_session (late joiners get 40, fixes slice-1 gap); game_commander_damage table + tracking in apply_damage_to_player (21 combat dmg from one commander = loss). Lobby create passes format. Tests CM6, CD1-3. | supabase/migrations/202605010137_commander_format_and_damage.sql, components/GameSessionLobby.tsx, lib/game/actions.ts, tests/feature/commander.test.ts, tests/harness/scenario.ts | 359/359, tsc+lint clean | ~9000 |
 | 01:51 | Session end: 75 writes across 22 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 22 reads | ~169470 tok |
+| 01:53 | Session end: 75 writes across 22 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 22 reads | ~169470 tok |
+| 01:56 | Created supabase/migrations/202605010138_commander_deck_seeding.sql | — | ~1239 |
+| 01:57 | Edited tests/harness/scenario.ts | 2→2 lines | ~39 |
+| 01:58 | Edited tests/harness/scenario.ts | added optional chaining | ~495 |
+| 01:59 | Created tests/feature/commander-deck.test.ts | — | ~876 |
+| 01:59 | Edited lib/game/actions.ts | modified spawnDeckForSession() | ~239 |
+| 02:00 | Edited components/GameSessionLobby.tsx | 2→5 lines | ~76 |
+| 02:00 | Edited lib/game/actions.ts | modified isSupabaseErrorLike() | ~44 |
+| 02:00 | Edited lib/game/types.ts | 3→4 lines | ~30 |
+| 02:00 | Edited lib/game/data.ts | 5→5 lines | ~48 |
+| 02:00 | Edited lib/game/data.ts | 6→7 lines | ~77 |
+| 02:01 | Edited components/DeckManager.tsx | inline fix | ~31 |
+| 02:01 | Edited components/DeckManager.tsx | added error handling | ~194 |
+| 02:01 | Edited components/DeckManager.tsx | CSS: null | ~775 |
+| 02:01 | Edited package.json | inline fix | ~28 |
+| 02:03 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | expanded (+7 lines) | ~313 |
+
+| 2026-06-06 | Commander slice 3 (deck side): mig 138 — decks.commander_card_id + set_deck_commander; spawn_deck_for_session RPC (library + commander to command zone) replacing the spawn-deck edge fn. Client: spawnDeckForSession->RPC, setDeckCommander, DeckManager commander toggle, getDeckDetail commander_card_id. Tests DK1-4. | supabase/migrations/202605010138_commander_deck_seeding.sql, lib/game/actions.ts, lib/game/data.ts, lib/game/types.ts, components/DeckManager.tsx, components/GameSessionLobby.tsx, tests/feature/commander-deck.test.ts, tests/harness/scenario.ts | 363/363, tsc+lint clean | ~10000 |
+| 02:04 | Session end: 90 writes across 25 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 23 reads | ~190860 tok |
+| 02:06 | Edited lib/game/types.ts | inline fix | ~30 |
+| 02:06 | Edited lib/game/data.ts | inline fix | ~32 |
+| 02:06 | Edited lib/game/data.ts | 7→9 lines | ~67 |
+| 02:06 | Edited lib/game/data.ts | 6→8 lines | ~117 |
+| 02:06 | Edited lib/game/types.ts | 6→8 lines | ~60 |
+| 02:06 | Edited lib/game/actions.ts | added nullish coalescing | ~155 |
+| 02:07 | Edited components/ControllerListV4.tsx | 5→6 lines | ~52 |
+| 02:07 | Edited components/ControllerListV4.tsx | CSS: castCommander, cardId | ~132 |
+| 02:07 | Edited components/ControllerListV4.tsx | 2→3 lines | ~57 |
+| 02:08 | Edited components/ControllerListV4.tsx | added optional chaining | ~540 |
+| 02:09 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~144 |
+
+| 2026-06-06 | Commander command-zone UI (V4): GameZone/gameZones + ControllerCard learn command/is_commander/command_zone_casts; getControllerCards selects them; command-zone strip under StatusBar with Cast button + live tax -> castCommander RPC. tsc+lint+next build clean. | components/ControllerListV4.tsx, lib/game/actions.ts, lib/game/data.ts, lib/game/types.ts | clean | ~4000 |
+| 02:10 | Session end: 101 writes across 25 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 23 reads | ~192671 tok |
+| 02:16 | Edited supabase/migrations/202605010138_commander_deck_seeding.sql | uid() → commander() | ~190 |
+| 02:16 | Edited supabase/migrations/202605010138_commander_deck_seeding.sql | 15→17 lines | ~194 |
+| 02:17 | Edited supabase/migrations/202605010138_commander_deck_seeding.sql | 9→9 lines | ~82 |
+| 02:17 | Edited tests/feature/commander-deck.test.ts | 11→13 lines | ~232 |
+| 02:19 | Created docs/commander-decks/README.md | — | ~326 |
+| 02:20 | Created docs/commander-decks/krenko-goblins.txt | — | ~378 |
+| 02:20 | Created docs/commander-decks/atraxa-counters.txt | — | ~406 |
+| 02:20 | Edited docs/commander-decks/atraxa-counters.txt | 2→7 lines | ~33 |
+| 02:20 | Edited docs/commander-decks/atraxa-counters.txt | 6→7 lines | ~24 |
+| 02:21 | Edited docs/commander-decks/atraxa-counters.txt | 2→2 lines | ~7 |
+
+| 2026-06-06 | Commander decklists + seeding de-dup fix: spawn_deck_for_session now EXCLUDES the commander from the library seed (no double-seed when the decklist still lists it); DK2 updated. Added docs/commander-decks/ (Krenko mono-red, Atraxa WUBG, 100 cards each) for the paste-import flow + README. | supabase/migrations/202605010138_commander_deck_seeding.sql, tests/feature/commander-deck.test.ts, docs/commander-decks/* | 363/363 | ~6000 |
+| 02:21 | Session end: 111 writes across 27 files (202605010131_protection_color_and_targeting.sql, protection.test.ts, package.json, card-behavior-schema.ts, card-behavior-llm.ts) | 23 reads | ~194660 tok |

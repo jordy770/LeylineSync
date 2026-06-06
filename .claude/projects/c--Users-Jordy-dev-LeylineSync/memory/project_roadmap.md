@@ -111,8 +111,15 @@ Reproduce each touched fn from its CURRENT migration (grep first — bug-281/283
 **Slice 1 — in-game command zone ✅ (mig 136).** `'command'` zone; `game_cards.is_commander` + `command_zone_casts`; `game_sessions.format`. `cast_commander` (cast from command zone at sorcery speed, base cost + tax = 2×prior casts, → cast_permanent → battlefield). Commander returns to the command zone instead of the graveyard on death (put_in_graveyard redirect, auto for now). `set_commander_format` → format + 40 life. Tests CM1–CM5 (355/355). See cerebrum.
 **Slice 2 — format-aware game start + commander damage ✅ (mig 137).** create_game_session(p_format) sets host life; join_game_session reads the session format → late joiners get 40 (fixes the slice-1 gap). game_commander_damage table + tracking in apply_damage_to_player(is_combat): 21 cumulative from one commander → defender life 0 → loss. Lobby's create now passes the format. Tests CM6, CD1-3 (359/359).
 
+**Slice 3 — deck side ✅ (mig 138).** decks.commander_card_id + set_deck_commander; spawn_deck_for_session RPC (seeds library + commander→command zone in a Commander game) REPLACES the spawn-deck Deno edge fn (now dead code). Client: spawnDeckForSession→RPC, setDeckCommander action, DeckManager ★ commander toggle, getDeckDetail exposes commander_card_id. Tests DK1-4 (363/363).
+
 **Remaining Commander slices:**
-- ~~Commander DAMAGE~~ ✅ shipped (slice 2). ~~late-joiner life~~ ✅ shipped (slice 2).
+- ~~Commander DAMAGE~~ ✅ slice 2. ~~late-joiner life~~ ✅ slice 2. ~~deck commander designation + seed to command zone~~ ✅ slice 3.
+- **Importer**: import_deck_from_text still ignores the 'Commander' section line — capture it into commander_card_id.
+- **Deck legality**: 100-card singleton + colour identity (needs a color_identity concept — derive from mana_cost or add a column).
+- ~~**Command-zone UI**~~ ✅ a command-zone strip in V4 (under the StatusBar) renders each command-zone card with a Cast button + live tax (2×command_zone_casts), gated on sorcery speed → castCommander RPC. Needed GameZone/gameZones + ControllerCard to learn 'command'/is_commander/command_zone_casts (getControllerCards already loaded all the player's cards, just not these fields; normalizeGameZone fell back to 'battlefield' for the unknown zone). tsc+lint+next build clean. (No automated UI test — same caveat as other client slices.)
+- **Return refinements**: owner CHOICE (vs auto) + non-death zones (exile/bounce/library); suppress the false 'dies' trigger on redirect.
+- **Multiplayer**: confirm 4-player turn/priority + last-player-standing win.
 - **Return-to-command refinements** — owner CHOICE (pending-decision) instead of auto; cover the non-death zones (exile/bounce-to-hand/library); suppress the false 'dies' trigger on redirect.
 - **Deck side** (the other half of the original scoping Q) — designate a commander on a deck (the importer already parses a 'Commander' line), 100-card singleton + colour-identity legality, and seed the commander into the command zone at game start (spawn-deck / create flow + set_commander_format). No `color_identity` column yet (derive from mana_cost like protection, or add one).
 - **Multiplayer**: seating already supports 3+; confirm 4-player turn/priority + "last player standing" win.

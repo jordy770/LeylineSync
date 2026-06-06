@@ -24,7 +24,7 @@ import type {
 } from './types'
 
 export const emptyManaPool: ManaPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }
-export const gameZones = ['library', 'hand', 'stack', 'battlefield', 'graveyard', 'exile'] as const
+export const gameZones = ['library', 'hand', 'stack', 'battlefield', 'graveyard', 'exile', 'command'] as const
 export const gameSessionStatuses = ['open', 'locked', 'finished'] as const
 export const turnPhases = ['beginning', 'main_1', 'combat', 'main_2', 'ending'] as const
 export const turnSteps = [
@@ -226,7 +226,9 @@ export async function getControllerCards(
       copied_script,
       static_effects_suppressed,
       entered_battlefield_turn_number,
-      plus_one_counters
+      plus_one_counters,
+      is_commander,
+      command_zone_casts
     `)
     .eq('session_id', sessionId)
     .eq('owner_id', playerId)
@@ -261,6 +263,8 @@ export async function getControllerCards(
       static_effects_suppressed: card.static_effects_suppressed ?? false,
       entered_battlefield_turn_number: card.entered_battlefield_turn_number ?? null,
       plus_one_counters: card.plus_one_counters ?? 0,
+      is_commander: (card as { is_commander?: boolean }).is_commander ?? false,
+      command_zone_casts: (card as { command_zone_casts?: number }).command_zone_casts ?? 0,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,
       cards: linkedCard,
     }
@@ -505,7 +509,7 @@ export async function getUserDecks(supabase: SupabaseClient) {
 export async function getDeckDetail(supabase: SupabaseClient, deckId: string) {
   const { data, error } = await supabase
     .from('decks')
-    .select('id, name, list_data, created_at')
+    .select('id, name, list_data, created_at, commander_card_id')
     .eq('id', deckId)
     .maybeSingle()
 
@@ -534,6 +538,7 @@ export async function getDeckDetail(supabase: SupabaseClient, deckId: string) {
     name: data.name ?? null,
     card_count: cardIds.length,
     created_at: data.created_at ?? null,
+    commander_card_id: (data as { commander_card_id?: string | null }).commander_card_id ?? null,
     cards: [...countsByCardId.entries()]
       .map(([cardId, quantity]) => ({
         card_id: cardId,

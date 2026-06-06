@@ -11,6 +11,7 @@ import {
   chooseTriggeredAbilityCreatureTarget,
   chooseTriggeredAbilityTargets,
   castFight,
+  castCommander as castCommanderAction,
   declareAttacker as declareAttackerAction,
   declareBlocker as declareBlockerAction,
   equip as equipAction,
@@ -587,6 +588,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
   const ownGraveyard = cards.filter((c) => c.zone === 'graveyard')
   const ownExile = cards.filter((c) => c.zone === 'exile')
   const ownLibraryCount = cards.filter((c) => c.zone === 'library').length
+  const commandZone = cards.filter((c) => c.zone === 'command')
   const ownCreatures = battlefieldCards.filter((c) => c.cards?.type_line?.toLowerCase().includes('creature'))
   const incomingAttackers = combatAssignments.filter((a) => a.defending_player_id === playerId)
   // Attackers this player has already declared this combat. Once non-empty, we
@@ -721,6 +723,11 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     // Equip — attach an Equipment you control onto a creature you control.
     equip: async (equipmentCardId: string, targetCardId: string) => {
       await equipAction(supabase, sessionId, equipmentCardId, targetCardId)
+      await refresh()
+    },
+    // Cast the commander from the command zone (cost + commander tax).
+    castCommander: async (cardId: string) => {
+      await castCommanderAction(supabase, sessionId, cardId)
       await refresh()
     },
     // Targeted player-damage spell (Lightning Bolt etc.)
@@ -945,6 +952,33 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
               isActivePlayer={isActivePlayer}
               libraryCount={ownLibraryCount}
             />
+            {/* Command zone — cast your commander (sorcery speed) with live tax. */}
+            {commandZone.length > 0 && (
+              <div className="flex shrink-0 items-center gap-2 overflow-x-auto border-b border-amber-500/20 bg-amber-500/[0.06] px-3 py-2">
+                <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-amber-400">
+                  Command
+                </span>
+                {commandZone.map((c) => {
+                  const tax = 2 * (c.command_zone_casts ?? 0)
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      disabled={!canCastSorceries}
+                      onClick={() => { void actions.castCommander(c.id) }}
+                      title={canCastSorceries ? 'Cast your commander' : 'Sorcery speed: your main phase, empty stack'}
+                      className={`flex shrink-0 items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold transition active:scale-95 ${
+                        canCastSorceries ? 'bg-amber-400 text-amber-950' : 'cursor-not-allowed bg-slate-700 text-slate-300 opacity-70'
+                      }`}
+                    >
+                      <span className="max-w-[120px] truncate">{c.name}</span>
+                      <ManaCostDisplay manaCost={c.cards?.mana_cost} dark={canCastSorceries} />
+                      {tax > 0 && <span className="rounded bg-black/20 px-1">+{tax} tax</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
             <div className="flex min-h-0 flex-1">
               <MainArea
                 supabase={supabase}

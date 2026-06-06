@@ -5205,6 +5205,182 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-05T23:50:13.338Z"
+    },
+    {
+      "id": "bug-321",
+      "timestamp": "2026-06-05T23:58:07.765Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T23:58:07.765Z"
+    },
+    {
+      "id": "bug-322",
+      "timestamp": "2026-06-05T23:59:45.525Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "9 lines replaced/restructured",
+      "fix": "Rewrote 23→34 lines (9 removed) | Also: async function getFunctionErrorMessage(response: R; if (!response) {",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-06T00:00:17.922Z"
+    },
+    {
+      "id": "bug-323",
+      "timestamp": "2026-06-06T00:00:06.017Z",
+      "error_message": "Type error",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T00:00:06.017Z"
+    },
+    {
+      "id": "bug-324",
+      "timestamp": "2026-06-06T00:00:56.573Z",
+      "error_message": "Type error",
+      "file": "lib/game/data.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T00:00:56.573Z"
+    },
+    {
+      "id": "bug-325",
+      "timestamp": "2026-06-06T00:01:35.218Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T00:01:35.218Z"
+    },
+    {
+      "id": "bug-326",
+      "timestamp": "2026-06-06T00:01:50.515Z",
+      "error_message": "Type error",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T00:01:50.515Z"
+    },
+    {
+      "id": "bug-327",
+      "timestamp": "2026-06-06T00:06:45.296Z",
+      "error_message": "Type error",
+      "file": "lib/game/data.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T00:06:45.296Z"
+    },
+    {
+      "id": "bug-328",
+      "timestamp": "2026-06-06T00:06:59.213Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T00:06:59.213Z"
+    },
+    {
+      "id": "bug-329",
+      "timestamp": "2026-06-06T00:08:08.343Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T00:08:08.343Z"
+    },
+    {
+      "id": "bug-330",
+      "timestamp": "2026-06-06T00:16:40.912Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010138_commander_deck_seeding.sql",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 14→15 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T00:16:40.912Z"
+    },
+    {
+      "id": "bug-331",
+      "timestamp": "2026-06-06T00:17:19.057Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/commander-deck.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 11→13 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T00:17:19.057Z"
     }
   ]
 }

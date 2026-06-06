@@ -2,7 +2,7 @@ export type ManaPool = Record<string, number>
 
 export type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G' | 'C'
 
-export type GameZone = 'library' | 'hand' | 'stack' | 'battlefield' | 'graveyard' | 'exile'
+export type GameZone = 'library' | 'hand' | 'stack' | 'battlefield' | 'graveyard' | 'exile' | 'command'
 
 export type GameSessionStatus = 'open' | 'locked' | 'finished'
 
@@ -52,6 +52,7 @@ export type DeckCardLine = {
 
 export type DeckDetail = DeckSummary & {
   cards: DeckCardLine[]
+  commander_card_id?: string | null
 }
 
 export type TurnPhase = 'beginning' | 'main_1' | 'combat' | 'main_2' | 'ending'
@@ -302,6 +303,8 @@ export type ControllerCard = {
   plus_one_counters?: number
   pump_power?: number
   pump_toughness?: number
+  is_commander?: boolean
+  command_zone_casts?: number
   cards: LinkedCard | null
 }
 

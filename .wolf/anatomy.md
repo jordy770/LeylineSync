@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T23:51:25.612Z
-> Files: 82 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T00:21:01.214Z
+> Files: 88 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~808 tok)
+- `package.json` — Node.js package manifest (~818 tok)
 - `README.md` — Project documentation (~16065 tok)
 
 ## .claude/
@@ -13,7 +13,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~7559 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~7918 tok)
 
 ## .claude/rules/
 
@@ -75,8 +75,9 @@
 ## components/
 
 - `CardBehaviorForm.tsx` — inputClass (~5786 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~52078 tok)
-- `GameSessionLobby.tsx` — GameSessionLobby (~4489 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~52633 tok)
+- `DeckManager.tsx` — DeckManager (~4376 tok)
+- `GameSessionLobby.tsx` — GameSessionLobby (~4520 tok)
 
 ## components/board/
 
@@ -99,18 +100,24 @@
 ## docs/
 
 
+## docs/commander-decks/
+
+- `atraxa-counters.txt` — Atraxa, Praetors' Voice — WUBG +1/+1 counters / proliferate (100 cards) (~407 tok)
+- `krenko-goblins.txt` — Krenko, Mob Boss — mono-red goblin aggro (100 cards) (~355 tok)
+- `README.md` — Project documentation (~306 tok)
+
 ## lib/
 
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 26 more (~10508 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~10632 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5317 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6727 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~7593 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~5075 tok)
-- `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5834 tok)
-- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2355 tok)
+- `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~5935 tok)
+- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2386 tok)
 - `use-controller-game-state.ts` — Exports useControllerGameState (~2048 tok)
 
 ## lib/supabase/
@@ -169,6 +176,7 @@
 - `202605010135_equipment_and_equip.sql` — F3 — Protection (DEBT), slice 4b: EQUIPMENT + the equip ability. (~1296 tok)
 - `202605010136_commander_command_zone.sql` — Commander (EDH), slice 1 — the IN-GAME command zone mechanics. (~2591 tok)
 - `202605010137_commander_format_and_damage.sql` — Commander (EDH), slice 2 — format-aware game start + COMMANDER DAMAGE. (~2185 tok)
+- `202605010138_commander_deck_seeding.sql` — Commander (EDH), slice 3 — the DECK side: designate a commander on a deck and (~1316 tok)
 
 ## tests/
 
@@ -180,6 +188,7 @@
 - `auras.test.ts` — F3 slice 4a — Auras + attachment (mig 134). An Aura is cast targeting a creature, (~1715 tok)
 - `cant-be-countered.test.ts` — "Can't be countered": a counter that targets an uncounterable spell resolves (~644 tok)
 - `combat-over-assignment.test.ts` — Phase 4 — player-chosen combat damage OVER-ASSIGNMENT (mig 122). The attacker (~1582 tok)
+- `commander-deck.test.ts` — Commander (EDH) slice 3 — the deck side (mig 138). A deck can designate a (~938 tok)
 - `commander.test.ts` — Commander (EDH) slice 1 — the in-game command zone (mig 136). A commander is (~1873 tok)
 - `damage-prevention.test.ts` — Phase 4 / F2.1a — damage prevention resolver (mig 125). A shield consumes damage (~1888 tok)
 - `divided-damage.test.ts` — Phase 3, slice 4a — divided damage (mig 115): the `divided_damage` action type (~1279 tok)
@@ -207,7 +216,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~7288 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B (and C, when (~7770 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~449 tok)
 
 ## tests/regression/

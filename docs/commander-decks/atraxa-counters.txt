@@ -1,0 +1,93 @@
+# Atraxa, Praetors' Voice — WUBG +1/+1 counters / proliferate (100 cards)
+# Import this list, then click the ★ on "Atraxa, Praetors' Voice" to set the commander.
+
+Commander
+1 Atraxa, Praetors' Voice
+
+Counters & proliferate payoffs
+1 Doubling Season
+1 Hardened Scales
+1 Cathars' Crusade
+1 Inexorable Tide
+1 Evolution Sage
+1 Conclave Mentor
+1 Corpsejack Menace
+1 Master Biomancer
+1 Forgotten Ancient
+1 Champion of Lambholt
+1 Managorger Hydra
+1 Kalonian Hydra
+1 Walking Ballista
+1 Hangarback Walker
+1 Spike Feeder
+1 Fathom Mage
+1 Herald of Secret Streams
+1 Reyhan, Last of the Abzan
+1 Pir, Imaginative Rascal
+1 Toothy, Imaginary Friend
+1 Mikaeus, the Lunarch
+1 Fertilid
+1 Juniper Order Ranger
+1 Bloom Tender
+1 Branching Evolution
+1 The Ozolith
+1 Inspiring Call
+1 Tezzeret's Gambit
+
+Planeswalkers
+1 Vraska, Golgari Queen
+1 Vivien Reid
+1 Teferi, Hero of Dominaria
+1 Kaya, Orzhov Usurper
+
+Ramp
+1 Sol Ring
+1 Arcane Signet
+1 Fellwar Stone
+1 Mind Stone
+1 Birds of Paradise
+1 Sakura-Tribe Elder
+1 Cultivate
+1 Kodama's Reach
+1 Farseek
+1 Nature's Lore
+
+Card advantage
+1 Sign in Blood
+1 Read the Bones
+1 Return of the Wildspeaker
+
+Interaction
+1 Swords to Plowshares
+1 Path to Exile
+1 Beast Within
+1 Putrefy
+1 Anguished Unmaking
+1 Assassin's Trophy
+1 Counterspell
+1 Cyclonic Rift
+1 Despark
+1 Generous Gift
+
+Lands
+1 Command Tower
+1 Exotic Orchard
+1 City of Brass
+1 Mana Confluence
+1 Reflecting Pool
+1 Path of Ancestry
+1 Breeding Pool
+1 Godless Shrine
+1 Hallowed Fountain
+1 Overgrown Tomb
+1 Temple Garden
+1 Watery Grave
+1 Windswept Heath
+1 Marsh Flats
+1 Misty Rainforest
+1 Verdant Catacombs
+1 Karn's Bastion
+9 Forest
+6 Plains
+6 Island
+6 Swamp

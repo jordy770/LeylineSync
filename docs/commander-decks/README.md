@@ -1,0 +1,24 @@
+# Sample Commander decklists
+
+Real preconstructed-style Commander (EDH) decks in the format the in-app importer
+(`import_deck_from_text`) accepts: one `1 Card Name` line per card, `#` comments and
+section headers (`Commander`, `Deck`) ignored.
+
+## How to use
+
+1. Make sure your card catalog has these cards (the importer matches by **name** and
+   lists any it can't find as "not accepted lines" — fix those and re-import).
+2. In the app: **Decks → Import a deck**, paste the file's contents, give it a name.
+3. Open the deck and click the **★** button on the commander row to designate it
+   (the importer doesn't yet auto-capture the `Commander` section — tracked as a
+   follow-up). The commander is excluded from the library and seeded into the
+   command zone when you start a **Commander** game.
+4. In the lobby, create a game with the **Commander** format, then spawn this deck.
+
+## Decks
+
+- `krenko-goblins.txt` — Krenko, Mob Boss (mono-red goblin aggro)
+- `atraxa-counters.txt` — Atraxa, Praetors' Voice (WUBG +1/+1 counters / superfriends)
+
+> These are starting points, not tournament lists. Card names use canonical Scryfall
+> spellings; if your catalog is a subset, expect some lines to be flagged on import.
