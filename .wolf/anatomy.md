@@ -1,11 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T20:02:48.423Z
-> Files: 100 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T20:26:01.405Z
+> Files: 105 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~849 tok)
+- `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~197 tok)
+- `package.json` — Node.js package manifest (~865 tok)
 - `README.md` — Project documentation (~16065 tok)
 
 ## .claude/
@@ -13,7 +14,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~8552 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~8731 tok)
 
 ## .claude/rules/
 
@@ -186,6 +187,8 @@
 - `202605010140_skip_eliminated_players.sql` — Commander (EDH) / multiplayer — skip ELIMINATED players in the turn + priority (~3412 tok)
 - `202605010141_commander_deck_legality.sql` — Commander (EDH) — SERVER-SIDE deck legality enforcement. (~2302 tok)
 - `202605010142_commander_return_refinements.sql` — Commander (EDH) — return-to-command refinements. (~1696 tok)
+- `202605010143_rls_scope_reads_to_session.sql` — Operational / security — scope game-state reads to SESSION MEMBERS. (~688 tok)
+- `202605010144_cleanup_finished_session.sql` — Operational — explicit cleanup of a FINISHED game's runtime data. (~724 tok)
 
 ## tests/
 
@@ -196,6 +199,7 @@
 - `apnap-trigger-order.test.ts` — Phase 4 / F1 — APNAP ordering of simultaneous triggered abilities (mig 123). (~1112 tok)
 - `auras.test.ts` — F3 slice 4a — Auras + attachment (mig 134). An Aura is cast targeting a creature, (~1715 tok)
 - `cant-be-countered.test.ts` — "Can't be countered": a counter that targets an uncounterable spell resolves (~644 tok)
+- `cleanup.test.ts` — Operational — cleanup_finished_session (mig 144) deletes a finished game's runtime (~567 tok)
 - `combat-over-assignment.test.ts` — Phase 4 — player-chosen combat damage OVER-ASSIGNMENT (mig 122). The attacker (~1582 tok)
 - `commander-deck.test.ts` — Commander (EDH) slice 3 — the deck side (mig 138). A deck can designate a (~2341 tok)
 - `commander-return.test.ts` — Commander (EDH) — return-to-command refinements (mig 142). A commander leaving (~1132 tok)
@@ -217,6 +221,7 @@
 - `player-discard.test.ts` — Near-term authoring — player-targeted discard (mig 118). `discard` gains (~1141 tok)
 - `priority-round.test.ts` — Phase 4 / F1b — a new stack object restarts the priority round (mig 124). Until (~626 tok)
 - `protection.test.ts` — F3 — Protection (DEBT), slice 1: the "can't be Targeted" (T) gate (mig 131). (~2532 tok)
+- `rls.test.ts` — Security — game-state reads are scoped to SESSION MEMBERS (mig 143). Two legacy (~732 tok)
 - `sacrifice-reanimate.test.ts` — Phase 1, slice 11 — sacrifice and return_from_graveyard (raise dead / (~2740 tok)
 - `search-library-variants.test.ts` — Phase 1, slice 14 — search_library variants (mig 111): graveyard destination, (~1560 tok)
 - `x-spells.test.ts` — Phase 1, slice 12 — X spells (variable amount paid as {X} generic mana). (~1339 tok)
@@ -227,7 +232,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~8687 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~8843 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~449 tok)
 
 ## tests/regression/

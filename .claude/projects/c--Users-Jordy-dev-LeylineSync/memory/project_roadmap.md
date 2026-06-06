@@ -133,9 +133,9 @@ Reproduce each touched fn from its CURRENT migration (grep first — bug-281/283
 
 ## ⚪ Operational (Phase 5)
 
-- Scheduled cleanup of finished-game runtime data (explicit RPC/job, not in `maybe_finish_game_session`)
-- Hidden-zone RLS hardening if private decklists matter
-- Silence the stray parent `package-lock.json` build warning (`turbopack.root`)
+- ~~Scheduled cleanup of finished-game runtime data~~ ✅ **shipped (mig 144)** — `cleanup_finished_session(session_id)` deletes runtime rows (cards/stack/effects/turn-state/players) for a status='finished' session, keeps game_sessions + game_session_players (winner/history). Callable by a session member or a service-role job. Tests CL1/CL2.
+- ~~Hidden-zone RLS hardening~~ ✅ **partly shipped (mig 143)** — dropped the two `USING(true)` SELECT policies (game_cards, game_players) that leaked every row to anon/non-members globally; reads now scoped to `is_session_player`. **DEFERRED (Slice B):** hiding hand/library BETWEEN fellow members — conflicts with the judge view (meant to see all hands) + the opponent count display (reads rows directly); needs a privileged-judge concept + count RPC first. Tests RLS1-3.
+- ~~Silence the stray parent `package-lock.json` build warning~~ ✅ **shipped** — `turbopack.root` pinned to the project dir in next.config.ts.
 
 ---
 **Why:** Consolidated at the user's request from four drifted roadmap sources so there's one current view.

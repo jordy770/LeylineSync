@@ -571,6 +571,20 @@ export class Scenario {
     return res.rows[0]?.active_player_id
   }
 
+  /** Force the session to 'finished' (test setup for cleanup). Runs as postgres. */
+  async markFinished(): Promise<void> {
+    await this.client.query("update public.game_sessions set status = 'finished' where id = $1", [
+      this.sessionId,
+    ])
+  }
+
+  /** Delete a finished session's runtime data, as the acting seat. */
+  async cleanupSession(): Promise<{ cleaned: boolean; cards_deleted: number }> {
+    return this.run(() =>
+      rpc(this.client, 'cleanup_finished_session', { p_session_id: this.sessionId }),
+    )
+  }
+
   /** Session finished-state + winner (for last-player-standing assertions). */
   async sessionResult(): Promise<{ status: string; winner_player_id: string | null }> {
     const res = await this.client.query<{ status: string; winner_player_id: string | null }>(

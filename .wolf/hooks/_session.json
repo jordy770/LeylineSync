@@ -3,8 +3,8 @@
   "started": "2026-06-06T18:38:50.634Z",
   "files_read": {
     "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": {
-      "count": 3,
-      "tokens": 8287,
+      "count": 4,
+      "tokens": 8552,
       "first_read": "2026-06-06T18:40:04.263Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts": {
@@ -88,9 +88,24 @@
       "first_read": "2026-06-06T19:35:43.757Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx": {
-      "count": 11,
-      "tokens": 53090,
+      "count": 12,
+      "tokens": 53454,
       "first_read": "2026-06-06T19:58:45.802Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts": {
+      "count": 1,
+      "tokens": 5941,
+      "first_read": "2026-06-06T20:09:18.228Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/use-judge-game-state.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-06T20:10:19.659Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/next.config.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-06T20:14:50.451Z"
     }
   },
   "files_written": [
@@ -339,14 +354,68 @@
       "action": "edit",
       "tokens": 374,
       "at": "2026-06-06T20:02:48.436Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010143_rls_scope_reads_to_session.sql",
+      "action": "create",
+      "tokens": 737,
+      "at": "2026-06-06T20:11:53.683Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/rls.test.ts",
+      "action": "create",
+      "tokens": 732,
+      "at": "2026-06-06T20:12:31.393Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 29,
+      "at": "2026-06-06T20:12:44.440Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010144_cleanup_finished_session.sql",
+      "action": "create",
+      "tokens": 776,
+      "at": "2026-06-06T20:13:42.656Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+      "action": "edit",
+      "tokens": 175,
+      "at": "2026-06-06T20:13:54.860Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/cleanup.test.ts",
+      "action": "create",
+      "tokens": 567,
+      "at": "2026-06-06T20:14:09.449Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 26,
+      "at": "2026-06-06T20:14:15.214Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/next.config.ts",
+      "action": "edit",
+      "tokens": 143,
+      "at": "2026-06-06T20:15:08.047Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 274,
+      "at": "2026-06-06T20:26:01.419Z"
     }
   ],
   "edit_counts": {
-    "tests/harness/scenario.ts": 4,
+    "tests/harness/scenario.ts": 5,
     "tests/feature/multiplayer.test.ts": 4,
-    "package.json": 2,
+    "package.json": 4,
     "supabase/migrations/202605010140_skip_eliminated_players.sql": 1,
-    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 5,
+    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 6,
     "lib/game/deck-insights.ts": 1,
     "tests/unit/deck-insights.test.ts": 2,
     "components/DeckInsights.tsx": 2,
@@ -356,11 +425,16 @@
     "supabase/migrations/202605010142_commander_return_refinements.sql": 1,
     "tests/feature/commander-return.test.ts": 1,
     "lib/game/actions.ts": 1,
-    "components/ControllerListV4.tsx": 12
+    "components/ControllerListV4.tsx": 12,
+    "supabase/migrations/202605010143_rls_scope_reads_to_session.sql": 1,
+    "tests/feature/rls.test.ts": 1,
+    "supabase/migrations/202605010144_cleanup_finished_session.sql": 1,
+    "tests/feature/cleanup.test.ts": 1,
+    "next.config.ts": 1
   },
-  "anatomy_hits": 15,
-  "anatomy_misses": 3,
-  "repeated_reads_warned": 16,
+  "anatomy_hits": 16,
+  "anatomy_misses": 5,
+  "repeated_reads_warned": 18,
   "cerebrum_warnings": 0,
-  "stop_count": 8
+  "stop_count": 9
 }

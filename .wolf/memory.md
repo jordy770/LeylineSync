@@ -1832,3 +1832,15 @@
 | 22:02 | Edited components/ControllerListV4.tsx | CSS: active, active | ~374 |
 
 | 2026-06-06 | Client drift #1a — set_pt wired into the controller (Frogify/"becomes X/Y" was uncastable; engine supported it since mig 129). putSetPtCreatureOnStack wrapper (action_type set_pt_creature) + getSpellPlan set_pt branch + plan kind + canCast/targetController/requiresCreatureTarget/needsTarget gates + a sky-coloured creature picker + setPtCreature handler + onSetPtCreature prop. Mirrors the pump path exactly. | lib/game/actions.ts, components/ControllerListV4.tsx | tsc+lint+build clean, 390/390 | ~3500 |
+| 22:05 | Session end: 41 writes across 15 files (scenario.ts, multiplayer.test.ts, package.json, 202605010140_skip_eliminated_players.sql, project_roadmap.md) | 18 reads | ~121276 tok |
+| 22:11 | Created supabase/migrations/202605010143_rls_scope_reads_to_session.sql | — | ~688 |
+| 22:12 | Created tests/feature/rls.test.ts | — | ~732 |
+| 22:12 | Edited package.json | inline fix | ~29 |
+| 22:13 | Created supabase/migrations/202605010144_cleanup_finished_session.sql | — | ~724 |
+| 22:13 | Edited tests/harness/scenario.ts | modified markFinished() | ~175 |
+| 22:14 | Created tests/feature/cleanup.test.ts | — | ~567 |
+| 22:14 | Edited package.json | inline fix | ~26 |
+| 22:15 | Edited next.config.ts | expanded (+9 lines) | ~143 |
+| 22:26 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified DEFERRED() | ~256 |
+
+| 2026-06-06 | Ops + security (#2). RLS (mig 143): dropped two USING(true) SELECT policies (game_cards, game_players) that leaked every row to anon/non-members; reads now is_session_player-scoped. Cleanup (mig 144): cleanup_finished_session(id) deletes runtime rows for a finished session, keeps session+players. next.config.ts: turbopack.root pinned (silences stray-lockfile warning). DEFERRED: hiding hidden zones between members (conflicts with judge view + count display). | supabase/migrations/202605010143_rls_scope_reads_to_session.sql, 202605010144_cleanup_finished_session.sql, next.config.ts, tests/feature/rls.test.ts, tests/feature/cleanup.test.ts, tests/harness/scenario.ts | 401/401, tsc+lint+build clean | ~6000 |
