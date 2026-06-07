@@ -2192,3 +2192,16 @@
 | 23:37 | Edited package.json | inline fix | ~20 |
 | 23:40 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~212 |
 | 23:45 | Zombie-deck gap analysis → roadmap (🧟 Tribal/typed effects section) + Tribal #1 first slice: typed lords (creature_type + exclude_source filter on the mass-pump fold in card_layered_power/toughness; freeform payload so no register change) | mig 164, llm, test-cards fixtures, typed-lords.test | 497 green, tsc/lint/build clean | ~30k |
+| 23:41 | Session end: 63 writes across 22 files (202605010158_counter_doubling.sql, card-behavior-llm.ts, card-behavior-schema.ts, test-cards.json, counter-doubling.test.ts) | 21 reads | ~135236 tok |
+| 23:54 | Created supabase/migrations/202605010165_watcher_triggers.sql | — | ~1707 |
+| 23:54 | Edited lib/game/card-behavior-schema.ts | expanded (+8 lines) | ~218 |
+| 23:54 | Edited lib/game/card-behavior-builder.ts | 2→4 lines | ~73 |
+| 23:55 | Edited lib/game/card-behavior-llm.ts | modified events() | ~383 |
+| 23:56 | Edited tests/fixtures/test-cards.json | 1→4 lines | ~374 |
+| 23:56 | Created tests/feature/watcher-triggers.test.ts | — | ~1428 |
+| 23:56 | Edited package.json | inline fix | ~21 |
+| 23:58 | Edited tests/feature/watcher-triggers.test.ts | modified pending() | ~108 |
+| 23:58 | Edited tests/feature/watcher-triggers.test.ts | 12→13 lines | ~186 |
+| 23:58 | Edited tests/feature/watcher-triggers.test.ts | 5→4 lines | ~99 |
+| 23:59 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~331 |
+| 00:10 | Tribal #1 complete: other-scoped trigger events (creature_entered/creature_died + filter; fire_watcher_triggers broadcasts to battlefield∪changed-card so self-death works; deaths use OLD.controller) | mig 165, schema filter, builder events, llm, test-cards watchers, watcher-triggers.test | 502 green, tsc/lint/build clean | ~26k |

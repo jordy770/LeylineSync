@@ -41,6 +41,8 @@ export const BUILDER_TRIGGER_EVENTS = [
   { value: 'beginning_of_upkeep', label: 'At the beginning of your upkeep' },
   { value: 'beginning_of_draw_step', label: 'At the beginning of your draw step' },
   { value: 'beginning_of_end_step', label: 'At the beginning of your end step' },
+  { value: 'creature_entered', label: 'When another/a creature enters (use filter)' },
+  { value: 'creature_died', label: 'When a creature dies (use filter)' },
 ] as const
 export type BuilderTriggerEvent = (typeof BUILDER_TRIGGER_EVENTS)[number]['value']
 

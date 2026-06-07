@@ -447,6 +447,14 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
   event: z.string(),
   source_zone_required: BehaviorZoneSchema.optional(),
   condition: z.record(z.string(), z.unknown()).optional(),
+  // For the other-scoped events creature_entered / creature_died: which entering/dying
+  // creature this watcher fires on. type_line = a subtype match (e.g. "Zombie");
+  // controller is relative to this card's controller; exclude_self:true = "another …".
+  filter: z.object({
+    type_line: z.string().optional(),
+    controller: z.enum(['you', 'opponent', 'any']).optional(),
+    exclude_self: z.boolean().optional(),
+  }).optional(),
   targets: z.array(CardBehaviorTargetSchema).optional(),
   effects: z.array(CardBehaviorActionSchema),
 })
