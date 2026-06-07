@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T20:16:04.314Z
-> Files: 43 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T20:59:30.422Z
+> Files: 46 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1035 tok)
+- `package.json` — Node.js package manifest (~1045 tok)
 
 ## .claude/
 
@@ -107,11 +107,11 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11303 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11325 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5434 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~8369 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~8427 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9737 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6099 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6161 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3269 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -147,6 +147,7 @@
 - `202605010160_energy_cost.sql` — Energy as an activation cost (roadmap Counters #8, the consumable half). (~2431 tok)
 - `202605010161_dynamic_counter_amounts.sql` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2, unified). (~4488 tok)
 - `202605010162_dynamic_amounts_spells_abilities.sql` — Dynamic amounts on the SPELL + ACTIVATED-ABILITY surfaces (roadmap Counters #5b/#8b (~6624 tok)
+- `202605010163_beast_within.sql` — Beast Within — "Destroy target permanent. Its controller creates a 3/3 green Beast (~1973 tok)
 
 ## tests/
 
@@ -154,6 +155,7 @@
 ## tests/feature/
 
 - `assassins-trophy.test.ts` — Assassin's Trophy (mig 152) — "Destroy target permanent an opponent controls. Its (~769 tok)
+- `beast-within.test.ts` — Beast Within (card request) — "Destroy target permanent. Its controller creates a (~1132 tok)
 - `commander-identity-mana.test.ts` — Commander-identity mana (mig 151) — "Add one mana of any color in your commander's (~662 tok)
 - `counter-doubling.test.ts` — Counter doubling — Doubling Season (roadmap Counters #5, half 1). A static (~1248 tok)
 - `counter-removal.test.ts` — Counter removal (roadmap Counters #1). Reuses the add_counters pipeline: a NEGATIVE (~1811 tok)
@@ -168,11 +170,12 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~7548 tok)
+- `test-cards.json` (~7706 tok)
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9330 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9353 tok)
+- `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~673 tok)
 
 ## tests/regression/
 

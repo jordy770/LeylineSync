@@ -875,12 +875,14 @@ export async function castSpellEffect(
   actions: unknown[],
   sourceCardId?: string | null,
   xValue?: number | null,
+  targetCardId?: string | null,
 ) {
   const { data, error } = await supabase.rpc('cast_spell_effect', {
     p_session_id: sessionId,
     p_actions: actions,
     p_source_card_id: sourceCardId ?? null,
     p_x_value: xValue ?? null,
+    p_target_card_id: targetCardId ?? null,
   })
 
   if (error) {

@@ -292,6 +292,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('create_token'),
     token: z.string(),
     count: z.number().optional(),
+    // "Its controller creates a token" (Beast Within): the token is created under the
+    // control of the spell's TARGET's controller, not the caster.
+    recipient: z.literal('target_controller').optional(),
   }),
   z.object({
     // A negative amount (or all=true) REMOVES counters; counter_type defaults +1/+1.

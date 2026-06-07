@@ -474,6 +474,7 @@ export class Scenario {
     actions: unknown[],
     sourceCardId: string | null = null,
     xValue: number | null = null,
+    targetCardId: string | null = null,
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'cast_spell_effect', {
@@ -481,6 +482,7 @@ export class Scenario {
         p_actions: JSON.stringify(actions),
         p_source_card_id: sourceCardId,
         p_x_value: xValue,
+        p_target_card_id: targetCardId,
       }),
     )
   }
