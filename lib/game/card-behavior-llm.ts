@@ -221,6 +221,7 @@ The engine supports these sections:
 2. triggered_abilities — "when/whenever/at" abilities. Each entry: { "event": <event>, "effects": [ ... ] }.
    Supported events: ${events}.
    Effects here are auto-resolved unless they explicitly target a creature. Supported effect types: ${triggerEffects}.
+   DYNAMIC AMOUNT (trigger/source effects only): instead of a fixed "amount": N, gain_life/lose_life/deal_damage/draw/mill/add_counters/add_player_counters may use "amount": { "counters": <kind>, "of": "self" | "you" } — resolved at apply time to the number of those counters. "of":"self" (default) counts that kind on THIS permanent (e.g. { "counters": "plus_one_one", "of": "self" } for "equal to the number of +1/+1 counters on ~"); "of":"you" counts the controller's player counters (e.g. { "counters": "experience", "of": "you" } for "equal to your experience counters"; also energy/poison). Use this for "for each counter" / "equal to the number of … counters" wording. (Not available on spell_effect or activated abilities yet — those take fixed numbers or "X".)
    - gain_life: { "type": "gain_life", "amount": N, "recipient"?: <recipient> } — default is the controller; use "each_player"/"all_players" when every player gains life.
    - draw:      { "type": "draw", "amount": N } — the controller draws N.
    - lose_life / deal_damage: { "type": ..., "amount": N, "recipient": <recipient> }.

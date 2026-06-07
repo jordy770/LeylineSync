@@ -1,18 +1,18 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T19:42:09.492Z
-> Files: 40 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T19:55:21.503Z
+> Files: 42 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1022 tok)
+- `package.json` — Node.js package manifest (~1035 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~10610 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~10864 tok)
 
 ## .claude/rules/
 
@@ -109,9 +109,9 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11303 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5434 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~8111 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~8331 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9737 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~5955 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6096 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3269 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -145,6 +145,7 @@
 - `202605010158_counter_doubling.sql` — Counter doubling — Doubling Season / Corpsejack Menace (roadmap Counters #5, half 1). (~6801 tok)
 - `202605010159_infect_toxic_wither.sql` — Infect / toxic / wither combat (roadmap Counters #7). (~9278 tok)
 - `202605010160_energy_cost.sql` — Energy as an activation cost (roadmap Counters #8, the consumable half). (~2431 tok)
+- `202605010161_dynamic_counter_amounts.sql` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2, unified). (~4488 tok)
 
 ## tests/
 
@@ -155,6 +156,7 @@
 - `commander-identity-mana.test.ts` — Commander-identity mana (mig 151) — "Add one mana of any color in your commander's (~662 tok)
 - `counter-doubling.test.ts` — Counter doubling — Doubling Season (roadmap Counters #5, half 1). A static (~1248 tok)
 - `counter-removal.test.ts` — Counter removal (roadmap Counters #1). Reuses the add_counters pipeline: a NEGATIVE (~1811 tok)
+- `dynamic-counter-amounts.test.ts` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2). A (~914 tok)
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
 - `enters-with-counters.test.ts` — "Enters the battlefield with N counters" (roadmap Counters #3). A REPLACEMENT applied (~1031 tok)
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
@@ -165,7 +167,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~6931 tok)
+- `test-cards.json` (~7293 tok)
 
 ## tests/harness/
 

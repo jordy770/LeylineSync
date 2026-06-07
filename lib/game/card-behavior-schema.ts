@@ -164,9 +164,18 @@ const BehaviorRecipientSchema = z.enum(['controller', 'each_opponent', 'active_p
 // "an opponent controls" -> opponent; "you control" -> you/controller/self.
 const TargetControllerSchema = z.enum(['any', 'opponent', 'you', 'controller', 'self']).optional()
 
-// An effect amount: a fixed number, or the literal "X" for a variable spell. X is
-// chosen at cast time, paid as {X} generic mana, and substituted server-side.
-const AmountSchema = z.union([z.number(), z.literal('X')])
+// A state-referencing dynamic amount (triggered/source effects only): "equal to the
+// number of <kind> counters on ~" (of:"self", default) or on you (of:"you", for
+// experience/energy/poison). Resolved at apply time by resolve_dynamic_amount.
+const DynamicAmountSchema = z.object({
+  counters: z.string(),
+  of: z.enum(['self', 'source', 'this', 'you', 'your', 'controller']).optional(),
+}).strict()
+
+// An effect amount: a fixed number, the literal "X" for a variable spell (chosen at
+// cast time, paid as {X} generic mana, substituted server-side), or a dynamic
+// counter-referencing amount (trigger/source path only).
+const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema])
 
 // Which kind of counter an add_counters effect places. "plus_one_one" is the
 // engine's fast +1/+1 column; everything else lives in the jsonb counter bag.
@@ -305,7 +314,7 @@ const CardBehaviorActionSchema = z.union([
     // Put player counters (poison/energy/experience) on players. Default recipient
     // each_opponent (poison/infect lands on opponents). Negative amount / all removes.
     type: z.literal('add_player_counters'),
-    amount: z.number(),
+    amount: AmountSchema,
     counter_type: PlayerCounterTypeSchema,
     recipient: BehaviorRecipientSchema.optional(),
     all: z.boolean().optional(),

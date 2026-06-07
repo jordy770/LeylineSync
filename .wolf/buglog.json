@@ -6708,6 +6708,106 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-07T19:19:30.274Z"
+    },
+    {
+      "id": "bug-414",
+      "timestamp": "2026-06-07T19:38:28.549Z",
+      "error_message": "Wrong reference: UnknownCostSchema should be z",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Used \"UnknownCostSchema\" instead of \"z\"",
+      "fix": "Changed UnknownCostSchema → z",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T19:38:28.549Z"
+    },
+    {
+      "id": "bug-415",
+      "timestamp": "2026-06-07T19:42:09.510Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `energy`",
+      "fix": "Changed to `activate_ability`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T19:42:09.510Z"
+    },
+    {
+      "id": "bug-416",
+      "timestamp": "2026-06-07T19:50:25.894Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 3→12 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T19:50:25.894Z"
+    },
+    {
+      "id": "bug-417",
+      "timestamp": "2026-06-07T19:51:00.898Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"type\"",
+      "fix": "Changed to \"amount\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T19:51:00.898Z"
+    },
+    {
+      "id": "bug-418",
+      "timestamp": "2026-06-07T20:55:00.000Z",
+      "error_message": "DS4/RM1/RM3/RM4 failed in full suite — negative add_counters amounts (counter removal) stopped removing after the dynamic-amount resolver was threaded in",
+      "file": "supabase/migrations/202605010161_dynamic_counter_amounts.sql",
+      "root_cause": "resolve_dynamic_amount clamped the literal-number branch with greatest(0, ...), but counter removal (mig 155) relies on NEGATIVE literal amounts in apply_triggered_ability_effects. The original coalesce((v_effect->>'amount')::integer,0) never clamped, so clamping turned every -1 removal into 0. The new dynamic test passed alone; only the FULL suite (removal/Doubling tests) exposed it.",
+      "fix": "Removed greatest(0, ...) from the number/string branch so negatives flow through for removal; only the counter-OBJECT branch clamps (a counter count is naturally >= 0).",
+      "tags": [
+        "postgres",
+        "counters",
+        "counter-removal",
+        "dynamic-amount",
+        "regression",
+        "clamp",
+        "full-suite-only"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T20:55:00.000Z"
+    },
+    {
+      "id": "bug-419",
+      "timestamp": "2026-06-07T19:55:21.522Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `resolve_dynamic_amount(session, source, controlle",
+      "fix": "Changed to `activate_ability`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T19:55:21.522Z"
     }
   ]
 }
