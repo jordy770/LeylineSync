@@ -169,7 +169,7 @@ const AmountSchema = z.union([z.number(), z.literal('X')])
 
 // Which kind of counter an add_counters effect places. "plus_one_one" is the
 // engine's fast +1/+1 column; everything else lives in the jsonb counter bag.
-const PermanentCounterTypeSchema = z.enum(['plus_one_one', 'minus_one_one', 'charge', 'quest', 'loyalty', 'generic']).optional()
+const PermanentCounterTypeSchema = z.enum(['plus_one_one', 'minus_one_one', 'charge', 'quest', 'generic']).optional()
 // Player counters live on game_session_players. "poison" >= 10 loses the game.
 const PlayerCounterTypeSchema = z.enum(['poison', 'energy', 'experience'])
 

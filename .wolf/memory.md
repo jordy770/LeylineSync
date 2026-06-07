@@ -2120,3 +2120,9 @@
 | 18:56 | Edited package.json | inline fix | ~23 |
 | 18:58 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | "for each counter" → "doubles_counters: true" | ~185 |
 | 18:59 | Counters #5 half 1 (Doubling Season: top-level static doubles_counters, counter_factor helper keyed off recipient controller, doubles the 4 placement sites incl per-row mass + enters-with) | mig 158, schema/llm, test-cards fixture, counter-doubling.test | 474 green, tsc/lint/build clean | ~28k |
+| 18:59 | Session end: 7 writes across 7 files (202605010158_counter_doubling.sql, card-behavior-llm.ts, card-behavior-schema.ts, test-cards.json, counter-doubling.test.ts) | 7 reads | ~47608 tok |
+| 19:22 | Edited lib/game/card-behavior-schema.ts | inline fix | ~34 |
+| 19:22 | Edited lib/game/card-behavior-registry.ts | 3→2 lines | ~24 |
+| 19:22 | Edited lib/game/card-behavior-llm.ts | inline fix | ~32 |
+| 19:23 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~133 |
+| 19:24 | Counters #6 resolved by BACK-OUT: removed inert `loyalty` counter_type (schema enum, registry option, LLM) — authoring no longer implies planeswalker support; no engine change (bag is keyless) | card-behavior-schema/registry/llm, roadmap | 474 green, tsc/lint/build clean | ~2k |
