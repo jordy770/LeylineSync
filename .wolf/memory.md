@@ -1954,3 +1954,17 @@
 | 14:55 | Edited components/ControllerListV4.tsx | inline fix | ~48 |
 
 | 2026-06-07 | Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking authorable. card_type_line_matches_target gains nonland_permanent; build_stack_payload_permanent_simple carries `then`; handle_permanent_effect applies main removal + then-riders (lose_life/gain_life/draw) to the caster. Schema: nonland_permanent + ThenRiderSchema. LLM doc + client (getSpellPlan/castPermanentEffect/cardMatchesTargetType). JSON/AI-authorable. Tests AU1-4. On new branch targeted-spell-riders (master FF'd to current work first). | supabase/migrations/202605010150_targeted_spell_riders.sql, lib/game/card-behavior-schema.ts, lib/game/card-behavior-llm.ts, lib/game/actions.ts, components/ControllerListV4.tsx, tests/feature/targeted-spell-riders.test.ts | 428/428, tsc+lint+build clean | ~9000 |
+| 14:59 | Session end: 28 writes across 11 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx, 202605010150_targeted_spell_riders.sql) | 10 reads | ~11114 tok |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | 1→3 lines | ~62 |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | inline fix | ~30 |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | modified SPELL() | ~486 |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | 2→6 lines | ~218 |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | inline fix | ~34 |
+| 15:28 | Edited lib/game/card-behavior-registry.ts | 6→8 lines | ~248 |
+| 15:28 | Edited lib/game/card-behavior-registry.ts | added 2 condition(s) | ~151 |
+| 15:28 | Edited lib/game/card-behavior-registry.ts | 4→5 lines | ~66 |
+| 15:29 | Edited lib/game/card-behavior-registry.ts | modified if() | ~78 |
+| 15:29 | Edited lib/game/card-behavior-registry.ts | added 1 condition(s) | ~172 |
+| 15:30 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+7 lines) | ~319 |
+
+| 2026-06-07 | Guided-form support for targeted-spell riders + nonland_permanent (registry-only; no new form UI). removalTargetField (creature + artifact/enchantment/planeswalker/permanent/nonland_permanent) on destroy/exile/bounce/tap/untap; 'rider' EffectContext + lose_life_rider/gain_life_rider (no recipient) + draw; optional `then` effect-list (effect-list gained optional support: omit in default/parse, drop empty in serialize). Anguished Unmaking round-trips form<->JSON. | lib/game/card-behavior-registry.ts, tests/unit/card-behavior-builder.test.ts | 436/436, tsc+lint+build clean | ~7000 |

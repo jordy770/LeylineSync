@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T12:55:38.136Z
-> Files: 7 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T13:30:23.095Z
+> Files: 9 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -105,6 +105,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~10874 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6927 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~8454 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~5231 tok)
 
 ## lib/supabase/
@@ -144,6 +145,7 @@
 
 ## tests/unit/
 
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~9245 tok)
 
 ## vercel/
 

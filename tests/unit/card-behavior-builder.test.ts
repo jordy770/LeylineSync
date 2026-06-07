@@ -114,6 +114,13 @@ const CASES: Case[] = [
   { name: 'spell gain_control (Mind Control)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'gain_control', duration: 'permanent', target_type: 'creature', target_controller: 'opponent' }] } }, form: true },
   { name: 'spell fight no controller (Pit Fight)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'fight', target_type: 'creature' }] } }, form: true },
 
+  // Removal targeting non-creature / nonland permanents (mig 113/150) — now form.
+  { name: 'spell destroy artifact (Disenchant)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'destroy', target_type: 'artifact' }] } }, form: true },
+  { name: 'spell exile nonland permanent', script: { schema_version: 2, spell_effect: { actions: [{ type: 'exile', target_type: 'nonland_permanent' }] } }, form: true },
+  // Anguished Unmaking — exile target nonland permanent, then you lose 3 life.
+  { name: 'spell exile nonland + lose-3 rider (Anguished Unmaking)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'exile', target_type: 'nonland_permanent', then: [{ type: 'lose_life', amount: 3 }] }] } }, form: true },
+  { name: 'spell destroy creature + draw rider', script: { schema_version: 2, spell_effect: { actions: [{ type: 'destroy', target_type: 'creature', then: [{ type: 'draw', amount: 1 }] }] } }, form: true },
+
   // Spell effects — NOT form-representable → JSON
   { name: 'spell add_counters target (dual-shape)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'add_counters', amount: 1, target_type: 'creature' }] } }, form: true },
   { name: 'spell deal_damage target (Lightning Bolt)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'deal_damage', amount: 3, target_type: ['creature', 'player'] }] } }, form: true },

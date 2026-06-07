@@ -6094,6 +6094,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-07T12:54:59.058Z"
+    },
+    {
+      "id": "bug-376",
+      "timestamp": "2026-06-07T13:27:11.873Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Had 'trigger'",
+      "fix": "Changed to 'rider'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-07T13:27:50.261Z"
+    },
+    {
+      "id": "bug-377",
+      "timestamp": "2026-06-07T13:27:32.035Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: // An absent OPTIONAL effect-list (a removal with no `then` ; // omitted (the form reads undefined as an empty list).",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-07T13:29:20.539Z"
+    },
+    {
+      "id": "bug-378",
+      "timestamp": "2026-06-07T13:28:04.070Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 6→8 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:28:04.070Z"
+    },
+    {
+      "id": "bug-379",
+      "timestamp": "2026-06-07T13:28:22.280Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Condition was: if (field.kind !== 'effect-list' && 'optional' in fiel)",
+      "fix": "Changed to: if ('optional' in field && field.optional && isEmptyVa)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:28:22.280Z"
     }
   ]
 }

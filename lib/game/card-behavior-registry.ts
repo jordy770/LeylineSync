@@ -22,7 +22,9 @@ export type TargetOption = {
   target_controller?: string
 }
 
-export type EffectContext = 'trigger' | 'spell'
+// 'rider' is a restricted context for a targeted spell's `then` self-rider — it
+// only offers simple caster-directed effects (lose_life / gain_life / draw).
+export type EffectContext = 'trigger' | 'spell' | 'rider'
 
 // Field kinds:
 //   `number`     — numeric; rejected if present-but-non-number.
@@ -43,7 +45,7 @@ export type FieldDescriptor =
   | { name: string; kind: 'select'; label?: string; default: string; options: readonly FieldOption[]; optional?: boolean }
   | { name: string; kind: 'text'; label?: string; default: string; optional?: boolean }
   | { name: string; kind: 'object'; label?: string; fields: readonly FieldDescriptor[]; optional?: boolean }
-  | { name: string; kind: 'effect-list'; label?: string; itemContext: EffectContext }
+  | { name: string; kind: 'effect-list'; label?: string; itemContext: EffectContext; optional?: boolean }
   | { name: string; kind: 'target'; label?: string; default: string; options: readonly TargetOption[] }
 
 export type EffectDef = {
@@ -148,6 +150,38 @@ const creatureTargetField: FieldDescriptor = {
   ],
 }
 
+// Removal (destroy/exile/bounce/tap/untap) may target any permanent, not just a
+// creature — the engine's permanent_effect handles non-creature permanents and the
+// trigger path (mig 114) matches by type. `nonland_permanent` is any permanent that
+// isn't a land (Anguished Unmaking, Vindicate, …).
+const removalTargetField: FieldDescriptor = {
+  name: 'target',
+  kind: 'target',
+  label: 'Target',
+  default: 'creature_any',
+  options: [
+    { value: 'creature_any', label: 'target creature', target_type: 'creature' },
+    { value: 'creature_opponent', label: 'a creature an opponent controls', target_type: 'creature', target_controller: 'opponent' },
+    { value: 'creature_you', label: 'a creature you control', target_type: 'creature', target_controller: 'you' },
+    { value: 'artifact', label: 'target artifact', target_type: 'artifact' },
+    { value: 'enchantment', label: 'target enchantment', target_type: 'enchantment' },
+    { value: 'planeswalker', label: 'target planeswalker', target_type: 'planeswalker' },
+    { value: 'nonland_permanent', label: 'target nonland permanent', target_type: 'nonland_permanent' },
+    { value: 'permanent', label: 'target permanent', target_type: 'permanent' },
+  ],
+}
+
+// An optional self-rider on a targeted removal SPELL ("…and you lose 3 life"):
+// simple caster-directed effects applied on resolution (engine: handle_permanent_
+// effect). Spells only — a trigger uses its own effects list instead.
+const thenRiderField: FieldDescriptor = {
+  name: 'then',
+  kind: 'effect-list',
+  label: 'Then you… (spells only)',
+  itemContext: 'rider',
+  optional: true,
+}
+
 // Damage can target a creature OR a player (Lightning Bolt's "any target"); the
 // engine routes each to its cast path (deal_damage_creature / deal_damage_player).
 const damageTargetField: FieldDescriptor = {
@@ -169,11 +203,15 @@ const damageTargetField: FieldDescriptor = {
 export const EFFECT_REGISTRY: readonly EffectDef[] = [
   { type: 'gain_life', label: 'Players gain life', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField('controller', { materializeDefault: false, omitDefault: true })] },
   { type: 'lose_life', label: 'Players lose life', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField()] },
+  // Rider-only variants (no recipient — always the caster) for a removal spell's
+  // `then`. Resolved over the recipient-bearing defs by the absence of `recipient`.
+  { type: 'lose_life', variant: 'lose_life_rider', label: 'you lose life', contexts: ['rider'], fields: [amountField('Amount')] },
+  { type: 'gain_life', variant: 'gain_life_rider', label: 'you gain life', contexts: ['rider'], fields: [amountField('Amount')] },
   { type: 'deal_damage', label: 'Deal damage to players', contexts: ['trigger'], fields: [amountField('Amount'), recipientField()] },
   // Targeted deal_damage (Lightning Bolt) — spell only; the engine routes a trigger
   // "deal damage to any target" against each opponent, so triggers use the shape above.
   { type: 'deal_damage', variant: 'deal_damage_target', label: 'Deal damage to a target', contexts: ['spell'], fields: [amountField('Amount'), damageTargetField] },
-  { type: 'draw', label: 'You draw cards', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
+  { type: 'draw', label: 'You draw cards', contexts: ['trigger', 'spell', 'rider'], fields: [amountField('Amount')] },
   { type: 'mill', label: 'Mill cards', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField()] },
   {
     type: 'create_token',
@@ -235,12 +273,14 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
       { name: 'effects', kind: 'effect-list', label: 'Then', itemContext: 'trigger' },
     ],
   },
-  // Single-target creature effects (Doom Blade, Banisher Priest exile, bounce, …).
-  { type: 'destroy', label: 'Destroy creature', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
-  { type: 'exile', label: 'Exile creature', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
-  { type: 'bounce', label: 'Return creature to hand', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
-  { type: 'tap', label: 'Tap creature', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
-  { type: 'untap', label: 'Untap creature', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
+  // Single-target removal (Doom Blade, Disenchant, Anguished Unmaking, …). Targets
+  // any permanent (creature / artifact / enchantment / planeswalker / nonland), with
+  // an optional spell-only self-rider via `then`.
+  { type: 'destroy', label: 'Destroy a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
+  { type: 'exile', label: 'Exile a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
+  { type: 'bounce', label: 'Return a permanent to hand', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
+  { type: 'tap', label: 'Tap a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
+  { type: 'untap', label: 'Untap a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
   // Fight: a creature you control fights a target creature. The target field
   // describes the FOUGHT creature (the fighter is implicit — the source creature
   // as a trigger, or a creature you control as a spell).
@@ -495,7 +535,15 @@ function parseFields(fields: readonly FieldDescriptor[], obj: Record<string, unk
     }
     const raw = obj[field.name]
     if (raw === undefined) {
-      if (field.kind !== 'effect-list' && field.optional) {
+      // An absent OPTIONAL effect-list (a removal with no `then` rider) is simply
+      // omitted (the form reads undefined as an empty list).
+      if (field.kind === 'effect-list') {
+        if (field.optional) {
+          continue
+        }
+        return null
+      }
+      if (field.optional) {
         if (!('materializeDefault' in field) || field.materializeDefault !== false) {
           out[field.name] = fieldDefault(field)
         }
@@ -521,6 +569,11 @@ export function effectDefault(keyOrType: string): RegistryEffect {
   }
   const result: RegistryEffect = { type: def.type }
   for (const field of def.fields) {
+    // An optional effect-list (a removal's `then` rider) starts absent — the form
+    // adds riders on demand; an empty list would serialize to nothing anyway.
+    if (field.kind === 'effect-list' && field.optional) {
+      continue
+    }
     if (
       field.kind !== 'effect-list' &&
       'optional' in field &&
@@ -555,8 +608,9 @@ export function effectToJson(effect: RegistryEffect): Record<string, unknown> {
       }
       continue
     }
-    // Drop optional fields that carry no information (blank text, empty object).
-    if (field.kind !== 'effect-list' && 'optional' in field && field.optional && isEmptyValue(field, effect[field.name])) {
+    // Drop optional fields that carry no information (blank text, empty object,
+    // an empty `then` rider list).
+    if ('optional' in field && field.optional && isEmptyValue(field, effect[field.name])) {
       continue
     }
     if (
