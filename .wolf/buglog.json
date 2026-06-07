@@ -6558,6 +6558,156 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-07T16:46:30.630Z"
+    },
+    {
+      "id": "bug-405",
+      "timestamp": "2026-06-07T16:55:47.899Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T16:55:47.899Z"
+    },
+    {
+      "id": "bug-406",
+      "timestamp": "2026-06-07T16:58:01.449Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had \"for each counter\"",
+      "fix": "Changed to `doubles_counters: true`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T16:58:01.449Z"
+    },
+    {
+      "id": "bug-407",
+      "timestamp": "2026-06-07T17:22:05.833Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Had 'loyalty'",
+      "fix": "Changed to 'generic'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T17:22:05.833Z"
+    },
+    {
+      "id": "bug-408",
+      "timestamp": "2026-06-07T17:22:11.083Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Had 'loyalty'",
+      "fix": "Changed to 'generic'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T17:22:11.083Z"
+    },
+    {
+      "id": "bug-409",
+      "timestamp": "2026-06-07T17:22:15.988Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"loyalty\"",
+      "fix": "Changed to \"generic\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T17:22:15.988Z"
+    },
+    {
+      "id": "bug-410",
+      "timestamp": "2026-06-07T17:23:21.049Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `counter_type`",
+      "fix": "Changed to `+N`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T17:23:21.049Z"
+    },
+    {
+      "id": "bug-411",
+      "timestamp": "2026-06-07T19:17:54.482Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T19:17:54.482Z"
+    },
+    {
+      "id": "bug-412",
+      "timestamp": "2026-06-07T20:05:00.000Z",
+      "error_message": "new row for relation \"game_continuous_effects\" violates check constraint \"game_continuous_effects_effect_type_check\" (code 23514)",
+      "file": "supabase/migrations/202605010159_infect_toxic_wither.sql",
+      "root_cause": "Adding a new continuous-effect type (infect/wither/toxic) requires updating BOTH the register_card_continuous_effects whitelist AND the separate table-level CHECK constraint game_continuous_effects_effect_type_check. The table CHECK is easy to miss — the register function's own whitelist passes, then the INSERT is rejected by the column constraint.",
+      "fix": "Reproduced the CHECK constraint from its CURRENT definition (mig 146 — NOT the stale baseline, bug-283) and appended infect/wither/toxic, dropping+re-adding the constraint at the top of the migration before any inserts.",
+      "tags": [
+        "postgres",
+        "check-constraint",
+        "game_continuous_effects",
+        "continuous-effects",
+        "new-effect-type",
+        "counters",
+        "infect"
+      ],
+      "related_bugs": [
+        "bug-283"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T20:05:00.000Z"
+    },
+    {
+      "id": "bug-413",
+      "timestamp": "2026-06-07T19:19:30.274Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `add_player_counters`",
+      "fix": "Changed to `card_has_infect`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T19:19:30.274Z"
     }
   ]
 }

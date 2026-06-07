@@ -2126,3 +2126,13 @@
 | 19:22 | Edited lib/game/card-behavior-llm.ts | inline fix | ~32 |
 | 19:23 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~133 |
 | 19:24 | Counters #6 resolved by BACK-OUT: removed inert `loyalty` counter_type (schema enum, registry option, LLM) — authoring no longer implies planeswalker support; no engine change (bag is keyless) | card-behavior-schema/registry/llm, roadmap | 474 green, tsc/lint/build clean | ~2k |
+| 19:24 | Session end: 11 writes across 8 files (202605010158_counter_doubling.sql, card-behavior-llm.ts, card-behavior-schema.ts, test-cards.json, counter-doubling.test.ts) | 8 reads | ~57731 tok |
+| 21:14 | Created supabase/migrations/202605010159_infect_toxic_wither.sql | — | ~9096 |
+| 21:16 | Edited tests/fixtures/test-cards.json | 1→4 lines | ~302 |
+| 21:16 | Created tests/feature/infect-toxic-wither.test.ts | — | ~1760 |
+| 21:16 | Edited package.json | inline fix | ~24 |
+| 21:17 | Edited supabase/migrations/202605010159_infect_toxic_wither.sql | expanded (+13 lines) | ~247 |
+| 21:17 | Edited lib/game/card-behavior-llm.ts | 1→4 lines | ~337 |
+| 21:18 | Edited lib/game/card-behavior-llm.ts | inline fix | ~66 |
+| 21:19 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | "add_player_counters" → "card_has_infect" | ~266 |
+| 21:25 | Counters #7 (infect/toxic/wither combat: card_has_infect/wither + card_toxic_amount readers, apply_damage_to_creature p_as_minus_counters flag, resolve_combat_damage routes 4 sites to poison/−1/−1, table CHECK extended bug-412) | mig 159, llm, test-cards fixtures, infect-toxic-wither.test | 480 green, tsc/lint/build clean | ~32k |
