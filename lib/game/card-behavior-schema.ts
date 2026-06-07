@@ -95,10 +95,22 @@ const BehaviorTargetTypeSchema = z.enum([
   'enchantment',
   'opponent',
   'permanent',
+  'nonland_permanent',
   'planeswalker',
   'player',
   'spell',
 ])
+
+// A small rider applied to the CASTER after a targeted removal resolves
+// ("…and you lose 3 life" / "…and you draw a card"). Simple untargeted effects only.
+const ThenRiderSchema = z
+  .array(
+    z.object({
+      type: z.enum(['lose_life', 'gain_life', 'draw']),
+      amount: z.number().int().nonnegative(),
+    }),
+  )
+  .optional()
 
 const KNOWN_V2_COST_TYPES = [
   'tap_self', 'untap_self', 'mana', 'pay_life',
@@ -292,6 +304,9 @@ const CardBehaviorActionSchema = z.union([
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
     targets: z.number().optional(),
+    // Optional self-rider ("…and you lose 3 life"): applied to the caster on
+    // resolution. Single-target only (not with `targets` > 1).
+    then: ThenRiderSchema,
   }),
   // Grant a keyword to a target creature until end of turn (trigger-only today).
   z.object({

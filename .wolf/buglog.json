@@ -6078,6 +6078,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-07T11:31:05.439Z"
+    },
+    {
+      "id": "bug-375",
+      "timestamp": "2026-06-07T12:54:59.058Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "No early return/throw for edge case: lt === 'any' || lt === 'permanent'",
+      "fix": "Added guard clause: if (lt === 'any' || lt === 'permanent')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T12:54:59.058Z"
     }
   ]
 }

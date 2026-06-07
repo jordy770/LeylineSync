@@ -28,9 +28,29 @@
       "first_read": "2026-06-07T11:29:21.959Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010113_permanent_effect.sql": {
-      "count": 1,
+      "count": 2,
       "tokens": 0,
       "first_read": "2026-06-07T12:18:58.887Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts": {
+      "count": 3,
+      "tokens": 5182,
+      "first_read": "2026-06-07T12:53:12.903Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-07T12:53:53.400Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-07T12:54:24.414Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-07T12:54:51.656Z"
     }
   },
   "files_written": [
@@ -135,17 +155,90 @@
       "action": "edit",
       "tokens": 132,
       "at": "2026-06-07T11:31:14.291Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010150_targeted_spell_riders.sql",
+      "action": "create",
+      "tokens": 1850,
+      "at": "2026-06-07T12:52:12.947Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/targeted-spell-riders.test.ts",
+      "action": "create",
+      "tokens": 1031,
+      "at": "2026-06-07T12:52:32.398Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 43,
+      "at": "2026-06-07T12:52:38.194Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 124,
+      "at": "2026-06-07T12:53:24.966Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 136,
+      "at": "2026-06-07T12:53:42.442Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+      "action": "edit",
+      "tokens": 307,
+      "at": "2026-06-07T12:54:06.823Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+      "action": "edit",
+      "tokens": 223,
+      "at": "2026-06-07T12:54:37.027Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 69,
+      "at": "2026-06-07T12:54:59.051Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 56,
+      "at": "2026-06-07T12:55:09.026Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 269,
+      "at": "2026-06-07T12:55:20.419Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 48,
+      "at": "2026-06-07T12:55:38.154Z"
     }
   ],
   "edit_counts": {
     "next.config.ts": 3,
     "app/controller/[id]/page.tsx": 1,
     "components/DeckManager.tsx": 8,
-    "components/CardCatalogPicker.tsx": 5
+    "components/CardCatalogPicker.tsx": 5,
+    "supabase/migrations/202605010150_targeted_spell_riders.sql": 1,
+    "tests/feature/targeted-spell-riders.test.ts": 1,
+    "package.json": 1,
+    "lib/game/card-behavior-schema.ts": 2,
+    "lib/game/card-behavior-llm.ts": 1,
+    "lib/game/actions.ts": 1,
+    "components/ControllerListV4.tsx": 4
   },
   "anatomy_hits": 0,
-  "anatomy_misses": 6,
-  "repeated_reads_warned": 0,
+  "anatomy_misses": 10,
+  "repeated_reads_warned": 3,
   "cerebrum_warnings": 0,
   "stop_count": 8
 }

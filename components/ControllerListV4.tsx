@@ -229,7 +229,7 @@ type SpellPlan =
   // Multi-target removal: pick up to `count` creatures, apply `effectKind` to each.
   | { kind: 'multi_creature'; effectKind: MultiCreatureKind; label: string; count: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   // Non-creature permanent removal: destroy/exile/… a target of `targetType`.
-  | { kind: 'permanent_effect'; effectKind: MultiCreatureKind; label: string; targetType: string | string[]; timing: 'instant' | 'sorcery'; targetController: TargetController }
+  | { kind: 'permanent_effect'; effectKind: MultiCreatureKind; label: string; targetType: string | string[]; timing: 'instant' | 'sorcery'; targetController: TargetController; then?: unknown[] }
   | { kind: 'fight'; timing: 'instant' | 'sorcery'; foughtController: TargetController }
   | { kind: 'draw'; amount: number; timing: 'instant' | 'sorcery'; xRequired?: boolean }
   | { kind: 'spell_effect'; actions: unknown[]; timing: 'instant' | 'sorcery'; xRequired?: boolean }
@@ -299,7 +299,9 @@ function cardMatchesTargetType(typeLine: string | null | undefined, tt: string |
   const types = Array.isArray(tt) ? tt : [tt]
   return types.some((t) => {
     const lt = String(t).toLowerCase()
-    return lt === 'any' || lt === 'permanent' || tl.includes(lt)
+    if (lt === 'any' || lt === 'permanent') return true
+    if (lt === 'nonland_permanent' || lt === 'nonland') return !tl.includes('land')
+    return tl.includes(lt)
   })
 }
 
@@ -446,11 +448,11 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
   }
 
   const creatureEffect = actions.find((a) => a.type in CREATURE_EFFECT_MAP) as
-    | (CardBehaviorAction & { target_controller?: unknown; targets?: number; target_type?: unknown })
+    | (CardBehaviorAction & { target_controller?: unknown; targets?: number; target_type?: unknown; then?: unknown[] })
     | undefined
   if (creatureEffect) {
     const mapped = CREATURE_EFFECT_MAP[creatureEffect.type]
-    // A non-creature permanent target (artifact/enchantment/…) → the permanent
+    // A non-creature permanent target (artifact/enchantment/nonland…) → the permanent
     // picker + cast path. Checked first: it changes both the picker and the action.
     if (!isCreatureOnlyTargetType(creatureEffect.target_type)) {
       return {
@@ -460,6 +462,7 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
         targetType: (creatureEffect.target_type as string | string[]) ?? 'permanent',
         timing,
         targetController: readTargetController(creatureEffect),
+        then: Array.isArray(creatureEffect.then) ? creatureEffect.then : undefined,
       }
     }
     // `targets` > 1 → a multi-target removal ("destroy up to N target creatures").
@@ -812,7 +815,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'permanent_effect') return
-      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController)
+      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then)
       await refresh()
     },
     // Divided damage — allocate the total across the chosen creature/player targets.

@@ -1941,3 +1941,16 @@
 | 13:32 | Session end: 17 writes across 4 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx) | 5 reads | ~1776 tok |
 | 14:20 | Session end: 17 writes across 4 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx) | 6 reads | ~1776 tok |
 | 14:24 | Session end: 17 writes across 4 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx) | 6 reads | ~1776 tok |
+| 14:52 | Created supabase/migrations/202605010150_targeted_spell_riders.sql | — | ~1727 |
+| 14:52 | Created tests/feature/targeted-spell-riders.test.ts | — | ~1031 |
+| 14:52 | Edited package.json | inline fix | ~43 |
+| 14:53 | Edited lib/game/card-behavior-schema.ts | expanded (+12 lines) | ~124 |
+| 14:53 | Edited lib/game/card-behavior-schema.ts | modified rider() | ~136 |
+| 14:54 | Edited lib/game/card-behavior-llm.ts | modified TARGET() | ~307 |
+| 14:54 | Edited lib/game/actions.ts | modified castPermanentEffect() | ~223 |
+| 14:54 | Edited components/ControllerListV4.tsx | added 2 condition(s) | ~69 |
+| 14:55 | Edited components/ControllerListV4.tsx | inline fix | ~56 |
+| 14:55 | Edited components/ControllerListV4.tsx | CSS: then, then | ~269 |
+| 14:55 | Edited components/ControllerListV4.tsx | inline fix | ~48 |
+
+| 2026-06-07 | Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking authorable. card_type_line_matches_target gains nonland_permanent; build_stack_payload_permanent_simple carries `then`; handle_permanent_effect applies main removal + then-riders (lose_life/gain_life/draw) to the caster. Schema: nonland_permanent + ThenRiderSchema. LLM doc + client (getSpellPlan/castPermanentEffect/cardMatchesTargetType). JSON/AI-authorable. Tests AU1-4. On new branch targeted-spell-riders (master FF'd to current work first). | supabase/migrations/202605010150_targeted_spell_riders.sql, lib/game/card-behavior-schema.ts, lib/game/card-behavior-llm.ts, lib/game/actions.ts, components/ControllerListV4.tsx, tests/feature/targeted-spell-riders.test.ts | 428/428, tsc+lint+build clean | ~9000 |
