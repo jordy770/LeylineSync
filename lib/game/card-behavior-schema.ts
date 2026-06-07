@@ -172,10 +172,18 @@ const DynamicAmountSchema = z.object({
   of: z.enum(['self', 'source', 'this', 'you', 'your', 'controller', 'target']).optional(),
 }).strict()
 
+// A count-based dynamic amount: "X = number of creatures you control / cards in your
+// graveyard / your devotion to <color>". Relative to the amount's controller.
+const CountAmountSchema = z.object({
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'devotion']),
+  type_line: z.string().optional(),
+  color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
+}).strict()
+
 // An effect amount: a fixed number, the literal "X" for a variable spell (chosen at
 // cast time, paid as {X} generic mana, substituted server-side), or a dynamic
-// counter-referencing amount (trigger/source path only).
-const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema])
+// counter- / count-referencing amount.
+const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema, CountAmountSchema])
 
 // Which kind of counter an add_counters effect places. "plus_one_one" is the
 // engine's fast +1/+1 column; everything else lives in the jsonb counter bag.
