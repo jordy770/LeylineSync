@@ -1,8 +1,12 @@
-import ControllerList from '@/components/ControllerList';
-import ControllerListV2 from '@/components/ControllerListV2';
-import ControllerListV3 from '@/components/ControllerListV3';
-import ControllerListV4 from '@/components/ControllerListV4';
+import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
+
+// Lazy-load each controller version so opening the page only compiles the ONE
+// requested via ?v= — not all four (V1+V2+V3+V4 ≈ 7,900 lines) on every visit.
+const ControllerList = dynamic(() => import('@/components/ControllerList'));
+const ControllerListV2 = dynamic(() => import('@/components/ControllerListV2'));
+const ControllerListV3 = dynamic(() => import('@/components/ControllerListV3'));
+const ControllerListV4 = dynamic(() => import('@/components/ControllerListV4'));
 
 export default function ControllerPage({
   params,

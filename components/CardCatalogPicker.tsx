@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
-import { getCardCatalog } from '@/lib/game/data'
+import { getCardCatalog, getCardDetail } from '@/lib/game/data'
 import { createClient } from '@/lib/supabase/client'
 import type { CardCatalogFilters, LinkedCard } from '@/lib/game/types'
 
@@ -53,6 +53,7 @@ export default function CardCatalogPicker({
   const [colorFilter, setColorFilter] = useState<NonNullable<CardCatalogFilters['color']>>('all')
   const [keywordFilter, setKeywordFilter] = useState('all')
   const [cards, setCards] = useState<LinkedCard[]>([])
+  const [pinnedCard, setPinnedCard] = useState<LinkedCard | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -78,8 +79,11 @@ export default function CardCatalogPicker({
 
         setCards(nextCards)
 
-        if (!nextCards.some((card) => card.id === value)) {
-          onChange(nextCards[0]?.id ?? '')
+        // Only default to the first result when NOTHING is selected yet. Do not
+        // override an explicit selection (e.g. a card opened from the deck editor)
+        // just because it isn't on the current search page.
+        if (!value && nextCards.length > 0) {
+          onChange(nextCards[0]!.id)
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Could not load card catalog'
@@ -101,7 +105,32 @@ export default function CardCatalogPicker({
     }
   }, [colorFilter, keywordFilter, onChange, search, supabase, typeFilter, value])
 
-  const selectedCard = cards.find((card) => card.id === value) ?? null
+  // Ensure the selected card is fetched + shown even when it's not in the current
+  // search results, so a pre-selected card (deck editor) always displays.
+  useEffect(() => {
+    if (!value || cards.some((card) => card.id === value)) {
+      setPinnedCard(null)
+      return
+    }
+    let isMounted = true
+    getCardDetail(supabase, value)
+      .then((card) => {
+        if (isMounted) setPinnedCard(card)
+      })
+      .catch(() => {
+        if (isMounted) setPinnedCard(null)
+      })
+    return () => {
+      isMounted = false
+    }
+  }, [value, cards, supabase])
+
+  const visibleCards = useMemo(
+    () => (pinnedCard && !cards.some((card) => card.id === pinnedCard.id) ? [pinnedCard, ...cards] : cards),
+    [pinnedCard, cards],
+  )
+
+  const selectedCard = visibleCards.find((card) => card.id === value) ?? null
 
   return (
     <div className="grid min-w-0 gap-2">
@@ -162,14 +191,14 @@ export default function CardCatalogPicker({
 
       <select
         value={value}
-        disabled={disabled || cards.length === 0}
+        disabled={disabled || visibleCards.length === 0}
         onChange={(event) => onChange(event.target.value)}
         className="w-full min-w-0 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {cards.length === 0 ? (
+        {visibleCards.length === 0 ? (
           <option value="">No cards found</option>
         ) : (
-          cards.map((card) => (
+          visibleCards.map((card) => (
             <option key={card.id} value={card.id}>
               {formatCardOption(card)}
             </option>

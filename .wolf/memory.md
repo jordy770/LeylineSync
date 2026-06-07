@@ -1876,3 +1876,144 @@
 | 23:13 | Edited tests/harness/seed.ts | modified for() | ~354 |
 
 | 2026-06-06 | Merged commander -> master (fast-forward; not pushed). Post-merge fresh-DB test surfaced a flaky DK5: ensureTestCards races across node --test per-file worker processes -> duplicate test-card rows -> non-deterministic limit-1 lookups. Fixed with a pg_advisory_xact_lock around seeding (bug-367). Rebuilt DB (0 dupes); 410/410 stable across two runs, tsc clean. | tests/harness/seed.ts, .wolf/buglog.json | 410/410 x2, tsc clean | ~4000 |
+| 23:15 | Session end: 11 writes across 9 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 4 reads | ~15075 tok |
+| 23:21 | Session end: 11 writes across 9 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 4 reads | ~15075 tok |
+| 23:26 | Created supabase/migrations/202605010147_creature_damage_shields.sql | — | ~3423 |
+| 23:26 | Edited tests/harness/scenario.ts | modified addCreaturePrevention() | ~182 |
+| 23:26 | Created tests/feature/creature-shield.test.ts | — | ~1176 |
+| 23:26 | Edited package.json | inline fix | ~29 |
+| 23:27 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~184 |
+
+| 2026-06-06 | Engine — CREATURE damage shields (mig 147, F2.1d) on new branch creature-damage-shields. add_creature_damage_prevention + apply_damage_to_creature resolver (consume shields then mark remaining damage + deathtouch + lethal sweep), mirroring the player resolver (mig 125). apply_creature_effect deal_damage reproduced (from mig 129) to route through it. Targeted path only; combat + card-authoring deferred. Harness addCreaturePrevention. Tests CS1-5. | supabase/migrations/202605010147_creature_damage_shields.sql, tests/feature/creature-shield.test.ts, tests/harness/scenario.ts | 415/415, tsc+lint clean | ~5000 |
+| 23:28 | Session end: 16 writes across 11 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 5 reads | ~20327 tok |
+| 23:34 | Session end: 16 writes across 11 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 5 reads | ~20327 tok |
+| 23:52 | Created supabase/migrations/202605010148_combat_creature_shields.sql | — | ~5302 |
+| 23:52 | Created tests/feature/combat-shield.test.ts | — | ~1004 |
+| 23:52 | Edited package.json | inline fix | ~22 |
+| 23:53 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~155 |
+
+| 2026-06-06 | Engine — COMBAT creature shields (mig 148, F2.1e). resolve_combat_damage (from mig 132) routes both creature-damage sites through apply_damage_to_creature; resolver gained p_run_sweep (combat=false to keep its single end-of-step lethal sweep = simultaneity). Dropped 6-arg version; targeted caller resolves to 7-arg default. Protection gate kept. Tests CB1-4; all combat tests green. | supabase/migrations/202605010148_combat_creature_shields.sql, tests/feature/combat-shield.test.ts | 419/419, tsc+lint clean | ~6000 |
+| 23:54 | Session end: 20 writes across 13 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 7 reads | ~27199 tok |
+| 23:59 | Created supabase/migrations/202605010149_cda_pt_layer.sql | — | ~2332 |
+| 23:59 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~181 |
+| 23:59 | Created tests/feature/cda-pt.test.ts | — | ~870 |
+| 23:59 | Edited package.json | inline fix | ~30 |
+| 00:01 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | "prevent damage to target " → "cda" | ~183 |
+
+| 2026-06-07 | Engine — CDA layer 7a (mig 149, F2.2f). card_cda_value reads a top-level script `cda` key (count creatures_you_control/lands_you_control/cards_in_graveyard + plus); card_layered_power/toughness base coalesce now set(7b)->cda(7a)->printed. No register/CHECK change (CDA is inherent, read from script). Fixture Wild Tracker Test (*/*); tests CD1-5. P/T LAYER SYSTEM 7a-7e COMPLETE. | supabase/migrations/202605010149_cda_pt_layer.sql, tests/feature/cda-pt.test.ts, tests/fixtures/test-cards.json | 424/424, tsc+lint clean | ~5000 |
+| 00:02 | Session end: 25 writes across 15 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 7 reads | ~30975 tok |
+
+## Session: 2026-06-07 11:11
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-07 11:11
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:20 | Edited next.config.ts | 6→5 lines | ~23 |
+| 11:21 | Edited app/controller/[id]/page.tsx | 5→9 lines | ~157 |
+
+| 2026-06-07 | Fixed Next.js dev "stuck on compiling". Two causes: (1) cacheComponents:true enabled but ZERO "use cache" directives -> pure Cache-Components overhead (root cold compile 4.2s -> 0.55s after removing; also explained the 7.7-min prod build); (2) app/controller/[id]/page.tsx statically imported ALL FOUR controller versions (V1+V2+V3+V4 ~7900 lines) -> now next/dynamic lazy-loads so only the ?v= version compiles. tsc clean. | next.config.ts, app/controller/[id]/page.tsx | root compile 4.2s->0.55s, tsc clean | ~3000 |
+| 11:23 | Session end: 2 writes across 2 files (next.config.ts, page.tsx) | 1 reads | ~180 tok |
+| 11:30 | Edited components/DeckManager.tsx | 3→3 lines | ~52 |
+| 11:30 | Edited components/DeckManager.tsx | 1→2 lines | ~54 |
+| 11:30 | Edited components/DeckManager.tsx | expanded (+7 lines) | ~153 |
+| 11:30 | Edited components/DeckManager.tsx | 5→7 lines | ~71 |
+| 11:30 | Edited components/DeckManager.tsx | 5→4 lines | ~20 |
+| 11:30 | Edited components/DeckManager.tsx | "mt-2 grid gap-2" → "mt-2 grid gap-2 lg:grid-c" | ~18 |
+| 11:30 | Edited components/DeckManager.tsx | 7→8 lines | ~116 |
+| 11:31 | Edited components/DeckManager.tsx | CSS: hover | ~354 |
+
+| 2026-06-07 | Deck editor UX: card-behavior editor now opens in a POPUP (CardBehaviorEditor in a max-w-6xl modal) instead of navigating to /cards/behavior; refreshes the deck on close so badges update. Made the card list readable: pulled "Edit Deck" out of the narrow ≤420px right column into a FULL-WIDTH section below the top row, and tiled the card list 2-up (lg:grid-cols-2). | components/DeckManager.tsx | tsc+lint clean | ~3500 |
+| 11:33 | Session end: 10 writes across 3 files (next.config.ts, page.tsx, DeckManager.tsx) | 3 reads | ~1018 tok |
+| 13:06 | Session end: 10 writes across 3 files (next.config.ts, page.tsx, DeckManager.tsx) | 4 reads | ~1018 tok |
+| 13:22 | Edited next.config.ts | 4→8 lines | ~94 |
+| 13:22 | Session end: 11 writes across 3 files (next.config.ts, page.tsx, DeckManager.tsx) | 4 reads | ~1112 tok |
+| 13:26 | Edited next.config.ts | 8→9 lines | ~107 |
+| 13:26 | Session end: 12 writes across 3 files (next.config.ts, page.tsx, DeckManager.tsx) | 4 reads | ~1219 tok |
+| 13:30 | Edited components/CardCatalogPicker.tsx | inline fix | ~18 |
+| 13:30 | Edited components/CardCatalogPicker.tsx | 3→4 lines | ~72 |
+| 13:30 | Edited components/CardCatalogPicker.tsx | some() → selection() | ~100 |
+| 13:31 | Edited components/CardCatalogPicker.tsx | added 3 condition(s) | ~235 |
+| 13:31 | Edited components/CardCatalogPicker.tsx | 10→10 lines | ~132 |
+| 13:32 | Session end: 17 writes across 4 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx) | 5 reads | ~1776 tok |
+| 14:20 | Session end: 17 writes across 4 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx) | 6 reads | ~1776 tok |
+| 14:24 | Session end: 17 writes across 4 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx) | 6 reads | ~1776 tok |
+| 14:52 | Created supabase/migrations/202605010150_targeted_spell_riders.sql | — | ~1727 |
+| 14:52 | Created tests/feature/targeted-spell-riders.test.ts | — | ~1031 |
+| 14:52 | Edited package.json | inline fix | ~43 |
+| 14:53 | Edited lib/game/card-behavior-schema.ts | expanded (+12 lines) | ~124 |
+| 14:53 | Edited lib/game/card-behavior-schema.ts | modified rider() | ~136 |
+| 14:54 | Edited lib/game/card-behavior-llm.ts | modified TARGET() | ~307 |
+| 14:54 | Edited lib/game/actions.ts | modified castPermanentEffect() | ~223 |
+| 14:54 | Edited components/ControllerListV4.tsx | added 2 condition(s) | ~69 |
+| 14:55 | Edited components/ControllerListV4.tsx | inline fix | ~56 |
+| 14:55 | Edited components/ControllerListV4.tsx | CSS: then, then | ~269 |
+| 14:55 | Edited components/ControllerListV4.tsx | inline fix | ~48 |
+
+| 2026-06-07 | Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking authorable. card_type_line_matches_target gains nonland_permanent; build_stack_payload_permanent_simple carries `then`; handle_permanent_effect applies main removal + then-riders (lose_life/gain_life/draw) to the caster. Schema: nonland_permanent + ThenRiderSchema. LLM doc + client (getSpellPlan/castPermanentEffect/cardMatchesTargetType). JSON/AI-authorable. Tests AU1-4. On new branch targeted-spell-riders (master FF'd to current work first). | supabase/migrations/202605010150_targeted_spell_riders.sql, lib/game/card-behavior-schema.ts, lib/game/card-behavior-llm.ts, lib/game/actions.ts, components/ControllerListV4.tsx, tests/feature/targeted-spell-riders.test.ts | 428/428, tsc+lint+build clean | ~9000 |
+| 14:59 | Session end: 28 writes across 11 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx, 202605010150_targeted_spell_riders.sql) | 10 reads | ~11114 tok |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | 1→3 lines | ~62 |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | inline fix | ~30 |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | modified SPELL() | ~486 |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | 2→6 lines | ~218 |
+| 15:27 | Edited lib/game/card-behavior-registry.ts | inline fix | ~34 |
+| 15:28 | Edited lib/game/card-behavior-registry.ts | 6→8 lines | ~248 |
+| 15:28 | Edited lib/game/card-behavior-registry.ts | added 2 condition(s) | ~151 |
+| 15:28 | Edited lib/game/card-behavior-registry.ts | 4→5 lines | ~66 |
+| 15:29 | Edited lib/game/card-behavior-registry.ts | modified if() | ~78 |
+| 15:29 | Edited lib/game/card-behavior-registry.ts | added 1 condition(s) | ~172 |
+| 15:30 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+7 lines) | ~319 |
+
+| 2026-06-07 | Guided-form support for targeted-spell riders + nonland_permanent (registry-only; no new form UI). removalTargetField (creature + artifact/enchantment/planeswalker/permanent/nonland_permanent) on destroy/exile/bounce/tap/untap; 'rider' EffectContext + lose_life_rider/gain_life_rider (no recipient) + draw; optional `then` effect-list (effect-list gained optional support: omit in default/parse, drop empty in serialize). Anguished Unmaking round-trips form<->JSON. | lib/game/card-behavior-registry.ts, tests/unit/card-behavior-builder.test.ts | 436/436, tsc+lint+build clean | ~7000 |
+| 15:32 | Session end: 39 writes across 13 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx, 202605010150_targeted_spell_riders.sql) | 13 reads | ~21361 tok |
+| 15:44 | Created supabase/migrations/202605010151_commander_identity_mana.sql | — | ~1357 |
+| 15:44 | Edited tests/harness/scenario.ts | added nullish coalescing | ~220 |
+| 15:44 | Created tests/feature/commander-identity-mana.test.ts | — | ~662 |
+| 15:45 | Edited lib/game/card-behavior-schema.ts | 2→7 lines | ~110 |
+| 15:45 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~38 |
+| 15:45 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~33 |
+| 15:46 | Edited lib/game/card-behavior-builder.ts | expanded (+6 lines) | ~194 |
+| 15:46 | Edited lib/game/card-behavior-builder.ts | 2→2 lines | ~35 |
+| 15:46 | Edited lib/game/card-behavior-builder.ts | 10→10 lines | ~100 |
+| 15:47 | Edited lib/game/card-behavior-llm.ts | inline fix | ~81 |
+| 15:48 | Edited lib/game/card-behavior.ts | 8→8 lines | ~72 |
+| 15:48 | Edited lib/game/actions.ts | added nullish coalescing | ~217 |
+| 15:49 | Edited components/ControllerListV4.tsx | added optional chaining | ~328 |
+| 15:49 | Edited components/ControllerListV4.tsx | CSS: commanderIdentity | ~454 |
+| 15:49 | Edited lib/game/card-behavior.ts | 5→6 lines | ~50 |
+| 15:50 | Edited components/ControllerListV4.tsx | 3→4 lines | ~70 |
+| 15:50 | Edited components/ControllerListV4.tsx | 8→9 lines | ~50 |
+| 15:51 | Edited components/ControllerListV4.tsx | CSS: commanderIdentity | ~37 |
+| 15:51 | Edited components/ControllerListV4.tsx | CSS: produces, commanderIdentity | ~426 |
+| 15:52 | Edited components/ControllerListV4.tsx | CSS: null | ~83 |
+| 15:52 | Edited components/ControllerListV4.tsx | "Add {${e.color}}" → "commander" | ~34 |
+| 15:54 | Edited tests/unit/card-behavior-builder.test.ts | 1→2 lines | ~132 |
+
+| 2026-06-07 | Commander-identity mana (Command Tower / Arcane Signet, mig 151). add_mana color 'commander' = any color in the commander's identity. Engine: add_mana_from_card p_commander_identity guard validates color ∈ card_color_identity(commander). Client: compute commander identity (is_commander card's mana_cost+oracle), render per-identity-color tap buttons. Schema/builder/form/LLM authorable ('commander' in isAddManaBehaviorAction allow-list; BUILDER_MANA_COLORS). Tests CMM1-3 + builder round-trip. | supabase/migrations/202605010151_commander_identity_mana.sql, lib/game/card-behavior-schema.ts, card-behavior-builder.ts, card-behavior.ts, card-behavior-llm.ts, actions.ts, components/ControllerListV4.tsx, tests | 439/439, tsc+lint+build clean | ~9000 |
+| 15:55 | Session end: 61 writes across 18 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx, 202605010150_targeted_spell_riders.sql) | 15 reads | ~94603 tok |
+| 16:12 | Created supabase/migrations/202605010152_assassins_trophy_rider.sql | — | ~2006 |
+| 16:13 | Created tests/feature/assassins-trophy.test.ts | — | ~769 |
+| 16:14 | Edited lib/game/card-behavior-schema.ts | modified rider() | ~135 |
+| 16:14 | Edited lib/game/card-behavior-registry.ts | 1→2 lines | ~75 |
+| 16:14 | Edited lib/game/card-behavior-registry.ts | modified for() | ~102 |
+| 16:14 | Edited lib/game/card-behavior-registry.ts | 6→7 lines | ~56 |
+| 16:15 | Edited lib/game/card-behavior-registry.ts | 7→10 lines | ~85 |
+| 16:15 | Edited lib/game/card-behavior-registry.ts | 7→9 lines | ~99 |
+| 16:15 | Edited lib/game/card-behavior-registry.ts | 5→5 lines | ~78 |
+| 16:15 | Edited lib/game/card-behavior-registry.ts | list() → boolean() | ~115 |
+| 16:16 | Edited lib/game/card-behavior-registry.ts | expanded (+10 lines) | ~155 |
+| 16:16 | Edited lib/game/card-behavior-registry.ts | 5→5 lines | ~214 |
+| 16:16 | Edited components/CardBehaviorForm.tsx | added 1 condition(s) | ~206 |
+| 16:17 | Edited lib/game/actions.ts | 17→19 lines | ~175 |
+| 16:17 | Edited components/ControllerListV4.tsx | inline fix | ~67 |
+| 16:17 | Edited components/ControllerListV4.tsx | CSS: controllerSearchesBasicLand | ~307 |
+| 16:17 | Edited components/ControllerListV4.tsx | inline fix | ~58 |
+| 16:17 | Edited lib/game/card-behavior-llm.ts | modified RIDER() | ~235 |
+| 16:18 | Edited lib/game/card-behavior-registry.ts | 7→9 lines | ~213 |
+| 16:18 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~150 |
+
+| 2026-06-07 | Assassin's Trophy (mig 152) — targeted removal parks a DECISION for the affected player. handle_permanent_effect: capture target controller before destroy, then if controller_searches_basic_land park a may-search (min 0) for that player (deciding_player = affected controller); returns awaiting_decision (handle_scry contract); submit_decision searches their library → basic to battlefield + shuffle. Authoring: new 'boolean' registry field kind (checkbox) + opponent-controlled removal target options + schema/LLM/client flag. Tests ATR1-2 + builder round-trip. | supabase/migrations/202605010152_assassins_trophy_rider.sql, lib/game/card-behavior-{schema,registry,llm}.ts, actions.ts, components/{ControllerListV4,CardBehaviorForm}.tsx, tests | 445/445, tsc+lint+build clean | ~11000 |
+| 16:20 | Session end: 81 writes across 21 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx, 202605010150_targeted_spell_riders.sql) | 17 reads | ~100334 tok |

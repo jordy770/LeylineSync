@@ -107,7 +107,9 @@ function getAutoTapColor(card: ControllerCard): ManaColor | null {
   if (ability.costs.length !== 1 || ability.costs[0].type !== 'tap_self') return null
   const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
   if (addManaEffects.length !== 1) return null
-  return addManaEffects[0].color
+  // A 'commander' source needs a colour choice — don't auto-tap; open the picker.
+  const color = addManaEffects[0].color
+  return color === 'commander' ? null : color
 }
 
 function renderAbilityCost(costs: CardBehaviorCost[]): string {
@@ -128,7 +130,7 @@ function renderAbilityCost(costs: CardBehaviorCost[]): string {
 
 function renderAbilityEffect(effects: CardBehaviorAction[]): string {
   return effects.map((e) => {
-    if (isAddManaBehaviorAction(e)) return `Add {${e.color}}`
+    if (isAddManaBehaviorAction(e)) return e.color === 'commander' ? 'Add any commander colour' : `Add {${e.color}}`
     const asAny = e as Record<string, unknown>
     if (e.type === 'deal_damage') return `Deal ${String(asAny.amount ?? '?')} damage`
     if (e.type === 'counter') return 'Counter target spell'
@@ -160,6 +162,25 @@ function manaCostColors(manaCost?: string | null): string[] {
   if (mc.includes('R')) out.push('red')
   if (mc.includes('G')) out.push('green')
   return out
+}
+
+// The player's commander colour identity (W/U/B/R/G letters) from the mana symbols in
+// their commander's mana cost + rules text — drives `color:'commander'` mana sources
+// (Command Tower, Arcane Signet). Empty (colourless / no commander) → falls back to C.
+function commanderIdentityColors(cards: ControllerCard[]): ManaColor[] {
+  const commander = cards.find((c) => c.is_commander)
+  if (!commander) return []
+  const identity = new Set<ManaColor>()
+  const scan = (text?: string | null) => {
+    for (const m of (text ?? '').toUpperCase().matchAll(/\{([^}]+)\}/g)) {
+      for (const ch of m[1] ?? '') {
+        if ('WUBRG'.includes(ch)) identity.add(ch as ManaColor)
+      }
+    }
+  }
+  scan(commander.cards?.mana_cost)
+  scan(commander.cards?.oracle_text)
+  return [...identity]
 }
 
 const cardIsAura = (typeLine?: string | null) => (typeLine ?? '').toLowerCase().includes('aura')
@@ -229,7 +250,7 @@ type SpellPlan =
   // Multi-target removal: pick up to `count` creatures, apply `effectKind` to each.
   | { kind: 'multi_creature'; effectKind: MultiCreatureKind; label: string; count: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   // Non-creature permanent removal: destroy/exile/… a target of `targetType`.
-  | { kind: 'permanent_effect'; effectKind: MultiCreatureKind; label: string; targetType: string | string[]; timing: 'instant' | 'sorcery'; targetController: TargetController }
+  | { kind: 'permanent_effect'; effectKind: MultiCreatureKind; label: string; targetType: string | string[]; timing: 'instant' | 'sorcery'; targetController: TargetController; then?: unknown[]; controllerSearchesBasicLand?: boolean }
   | { kind: 'fight'; timing: 'instant' | 'sorcery'; foughtController: TargetController }
   | { kind: 'draw'; amount: number; timing: 'instant' | 'sorcery'; xRequired?: boolean }
   | { kind: 'spell_effect'; actions: unknown[]; timing: 'instant' | 'sorcery'; xRequired?: boolean }
@@ -299,7 +320,9 @@ function cardMatchesTargetType(typeLine: string | null | undefined, tt: string |
   const types = Array.isArray(tt) ? tt : [tt]
   return types.some((t) => {
     const lt = String(t).toLowerCase()
-    return lt === 'any' || lt === 'permanent' || tl.includes(lt)
+    if (lt === 'any' || lt === 'permanent') return true
+    if (lt === 'nonland_permanent' || lt === 'nonland') return !tl.includes('land')
+    return tl.includes(lt)
   })
 }
 
@@ -446,11 +469,11 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
   }
 
   const creatureEffect = actions.find((a) => a.type in CREATURE_EFFECT_MAP) as
-    | (CardBehaviorAction & { target_controller?: unknown; targets?: number; target_type?: unknown })
+    | (CardBehaviorAction & { target_controller?: unknown; targets?: number; target_type?: unknown; then?: unknown[]; controller_searches_basic_land?: boolean })
     | undefined
   if (creatureEffect) {
     const mapped = CREATURE_EFFECT_MAP[creatureEffect.type]
-    // A non-creature permanent target (artifact/enchantment/…) → the permanent
+    // A non-creature permanent target (artifact/enchantment/nonland…) → the permanent
     // picker + cast path. Checked first: it changes both the picker and the action.
     if (!isCreatureOnlyTargetType(creatureEffect.target_type)) {
       return {
@@ -460,6 +483,8 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
         targetType: (creatureEffect.target_type as string | string[]) ?? 'permanent',
         timing,
         targetController: readTargetController(creatureEffect),
+        then: Array.isArray(creatureEffect.then) ? creatureEffect.then : undefined,
+        controllerSearchesBasicLand: creatureEffect.controller_searches_basic_land === true,
       }
     }
     // `targets` > 1 → a multi-target removal ("destroy up to N target creatures").
@@ -701,10 +726,31 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     const card = battlefieldCards.find((c) => c.id === cardId)
     const script = card?.copied_script ?? card?.cards?.script ?? null
     const ability = selectFirstManaAbility(script, card?.cards?.type_line, color)
-    const manaEffect = ability?.effects.find(
+    if (!card || !ability) {
+      setErrorMessage('No mana ability found.')
+      return
+    }
+    // A `color:'commander'` source produces a CHOSEN identity colour; the picker
+    // passes the real colour (validated against the commander's identity server-side).
+    const commanderEffect = ability.effects.find((e) => isAddManaBehaviorAction(e) && e.color === 'commander')
+    if (commanderEffect && isAddManaBehaviorAction(commanderEffect) && color) {
+      await addManaFromCard({
+        supabase,
+        cardId,
+        sessionId,
+        playerId,
+        color,
+        amount: commanderEffect.amount,
+        shouldTapCard: ability.costs.some((c) => c.type === 'tap_self'),
+        commanderIdentity: true,
+      })
+      await refresh()
+      return
+    }
+    const manaEffect = ability.effects.find(
       (e) => isAddManaBehaviorAction(e) && (!color || e.color === color),
     )
-    if (!card || !ability || !manaEffect || !isAddManaBehaviorAction(manaEffect)) {
+    if (!manaEffect || !isAddManaBehaviorAction(manaEffect)) {
       setErrorMessage('No mana ability found.')
       return
     }
@@ -812,7 +858,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'permanent_effect') return
-      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController)
+      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then, plan.controllerSearchesBasicLand)
       await refresh()
     },
     // Divided damage — allocate the total across the chosen creature/player targets.
@@ -1058,6 +1104,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             playerId={playerId}
             pendingStackItems={pendingStackItems}
             boardCards={boardCards}
+            commanderIdentity={commanderIdentityColors(cards)}
             onTapForMana={async (cardId, color) => { await actions.tapForMana(cardId, color) }}
             onCastCard={async (cardId) => { await actions.castSpell(cardId) }}
             onDealDamageToPlayer={async (cardId, targetPlayerId) => { await actions.dealDamageToPlayer(cardId, targetPlayerId) }}
@@ -2065,6 +2112,7 @@ function CardActionSheet({
   playerId,
   pendingStackItems,
   boardCards,
+  commanderIdentity,
   onTapForMana,
   onCastCard,
   onDealDamageToPlayer,
@@ -2094,6 +2142,7 @@ function CardActionSheet({
   playerId: string | null
   pendingStackItems: StackItem[]
   boardCards: BoardCard[]
+  commanderIdentity: ManaColor[]
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
   onCastCard: (cardId: string) => Promise<void>
   onDealDamageToPlayer: (cardId: string, targetPlayerId: string) => Promise<void>
@@ -2795,25 +2844,33 @@ function CardActionSheet({
               const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
               const hasTapCost = ability.costs.some((c) => c.type === 'tap_self')
               const isUnavailable = hasTapCost && card.is_tapped
-              return addManaEffects.map((effect) => (
-                <button
-                  key={`${i}-${effect.color}`}
-                  type="button"
-                  disabled={isUnavailable}
-                  onClick={() => { void onTapForMana(card.id, effect.color); onClose() }}
-                  className={`flex items-center gap-2.5 rounded-2xl border px-3 py-3 transition active:scale-95 ${
-                    isUnavailable
-                      ? 'border-white/5 bg-[#0F1117] opacity-30'
-                      : 'border-white/10 bg-[#0F1117] hover:border-white/20'
-                  }`}
-                >
-                  {hasTapCost && (
-                    <span className="shrink-0 text-[9px] font-black text-slate-600">{'{T}'}</span>
-                  )}
-                  <ManaSymbol color={effect.color} size="md" />
-                  <span className="text-sm font-bold text-white">Add {effect.color}</span>
-                </button>
-              ))
+              return addManaEffects.flatMap((effect) => {
+                // 'commander' → one button per colour in the commander's identity
+                // (colourless fallback when there is none). Else the fixed colour.
+                const produces: ManaColor[] =
+                  effect.color === 'commander'
+                    ? (commanderIdentity.length > 0 ? commanderIdentity : (['C'] as ManaColor[]))
+                    : [effect.color as ManaColor]
+                return produces.map((produced) => (
+                  <button
+                    key={`${i}-${effect.color}-${produced}`}
+                    type="button"
+                    disabled={isUnavailable}
+                    onClick={() => { void onTapForMana(card.id, produced); onClose() }}
+                    className={`flex items-center gap-2.5 rounded-2xl border px-3 py-3 transition active:scale-95 ${
+                      isUnavailable
+                        ? 'border-white/5 bg-[#0F1117] opacity-30'
+                        : 'border-white/10 bg-[#0F1117] hover:border-white/20'
+                    }`}
+                  >
+                    {hasTapCost && (
+                      <span className="shrink-0 text-[9px] font-black text-slate-600">{'{T}'}</span>
+                    )}
+                    <ManaSymbol color={produced} size="md" />
+                    <span className="text-sm font-bold text-white">Add {produced}</span>
+                  </button>
+                ))
+              })
             })}
           </div>
         )}

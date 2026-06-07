@@ -5955,10 +5955,337 @@
       "file": "tests/harness/seed.ts",
       "root_cause": "node --test runs each test file in its own worker process, so ensureTestCards ran concurrently across ~30 workers. The where-not-exists guard races (workers pass the check before any insert commits) -> 11-13 duplicate rows per test-card name. Most tests tolerate dupes (copies are identical), but DK5 compares the importer's limit-1 pick against cardId()'s independent limit-1 pick -> different duplicate rows -> mismatch.",
       "fix": "Serialise seeding with a transaction-scoped advisory lock (pg_advisory_xact_lock) in ensureTestCards: exactly one worker fills the catalog, the rest wait then find rows present and insert nothing. Rebuilt the DB to clear accumulated dupes (now 0).",
-      "tags": ["test-harness", "flaky", "race-condition", "node-test", "seed", "duplicates"],
+      "tags": [
+        "test-harness",
+        "flaky",
+        "race-condition",
+        "node-test",
+        "seed",
+        "duplicates"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-06T22:30:00.000Z"
+    },
+    {
+      "id": "bug-368",
+      "timestamp": "2026-06-06T21:26:12.496Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T21:26:12.496Z"
+    },
+    {
+      "id": "bug-369",
+      "timestamp": "2026-06-06T22:01:57.360Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had \"prevent damage to target creature\"",
+      "fix": "Changed to `cda`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-06T22:01:57.360Z"
+    },
+    {
+      "id": "bug-370",
+      "timestamp": "2026-06-07T09:21:00.431Z",
+      "error_message": "Missing import: @/components/ControllerList, @/components/ControllerListV2, @/components/ControllerListV3, @/components/ControllerListV4",
+      "file": "app/controller/[id]/page.tsx",
+      "root_cause": "Module(s) not imported: @/components/ControllerList, @/components/ControllerListV2, @/components/ControllerListV3, @/components/ControllerListV4",
+      "fix": "Added import(s) for @/components/ControllerList, @/components/ControllerListV2, @/components/ControllerListV3, @/components/ControllerListV4",
+      "tags": [
+        "auto-detected",
+        "missing-import",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T09:21:00.431Z"
+    },
+    {
+      "id": "bug-371",
+      "timestamp": "2026-06-07T09:30:09.550Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Had 'next/link'",
+      "fix": "Changed to '@/components/CardBehaviorEditor'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-07T09:30:43.330Z"
+    },
+    {
+      "id": "bug-372",
+      "timestamp": "2026-06-07T09:30:24.330Z",
+      "error_message": "CSS fix: lg",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "lg: grid-cols-[minmax(0,1fr)_minmax(360px,420px)]\"> → grid-cols-[minmax(0,1fr)_minmax(320px,400px)]\">",
+      "fix": "Changed lg: grid-cols-[minmax(0,1fr)_minmax(360px,420px)]\"> → grid-cols-[minmax(0,1fr)_minmax(320px,400px)]\">",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T09:30:24.330Z"
+    },
+    {
+      "id": "bug-373",
+      "timestamp": "2026-06-07T11:30:56.664Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/CardCatalogPicker.tsx",
+      "root_cause": "Condition was: if (!nextCards.some((card)",
+      "fix": "Changed to: if (!value && nextCards.length > 0)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T11:30:56.664Z"
+    },
+    {
+      "id": "bug-374",
+      "timestamp": "2026-06-07T11:31:05.439Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/CardCatalogPicker.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T11:31:05.439Z"
+    },
+    {
+      "id": "bug-375",
+      "timestamp": "2026-06-07T12:54:59.058Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "No early return/throw for edge case: lt === 'any' || lt === 'permanent'",
+      "fix": "Added guard clause: if (lt === 'any' || lt === 'permanent')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T12:54:59.058Z"
+    },
+    {
+      "id": "bug-376",
+      "timestamp": "2026-06-07T13:27:11.873Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Had 'trigger'",
+      "fix": "Changed to 'rider'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-07T13:27:50.261Z"
+    },
+    {
+      "id": "bug-377",
+      "timestamp": "2026-06-07T13:27:32.035Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: // An absent OPTIONAL effect-list (a removal with no `then` ; // omitted (the form reads undefined as an empty list).",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-07T13:29:20.539Z"
+    },
+    {
+      "id": "bug-378",
+      "timestamp": "2026-06-07T13:28:04.070Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 6→8 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:28:04.070Z"
+    },
+    {
+      "id": "bug-379",
+      "timestamp": "2026-06-07T13:28:22.280Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Condition was: if (field.kind !== 'effect-list' && 'optional' in fiel)",
+      "fix": "Changed to: if ('optional' in field && field.optional && isEmptyVa)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:28:22.280Z"
+    },
+    {
+      "id": "bug-380",
+      "timestamp": "2026-06-07T13:44:32.706Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:44:32.706Z"
+    },
+    {
+      "id": "bug-381",
+      "timestamp": "2026-06-07T13:46:43.721Z",
+      "error_message": "Wrong reference: ManaColor should be ManaProductionColor",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Used \"ManaColor\" instead of \"ManaProductionColor\"",
+      "fix": "Changed ManaColor → ManaProductionColor",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:46:43.721Z"
+    },
+    {
+      "id": "bug-382",
+      "timestamp": "2026-06-07T13:48:49.420Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:48:49.420Z"
+    },
+    {
+      "id": "bug-383",
+      "timestamp": "2026-06-07T13:49:04.245Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:49:04.245Z"
+    },
+    {
+      "id": "bug-384",
+      "timestamp": "2026-06-07T13:49:19.500Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 23→44 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:49:19.500Z"
+    },
+    {
+      "id": "bug-385",
+      "timestamp": "2026-06-07T13:51:49.854Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:51:49.854Z"
+    },
+    {
+      "id": "bug-386",
+      "timestamp": "2026-06-07T13:52:51.594Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had `Add {${e.color}}`",
+      "fix": "Changed to 'commander'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:52:51.594Z"
+    },
+    {
+      "id": "bug-387",
+      "timestamp": "2026-06-07T14:15:36.289Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Condition was: if (field.kind === 'effect-list' && field.optional)",
+      "fix": "Changed to: if ((field.kind === 'effect-list' || field.kind === 'b)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T14:15:36.289Z"
     }
   ]
 }

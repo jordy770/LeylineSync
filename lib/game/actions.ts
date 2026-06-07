@@ -597,6 +597,8 @@ export async function castPermanentEffect(
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
   targetController?: TargetController | null,
+  then?: unknown[],
+  controllerSearchesBasicLand?: boolean,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -608,6 +610,8 @@ export async function castPermanentEffect(
       timing,
       target_controller: targetController ?? null,
       generic_payment: genericPayment ?? null,
+      then: then ?? [],
+      controller_searches_basic_land: controllerSearchesBasicLand ?? false,
     },
     p_source_card_id: sourceCardId ?? null,
   })
@@ -1363,6 +1367,7 @@ export async function addManaFromCard({
   color,
   amount,
   shouldTapCard,
+  commanderIdentity,
 }: {
   supabase: SupabaseClient
   cardId: string
@@ -1371,6 +1376,9 @@ export async function addManaFromCard({
   color: string
   amount: number
   shouldTapCard: boolean
+  // True for a `color:'commander'` source — the engine then validates the chosen
+  // colour is in the player's commander's colour identity.
+  commanderIdentity?: boolean
 }) {
   const { data, error } = await supabase.rpc('add_mana_from_card', {
     p_game_card_id: cardId,
@@ -1379,6 +1387,7 @@ export async function addManaFromCard({
     p_color: color,
     p_amount: amount,
     p_should_tap_card: shouldTapCard,
+    p_commander_identity: commanderIdentity ?? false,
   })
 
   if (error) {

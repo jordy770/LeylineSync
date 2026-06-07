@@ -423,6 +423,20 @@ function FieldControl({
     )
   }
 
+  if (field.kind === 'boolean') {
+    return (
+      <label className="flex items-center gap-2 text-xs text-slate-300" title={field.label}>
+        <input
+          type="checkbox"
+          checked={value === true}
+          disabled={disabled}
+          onChange={(event) => onChange(event.target.checked)}
+        />
+        {field.label}
+      </label>
+    )
+  }
+
   // Nested record — render its sub-fields inline, writing back into the object.
   if (field.kind === 'object') {
     const v = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>

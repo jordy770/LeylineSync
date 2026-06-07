@@ -4,6 +4,11 @@ import { z } from 'zod'
 
 const ManaColorSchema = z.enum(['W', 'U', 'B', 'R', 'G', 'C'])
 
+// A mana ability may produce a fixed colour, or 'commander' = "one mana of any colour
+// in your commander's colour identity" (Command Tower, Arcane Signet). The client
+// resolves 'commander' to a chosen identity colour at tap time.
+const ManaProductionColorSchema = z.union([ManaColorSchema, z.literal('commander')])
+
 const GameZoneSchema = z.enum(['library', 'hand', 'stack', 'battlefield', 'graveyard', 'exile'])
 
 const BehaviorZoneSchema = z.union([GameZoneSchema, z.enum(['command', 'any'])])
@@ -54,7 +59,7 @@ const UnknownV1ActionSchema = z.object({
 export const CardActionSchema = z.union([
   z.object({
     type: z.literal('add_mana'),
-    color: ManaColorSchema,
+    color: ManaProductionColorSchema,
     amount: z.number().int().positive(),
   }),
   z.object({
@@ -95,10 +100,22 @@ const BehaviorTargetTypeSchema = z.enum([
   'enchantment',
   'opponent',
   'permanent',
+  'nonland_permanent',
   'planeswalker',
   'player',
   'spell',
 ])
+
+// A small rider applied to the CASTER after a targeted removal resolves
+// ("…and you lose 3 life" / "…and you draw a card"). Simple untargeted effects only.
+const ThenRiderSchema = z
+  .array(
+    z.object({
+      type: z.enum(['lose_life', 'gain_life', 'draw']),
+      amount: z.number().int().nonnegative(),
+    }),
+  )
+  .optional()
 
 const KNOWN_V2_COST_TYPES = [
   'tap_self', 'untap_self', 'mana', 'pay_life',
@@ -152,7 +169,7 @@ const AmountSchema = z.union([z.number(), z.literal('X')])
 const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('add_mana'),
-    color: ManaColorSchema,
+    color: ManaProductionColorSchema,
     amount: z.number(),
   }),
   z.object({
@@ -292,6 +309,12 @@ const CardBehaviorActionSchema = z.union([
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
     targets: z.number().optional(),
+    // Optional self-rider ("…and you lose 3 life"): applied to the caster on
+    // resolution. Single-target only (not with `targets` > 1).
+    then: ThenRiderSchema,
+    // Assassin's Trophy: the destroyed permanent's controller may search their
+    // library for a basic land, put it onto the battlefield, then shuffle.
+    controller_searches_basic_land: z.boolean().optional(),
   }),
   // Grant a keyword to a target creature until end of turn (trigger-only today).
   z.object({
