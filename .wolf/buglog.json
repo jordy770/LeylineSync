@@ -6808,6 +6808,41 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-07T19:55:21.522Z"
+    },
+    {
+      "id": "bug-420",
+      "timestamp": "2026-06-07T20:08:18.764Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"of\"",
+      "fix": "Changed to \"target\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T20:08:18.764Z"
+    },
+    {
+      "id": "bug-421",
+      "timestamp": "2026-06-07T21:20:00.000Z",
+      "error_message": "function public.resolve_dynamic_amount(uuid, uuid, uuid, jsonb) is not unique (code 42725) — DA1-4 (trigger path) failed after adding a 5th defaulted param",
+      "file": "supabase/migrations/202605010162_dynamic_amounts_spells_abilities.sql",
+      "root_cause": "CREATE OR REPLACE with a DIFFERENT arg count does not replace the old function — it adds an overload. The mig-161 4-arg resolve_dynamic_amount and the new 5-arg-with-default both matched a 4-arg call, so PostgreSQL refused it as ambiguous. The new test (DA5-8, 5-arg calls) passed; the EXISTING 4-arg callers (apply_triggered_ability_effects) broke — caught only by the full/file suite.",
+      "fix": "DROP FUNCTION the old 4-arg signature at the top of the migration before CREATE OR REPLACE of the 5-arg; the 4-arg callers then bind to the 5-arg via the default.",
+      "tags": [
+        "postgres",
+        "function-overload",
+        "default-parameter",
+        "ambiguous",
+        "create-or-replace",
+        "dynamic-amount"
+      ],
+      "related_bugs": ["bug-418"],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T21:20:00.000Z"
     }
   ]
 }

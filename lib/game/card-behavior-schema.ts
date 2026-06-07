@@ -169,7 +169,7 @@ const TargetControllerSchema = z.enum(['any', 'opponent', 'you', 'controller', '
 // experience/energy/poison). Resolved at apply time by resolve_dynamic_amount.
 const DynamicAmountSchema = z.object({
   counters: z.string(),
-  of: z.enum(['self', 'source', 'this', 'you', 'your', 'controller']).optional(),
+  of: z.enum(['self', 'source', 'this', 'you', 'your', 'controller', 'target']).optional(),
 }).strict()
 
 // An effect amount: a fixed number, the literal "X" for a variable spell (chosen at
