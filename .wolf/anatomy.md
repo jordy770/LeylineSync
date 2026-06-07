@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T13:30:23.095Z
-> Files: 9 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T13:54:12.971Z
+> Files: 14 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -72,7 +72,7 @@
 
 ## components/
 
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~53523 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~54214 tok)
 
 ## components/board/
 
@@ -103,10 +103,12 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~10874 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6927 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~10946 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5434 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~6972 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~8454 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~5231 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~5330 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3269 tok)
 
 ## lib/supabase/
 
@@ -126,12 +128,14 @@
 ## supabase/migrations/
 
 - `202605010150_targeted_spell_riders.sql` — Targeted spell RIDERS + the `nonland_permanent` target type (Anguished Unmaking). (~1727 tok)
+- `202605010151_commander_identity_mana.sql` — Commander-identity mana ("Add one mana of any color in your commander's color (~1357 tok)
 
 ## tests/
 
 
 ## tests/feature/
 
+- `commander-identity-mana.test.ts` — Commander-identity mana (mig 151) — "Add one mana of any color in your commander's (~662 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
 
 ## tests/fixtures/
@@ -139,13 +143,14 @@
 
 ## tests/harness/
 
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9330 tok)
 
 ## tests/regression/
 
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~9245 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~9318 tok)
 
 ## vercel/
 

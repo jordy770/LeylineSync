@@ -1365,6 +1365,7 @@ export async function addManaFromCard({
   color,
   amount,
   shouldTapCard,
+  commanderIdentity,
 }: {
   supabase: SupabaseClient
   cardId: string
@@ -1373,6 +1374,9 @@ export async function addManaFromCard({
   color: string
   amount: number
   shouldTapCard: boolean
+  // True for a `color:'commander'` source — the engine then validates the chosen
+  // colour is in the player's commander's colour identity.
+  commanderIdentity?: boolean
 }) {
   const { data, error } = await supabase.rpc('add_mana_from_card', {
     p_game_card_id: cardId,
@@ -1381,6 +1385,7 @@ export async function addManaFromCard({
     p_color: color,
     p_amount: amount,
     p_should_tap_card: shouldTapCard,
+    p_commander_identity: commanderIdentity ?? false,
   })
 
   if (error) {

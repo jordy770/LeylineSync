@@ -6158,6 +6158,118 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-07T13:28:22.280Z"
+    },
+    {
+      "id": "bug-380",
+      "timestamp": "2026-06-07T13:44:32.706Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:44:32.706Z"
+    },
+    {
+      "id": "bug-381",
+      "timestamp": "2026-06-07T13:46:43.721Z",
+      "error_message": "Wrong reference: ManaColor should be ManaProductionColor",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Used \"ManaColor\" instead of \"ManaProductionColor\"",
+      "fix": "Changed ManaColor → ManaProductionColor",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:46:43.721Z"
+    },
+    {
+      "id": "bug-382",
+      "timestamp": "2026-06-07T13:48:49.420Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:48:49.420Z"
+    },
+    {
+      "id": "bug-383",
+      "timestamp": "2026-06-07T13:49:04.245Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:49:04.245Z"
+    },
+    {
+      "id": "bug-384",
+      "timestamp": "2026-06-07T13:49:19.500Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 23→44 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:49:19.500Z"
+    },
+    {
+      "id": "bug-385",
+      "timestamp": "2026-06-07T13:51:49.854Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:51:49.854Z"
+    },
+    {
+      "id": "bug-386",
+      "timestamp": "2026-06-07T13:52:51.594Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had `Add {${e.color}}`",
+      "fix": "Changed to 'commander'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T13:52:51.594Z"
     }
   ]
 }

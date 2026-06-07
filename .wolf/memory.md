@@ -1968,3 +1968,28 @@
 | 15:30 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+7 lines) | ~319 |
 
 | 2026-06-07 | Guided-form support for targeted-spell riders + nonland_permanent (registry-only; no new form UI). removalTargetField (creature + artifact/enchantment/planeswalker/permanent/nonland_permanent) on destroy/exile/bounce/tap/untap; 'rider' EffectContext + lose_life_rider/gain_life_rider (no recipient) + draw; optional `then` effect-list (effect-list gained optional support: omit in default/parse, drop empty in serialize). Anguished Unmaking round-trips form<->JSON. | lib/game/card-behavior-registry.ts, tests/unit/card-behavior-builder.test.ts | 436/436, tsc+lint+build clean | ~7000 |
+| 15:32 | Session end: 39 writes across 13 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx, 202605010150_targeted_spell_riders.sql) | 13 reads | ~21361 tok |
+| 15:44 | Created supabase/migrations/202605010151_commander_identity_mana.sql | — | ~1357 |
+| 15:44 | Edited tests/harness/scenario.ts | added nullish coalescing | ~220 |
+| 15:44 | Created tests/feature/commander-identity-mana.test.ts | — | ~662 |
+| 15:45 | Edited lib/game/card-behavior-schema.ts | 2→7 lines | ~110 |
+| 15:45 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~38 |
+| 15:45 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~33 |
+| 15:46 | Edited lib/game/card-behavior-builder.ts | expanded (+6 lines) | ~194 |
+| 15:46 | Edited lib/game/card-behavior-builder.ts | 2→2 lines | ~35 |
+| 15:46 | Edited lib/game/card-behavior-builder.ts | 10→10 lines | ~100 |
+| 15:47 | Edited lib/game/card-behavior-llm.ts | inline fix | ~81 |
+| 15:48 | Edited lib/game/card-behavior.ts | 8→8 lines | ~72 |
+| 15:48 | Edited lib/game/actions.ts | added nullish coalescing | ~217 |
+| 15:49 | Edited components/ControllerListV4.tsx | added optional chaining | ~328 |
+| 15:49 | Edited components/ControllerListV4.tsx | CSS: commanderIdentity | ~454 |
+| 15:49 | Edited lib/game/card-behavior.ts | 5→6 lines | ~50 |
+| 15:50 | Edited components/ControllerListV4.tsx | 3→4 lines | ~70 |
+| 15:50 | Edited components/ControllerListV4.tsx | 8→9 lines | ~50 |
+| 15:51 | Edited components/ControllerListV4.tsx | CSS: commanderIdentity | ~37 |
+| 15:51 | Edited components/ControllerListV4.tsx | CSS: produces, commanderIdentity | ~426 |
+| 15:52 | Edited components/ControllerListV4.tsx | CSS: null | ~83 |
+| 15:52 | Edited components/ControllerListV4.tsx | "Add {${e.color}}" → "commander" | ~34 |
+| 15:54 | Edited tests/unit/card-behavior-builder.test.ts | 1→2 lines | ~132 |
+
+| 2026-06-07 | Commander-identity mana (Command Tower / Arcane Signet, mig 151). add_mana color 'commander' = any color in the commander's identity. Engine: add_mana_from_card p_commander_identity guard validates color ∈ card_color_identity(commander). Client: compute commander identity (is_commander card's mana_cost+oracle), render per-identity-color tap buttons. Schema/builder/form/LLM authorable ('commander' in isAddManaBehaviorAction allow-list; BUILDER_MANA_COLORS). Tests CMM1-3 + builder round-trip. | supabase/migrations/202605010151_commander_identity_mana.sql, lib/game/card-behavior-schema.ts, card-behavior-builder.ts, card-behavior.ts, card-behavior-llm.ts, actions.ts, components/ControllerListV4.tsx, tests | 439/439, tsc+lint+build clean | ~9000 |

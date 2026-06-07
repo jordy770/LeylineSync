@@ -4,6 +4,11 @@ import { z } from 'zod'
 
 const ManaColorSchema = z.enum(['W', 'U', 'B', 'R', 'G', 'C'])
 
+// A mana ability may produce a fixed colour, or 'commander' = "one mana of any colour
+// in your commander's colour identity" (Command Tower, Arcane Signet). The client
+// resolves 'commander' to a chosen identity colour at tap time.
+const ManaProductionColorSchema = z.union([ManaColorSchema, z.literal('commander')])
+
 const GameZoneSchema = z.enum(['library', 'hand', 'stack', 'battlefield', 'graveyard', 'exile'])
 
 const BehaviorZoneSchema = z.union([GameZoneSchema, z.enum(['command', 'any'])])
@@ -54,7 +59,7 @@ const UnknownV1ActionSchema = z.object({
 export const CardActionSchema = z.union([
   z.object({
     type: z.literal('add_mana'),
-    color: ManaColorSchema,
+    color: ManaProductionColorSchema,
     amount: z.number().int().positive(),
   }),
   z.object({
@@ -164,7 +169,7 @@ const AmountSchema = z.union([z.number(), z.literal('X')])
 const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('add_mana'),
-    color: ManaColorSchema,
+    color: ManaProductionColorSchema,
     amount: z.number(),
   }),
   z.object({

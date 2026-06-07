@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-05-27T13:42:32.489Z",
   "lifetime": {
-    "total_tokens_estimated": 17445705,
-    "total_reads": 2526,
-    "total_writes": 9503,
+    "total_tokens_estimated": 17467066,
+    "total_reads": 2539,
+    "total_writes": 9542,
     "total_sessions": 51,
     "anatomy_hits": 1986,
-    "anatomy_misses": 535,
-    "repeated_reads_blocked": 3389,
-    "estimated_savings_vs_bare_cli": 74020447
+    "anatomy_misses": 548,
+    "repeated_reads_blocked": 3394,
+    "estimated_savings_vs_bare_cli": 74047577
   },
   "sessions": [
     {
@@ -66825,6 +66825,296 @@
         "reads_count": 10,
         "writes_count": 28,
         "repeated_reads_blocked": 3,
+        "anatomy_lookups": 0
+      }
+    },
+    {
+      "id": "session-2026-06-07-1111",
+      "started": "2026-06-07T09:11:28.040Z",
+      "ended": "2026-06-07T13:32:32.637Z",
+      "reads": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/app/controller/[id]/page.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorEditor.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/login-form.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010113_permanent_effect.sql",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 5182,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 8383,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/next.config.ts",
+          "tokens_estimated": 23,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/app/controller/[id]/page.tsx",
+          "tokens_estimated": 157,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+          "tokens_estimated": 52,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+          "tokens_estimated": 54,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+          "tokens_estimated": 153,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+          "tokens_estimated": 71,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+          "tokens_estimated": 20,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+          "tokens_estimated": 116,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+          "tokens_estimated": 354,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/next.config.ts",
+          "tokens_estimated": 94,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/next.config.ts",
+          "tokens_estimated": 107,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
+          "tokens_estimated": 18,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
+          "tokens_estimated": 72,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
+          "tokens_estimated": 100,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
+          "tokens_estimated": 235,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
+          "tokens_estimated": 132,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010150_targeted_spell_riders.sql",
+          "tokens_estimated": 1850,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/targeted-spell-riders.test.ts",
+          "tokens_estimated": 1031,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 43,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 124,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 136,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+          "tokens_estimated": 307,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+          "tokens_estimated": 223,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 69,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 56,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 269,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 62,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 30,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 486,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 218,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 248,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 151,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 66,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 78,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 172,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+          "tokens_estimated": 319,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 13565,
+        "output_tokens_estimated": 7796,
+        "reads_count": 13,
+        "writes_count": 39,
+        "repeated_reads_blocked": 5,
         "anatomy_lookups": 0
       }
     }

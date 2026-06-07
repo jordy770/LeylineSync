@@ -137,13 +137,19 @@ export function defaultSpellEffect(key: BuilderSpellEffectType | string): Builde
 //   * damage  — a {tap}/{mana} cost that deals damage to a chosen target via
 //               activate_ability and the stack.
 
-export const BUILDER_MANA_COLORS: { value: ManaColor; label: string }[] = [
+// A mana ability produces a fixed colour, or 'commander' = "one mana of any colour
+// in your commander's colour identity" (Command Tower, Arcane Signet). The V4
+// controller resolves 'commander' to a chosen identity colour at tap time.
+export type ManaProductionColor = ManaColor | 'commander'
+
+export const BUILDER_MANA_COLORS: { value: ManaProductionColor; label: string }[] = [
   { value: 'W', label: 'White {W}' },
   { value: 'U', label: 'Blue {U}' },
   { value: 'B', label: 'Black {B}' },
   { value: 'R', label: 'Red {R}' },
   { value: 'G', label: 'Green {G}' },
   { value: 'C', label: 'Colorless {C}' },
+  { value: 'commander', label: 'Any in commander identity' },
 ]
 
 export const BUILDER_DAMAGE_TARGETS = [
@@ -163,7 +169,7 @@ export type BuilderAbilityKind = (typeof BUILDER_ABILITY_KINDS)[number]['value']
 // effect (deal_damage / destroy / draw / pump / …), edited via the shared effect
 // editor. (Replaces the old bespoke `damage` kind; deal_damage is now just an effect.)
 export type BuilderActivatedAbility =
-  | { kind: 'mana'; tapSelf: boolean; color: ManaColor; amount: number }
+  | { kind: 'mana'; tapSelf: boolean; color: ManaProductionColor; amount: number }
   | { kind: 'effect'; tapSelf: boolean; mana: string; effect: RegistryEffect }
 
 export function defaultActivatedAbility(kind: BuilderAbilityKind): BuilderActivatedAbility {
@@ -404,13 +410,13 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
         return null
       }
       const color = effect.color
-      if (typeof color !== 'string' || !['W', 'U', 'B', 'R', 'G', 'C'].includes(color)) {
+      if (typeof color !== 'string' || !['W', 'U', 'B', 'R', 'G', 'C', 'commander'].includes(color)) {
         return null
       }
       abilities.push({
         kind: 'mana',
         tapSelf,
-        color: color as ManaColor,
+        color: color as ManaProductionColor,
         amount: typeof effect.amount === 'number' ? effect.amount : 1,
       })
     } else {

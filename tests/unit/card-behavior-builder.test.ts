@@ -137,6 +137,7 @@ const CASES: Case[] = [
   { name: 'activated deal_damage +timing', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }], label: 'x', timing: 'instant', effects: [{ type: 'deal_damage', amount: 1, target_type: ['creature', 'player'] }], is_mana_ability: false }] }, form: false },
   { name: 'activated deal_damage bare', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }], effects: [{ type: 'deal_damage', amount: 1, target_type: ['creature', 'player'] }] }] }, form: true },
   { name: 'activated mana', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }], effects: [{ type: 'add_mana', color: 'G', amount: 1 }] }] }, form: true },
+  { name: 'activated commander-identity mana (Command Tower)', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }], effects: [{ type: 'add_mana', color: 'commander', amount: 1 }] }] }, form: true },
 
   // V1 / top-level `actions` key → JSON (not in known top-level keys)
   { name: 'v1 actions pump', script: { actions: [{ type: 'pump', power: 3, toughness: 3, target_type: 'creature' }] }, form: false },

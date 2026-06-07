@@ -747,6 +747,28 @@ export class Scenario {
     return res.rows[0]
   }
 
+  /** Tap a source for mana (add_mana_from_card), as the acting seat. */
+  async addManaFromCard(
+    card: string,
+    color: string,
+    opts: { commanderIdentity?: boolean; tap?: boolean; amount?: number } = {},
+    seat: Seat = this.acting,
+  ): Promise<Record<string, number>> {
+    return this.run(
+      () =>
+        rpc(this.client, 'add_mana_from_card', {
+          p_game_card_id: card,
+          p_session_id: this.sessionId,
+          p_player_id: this.players[seat],
+          p_color: color,
+          p_amount: opts.amount ?? 1,
+          p_should_tap_card: opts.tap ?? false,
+          p_commander_identity: opts.commanderIdentity ?? false,
+        }),
+      seat,
+    )
+  }
+
   /** A seat's current mana pool (defaults to an all-zero pool if unset). */
   async manaOf(seat: Seat): Promise<Record<string, number>> {
     const res = await this.client.query<{ mana_pool: Record<string, number> }>(
