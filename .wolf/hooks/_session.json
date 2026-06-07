@@ -1,215 +1,151 @@
 {
-  "session_id": "session-2026-06-06-2233",
-  "started": "2026-06-06T20:33:19.486Z",
+  "session_id": "session-2026-06-07-1111",
+  "started": "2026-06-07T09:11:28.040Z",
   "files_read": {
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010134_auras_and_attachment.sql": {
-      "count": 2,
-      "tokens": 5838,
-      "first_read": "2026-06-06T20:37:28.125Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010128_set_pt_layer.sql": {
-      "count": 1,
-      "tokens": 1753,
-      "first_read": "2026-06-06T20:37:39.816Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/scripts/setup-local-test-db.mjs": {
+    "c:/Users/Jordy/dev/LeylineSync/app/controller/[id]/page.tsx": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-06T21:11:57.999Z"
+      "first_read": "2026-06-07T09:20:54.448Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/tests/harness/seed.ts": {
+    "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-06T21:12:54.910Z"
+      "first_read": "2026-06-07T09:27:42.015Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010125_damage_prevention_resolver.sql": {
+    "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorEditor.tsx": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-06T21:23:29.238Z"
+      "first_read": "2026-06-07T09:27:58.530Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010132_protection_combat_damage.sql": {
+    "c:/Users/Jordy/dev/LeylineSync/components/login-form.tsx": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-06T21:48:52.430Z"
+      "first_read": "2026-06-07T11:02:50.371Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/tests/feature/combat-over-assignment.test.ts": {
+    "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-06T21:50:58.530Z"
+      "first_read": "2026-06-07T11:29:21.959Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010113_permanent_effect.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-07T12:18:58.887Z"
     }
   },
   "files_written": [
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010145_anthem_static_pumps.sql",
-      "action": "create",
-      "tokens": 1781,
-      "at": "2026-06-06T20:39:48.340Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "file": "c:/Users/Jordy/dev/LeylineSync/next.config.ts",
       "action": "edit",
-      "tokens": 257,
-      "at": "2026-06-06T20:39:58.472Z"
+      "tokens": 23,
+      "at": "2026-06-07T09:20:30.470Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/anthem.test.ts",
-      "action": "create",
-      "tokens": 1013,
-      "at": "2026-06-06T20:40:18.201Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "file": "c:/Users/Jordy/dev/LeylineSync/app/controller/[id]/page.tsx",
       "action": "edit",
-      "tokens": 25,
-      "at": "2026-06-06T20:40:25.166Z"
+      "tokens": 157,
+      "at": "2026-06-07T09:21:00.426Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
       "action": "edit",
-      "tokens": 233,
-      "at": "2026-06-06T20:41:25.672Z"
+      "tokens": 52,
+      "at": "2026-06-07T09:30:09.545Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010146_switch_pt_layer.sql",
-      "action": "create",
-      "tokens": 2788,
-      "at": "2026-06-06T20:52:02.087Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
       "action": "edit",
-      "tokens": 140,
-      "at": "2026-06-06T20:52:10.012Z"
+      "tokens": 54,
+      "at": "2026-06-07T09:30:16.165Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/switch-pt.test.ts",
-      "action": "create",
-      "tokens": 726,
-      "at": "2026-06-06T20:52:27.763Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
       "action": "edit",
-      "tokens": 27,
-      "at": "2026-06-06T20:52:35.184Z"
+      "tokens": 153,
+      "at": "2026-06-07T09:30:24.325Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
       "action": "edit",
-      "tokens": 140,
-      "at": "2026-06-06T20:53:32.575Z"
+      "tokens": 71,
+      "at": "2026-06-07T09:30:31.209Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/seed.ts",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 20,
+      "at": "2026-06-07T09:30:36.428Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-06-07T09:30:43.325Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
+      "action": "edit",
+      "tokens": 116,
+      "at": "2026-06-07T09:30:50.224Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/DeckManager.tsx",
       "action": "edit",
       "tokens": 354,
-      "at": "2026-06-06T21:13:06.690Z"
+      "at": "2026-06-07T09:31:00.036Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010147_creature_damage_shields.sql",
-      "action": "create",
-      "tokens": 3668,
-      "at": "2026-06-06T21:26:03.938Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+      "file": "c:/Users/Jordy/dev/LeylineSync/next.config.ts",
       "action": "edit",
-      "tokens": 182,
-      "at": "2026-06-06T21:26:12.491Z"
+      "tokens": 94,
+      "at": "2026-06-07T11:22:17.545Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/creature-shield.test.ts",
-      "action": "create",
-      "tokens": 1176,
-      "at": "2026-06-06T21:26:34.994Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "file": "c:/Users/Jordy/dev/LeylineSync/next.config.ts",
       "action": "edit",
-      "tokens": 29,
-      "at": "2026-06-06T21:26:40.694Z"
+      "tokens": 107,
+      "at": "2026-06-07T11:26:31.957Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
       "action": "edit",
-      "tokens": 197,
-      "at": "2026-06-06T21:27:28.820Z"
+      "tokens": 18,
+      "at": "2026-06-07T11:30:42.960Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010148_combat_creature_shields.sql",
-      "action": "create",
-      "tokens": 5680,
-      "at": "2026-06-06T21:52:17.915Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/combat-shield.test.ts",
-      "action": "create",
-      "tokens": 1004,
-      "at": "2026-06-06T21:52:37.857Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
       "action": "edit",
-      "tokens": 22,
-      "at": "2026-06-06T21:52:45.428Z"
+      "tokens": 72,
+      "at": "2026-06-07T11:30:49.671Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
       "action": "edit",
-      "tokens": 166,
-      "at": "2026-06-06T21:53:49.615Z"
+      "tokens": 100,
+      "at": "2026-06-07T11:30:56.658Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010149_cda_pt_layer.sql",
-      "action": "create",
-      "tokens": 2499,
-      "at": "2026-06-06T21:59:19.441Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
       "action": "edit",
-      "tokens": 181,
-      "at": "2026-06-06T21:59:29.386Z"
+      "tokens": 235,
+      "at": "2026-06-07T11:31:05.435Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/cda-pt.test.ts",
-      "action": "create",
-      "tokens": 870,
-      "at": "2026-06-06T21:59:49.746Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardCatalogPicker.tsx",
       "action": "edit",
-      "tokens": 30,
-      "at": "2026-06-06T21:59:56.668Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
-      "action": "edit",
-      "tokens": 196,
-      "at": "2026-06-06T22:01:57.350Z"
+      "tokens": 132,
+      "at": "2026-06-07T11:31:14.291Z"
     }
   ],
   "edit_counts": {
-    "supabase/migrations/202605010145_anthem_static_pumps.sql": 1,
-    "tests/fixtures/test-cards.json": 2,
-    "tests/feature/anthem.test.ts": 1,
-    "package.json": 5,
-    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 5,
-    "supabase/migrations/202605010146_switch_pt_layer.sql": 1,
-    "tests/harness/scenario.ts": 2,
-    "tests/feature/switch-pt.test.ts": 1,
-    "tests/harness/seed.ts": 1,
-    "supabase/migrations/202605010147_creature_damage_shields.sql": 1,
-    "tests/feature/creature-shield.test.ts": 1,
-    "supabase/migrations/202605010148_combat_creature_shields.sql": 1,
-    "tests/feature/combat-shield.test.ts": 1,
-    "supabase/migrations/202605010149_cda_pt_layer.sql": 1,
-    "tests/feature/cda-pt.test.ts": 1
+    "next.config.ts": 3,
+    "app/controller/[id]/page.tsx": 1,
+    "components/DeckManager.tsx": 8,
+    "components/CardCatalogPicker.tsx": 5
   },
-  "anatomy_hits": 2,
-  "anatomy_misses": 5,
-  "repeated_reads_warned": 1,
+  "anatomy_hits": 0,
+  "anatomy_misses": 6,
+  "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 9
+  "stop_count": 8
 }

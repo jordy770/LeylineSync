@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "192.168.178.150",
     "10.0.0.18",
+    // Accessing the dev server through `tailscale serve` makes the browser origin
+    // the Tailscale domain, which Next blocks unless allowed — that breaks the
+    // post-login RSC refresh. The exact tailnet host + a wildcard for other devices.
+    "desktop-rop8tsg.tailb5e0d.ts.net",
+    "*.ts.net",
   ],
   images: {
     remotePatterns: [

@@ -1,10 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T22:01:57.279Z
-> Files: 11 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T11:31:14.278Z
+> Files: 15 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
+- `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~278 tok)
 - `package.json` — Node.js package manifest (~912 tok)
 
 ## .claude/
@@ -61,6 +62,7 @@
 
 ## app/controller/[id]/
 
+- `page.tsx` — Lazy-load each controller version so opening the page only compiles the ONE (~475 tok)
 
 ## app/decks/
 
@@ -73,6 +75,8 @@
 
 ## components/
 
+- `CardCatalogPicker.tsx` — cardTypeFilters (~2628 tok)
+- `DeckManager.tsx` — DeckManager (~8614 tok)
 
 ## components/board/
 

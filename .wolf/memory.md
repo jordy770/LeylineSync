@@ -1927,3 +1927,17 @@
 | 11:31 | Edited components/DeckManager.tsx | CSS: hover | ~354 |
 
 | 2026-06-07 | Deck editor UX: card-behavior editor now opens in a POPUP (CardBehaviorEditor in a max-w-6xl modal) instead of navigating to /cards/behavior; refreshes the deck on close so badges update. Made the card list readable: pulled "Edit Deck" out of the narrow ≤420px right column into a FULL-WIDTH section below the top row, and tiled the card list 2-up (lg:grid-cols-2). | components/DeckManager.tsx | tsc+lint clean | ~3500 |
+| 11:33 | Session end: 10 writes across 3 files (next.config.ts, page.tsx, DeckManager.tsx) | 3 reads | ~1018 tok |
+| 13:06 | Session end: 10 writes across 3 files (next.config.ts, page.tsx, DeckManager.tsx) | 4 reads | ~1018 tok |
+| 13:22 | Edited next.config.ts | 4→8 lines | ~94 |
+| 13:22 | Session end: 11 writes across 3 files (next.config.ts, page.tsx, DeckManager.tsx) | 4 reads | ~1112 tok |
+| 13:26 | Edited next.config.ts | 8→9 lines | ~107 |
+| 13:26 | Session end: 12 writes across 3 files (next.config.ts, page.tsx, DeckManager.tsx) | 4 reads | ~1219 tok |
+| 13:30 | Edited components/CardCatalogPicker.tsx | inline fix | ~18 |
+| 13:30 | Edited components/CardCatalogPicker.tsx | 3→4 lines | ~72 |
+| 13:30 | Edited components/CardCatalogPicker.tsx | some() → selection() | ~100 |
+| 13:31 | Edited components/CardCatalogPicker.tsx | added 3 condition(s) | ~235 |
+| 13:31 | Edited components/CardCatalogPicker.tsx | 10→10 lines | ~132 |
+| 13:32 | Session end: 17 writes across 4 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx) | 5 reads | ~1776 tok |
+| 14:20 | Session end: 17 writes across 4 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx) | 6 reads | ~1776 tok |
+| 14:24 | Session end: 17 writes across 4 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx) | 6 reads | ~1776 tok |

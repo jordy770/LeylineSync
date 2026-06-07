@@ -5998,6 +5998,86 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-06T22:01:57.360Z"
+    },
+    {
+      "id": "bug-370",
+      "timestamp": "2026-06-07T09:21:00.431Z",
+      "error_message": "Missing import: @/components/ControllerList, @/components/ControllerListV2, @/components/ControllerListV3, @/components/ControllerListV4",
+      "file": "app/controller/[id]/page.tsx",
+      "root_cause": "Module(s) not imported: @/components/ControllerList, @/components/ControllerListV2, @/components/ControllerListV3, @/components/ControllerListV4",
+      "fix": "Added import(s) for @/components/ControllerList, @/components/ControllerListV2, @/components/ControllerListV3, @/components/ControllerListV4",
+      "tags": [
+        "auto-detected",
+        "missing-import",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T09:21:00.431Z"
+    },
+    {
+      "id": "bug-371",
+      "timestamp": "2026-06-07T09:30:09.550Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Had 'next/link'",
+      "fix": "Changed to '@/components/CardBehaviorEditor'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-07T09:30:43.330Z"
+    },
+    {
+      "id": "bug-372",
+      "timestamp": "2026-06-07T09:30:24.330Z",
+      "error_message": "CSS fix: lg",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "lg: grid-cols-[minmax(0,1fr)_minmax(360px,420px)]\"> → grid-cols-[minmax(0,1fr)_minmax(320px,400px)]\">",
+      "fix": "Changed lg: grid-cols-[minmax(0,1fr)_minmax(360px,420px)]\"> → grid-cols-[minmax(0,1fr)_minmax(320px,400px)]\">",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T09:30:24.330Z"
+    },
+    {
+      "id": "bug-373",
+      "timestamp": "2026-06-07T11:30:56.664Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/CardCatalogPicker.tsx",
+      "root_cause": "Condition was: if (!nextCards.some((card)",
+      "fix": "Changed to: if (!value && nextCards.length > 0)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T11:30:56.664Z"
+    },
+    {
+      "id": "bug-374",
+      "timestamp": "2026-06-07T11:31:05.439Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/CardCatalogPicker.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T11:31:05.439Z"
     }
   ]
 }
