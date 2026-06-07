@@ -1901,3 +1901,18 @@
 | 00:01 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | "prevent damage to target " → "cda" | ~183 |
 
 | 2026-06-07 | Engine — CDA layer 7a (mig 149, F2.2f). card_cda_value reads a top-level script `cda` key (count creatures_you_control/lands_you_control/cards_in_graveyard + plus); card_layered_power/toughness base coalesce now set(7b)->cda(7a)->printed. No register/CHECK change (CDA is inherent, read from script). Fixture Wild Tracker Test (*/*); tests CD1-5. P/T LAYER SYSTEM 7a-7e COMPLETE. | supabase/migrations/202605010149_cda_pt_layer.sql, tests/feature/cda-pt.test.ts, tests/fixtures/test-cards.json | 424/424, tsc+lint clean | ~5000 |
+| 00:02 | Session end: 25 writes across 15 files (202605010145_anthem_static_pumps.sql, test-cards.json, anthem.test.ts, package.json, project_roadmap.md) | 7 reads | ~30975 tok |
+
+## Session: 2026-06-07 11:11
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-07 11:11
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:20 | Edited next.config.ts | 6→5 lines | ~23 |
+| 11:21 | Edited app/controller/[id]/page.tsx | 5→9 lines | ~157 |
+
+| 2026-06-07 | Fixed Next.js dev "stuck on compiling". Two causes: (1) cacheComponents:true enabled but ZERO "use cache" directives -> pure Cache-Components overhead (root cold compile 4.2s -> 0.55s after removing; also explained the 7.7-min prod build); (2) app/controller/[id]/page.tsx statically imported ALL FOUR controller versions (V1+V2+V3+V4 ~7900 lines) -> now next/dynamic lazy-loads so only the ?v= version compiles. tsc clean. | next.config.ts, app/controller/[id]/page.tsx | root compile 4.2s->0.55s, tsc clean | ~3000 |

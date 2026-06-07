@@ -14,7 +14,6 @@ const nextConfig: NextConfig = {
     "192.168.178.150",
     "10.0.0.18",
   ],
-  cacheComponents: true,
   images: {
     remotePatterns: [
       {
