@@ -204,6 +204,8 @@ Output ONLY a single JSON object (no markdown fences, no prose). Use \`"schema_v
 
 Top-level flags: if the card says "this spell can't be countered" (or "can't be countered by spells or abilities"), add \`"cant_be_countered": true\` at the top level of the object (alongside schema_version). It applies to any spell type.
 
+If the card says "enters the battlefield with N +1/+1 counters on it" (Walking Ballista, Hangarback Walker — often 0/0 creatures), add \`"enters_with_counters": { "amount": N }\` at the top level (counter_type defaults +1/+1; add "counter_type" for a bag kind). This is a REPLACEMENT applied as it enters, so a 0/0 survives — do NOT model it as an enters_the_battlefield add_counters trigger (that resolves too late, after the 0/0 would already have died).
+
 The engine supports these sections:
 
 1. continuous_effects — static keyword abilities. Each entry: { "type": <keyword>, "affected": "source", "source_zone_required": "battlefield" }.

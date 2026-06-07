@@ -6446,6 +6446,54 @@
       "related_bugs": [],
       "occurrences": 3,
       "last_seen": "2026-06-07T15:56:39.278Z"
+    },
+    {
+      "id": "bug-398",
+      "timestamp": "2026-06-07T16:33:22.681Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T16:33:22.681Z"
+    },
+    {
+      "id": "bug-399",
+      "timestamp": "2026-06-07T16:35:23.050Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T16:35:23.050Z"
+    },
+    {
+      "id": "bug-400",
+      "timestamp": "2026-06-07T16:37:12.830Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `add_counters`",
+      "fix": "Changed to `enters_with_counters: {amount, counter_type?}`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T16:37:12.830Z"
     }
   ]
 }
