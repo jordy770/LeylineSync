@@ -2181,3 +2181,14 @@
 | 22:59 | Created tests/feature/beast-within.test.ts | — | ~1132 |
 | 22:59 | Edited package.json | inline fix | ~24 |
 | 23:05 | Beast Within (destroy target permanent + its controller creates a 3/3 Beast): cast_spell_effect +p_target_card_id, apply_trigger_effects captures target controller pre-loop + injects recipient_player_id, apply_triggered_ability_effects create_token honors it; seed +is_token, Beast Token fixture | mig 163, schema, harness+actions castSpellEffect, llm, beast-within.test | 494 green, tsc/lint/build clean | ~38k |
+| 23:05 | Session end: 56 writes across 20 files (202605010158_counter_doubling.sql, card-behavior-llm.ts, card-behavior-schema.ts, test-cards.json, counter-doubling.test.ts) | 20 reads | ~124629 tok |
+| 23:20 | Session end: 56 writes across 20 files (202605010158_counter_doubling.sql, card-behavior-llm.ts, card-behavior-schema.ts, test-cards.json, counter-doubling.test.ts) | 21 reads | ~130063 tok |
+| 23:26 | Session end: 56 writes across 20 files (202605010158_counter_doubling.sql, card-behavior-llm.ts, card-behavior-schema.ts, test-cards.json, counter-doubling.test.ts) | 21 reads | ~130063 tok |
+| 23:35 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | expanded (+15 lines) | ~979 |
+| 23:35 | Created supabase/migrations/202605010164_typed_lords.sql | — | ~1738 |
+| 23:36 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~374 |
+| 23:36 | Edited tests/fixtures/test-cards.json | 1→4 lines | ~338 |
+| 23:37 | Created tests/feature/typed-lords.test.ts | — | ~913 |
+| 23:37 | Edited package.json | inline fix | ~20 |
+| 23:40 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~212 |
+| 23:45 | Zombie-deck gap analysis → roadmap (🧟 Tribal/typed effects section) + Tribal #1 first slice: typed lords (creature_type + exclude_source filter on the mass-pump fold in card_layered_power/toughness; freeform payload so no register change) | mig 164, llm, test-cards fixtures, typed-lords.test | 497 green, tsc/lint/build clean | ~30k |

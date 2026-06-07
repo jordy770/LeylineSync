@@ -1,18 +1,18 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T20:59:30.422Z
-> Files: 46 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T21:40:22.255Z
+> Files: 48 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1045 tok)
+- `package.json` — Node.js package manifest (~1055 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~11004 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~11993 tok)
 
 ## .claude/rules/
 
@@ -109,7 +109,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11325 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5434 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~8427 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~8621 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9737 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6161 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3269 tok)
@@ -148,6 +148,7 @@
 - `202605010161_dynamic_counter_amounts.sql` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2, unified). (~4488 tok)
 - `202605010162_dynamic_amounts_spells_abilities.sql` — Dynamic amounts on the SPELL + ACTIVATED-ABILITY surfaces (roadmap Counters #5b/#8b (~6624 tok)
 - `202605010163_beast_within.sql` — Beast Within — "Destroy target permanent. Its controller creates a 3/3 green Beast (~1973 tok)
+- `202605010164_typed_lords.sql` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). (~1738 tok)
 
 ## tests/
 
@@ -167,10 +168,11 @@
 - `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
 - `proliferate.test.ts` — Proliferate (Atraxa, Praetors' Voice end step, Karn's Bastion, etc.). The engine (~1083 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
+- `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~7706 tok)
+- `test-cards.json` (~7929 tok)
 
 ## tests/harness/
 
