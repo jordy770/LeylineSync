@@ -681,6 +681,18 @@ export class Scenario {
     )
   }
 
+  /** Declare `attackerCardId` attacking a planeswalker (its controller is derived). */
+  async declareAttackerVsPlaneswalker(attackerCardId: string, planeswalkerCardId: string): Promise<unknown> {
+    return this.run(() =>
+      rpc(this.client, 'declare_attacker', {
+        p_session_id: this.sessionId,
+        p_attacker_card_id: attackerCardId,
+        p_defending_player_id: null,
+        p_defending_planeswalker_id: planeswalkerCardId,
+      }),
+    )
+  }
+
   /** Declare the acting seat's creature as a blocker of `attackerCardId`. */
   async declareBlocker(blockerCardId: string, attackerCardId: string): Promise<unknown> {
     return this.run(() =>

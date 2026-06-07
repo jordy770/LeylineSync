@@ -2249,3 +2249,14 @@
 | 00:44 | Edited tests/feature/planeswalkers.test.ts | 4→7 lines | ~129 |
 | 00:44 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~297 |
 | 00:52 | Tribal #4 slice 1: planeswalkers (loyalty bag counter via enters_with_counters; activate_loyalty_ability sorcery-speed/once-per-turn/cost; 0-loyalty SBA) | mig 168, schema loyalty+loyalty_abilities, harness activateLoyalty, llm, test-cards Test Walker, planeswalkers.test | 515 green, tsc/lint/build clean | ~34k |
+| 00:46 | Session end: 112 writes across 33 files (202605010158_counter_doubling.sql, card-behavior-llm.ts, card-behavior-schema.ts, test-cards.json, counter-doubling.test.ts) | 23 reads | ~213427 tok |
+| 00:55 | Created supabase/migrations/202605010169_planeswalker_combat.sql | — | ~1855 |
+| 00:56 | Edited supabase/migrations/202605010169_planeswalker_combat.sql | 4→5 lines | ~51 |
+| 00:56 | Edited supabase/migrations/202605010169_planeswalker_combat.sql | expanded (+6 lines) | ~320 |
+| 00:56 | Edited supabase/migrations/202605010169_planeswalker_combat.sql | expanded (+6 lines) | ~289 |
+| 00:56 | Edited supabase/migrations/202605010169_planeswalker_combat.sql | modified damage() | ~108 |
+| 00:57 | Edited tests/harness/scenario.ts | modified declareAttacker() | ~222 |
+| 00:57 | Created tests/feature/planeswalker-combat.test.ts | — | ~960 |
+| 00:57 | Edited package.json | inline fix | ~23 |
+| 00:58 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~216 |
+| 01:05 | Tribal #4 slice 2: planeswalker combat (defending_planeswalker_id col; declare_attacker +PW target; resolve_combat_damage routes unblocked+trample to apply_damage_to_planeswalker loyalty; 0-loyalty SBA at combat end) | mig 169, harness declareAttackerVsPlaneswalker, planeswalker-combat.test | 518 green, tsc/lint/build clean | ~28k |

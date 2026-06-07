@@ -1,18 +1,18 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T22:44:41.064Z
-> Files: 56 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T22:58:16.209Z
+> Files: 58 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1100 tok)
+- `package.json` — Node.js package manifest (~1112 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~12680 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~12791 tok)
 
 ## .claude/rules/
 
@@ -153,6 +153,7 @@
 - `202605010166_count_dynamic_amounts.sql` — Count-based dynamic amounts (roadmap Tribal #2). "X = number of creatures you (~1734 tok)
 - `202605010167_counter_placement_trigger.sql` — Counter-placement trigger event (roadmap Tribal #3). "Whenever ~ / a creature you (~466 tok)
 - `202605010168_planeswalkers.sql` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). (~2363 tok)
+- `202605010169_planeswalker_combat.sql` — Planeswalker combat (roadmap Tribal #4, slice 2). Attack a planeswalker; its (~6877 tok)
 
 ## tests/
 
@@ -172,6 +173,7 @@
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
 - `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
 - `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
+- `planeswalker-combat.test.ts` — Planeswalker combat (roadmap Tribal #4, slice 2). A creature can attack a planeswalker; (~960 tok)
 - `planeswalkers.test.ts` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). A planeswalker enters (~1298 tok)
 - `proliferate.test.ts` — Proliferate (Atraxa, Praetors' Voice end step, Karn's Bastion, etc.). The engine (~1083 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
@@ -184,7 +186,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9463 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9600 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~673 tok)
 
 ## tests/regression/
