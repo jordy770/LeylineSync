@@ -119,7 +119,7 @@ const ThenRiderSchema = z
 
 const KNOWN_V2_COST_TYPES = [
   'tap_self', 'untap_self', 'mana', 'pay_life',
-  'sacrifice_self', 'discard', 'exile_self',
+  'sacrifice_self', 'discard', 'exile_self', 'energy',
 ] as const
 
 const UnknownCostSchema = z.object({
@@ -137,6 +137,7 @@ const CardBehaviorCostSchema = z.union([
   z.object({ type: z.literal('sacrifice_self') }),
   z.object({ type: z.literal('discard'), amount: z.number() }),
   z.object({ type: z.literal('exile_self'), from_zone: BehaviorZoneSchema.optional() }),
+  z.object({ type: z.literal('energy'), amount: z.number() }),
   UnknownCostSchema,
 ])
 

@@ -248,7 +248,7 @@ The engine supports these sections:
    - Controller restriction (triggers and spells): add "target_controller": "opponent" for "a creature an opponent controls", or "target_controller": "you" for "a creature you control". Omit it when there is no restriction.
 
 3. activated_abilities — "{cost}: effect" abilities. Each entry: { "costs": [ ... ], "effects": [ ... ], "is_mana_ability"?: true }.
-   Costs: { "type": "tap_self" } for {T}; { "type": "mana", "amount": "{2}{R}" } for a mana cost string.
+   Costs: { "type": "tap_self" } for {T}; { "type": "mana", "amount": "{2}{R}" } for a mana cost string; { "type": "energy", "amount": N } to spend N energy counters ({E}{E} = amount 2). Combine multiple cost entries for "{T}, Pay two energy: …".
    The ability has ONE effect. Supported: deal_damage ({ "type": "deal_damage", "amount": N, "target_type": <target> }), the creature-target effects destroy/exile/bounce/tap/untap/add_counters/pump/grant_keyword/gain_control (with "target_type": "creature", e.g. "{T}: Destroy target creature" = { "type": "destroy", "target_type": "creature" }), and untargeted draw ({ "type": "draw", "amount": N }, e.g. "{2}: Draw a card"). For a MANA ability use add_mana — { "type": "add_mana", "color": "W|U|B|R|G|C", "amount": N } with "is_mana_ability": true. For "any color in your commander's color identity" (Command Tower, Arcane Signet), use "color": "commander" — the player picks an identity colour at tap time. Do NOT put decision effects (scry/search/sacrifice/may/choose_player) in an activated ability.
    deal_damage target_type values: ${damageTargets}. "any target" -> ["creature","player"].
 
