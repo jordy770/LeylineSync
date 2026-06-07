@@ -598,6 +598,7 @@ export async function castPermanentEffect(
   genericPayment?: Record<string, number>,
   targetController?: TargetController | null,
   then?: unknown[],
+  controllerSearchesBasicLand?: boolean,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -610,6 +611,7 @@ export async function castPermanentEffect(
       target_controller: targetController ?? null,
       generic_payment: genericPayment ?? null,
       then: then ?? [],
+      controller_searches_basic_land: controllerSearchesBasicLand ?? false,
     },
     p_source_card_id: sourceCardId ?? null,
   })

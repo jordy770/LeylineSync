@@ -120,6 +120,8 @@ const CASES: Case[] = [
   // Anguished Unmaking — exile target nonland permanent, then you lose 3 life.
   { name: 'spell exile nonland + lose-3 rider (Anguished Unmaking)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'exile', target_type: 'nonland_permanent', then: [{ type: 'lose_life', amount: 3 }] }] } }, form: true },
   { name: 'spell destroy creature + draw rider', script: { schema_version: 2, spell_effect: { actions: [{ type: 'destroy', target_type: 'creature', then: [{ type: 'draw', amount: 1 }] }] } }, form: true },
+  // Assassin's Trophy — destroy opponent permanent + its controller searches a basic land.
+  { name: 'spell Assassin\'s Trophy', script: { schema_version: 2, spell_effect: { actions: [{ type: 'destroy', target_type: 'permanent', target_controller: 'opponent', controller_searches_basic_land: true }] } }, form: true },
 
   // Spell effects — NOT form-representable → JSON
   { name: 'spell add_counters target (dual-shape)', script: { schema_version: 2, spell_effect: { actions: [{ type: 'add_counters', amount: 1, target_type: 'creature' }] } }, form: true },

@@ -1993,3 +1993,26 @@
 | 15:54 | Edited tests/unit/card-behavior-builder.test.ts | 1→2 lines | ~132 |
 
 | 2026-06-07 | Commander-identity mana (Command Tower / Arcane Signet, mig 151). add_mana color 'commander' = any color in the commander's identity. Engine: add_mana_from_card p_commander_identity guard validates color ∈ card_color_identity(commander). Client: compute commander identity (is_commander card's mana_cost+oracle), render per-identity-color tap buttons. Schema/builder/form/LLM authorable ('commander' in isAddManaBehaviorAction allow-list; BUILDER_MANA_COLORS). Tests CMM1-3 + builder round-trip. | supabase/migrations/202605010151_commander_identity_mana.sql, lib/game/card-behavior-schema.ts, card-behavior-builder.ts, card-behavior.ts, card-behavior-llm.ts, actions.ts, components/ControllerListV4.tsx, tests | 439/439, tsc+lint+build clean | ~9000 |
+| 15:55 | Session end: 61 writes across 18 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx, 202605010150_targeted_spell_riders.sql) | 15 reads | ~94603 tok |
+| 16:12 | Created supabase/migrations/202605010152_assassins_trophy_rider.sql | — | ~2006 |
+| 16:13 | Created tests/feature/assassins-trophy.test.ts | — | ~769 |
+| 16:14 | Edited lib/game/card-behavior-schema.ts | modified rider() | ~135 |
+| 16:14 | Edited lib/game/card-behavior-registry.ts | 1→2 lines | ~75 |
+| 16:14 | Edited lib/game/card-behavior-registry.ts | modified for() | ~102 |
+| 16:14 | Edited lib/game/card-behavior-registry.ts | 6→7 lines | ~56 |
+| 16:15 | Edited lib/game/card-behavior-registry.ts | 7→10 lines | ~85 |
+| 16:15 | Edited lib/game/card-behavior-registry.ts | 7→9 lines | ~99 |
+| 16:15 | Edited lib/game/card-behavior-registry.ts | 5→5 lines | ~78 |
+| 16:15 | Edited lib/game/card-behavior-registry.ts | list() → boolean() | ~115 |
+| 16:16 | Edited lib/game/card-behavior-registry.ts | expanded (+10 lines) | ~155 |
+| 16:16 | Edited lib/game/card-behavior-registry.ts | 5→5 lines | ~214 |
+| 16:16 | Edited components/CardBehaviorForm.tsx | added 1 condition(s) | ~206 |
+| 16:17 | Edited lib/game/actions.ts | 17→19 lines | ~175 |
+| 16:17 | Edited components/ControllerListV4.tsx | inline fix | ~67 |
+| 16:17 | Edited components/ControllerListV4.tsx | CSS: controllerSearchesBasicLand | ~307 |
+| 16:17 | Edited components/ControllerListV4.tsx | inline fix | ~58 |
+| 16:17 | Edited lib/game/card-behavior-llm.ts | modified RIDER() | ~235 |
+| 16:18 | Edited lib/game/card-behavior-registry.ts | 7→9 lines | ~213 |
+| 16:18 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~150 |
+
+| 2026-06-07 | Assassin's Trophy (mig 152) — targeted removal parks a DECISION for the affected player. handle_permanent_effect: capture target controller before destroy, then if controller_searches_basic_land park a may-search (min 0) for that player (deciding_player = affected controller); returns awaiting_decision (handle_scry contract); submit_decision searches their library → basic to battlefield + shuffle. Authoring: new 'boolean' registry field kind (checkbox) + opponent-controlled removal target options + schema/LLM/client flag. Tests ATR1-2 + builder round-trip. | supabase/migrations/202605010152_assassins_trophy_rider.sql, lib/game/card-behavior-{schema,registry,llm}.ts, actions.ts, components/{ControllerListV4,CardBehaviorForm}.tsx, tests | 445/445, tsc+lint+build clean | ~11000 |

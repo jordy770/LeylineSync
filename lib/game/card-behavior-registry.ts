@@ -41,6 +41,7 @@ export type EffectContext = 'trigger' | 'spell' | 'rider'
 //                  `target_type` (+ optional `target_controller`). Always required.
 export type FieldDescriptor =
   | { name: string; kind: 'number'; label?: string; default: number; min?: number; max?: number; optional?: boolean; materializeDefault?: boolean; omitDefault?: boolean }
+  | { name: string; kind: 'boolean'; label?: string; default: boolean; optional?: boolean }
   | { name: string; kind: 'enum'; label?: string; default: string; options: readonly FieldOption[]; optional?: boolean; materializeDefault?: boolean; omitDefault?: boolean }
   | { name: string; kind: 'select'; label?: string; default: string; options: readonly FieldOption[]; optional?: boolean }
   | { name: string; kind: 'text'; label?: string; default: string; optional?: boolean }
@@ -167,7 +168,9 @@ const removalTargetField: FieldDescriptor = {
     { value: 'enchantment', label: 'target enchantment', target_type: 'enchantment' },
     { value: 'planeswalker', label: 'target planeswalker', target_type: 'planeswalker' },
     { value: 'nonland_permanent', label: 'target nonland permanent', target_type: 'nonland_permanent' },
+    { value: 'nonland_permanent_opponent', label: 'a nonland permanent an opponent controls', target_type: 'nonland_permanent', target_controller: 'opponent' },
     { value: 'permanent', label: 'target permanent', target_type: 'permanent' },
+    { value: 'permanent_opponent', label: 'a permanent an opponent controls', target_type: 'permanent', target_controller: 'opponent' },
   ],
 }
 
@@ -179,6 +182,16 @@ const thenRiderField: FieldDescriptor = {
   kind: 'effect-list',
   label: 'Then you… (spells only)',
   itemContext: 'rider',
+  optional: true,
+}
+
+// Assassin's Trophy: the destroyed permanent's controller may search a basic land
+// onto the battlefield. Spell-only; applies to the AFFECTED player, not the caster.
+const basicLandRiderField: FieldDescriptor = {
+  name: 'controller_searches_basic_land',
+  kind: 'boolean',
+  label: 'Its controller may search a basic land (spells only)',
+  default: false,
   optional: true,
 }
 
@@ -276,11 +289,11 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   // Single-target removal (Doom Blade, Disenchant, Anguished Unmaking, …). Targets
   // any permanent (creature / artifact / enchantment / planeswalker / nonland), with
   // an optional spell-only self-rider via `then`.
-  { type: 'destroy', label: 'Destroy a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
-  { type: 'exile', label: 'Exile a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
-  { type: 'bounce', label: 'Return a permanent to hand', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
-  { type: 'tap', label: 'Tap a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
-  { type: 'untap', label: 'Untap a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField] },
+  { type: 'destroy', label: 'Destroy a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField, basicLandRiderField] },
+  { type: 'exile', label: 'Exile a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField, basicLandRiderField] },
+  { type: 'bounce', label: 'Return a permanent to hand', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField, basicLandRiderField] },
+  { type: 'tap', label: 'Tap a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField, basicLandRiderField] },
+  { type: 'untap', label: 'Untap a permanent', contexts: ['trigger', 'spell'], fields: [removalTargetField, thenRiderField, basicLandRiderField] },
   // Fight: a creature you control fights a target creature. The target field
   // describes the FOUGHT creature (the fighter is implicit — the source creature
   // as a trigger, or a creature you control as a spell).
@@ -412,6 +425,7 @@ function fieldDefault(field: FieldDescriptor): unknown {
     case 'enum':
     case 'select':
     case 'text':
+    case 'boolean':
     case 'target':
       return field.default
     case 'object': {
@@ -432,6 +446,7 @@ function fieldToJson(field: FieldDescriptor, value: unknown): unknown {
     case 'enum':
     case 'select':
     case 'text':
+    case 'boolean':
     case 'target': // target is expanded to its two keys by effectToJson, never here
       return value
     case 'object': {
@@ -460,6 +475,9 @@ function isEmptyValue(field: FieldDescriptor, value: unknown): boolean {
     case 'select':
     case 'target':
       return false
+    // An optional boolean carries info only when true (false ≈ absent → dropped).
+    case 'boolean':
+      return value !== true
     case 'text':
       return typeof value !== 'string' || value === ''
     case 'object': {
@@ -476,6 +494,8 @@ function parseFieldValue(field: FieldDescriptor, raw: unknown): unknown | typeof
   switch (field.kind) {
     case 'number':
       return typeof raw === 'number' ? raw : REJECT
+    case 'boolean':
+      return typeof raw === 'boolean' ? raw : REJECT
     case 'enum':
       return typeof raw === 'string' && field.options.some((o) => o.value === raw) ? raw : REJECT
     case 'select':
@@ -535,9 +555,9 @@ function parseFields(fields: readonly FieldDescriptor[], obj: Record<string, unk
     }
     const raw = obj[field.name]
     if (raw === undefined) {
-      // An absent OPTIONAL effect-list (a removal with no `then` rider) is simply
-      // omitted (the form reads undefined as an empty list).
-      if (field.kind === 'effect-list') {
+      // An absent OPTIONAL effect-list / boolean (a removal with no rider / flag) is
+      // simply omitted (the form reads undefined as empty / false).
+      if (field.kind === 'effect-list' || field.kind === 'boolean') {
         if (field.optional) {
           continue
         }
@@ -569,9 +589,9 @@ export function effectDefault(keyOrType: string): RegistryEffect {
   }
   const result: RegistryEffect = { type: def.type }
   for (const field of def.fields) {
-    // An optional effect-list (a removal's `then` rider) starts absent — the form
-    // adds riders on demand; an empty list would serialize to nothing anyway.
-    if (field.kind === 'effect-list' && field.optional) {
+    // An optional effect-list (a removal's `then` rider) or boolean flag starts
+    // absent — the form sets it on demand; it would serialize to nothing anyway.
+    if ((field.kind === 'effect-list' || field.kind === 'boolean') && field.optional) {
       continue
     }
     if (

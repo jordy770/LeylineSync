@@ -250,7 +250,7 @@ type SpellPlan =
   // Multi-target removal: pick up to `count` creatures, apply `effectKind` to each.
   | { kind: 'multi_creature'; effectKind: MultiCreatureKind; label: string; count: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   // Non-creature permanent removal: destroy/exile/… a target of `targetType`.
-  | { kind: 'permanent_effect'; effectKind: MultiCreatureKind; label: string; targetType: string | string[]; timing: 'instant' | 'sorcery'; targetController: TargetController; then?: unknown[] }
+  | { kind: 'permanent_effect'; effectKind: MultiCreatureKind; label: string; targetType: string | string[]; timing: 'instant' | 'sorcery'; targetController: TargetController; then?: unknown[]; controllerSearchesBasicLand?: boolean }
   | { kind: 'fight'; timing: 'instant' | 'sorcery'; foughtController: TargetController }
   | { kind: 'draw'; amount: number; timing: 'instant' | 'sorcery'; xRequired?: boolean }
   | { kind: 'spell_effect'; actions: unknown[]; timing: 'instant' | 'sorcery'; xRequired?: boolean }
@@ -469,7 +469,7 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
   }
 
   const creatureEffect = actions.find((a) => a.type in CREATURE_EFFECT_MAP) as
-    | (CardBehaviorAction & { target_controller?: unknown; targets?: number; target_type?: unknown; then?: unknown[] })
+    | (CardBehaviorAction & { target_controller?: unknown; targets?: number; target_type?: unknown; then?: unknown[]; controller_searches_basic_land?: boolean })
     | undefined
   if (creatureEffect) {
     const mapped = CREATURE_EFFECT_MAP[creatureEffect.type]
@@ -484,6 +484,7 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
         timing,
         targetController: readTargetController(creatureEffect),
         then: Array.isArray(creatureEffect.then) ? creatureEffect.then : undefined,
+        controllerSearchesBasicLand: creatureEffect.controller_searches_basic_land === true,
       }
     }
     // `targets` > 1 → a multi-target removal ("destroy up to N target creatures").
@@ -857,7 +858,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'permanent_effect') return
-      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then)
+      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then, plan.controllerSearchesBasicLand)
       await refresh()
     },
     // Divided damage — allocate the total across the chosen creature/player targets.

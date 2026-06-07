@@ -33,8 +33,8 @@
       "first_read": "2026-06-07T12:18:58.887Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts": {
-      "count": 6,
-      "tokens": 5231,
+      "count": 7,
+      "tokens": 5330,
       "first_read": "2026-06-07T12:53:12.903Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts": {
@@ -53,8 +53,8 @@
       "first_read": "2026-06-07T12:54:51.656Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts": {
-      "count": 3,
-      "tokens": 8383,
+      "count": 8,
+      "tokens": 8572,
       "first_read": "2026-06-07T13:20:14.057Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx": {
@@ -76,6 +76,16 @@
       "count": 2,
       "tokens": 3241,
       "first_read": "2026-06-07T13:48:07.332Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010111_search_library_variants.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-07T14:10:13.394Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010104_stack_action_handler_registry.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-07T14:10:36.283Z"
     }
   },
   "files_written": [
@@ -444,6 +454,126 @@
       "action": "edit",
       "tokens": 132,
       "at": "2026-06-07T13:54:12.984Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010152_assassins_trophy_rider.sql",
+      "action": "create",
+      "tokens": 2149,
+      "at": "2026-06-07T14:12:34.807Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/assassins-trophy.test.ts",
+      "action": "create",
+      "tokens": 769,
+      "at": "2026-06-07T14:13:10.716Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 135,
+      "at": "2026-06-07T14:14:05.566Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 75,
+      "at": "2026-06-07T14:14:14.197Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 102,
+      "at": "2026-06-07T14:14:41.252Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 56,
+      "at": "2026-06-07T14:14:53.543Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 85,
+      "at": "2026-06-07T14:15:00.187Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 99,
+      "at": "2026-06-07T14:15:08.584Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 78,
+      "at": "2026-06-07T14:15:36.284Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 115,
+      "at": "2026-06-07T14:15:55.165Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 155,
+      "at": "2026-06-07T14:16:15.359Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 214,
+      "at": "2026-06-07T14:16:32.364Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 206,
+      "at": "2026-06-07T14:16:46.353Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
+      "action": "edit",
+      "tokens": 175,
+      "at": "2026-06-07T14:17:04.656Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 67,
+      "at": "2026-06-07T14:17:12.354Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 307,
+      "at": "2026-06-07T14:17:24.106Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 58,
+      "at": "2026-06-07T14:17:30.592Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+      "action": "edit",
+      "tokens": 235,
+      "at": "2026-06-07T14:17:42.832Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 213,
+      "at": "2026-06-07T14:18:27.085Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+      "action": "edit",
+      "tokens": 150,
+      "at": "2026-06-07T14:18:46.403Z"
     }
   ],
   "edit_counts": {
@@ -454,21 +584,24 @@
     "supabase/migrations/202605010150_targeted_spell_riders.sql": 1,
     "tests/feature/targeted-spell-riders.test.ts": 1,
     "package.json": 1,
-    "lib/game/card-behavior-schema.ts": 5,
-    "lib/game/card-behavior-llm.ts": 2,
-    "lib/game/actions.ts": 2,
-    "components/ControllerListV4.tsx": 12,
-    "lib/game/card-behavior-registry.ts": 10,
-    "tests/unit/card-behavior-builder.test.ts": 2,
+    "lib/game/card-behavior-schema.ts": 6,
+    "lib/game/card-behavior-llm.ts": 3,
+    "lib/game/actions.ts": 3,
+    "components/ControllerListV4.tsx": 15,
+    "lib/game/card-behavior-registry.ts": 20,
+    "tests/unit/card-behavior-builder.test.ts": 3,
     "supabase/migrations/202605010151_commander_identity_mana.sql": 1,
     "tests/harness/scenario.ts": 1,
     "tests/feature/commander-identity-mana.test.ts": 1,
     "lib/game/card-behavior-builder.ts": 3,
-    "lib/game/card-behavior.ts": 2
+    "lib/game/card-behavior.ts": 2,
+    "supabase/migrations/202605010152_assassins_trophy_rider.sql": 1,
+    "tests/feature/assassins-trophy.test.ts": 1,
+    "components/CardBehaviorForm.tsx": 1
   },
   "anatomy_hits": 0,
-  "anatomy_misses": 15,
-  "repeated_reads_warned": 18,
+  "anatomy_misses": 17,
+  "repeated_reads_warned": 24,
   "cerebrum_warnings": 0,
-  "stop_count": 10
+  "stop_count": 11
 }

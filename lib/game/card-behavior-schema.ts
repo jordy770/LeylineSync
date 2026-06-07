@@ -312,6 +312,9 @@ const CardBehaviorActionSchema = z.union([
     // Optional self-rider ("…and you lose 3 life"): applied to the caster on
     // resolution. Single-target only (not with `targets` > 1).
     then: ThenRiderSchema,
+    // Assassin's Trophy: the destroyed permanent's controller may search their
+    // library for a basic land, put it onto the battlefield, then shuffle.
+    controller_searches_basic_land: z.boolean().optional(),
   }),
   // Grant a keyword to a target creature until end of turn (trigger-only today).
   z.object({

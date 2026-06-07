@@ -6270,6 +6270,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-07T13:52:51.594Z"
+    },
+    {
+      "id": "bug-387",
+      "timestamp": "2026-06-07T14:15:36.289Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Condition was: if (field.kind === 'effect-list' && field.optional)",
+      "fix": "Changed to: if ((field.kind === 'effect-list' || field.kind === 'b)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T14:15:36.289Z"
     }
   ]
 }
