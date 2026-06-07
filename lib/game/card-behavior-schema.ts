@@ -146,6 +146,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player',
   'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
+  'add_player_counters', 'proliferate',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -165,6 +166,12 @@ const TargetControllerSchema = z.enum(['any', 'opponent', 'you', 'controller', '
 // An effect amount: a fixed number, or the literal "X" for a variable spell. X is
 // chosen at cast time, paid as {X} generic mana, and substituted server-side.
 const AmountSchema = z.union([z.number(), z.literal('X')])
+
+// Which kind of counter an add_counters effect places. "plus_one_one" is the
+// engine's fast +1/+1 column; everything else lives in the jsonb counter bag.
+const PermanentCounterTypeSchema = z.enum(['plus_one_one', 'charge', 'quest', 'loyalty', 'generic']).optional()
+// Player counters live on game_session_players. "poison" >= 10 loses the game.
+const PlayerCounterTypeSchema = z.enum(['poison', 'energy', 'experience'])
 
 const CardBehaviorActionSchema = z.union([
   z.object({
@@ -282,11 +289,21 @@ const CardBehaviorActionSchema = z.union([
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+    counter_type: PermanentCounterTypeSchema,
   }),
   z.object({
     type: z.literal('add_counters_all'),
     amount: z.number(),
     target_controller: TargetControllerSchema,
+    counter_type: PermanentCounterTypeSchema,
+  }),
+  z.object({
+    // Put player counters (poison/energy/experience) on players. Default recipient
+    // each_opponent (poison/infect lands on opponents).
+    type: z.literal('add_player_counters'),
+    amount: z.number(),
+    counter_type: PlayerCounterTypeSchema,
+    recipient: BehaviorRecipientSchema.optional(),
   }),
   z.object({
     type: z.enum(['tap_all', 'untap_all']),

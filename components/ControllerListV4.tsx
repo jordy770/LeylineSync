@@ -282,6 +282,15 @@ function creatureMatchesController(
 
 // Untargeted spell actions that resolve as a server-side effect program (no
 // target picker). A spell mixing only these can run as one multi-action cast.
+// A counter bag ({poison:3,charge:1}) → sorted [{kind,n}] for display, skipping zeros.
+function formatCounterBag(bag: Record<string, number> | null | undefined): { kind: string; n: number }[] {
+  if (!bag) return []
+  return Object.entries(bag)
+    .filter(([, n]) => n > 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([kind, n]) => ({ kind, n }))
+}
+
 const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'add_counters_all', 'tap_all', 'untap_all', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard', 'proliferate']
 // Effects that open a resolution-time choice — a spell containing one must run as a
 // program (single dedicated cast kinds can't surface the prompt).
@@ -1208,6 +1217,15 @@ function StatusBar({
           <span className="text-[7px] uppercase tracking-wider text-slate-700">lib</span>
         </div>
         <span className="text-xl font-black leading-none text-white">{currentPlayer?.life_total ?? '—'}</span>
+        {formatCounterBag(currentPlayer?.counters).map(({ kind, n }) => (
+          <span
+            key={kind}
+            className={`text-[9px] font-black leading-none ${kind === 'poison' ? 'text-lime-400' : 'text-amber-400'}`}
+            title={`${n} ${kind} counter${n > 1 ? 's' : ''}`}
+          >
+            {kind === 'poison' ? `☠${n}` : `${n} ${kind}`}
+          </span>
+        ))}
       </div>
     </header>
   )
@@ -1348,6 +1366,9 @@ function MainArea({
                 {p.username ?? `P${p.seat_number}`}
               </span>
               <span className="text-[9px] font-black text-white">♥{p.life_total}</span>
+              {(p.counters?.poison ?? 0) > 0 && (
+                <span className="text-[9px] font-black text-lime-400" title={`${p.counters!.poison} poison`}>☠{p.counters!.poison}</span>
+              )}
               <span className="flex items-center gap-1 border-l border-white/10 pl-1.5 text-[8px] text-slate-500">
                 <span title="Cards in hand">✋{counts?.handCount ?? '·'}</span>
                 <span title="Permanents on battlefield">⬡{permanents}</span>
@@ -2391,6 +2412,11 @@ function CardActionSheet({
                 +{card.plus_one_counters} counter{card.plus_one_counters! > 1 ? 's' : ''}
               </span>
             )}
+            {formatCounterBag(card.counters).map(({ kind, n }) => (
+              <span key={kind} className="text-[9px] font-bold text-amber-400">
+                {n} {kind}
+              </span>
+            ))}
             {((card.pump_power ?? 0) !== 0 || (card.pump_toughness ?? 0) !== 0) && (
               <span className="text-[9px] font-bold text-sky-400">
                 +{card.pump_power ?? 0}/+{card.pump_toughness ?? 0} until EOT

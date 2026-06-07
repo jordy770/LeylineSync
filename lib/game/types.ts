@@ -22,6 +22,8 @@ export type GameSessionPlayer = {
   username?: string | null
   seat_number: number
   life_total: number
+  // Player counter bag (poison/energy/experience). Empty when the player has none.
+  counters?: Record<string, number> | null
   joined_at?: string
 }
 
@@ -282,6 +284,8 @@ export type BoardCard = {
   controller_player_id?: string | null
   is_face_down?: boolean | null
   plus_one_counters?: number
+  // Non-+1/+1 counter bag (charge/quest/…). Empty when none.
+  counters?: Record<string, number> | null
   pump_power?: number
   pump_toughness?: number
   // Colours this card has protection from (white|blue|black|red|green).
@@ -301,6 +305,7 @@ export type ControllerCard = {
   static_effects_suppressed?: boolean
   entered_battlefield_turn_number?: number | null
   plus_one_counters?: number
+  counters?: Record<string, number> | null
   pump_power?: number
   pump_toughness?: number
   is_commander?: boolean
@@ -322,6 +327,7 @@ export type GameCardInstanceRow = {
   static_effects_suppressed?: boolean
   entered_battlefield_turn_number?: number | null
   plus_one_counters?: number
+  counters?: Record<string, number> | null
 }
 
 export type SupabaseErrorLike = {

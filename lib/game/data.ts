@@ -67,7 +67,8 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       damage_marked,
       zone,
       controller_player_id,
-      plus_one_counters
+      plus_one_counters,
+      counters
     `)
     .eq('session_id', sessionId)
     .eq('zone', 'battlefield')
@@ -101,6 +102,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       power_toughness: linkedCard?.power_toughness ?? null,
       controller_player_id: item.controller_player_id ?? null,
       plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
+      counters: (item as { counters?: Record<string, number> | null }).counters ?? null,
     }
   })
 }
@@ -227,6 +229,7 @@ export async function getControllerCards(
       static_effects_suppressed,
       entered_battlefield_turn_number,
       plus_one_counters,
+      counters,
       is_commander,
       command_zone_casts
     `)
@@ -263,6 +266,7 @@ export async function getControllerCards(
       static_effects_suppressed: card.static_effects_suppressed ?? false,
       entered_battlefield_turn_number: card.entered_battlefield_turn_number ?? null,
       plus_one_counters: card.plus_one_counters ?? 0,
+      counters: (card as { counters?: Record<string, number> | null }).counters ?? null,
       is_commander: (card as { is_commander?: boolean }).is_commander ?? false,
       command_zone_casts: (card as { command_zone_casts?: number }).command_zone_casts ?? 0,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,

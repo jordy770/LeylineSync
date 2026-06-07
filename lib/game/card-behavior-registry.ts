@@ -103,6 +103,41 @@ const controllerField: FieldDescriptor = {
   optional: true,
 }
 
+// Which counter kind an add_counters effect places. "plus_one_one" is the engine's
+// fast +1/+1 column (default, omitted when serialized); anything else lands in the
+// jsonb counter bag and has no P/T effect.
+const counterTypeField: FieldDescriptor = {
+  name: 'counter_type',
+  kind: 'enum',
+  label: 'Counter kind',
+  default: 'plus_one_one',
+  options: [
+    { value: 'plus_one_one', label: '+1/+1' },
+    { value: 'charge', label: 'charge' },
+    { value: 'quest', label: 'quest' },
+    { value: 'loyalty', label: 'loyalty' },
+    { value: 'generic', label: 'generic' },
+  ],
+  optional: true,
+  // Default +1/+1 is the engine's fast column — keep it out of the in-memory shape
+  // and the serialized JSON unless the author picks a bag counter.
+  materializeDefault: false,
+  omitDefault: true,
+}
+
+// Player counters (poison/energy/experience) for add_player_counters.
+const playerCounterTypeField: FieldDescriptor = {
+  name: 'counter_type',
+  kind: 'enum',
+  label: 'Counter kind',
+  default: 'poison',
+  options: [
+    { value: 'poison', label: 'poison' },
+    { value: 'energy', label: 'energy' },
+    { value: 'experience', label: 'experience' },
+  ],
+}
+
 // Where a tutored card goes (search_library.to).
 const SEARCH_DESTINATIONS: readonly FieldOption[] = [
   { value: 'hand', label: 'to your hand' },
@@ -235,10 +270,12 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
       { name: 'token', kind: 'select', label: 'Token', default: EFFECT_TOKEN_NAMES[0], options: TOKEN_OPTIONS },
     ],
   },
-  { type: 'add_counters', label: '+1/+1 counters on this', contexts: ['trigger'], fields: [amountField('Amount')] },
-  // Targeted +1/+1 counters — put N counters on a target creature (spell or trigger).
-  { type: 'add_counters', variant: 'add_counters_target', label: '+1/+1 counters on a target creature', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), creatureTargetField] },
-  { type: 'add_counters_all', label: '+1/+1 counters on creatures', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), controllerField] },
+  { type: 'add_counters', label: 'Counters on this', contexts: ['trigger'], fields: [amountField('Amount'), counterTypeField] },
+  // Targeted counters — put N counters on a target creature (spell or trigger).
+  { type: 'add_counters', variant: 'add_counters_target', label: 'Counters on a target creature', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), creatureTargetField, counterTypeField] },
+  { type: 'add_counters_all', label: 'Counters on creatures', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), controllerField, counterTypeField] },
+  // Player counters — poison/energy/experience on players (poison >= 10 loses).
+  { type: 'add_player_counters', label: 'Player counters (poison/energy/…)', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), playerCounterTypeField, recipientField()] },
   { type: 'tap_all', label: 'Tap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
   { type: 'untap_all', label: 'Untap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
   { type: 'scry', label: 'Scry N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
@@ -352,15 +389,31 @@ function defFieldKeys(def: EffectDef): string[] {
   return def.fields.map((f) => (f.kind === 'target' ? 'target' : f.name))
 }
 
+// A field key can only discriminate between variants if it's NOT present on every
+// variant of the type. A key common to all variants (e.g. counter_type on both
+// add_counters shapes, which is omitted by default) must not gate matching, or the
+// more-specific variant silently fails to resolve when that optional field is absent.
+function nonDiscriminatingKeys(type: string): Set<string> {
+  const defs = defsForType(type)
+  if (defs.length <= 1) return new Set()
+  const keyLists = defs.map(defFieldKeys)
+  return new Set(keyLists[0]!.filter((k) => keyLists.every((keys) => keys.includes(k))))
+}
+
 // Resolve which variant def an in-memory effect uses, by the fields it carries.
-// Among defs whose field keys are all present, the most specific (most fields)
-// wins; a single-variant type falls straight through.
+// Among defs whose discriminating field keys are all present, the most specific
+// (most fields) wins; a single-variant type falls straight through.
 export function resolveEffectDef(effect: RegistryEffect): EffectDef | undefined {
   const defs = defsForType(effect.type)
   if (defs.length <= 1) {
     return defs[0]
   }
-  const candidates = defs.filter((def) => defFieldKeys(def).every((k) => k in effect))
+  const shared = nonDiscriminatingKeys(effect.type)
+  const candidates = defs.filter((def) =>
+    defFieldKeys(def)
+      .filter((k) => !shared.has(k))
+      .every((k) => k in effect),
+  )
   if (candidates.length === 0) {
     return defs[0]
   }
