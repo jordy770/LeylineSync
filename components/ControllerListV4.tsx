@@ -245,7 +245,7 @@ type SpellPlan =
   | { kind: 'divided_damage'; amount: number; timing: 'instant' | 'sorcery'; canTargetPlayer: boolean; canTargetCreature: boolean; targetController: TargetController }
   | { kind: 'pump'; power: number; toughness: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   | { kind: 'set_pt'; power: number; toughness: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
-  | { kind: 'add_counters'; amount: number; timing: 'instant' | 'sorcery'; targetController: TargetController; xRequired?: boolean }
+  | { kind: 'add_counters'; amount: number; timing: 'instant' | 'sorcery'; targetController: TargetController; xRequired?: boolean; counterType?: string; all?: boolean }
   | { kind: 'creature_effect'; effect: TargetedCreatureActionType; label: string; keyword?: string; duration?: string; untap?: boolean; haste?: boolean; timing: 'instant' | 'sorcery'; targetController: TargetController }
   // Multi-target removal: pick up to `count` creatures, apply `effectKind` to each.
   | { kind: 'multi_creature'; effectKind: MultiCreatureKind; label: string; count: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
@@ -420,7 +420,7 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
   }
 
   const addCounters = actions.find((a) => a.type === 'add_counters') as
-    | (CardBehaviorAction & { amount?: number | 'X'; target_type?: unknown; target?: unknown; target_controller?: unknown })
+    | (CardBehaviorAction & { amount?: number | 'X'; target_type?: unknown; target?: unknown; target_controller?: unknown; counter_type?: string; all?: boolean })
     | undefined
   if (
     addCounters &&
@@ -428,7 +428,7 @@ function getSpellPlan(card: ControllerCard): SpellPlan {
     targetTypeMatches(addCounters.target_type ?? addCounters.target ?? 'creature', 'creature')
   ) {
     const xRequired = addCounters.amount === 'X'
-    return { kind: 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired }
+    return { kind: 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired, counterType: addCounters.counter_type, all: addCounters.all }
   }
 
   // Grant-keyword combat trick (e.g. "target creature gains flying until EOT").
@@ -837,7 +837,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'add_counters') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
-      await putAddCountersCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController, x)
+      await putAddCountersCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController, x, plan.counterType, plan.all)
       await refresh()
     },
     // Targeted creature effect — destroy / bounce / tap / untap

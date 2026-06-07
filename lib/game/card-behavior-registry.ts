@@ -125,6 +125,20 @@ const counterTypeField: FieldDescriptor = {
   omitDefault: true,
 }
 
+// Counter amount allows NEGATIVES (a negative amount removes that many counters —
+// "remove a +1/+1 counter" = amount -1). Removing +1/+1 re-runs the lethal SBA.
+const counterAmountField: FieldDescriptor = { name: 'amount', kind: 'number', label: 'Amount (negative removes)', default: 1, min: -99, max: 99 }
+
+// "Remove ALL counters of that kind" (Hex Parasite / Solemnity-style). When true the
+// amount is ignored. Optional + default false → omitted unless the author ticks it.
+const removeAllField: FieldDescriptor = {
+  name: 'all',
+  kind: 'boolean',
+  label: 'Remove all of that kind',
+  default: false,
+  optional: true,
+}
+
 // Player counters (poison/energy/experience) for add_player_counters.
 const playerCounterTypeField: FieldDescriptor = {
   name: 'counter_type',
@@ -270,12 +284,13 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
       { name: 'token', kind: 'select', label: 'Token', default: EFFECT_TOKEN_NAMES[0], options: TOKEN_OPTIONS },
     ],
   },
-  { type: 'add_counters', label: 'Counters on this', contexts: ['trigger'], fields: [amountField('Amount'), counterTypeField] },
-  // Targeted counters — put N counters on a target creature (spell or trigger).
-  { type: 'add_counters', variant: 'add_counters_target', label: 'Counters on a target creature', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), creatureTargetField, counterTypeField] },
-  { type: 'add_counters_all', label: 'Counters on creatures', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), controllerField, counterTypeField] },
+  // Add OR remove counters (negative amount / "remove all" removes — fading, Hex Parasite).
+  { type: 'add_counters', label: 'Counters on this', contexts: ['trigger'], fields: [counterAmountField, counterTypeField, removeAllField] },
+  // Targeted counters — add/remove counters on a target creature (spell or trigger).
+  { type: 'add_counters', variant: 'add_counters_target', label: 'Counters on a target creature', contexts: ['trigger', 'spell'], fields: [counterAmountField, creatureTargetField, counterTypeField, removeAllField] },
+  { type: 'add_counters_all', label: 'Counters on creatures', contexts: ['trigger', 'spell'], fields: [counterAmountField, controllerField, counterTypeField, removeAllField] },
   // Player counters — poison/energy/experience on players (poison >= 10 loses).
-  { type: 'add_player_counters', label: 'Player counters (poison/energy/…)', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), playerCounterTypeField, recipientField()] },
+  { type: 'add_player_counters', label: 'Player counters (poison/energy/…)', contexts: ['trigger', 'spell'], fields: [counterAmountField, playerCounterTypeField, recipientField(), removeAllField] },
   { type: 'tap_all', label: 'Tap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
   { type: 'untap_all', label: 'Untap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
   { type: 'scry', label: 'Scry N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },

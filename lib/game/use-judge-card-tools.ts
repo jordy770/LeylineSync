@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
+  adjustCardBagCounter,
   adjustCardCounters,
+  adjustPlayerCounter,
   applyPtPump,
   createToken,
   devClearSummoningSickness,
@@ -148,6 +150,18 @@ export function useJudgeCardTools({
             delta > 0 ? 'Counter added' : 'Counter removed',
           )
         : Promise.resolve(),
+    adjustSelectedCardBag: (kind: string, delta: number) =>
+      selectedCard
+        ? runJudgeAction(
+            () => adjustCardBagCounter(supabase, sessionId, selectedCard.id, kind, delta),
+            `${delta > 0 ? 'Added' : 'Removed'} ${kind} counter`,
+          )
+        : Promise.resolve(),
+    adjustPlayerCounterBag: (kind: string, delta: number) =>
+      runJudgeAction(
+        () => adjustPlayerCounter(supabase, sessionId, playerId, kind, delta),
+        `${delta > 0 ? 'Added' : 'Removed'} ${kind} counter`,
+      ),
     pumpSelectedCard: (power: number, toughness: number) =>
       selectedCard
         ? runJudgeAction(

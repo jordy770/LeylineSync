@@ -125,6 +125,23 @@ Reproduce each touched fn from its CURRENT migration (grep first — bug-281/283
 - **Multiplayer**: seating already supports 3+; confirm 4-player turn/priority + "last player standing" win.
 - **Client**: ✅ a **format selector** (Standard/Commander toggle) landed in GameSessionLobby — on Create it calls `set_commander_format` when Commander is picked. **KNOWN GAP:** set_commander_format sets all *current* players to 40, but at create only the host exists, so **late joiners start at 20**. Proper fix = thread `p_format` into create_game_session + have join_game_session set life from the session format (the deferred option #2; do it in the deck-side/seeding slice). Still TODO: a command-zone strip in V4 with a Cast button showing the live commander tax.
 
+## 🟤 Counters & Proliferation
+
+**✅ Shipped:**
+- **+1/+1 counters** (fast `game_cards.plus_one_counters` column, on the P/T hot path) — long-standing.
+- **Proliferate** (mig 153 +1/+1-only → mig 154 generalized). Chooses any number of permanents AND players that have a counter; each gets +1 of every kind already there. Functionally complete for everything modelled.
+- **Multi-counter model — Tier 1 + poison loss** (mig 154). Additive `counters jsonb` bag on `game_cards` (charge/quest/generic/…) and `game_session_players` (poison/energy/experience); `plus_one_counters` untouched on the hot path. `add_counters`/`add_counters_all` gained `counter_type`; new `add_player_counters` effect; **poison ≥ 10 loses** (maybe_finish_game_session). Display: card counter chips + player poison ☠; `get_session_players` returns counters. Tests proliferate PRO1-3 + multi-counter MC1-6.
+
+**🔜 Remaining (tiered by cost):**
+1. 🚧 **Counter removal authoring** — IN PROGRESS. "Remove a +1/+1 counter" / "remove all counters" (Hex Parasite, fading/vanishing, Vampire Hexmage). Implemented as negative `amount` + an `all` flag on the existing `add_counters` family (re-uses the whole pipeline; removing +1/+1 re-runs the lethal SBA). *Targeted bag-counter removal as a standalone instant/activated may defer the per-action client/builder threading.*
+2. 🚧 **Judge-tool counter parity** — IN PROGRESS. `JudgePlayerCardTools` only adjusts +1/+1; add +/- for card bag counters and player poison/energy (+ the adjust RPC).
+3. **"Enters with N counters"** as a static (graft/modular) — today faked via an ETB `add_counters` trigger (wrong timing).
+4. **−1/−1 counters** (Tier 2, deferred) — reduce P/T, annihilate with +1/+1 (CR 122.3), cause 0-toughness death. The one counter kind that MUST touch `card_effective_power/toughness`.
+5. **Counter doubling / scaling** (Doubling Season, Hardened Scales, "for each counter", "X = number of counters") — no counter-referencing conditions/multipliers.
+6. **Planeswalker loyalty** (Tier 3) — `loyalty` is exposed as a bag `counter_type` so proliferate bumps it, but it's COSMETIC: no planeswalker permanent type, no `+N`/`−N` loyalty costs, no 0-loyalty→graveyard SBA, can't attack/target. Either build the subsystem or back the enum entry out.
+7. **Infect / toxic / wither combat** — poison only arrives via `add_player_counters`; combat damage as poison/−1/−1 not modelled.
+8. **Inert player counters** — `energy`/`experience` are tracked + proliferatable but nothing spends energy (as a cost) or reads experience to scale abilities.
+
 ## 🔵 Architecture frontier (deferred by design — cerebrum Decision Log 2026-06-01)
 
 - **`effective_characteristics`** accessor (one face/script accessor) — unlocks DFCs (Jill // Shiva); the seam already reserved in `effective_script`

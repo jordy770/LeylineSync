@@ -2060,3 +2060,26 @@
 | 17:19 | Edited lib/game/card-behavior-registry.ts | added 1 condition(s) | ~345 |
 | 17:19 | Edited lib/game/card-behavior-registry.ts | reduce() → every() | ~76 |
 | 17:20 | multi-counter model (Tier 1 + poison loss) — jsonb bag on cards+players, counter_type, add_player_counters, proliferate cards+players, poison>=10 loss | mig 154, schema/registry/llm, data.ts, types.ts, ControllerListV4, multi-counter.test | 454 green, tsc/lint/build clean | ~30k |
+| 17:22 | Session end: 34 writes across 10 files (card-behavior-schema.ts, card-behavior-registry.ts, ControllerListV4.tsx, card-behavior-llm.ts, proliferate.test.ts) | 16 reads | ~141443 tok |
+| 17:25 | Session end: 34 writes across 10 files (card-behavior-schema.ts, card-behavior-registry.ts, ControllerListV4.tsx, card-behavior-llm.ts, proliferate.test.ts) | 16 reads | ~141443 tok |
+| 17:49 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified Remaining() | ~706 |
+| 17:51 | Created supabase/migrations/202605010155_counter_removal.sql | — | ~5995 |
+| 17:51 | Edited lib/game/card-behavior-registry.ts | expanded (+14 lines) | ~216 |
+| 17:52 | Edited lib/game/card-behavior-registry.ts | 6→7 lines | ~284 |
+| 17:52 | Edited lib/game/card-behavior-schema.ts | 22→26 lines | ~294 |
+| 17:52 | Edited lib/game/card-behavior-llm.ts | 3→3 lines | ~417 |
+| 17:53 | Edited lib/game/actions.ts | 18→22 lines | ~202 |
+| 17:53 | Edited components/ControllerListV4.tsx | inline fix | ~49 |
+| 17:53 | Edited components/ControllerListV4.tsx | CSS: counterType, all | ~209 |
+| 17:53 | Edited components/ControllerListV4.tsx | 2→2 lines | ~57 |
+| 17:55 | Edited supabase/migrations/202605010155_counter_removal.sql | modified public() | ~718 |
+| 17:55 | Edited lib/game/actions.ts | added 2 condition(s) | ~320 |
+| 17:55 | Edited lib/game/use-judge-card-tools.ts | 3→5 lines | ~27 |
+| 17:55 | Edited lib/game/use-judge-card-tools.ts | expanded (+12 lines) | ~234 |
+| 17:56 | Edited components/JudgePanel.tsx | 7→8 lines | ~89 |
+| 17:56 | Edited components/judge/JudgePlayerCardTools.tsx | added optional chaining | ~367 |
+| 17:56 | Edited components/judge/JudgePlayerCardTools.tsx | added optional chaining | ~677 |
+| 17:56 | Edited components/judge/JudgePlayerCardTools.tsx | added optional chaining | ~503 |
+| 17:57 | Created tests/feature/counter-removal.test.ts | — | ~1811 |
+| 17:57 | Edited package.json | inline fix | ~22 |
+| 17:58 | Counters #1 (removal: neg amount + all, lethal recheck) + #2 (judge bag/player counter controls) + roadmap | mig 155, schema/registry/llm, actions.ts, use-judge-card-tools, JudgePlayerCardTools/Panel, ControllerListV4, counter-removal.test | 460 green, tsc/lint/build clean | ~28k |

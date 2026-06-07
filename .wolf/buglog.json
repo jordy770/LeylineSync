@@ -6382,6 +6382,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-07T15:19:32.635Z"
+    },
+    {
+      "id": "bug-394",
+      "timestamp": "2026-06-07T15:52:39.550Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"type\"",
+      "fix": "Changed to \"remove a +1/+1 counter\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T15:52:39.550Z"
+    },
+    {
+      "id": "bug-395",
+      "timestamp": "2026-06-07T15:53:38.200Z",
+      "error_message": "CSS fix: kind",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "kind: 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired → 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired, counterType: addCounters.counter_type, all: addCounters.all",
+      "fix": "Changed kind: 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired → 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired, counterType: addCounters.counter_type, all: addCounters.all",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T15:53:38.200Z"
+    },
+    {
+      "id": "bug-396",
+      "timestamp": "2026-06-07T15:55:24.601Z",
+      "error_message": "Missing await",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T15:55:24.601Z"
+    },
+    {
+      "id": "bug-397",
+      "timestamp": "2026-06-07T15:56:14.244Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/judge/JudgePlayerCardTools.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Other counter kinds (charge/quest/…) already on the card; {cardBagKinds.map((kind) => ( | Also: <h4 className=\"mb-2 text-xs font-semibold uppercase tracking; <div className=\"grid gap-2\">",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-06-07T15:56:39.278Z"
     }
   ]
 }

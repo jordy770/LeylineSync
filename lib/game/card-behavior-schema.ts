@@ -284,26 +284,30 @@ const CardBehaviorActionSchema = z.union([
     count: z.number().optional(),
   }),
   z.object({
+    // A negative amount (or all=true) REMOVES counters; counter_type defaults +1/+1.
     type: z.literal('add_counters'),
     amount: AmountSchema,
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
     counter_type: PermanentCounterTypeSchema,
+    all: z.boolean().optional(),
   }),
   z.object({
     type: z.literal('add_counters_all'),
     amount: z.number(),
     target_controller: TargetControllerSchema,
     counter_type: PermanentCounterTypeSchema,
+    all: z.boolean().optional(),
   }),
   z.object({
     // Put player counters (poison/energy/experience) on players. Default recipient
-    // each_opponent (poison/infect lands on opponents).
+    // each_opponent (poison/infect lands on opponents). Negative amount / all removes.
     type: z.literal('add_player_counters'),
     amount: z.number(),
     counter_type: PlayerCounterTypeSchema,
     recipient: BehaviorRecipientSchema.optional(),
+    all: z.boolean().optional(),
   }),
   z.object({
     type: z.enum(['tap_all', 'untap_all']),

@@ -633,6 +633,8 @@ export async function putAddCountersCreatureOnStack(
   genericPayment?: Record<string, number>,
   targetController?: TargetController | null,
   xValue?: number | null,
+  counterType?: string | null,
+  all?: boolean,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -643,6 +645,8 @@ export async function putAddCountersCreatureOnStack(
       x_value: xValue ?? null,
       timing,
       target_controller: targetController ?? null,
+      counter_type: counterType ?? null,
+      all: all ?? false,
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
@@ -1208,6 +1212,46 @@ export async function adjustCardCounters(
   }
 
   return data as number
+}
+
+// Judge: adjust a non-+1/+1 bag counter (charge/quest/…) on a card. Returns the bag.
+export async function adjustCardBagCounter(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  kind: string,
+  delta: number,
+) {
+  const { data, error } = await supabase.rpc('adjust_card_bag_counter', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_kind: kind,
+    p_delta: delta,
+  })
+  if (error) {
+    throw error
+  }
+  return data as Record<string, number>
+}
+
+// Judge: adjust a player counter (poison/energy/experience). Returns the bag.
+export async function adjustPlayerCounter(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+  kind: string,
+  delta: number,
+) {
+  const { data, error } = await supabase.rpc('adjust_player_counter', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+    p_kind: kind,
+    p_delta: delta,
+  })
+  if (error) {
+    throw error
+  }
+  return data as Record<string, number>
 }
 
 export async function applyPtPump(
