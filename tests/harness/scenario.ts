@@ -565,6 +565,17 @@ export class Scenario {
     )
   }
 
+  /** Activate loyalty ability `index` on a planeswalker the acting seat controls. */
+  async activateLoyalty(sourceCardId: string, index = 0): Promise<unknown> {
+    return this.run(() =>
+      rpc(this.client, 'activate_loyalty_ability', {
+        p_session_id: this.sessionId,
+        p_source_card_id: sourceCardId,
+        p_ability_index: index,
+      }),
+    )
+  }
+
   /** Pass priority as the acting seat (rotates priority; resolves/advances once all pass). */
   async passPriority(seat: Seat = this.acting): Promise<unknown> {
     return this.run(() => rpc(this.client, 'pass_priority', { p_session_id: this.sessionId }), seat)

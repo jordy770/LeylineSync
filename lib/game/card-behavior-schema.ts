@@ -485,6 +485,15 @@ export const CardBehaviorScriptV2Schema = z.object({
     amount: z.number().int().positive(),
     counter_type: PermanentCounterTypeSchema,
   }).optional(),
+  // Planeswalker starting loyalty (a loyalty counter set as it enters).
+  loyalty: z.number().int().positive().optional(),
+  // Planeswalker loyalty abilities — +N / −N / 0; cost is paid by adjusting loyalty,
+  // sorcery-speed, once per turn. effects use the triggered-ability vocabulary.
+  loyalty_abilities: z.array(z.object({
+    cost: z.number().int(),
+    label: z.string().optional(),
+    effects: z.array(CardBehaviorActionSchema),
+  })).optional(),
   spell_effect: CardBehaviorSpellEffectSchema.optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),

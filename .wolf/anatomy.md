@@ -1,18 +1,18 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T22:29:07.525Z
-> Files: 54 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T22:44:41.064Z
+> Files: 56 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1090 tok)
+- `package.json` — Node.js package manifest (~1100 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~12432 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~12680 tok)
 
 ## .claude/rules/
 
@@ -109,9 +109,9 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11325 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5525 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~9325 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~9577 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9737 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6456 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6590 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3296 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -152,6 +152,7 @@
 - `202605010165_watcher_triggers.sql` — Other-scoped trigger events (roadmap Tribal #1, second half). (~1707 tok)
 - `202605010166_count_dynamic_amounts.sql` — Count-based dynamic amounts (roadmap Tribal #2). "X = number of creatures you (~1734 tok)
 - `202605010167_counter_placement_trigger.sql` — Counter-placement trigger event (roadmap Tribal #3). "Whenever ~ / a creature you (~466 tok)
+- `202605010168_planeswalkers.sql` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). (~2363 tok)
 
 ## tests/
 
@@ -171,6 +172,7 @@
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
 - `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
 - `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
+- `planeswalkers.test.ts` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). A planeswalker enters (~1298 tok)
 - `proliferate.test.ts` — Proliferate (Atraxa, Praetors' Voice end step, Karn's Bastion, etc.). The engine (~1083 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
 - `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)
@@ -178,11 +180,11 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~8809 tok)
+- `test-cards.json` (~8981 tok)
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9353 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9463 tok)
 - `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~673 tok)
 
 ## tests/regression/
