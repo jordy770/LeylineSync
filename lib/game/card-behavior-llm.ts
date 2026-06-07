@@ -206,6 +206,8 @@ Top-level flags: if the card says "this spell can't be countered" (or "can't be 
 
 If the card says "enters the battlefield with N +1/+1 counters on it" (Walking Ballista, Hangarback Walker — often 0/0 creatures), add \`"enters_with_counters": { "amount": N }\` at the top level (counter_type defaults +1/+1; add "counter_type" for a bag kind). This is a REPLACEMENT applied as it enters, so a 0/0 survives — do NOT model it as an enters_the_battlefield add_counters trigger (that resolves too late, after the 0/0 would already have died).
 
+If the card says "if an effect would put one or more counters on a permanent you control, it puts twice that many" (Doubling Season, Corpsejack Menace), add \`"doubles_counters": true\` at the top level. It's a static replacement: while on the battlefield, every counter PLACED on a permanent its controller controls is doubled (two of them stack to ×4). Removal and player counters (poison/energy) are unaffected. Do NOT model the doubling on each counter source — just flag the doubler.
+
 The engine supports these sections:
 
 1. continuous_effects — static keyword abilities. Each entry: { "type": <keyword>, "affected": "source", "source_zone_required": "battlefield" }.

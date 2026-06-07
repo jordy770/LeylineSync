@@ -444,6 +444,9 @@ export const CardBehaviorScriptV2Schema = z.object({
   // "This spell can't be countered." A static property read at counter-resolution
   // time: an uncounterable spell's counter resolves but fails to cancel it.
   cant_be_countered: z.boolean().optional(),
+  // "If an effect would put counters on a permanent you control, it puts twice that
+  // many instead" (Doubling Season). A static replacement read at counter-placement.
+  doubles_counters: z.boolean().optional(),
   // "Enters the battlefield with N counters on it" — a REPLACEMENT, applied as the
   // card enters (before SBA), so a 0/0 that enters with +1/+1 counters survives.
   // counter_type defaults +1/+1.
