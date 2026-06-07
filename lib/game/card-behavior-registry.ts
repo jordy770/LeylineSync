@@ -113,6 +113,7 @@ const counterTypeField: FieldDescriptor = {
   default: 'plus_one_one',
   options: [
     { value: 'plus_one_one', label: '+1/+1' },
+    { value: 'minus_one_one', label: '−1/−1' },
     { value: 'charge', label: 'charge' },
     { value: 'quest', label: 'quest' },
     { value: 'loyalty', label: 'loyalty' },

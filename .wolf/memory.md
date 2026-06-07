@@ -2093,3 +2093,16 @@
 | 18:36 | Edited tests/feature/enters-with-counters.test.ts | modified cardBag() | ~24 |
 | 18:36 | Counters #3 (enters-with-counters replacement, BEFORE zone trigger; 0/0 survives) | mig 156, schema, llm, fixture Counter Walker Test, enters-with-counters.test | 464 green, tsc/lint/build clean | ~12k |
 | 18:37 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~82 |
+| 18:42 | Created supabase/migrations/202605010157_minus_one_counters.sql | — | ~7680 |
+| 18:42 | Edited lib/game/card-behavior-schema.ts | inline fix | ~37 |
+| 18:42 | Edited lib/game/card-behavior-registry.ts | 8→9 lines | ~86 |
+| 18:42 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~157 |
+| 18:42 | Edited lib/game/card-behavior-llm.ts | inline fix | ~138 |
+| 18:43 | Created tests/feature/minus-one-counters.test.ts | — | ~1637 |
+| 18:43 | Edited package.json | inline fix | ~25 |
+| 18:44 | Edited supabase/migrations/202605010157_minus_one_counters.sql | 19→14 lines | ~218 |
+| 18:44 | Edited supabase/migrations/202605010157_minus_one_counters.sql | 16→13 lines | ~213 |
+| 18:44 | Edited supabase/migrations/202605010157_minus_one_counters.sql | 28→23 lines | ~332 |
+| 18:45 | Edited tests/feature/minus-one-counters.test.ts | modified 1() | ~286 |
+| 18:46 | Counters #4 (-1/-1 counters: bag key minus_one_one, layered P/T subtract, annihilation+lethal recheck) | mig 157, schema/registry/llm, ControllerListV4 label, minus-one-counters.test | 469 green, tsc/lint/build clean | ~26k |
+| 18:46 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | "card_effective_power/toug" → "minus_one_one" | ~114 |

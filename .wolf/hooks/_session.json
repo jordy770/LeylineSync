@@ -116,6 +116,11 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-07T16:33:44.186Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010149_cda_pt_layer.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-07T16:38:01.563Z"
     }
   },
   "files_written": [
@@ -490,20 +495,92 @@
       "action": "edit",
       "tokens": 88,
       "at": "2026-06-07T16:37:12.825Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010157_minus_one_counters.sql",
+      "action": "create",
+      "tokens": 8228,
+      "at": "2026-06-07T16:42:01.426Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 37,
+      "at": "2026-06-07T16:42:16.056Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 86,
+      "at": "2026-06-07T16:42:25.090Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 157,
+      "at": "2026-06-07T16:42:33.952Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
+      "action": "edit",
+      "tokens": 138,
+      "at": "2026-06-07T16:42:41.788Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/minus-one-counters.test.ts",
+      "action": "create",
+      "tokens": 1637,
+      "at": "2026-06-07T16:43:26.188Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 25,
+      "at": "2026-06-07T16:43:31.449Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010157_minus_one_counters.sql",
+      "action": "edit",
+      "tokens": 233,
+      "at": "2026-06-07T16:44:22.066Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010157_minus_one_counters.sql",
+      "action": "edit",
+      "tokens": 228,
+      "at": "2026-06-07T16:44:33.132Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010157_minus_one_counters.sql",
+      "action": "edit",
+      "tokens": 356,
+      "at": "2026-06-07T16:44:45.432Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/minus-one-counters.test.ts",
+      "action": "edit",
+      "tokens": 286,
+      "at": "2026-06-07T16:45:00.750Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "action": "edit",
+      "tokens": 122,
+      "at": "2026-06-07T16:46:30.625Z"
     }
   ],
   "edit_counts": {
-    "lib/game/card-behavior-schema.ts": 6,
-    "lib/game/card-behavior-registry.ts": 9,
-    "components/ControllerListV4.tsx": 9,
-    "lib/game/card-behavior-llm.ts": 5,
+    "lib/game/card-behavior-schema.ts": 7,
+    "lib/game/card-behavior-registry.ts": 10,
+    "components/ControllerListV4.tsx": 10,
+    "lib/game/card-behavior-llm.ts": 6,
     "tests/feature/proliferate.test.ts": 1,
-    "package.json": 4,
+    "package.json": 5,
     "supabase/migrations/202605010154_multi_counter_model.sql": 2,
     "lib/game/types.ts": 4,
     "lib/game/data.ts": 4,
     "tests/feature/multi-counter.test.ts": 1,
-    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 2,
+    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 3,
     "supabase/migrations/202605010155_counter_removal.sql": 2,
     "lib/game/actions.ts": 2,
     "lib/game/use-judge-card-tools.ts": 2,
@@ -512,11 +589,13 @@
     "tests/feature/counter-removal.test.ts": 1,
     "supabase/migrations/202605010156_enters_with_counters.sql": 1,
     "tests/fixtures/test-cards.json": 1,
-    "tests/feature/enters-with-counters.test.ts": 2
+    "tests/feature/enters-with-counters.test.ts": 2,
+    "supabase/migrations/202605010157_minus_one_counters.sql": 4,
+    "tests/feature/minus-one-counters.test.ts": 2
   },
   "anatomy_hits": 11,
-  "anatomy_misses": 12,
-  "repeated_reads_warned": 35,
+  "anatomy_misses": 13,
+  "repeated_reads_warned": 36,
   "cerebrum_warnings": 0,
   "stop_count": 4
 }

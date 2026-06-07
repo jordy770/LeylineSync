@@ -283,12 +283,14 @@ function creatureMatchesController(
 // Untargeted spell actions that resolve as a server-side effect program (no
 // target picker). A spell mixing only these can run as one multi-action cast.
 // A counter bag ({poison:3,charge:1}) → sorted [{kind,n}] for display, skipping zeros.
+// `minus_one_one` is the internal key for −1/−1 counters; show the readable label.
+const COUNTER_LABELS: Record<string, string> = { minus_one_one: '−1/−1' }
 function formatCounterBag(bag: Record<string, number> | null | undefined): { kind: string; n: number }[] {
   if (!bag) return []
   return Object.entries(bag)
     .filter(([, n]) => n > 0)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([kind, n]) => ({ kind, n }))
+    .map(([kind, n]) => ({ kind: COUNTER_LABELS[kind] ?? kind, n }))
 }
 
 const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'add_counters_all', 'tap_all', 'untap_all', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard', 'proliferate']

@@ -6494,6 +6494,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-07T16:37:12.830Z"
+    },
+    {
+      "id": "bug-401",
+      "timestamp": "2026-06-07T16:42:16.064Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Had 'charge'",
+      "fix": "Changed to 'minus_one_one'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T16:42:16.064Z"
+    },
+    {
+      "id": "bug-402",
+      "timestamp": "2026-06-07T16:42:33.958Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T16:42:33.958Z"
+    },
+    {
+      "id": "bug-403",
+      "timestamp": "2026-06-07T16:42:41.793Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"charge\"",
+      "fix": "Changed to \"minus_one_one\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T16:42:41.793Z"
+    },
+    {
+      "id": "bug-404",
+      "timestamp": "2026-06-07T16:46:30.630Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `card_effective_power/toughness`",
+      "fix": "Changed to `minus_one_one`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T16:46:30.630Z"
     }
   ]
 }
