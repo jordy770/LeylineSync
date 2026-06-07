@@ -298,6 +298,9 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   // describes the FOUGHT creature (the fighter is implicit — the source creature
   // as a trigger, or a creature you control as a spell).
   { type: 'fight', label: 'Fight (your creature fights a target creature)', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
+  // Proliferate — at resolution the controller chooses any number of permanents
+  // with a +1/+1 counter; each gets another. No authoring fields.
+  { type: 'proliferate', label: 'Proliferate', contexts: ['trigger', 'spell'], fields: [] },
   {
     type: 'pump',
     label: 'Pump creature (+X/+X)',

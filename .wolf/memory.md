@@ -2017,3 +2017,17 @@
 
 | 2026-06-07 | Assassin's Trophy (mig 152) — targeted removal parks a DECISION for the affected player. handle_permanent_effect: capture target controller before destroy, then if controller_searches_basic_land park a may-search (min 0) for that player (deciding_player = affected controller); returns awaiting_decision (handle_scry contract); submit_decision searches their library → basic to battlefield + shuffle. Authoring: new 'boolean' registry field kind (checkbox) + opponent-controlled removal target options + schema/LLM/client flag. Tests ATR1-2 + builder round-trip. | supabase/migrations/202605010152_assassins_trophy_rider.sql, lib/game/card-behavior-{schema,registry,llm}.ts, actions.ts, components/{ControllerListV4,CardBehaviorForm}.tsx, tests | 445/445, tsc+lint+build clean | ~11000 |
 | 16:20 | Session end: 81 writes across 21 files (next.config.ts, page.tsx, DeckManager.tsx, CardCatalogPicker.tsx, 202605010150_targeted_spell_riders.sql) | 17 reads | ~100334 tok |
+| 16:38 | Created supabase/migrations/202605010153_proliferate.sql | — | ~8315 |
+
+## Session: 2026-06-07 16:40
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:40 | Edited lib/game/card-behavior-schema.ts | 5→10 lines | ~100 |
+| 16:40 | Edited lib/game/card-behavior-registry.ts | 1→4 lines | ~109 |
+| 16:41 | Edited components/ControllerListV4.tsx | 4→4 lines | ~166 |
+| 16:41 | Edited components/ControllerListV4.tsx | inline fix | ~70 |
+| 16:41 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~266 |
+| 16:42 | Created tests/feature/proliferate.test.ts | — | ~1083 |
+| 16:42 | Edited package.json | inline fix | ~22 |
+| 16:44 | proliferate (Atraxa) — full/choice version | mig 153, schema, registry, llm, ControllerListV4, proliferate.test | 448 green, tsc/lint/build clean | ~14k |

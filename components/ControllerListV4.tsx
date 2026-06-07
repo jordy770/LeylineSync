@@ -282,10 +282,10 @@ function creatureMatchesController(
 
 // Untargeted spell actions that resolve as a server-side effect program (no
 // target picker). A spell mixing only these can run as one multi-action cast.
-const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'add_counters_all', 'tap_all', 'untap_all', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard']
+const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'add_counters_all', 'tap_all', 'untap_all', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard', 'proliferate']
 // Effects that open a resolution-time choice — a spell containing one must run as a
 // program (single dedicated cast kinds can't surface the prompt).
-const DECISION_SPELL_ACTION_TYPES = ['scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard']
+const DECISION_SPELL_ACTION_TYPES = ['scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard', 'proliferate']
 
 // Maps a spell_effect action type to a targeted-creature stack action + a picker label.
 const CREATURE_EFFECT_MAP: Record<string, { effect: TargetedCreatureActionType; label: string }> = {
@@ -1729,7 +1729,7 @@ function PendingDecisionPrompt({
         <ChooseModeBody decision={decision} boardCards={boardCards} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'scry' || decision.decision_type === 'surveil' ? (
         <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} isPending={isPending} onSubmit={submit} />
-      ) : decision.decision_type === 'search_library' || decision.decision_type === 'choose_cards' || decision.decision_type === 'sacrifice' || decision.decision_type === 'return_from_graveyard' ? (
+      ) : decision.decision_type === 'search_library' || decision.decision_type === 'choose_cards' || decision.decision_type === 'sacrifice' || decision.decision_type === 'return_from_graveyard' || decision.decision_type === 'proliferate' ? (
         <CardPickBody decision={decision} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'confirm' ? (
         <ConfirmBody isPending={isPending} onSubmit={submit} />

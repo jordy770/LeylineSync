@@ -368,6 +368,11 @@ const CardBehaviorActionSchema = z.union([
     amount: AmountSchema.optional(),
     combat_only: z.boolean().optional(),
   }),
+  z.object({
+    // Proliferate — choose any number of permanents with a +1/+1 counter; each
+    // gets another. No fields (the choice happens at resolution).
+    type: z.literal('proliferate'),
+  }),
   UnknownV2ActionSchema,
 ])
 
