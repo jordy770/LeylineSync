@@ -107,9 +107,9 @@ function getAutoTapColor(card: ControllerCard): ManaColor | null {
   if (ability.costs.length !== 1 || ability.costs[0].type !== 'tap_self') return null
   const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
   if (addManaEffects.length !== 1) return null
-  // A 'commander' source needs a colour choice — don't auto-tap; open the picker.
+  // A 'commander'/'any' source needs a colour choice — don't auto-tap; open the picker.
   const color = addManaEffects[0].color
-  return color === 'commander' ? null : color
+  return color === 'commander' || color === 'any' ? null : color
 }
 
 function renderAbilityCost(costs: CardBehaviorCost[]): string {
@@ -130,7 +130,7 @@ function renderAbilityCost(costs: CardBehaviorCost[]): string {
 
 function renderAbilityEffect(effects: CardBehaviorAction[]): string {
   return effects.map((e) => {
-    if (isAddManaBehaviorAction(e)) return e.color === 'commander' ? 'Add any commander colour' : `Add {${e.color}}`
+    if (isAddManaBehaviorAction(e)) return e.color === 'commander' ? 'Add any commander colour' : e.color === 'any' ? 'Add any colour' : `Add {${e.color}}`
     const asAny = e as Record<string, unknown>
     if (e.type === 'deal_damage') return `Deal ${String(asAny.amount ?? '?')} damage`
     if (e.type === 'counter') return 'Counter target spell'
@@ -754,6 +754,22 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
         amount: commanderEffect.amount,
         shouldTapCard: ability.costs.some((c) => c.type === 'tap_self'),
         commanderIdentity: true,
+      })
+      await refresh()
+      return
+    }
+    // A `color:'any'` source produces a CHOSEN colour with no identity restriction.
+    const anyColorEffect = ability.effects.find((e) => isAddManaBehaviorAction(e) && e.color === 'any')
+    if (anyColorEffect && isAddManaBehaviorAction(anyColorEffect) && color) {
+      await addManaFromCard({
+        supabase,
+        cardId,
+        sessionId,
+        playerId,
+        color,
+        amount: anyColorEffect.amount,
+        shouldTapCard: ability.costs.some((c) => c.type === 'tap_self'),
+        commanderIdentity: false,
       })
       await refresh()
       return
@@ -2874,11 +2890,14 @@ function CardActionSheet({
               const isUnavailable = hasTapCost && card.is_tapped
               return addManaEffects.flatMap((effect) => {
                 // 'commander' → one button per colour in the commander's identity
-                // (colourless fallback when there is none). Else the fixed colour.
+                // (colourless fallback when there is none); 'any' → one per W/U/B/R/G;
+                // else the fixed colour.
                 const produces: ManaColor[] =
                   effect.color === 'commander'
                     ? (commanderIdentity.length > 0 ? commanderIdentity : (['C'] as ManaColor[]))
-                    : [effect.color as ManaColor]
+                    : effect.color === 'any'
+                      ? (['W', 'U', 'B', 'R', 'G'] as ManaColor[])
+                      : [effect.color as ManaColor]
                 return produces.map((produced) => (
                   <button
                     key={`${i}-${effect.color}-${produced}`}

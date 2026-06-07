@@ -4,10 +4,12 @@ import { z } from 'zod'
 
 const ManaColorSchema = z.enum(['W', 'U', 'B', 'R', 'G', 'C'])
 
-// A mana ability may produce a fixed colour, or 'commander' = "one mana of any colour
-// in your commander's colour identity" (Command Tower, Arcane Signet). The client
-// resolves 'commander' to a chosen identity colour at tap time.
-const ManaProductionColorSchema = z.union([ManaColorSchema, z.literal('commander')])
+// A mana ability may produce a fixed colour, 'commander' = "one mana of any colour in
+// your commander's colour identity" (Command Tower, Arcane Signet), or 'any' = "one mana
+// of any colour" (Chromatic Lantern, rainbow lands). The client resolves 'commander'/
+// 'any' to a chosen colour at tap time (the server validates 'commander' against the
+// identity; 'any' is unrestricted).
+const ManaProductionColorSchema = z.union([ManaColorSchema, z.literal('commander'), z.literal('any')])
 
 const GameZoneSchema = z.enum(['library', 'hand', 'stack', 'battlefield', 'graveyard', 'exile'])
 

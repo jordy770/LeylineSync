@@ -32,8 +32,9 @@ export type CardBehaviorCost =
 export type CardBehaviorAction =
   | {
       type: 'add_mana'
-      // 'commander' = one mana of any colour in your commander's colour identity.
-      color: ManaColor | 'commander'
+      // 'commander' = one mana of any colour in your commander's colour identity;
+      // 'any' = one mana of any colour (Chromatic Lantern / rainbow lands).
+      color: ManaColor | 'commander' | 'any'
       amount: number
     }
   | {
@@ -233,7 +234,7 @@ export function isAddManaBehaviorAction(
     action.type === 'add_mana' &&
     'color' in action &&
     typeof action.color === 'string' &&
-    ['W', 'U', 'B', 'R', 'G', 'C', 'commander'].includes(action.color) &&
+    ['W', 'U', 'B', 'R', 'G', 'C', 'commander', 'any'].includes(action.color) &&
     'amount' in action &&
     typeof action.amount === 'number'
   )

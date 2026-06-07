@@ -1,18 +1,18 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T22:09:38.848Z
-> Files: 52 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T22:29:07.525Z
+> Files: 54 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1076 tok)
+- `package.json` — Node.js package manifest (~1090 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~12290 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~12432 tok)
 
 ## .claude/rules/
 
@@ -74,7 +74,7 @@
 ## components/
 
 - `CardBehaviorForm.tsx` — inputClass (~5895 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~54739 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~54974 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
 ## components/board/
@@ -108,11 +108,11 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11325 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5481 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~9181 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5525 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~9325 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9737 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6407 tok)
-- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3269 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6456 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3296 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
 - `use-judge-card-tools.ts` — Exports useJudgeCardTools (~1636 tok)
@@ -151,6 +151,7 @@
 - `202605010164_typed_lords.sql` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). (~1738 tok)
 - `202605010165_watcher_triggers.sql` — Other-scoped trigger events (roadmap Tribal #1, second half). (~1707 tok)
 - `202605010166_count_dynamic_amounts.sql` — Count-based dynamic amounts (roadmap Tribal #2). "X = number of creatures you (~1734 tok)
+- `202605010167_counter_placement_trigger.sql` — Counter-placement trigger event (roadmap Tribal #3). "Whenever ~ / a creature you (~466 tok)
 
 ## tests/
 
@@ -162,6 +163,7 @@
 - `commander-identity-mana.test.ts` — Commander-identity mana (mig 151) — "Add one mana of any color in your commander's (~662 tok)
 - `count-amounts.test.ts` — Count-based dynamic amounts (roadmap Tribal #2). An effect "amount" of (~968 tok)
 - `counter-doubling.test.ts` — Counter doubling — Doubling Season (roadmap Counters #5, half 1). A static (~1248 tok)
+- `counter-placement-trigger.test.ts` — Counter-placement trigger event (roadmap Tribal #3). `creature_got_counter` fires (~1243 tok)
 - `counter-removal.test.ts` — Counter removal (roadmap Counters #1). Reuses the add_counters pipeline: a NEGATIVE (~1811 tok)
 - `dynamic-counter-amounts.test.ts` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2). A (~1830 tok)
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
@@ -176,7 +178,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~8703 tok)
+- `test-cards.json` (~8809 tok)
 
 ## tests/harness/
 

@@ -43,6 +43,7 @@ export const BUILDER_TRIGGER_EVENTS = [
   { value: 'beginning_of_end_step', label: 'At the beginning of your end step' },
   { value: 'creature_entered', label: 'When another/a creature enters (use filter)' },
   { value: 'creature_died', label: 'When a creature dies (use filter)' },
+  { value: 'creature_got_counter', label: 'When a creature gets a +1/+1 counter (use filter)' },
 ] as const
 export type BuilderTriggerEvent = (typeof BUILDER_TRIGGER_EVENTS)[number]['value']
 
@@ -142,7 +143,7 @@ export function defaultSpellEffect(key: BuilderSpellEffectType | string): Builde
 // A mana ability produces a fixed colour, or 'commander' = "one mana of any colour
 // in your commander's colour identity" (Command Tower, Arcane Signet). The V4
 // controller resolves 'commander' to a chosen identity colour at tap time.
-export type ManaProductionColor = ManaColor | 'commander'
+export type ManaProductionColor = ManaColor | 'commander' | 'any'
 
 export const BUILDER_MANA_COLORS: { value: ManaProductionColor; label: string }[] = [
   { value: 'W', label: 'White {W}' },
@@ -152,6 +153,7 @@ export const BUILDER_MANA_COLORS: { value: ManaProductionColor; label: string }[
   { value: 'G', label: 'Green {G}' },
   { value: 'C', label: 'Colorless {C}' },
   { value: 'commander', label: 'Any in commander identity' },
+  { value: 'any', label: 'Any colour' },
 ]
 
 export const BUILDER_DAMAGE_TARGETS = [
@@ -412,7 +414,7 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
         return null
       }
       const color = effect.color
-      if (typeof color !== 'string' || !['W', 'U', 'B', 'R', 'G', 'C', 'commander'].includes(color)) {
+      if (typeof color !== 'string' || !['W', 'U', 'B', 'R', 'G', 'C', 'commander', 'any'].includes(color)) {
         return null
       }
       abilities.push({
