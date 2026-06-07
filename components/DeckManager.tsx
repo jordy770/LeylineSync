@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import CardCatalogPicker from '@/components/CardCatalogPicker'
-import Link from 'next/link'
+import CardBehaviorEditor from '@/components/CardBehaviorEditor'
 import DeckInsights from '@/components/DeckInsights'
 import { importDeckFromText, getErrorMessage, setCardScript, setDeckCommander, updateDeckList } from '@/lib/game/actions'
 import { getCardConfigStatus, type CardConfigStatus } from '@/lib/game/card-behavior'
@@ -30,6 +30,7 @@ export default function DeckManager() {
   const [sampleHand, setSampleHand] = useState<string[] | null>(null)
   const [preview, setPreview] = useState<LinkedCard | null>(null)
   const [batch, setBatch] = useState<{ done: number; total: number; ok: number; failed: number } | null>(null)
+  const [behaviorCardId, setBehaviorCardId] = useState<string | null>(null)
 
   const refreshDecks = async () => {
     const nextDecks = await getUserDecks(supabase)
@@ -307,8 +308,15 @@ export default function DeckManager() {
     }
   }
 
+  // Close the behavior popup and refresh the deck so the badges reflect the new script.
+  const closeBehavior = () => {
+    setBehaviorCardId(null)
+    void refreshSelectedDeck()
+  }
+
   return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(360px,420px)]">
+    <div className="space-y-6">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)]">
       <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
         <h2 className="text-lg font-semibold">Create Deck</h2>
         <p className="mt-1 text-sm text-slate-400">
@@ -396,9 +404,11 @@ export default function DeckManager() {
             ))}
           </div>
         )}
+      </section>
+      </div>
 
-        {selectedDeck ? (
-          <div className="mt-5 border-t border-slate-800 pt-5">
+      {selectedDeck ? (
+        <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
             <h3 className="text-sm font-semibold text-slate-200">Edit Deck</h3>
             <p className="mt-1 text-xs text-slate-400">
               {selectedDeck.name || 'Untitled Deck'} - {selectedDeck.card_count} cards
@@ -511,7 +521,7 @@ export default function DeckManager() {
               </select>
             </div>
 
-            <div className="mt-2 grid gap-2">
+            <div className="mt-2 grid gap-2 lg:grid-cols-2">
               {[...selectedDeck.cards]
                 .filter((line) => !showNeedsOnly || getCardConfigStatus(line.card ?? {}) === 'needs')
                 .sort((a, b) => {
@@ -562,13 +572,14 @@ export default function DeckManager() {
                       </p>
                     </div>
                     <div className="flex gap-1">
-                      <Link
-                        href={`/cards/behavior?card=${line.card_id}`}
+                      <button
+                        type="button"
+                        onClick={() => setBehaviorCardId(line.card_id)}
                         title="Edit this card's behavior"
                         className="rounded bg-sky-700 px-2 py-1 text-xs font-semibold text-sky-100 hover:bg-sky-600"
                       >
                         Behavior
-                      </Link>
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleSetCommander(isCommander ? null : line.card_id)}
@@ -593,9 +604,8 @@ export default function DeckManager() {
                 )
               })}
             </div>
-          </div>
-        ) : null}
-      </section>
+        </section>
+      ) : null}
 
       {/* Sample opening hand */}
       {sampleHand && (
@@ -642,6 +652,31 @@ export default function DeckManager() {
             alt={preview.name ?? 'Card'}
             className="max-h-[85vh] max-w-[90vw] rounded-xl shadow-2xl"
           />
+        </div>
+      )}
+
+      {/* Card behavior editor (popup) — edit a deck card's script without leaving the page */}
+      {behaviorCardId && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-black/80 p-4"
+          onClick={closeBehavior}
+        >
+          <div
+            className="my-4 w-full max-w-6xl rounded-lg border border-slate-700 bg-slate-950 p-4"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-white">Card behavior</h3>
+              <button
+                type="button"
+                onClick={closeBehavior}
+                className="rounded border border-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 hover:bg-slate-800"
+              >
+                Close
+              </button>
+            </div>
+            <CardBehaviorEditor initialCardId={behaviorCardId} />
+          </div>
         </div>
       )}
     </div>

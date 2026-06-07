@@ -1916,3 +1916,14 @@
 | 11:21 | Edited app/controller/[id]/page.tsx | 5→9 lines | ~157 |
 
 | 2026-06-07 | Fixed Next.js dev "stuck on compiling". Two causes: (1) cacheComponents:true enabled but ZERO "use cache" directives -> pure Cache-Components overhead (root cold compile 4.2s -> 0.55s after removing; also explained the 7.7-min prod build); (2) app/controller/[id]/page.tsx statically imported ALL FOUR controller versions (V1+V2+V3+V4 ~7900 lines) -> now next/dynamic lazy-loads so only the ?v= version compiles. tsc clean. | next.config.ts, app/controller/[id]/page.tsx | root compile 4.2s->0.55s, tsc clean | ~3000 |
+| 11:23 | Session end: 2 writes across 2 files (next.config.ts, page.tsx) | 1 reads | ~180 tok |
+| 11:30 | Edited components/DeckManager.tsx | 3→3 lines | ~52 |
+| 11:30 | Edited components/DeckManager.tsx | 1→2 lines | ~54 |
+| 11:30 | Edited components/DeckManager.tsx | expanded (+7 lines) | ~153 |
+| 11:30 | Edited components/DeckManager.tsx | 5→7 lines | ~71 |
+| 11:30 | Edited components/DeckManager.tsx | 5→4 lines | ~20 |
+| 11:30 | Edited components/DeckManager.tsx | "mt-2 grid gap-2" → "mt-2 grid gap-2 lg:grid-c" | ~18 |
+| 11:30 | Edited components/DeckManager.tsx | 7→8 lines | ~116 |
+| 11:31 | Edited components/DeckManager.tsx | CSS: hover | ~354 |
+
+| 2026-06-07 | Deck editor UX: card-behavior editor now opens in a POPUP (CardBehaviorEditor in a max-w-6xl modal) instead of navigating to /cards/behavior; refreshes the deck on close so badges update. Made the card list readable: pulled "Edit Deck" out of the narrow ≤420px right column into a FULL-WIDTH section below the top row, and tiled the card list 2-up (lg:grid-cols-2). | components/DeckManager.tsx | tsc+lint clean | ~3500 |
