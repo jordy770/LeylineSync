@@ -174,13 +174,13 @@ export type BuilderAbilityKind = (typeof BUILDER_ABILITY_KINDS)[number]['value']
 // editor. (Replaces the old bespoke `damage` kind; deal_damage is now just an effect.)
 export type BuilderActivatedAbility =
   | { kind: 'mana'; tapSelf: boolean; color: ManaProductionColor; amount: number }
-  | { kind: 'effect'; tapSelf: boolean; sacSelf: boolean; mana: string; effect: RegistryEffect }
+  | { kind: 'effect'; tapSelf: boolean; sacSelf: boolean; exileFromGraveyard: boolean; mana: string; effect: RegistryEffect }
 
 export function defaultActivatedAbility(kind: BuilderAbilityKind): BuilderActivatedAbility {
   if (kind === 'mana') {
     return { kind: 'mana', tapSelf: true, color: 'C', amount: 1 }
   }
-  return { kind: 'effect', tapSelf: true, sacSelf: false, mana: '', effect: effectDefault('deal_damage_target') }
+  return { kind: 'effect', tapSelf: true, sacSelf: false, exileFromGraveyard: false, mana: '', effect: effectDefault('deal_damage_target') }
 }
 
 // A static anthem / lord: "[Other] [<Type>] creatures [you control | everywhere]
@@ -344,6 +344,9 @@ function activatedAbilityToJson(ability: BuilderActivatedAbility): Record<string
   if (ability.sacSelf) {
     costs.push({ type: 'sacrifice_self' })
   }
+  if (ability.exileFromGraveyard) {
+    costs.push({ type: 'exile_from_graveyard', type_line: 'creature' })
+  }
   if (ability.mana.trim()) {
     costs.push({ type: 'mana', amount: ability.mana.trim() })
   }
@@ -497,15 +500,20 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
     const costs = Array.isArray(e.costs) ? (e.costs as Record<string, unknown>[]) : []
     const effects = Array.isArray(e.effects) ? (e.effects as Record<string, unknown>[]) : []
 
-    // Costs must only be tap_self, sacrifice_self, and/or a mana string.
+    // Costs must only be tap_self, sacrifice_self, exile-a-creature-from-a-graveyard,
+    // and/or a mana string. The graveyard-exile cost is form-representable only for
+    // the "creature" filter (Cemetery Reaper); other filters round-trip to JSON.
     let tapSelf = false
     let sacSelf = false
+    let exileFromGraveyard = false
     let mana = ''
     for (const cost of costs) {
       if (cost?.type === 'tap_self') {
         tapSelf = true
       } else if (cost?.type === 'sacrifice_self') {
         sacSelf = true
+      } else if (cost?.type === 'exile_from_graveyard' && (cost.type_line === undefined || cost.type_line === 'creature')) {
+        exileFromGraveyard = true
       } else if (cost?.type === 'mana' && typeof cost.amount === 'string') {
         mana = cost.amount
       } else {
@@ -519,9 +527,9 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
     const effect = effects[0]
 
     if (e.is_mana_ability === true) {
-      // Mana abilities have no sacrifice cost in the form — a sac'd mana ability
-      // round-trips to JSON rather than silently dropping the cost.
-      if (effect?.type !== 'add_mana' || mana || sacSelf) {
+      // Mana abilities have no sacrifice / graveyard-exile cost in the form — such
+      // a mana ability round-trips to JSON rather than silently dropping the cost.
+      if (effect?.type !== 'add_mana' || mana || sacSelf || exileFromGraveyard) {
         return null
       }
       const color = effect.color
@@ -542,7 +550,7 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
       if (parsed === null) {
         return null
       }
-      abilities.push({ kind: 'effect', tapSelf, sacSelf, mana, effect: parsed })
+      abilities.push({ kind: 'effect', tapSelf, sacSelf, exileFromGraveyard, mana, effect: parsed })
     }
   }
   return abilities

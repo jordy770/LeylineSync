@@ -166,6 +166,10 @@ const CASES: Case[] = [
   // flashback_life must be a positive integer.
   { name: 'flashback_life zero → json', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 0, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
   { name: 'flashback_life non-integer → json', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 1.5, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
+  // Cemetery Reaper: an activated ability with a graveyard-exile cost + create_token.
+  { name: 'activated exile-from-graveyard + create_token → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}{B}' }, { type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'creature' }], effects: [{ type: 'create_token', token: 'Zombie Token', count: 1 }] }] }, form: true },
+  // A non-creature graveyard-exile filter isn't form-representable (the checkbox is creature-only).
+  { name: 'activated exile-from-graveyard non-creature filter → json', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'land' }], effects: [{ type: 'draw', amount: 1 }] }] }, form: false },
   // An alternate flashback effect (do more/different from the graveyard) round-trips.
   { name: 'flashback_effect alternate program → form', script: { schema_version: 2, flashback: '{2}', spell_effect: { actions: [{ type: 'draw', amount: 1 }] }, flashback_effect: { actions: [{ type: 'draw', amount: 3 }] } }, form: true },
 
@@ -247,6 +251,14 @@ test('exact build: Deep Analysis (target player draws two + flashback, pay 3 lif
     spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] },
     flashback: '{1}{U}',
     flashback_life: 3,
+  })
+})
+
+test('exact build: Cemetery Reaper ability (mana+tap+exile-from-graveyard → create_token)', () => {
+  const form = parseScriptToForm({ schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}{B}' }, { type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'creature' }], effects: [{ type: 'create_token', token: 'Zombie Token', count: 1 }] }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    activated_abilities: [{ costs: [{ type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'creature' }, { type: 'mana', amount: '{2}{B}' }], effects: [{ type: 'create_token', token: 'Zombie Token', count: 1 }] }],
   })
 })
 
@@ -419,7 +431,7 @@ test('defaultSpellEffect shapes', () => {
 test('defaultActivatedAbility shapes', () => {
   assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, color: 'C', amount: 1 })
   // The generic 'effect' kind defaults to a targeted deal_damage (the old 'damage' kind).
-  assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, sacSelf: false, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
+  assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, sacSelf: false, exileFromGraveyard: false, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
 })
 
 // An activated ability of a non-damage effect (a new capability) is Form-representable.

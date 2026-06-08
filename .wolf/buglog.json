@@ -7803,6 +7803,108 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-06-08T00:00:00.000Z"
+    },
+    {
+      "id": "bug-480",
+      "timestamp": "2026-06-08T14:51:37.975Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Condition was: if (effect?.type !== 'add_mana' || mana || sacSelf)",
+      "fix": "Changed to: if (effect?.type !== 'add_mana' || mana || sacSelf || )",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T14:51:37.975Z"
+    },
+    {
+      "id": "bug-481",
+      "timestamp": "2026-06-08T14:51:50.900Z",
+      "error_message": "Type error",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T14:51:50.900Z"
+    },
+    {
+      "id": "bug-482",
+      "timestamp": "2026-06-08T14:52:19.557Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"{T}, Pay two energy: …\"",
+      "fix": "Changed to \"type\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T14:52:19.557Z"
+    },
+    {
+      "id": "bug-483",
+      "timestamp": "2026-06-08T14:53:01.178Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Increasing Insight Test\"",
+      "fix": "Changed to \"Cemetery Reaper Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-08T14:54:52.696Z"
+    },
+    {
+      "id": "bug-484",
+      "timestamp": "2026-06-08T14:53:38.122Z",
+      "error_message": "Type error",
+      "file": "tests/unit/card-behavior-builder.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T14:53:38.122Z"
+    },
+    {
+      "id": "bug-470",
+      "timestamp": "2026-06-08T00:00:00.000Z",
+      "error_message": "User: Cemetery Reaper 'exile a creature from a graveyard' couldn't be set in the guided form",
+      "file": "supabase/migrations/202605010178_exile_from_graveyard_cost.sql",
+      "root_cause": "Two activated-ability gaps: no exile_from_graveyard cost (graveyard-card targeting), and activate_ability had no create_token effect (and put_action_on_stack has no token handler). Cemetery Reaper needs both.",
+      "fix": "mig 178 adds the exile_from_graveyard cost (validates+exiles the chosen graveyard card passed as p_target_card_id) and routes create_token through a direct spell_effect stack insert (reusing the spell-effect resolver). Wired schema + builder + form (an Exile-a-creature-from-a-graveyard checkbox). Added a Zombie Token fixture so the form-canonical token name is also engine-seeded.",
+      "fix_lesson": "EFFECT_TOKEN_NAMES (form) and the seeded test tokens are separate lists — a token must be in BOTH to round-trip through the form AND resolve in the engine.",
+      "tags": [
+        "activated-ability",
+        "exile-from-graveyard",
+        "create_token",
+        "graveyard-targeting",
+        "sql",
+        "guided-form"
+      ],
+      "related_bugs": [
+        "bug-464"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T00:00:00.000Z"
     }
   ]
 }

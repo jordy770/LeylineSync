@@ -139,6 +139,9 @@ const CardBehaviorCostSchema = z.union([
   z.object({ type: z.literal('sacrifice_self') }),
   z.object({ type: z.literal('discard'), amount: z.number() }),
   z.object({ type: z.literal('exile_self'), from_zone: BehaviorZoneSchema.optional() }),
+  // "Exile a creature card from a graveyard" (Cemetery Reaper). type_line filters
+  // the exiled card (default "creature"); the chosen card is passed at activation.
+  z.object({ type: z.literal('exile_from_graveyard'), type_line: z.string().optional() }),
   z.object({ type: z.literal('energy'), amount: z.number() }),
   UnknownCostSchema,
 ])

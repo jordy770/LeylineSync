@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T14:05:37.397Z
-> Files: 76 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T14:55:44.130Z
+> Files: 78 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1197 tok)
+- `package.json` — Node.js package manifest (~1208 tok)
 
 ## .claude/
 
@@ -74,7 +74,7 @@
 ## components/
 
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4152 tok)
-- `CardBehaviorForm.tsx` — inputClass (~8112 tok)
+- `CardBehaviorForm.tsx` — inputClass (~8248 tok)
 - `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~57351 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
@@ -109,10 +109,10 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11467 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~7521 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10589 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~7695 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10707 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9931 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7290 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7364 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -164,6 +164,7 @@
 - `202605010175_sacrifice_self_ability_cost.sql` — Reproduces activate_ability (from mig 162) adding the `sacrifice_self` activated-ability cost (Commander's Sphere). Sacrifices the source via put_in_graveyard after other costs, before the ability hits the stack. (~2448 tok)
 - `202605010176_flashback_life_cost.sql` — Flashback with an additional "Pay N life" cost (Deep Analysis: "Flashback— (~2138 tok)
 - `202605010177_flashback_alternate_effect.sql` — Flashback that does DIFFERENT/extra stuff than the hand cast (the "Increasing" (~2362 tok)
+- `202605010178_exile_from_graveyard_cost.sql` — "Exile a creature card from a graveyard" as an activated-ability cost, plus (~3073 tok)
 
 ## tests/
 
@@ -173,6 +174,7 @@
 - `army-of-the-damned.test.ts` — Army of the Damned — "Create thirteen 2/2 black Zombie creature tokens that are (~1092 tok)
 - `assassins-trophy.test.ts` — Assassin's Trophy (mig 152) — "Destroy target permanent an opponent controls. Its (~769 tok)
 - `beast-within.test.ts` — Beast Within (card request) — "Destroy target permanent. Its controller creates a (~1132 tok)
+- `cemetery-reaper.test.ts` — Cemetery Reaper's activated ability (mig 178): "{2}{B}, {T}, Exile a creature (~980 tok)
 - `choose-creature-type.test.ts` — Choose a creature type (roadmap Tribal #6). A choose_creature_type effect parks a (~732 tok)
 - `commander-identity-mana.test.ts` — Commander-identity mana (mig 151) — "Add one mana of any color in your commander's (~662 tok)
 - `count-amounts.test.ts` — Count-based dynamic amounts (roadmap Tribal #2). An effect "amount" of (~968 tok)
@@ -200,7 +202,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~10009 tok)
+- `test-cards.json` (~10261 tok)
 
 ## tests/harness/
 
@@ -212,7 +214,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~11402 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~11703 tok)
 
 ## vercel/
 

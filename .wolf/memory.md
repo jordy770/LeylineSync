@@ -2490,3 +2490,21 @@
 | 16:05 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+10 lines) | ~159 |
 | 16:05 | Edited package.json | inline fix | ~37 |
 | 16:07 | Flashback alternate effect (Increasing cycle) | mig 177, card-behavior-schema/builder/llm, CardBehaviorForm.tsx, flashback-alternate-effect.test.ts | flashback_effect replaces spell_effect on graveyard cast, engine-enforced by zone; 570/570 | ~24k |
+| 16:08 | Session end: 77 writes across 18 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 17 reads | ~173113 tok |
+| 16:50 | Created supabase/migrations/202605010178_exile_from_graveyard_cost.sql | — | ~3073 |
+| 16:50 | Edited lib/game/card-behavior-schema.ts | 4→7 lines | ~124 |
+| 16:51 | Edited lib/game/card-behavior-builder.ts | modified defaultActivatedAbility() | ~166 |
+| 16:51 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~80 |
+| 16:51 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~239 |
+| 16:51 | Edited lib/game/card-behavior-builder.ts | modified if() | ~80 |
+| 16:51 | Edited lib/game/card-behavior-builder.ts | inline fix | ~29 |
+| 16:51 | Edited components/CardBehaviorForm.tsx | CSS: Reaper, exileFromGraveyard | ~234 |
+| 16:52 | Edited lib/game/card-behavior-llm.ts | 2→2 lines | ~311 |
+| 16:53 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~228 |
+| 16:53 | Created tests/feature/cemetery-reaper.test.ts | — | ~980 |
+| 16:53 | Edited tests/unit/card-behavior-builder.test.ts | 1→5 lines | ~252 |
+| 16:53 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~223 |
+| 16:54 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~252 |
+| 16:55 | Edited package.json | inline fix | ~36 |
+| 16:55 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~58 |
+| 16:57 | Cemetery Reaper: exile-from-graveyard cost + create_token in abilities | mig 178, schema/builder/llm, CardBehaviorForm.tsx, cemetery-reaper.test.ts | new activated cost + token effect; engine+form+tests; picker pending; 577/577 | ~30k |

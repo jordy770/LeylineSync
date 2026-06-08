@@ -778,6 +778,15 @@ function ActivatedAbilityEditor({
               />
               Sacrifice this
             </label>
+            <label className="flex items-center gap-1.5" title="Cemetery Reaper: exile a creature card from any graveyard as a cost">
+              <input
+                type="checkbox"
+                checked={ability.exileFromGraveyard}
+                disabled={disabled}
+                onChange={(event) => onChange({ ...ability, exileFromGraveyard: event.target.checked })}
+              />
+              Exile a creature from a graveyard
+            </label>
             <label className="flex items-center gap-1.5">
               Mana cost
               <input
