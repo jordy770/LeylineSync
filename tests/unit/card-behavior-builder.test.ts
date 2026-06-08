@@ -205,6 +205,10 @@ const CASES: Case[] = [
   { name: 'crippling fear (choose_creature_type + pump_all) → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'choose_creature_type', effects: [{ type: 'pump_all', power: -3, toughness: -3, scope: 'all', exclude_type: true }] }] } }, form: true },
   { name: 'fixed-type mass pump_all → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'pump_all', power: 1, toughness: 1, scope: 'controller', creature_type: 'Zombie' }] } }, form: true },
 
+  // Amass — a simple amount effect, form-representable in trigger + spell.
+  { name: 'amass trigger (Lazotep Reaver) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'amass', amount: 1 }] }] }, form: true },
+  { name: 'amass spell → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'amass', amount: 4 }] } }, form: true },
+
   // Edge cases
   { name: 'empty object', script: {}, form: true },
   { name: 'null script', script: null, form: true },

@@ -328,6 +328,7 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
       { name: 'exclude_type', kind: 'boolean', label: 'Creatures NOT of that type', default: false, optional: true },
     ],
   },
+  { type: 'amass', label: 'Amass N (grow a Zombie Army)', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   { type: 'scry', label: 'Scry N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   { type: 'surveil', label: 'Surveil N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   {

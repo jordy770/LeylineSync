@@ -2582,3 +2582,14 @@
 | 20:06 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~170 |
 | 20:06 | Edited package.json | inline fix | ~36 |
 | 20:07 | nontoken watcher filter (Midnight Reaper, Open the Graves) | mig 181, schema/builder, CardBehaviorForm.tsx, nontoken-watcher.test.ts | filter.nontoken skips token deaths/enters; 603/603 | ~12k |
+| 20:08 | Session end: 153 writes across 28 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 26 reads | ~246024 tok |
+| 20:12 | Created supabase/migrations/202605010182_amass.sql | — | ~4488 |
+| 20:13 | Edited lib/game/card-behavior-schema.ts | 8→13 lines | ~110 |
+| 20:13 | Edited lib/game/card-behavior-schema.ts | inline fix | ~22 |
+| 20:13 | Edited lib/game/card-behavior-registry.ts | 1→2 lines | ~65 |
+| 20:13 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~218 |
+| 20:14 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~163 |
+| 20:14 | Created tests/feature/amass.test.ts | — | ~885 |
+| 20:14 | Edited tests/unit/card-behavior-builder.test.ts | 2→6 lines | ~137 |
+| 20:15 | Edited package.json | inline fix | ~33 |
+| 20:16 | Amass N (6 WAR Zombie cards) | mig 182, schema/registry/llm, amass.test.ts | amass helper + reproduced apply_triggered_ability_effects; Zombie Army 0/0 token; 610/610 | ~30k |

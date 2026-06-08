@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T18:06:17.096Z
-> Files: 84 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T18:15:04.115Z
+> Files: 86 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1243 tok)
+- `package.json` — Node.js package manifest (~1251 tok)
 
 ## .claude/
 
@@ -110,9 +110,9 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8908 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10976 tok)
-- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10411 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7585 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11109 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10447 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7630 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -168,12 +168,14 @@
 - `202605010179_mass_typed_debuff.sql` — Crippling Fear — "Choose a creature type. Each creature that isn't of the (~7295 tok)
 - `202605010180_mana_ability_cost_multicolor.sql` — Mana abilities with an activation cost and/or multiple produced colours (~1153 tok)
 - `202605010181_watcher_nontoken_filter.sql` — `nontoken` watcher filter — "Whenever a NONTOKEN creature you control dies, …" (~873 tok)
+- `202605010182_amass.sql` — Amass N (War of the Spark) — "If you don't control an Army, create a 0/0 black (~4488 tok)
 
 ## tests/
 
 
 ## tests/feature/
 
+- `amass.test.ts` — Amass N (mig 182) — "If you don't control an Army, create a 0/0 black Zombie (~885 tok)
 - `army-of-the-damned.test.ts` — Army of the Damned — "Create thirteen 2/2 black Zombie creature tokens that are (~1092 tok)
 - `assassins-trophy.test.ts` — Assassin's Trophy (mig 152) — "Destroy target permanent an opponent controls. Its (~769 tok)
 - `beast-within.test.ts` — Beast Within (card request) — "Destroy target permanent. Its controller creates a (~1132 tok)
@@ -208,7 +210,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~10512 tok)
+- `test-cards.json` (~10655 tok)
 
 ## tests/harness/
 
@@ -220,7 +222,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13141 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13258 tok)
 
 ## vercel/
 

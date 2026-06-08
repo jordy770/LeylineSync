@@ -152,7 +152,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type',
   'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
-  'add_player_counters', 'proliferate', 'grant_cast_from_graveyard',
+  'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -379,6 +379,11 @@ const CardBehaviorActionSchema = z.union([
     scope: z.enum(['all', 'controller']).optional(),
     creature_type: z.string().optional(),
     exclude_type: z.boolean().optional(),
+  }),
+  // Amass N — create-or-grow a 0/0 Zombie Army with N +1/+1 counters.
+  z.object({
+    type: z.literal('amass'),
+    amount: z.number(),
   }),
   // Targeted creature effects cast as a spell (destroy/exile/bounce/tap/untap).
   // `targets` > 1 makes it a multi-target spell ("destroy up to N target
