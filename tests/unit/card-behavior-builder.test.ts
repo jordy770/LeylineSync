@@ -166,6 +166,8 @@ const CASES: Case[] = [
   // flashback_life must be a positive integer.
   { name: 'flashback_life zero → json', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 0, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
   { name: 'flashback_life non-integer → json', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 1.5, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
+  // An alternate flashback effect (do more/different from the graveyard) round-trips.
+  { name: 'flashback_effect alternate program → form', script: { schema_version: 2, flashback: '{2}', spell_effect: { actions: [{ type: 'draw', amount: 1 }] }, flashback_effect: { actions: [{ type: 'draw', amount: 3 }] } }, form: true },
 
   // Static anthems / lords (pump on affected:'controller') — form-representable.
   { name: 'static other-Zombie lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] }, form: true },
@@ -245,6 +247,16 @@ test('exact build: Deep Analysis (target player draws two + flashback, pay 3 lif
     spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] },
     flashback: '{1}{U}',
     flashback_life: 3,
+  })
+})
+
+test('exact build: flashback alternate effect (draw 1, draw 3 on flashback)', () => {
+  const form = parseScriptToForm({ schema_version: 2, flashback: '{2}', spell_effect: { actions: [{ type: 'draw', amount: 1 }] }, flashback_effect: { actions: [{ type: 'draw', amount: 3 }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'draw', amount: 1 }] },
+    flashback: '{2}',
+    flashback_effect: { actions: [{ type: 'draw', amount: 3 }] },
   })
 })
 

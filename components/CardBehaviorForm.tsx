@@ -86,14 +86,6 @@ export default function CardBehaviorForm({
     onChange({ ...value, activatedAbilities: value.activatedAbilities.filter((_, i) => i !== index) })
   }
 
-  const updateSpellAction = (index: number, next: BuilderSpellEffect) => {
-    onChange({ ...value, spellEffect: value.spellEffect.map((a, i) => (i === index ? next : a)) })
-  }
-
-  const removeSpellAction = (index: number) => {
-    onChange({ ...value, spellEffect: value.spellEffect.filter((_, i) => i !== index) })
-  }
-
   return (
     <div className="grid gap-5">
       {/* Keywords */}
@@ -245,41 +237,12 @@ export default function CardBehaviorForm({
           </button>
         </div>
 
-        {value.spellEffect.length === 0 ? (
-          <p className="text-xs text-slate-500">No spell effect. Actions resolve in order (e.g. Scry 1, then Draw 1).</p>
-        ) : (
-          value.spellEffect.map((action, index) => (
-            <div key={index} className="flex flex-wrap items-center gap-2">
-              <select
-                value={effectKeyOf(action)}
-                disabled={disabled}
-                onChange={(event) =>
-                  updateSpellAction(index, defaultSpellEffect(event.target.value as BuilderSpellEffectType))
-                }
-                className={inputClass}
-              >
-                {BUILDER_SPELL_EFFECT_TYPES.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <EffectFields
-                effect={action}
-                disabled={disabled}
-                onChange={(next) => updateSpellAction(index, next as BuilderSpellEffect)}
-              />
-              <button
-                type="button"
-                disabled={disabled}
-                onClick={() => removeSpellAction(index)}
-                className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
-              >
-                ✕
-              </button>
-            </div>
-          ))
-        )}
+        <SpellActionList
+          actions={value.spellEffect}
+          disabled={disabled}
+          emptyText="No spell effect. Actions resolve in order (e.g. Scry 1, then Draw 1)."
+          onChange={(next) => onChange({ ...value, spellEffect: next })}
+        />
       </section>
 
       {/* Flashback (cast the spell effect above from the graveyard, then exile) */}
@@ -316,7 +279,83 @@ export default function CardBehaviorForm({
           Add a life payment for costs like Deep Analysis ({'{1}{U}'}, pay 3 life).
         </p>
       </section>
+
+      {/* Flashback effect — replaces the spell effect when cast via flashback */}
+      <section className="grid gap-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Flashback effect <span className="font-normal normal-case text-slate-500">(replaces the effect above on flashback)</span>
+          </h3>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange({ ...value, flashbackEffect: [...value.flashbackEffect, defaultSpellEffect('scry')] })}
+            className="rounded border border-slate-700 px-2 py-1 text-xs font-semibold text-slate-200 disabled:opacity-50"
+          >
+            + Add flashback action
+          </button>
+        </div>
+        <SpellActionList
+          actions={value.flashbackEffect}
+          disabled={disabled}
+          emptyText="Empty = the flashback cast runs the normal spell effect. Add actions for cards that do more/different from the graveyard (e.g. create ten tokens instead of five)."
+          onChange={(next) => onChange({ ...value, flashbackEffect: next })}
+        />
+      </section>
     </div>
+  )
+}
+
+// A reusable ordered list of untargeted spell actions (a dropdown + the action's
+// fields + remove), shared by the Spell effect and Flashback effect sections.
+function SpellActionList({
+  actions,
+  onChange,
+  disabled,
+  emptyText,
+}: {
+  actions: BuilderSpellEffect[]
+  onChange: (next: BuilderSpellEffect[]) => void
+  disabled: boolean
+  emptyText: string
+}) {
+  if (actions.length === 0) {
+    return <p className="text-xs text-slate-500">{emptyText}</p>
+  }
+  return (
+    <>
+      {actions.map((action, index) => (
+        <div key={index} className="flex flex-wrap items-center gap-2">
+          <select
+            value={effectKeyOf(action)}
+            disabled={disabled}
+            onChange={(event) =>
+              onChange(actions.map((a, i) => (i === index ? defaultSpellEffect(event.target.value as BuilderSpellEffectType) : a)))
+            }
+            className={inputClass}
+          >
+            {BUILDER_SPELL_EFFECT_TYPES.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <EffectFields
+            effect={action}
+            disabled={disabled}
+            onChange={(next) => onChange(actions.map((a, i) => (i === index ? (next as BuilderSpellEffect) : a)))}
+          />
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange(actions.filter((_, i) => i !== index))}
+            className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+    </>
   )
 }
 

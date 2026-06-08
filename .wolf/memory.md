@@ -2466,3 +2466,27 @@
 | 15:40 | Edited tests/unit/card-behavior-builder.test.ts | 8→9 lines | ~155 |
 | 15:40 | Edited package.json | inline fix | ~36 |
 | 15:42 | Flashback "Pay N life" cost (Deep Analysis) | mig 176, card-behavior-schema/builder/llm, CardBehaviorForm.tsx, flashback-life.test.ts | flashback_life integer; engine deducts + validates life; 565/565 | ~20k |
+| 15:43 | Edited components/ControllerListV4.tsx | 2→4 lines | ~79 |
+| 15:43 | Edited components/ControllerListV4.tsx | 7→12 lines | ~194 |
+| 15:45 | Session end: 57 writes across 16 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 16 reads | ~164989 tok |
+| 16:01 | Created supabase/migrations/202605010177_flashback_alternate_effect.sql | — | ~2362 |
+| 16:01 | Edited lib/game/card-behavior-schema.ts | 3→8 lines | ~166 |
+| 16:01 | Edited lib/game/card-behavior.ts | 3→5 lines | ~62 |
+| 16:01 | Edited lib/game/card-behavior.ts | 3→4 lines | ~36 |
+| 16:02 | Edited lib/game/card-behavior-builder.ts | 13→18 lines | ~165 |
+| 16:02 | Edited lib/game/card-behavior-builder.ts | 5→6 lines | ~145 |
+| 16:02 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~98 |
+| 16:02 | Edited lib/game/card-behavior-builder.ts | 4→5 lines | ~25 |
+| 16:02 | Edited lib/game/card-behavior-builder.ts | added 2 condition(s) | ~147 |
+| 16:02 | Edited lib/game/card-behavior-builder.ts | inline fix | ~35 |
+| 16:02 | Edited components/CardBehaviorEditor.tsx | CSS: flashbackEffect | ~45 |
+| 16:03 | Edited components/CardBehaviorForm.tsx | removed 36 lines | ~82 |
+| 16:03 | Edited components/CardBehaviorForm.tsx | — | ~0 |
+| 16:04 | Edited components/CardBehaviorForm.tsx | added 1 condition(s) | ~903 |
+| 16:04 | Edited lib/game/card-behavior-llm.ts | inline fix | ~275 |
+| 16:04 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~129 |
+| 16:05 | Created tests/feature/flashback-alternate-effect.test.ts | — | ~842 |
+| 16:05 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~148 |
+| 16:05 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+10 lines) | ~159 |
+| 16:05 | Edited package.json | inline fix | ~37 |
+| 16:07 | Flashback alternate effect (Increasing cycle) | mig 177, card-behavior-schema/builder/llm, CardBehaviorForm.tsx, flashback-alternate-effect.test.ts | flashback_effect replaces spell_effect on graveyard cast, engine-enforced by zone; 570/570 | ~24k |

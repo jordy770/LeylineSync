@@ -530,6 +530,11 @@ export const CardBehaviorScriptV2Schema = z.object({
   // An additional "Pay N life" flashback cost (Deep Analysis: "Flashback—{1}{U},
   // Pay 3 life"). Paid alongside `flashback` only on a graveyard (flashback) cast.
   flashback_life: z.number().int().positive().optional(),
+  // An alternate spell program REPLACING `spell_effect` when cast via flashback —
+  // for cards that do more/different from the graveyard ("Increasing …" cycle:
+  // create ten tokens instead of five, mill twice X, etc.). Same shape as
+  // spell_effect; the engine selects it by cast zone.
+  flashback_effect: CardBehaviorSpellEffectSchema.optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),

@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T13:40:34.266Z
-> Files: 75 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T14:05:37.397Z
+> Files: 76 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1183 tok)
+- `package.json` — Node.js package manifest (~1197 tok)
 
 ## .claude/
 
@@ -73,9 +73,9 @@
 
 ## components/
 
-- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4135 tok)
-- `CardBehaviorForm.tsx` — inputClass (~7696 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~57230 tok)
+- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4152 tok)
+- `CardBehaviorForm.tsx` — inputClass (~8112 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~57351 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
 ## components/board/
@@ -109,11 +109,11 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11467 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~7263 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10373 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~7521 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10589 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9931 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7187 tok)
-- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3472 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7290 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
 - `use-judge-card-tools.ts` — Exports useJudgeCardTools (~1636 tok)
@@ -163,6 +163,7 @@
 - `202605010174_flashback_and_tapped_tokens.sql` — Army of the Damned: "Create thirteen 2/2 black Zombie creature tokens that are (~2083 tok)
 - `202605010175_sacrifice_self_ability_cost.sql` — Reproduces activate_ability (from mig 162) adding the `sacrifice_self` activated-ability cost (Commander's Sphere). Sacrifices the source via put_in_graveyard after other costs, before the ability hits the stack. (~2448 tok)
 - `202605010176_flashback_life_cost.sql` — Flashback with an additional "Pay N life" cost (Deep Analysis: "Flashback— (~2138 tok)
+- `202605010177_flashback_alternate_effect.sql` — Flashback that does DIFFERENT/extra stuff than the hand cast (the "Increasing" (~2362 tok)
 
 ## tests/
 
@@ -181,6 +182,7 @@
 - `dynamic-counter-amounts.test.ts` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2). A (~1830 tok)
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
 - `enters-with-counters.test.ts` — "Enters the battlefield with N counters" (roadmap Counters #3). A REPLACEMENT applied (~1031 tok)
+- `flashback-alternate-effect.test.ts` — Flashback that does a DIFFERENT/extra effect than the hand cast (the (~842 tok)
 - `flashback-life.test.ts` — Flashback with an additional "Pay N life" cost (mig 176). Deep Analysis's (~662 tok)
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
 - `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~1730 tok)
@@ -198,7 +200,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~9896 tok)
+- `test-cards.json` (~10009 tok)
 
 ## tests/harness/
 
@@ -210,7 +212,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~11160 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~11402 tok)
 
 ## vercel/
 

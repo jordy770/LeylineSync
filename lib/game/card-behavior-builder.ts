@@ -222,6 +222,10 @@ export type BuilderForm = {
   flashback: string
   // Additional "Pay N life" flashback cost (0 = none). Deep Analysis = mana + 3 life.
   flashbackLife: number
+  // An alternate spell program run instead of `spellEffect` when cast via flashback
+  // (the "Increasing …" cards do more/different from the graveyard). Empty = the
+  // flashback cast runs the normal spell effect.
+  flashbackEffect: BuilderSpellEffect[]
 }
 
 export const EMPTY_BUILDER_FORM: BuilderForm = {
@@ -232,6 +236,7 @@ export const EMPTY_BUILDER_FORM: BuilderForm = {
   spellEffect: [],
   flashback: '',
   flashbackLife: 0,
+  flashbackEffect: [],
 }
 
 // ─── Defaults / factories ──────────────────────────────────────────────────────
@@ -280,10 +285,11 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
   const spellEffectActions = form.spellEffect.map((a) => registryEffectToJson(a))
   const flashback = form.flashback.trim()
   const flashbackLife = Math.max(0, Math.floor(form.flashbackLife))
-  // A flashback may carry a mana cost, a "pay N life" cost, or both. Either makes
-  // the card flashback-castable (the engine needs the `flashback` key present even
-  // for a life-only cost), so emit `flashback` whenever there's any flashback.
-  const hasFlashback = flashback !== '' || flashbackLife > 0
+  const flashbackEffectActions = form.flashbackEffect.map((a) => registryEffectToJson(a))
+  // A flashback may carry a mana cost, a "pay N life" cost, an alternate effect, or
+  // any mix. Any of them makes the card flashback-castable (the engine needs the
+  // `flashback` key present), so emit `flashback` whenever there's any flashback.
+  const hasFlashback = flashback !== '' || flashbackLife > 0 || flashbackEffectActions.length > 0
 
   // Nothing authored → no script (clears behavior).
   if (
@@ -310,9 +316,12 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
     script.spell_effect = { actions: spellEffectActions }
   }
   if (hasFlashback) {
-    script.flashback = flashback // may be '' for a life-only flashback
+    script.flashback = flashback // may be '' for a life-only / effect-only flashback
     if (flashbackLife > 0) {
       script.flashback_life = flashbackLife
+    }
+    if (flashbackEffectActions.length > 0) {
+      script.flashback_effect = { actions: flashbackEffectActions }
     }
   }
 
@@ -370,6 +379,7 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     'spell_effect',
     'flashback',
     'flashback_life',
+    'flashback_effect',
   ])
   if (Object.keys(s).some((key) => !knownKeys.has(key))) {
     return null
@@ -420,7 +430,17 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     spellEffect = parsed
   }
 
-  return { keywords, staticBuffs, triggers, activatedAbilities, spellEffect, flashback, flashbackLife }
+  // The alternate flashback effect (same shape as spell_effect).
+  let flashbackEffect: BuilderSpellEffect[] = []
+  if (s.flashback_effect !== undefined) {
+    const parsed = parseSpellEffect(s.flashback_effect)
+    if (parsed === null) {
+      return null
+    }
+    flashbackEffect = parsed
+  }
+
+  return { keywords, staticBuffs, triggers, activatedAbilities, spellEffect, flashback, flashbackLife, flashbackEffect }
 }
 
 // Returns the form model for a spell_effect built from plain scry/surveil/draw

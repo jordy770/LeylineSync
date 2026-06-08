@@ -105,6 +105,8 @@ export type CardBehaviorScriptV2 = {
   flashback?: string
   // Additional "Pay N life" flashback cost (Deep Analysis).
   flashback_life?: number
+  // Alternate spell program used when cast via flashback (replaces spell_effect).
+  flashback_effect?: CardBehaviorSpellEffect
 }
 
 export type AnyCardBehaviorScript = CardScript | CardBehaviorScriptV2
@@ -363,6 +365,7 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     loyalty_abilities: script.loyalty_abilities ?? [],
     flashback: script.flashback,
     flashback_life: script.flashback_life,
+    flashback_effect: script.flashback_effect,
   }
 }
 

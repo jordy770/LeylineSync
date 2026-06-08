@@ -35,6 +35,7 @@ const emptyBuilderForm = (): BuilderForm => ({
   spellEffect: [...EMPTY_BUILDER_FORM.spellEffect],
   flashback: EMPTY_BUILDER_FORM.flashback,
   flashbackLife: EMPTY_BUILDER_FORM.flashbackLife,
+  flashbackEffect: [...EMPTY_BUILDER_FORM.flashbackEffect],
 })
 
 const scriptToText = (script: CardScript | null | undefined) =>
