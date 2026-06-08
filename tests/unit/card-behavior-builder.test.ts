@@ -144,6 +144,10 @@ const CASES: Case[] = [
   { name: 'spark reaper (sacrifice-a-creature cost) → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}{B}' }, { type: 'sacrifice_creature' }], effects: [{ type: 'draw', amount: 1 }] }] }, form: true },
   // Dimir Signet: a mana ability with a {1} cost + two produced colours.
   { name: 'Dimir Signet (mana cost + multi-colour) → form', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }, { type: 'add_mana', color: 'B', amount: 1 }] }] }, form: true },
+  // Talisman of Dominance — a mana ability with a "Pay N life" cost.
+  { name: 'Talisman pay-life mana ability → form', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'pay_life', amount: 1 }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }] }] }, form: true },
+  // pay_life on a NON-mana (effect) ability isn't modelled → stays in JSON.
+  { name: 'pay_life on an effect ability → json', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }, { type: 'pay_life', amount: 1 }], effects: [{ type: 'draw', amount: 1 }] }] }, form: false },
 
   // V1 / top-level `actions` key → JSON (not in known top-level keys)
   { name: 'v1 actions pump', script: { actions: [{ type: 'pump', power: 3, toughness: 3, target_type: 'creature' }] }, form: false },
@@ -488,7 +492,7 @@ test('defaultSpellEffect shapes', () => {
 })
 
 test('defaultActivatedAbility shapes', () => {
-  assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, mana: '', colors: [{ color: 'C', amount: 1 }] })
+  assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, mana: '', payLife: 0, colors: [{ color: 'C', amount: 1 }] })
   // The generic 'effect' kind defaults to a targeted deal_damage (the old 'damage' kind).
   assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, sacSelf: false, sacCreature: false, exileFromGraveyard: false, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
 })

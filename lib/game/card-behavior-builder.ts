@@ -208,12 +208,14 @@ export type BuilderAbilityKind = (typeof BUILDER_ABILITY_KINDS)[number]['value']
 // multiple colours + a `mana` cost is Dimir Signet ("{1},{T}: Add {U}{B}").
 export type BuilderManaOutput = { color: ManaProductionColor; amount: number }
 export type BuilderActivatedAbility =
-  | { kind: 'mana'; tapSelf: boolean; mana: string; colors: BuilderManaOutput[] }
+  // payLife (0 = none) is an additional "Pay N life" cost (Talisman of Dominance:
+  // "{T}, Pay 1 life: Add {U} or {B}", authored as one single-colour ability each).
+  | { kind: 'mana'; tapSelf: boolean; mana: string; payLife: number; colors: BuilderManaOutput[] }
   | { kind: 'effect'; tapSelf: boolean; sacSelf: boolean; sacCreature: boolean; exileFromGraveyard: boolean; mana: string; effect: RegistryEffect }
 
 export function defaultActivatedAbility(kind: BuilderAbilityKind): BuilderActivatedAbility {
   if (kind === 'mana') {
-    return { kind: 'mana', tapSelf: true, mana: '', colors: [{ color: 'C', amount: 1 }] }
+    return { kind: 'mana', tapSelf: true, mana: '', payLife: 0, colors: [{ color: 'C', amount: 1 }] }
   }
   return { kind: 'effect', tapSelf: true, sacSelf: false, sacCreature: false, exileFromGraveyard: false, mana: '', effect: effectDefault('deal_damage_target') }
 }
@@ -387,6 +389,9 @@ function activatedAbilityToJson(ability: BuilderActivatedAbility): Record<string
     }
     if (ability.mana.trim()) {
       manaCosts.push({ type: 'mana', amount: ability.mana.trim() })
+    }
+    if (ability.payLife > 0) {
+      manaCosts.push({ type: 'pay_life', amount: ability.payLife })
     }
     return {
       is_mana_ability: true,
@@ -569,6 +574,7 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
     let sacCreature = false
     let exileFromGraveyard = false
     let mana = ''
+    let payLife = 0
     for (const cost of costs) {
       if (cost?.type === 'tap_self') {
         tapSelf = true
@@ -580,14 +586,17 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
         exileFromGraveyard = true
       } else if (cost?.type === 'mana' && typeof cost.amount === 'string') {
         mana = cost.amount
+      } else if (cost?.type === 'pay_life' && typeof cost.amount === 'number') {
+        payLife = cost.amount
       } else {
         return null
       }
     }
 
     if (e.is_mana_ability === true) {
-      // Mana abilities: tap and/or an optional mana cost (no sacrifice / graveyard
-      // exile); one or more add_mana effects, each a fixed/any/commander colour.
+      // Mana abilities: tap and/or an optional mana cost and/or a "pay N life" cost
+      // (Talisman); no sacrifice / graveyard exile; one or more add_mana effects,
+      // each a fixed/any/commander colour.
       if (sacSelf || sacCreature || exileFromGraveyard || effects.length < 1) {
         return null
       }
@@ -602,11 +611,12 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
         }
         colors.push({ color: color as ManaProductionColor, amount: typeof eff.amount === 'number' ? eff.amount : 1 })
       }
-      abilities.push({ kind: 'mana', tapSelf, mana, colors })
+      abilities.push({ kind: 'mana', tapSelf, mana, payLife, colors })
     } else {
       // Generic "{cost}: <effect>" — exactly one effect, a registry effect the form
-      // can represent (parsed in spell context). Otherwise the script stays in JSON.
-      if (effects.length !== 1) {
+      // can represent (parsed in spell context). pay_life is only modelled on mana
+      // abilities, so an effect ability carrying it stays in JSON (no data loss).
+      if (effects.length !== 1 || payLife > 0) {
         return null
       }
       const parsed = effectFromJson(effects[0], 'spell')

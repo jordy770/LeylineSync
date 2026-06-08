@@ -33,8 +33,8 @@
       "first_read": "2026-06-08T19:27:31.557Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts": {
-      "count": 1,
-      "tokens": 8984,
+      "count": 2,
+      "tokens": 9123,
       "first_read": "2026-06-08T19:27:44.575Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010185_mass_destroy_and_reanimate.sql": {
@@ -48,8 +48,8 @@
       "first_read": "2026-06-08T19:30:32.897Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts": {
-      "count": 1,
-      "tokens": 13462,
+      "count": 2,
+      "tokens": 13554,
       "first_read": "2026-06-08T19:31:18.409Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql": {
@@ -91,6 +91,26 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-08T19:47:08.564Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010180_mana_ability_cost_multicolor.sql": {
+      "count": 1,
+      "tokens": 1153,
+      "first_read": "2026-06-08T19:52:02.752Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx": {
+      "count": 1,
+      "tokens": 58607,
+      "first_read": "2026-06-08T19:52:57.605Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx": {
+      "count": 1,
+      "tokens": 9538,
+      "first_read": "2026-06-08T19:55:00.619Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts": {
+      "count": 1,
+      "tokens": 9754,
+      "first_read": "2026-06-08T19:56:15.947Z"
     }
   },
   "files_written": [
@@ -207,24 +227,101 @@
       "action": "edit",
       "tokens": 28,
       "at": "2026-06-08T19:48:09.148Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010189_mana_ability_pay_life_cost.sql",
+      "action": "create",
+      "tokens": 1433,
+      "at": "2026-06-08T19:54:00.863Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 216,
+      "at": "2026-06-08T19:54:13.129Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 156,
+      "at": "2026-06-08T19:54:21.320Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 338,
+      "at": "2026-06-08T19:54:33.572Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 118,
+      "at": "2026-06-08T19:54:51.065Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 313,
+      "at": "2026-06-08T19:55:09.845Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "action": "edit",
+      "tokens": 159,
+      "at": "2026-06-08T19:55:28.859Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+      "action": "edit",
+      "tokens": 41,
+      "at": "2026-06-08T19:55:42.108Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+      "action": "edit",
+      "tokens": 295,
+      "at": "2026-06-08T19:55:56.244Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 214,
+      "at": "2026-06-08T19:56:30.643Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/mana-ability-pay-life.test.ts",
+      "action": "create",
+      "tokens": 797,
+      "at": "2026-06-08T19:56:46.599Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 28,
+      "at": "2026-06-08T19:56:52.303Z"
     }
   ],
   "edit_counts": {
     "supabase/migrations/202605010186_exile_from_graveyard_effect.sql": 3,
     "lib/game/card-behavior-schema.ts": 2,
     "lib/game/card-behavior-registry.ts": 1,
-    "tests/fixtures/test-cards.json": 3,
+    "tests/fixtures/test-cards.json": 4,
     "tests/feature/exile-from-graveyard-effect.test.ts": 1,
-    "package.json": 3,
-    "tests/unit/card-behavior-builder.test.ts": 1,
+    "package.json": 4,
+    "tests/unit/card-behavior-builder.test.ts": 3,
     "supabase/migrations/202605010187_activated_search_library.sql": 1,
     "tests/feature/activated-search-library.test.ts": 1,
     "supabase/migrations/202605010188_activated_destroy_permanent.sql": 2,
-    "tests/feature/activated-destroy-permanent.test.ts": 1
+    "tests/feature/activated-destroy-permanent.test.ts": 1,
+    "supabase/migrations/202605010189_mana_ability_pay_life_cost.sql": 1,
+    "lib/game/card-behavior-builder.ts": 4,
+    "components/CardBehaviorForm.tsx": 1,
+    "components/ControllerListV4.tsx": 1,
+    "tests/feature/mana-ability-pay-life.test.ts": 1
   },
-  "anatomy_hits": 11,
+  "anatomy_hits": 15,
   "anatomy_misses": 7,
-  "repeated_reads_warned": 4,
+  "repeated_reads_warned": 6,
   "cerebrum_warnings": 0,
-  "stop_count": 2
+  "stop_count": 3
 }

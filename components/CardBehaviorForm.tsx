@@ -873,6 +873,21 @@ function ActivatedAbilityEditor({
             />
           </label>
         ) : null}
+
+        {ability.kind === 'mana' ? (
+          <label className="flex items-center gap-1.5" title="An additional 'Pay N life' cost, e.g. Talisman of Dominance pays 1 life">
+            Pay life
+            <input
+              type="number"
+              min={0}
+              max={20}
+              value={ability.payLife}
+              disabled={disabled}
+              onChange={(event) => onChange({ ...ability, payLife: Math.max(0, Number(event.target.value)) })}
+              className={`${inputClass} w-16`}
+            />
+          </label>
+        ) : null}
       </div>
 
       {/* Effect row */}

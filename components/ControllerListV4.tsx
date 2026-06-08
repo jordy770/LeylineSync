@@ -2960,11 +2960,13 @@ function CardActionSheet({
               const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
               const hasTapCost = ability.costs.some((c) => c.type === 'tap_self')
               const isUnavailable = hasTapCost && card.is_tapped
-              // A mana ability with a mana cost or multiple produced colours
-              // (Dimir Signet "{1},{T}: Add {U}{B}") is one atomic activation —
-              // pay the cost, tap, add all colours via activate_mana_ability.
-              const hasManaCost = ability.costs.some((c) => c.type === 'mana')
-              if (hasManaCost || addManaEffects.length > 1) {
+              // A mana ability with a non-tap cost (a mana cost — Dimir Signet
+              // "{1},{T}: Add {U}{B}"; or a "Pay N life" cost — Talisman of
+              // Dominance "{T},Pay 1 life: Add {U}") or multiple produced colours
+              // is one atomic activation: pay the cost(s), tap, add all colours via
+              // activate_mana_ability (so the life/mana payment isn't skipped).
+              const hasNonTapCost = ability.costs.some((c) => c.type !== 'tap_self')
+              if (hasNonTapCost || addManaEffects.length > 1) {
                 return [(
                   <button
                     key={`mana-${index}`}

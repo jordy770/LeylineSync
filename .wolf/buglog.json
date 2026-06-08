@@ -8602,6 +8602,86 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T19:47:43.850Z"
+    },
+    {
+      "id": "bug-529",
+      "timestamp": "2026-06-08T19:54:13.138Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T19:54:13.138Z"
+    },
+    {
+      "id": "bug-530",
+      "timestamp": "2026-06-08T19:54:51.070Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 7→8 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T19:54:51.070Z"
+    },
+    {
+      "id": "bug-531",
+      "timestamp": "2026-06-08T19:55:28.864Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Condition was: if (hasManaCost || addManaEffects.length > 1)",
+      "fix": "Changed to: if (hasNonTapCost || addManaEffects.length > 1)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T19:55:28.864Z"
+    },
+    {
+      "id": "bug-532",
+      "timestamp": "2026-06-08T19:55:42.113Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/unit/card-behavior-builder.test.ts",
+      "root_cause": "Had ', colors: [{ color: '",
+      "fix": "Changed to ', payLife: 0, colors: [{ color: '",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T19:55:42.113Z"
+    },
+    {
+      "id": "bug-533",
+      "timestamp": "2026-06-08T19:56:30.648Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Unstable Obelisk Test\"",
+      "fix": "Changed to \"Talisman of Dominance Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T19:56:30.648Z"
     }
   ]
 }

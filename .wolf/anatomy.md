@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T19:48:09.136Z
-> Files: 99 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T19:56:52.290Z
+> Files: 101 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1343 tok)
+- `package.json` — Node.js package manifest (~1356 tok)
 
 ## .claude/
 
@@ -74,8 +74,8 @@
 ## components/
 
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4152 tok)
-- `CardBehaviorForm.tsx` — inputClass (~9538 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~58607 tok)
+- `CardBehaviorForm.tsx` — inputClass (~9705 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~58658 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
 ## components/board/
@@ -109,7 +109,7 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8984 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~9154 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10898 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7948 tok)
@@ -175,6 +175,7 @@
 - `202605010186_exile_from_graveyard_effect.sql` — "Exile target card from a graveyard" as a targeted EFFECT (Withered Wretch: (~4524 tok)
 - `202605010187_activated_search_library.sql` — search_library as an ACTIVATED-ability effect (Wayfarer's Bauble: "{1}, {T}, (~3771 tok)
 - `202605010188_activated_destroy_permanent.sql` — Activated destroy/exile/bounce/tap/untap of a NON-creature permanent (Unstable (~3925 tok)
+- `202605010189_mana_ability_pay_life_cost.sql` — `pay_life` as a mana-ability activation cost (Talisman of Dominance: "{T}, Pay 1 (~1337 tok)
 
 ## tests/
 
@@ -204,6 +205,7 @@
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
 - `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~1730 tok)
 - `mana-ability-multicolor.test.ts` — Mana abilities with an activation cost + multiple produced colours (mig 180). (~582 tok)
+- `mana-ability-pay-life.test.ts` — `pay_life` as a mana-ability cost (mig 189). Talisman of Dominance: "{T}: Add (~797 tok)
 - `mass-destroy-reanimate.test.ts` — Mass destroy + mass reanimate (mig 185). Zombie Apocalypse: "Return all Zombie (~743 tok)
 - `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
 - `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
@@ -223,7 +225,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~11854 tok)
+- `test-cards.json` (~12050 tok)
 
 ## tests/harness/
 
@@ -235,7 +237,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13550 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13736 tok)
 
 ## vercel/
 

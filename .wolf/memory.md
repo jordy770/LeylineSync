@@ -2662,3 +2662,17 @@
 | 21:47 | Created tests/feature/activated-destroy-permanent.test.ts | — | ~855 |
 | 21:48 | Edited package.json | inline fix | ~28 |
 | 21:49 | Unstable Obelisk: activated destroy of any permanent (mig 188) | activate_ability removal branch routes non-creature target_type to permanent_effect; fixture+test, form already supported | 633/633 green | ~6k |
+| 21:49 | Session end: 19 writes across 11 files (202605010186_exile_from_graveyard_effect.sql, card-behavior-schema.ts, card-behavior-registry.ts, test-cards.json, exile-from-graveyard-effect.test.ts) | 18 reads | ~85360 tok |
+| 21:54 | Created supabase/migrations/202605010189_mana_ability_pay_life_cost.sql | — | ~1337 |
+| 21:54 | Edited lib/game/card-behavior-builder.ts | modified defaultActivatedAbility() | ~216 |
+| 21:54 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~156 |
+| 21:54 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~338 |
+| 21:54 | Edited lib/game/card-behavior-builder.ts | modified if() | ~118 |
+| 21:55 | Edited components/CardBehaviorForm.tsx | CSS: payLife | ~313 |
+| 21:55 | Edited components/ControllerListV4.tsx | CSS: life, activation | ~159 |
+| 21:55 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~41 |
+| 21:55 | Edited tests/unit/card-behavior-builder.test.ts | 3→7 lines | ~295 |
+| 21:56 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~214 |
+| 21:56 | Created tests/feature/mana-ability-pay-life.test.ts | — | ~797 |
+| 21:56 | Edited package.json | inline fix | ~28 |
+| 21:58 | Talisman of Dominance: pay_life as a mana-ability cost (mig 189) | activate_mana_ability + builder/form payLife + CL4 routing (hunk-split); fixture+tests | 639/639 green | ~12k |
