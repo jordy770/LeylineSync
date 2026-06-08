@@ -934,6 +934,27 @@ export async function activateAbility(
   return data as StackItem
 }
 
+// Mana abilities with a cost and/or multiple produced colours (Dimir Signet:
+// "{1},{T}: Add {U}{B}"). Pays the cost, taps, and adds every colour atomically.
+export async function activateManaAbility(
+  supabase: SupabaseClient,
+  sessionId: string,
+  sourceCardId: string,
+  abilityIndex: number,
+  genericPayment?: Record<string, number>,
+) {
+  const { error } = await supabase.rpc('activate_mana_ability', {
+    p_session_id: sessionId,
+    p_source_card_id: sourceCardId,
+    p_ability_index: abilityIndex,
+    p_generic_payment: genericPayment ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
 export async function activateLoyaltyAbility(
   supabase: SupabaseClient,
   sessionId: string,

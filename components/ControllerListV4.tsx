@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   activateAbility,
   activateLoyaltyAbility,
+  activateManaAbility,
   addManaFromCard,
   advanceStep,
   castCardFromHand,
@@ -963,6 +964,10 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       await activateLoyaltyAbility(supabase, sessionId, sourceCardId, abilityIndex)
       await refresh()
     },
+    activateManaAbility: async (sourceCardId: string, abilityIndex: number) => {
+      await activateManaAbility(supabase, sessionId, sourceCardId, abilityIndex)
+      await refresh()
+    },
     tapForMana,
     declareAttacker: async (cardId: string, target: { playerId?: string; planeswalkerId?: string }) => {
       await declareAttackerAction(supabase, sessionId, cardId, target.playerId ?? null, target.planeswalkerId ?? null)
@@ -1167,6 +1172,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
+            onActivateManaAbility={async (sourceId, abilityIndex) => { await actions.activateManaAbility(sourceId, abilityIndex) }}
             onActivateLoyalty={async (sourceId, abilityIndex) => { await actions.activateLoyalty(sourceId, abilityIndex) }}
             onCastAura={async (cardId, targetCardId) => { await actions.castAura(cardId, targetCardId) }}
             onEquip={async (cardId, targetCardId) => { await actions.equip(cardId, targetCardId) }}
@@ -2189,6 +2195,7 @@ function CardActionSheet({
   onModalSpell,
   onCounterSpell,
   onActivateAbility,
+  onActivateManaAbility,
   onActivateLoyalty,
   onCastAura,
   onEquip,
@@ -2224,6 +2231,7 @@ function CardActionSheet({
     abilityIndex: number,
     target?: { targetCardId?: string | null; targetPlayerId?: string | null },
   ) => Promise<void>
+  onActivateManaAbility: (sourceId: string, abilityIndex: number) => Promise<void>
   onActivateLoyalty: (sourceId: string, abilityIndex: number) => Promise<void>
   onCastAura: (cardId: string, targetCardId: string) => Promise<void>
   onEquip: (cardId: string, targetCardId: string) => Promise<void>
@@ -2237,10 +2245,10 @@ function CardActionSheet({
   const abilityAvailableInZone = (req?: string | null) =>
     !req || req === 'any' || req === zone
 
-  const manaAbilities =
-    script.activated_abilities?.filter(
-      (a) => a.is_mana_ability && abilityAvailableInZone(a.source_zone_required),
-    ) ?? []
+  // Keep the original index so activate_mana_ability can address the ability.
+  const manaAbilities = (script.activated_abilities ?? [])
+    .map((ability, index) => ({ ability, index }))
+    .filter(({ ability }) => ability.is_mana_ability && abilityAvailableInZone(ability.source_zone_required))
   // Keep the original index so activate_ability can address the ability server-side.
   const otherAbilities = (script.activated_abilities ?? [])
     .map((ability, index) => ({ ability, index }))
@@ -2948,10 +2956,37 @@ function CardActionSheet({
         {/* Mana abilities (battlefield) */}
         {manaAbilities.length > 0 && (
           <div className="mb-3 grid grid-cols-2 gap-2">
-            {manaAbilities.flatMap((ability, i) => {
+            {manaAbilities.flatMap(({ ability, index }, i) => {
               const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
               const hasTapCost = ability.costs.some((c) => c.type === 'tap_self')
               const isUnavailable = hasTapCost && card.is_tapped
+              // A mana ability with a mana cost or multiple produced colours
+              // (Dimir Signet "{1},{T}: Add {U}{B}") is one atomic activation —
+              // pay the cost, tap, add all colours via activate_mana_ability.
+              const hasManaCost = ability.costs.some((c) => c.type === 'mana')
+              if (hasManaCost || addManaEffects.length > 1) {
+                return [(
+                  <button
+                    key={`mana-${index}`}
+                    type="button"
+                    disabled={isUnavailable}
+                    onClick={() => { void onActivateManaAbility(card.id, index); onClose() }}
+                    className={`col-span-2 flex items-center gap-2 rounded-2xl border px-3 py-3 transition active:scale-95 ${
+                      isUnavailable ? 'border-white/5 bg-[#0F1117] opacity-30' : 'border-white/10 bg-[#0F1117] hover:border-white/20'
+                    }`}
+                  >
+                    <span className="shrink-0 text-[10px] font-black text-slate-500">{renderAbilityCost(ability.costs)}</span>
+                    <span className="text-slate-600">→</span>
+                    <span className="flex items-center gap-1">
+                      {addManaEffects.flatMap((effect) =>
+                        Array.from({ length: Math.max(1, effect.amount) }, (_, k) => (
+                          <ManaSymbol key={`${effect.color}-${k}`} color={effect.color as ManaColor} size="md" />
+                        )),
+                      )}
+                    </span>
+                  </button>
+                )]
+              }
               return addManaEffects.flatMap((effect) => {
                 // 'commander' → one button per colour in the commander's identity
                 // (colourless fallback when there is none); 'any' → one per W/U/B/R/G;
