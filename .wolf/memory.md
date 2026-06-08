@@ -2687,3 +2687,20 @@
 | 23:00 | Edited tests/unit/card-behavior-builder.test.ts | 2→4 lines | ~224 |
 | 23:00 | Edited package.json | inline fix | ~27 |
 | 23:01 | Settability sweep: 61/87 V2 fixtures form-settable; fixed deal_damage_target trigger context (Flame Mage) | registry + feature/unit test | 641 green; gaps triaged | ~8k |
+| 23:02 | Session end: 37 writes across 17 files (202605010186_exile_from_graveyard_effect.sql, card-behavior-schema.ts, card-behavior-registry.ts, test-cards.json, exile-from-graveyard-effect.test.ts) | 22 reads | ~170769 tok |
+| 23:13 | Edited lib/game/card-behavior-builder.ts | modified defaultStaticBuff() | ~252 |
+| 23:13 | Edited lib/game/card-behavior-builder.ts | 3→6 lines | ~102 |
+| 23:13 | Edited lib/game/card-behavior-builder.ts | 4→5 lines | ~35 |
+| 23:13 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~129 |
+| 23:14 | Edited lib/game/card-behavior-builder.ts | modified if() | ~51 |
+| 23:14 | Edited lib/game/card-behavior-builder.ts | 2→2 lines | ~40 |
+| 23:14 | Edited lib/game/card-behavior-builder.ts | added 2 condition(s) | ~450 |
+| 23:14 | Edited lib/game/card-behavior-builder.ts | added 6 condition(s) | ~354 |
+| 23:15 | Edited components/CardBehaviorForm.tsx | 15→17 lines | ~123 |
+| 23:15 | Edited components/CardBehaviorForm.tsx | expanded (+8 lines) | ~136 |
+| 23:16 | Edited components/CardBehaviorForm.tsx | CSS: keywordGrants, disabled | ~496 |
+| 23:16 | Edited components/CardBehaviorForm.tsx | modified KeywordGrantEditor() | ~596 |
+| 23:16 | Edited tests/unit/card-behavior-builder.test.ts | modified grants() | ~550 |
+| 23:17 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~246 |
+| 23:17 | Edited components/CardBehaviorEditor.tsx | CSS: keywordGrants | ~68 |
+| 23:19 | Typed keyword grants now form-settable (Eternal Skylord/Vizier) | builder keywordGrants model + KeywordGrantEditor widget + unit tests | 656/656; 62/87 settable | ~10k |

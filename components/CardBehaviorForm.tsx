@@ -13,6 +13,7 @@ import {
   type BuilderTriggerController,
   defaultActivatedAbility,
   defaultEffect,
+  defaultKeywordGrant,
   defaultSpellEffect,
   defaultStaticBuff,
   defaultTrigger,
@@ -20,6 +21,7 @@ import {
   type BuilderEffect,
   type BuilderForm,
   type BuilderKeyword,
+  type BuilderKeywordGrant,
   type BuilderSpellEffect,
   type BuilderSpellEffectType,
   type BuilderStaticBuff,
@@ -68,6 +70,14 @@ export default function CardBehaviorForm({
 
   const removeStaticBuff = (index: number) => {
     onChange({ ...value, staticBuffs: value.staticBuffs.filter((_, i) => i !== index) })
+  }
+
+  const updateKeywordGrant = (index: number, next: BuilderKeywordGrant) => {
+    onChange({ ...value, keywordGrants: value.keywordGrants.map((g, i) => (i === index ? next : g)) })
+  }
+
+  const removeKeywordGrant = (index: number) => {
+    onChange({ ...value, keywordGrants: value.keywordGrants.filter((_, i) => i !== index) })
   }
 
   const updateTrigger = (index: number, next: BuilderTrigger) => {
@@ -144,6 +154,39 @@ export default function CardBehaviorForm({
               disabled={disabled}
               onChange={(next) => updateStaticBuff(index, next)}
               onRemove={() => removeStaticBuff(index)}
+            />
+          ))
+        )}
+      </section>
+
+      {/* Typed keyword grants */}
+      <section className="grid gap-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Keyword grants <span className="font-normal normal-case text-slate-500">(&quot;Zombies you control have flying&quot;)</span>
+          </h3>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange({ ...value, keywordGrants: [...value.keywordGrants, defaultKeywordGrant()] })}
+            className="rounded border border-slate-700 px-2 py-1 text-xs font-semibold text-slate-200 disabled:opacity-50"
+          >
+            + Add keyword grant
+          </button>
+        </div>
+
+        {value.keywordGrants.length === 0 ? (
+          <p className="text-xs text-slate-500">
+            No keyword grants. Use these for &quot;[Type] creatures you control have &lt;keyword&gt;&quot;.
+          </p>
+        ) : (
+          value.keywordGrants.map((grant, index) => (
+            <KeywordGrantEditor
+              key={index}
+              grant={grant}
+              disabled={disabled}
+              onChange={(next) => updateKeywordGrant(index, next)}
+              onRemove={() => removeKeywordGrant(index)}
             />
           ))
         )}
@@ -429,6 +472,68 @@ function StaticBuffEditor({
         />
         Other (not itself)
       </label>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={onRemove}
+        className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+      >
+        ✕
+      </button>
+    </div>
+  )
+}
+
+function KeywordGrantEditor({
+  grant,
+  onChange,
+  onRemove,
+  disabled,
+}: {
+  grant: BuilderKeywordGrant
+  onChange: (next: BuilderKeywordGrant) => void
+  onRemove: () => void
+  disabled: boolean
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 p-3 text-xs text-slate-300">
+      <input
+        type="text"
+        value={grant.creatureType}
+        disabled={disabled}
+        placeholder="any type"
+        title="Creature type (blank = all creatures)"
+        onChange={(event) => onChange({ ...grant, creatureType: event.target.value })}
+        className={`${inputClass} w-32`}
+      />
+      <span>creatures</span>
+      <select
+        value={grant.scope}
+        disabled={disabled}
+        title="Which creatures this affects"
+        onChange={(event) => onChange({ ...grant, scope: event.target.value as BuilderKeywordGrant['scope'] })}
+        className={inputClass}
+      >
+        {BUILDER_STATIC_SCOPES.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <span>have</span>
+      <select
+        value={grant.keyword}
+        disabled={disabled}
+        title="Keyword"
+        onChange={(event) => onChange({ ...grant, keyword: event.target.value as BuilderKeyword })}
+        className={inputClass}
+      >
+        {BUILDER_KEYWORDS.map((keyword) => (
+          <option key={keyword} value={keyword}>
+            {KEYWORD_LABELS[keyword]}
+          </option>
+        ))}
+      </select>
       <button
         type="button"
         disabled={disabled}

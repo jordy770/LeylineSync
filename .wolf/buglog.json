@@ -8731,6 +8731,86 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T20:59:45.124Z"
+    },
+    {
+      "id": "bug-537",
+      "timestamp": "2026-06-08T21:13:40.258Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T21:13:40.258Z"
+    },
+    {
+      "id": "bug-538",
+      "timestamp": "2026-06-08T21:14:14.007Z",
+      "error_message": "Wrong return value",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Was returning: { keywords, staticBuffs, triggers, activatedAbilit",
+      "fix": "Now returns: { keywords, staticBuffs, keywordGrants, triggers, ",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T21:14:14.007Z"
+    },
+    {
+      "id": "bug-539",
+      "timestamp": "2026-06-08T21:14:30.284Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 34→44 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T21:14:30.284Z"
+    },
+    {
+      "id": "bug-540",
+      "timestamp": "2026-06-08T21:14:43.966Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T21:14:43.966Z"
+    },
+    {
+      "id": "bug-541",
+      "timestamp": "2026-06-08T21:16:15.671Z",
+      "error_message": "Type error",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T21:16:15.671Z"
     }
   ]
 }

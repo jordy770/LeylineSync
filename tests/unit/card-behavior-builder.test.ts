@@ -192,6 +192,14 @@ const CASES: Case[] = [
   { name: 'static all-scope sliver lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver' } }] }, form: true },
   { name: 'static all-scope other-sliver lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver', exclude_source: true } }] }, form: true },
   { name: 'static lord + keyword together → form', script: { continuous_effects: [{ type: 'flying', affected: 'source', source_zone_required: 'battlefield' }, { type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] }, form: true },
+  // Typed keyword grants (Eternal Skylord / Vizier): keyword + affected controller/all + payload.creature_type.
+  { name: 'typed keyword grant (Skylord flying) → form', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie' } }] }, form: true },
+  { name: 'typed keyword grant deathtouch → form', script: { schema_version: 2, continuous_effects: [{ type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Zombie' } }] }, form: true },
+  { name: 'keyword grant all-scope no type → form', script: { schema_version: 2, continuous_effects: [{ type: 'trample', affected: 'all' }] }, form: true },
+  { name: 'keyword grant + source keyword + lord together → form', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'source', source_zone_required: 'battlefield' }, { type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Zombie' } }, { type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie' } }] }, form: true },
+  // Non-canonical keyword grants bail to JSON.
+  { name: 'keyword grant empty creature_type → json', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: '' } }] }, form: false },
+  { name: 'keyword grant extra payload key → json', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie', foo: 1 } }] }, form: false },
   // Non-canonical anthems bail to JSON (the form would round-trip them differently).
   { name: 'static pump affected source (aura, not anthem) → json', script: { continuous_effects: [{ type: 'pump', affected: 'source', payload: { power: 1, toughness: 1 } }] }, form: false },
   { name: 'static pump empty creature_type → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: '' } }] }, form: false },
@@ -275,6 +283,14 @@ test('exact build: sliver lord (all Slivers +1/+1, affected:all)', () => {
   assert.deepEqual(buildScriptFromForm(form!), {
     schema_version: 2,
     continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver' } }],
+  })
+})
+
+test('exact build: Eternal Skylord (Zombies you control have flying)', () => {
+  const form = parseScriptToForm({ schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie' } }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie' } }],
   })
 })
 

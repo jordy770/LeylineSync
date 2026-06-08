@@ -244,11 +244,30 @@ export function defaultStaticBuff(): BuilderStaticBuff {
   return { power: 1, toughness: 1, creatureType: '', excludeSource: false, scope: 'controller' }
 }
 
+// A typed keyword grant: "[<Type>] creatures [you control | everywhere] have
+// <keyword>" (Eternal Skylord: "Zombies you control have flying"; Vizier:
+// deathtouch). Serializes to a keyword continuous effect with affected 'controller'
+// (your creatures) or 'all' (everyone), and payload.creature_type when a type is
+// set (empty = all creatures). The engine reads it in the card_has_<keyword>
+// accessors (mig 184). Only the combat keywords with accessors are grantable.
+export type BuilderKeywordGrant = {
+  keyword: BuilderKeyword
+  creatureType: string
+  scope: BuilderStaticScope
+}
+
+export function defaultKeywordGrant(): BuilderKeywordGrant {
+  return { keyword: 'flying', creatureType: '', scope: 'controller' }
+}
+
 export type BuilderForm = {
   keywords: BuilderKeyword[]
   // Static type-anthems ("Other Zombies you control get +1/+1"). Serialized
   // alongside keywords into continuous_effects.
   staticBuffs: BuilderStaticBuff[]
+  // Typed keyword grants ("Zombies you control have flying"). Serialized into
+  // continuous_effects as keyword effects with affected:'controller'|'all'.
+  keywordGrants: BuilderKeywordGrant[]
   triggers: BuilderTrigger[]
   activatedAbilities: BuilderActivatedAbility[]
   // An ordered list of untargeted spell actions (instant/sorcery resolution),
@@ -268,6 +287,7 @@ export type BuilderForm = {
 export const EMPTY_BUILDER_FORM: BuilderForm = {
   keywords: [],
   staticBuffs: [],
+  keywordGrants: [],
   triggers: [],
   activatedAbilities: [],
   spellEffect: [],
@@ -308,7 +328,16 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
     return { type: 'pump', affected: buff.scope, payload }
   })
 
-  const continuousEffects = [...keywordEffects, ...staticBuffEffects]
+  const keywordGrantEffects = form.keywordGrants.map((grant) => {
+    const out: Record<string, unknown> = { type: grant.keyword, affected: grant.scope }
+    const type = grant.creatureType.trim()
+    if (type !== '') {
+      out.payload = { creature_type: type }
+    }
+    return out
+  })
+
+  const continuousEffects = [...keywordEffects, ...staticBuffEffects, ...keywordGrantEffects]
 
   const triggeredAbilities = form.triggers.map((trigger) => {
     const out: Record<string, unknown> = {
@@ -476,7 +505,7 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
   if (continuous === null) {
     return null
   }
-  const { keywords, staticBuffs } = continuous
+  const { keywords, staticBuffs, keywordGrants } = continuous
 
   const triggers = parseTriggers(s.triggered_abilities)
   if (triggers === null) {
@@ -509,7 +538,7 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     flashbackEffect = parsed
   }
 
-  return { keywords, staticBuffs, triggers, activatedAbilities, spellEffect, flashback, flashbackLife, flashbackEffect }
+  return { keywords, staticBuffs, keywordGrants, triggers, activatedAbilities, spellEffect, flashback, flashbackLife, flashbackEffect }
 }
 
 // Returns the form model for a spell_effect built from plain scry/surveil/draw
@@ -635,9 +664,9 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
 // in JSON mode rather than silently dropping data.
 function parseContinuousEffects(
   value: unknown,
-): { keywords: BuilderKeyword[]; staticBuffs: BuilderStaticBuff[] } | null {
+): { keywords: BuilderKeyword[]; staticBuffs: BuilderStaticBuff[]; keywordGrants: BuilderKeywordGrant[] } | null {
   if (value == null) {
-    return { keywords: [], staticBuffs: [] }
+    return { keywords: [], staticBuffs: [], keywordGrants: [] }
   }
   if (!Array.isArray(value)) {
     return null
@@ -645,6 +674,7 @@ function parseContinuousEffects(
 
   const keywords: BuilderKeyword[] = []
   const staticBuffs: BuilderStaticBuff[] = []
+  const keywordGrants: BuilderKeywordGrant[] = []
   for (const entry of value) {
     if (typeof entry !== 'object' || entry === null) {
       return null
@@ -655,8 +685,17 @@ function parseContinuousEffects(
       return null
     }
 
-    // Plain keyword effect on the source permanent.
+    // A keyword effect. affected 'source'/absent → the source has the keyword;
+    // affected 'controller'/'all' → a TYPED grant to other creatures (Skylord).
     if ((BUILDER_KEYWORDS as readonly string[]).includes(type)) {
+      if (e.affected === 'controller' || e.affected === 'all') {
+        const grant = parseKeywordGrant(e, type as BuilderKeyword)
+        if (grant === null) {
+          return null
+        }
+        keywordGrants.push(grant)
+        continue
+      }
       if (
         (e.affected !== undefined && e.affected !== 'source') ||
         (e.source_zone_required !== undefined && e.source_zone_required !== 'battlefield') ||
@@ -680,7 +719,37 @@ function parseContinuousEffects(
 
     return null
   }
-  return { keywords, staticBuffs }
+  return { keywords, staticBuffs, keywordGrants }
+}
+
+// A form-representable typed keyword grant is `{ type:<keyword>, affected:
+// 'controller'|'all', [payload:{ creature_type }] }` — exactly what
+// buildScriptFromForm emits. Extra keys, a non-string creature_type, or an empty
+// creature_type string (should be omitted, not '') round-trip to JSON mode.
+function parseKeywordGrant(e: Record<string, unknown>, keyword: BuilderKeyword): BuilderKeywordGrant | null {
+  if (
+    (e.affected !== 'controller' && e.affected !== 'all') ||
+    Object.keys(e).some((key) => !['type', 'effect_type', 'affected', 'payload'].includes(key))
+  ) {
+    return null
+  }
+  let creatureType = ''
+  if (e.payload !== undefined) {
+    if (typeof e.payload !== 'object' || e.payload === null) {
+      return null
+    }
+    const p = e.payload as Record<string, unknown>
+    if (Object.keys(p).some((key) => key !== 'creature_type')) {
+      return null
+    }
+    if (p.creature_type !== undefined) {
+      if (typeof p.creature_type !== 'string' || p.creature_type.trim() === '') {
+        return null
+      }
+      creatureType = p.creature_type
+    }
+  }
+  return { keyword, creatureType, scope: e.affected as BuilderStaticScope }
 }
 
 // A form-representable anthem is `{ type:'pump', affected:'controller'|'all',

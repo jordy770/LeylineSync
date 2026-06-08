@@ -48,8 +48,8 @@
       "first_read": "2026-06-08T19:30:32.897Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts": {
-      "count": 5,
-      "tokens": 13858,
+      "count": 7,
+      "tokens": 14399,
       "first_read": "2026-06-08T19:31:18.409Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql": {
@@ -103,14 +103,19 @@
       "first_read": "2026-06-08T19:52:57.605Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx": {
-      "count": 1,
-      "tokens": 9538,
+      "count": 5,
+      "tokens": 9705,
       "first_read": "2026-06-08T19:55:00.619Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts": {
       "count": 1,
       "tokens": 9754,
       "first_read": "2026-06-08T19:56:15.947Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorEditor.tsx": {
+      "count": 1,
+      "tokens": 4152,
+      "first_read": "2026-06-08T21:17:48.511Z"
     }
   },
   "files_written": [
@@ -335,6 +340,96 @@
       "action": "edit",
       "tokens": 27,
       "at": "2026-06-08T21:00:53.421Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 252,
+      "at": "2026-06-08T21:13:32.146Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 102,
+      "at": "2026-06-08T21:13:40.254Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 35,
+      "at": "2026-06-08T21:13:45.431Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 129,
+      "at": "2026-06-08T21:13:56.276Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 51,
+      "at": "2026-06-08T21:14:06.424Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 40,
+      "at": "2026-06-08T21:14:14.002Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 450,
+      "at": "2026-06-08T21:14:30.279Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 354,
+      "at": "2026-06-08T21:14:43.961Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 123,
+      "at": "2026-06-08T21:15:42.026Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 136,
+      "at": "2026-06-08T21:15:50.808Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 496,
+      "at": "2026-06-08T21:16:03.687Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 596,
+      "at": "2026-06-08T21:16:15.665Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+      "action": "edit",
+      "tokens": 550,
+      "at": "2026-06-08T21:16:53.745Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+      "action": "edit",
+      "tokens": 246,
+      "at": "2026-06-08T21:17:09.600Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorEditor.tsx",
+      "action": "edit",
+      "tokens": 68,
+      "at": "2026-06-08T21:17:54.627Z"
     }
   ],
   "edit_counts": {
@@ -344,21 +439,22 @@
     "tests/fixtures/test-cards.json": 4,
     "tests/feature/exile-from-graveyard-effect.test.ts": 1,
     "package.json": 5,
-    "tests/unit/card-behavior-builder.test.ts": 5,
+    "tests/unit/card-behavior-builder.test.ts": 7,
     "supabase/migrations/202605010187_activated_search_library.sql": 1,
     "tests/feature/activated-search-library.test.ts": 1,
     "supabase/migrations/202605010188_activated_destroy_permanent.sql": 2,
     "tests/feature/activated-destroy-permanent.test.ts": 1,
     "supabase/migrations/202605010189_mana_ability_pay_life_cost.sql": 1,
-    "lib/game/card-behavior-builder.ts": 4,
-    "components/CardBehaviorForm.tsx": 1,
+    "lib/game/card-behavior-builder.ts": 12,
+    "components/CardBehaviorForm.tsx": 5,
     "components/ControllerListV4.tsx": 1,
     "tests/feature/mana-ability-pay-life.test.ts": 1,
-    "tests/feature/trigger-deal-damage-target.test.ts": 1
+    "tests/feature/trigger-deal-damage-target.test.ts": 1,
+    "components/CardBehaviorEditor.tsx": 1
   },
-  "anatomy_hits": 15,
+  "anatomy_hits": 16,
   "anatomy_misses": 7,
-  "repeated_reads_warned": 10,
+  "repeated_reads_warned": 16,
   "cerebrum_warnings": 0,
-  "stop_count": 5
+  "stop_count": 6
 }
