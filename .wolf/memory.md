@@ -2609,3 +2609,8 @@
 | 20:25 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~116 |
 | 20:25 | Edited package.json | inline fix | ~33 |
 | 20:26 | sacrifice-a-creature cost + multi-effect activated abilities (Spark Reaper, Vampiric Rites) | mig 183, schema/builder, CardBehaviorForm.tsx, sacrifice-creature-cost.test.ts | new cost + spell_effect route for >1 effect; 615/615 | ~20k |
+| 20:27 | Session end: 176 writes across 32 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 27 reads | ~261480 tok |
+| 20:36 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~345 |
+| 20:37 | Created tests/feature/tribal-death-payoffs.test.ts | — | ~723 |
+| 20:37 | Edited package.json | inline fix | ~34 |
+| 20:38 | Verify tribal death payoffs (Vengeful Dead, Diregraf Captain) | tribal-death-payoffs.test.ts, fixtures | watcher death-drain confirmed (incl own death + lord combo); no code change; 617/617 | ~6k |
