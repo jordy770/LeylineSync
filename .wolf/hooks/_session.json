@@ -28,8 +28,8 @@
       "first_read": "2026-06-08T19:27:10.094Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts": {
-      "count": 1,
-      "tokens": 10721,
+      "count": 2,
+      "tokens": 10898,
       "first_read": "2026-06-08T19:27:31.557Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts": {
@@ -48,8 +48,8 @@
       "first_read": "2026-06-08T19:30:32.897Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts": {
-      "count": 2,
-      "tokens": 13554,
+      "count": 5,
+      "tokens": 13858,
       "first_read": "2026-06-08T19:31:18.409Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql": {
@@ -299,16 +299,28 @@
       "action": "edit",
       "tokens": 28,
       "at": "2026-06-08T19:56:52.303Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 271,
+      "at": "2026-06-08T20:03:51.314Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+      "action": "edit",
+      "tokens": 242,
+      "at": "2026-06-08T20:04:24.161Z"
     }
   ],
   "edit_counts": {
     "supabase/migrations/202605010186_exile_from_graveyard_effect.sql": 3,
     "lib/game/card-behavior-schema.ts": 2,
-    "lib/game/card-behavior-registry.ts": 1,
+    "lib/game/card-behavior-registry.ts": 2,
     "tests/fixtures/test-cards.json": 4,
     "tests/feature/exile-from-graveyard-effect.test.ts": 1,
     "package.json": 4,
-    "tests/unit/card-behavior-builder.test.ts": 3,
+    "tests/unit/card-behavior-builder.test.ts": 4,
     "supabase/migrations/202605010187_activated_search_library.sql": 1,
     "tests/feature/activated-search-library.test.ts": 1,
     "supabase/migrations/202605010188_activated_destroy_permanent.sql": 2,
@@ -321,7 +333,7 @@
   },
   "anatomy_hits": 15,
   "anatomy_misses": 7,
-  "repeated_reads_warned": 6,
+  "repeated_reads_warned": 10,
   "cerebrum_warnings": 0,
-  "stop_count": 3
+  "stop_count": 4
 }

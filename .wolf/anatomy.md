@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T19:56:52.290Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T20:04:24.145Z
 > Files: 101 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -111,7 +111,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~9154 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
-- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10898 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10972 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7948 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
@@ -237,7 +237,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13736 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13858 tok)
 
 ## vercel/
 

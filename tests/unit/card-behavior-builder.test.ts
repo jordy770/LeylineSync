@@ -176,6 +176,8 @@ const CASES: Case[] = [
   { name: 'flashback_life non-integer → json', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 1.5, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
   // Cemetery Reaper: an activated ability with a graveyard-exile cost + create_token.
   { name: 'activated exile-from-graveyard + create_token → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}{B}' }, { type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'creature' }], effects: [{ type: 'create_token', token: 'Zombie Token', count: 1 }] }] }, form: true },
+  // Wayfarer's Bauble: an activated sacrifice tutor with the search_library `tapped` flag.
+  { name: 'activated search_library tapped → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }, { type: 'sacrifice_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'search_library', count: 1, to: 'battlefield', tapped: true, filter: { type_line: 'Basic Land' } }] }] }, form: true },
   // A non-creature graveyard-exile filter isn't form-representable (the checkbox is creature-only).
   { name: 'activated exile-from-graveyard non-creature filter → json', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'land' }], effects: [{ type: 'draw', amount: 1 }] }] }, form: false },
   // An alternate flashback effect (do more/different from the graveyard) round-trips.

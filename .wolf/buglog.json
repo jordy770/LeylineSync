@@ -8682,6 +8682,39 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T19:56:30.648Z"
+    },
+    {
+      "id": "bug-534",
+      "timestamp": "2026-06-08T20:03:51.319Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 15→18 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T20:03:51.319Z"
+    },
+    {
+      "id": "bug-527",
+      "timestamp": "2026-06-08T20:30:00.000Z",
+      "error_message": "Wayfarer's Bauble not settable in the guided form (parseScriptToForm → null / JSON mode)",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "The search_library registry entry did not expose the  field, though schema + engine support it. effectFromJson strict-parses, so  was an unknown key → the whole script dropped to JSON-only mode. Engine/schema support does NOT imply the form can author it — the registry must list the field.",
+      "fix": "Added an optional  boolean field to the search_library registry entry (omitted unless true). Wayfarer's Bauble now round-trips through the form.",
+      "tags": [
+        "registry",
+        "form-authorability",
+        "search_library",
+        "round-trip"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T20:30:00.000Z"
     }
   ]
 }

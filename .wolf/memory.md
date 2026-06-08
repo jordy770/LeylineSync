@@ -2676,3 +2676,8 @@
 | 21:56 | Created tests/feature/mana-ability-pay-life.test.ts | — | ~797 |
 | 21:56 | Edited package.json | inline fix | ~28 |
 | 21:58 | Talisman of Dominance: pay_life as a mana-ability cost (mig 189) | activate_mana_ability + builder/form payLife + CL4 routing (hunk-split); fixture+tests | 639/639 green | ~12k |
+| 21:59 | Session end: 31 writes across 16 files (202605010186_exile_from_graveyard_effect.sql, card-behavior-schema.ts, card-behavior-registry.ts, test-cards.json, exile-from-graveyard-effect.test.ts) | 22 reads | ~168751 tok |
+| 22:03 | Edited lib/game/card-behavior-registry.ts | 15→18 lines | ~271 |
+| 22:04 | Edited tests/unit/card-behavior-builder.test.ts | 2→4 lines | ~242 |
+| 22:05 | Fix: search_library `tapped` not form-exposed (Wayfarers Bauble was JSON-only) | registry tapped field + unit case | now form-settable; 639/639 | ~3k |
+| 22:05 | Fix: search_library tapped not form-exposed (Wayfarers Bauble was JSON-only) | registry tapped field + unit case | now form-settable; 639/639 | ~3k |

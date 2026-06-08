@@ -363,14 +363,17 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     fields: [
       { name: 'count', kind: 'number', label: 'Count', default: 1, min: 1, max: 10, optional: true },
       { name: 'to', kind: 'enum', label: 'Destination', default: 'hand', options: SEARCH_DESTINATIONS, optional: true },
+      // "...put it onto the battlefield TAPPED" (Wayfarer's Bauble, Rampant Growth).
+      // Optional boolean → omitted unless ticked, so plain tutors stay clean.
+      { name: 'tapped', kind: 'boolean', label: 'Enters tapped', default: false, optional: true },
       {
         name: 'filter',
         kind: 'object',
         label: 'Filter',
         optional: true,
         // Only type_line is form-exposed; filter.name is JSON/AI-authorable (like
-        // the tapped/reveal extras) — the object serializer can't drop an empty
-        // sub-field, so adding it here would leak name:'' into every tutor.
+        // the reveal extra) — the object serializer can't drop an empty sub-field,
+        // so adding it here would leak name:'' into every tutor.
         fields: [{ name: 'type_line', kind: 'text', label: 'Type line', default: '' }],
       },
     ],
