@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import {
   activateAbility,
+  activateLoyaltyAbility,
   addManaFromCard,
   advanceStep,
   castCardFromHand,
@@ -284,11 +285,13 @@ function creatureMatchesController(
 // target picker). A spell mixing only these can run as one multi-action cast.
 // A counter bag ({poison:3,charge:1}) → sorted [{kind,n}] for display, skipping zeros.
 // `minus_one_one` is the internal key for −1/−1 counters; show the readable label.
-const COUNTER_LABELS: Record<string, string> = { minus_one_one: '−1/−1' }
+const COUNTER_LABELS: Record<string, string> = { minus_one_one: '−1/−1', loyalty: '◆' }
+// Internal bag keys that are bookkeeping, not displayable counters.
+const HIDDEN_COUNTER_KEYS = new Set(['loyalty_turn'])
 function formatCounterBag(bag: Record<string, number> | null | undefined): { kind: string; n: number }[] {
   if (!bag) return []
   return Object.entries(bag)
-    .filter(([, n]) => n > 0)
+    .filter(([key, n]) => n > 0 && !HIDDEN_COUNTER_KEYS.has(key))
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([kind, n]) => ({ kind: COUNTER_LABELS[kind] ?? kind, n }))
 }
@@ -622,6 +625,10 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
 
   const currentPlayer = players.find((p) => p.player_id === playerId) ?? null
   const opponentPlayers = players.filter((p) => p.player_id !== playerId)
+  // Opponents' planeswalkers — attackable targets in the declare-attackers UI.
+  const opponentPlaneswalkers = boardCards
+    .filter((c) => c.controller_player_id !== playerId && (c.type_line?.toLowerCase().includes('planeswalker') ?? false))
+    .map((c) => ({ id: c.id, name: c.name, loyalty: Number(c.counters?.loyalty ?? 0) }))
   const pendingStackItems = stackItems.filter((i) => i.status === 'pending')
 
   const hasPriority = Boolean(
@@ -946,9 +953,13 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       await activateAbility(supabase, sessionId, sourceCardId, abilityIndex, target)
       await refresh()
     },
+    activateLoyalty: async (sourceCardId: string, abilityIndex: number) => {
+      await activateLoyaltyAbility(supabase, sessionId, sourceCardId, abilityIndex)
+      await refresh()
+    },
     tapForMana,
-    declareAttacker: async (cardId: string, targetPlayerId: string) => {
-      await declareAttackerAction(supabase, sessionId, cardId, targetPlayerId)
+    declareAttacker: async (cardId: string, target: { playerId?: string; planeswalkerId?: string }) => {
+      await declareAttackerAction(supabase, sessionId, cardId, target.playerId ?? null, target.planeswalkerId ?? null)
       await refresh()
     },
     declareBlocker: async (blockerCardId: string, attackingCardId: string) => {
@@ -1011,6 +1022,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             <DeclareAttackersLayout
               ownCreatures={ownCreatures}
               opponentPlayers={opponentPlayers}
+              opponentPlaneswalkers={opponentPlaneswalkers}
               turnState={turnState}
               errorMessage={errorMessage}
               onDeclareAttacker={actions.declareAttacker}
@@ -1149,6 +1161,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
+            onActivateLoyalty={async (sourceId, abilityIndex) => { await actions.activateLoyalty(sourceId, abilityIndex) }}
             onCastAura={async (cardId, targetCardId) => { await actions.castAura(cardId, targetCardId) }}
             onEquip={async (cardId, targetCardId) => { await actions.equip(cardId, targetCardId) }}
             onClose={() => setSelectedCard(null)}
@@ -2169,6 +2182,7 @@ function CardActionSheet({
   onModalSpell,
   onCounterSpell,
   onActivateAbility,
+  onActivateLoyalty,
   onCastAura,
   onEquip,
   onClose,
@@ -2203,6 +2217,7 @@ function CardActionSheet({
     abilityIndex: number,
     target?: { targetCardId?: string | null; targetPlayerId?: string | null },
   ) => Promise<void>
+  onActivateLoyalty: (sourceId: string, abilityIndex: number) => Promise<void>
   onCastAura: (cardId: string, targetCardId: string) => Promise<void>
   onEquip: (cardId: string, targetCardId: string) => Promise<void>
   onClose: () => void
@@ -2363,7 +2378,7 @@ function CardActionSheet({
     }
   }
 
-  const hasActions = canCast || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0
+  const hasActions = canCast || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0 || (script.loyalty_abilities?.length ?? 0) > 0
 
   return (
     <>
@@ -2958,6 +2973,37 @@ function CardActionSheet({
                   {supported && hasTap && card.is_tapped && (
                     <span className="ml-auto shrink-0 text-[9px] text-amber-500/70">Tapped</span>
                   )}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Planeswalker loyalty abilities (sorcery speed, once per turn) */}
+        {(script.loyalty_abilities?.length ?? 0) > 0 && !picking && !abilityPick && (
+          <div className="space-y-1.5">
+            <p className="mb-1 flex items-center gap-1.5 text-[9px] uppercase tracking-widest text-slate-700">
+              Loyalty <span className="text-[11px] font-black text-amber-400">◆ {Number(card.counters?.loyalty ?? 0)}</span>
+            </p>
+            {(script.loyalty_abilities ?? []).map((ability, index) => {
+              const cur = Number(card.counters?.loyalty ?? 0)
+              const affordable = cur + ability.cost >= 0
+              const available = canCastSorceries && affordable
+              const sign = ability.cost > 0 ? `+${ability.cost}` : `${ability.cost}`
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  disabled={!available}
+                  onClick={() => { void onActivateLoyalty(card.id, index); onClose() }}
+                  className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 transition active:scale-95 ${
+                    available ? 'border-white/15 bg-[#0F1117]' : 'border-white/5 bg-[#0F1117]/60 opacity-50'
+                  }`}
+                >
+                  <span className="shrink-0 rounded-md bg-amber-400/15 px-1.5 py-0.5 text-[11px] font-black text-amber-300">{sign}</span>
+                  <span className="text-[10px] text-slate-400">{ability.label ?? renderAbilityEffect(ability.effects)}</span>
+                  {!affordable && <span className="ml-auto shrink-0 text-[9px] text-amber-500/70">Not enough</span>}
+                  {affordable && !canCastSorceries && <span className="ml-auto shrink-0 text-[9px] text-slate-700">Sorcery speed</span>}
                 </button>
               )
             })}
@@ -3900,6 +3946,7 @@ function ZoneSection({
 function DeclareAttackersLayout({
   ownCreatures,
   opponentPlayers,
+  opponentPlaneswalkers,
   turnState,
   errorMessage,
   onDeclareAttacker,
@@ -3907,18 +3954,24 @@ function DeclareAttackersLayout({
 }: {
   ownCreatures: ControllerCard[]
   opponentPlayers: GameSessionPlayer[]
+  opponentPlaneswalkers: { id: string; name: string; loyalty: number }[]
   turnState: GameTurnState | null
   errorMessage: string | null
-  onDeclareAttacker: (cardId: string, targetPlayerId: string) => Promise<void>
+  onDeclareAttacker: (cardId: string, target: { playerId?: string; planeswalkerId?: string }) => Promise<void>
   onPassPriority: () => Promise<void>
 }) {
   const untappedCreatures = ownCreatures.filter((c) => !c.is_tapped)
-  const defaultTarget = opponentPlayers[0]?.player_id ?? ''
-  const [assignments, setAssignments] = useState<Record<string, string>>({})
+  // Attackable targets: each opponent player + each opponent planeswalker.
+  const targets: { kind: 'player' | 'planeswalker'; id: string; label: string; sub: string }[] = [
+    ...opponentPlayers.map((p) => ({ kind: 'player' as const, id: p.player_id, label: p.username ?? `Player ${p.seat_number}`, sub: `♥ ${p.life_total}` })),
+    ...opponentPlaneswalkers.map((pw) => ({ kind: 'planeswalker' as const, id: pw.id, label: pw.name, sub: `◆ ${pw.loyalty}` })),
+  ]
+  const [selectedTargetId, setSelectedTargetId] = useState<string>(targets[0]?.id ?? '')
+  const selectedTarget = targets.find((t) => t.id === selectedTargetId) ?? targets[0] ?? null
+  const [attackers, setAttackers] = useState<Set<string>>(new Set())
   const [isPending, setIsPending] = useState(false)
   const [localError, setLocalError] = useState<string | null>(null)
-  const attackingCount = Object.keys(assignments).length
-  const defender = opponentPlayers[0]
+  const attackingCount = attackers.size
 
   const isAttackable = (card: ControllerCard) => {
     const turnNumber = turnState?.turn_number ?? 0
@@ -3936,20 +3989,24 @@ function DeclareAttackersLayout({
   const toggleAttacker = (cardId: string) => {
     const card = untappedCreatures.find((c) => c.id === cardId)
     if (!card || !isAttackable(card)) return
-    setAssignments((prev) => {
-      const next = { ...prev }
-      if (next[cardId]) delete next[cardId]
-      else next[cardId] = defaultTarget
+    setAttackers((prev) => {
+      const next = new Set(prev)
+      if (next.has(cardId)) next.delete(cardId)
+      else next.add(cardId)
       return next
     })
   }
 
   const submit = async () => {
+    if (!selectedTarget) return
     setIsPending(true)
     setLocalError(null)
     try {
-      for (const [cardId, targetId] of Object.entries(assignments)) {
-        if (targetId) await onDeclareAttacker(cardId, targetId)
+      const target = selectedTarget.kind === 'planeswalker'
+        ? { planeswalkerId: selectedTarget.id }
+        : { playerId: selectedTarget.id }
+      for (const cardId of attackers) {
+        await onDeclareAttacker(cardId, target)
       }
       // Pass priority — the step advances automatically when both players pass
       await onPassPriority()
@@ -3983,14 +4040,29 @@ function DeclareAttackersLayout({
         )}
       </div>
 
-      {/* Defender */}
-      {defender && (
-        <div className="flex h-[42px] shrink-0 items-center justify-between border-b border-[#2A2D38] bg-[#0A0B14] px-5">
-          <div>
-            <p className="text-[9px] uppercase tracking-widest text-slate-500">Defending</p>
-            <p className="text-sm font-black text-white">{defender.username ?? `Player ${defender.seat_number}`}</p>
+      {/* Attack target — an opponent player or one of their planeswalkers */}
+      {targets.length > 0 && (
+        <div className="shrink-0 border-b border-[#2A2D38] bg-[#0A0B14] px-3 py-2">
+          <p className="mb-1.5 px-2 text-[9px] uppercase tracking-widest text-slate-500">Attacking</p>
+          <div className="flex gap-2 overflow-x-auto">
+            {targets.map((t) => {
+              const active = t.id === selectedTargetId
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setSelectedTargetId(t.id)}
+                  className={`flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 transition active:scale-95 ${
+                    active ? 'border-[#D4591A] bg-[#D4591A]/10' : 'border-[#2A2D38] bg-[#131720]'
+                  }`}
+                >
+                  <span className="text-[8px] uppercase tracking-wider text-slate-500">{t.kind === 'planeswalker' ? 'PW' : 'Player'}</span>
+                  <span className="text-xs font-black text-white">{t.label}</span>
+                  <span className="text-[11px] font-bold text-slate-300">{t.sub}</span>
+                </button>
+              )
+            })}
           </div>
-          <p className="text-2xl font-black text-white">{defender.life_total}</p>
         </div>
       )}
 
@@ -4001,7 +4073,7 @@ function DeclareAttackersLayout({
         ) : (
           untappedCreatures.map((card) => {
             const attackable = isAttackable(card)
-            const isAttacking = Boolean(assignments[card.id])
+            const isAttacking = attackers.has(card.id)
             return (
               <motion.button
                 key={card.id}

@@ -2260,3 +2260,34 @@
 | 00:57 | Edited package.json | inline fix | ~23 |
 | 00:58 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~216 |
 | 01:05 | Tribal #4 slice 2: planeswalker combat (defending_planeswalker_id col; declare_attacker +PW target; resolve_combat_damage routes unblocked+trample to apply_damage_to_planeswalker loyalty; 0-loyalty SBA at combat end) | mig 169, harness declareAttackerVsPlaneswalker, planeswalker-combat.test | 518 green, tsc/lint/build clean | ~28k |
+| 01:00 | Session end: 121 writes across 35 files (202605010158_counter_doubling.sql, card-behavior-llm.ts, card-behavior-schema.ts, test-cards.json, counter-doubling.test.ts) | 23 reads | ~217673 tok |
+
+## Session: 2026-06-08 09:48
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-08 09:48
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:50 | Edited lib/game/actions.ts | added 1 condition(s) | ~116 |
+| 09:50 | Edited lib/game/actions.ts | added nullish coalescing | ~150 |
+| 09:51 | Edited lib/game/card-behavior.ts | expanded (+9 lines) | ~154 |
+| 09:51 | Edited lib/game/card-behavior.ts | modified normalizeV2Script() | ~133 |
+| 09:52 | Edited components/ControllerListV4.tsx | 3→4 lines | ~21 |
+| 09:52 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~164 |
+| 09:54 | Edited components/ControllerListV4.tsx | 8→9 lines | ~111 |
+| 09:54 | Edited components/ControllerListV4.tsx | added optional chaining | ~174 |
+| 09:55 | Edited components/ControllerListV4.tsx | 3→3 lines | ~73 |
+| 09:55 | Edited components/ControllerListV4.tsx | modified DeclareAttackersLayout() | ~818 |
+| 09:56 | Edited components/ControllerListV4.tsx | CSS: active | ~365 |
+| 09:56 | Edited components/ControllerListV4.tsx | Boolean() → has() | ~30 |
+| 09:56 | Edited components/ControllerListV4.tsx | CSS: onActivateLoyalty | ~92 |
+| 09:56 | Edited components/ControllerListV4.tsx | 2→3 lines | ~16 |
+| 09:56 | Edited components/ControllerListV4.tsx | 1→2 lines | ~76 |
+| 09:57 | Edited components/ControllerListV4.tsx | added optional chaining | ~584 |
+| 09:57 | Edited components/ControllerListV4.tsx | added optional chaining | ~42 |
+| 09:58 | Edited components/ControllerListV4.tsx | CSS: loyalty | ~181 |
+| 09:58 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~244 |
+| 10:05 | Tribal #4 slice 3: planeswalker CLIENT UI (loyalty section in CardActionSheet + attack-target picker for PWs in DeclareAttackersLayout; actions activateLoyaltyAbility + declareAttacker PW target; normalize preserves loyalty_abilities; hide loyalty_turn chip) | actions.ts, card-behavior.ts, ControllerListV4.tsx | 518 green, tsc/lint/build clean (client slice, no UI test) | ~26k |

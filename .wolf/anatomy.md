@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-07T22:58:16.209Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T07:58:55.732Z
 > Files: 58 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -12,7 +12,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~12791 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~12937 tok)
 
 ## .claude/rules/
 
@@ -74,7 +74,7 @@
 ## components/
 
 - `CardBehaviorForm.tsx` — inputClass (~5895 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~54974 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~56301 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
 ## components/board/
@@ -107,12 +107,12 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11325 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11467 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5525 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~9577 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9737 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6590 tok)
-- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3296 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3397 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
 - `use-judge-card-tools.ts` — Exports useJudgeCardTools (~1636 tok)

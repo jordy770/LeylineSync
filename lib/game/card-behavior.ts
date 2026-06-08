@@ -85,6 +85,12 @@ export type CardBehaviorTriggeredAbility = {
   effects: CardBehaviorAction[]
 }
 
+export type CardBehaviorLoyaltyAbility = {
+  cost: number
+  label?: string
+  effects: CardBehaviorAction[]
+}
+
 export type CardBehaviorScriptV2 = {
   schema_version: 2
   keywords?: string[]
@@ -92,6 +98,9 @@ export type CardBehaviorScriptV2 = {
   activated_abilities?: CardBehaviorActivatedAbility[]
   triggered_abilities?: CardBehaviorTriggeredAbility[]
   continuous_effects?: CardContinuousEffect[]
+  // Planeswalker starting loyalty + loyalty abilities (preserved for the UI).
+  loyalty?: number
+  loyalty_abilities?: CardBehaviorLoyaltyAbility[]
 }
 
 export type AnyCardBehaviorScript = CardScript | CardBehaviorScriptV2
@@ -346,6 +355,8 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     activated_abilities: script.activated_abilities ?? [],
     triggered_abilities: script.triggered_abilities ?? [],
     continuous_effects: script.continuous_effects ?? [],
+    loyalty: script.loyalty,
+    loyalty_abilities: script.loyalty_abilities ?? [],
   }
 }
 

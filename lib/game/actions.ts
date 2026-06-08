@@ -934,6 +934,23 @@ export async function activateAbility(
   return data as StackItem
 }
 
+export async function activateLoyaltyAbility(
+  supabase: SupabaseClient,
+  sessionId: string,
+  sourceCardId: string,
+  abilityIndex: number,
+) {
+  const { error } = await supabase.rpc('activate_loyalty_ability', {
+    p_session_id: sessionId,
+    p_source_card_id: sourceCardId,
+    p_ability_index: abilityIndex,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
 export async function putCounterSpellOnStack(
   supabase: SupabaseClient,
   sessionId: string,
@@ -1144,12 +1161,14 @@ export async function declareAttacker(
   supabase: SupabaseClient,
   sessionId: string,
   attackerCardId: string,
-  defendingPlayerId: string,
+  defendingPlayerId: string | null,
+  defendingPlaneswalkerId?: string | null,
 ) {
   const { data, error } = await supabase.rpc('declare_attacker', {
     p_session_id: sessionId,
     p_attacker_card_id: attackerCardId,
     p_defending_player_id: defendingPlayerId,
+    p_defending_planeswalker_id: defendingPlaneswalkerId ?? null,
   })
 
   if (error) {
