@@ -1585,6 +1585,7 @@ function MainArea({
             exile={ownExile}
             initialTab={myZoneTab}
             onClose={() => setMyZoneOpen(false)}
+            onCardTap={onCardTap}
           />
         )}
       </AnimatePresence>
@@ -2317,6 +2318,16 @@ function CardActionSheet({
   )
 
   const canCast = canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackCount)
+  // Flashback: a card in the graveyard carrying a `flashback` cost can be re-cast
+  // from there for that cost (the server then exiles it). Supported here for the
+  // untargeted programs Army of the Damned-style cards use.
+  const flashbackCost = script.flashback ?? null
+  const fbSorcerySpeed = card.cards?.type_line?.toLowerCase().includes('sorcery') ?? false
+  const canFlashback =
+    !!flashbackCost &&
+    zone === 'graveyard' &&
+    (fbSorcerySpeed ? canCastSorceries : canCastInstants) &&
+    (spellPlan.kind === 'spell_effect' || spellPlan.kind === 'draw' || spellPlan.kind === 'modal')
   const hasCreatureTargets = targetableCreatures.length > 0
   const requiresCreatureTarget =
     spellPlan.kind === 'pump' ||
@@ -2378,7 +2389,14 @@ function CardActionSheet({
     }
   }
 
-  const hasActions = canCast || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0 || (script.loyalty_abilities?.length ?? 0) > 0
+  const handleFlashback = () => {
+    if (spellPlan.kind === 'draw') void onDrawCards(card.id)
+    else if (spellPlan.kind === 'modal') void onModalSpell(card.id)
+    else void onSpellEffect(card.id)
+    onClose()
+  }
+
+  const hasActions = canCast || canFlashback || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0 || (script.loyalty_abilities?.length ?? 0) > 0
 
   return (
     <>
@@ -2479,6 +2497,19 @@ function CardActionSheet({
               {isAura ? 'Cast - enchant a creature' : castLabel}
             </span>
             <ManaCostDisplay manaCost={card.cards?.mana_cost} dark={hasRequiredTargets} />
+          </button>
+        )}
+
+        {/* Flashback button (graveyard card with a flashback cost) */}
+        {canFlashback && !picking && !attachPick && (
+          <button
+            type="button"
+            aria-label={`Flashback ${flashbackCost}`}
+            onClick={handleFlashback}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl bg-purple-400 px-4 py-3.5 transition active:scale-95"
+          >
+            <span className="font-black text-purple-950">Flashback</span>
+            <ManaCostDisplay manaCost={flashbackCost} dark />
           </button>
         )}
 
@@ -3547,11 +3578,15 @@ function MyZonesSheet({
   exile,
   initialTab,
   onClose,
+  onCardTap,
 }: {
   graveyard: ControllerCard[]
   exile: ControllerCard[]
   initialTab: MyZoneTab
   onClose: () => void
+  // Tapping a graveyard card with an action (e.g. flashback) opens its action
+  // sheet; closes this zone sheet so the action sheet is visible.
+  onCardTap: (card: ControllerCard) => void
 }) {
   const [tab, setTab] = useState<MyZoneTab>(initialTab)
 
@@ -3634,14 +3669,34 @@ function MyZonesSheet({
                   <p className="py-8 text-center text-sm text-slate-700">Graveyard is empty</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {graveyard.map((card) => (
-                      <div key={card.id} className="w-[60px]">
-                        <MotionCard
-                          card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: false, damage_marked: 0, zone: card.zone }}
-                          size="board" useLayoutId={false} className="w-full"
-                        />
-                      </div>
-                    ))}
+                    {graveyard.map((card) => {
+                      // A card with a flashback cost is castable from here — make it
+                      // tappable (opens its action sheet) and badge it.
+                      const hasFlashback = !!normalizeCardBehaviorToV2(
+                        card.copied_script ?? card.cards?.script ?? null,
+                        card.cards?.type_line,
+                      ).flashback
+                      return (
+                        <div key={card.id} className="w-[60px]">
+                          <button
+                            type="button"
+                            disabled={!hasFlashback}
+                            onClick={() => { onCardTap(card); onClose() }}
+                            className={`relative block w-full ${hasFlashback ? 'active:scale-95' : 'cursor-default'}`}
+                          >
+                            <MotionCard
+                              card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: false, damage_marked: 0, zone: card.zone }}
+                              size="board" useLayoutId={false} className="w-full"
+                            />
+                            {hasFlashback && (
+                              <span className="absolute -right-1 -top-1 rounded-full bg-purple-400 px-1 text-[8px] font-black text-purple-950">
+                                FB
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
               </motion.div>

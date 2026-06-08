@@ -2375,3 +2375,11 @@
 | 13:34 | Edited lib/game/card-behavior-llm.ts | inline fix | ~159 |
 | 13:34 | Edited lib/game/card-behavior-llm.ts | modified Flashback() | ~192 |
 | 13:35 | Army of the Damned: flashback (cast_spell_effect accepts graveyard source w/ script `flashback` cost -> pays it, exiles card) + tapped tokens (create_token `tapped` flag) | mig 174, test-cards.json, card-behavior-schema.ts, card-behavior.ts, card-behavior-llm.ts, army-of-the-damned.test.ts | 528/528 green, tsc/lint/build clean | ~14k |
+| 13:35 | Session end: 18 writes across 9 files (202605010173_cast_from_graveyard.sql, test-cards.json, card-behavior-schema.ts, liliana-untouched.test.ts, card-behavior-llm.ts) | 14 reads | ~82906 tok |
+| 13:49 | Edited components/ControllerListV4.tsx | added optional chaining | ~216 |
+| 13:49 | Edited components/ControllerListV4.tsx | added 2 condition(s) | ~110 |
+| 13:49 | Edited components/ControllerListV4.tsx | CSS: active | ~192 |
+| 13:49 | Edited components/ControllerListV4.tsx | CSS: onCardTap, card | ~110 |
+| 13:50 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~481 |
+| 13:50 | Edited components/ControllerListV4.tsx | 6→7 lines | ~63 |
+| 13:53 | Flashback UI slice: graveyard cards with a flashback cost are tappable (FB badge) -> CardActionSheet shows a Flashback cast button -> reuses spellEffect handler (server applies flashback) | components/ControllerListV4.tsx | tsc/lint/build clean | ~6k |
