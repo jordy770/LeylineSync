@@ -2681,3 +2681,9 @@
 | 22:04 | Edited tests/unit/card-behavior-builder.test.ts | 2→4 lines | ~242 |
 | 22:05 | Fix: search_library `tapped` not form-exposed (Wayfarers Bauble was JSON-only) | registry tapped field + unit case | now form-settable; 639/639 | ~3k |
 | 22:05 | Fix: search_library tapped not form-exposed (Wayfarers Bauble was JSON-only) | registry tapped field + unit case | now form-settable; 639/639 | ~3k |
+| 22:05 | Session end: 33 writes across 16 files (202605010186_exile_from_graveyard_effect.sql, card-behavior-schema.ts, card-behavior-registry.ts, test-cards.json, exile-from-graveyard-effect.test.ts) | 22 reads | ~169745 tok |
+| 22:59 | Edited lib/game/card-behavior-registry.ts | 3→5 lines | ~146 |
+| 23:00 | Created tests/feature/trigger-deal-damage-target.test.ts | — | ~627 |
+| 23:00 | Edited tests/unit/card-behavior-builder.test.ts | 2→4 lines | ~224 |
+| 23:00 | Edited package.json | inline fix | ~27 |
+| 23:01 | Settability sweep: 61/87 V2 fixtures form-settable; fixed deal_damage_target trigger context (Flame Mage) | registry + feature/unit test | 641 green; gaps triaged | ~8k |

@@ -311,16 +311,40 @@
       "action": "edit",
       "tokens": 242,
       "at": "2026-06-08T20:04:24.161Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 146,
+      "at": "2026-06-08T20:59:45.118Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/trigger-deal-damage-target.test.ts",
+      "action": "create",
+      "tokens": 627,
+      "at": "2026-06-08T21:00:34.210Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+      "action": "edit",
+      "tokens": 224,
+      "at": "2026-06-08T21:00:44.500Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 27,
+      "at": "2026-06-08T21:00:53.421Z"
     }
   ],
   "edit_counts": {
     "supabase/migrations/202605010186_exile_from_graveyard_effect.sql": 3,
     "lib/game/card-behavior-schema.ts": 2,
-    "lib/game/card-behavior-registry.ts": 2,
+    "lib/game/card-behavior-registry.ts": 3,
     "tests/fixtures/test-cards.json": 4,
     "tests/feature/exile-from-graveyard-effect.test.ts": 1,
-    "package.json": 4,
-    "tests/unit/card-behavior-builder.test.ts": 4,
+    "package.json": 5,
+    "tests/unit/card-behavior-builder.test.ts": 5,
     "supabase/migrations/202605010187_activated_search_library.sql": 1,
     "tests/feature/activated-search-library.test.ts": 1,
     "supabase/migrations/202605010188_activated_destroy_permanent.sql": 2,
@@ -329,11 +353,12 @@
     "lib/game/card-behavior-builder.ts": 4,
     "components/CardBehaviorForm.tsx": 1,
     "components/ControllerListV4.tsx": 1,
-    "tests/feature/mana-ability-pay-life.test.ts": 1
+    "tests/feature/mana-ability-pay-life.test.ts": 1,
+    "tests/feature/trigger-deal-damage-target.test.ts": 1
   },
   "anatomy_hits": 15,
   "anatomy_misses": 7,
   "repeated_reads_warned": 10,
   "cerebrum_warnings": 0,
-  "stop_count": 4
+  "stop_count": 5
 }

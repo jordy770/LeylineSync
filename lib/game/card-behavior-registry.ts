@@ -284,9 +284,11 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   { type: 'lose_life', variant: 'lose_life_rider', label: 'you lose life', contexts: ['rider'], fields: [amountField('Amount')] },
   { type: 'gain_life', variant: 'gain_life_rider', label: 'you gain life', contexts: ['rider'], fields: [amountField('Amount')] },
   { type: 'deal_damage', label: 'Deal damage to players', contexts: ['trigger'], fields: [amountField('Amount'), recipientField()] },
-  // Targeted deal_damage (Lightning Bolt) — spell only; the engine routes a trigger
-  // "deal damage to any target" against each opponent, so triggers use the shape above.
-  { type: 'deal_damage', variant: 'deal_damage_target', label: 'Deal damage to a target', contexts: ['spell'], fields: [amountField('Amount'), damageTargetField] },
+  // Targeted deal_damage (Lightning Bolt as a spell; "deal N damage to target
+  // creature" as an ETB trigger — Flame Mage). The engine resolves a targeted
+  // deal_damage trigger via the same path as destroy/pump (trigger_effect_target_type
+  // lists deal_damage). Disambiguated from the recipient shape above by `target_type`.
+  { type: 'deal_damage', variant: 'deal_damage_target', label: 'Deal damage to a target', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), damageTargetField] },
   // Neutral subject ("Draw cards", not "You draw cards"): the drawer is the
   // effect's controller — the source's controller in a trigger/spell, the caster
   // in a `then` rider, and the CHOSEN player inside choose_player. A caster-centric

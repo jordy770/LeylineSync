@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T20:04:24.145Z
-> Files: 101 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T21:00:53.408Z
+> Files: 102 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1356 tok)
+- `package.json` — Node.js package manifest (~1370 tok)
 
 ## .claude/
 
@@ -111,7 +111,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~9154 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
-- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10972 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11021 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7948 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
@@ -219,6 +219,7 @@
 - `target-player-draw.test.ts` — "Target player draws N" (Deep Analysis) = choose_player(any) → draw; the CHOSEN player draws, not the caster (can target self or opponent). (~700 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
 - `tribal-death-payoffs.test.ts` — Tribal death payoffs (Undead Unleashed) — confirm the watcher system handles (~723 tok)
+- `trigger-deal-damage-target.test.ts` — Targeted deal_damage from a TRIGGERED ability (Flame Mage: "When this enters, (~627 tok)
 - `typed-keyword-grant.test.ts` — Typed keyword grants (mig 184) — "Zombies you control have flying" (Eternal (~681 tok)
 - `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)
 - `watcher-triggers.test.ts` — Other-scoped trigger events (roadmap Tribal #1, second half). `creature_entered` / (~1569 tok)
@@ -237,7 +238,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13858 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13960 tok)
 
 ## vercel/
 
