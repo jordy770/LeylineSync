@@ -516,6 +516,15 @@ function TriggerEditor({
             />
             another (not this)
           </label>
+          <label className="flex items-center gap-1.5" title="Ignore token creatures (Midnight Reaper, Open the Graves)">
+            <input
+              type="checkbox"
+              checked={trigger.filter.nontoken}
+              disabled={disabled}
+              onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, nontoken: event.target.checked } })}
+            />
+            nontoken only
+          </label>
         </div>
       )}
 

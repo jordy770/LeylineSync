@@ -106,10 +106,12 @@ export type BuilderTriggerFilter = {
   typeLine: string
   controller: BuilderTriggerController
   excludeSelf: boolean
+  // "a NONTOKEN creature …" — ignore token creatures (Midnight Reaper).
+  nontoken: boolean
 }
 
 export function emptyTriggerFilter(): BuilderTriggerFilter {
-  return { typeLine: '', controller: 'you', excludeSelf: false }
+  return { typeLine: '', controller: 'you', excludeSelf: false, nontoken: false }
 }
 
 export function isWatcherEvent(event: string): boolean {
@@ -321,6 +323,7 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
       if (typeLine !== '') filter.type_line = typeLine
       if (f.controller !== 'you') filter.controller = f.controller
       if (f.excludeSelf) filter.exclude_self = true
+      if (f.nontoken) filter.nontoken = true
       if (Object.keys(filter).length > 0) out.filter = filter
     }
     return out
@@ -756,7 +759,7 @@ function parseTriggerFilter(value: unknown): BuilderTriggerFilter | null {
     return null
   }
   const f = value as Record<string, unknown>
-  if (Object.keys(f).some((key) => !['type_line', 'controller', 'exclude_self'].includes(key))) {
+  if (Object.keys(f).some((key) => !['type_line', 'controller', 'exclude_self', 'nontoken'].includes(key))) {
     return null
   }
   if (f.type_line !== undefined && typeof f.type_line !== 'string') {
@@ -768,10 +771,14 @@ function parseTriggerFilter(value: unknown): BuilderTriggerFilter | null {
   if (f.exclude_self !== undefined && typeof f.exclude_self !== 'boolean') {
     return null
   }
+  if (f.nontoken !== undefined && typeof f.nontoken !== 'boolean') {
+    return null
+  }
   return {
     typeLine: typeof f.type_line === 'string' ? f.type_line : '',
     controller: (f.controller as BuilderTriggerController) ?? 'you',
     excludeSelf: f.exclude_self === true,
+    nontoken: f.nontoken === true,
   }
 }
 

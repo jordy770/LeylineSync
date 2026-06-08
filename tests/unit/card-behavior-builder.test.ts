@@ -195,6 +195,8 @@ const CASES: Case[] = [
   { name: 'champion of the perished (watcher filter) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', controller: 'you', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: true },
   { name: 'watcher filter controller any → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_died', filter: { controller: 'any' }, effects: [{ type: 'draw', amount: 1 }] }] }, form: true },
   { name: 'watcher filter type-only → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: true },
+  // Midnight Reaper: a nontoken death watcher.
+  { name: 'midnight reaper (nontoken death watcher) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_died', filter: { controller: 'you', nontoken: true }, effects: [{ type: 'draw', amount: 1 }, { type: 'lose_life', amount: 1, recipient: 'controller' }] }] }, form: true },
   // Non-canonical filters bail to JSON.
   { name: 'watcher filter unknown key → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { foo: 1 }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },
   { name: 'watcher filter bad controller → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { controller: 'nobody' }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },
@@ -501,5 +503,5 @@ test('activated draw ability ({2}: draw) round-trips through the form', () => {
 })
 
 test('defaultTrigger shape', () => {
-  assert.deepEqual(defaultTrigger(), { event: 'enters_the_battlefield', filter: { typeLine: '', controller: 'you', excludeSelf: false }, effects: [{ type: 'gain_life', amount: 1 }] })
+  assert.deepEqual(defaultTrigger(), { event: 'enters_the_battlefield', filter: { typeLine: '', controller: 'you', excludeSelf: false, nontoken: false }, effects: [{ type: 'gain_life', amount: 1 }] })
 })

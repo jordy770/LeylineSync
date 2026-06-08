@@ -507,6 +507,9 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     type_line: z.string().optional(),
     controller: z.enum(['you', 'opponent', 'any']).optional(),
     exclude_self: z.boolean().optional(),
+    // "a NONTOKEN creature …" (Midnight Reaper, Open the Graves) — the watcher
+    // ignores token creatures entering/dying.
+    nontoken: z.boolean().optional(),
   }).optional(),
   targets: z.array(CardBehaviorTargetSchema).optional(),
   effects: z.array(CardBehaviorActionSchema),

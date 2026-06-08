@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T16:04:26.512Z
-> Files: 82 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T18:06:17.096Z
+> Files: 84 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1232 tok)
+- `package.json` — Node.js package manifest (~1243 tok)
 
 ## .claude/
 
@@ -74,7 +74,7 @@
 ## components/
 
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4152 tok)
-- `CardBehaviorForm.tsx` — inputClass (~9280 tok)
+- `CardBehaviorForm.tsx` — inputClass (~9408 tok)
 - `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~58607 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
@@ -109,10 +109,10 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8822 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8908 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10976 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10411 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7537 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7585 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -167,6 +167,7 @@
 - `202605010178_exile_from_graveyard_cost.sql` — "Exile a creature card from a graveyard" as an activated-ability cost, plus (~3073 tok)
 - `202605010179_mass_typed_debuff.sql` — Crippling Fear — "Choose a creature type. Each creature that isn't of the (~7295 tok)
 - `202605010180_mana_ability_cost_multicolor.sql` — Mana abilities with an activation cost and/or multiple produced colours (~1153 tok)
+- `202605010181_watcher_nontoken_filter.sql` — `nontoken` watcher filter — "Whenever a NONTOKEN creature you control dies, …" (~873 tok)
 
 ## tests/
 
@@ -194,6 +195,7 @@
 - `mana-ability-multicolor.test.ts` — Mana abilities with an activation cost + multiple produced colours (mig 180). (~582 tok)
 - `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
 - `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
+- `nontoken-watcher.test.ts` — `nontoken` watcher filter (mig 181) — "Whenever a NONTOKEN creature you control (~749 tok)
 - `planeswalker-combat.test.ts` — Planeswalker combat (roadmap Tribal #4, slice 2). A creature can attack a planeswalker; (~960 tok)
 - `planeswalkers.test.ts` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). A planeswalker enters (~1298 tok)
 - `proliferate.test.ts` — Proliferate (Atraxa, Praetors' Voice end step, Karn's Bastion, etc.). The engine (~1083 tok)
@@ -206,7 +208,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~10376 tok)
+- `test-cards.json` (~10512 tok)
 
 ## tests/harness/
 
@@ -218,7 +220,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13036 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13141 tok)
 
 ## vercel/
 

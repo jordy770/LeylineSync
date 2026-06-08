@@ -2567,3 +2567,18 @@
 | 18:04 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~185 |
 | 18:04 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~194 |
 | 18:06 | Guided form: multi-colour mana ability + cost (Dimir Signet) | card-behavior-builder.ts, CardBehaviorForm.tsx, builder.test.ts | mana ability colors[] list + mana cost; 599/599; Dimir Signet all 3 layers done | ~16k |
+| 18:06 | Session end: 142 writes across 26 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 25 reads | ~241590 tok |
+| 18:11 | Session end: 142 writes across 26 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 25 reads | ~241590 tok |
+| 20:01 | Session end: 142 writes across 26 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 25 reads | ~241590 tok |
+| 20:03 | Created supabase/migrations/202605010181_watcher_nontoken_filter.sql | — | ~873 |
+| 20:04 | Edited lib/game/card-behavior-schema.ts | 5→8 lines | ~99 |
+| 20:04 | Edited lib/game/card-behavior-builder.ts | modified emptyTriggerFilter() | ~103 |
+| 20:04 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~94 |
+| 20:04 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~216 |
+| 20:04 | Edited components/CardBehaviorForm.tsx | CSS: nontoken | ~252 |
+| 20:05 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~152 |
+| 20:05 | Created tests/feature/nontoken-watcher.test.ts | — | ~749 |
+| 20:05 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~58 |
+| 20:06 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~170 |
+| 20:06 | Edited package.json | inline fix | ~36 |
+| 20:07 | nontoken watcher filter (Midnight Reaper, Open the Graves) | mig 181, schema/builder, CardBehaviorForm.tsx, nontoken-watcher.test.ts | filter.nontoken skips token deaths/enters; 603/603 | ~12k |
