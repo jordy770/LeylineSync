@@ -103,6 +103,20 @@ const controllerField: FieldDescriptor = {
   optional: true,
 }
 
+// Which creatures a mass pump (pump_all) affects: 'all' (any controller) or
+// 'controller' (yours). Serialized as `scope`.
+const massPumpScopeField: FieldDescriptor = {
+  name: 'scope',
+  kind: 'enum',
+  label: 'Affects',
+  default: 'all',
+  options: [
+    { value: 'all', label: 'all creatures' },
+    { value: 'controller', label: 'creatures you control' },
+  ],
+  optional: true,
+}
+
 // Which counter kind an add_counters effect places. "plus_one_one" is the engine's
 // fast +1/+1 column (default, omitted when serialized); anything else lands in the
 // jsonb counter bag and has no P/T effect.
@@ -299,6 +313,21 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   { type: 'add_player_counters', label: 'Player counters (poison/energy/…)', contexts: ['trigger', 'spell'], fields: [counterAmountField, playerCounterTypeField, recipientField(), removeAllField] },
   { type: 'tap_all', label: 'Tap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
   { type: 'untap_all', label: 'Untap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
+  // Mass P/T pump until end of turn (Crippling Fear = -3/-3 to non-chosen-type).
+  // Under "Choose a creature type" leave Creature type BLANK (it's injected); set
+  // it directly for a fixed-type mass pump.
+  {
+    type: 'pump_all',
+    label: 'All creatures get ±X/±X (until end of turn)',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      { name: 'power', kind: 'number', label: 'Power', default: -1, min: -99, max: 99 },
+      { name: 'toughness', kind: 'number', label: 'Toughness', default: -1, min: -99, max: 99 },
+      massPumpScopeField,
+      { name: 'creature_type', kind: 'text', label: 'Creature type', default: '', optional: true },
+      { name: 'exclude_type', kind: 'boolean', label: 'Creatures NOT of that type', default: false, optional: true },
+    ],
+  },
   { type: 'scry', label: 'Scry N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   { type: 'surveil', label: 'Surveil N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   {
@@ -344,6 +373,17 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     fields: [
       { name: 'filter', kind: 'enum', label: 'Player', default: 'opponent', options: CHOOSE_PLAYER_FILTERS, optional: true },
       { name: 'effects', kind: 'effect-list', label: 'That player:', itemContext: 'trigger' },
+    ],
+  },
+  {
+    // "Choose a creature type, then …" (Crippling Fear, Distant Melody). The chosen
+    // type is injected into the inner effects (a pump_all's creature_type, or a
+    // count-amount's type_line) — leave those blank.
+    type: 'choose_creature_type',
+    label: 'Choose a creature type, then…',
+    contexts: ['spell'],
+    fields: [
+      { name: 'effects', kind: 'effect-list', label: 'Then (chosen type is injected):', itemContext: 'spell' },
     ],
   },
   // Single-target removal (Doom Blade, Disenchant, Anguished Unmaking, …). Targets

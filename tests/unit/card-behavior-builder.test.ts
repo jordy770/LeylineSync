@@ -197,6 +197,10 @@ const CASES: Case[] = [
   { name: 'watcher filter unknown key → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { foo: 1 }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },
   { name: 'watcher filter bad controller → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { controller: 'nobody' }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },
 
+  // Crippling Fear: choose_creature_type wrapping a mass pump_all — now form-representable.
+  { name: 'crippling fear (choose_creature_type + pump_all) → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'choose_creature_type', effects: [{ type: 'pump_all', power: -3, toughness: -3, scope: 'all', exclude_type: true }] }] } }, form: true },
+  { name: 'fixed-type mass pump_all → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'pump_all', power: 1, toughness: 1, scope: 'controller', creature_type: 'Zombie' }] } }, form: true },
+
   // Edge cases
   { name: 'empty object', script: {}, form: true },
   { name: 'null script', script: null, form: true },
@@ -294,6 +298,14 @@ test('exact build: watcher filter controller opponent', () => {
   assert.deepEqual(buildScriptFromForm(form!), {
     schema_version: 2,
     triggered_abilities: [{ event: 'creature_died', filter: { controller: 'opponent' }, effects: [{ type: 'draw', amount: 1 }] }],
+  })
+})
+
+test('exact build: Crippling Fear (choose_creature_type → mass -3/-3 to non-chosen-type)', () => {
+  const form = parseScriptToForm({ schema_version: 2, spell_effect: { actions: [{ type: 'choose_creature_type', effects: [{ type: 'pump_all', power: -3, toughness: -3, scope: 'all', exclude_type: true }] }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'choose_creature_type', effects: [{ type: 'pump_all', power: -3, toughness: -3, scope: 'all', exclude_type: true }] }] },
   })
 })
 

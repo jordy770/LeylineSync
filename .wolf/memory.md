@@ -2536,3 +2536,10 @@
 | 17:39 | Edited tests/feature/crippling-fear.test.ts | added optional chaining | ~347 |
 | 17:39 | Edited package.json | inline fix | ~36 |
 | 17:41 | Crippling Fear: mass typed debuff (pump_all + exclude_type) | mig 179, card-behavior-schema/llm, crippling-fear.test.ts | choose_creature_type -> pump_all -3/-3 to non-chosen-type, until EOT; 589/589 | ~34k |
+| 17:41 | Session end: 116 writes across 22 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 23 reads | ~220587 tok |
+| 17:45 | Edited lib/game/card-behavior-registry.ts | expanded (+14 lines) | ~184 |
+| 17:45 | Edited lib/game/card-behavior-registry.ts | expanded (+15 lines) | ~286 |
+| 17:45 | Edited lib/game/card-behavior-registry.ts | modified Then() | ~200 |
+| 17:45 | Edited tests/unit/card-behavior-builder.test.ts | 2→6 lines | ~184 |
+| 17:45 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~171 |
+| 17:47 | Guided form: choose_creature_type + pump_all (Crippling Fear authorable) | card-behavior-registry.ts, builder.test.ts | 2 registry entries + scope field; no builder/component change; 594/594 | ~10k |
