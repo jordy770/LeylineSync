@@ -13,6 +13,7 @@
 
 ## Key Learnings
 
+- **Cast-from-graveyard (mig 173):** Alternate cast ZONES are modelled as a player-scoped permission, not a rewrite of the cast path. A `cast_from_graveyard` continuous-effect row (`affected_player_id` + `payload.type_line` filter, `expires_at_phase='ending'/step='cleanup'`, NOT flagged `registered_from_card_script` so rebuild leaves it) is written by a `grant_cast_from_graveyard` effect branch; `cast_card_from_hand` then accepts `zone in ('hand','graveyard')` and gates a graveyard source on a matching permission. End-of-turn sweep is automatic via the existing `expire_continuous_effects_for_step`. This was the deferred "Noctis-class" frontier — turned out small because the cast path is one function and the permission reuses existing continuous-effect machinery.
 - **Project:** LeylineSync
 - **Description:** Realtime Magic: The Gathering style board/controller app built with Next.js and Supabase.
 - **Card behavior resolution chain:** runtime reads behavior as `coalesce(game_cards.copied_script, cards.script)` across ~10 SQL functions (casting, rebuild_scripted_continuous_effects, activate_ability, combat keyword registration). `copied_script` = per-instance copy override; `cards.script` = base.

@@ -1,601 +1,118 @@
 {
-  "session_id": "session-2026-06-07-1640",
-  "started": "2026-06-07T14:40:03.114Z",
+  "session_id": "session-2026-06-08-1204",
+  "started": "2026-06-08T10:04:34.376Z",
   "files_read": {
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts": {
-      "count": 6,
-      "tokens": 5771,
-      "first_read": "2026-06-07T14:40:16.304Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts": {
-      "count": 10,
-      "tokens": 9693,
-      "first_read": "2026-06-07T14:40:30.246Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior.ts": {
-      "count": 1,
-      "tokens": 3269,
-      "first_read": "2026-06-07T14:40:51.044Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx": {
-      "count": 9,
-      "tokens": 54676,
-      "first_read": "2026-06-07T14:41:01.921Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts": {
-      "count": 3,
-      "tokens": 7490,
-      "first_read": "2026-06-07T14:41:24.950Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/tests/feature/sacrifice-reanimate.test.ts": {
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010106_gain_control.sql": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-07T14:41:49.338Z"
+      "first_read": "2026-06-08T11:04:24.098Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010159_infect_toxic_wither.sql": {
+      "count": 1,
+      "tokens": 9278,
+      "first_read": "2026-06-08T11:04:55.553Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010162_dynamic_amounts_spells_abilities.sql": {
+      "count": 1,
+      "tokens": 6624,
+      "first_read": "2026-06-08T11:05:36.287Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010171_conditional_mill.sql": {
+      "count": 4,
+      "tokens": 3803,
+      "first_read": "2026-06-08T11:06:06.772Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts": {
       "count": 1,
-      "tokens": 9330,
-      "first_read": "2026-06-07T14:42:02.357Z"
+      "tokens": 9600,
+      "first_read": "2026-06-08T11:06:38.113Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/package.json": {
-      "count": 1,
-      "tokens": 924,
-      "first_read": "2026-06-07T14:42:51.550Z"
-    },
-    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010068_plus_one_counters.sql": {
+    "c:/tmp/cast_fn.sql": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-07T14:57:18.798Z"
-    },
-    "C:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql": {
-      "count": 4,
-      "tokens": 0,
-      "first_read": "2026-06-07T14:57:19.101Z"
-    },
-    "C:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts": {
-      "count": 1,
-      "tokens": 5452,
-      "first_read": "2026-06-07T14:57:34.827Z"
-    },
-    "C:/Users/Jordy/dev/LeylineSync/lib/game/types.ts": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-07T14:57:47.832Z"
-    },
-    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010153_proliferate.sql": {
-      "count": 3,
-      "tokens": 8315,
-      "first_read": "2026-06-07T14:57:58.063Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts": {
-      "count": 1,
-      "tokens": 5434,
-      "first_read": "2026-06-07T15:11:22.756Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts": {
-      "count": 4,
-      "tokens": 5972,
-      "first_read": "2026-06-07T15:11:40.131Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts": {
-      "count": 2,
-      "tokens": 2422,
-      "first_read": "2026-06-07T15:12:47.092Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-06-07T15:49:13.797Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts": {
-      "count": 1,
-      "tokens": 10980,
-      "first_read": "2026-06-07T15:53:00.995Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/components/judge/JudgePlayerCardTools.tsx": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-07T15:54:15.835Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/components/JudgePanel.tsx": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-07T15:54:38.281Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/lib/game/use-judge-card-tools.ts": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-06-07T15:55:34.326Z"
-    },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010142_commander_return_refinements.sql": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-07T16:31:31.963Z"
+      "first_read": "2026-06-08T11:07:26.353Z"
     },
     "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json": {
       "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-07T16:33:44.186Z"
+      "tokens": 9483,
+      "first_read": "2026-06-08T11:09:22.581Z"
     },
-    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010149_cda_pt_layer.sql": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-06-07T16:38:01.563Z"
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts": {
+      "count": 3,
+      "tokens": 6900,
+      "first_read": "2026-06-08T11:09:38.589Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/feature/energy-cost.test.ts": {
+      "count": 1,
+      "tokens": 993,
+      "first_read": "2026-06-08T11:10:32.024Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts": {
+      "count": 1,
+      "tokens": 9940,
+      "first_read": "2026-06-08T11:12:28.769Z"
     }
   },
   "files_written": [
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
-      "action": "edit",
-      "tokens": 100,
-      "at": "2026-06-07T14:40:22.548Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
-      "action": "edit",
-      "tokens": 109,
-      "at": "2026-06-07T14:40:39.391Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
-      "action": "edit",
-      "tokens": 166,
-      "at": "2026-06-07T14:41:09.342Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
-      "action": "edit",
-      "tokens": 70,
-      "at": "2026-06-07T14:41:15.478Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
-      "action": "edit",
-      "tokens": 266,
-      "at": "2026-06-07T14:41:36.975Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/proliferate.test.ts",
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010173_cast_from_graveyard.sql",
       "action": "create",
-      "tokens": 1083,
-      "at": "2026-06-07T14:42:31.908Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
-      "action": "edit",
-      "tokens": 22,
-      "at": "2026-06-07T14:42:58.886Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010154_multi_counter_model.sql",
-      "action": "create",
-      "tokens": 15992,
-      "at": "2026-06-07T15:08:33.047Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
-      "action": "edit",
-      "tokens": 185,
-      "at": "2026-06-07T15:09:19.573Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
-      "action": "edit",
-      "tokens": 232,
-      "at": "2026-06-07T15:09:29.445Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
-      "action": "edit",
-      "tokens": 59,
-      "at": "2026-06-07T15:09:44.342Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
-      "action": "edit",
-      "tokens": 296,
-      "at": "2026-06-07T15:10:16.502Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
-      "action": "edit",
-      "tokens": 242,
-      "at": "2026-06-07T15:10:27.430Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
-      "action": "edit",
-      "tokens": 402,
-      "at": "2026-06-07T15:10:52.673Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
-      "action": "edit",
-      "tokens": 0,
-      "at": "2026-06-07T15:11:06.471Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010154_multi_counter_model.sql",
-      "action": "edit",
-      "tokens": 405,
-      "at": "2026-06-07T15:12:34.941Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
-      "action": "edit",
-      "tokens": 55,
-      "at": "2026-06-07T15:12:51.080Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
-      "action": "edit",
-      "tokens": 103,
-      "at": "2026-06-07T15:13:06.015Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
-      "action": "edit",
-      "tokens": 56,
-      "at": "2026-06-07T15:13:11.667Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/types.ts",
-      "action": "edit",
-      "tokens": 36,
-      "at": "2026-06-07T15:13:16.574Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
-      "action": "edit",
-      "tokens": 43,
-      "at": "2026-06-07T15:13:22.562Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
-      "action": "edit",
-      "tokens": 73,
-      "at": "2026-06-07T15:13:28.081Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
-      "action": "edit",
-      "tokens": 38,
-      "at": "2026-06-07T15:13:39.739Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/data.ts",
-      "action": "edit",
-      "tokens": 88,
-      "at": "2026-06-07T15:13:45.074Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
-      "action": "edit",
-      "tokens": 157,
-      "at": "2026-06-07T15:14:00.400Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
-      "action": "edit",
-      "tokens": 180,
-      "at": "2026-06-07T15:14:10.368Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
-      "action": "edit",
-      "tokens": 154,
-      "at": "2026-06-07T15:14:25.286Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
-      "action": "edit",
-      "tokens": 117,
-      "at": "2026-06-07T15:14:40.814Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/multi-counter.test.ts",
-      "action": "create",
-      "tokens": 1943,
-      "at": "2026-06-07T15:16:20.275Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
-      "action": "edit",
-      "tokens": 21,
-      "at": "2026-06-07T15:16:24.995Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
-      "action": "edit",
-      "tokens": 127,
-      "at": "2026-06-07T15:17:50.683Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
-      "action": "edit",
-      "tokens": 313,
-      "at": "2026-06-07T15:18:36.037Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
-      "action": "edit",
-      "tokens": 345,
-      "at": "2026-06-07T15:19:32.630Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
-      "action": "edit",
-      "tokens": 76,
-      "at": "2026-06-07T15:19:42.550Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
-      "action": "edit",
-      "tokens": 757,
-      "at": "2026-06-07T15:49:43.980Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010155_counter_removal.sql",
-      "action": "create",
-      "tokens": 6423,
-      "at": "2026-06-07T15:51:24.300Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
-      "action": "edit",
-      "tokens": 216,
-      "at": "2026-06-07T15:51:49.359Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
-      "action": "edit",
-      "tokens": 284,
-      "at": "2026-06-07T15:52:06.854Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
-      "action": "edit",
-      "tokens": 294,
-      "at": "2026-06-07T15:52:26.162Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
-      "action": "edit",
-      "tokens": 417,
-      "at": "2026-06-07T15:52:39.545Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
-      "action": "edit",
-      "tokens": 202,
-      "at": "2026-06-07T15:53:13.850Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
-      "action": "edit",
-      "tokens": 49,
-      "at": "2026-06-07T15:53:19.615Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
-      "action": "edit",
-      "tokens": 209,
-      "at": "2026-06-07T15:53:38.195Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
-      "action": "edit",
-      "tokens": 57,
-      "at": "2026-06-07T15:53:48.422Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010155_counter_removal.sql",
-      "action": "edit",
-      "tokens": 770,
-      "at": "2026-06-07T15:55:04.895Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts",
-      "action": "edit",
-      "tokens": 320,
-      "at": "2026-06-07T15:55:24.596Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-judge-card-tools.ts",
-      "action": "edit",
-      "tokens": 27,
-      "at": "2026-06-07T15:55:41.834Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/use-judge-card-tools.ts",
-      "action": "edit",
-      "tokens": 234,
-      "at": "2026-06-07T15:55:50.528Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/JudgePanel.tsx",
-      "action": "edit",
-      "tokens": 89,
-      "at": "2026-06-07T15:56:01.326Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/judge/JudgePlayerCardTools.tsx",
-      "action": "edit",
-      "tokens": 367,
-      "at": "2026-06-07T15:56:14.239Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/judge/JudgePlayerCardTools.tsx",
-      "action": "edit",
-      "tokens": 677,
-      "at": "2026-06-07T15:56:26.918Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/judge/JudgePlayerCardTools.tsx",
-      "action": "edit",
-      "tokens": 503,
-      "at": "2026-06-07T15:56:39.273Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/counter-removal.test.ts",
-      "action": "create",
-      "tokens": 1811,
-      "at": "2026-06-07T15:57:41.503Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
-      "action": "edit",
-      "tokens": 22,
-      "at": "2026-06-07T15:57:47.621Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
-      "action": "edit",
-      "tokens": 172,
-      "at": "2026-06-07T16:33:22.674Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010156_enters_with_counters.sql",
-      "action": "create",
-      "tokens": 760,
-      "at": "2026-06-07T16:33:38.797Z"
+      "tokens": 6556,
+      "at": "2026-06-08T11:09:12.660Z"
     },
     {
       "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
       "action": "edit",
-      "tokens": 159,
-      "at": "2026-06-07T16:33:52.965Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/enters-with-counters.test.ts",
-      "action": "create",
-      "tokens": 1059,
-      "at": "2026-06-07T16:34:56.478Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
-      "action": "edit",
-      "tokens": 24,
-      "at": "2026-06-07T16:35:01.627Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
-      "action": "edit",
-      "tokens": 199,
-      "at": "2026-06-07T16:35:23.044Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/enters-with-counters.test.ts",
-      "action": "edit",
-      "tokens": 24,
-      "at": "2026-06-07T16:36:32.227Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
-      "action": "edit",
-      "tokens": 88,
-      "at": "2026-06-07T16:37:12.825Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010157_minus_one_counters.sql",
-      "action": "create",
-      "tokens": 8228,
-      "at": "2026-06-07T16:42:01.426Z"
+      "tokens": 44,
+      "at": "2026-06-08T11:09:27.394Z"
     },
     {
       "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
       "action": "edit",
-      "tokens": 37,
-      "at": "2026-06-07T16:42:16.056Z"
+      "tokens": 163,
+      "at": "2026-06-08T11:09:58.448Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
       "action": "edit",
-      "tokens": 86,
-      "at": "2026-06-07T16:42:25.090Z"
+      "tokens": 42,
+      "at": "2026-06-08T11:10:04.040Z"
     },
     {
-      "file": "c:/Users/Jordy/dev/LeylineSync/components/ControllerListV4.tsx",
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/liliana-untouched.test.ts",
       "action": "edit",
-      "tokens": 157,
-      "at": "2026-06-07T16:42:33.952Z"
+      "tokens": 364,
+      "at": "2026-06-08T11:10:15.672Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/liliana-untouched.test.ts",
+      "action": "edit",
+      "tokens": 220,
+      "at": "2026-06-08T11:10:40.513Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/liliana-untouched.test.ts",
+      "action": "edit",
+      "tokens": 48,
+      "at": "2026-06-08T11:12:17.699Z"
     },
     {
       "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-llm.ts",
       "action": "edit",
-      "tokens": 138,
-      "at": "2026-06-07T16:42:41.788Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/minus-one-counters.test.ts",
-      "action": "create",
-      "tokens": 1637,
-      "at": "2026-06-07T16:43:26.188Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
-      "action": "edit",
-      "tokens": 25,
-      "at": "2026-06-07T16:43:31.449Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010157_minus_one_counters.sql",
-      "action": "edit",
-      "tokens": 233,
-      "at": "2026-06-07T16:44:22.066Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010157_minus_one_counters.sql",
-      "action": "edit",
-      "tokens": 228,
-      "at": "2026-06-07T16:44:33.132Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010157_minus_one_counters.sql",
-      "action": "edit",
-      "tokens": 356,
-      "at": "2026-06-07T16:44:45.432Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/minus-one-counters.test.ts",
-      "action": "edit",
-      "tokens": 286,
-      "at": "2026-06-07T16:45:00.750Z"
-    },
-    {
-      "file": "c:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
-      "action": "edit",
-      "tokens": 122,
-      "at": "2026-06-07T16:46:30.625Z"
+      "tokens": 261,
+      "at": "2026-06-08T11:12:37.063Z"
     }
   ],
   "edit_counts": {
-    "lib/game/card-behavior-schema.ts": 7,
-    "lib/game/card-behavior-registry.ts": 10,
-    "components/ControllerListV4.tsx": 10,
-    "lib/game/card-behavior-llm.ts": 6,
-    "tests/feature/proliferate.test.ts": 1,
-    "package.json": 5,
-    "supabase/migrations/202605010154_multi_counter_model.sql": 2,
-    "lib/game/types.ts": 4,
-    "lib/game/data.ts": 4,
-    "tests/feature/multi-counter.test.ts": 1,
-    ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": 3,
-    "supabase/migrations/202605010155_counter_removal.sql": 2,
-    "lib/game/actions.ts": 2,
-    "lib/game/use-judge-card-tools.ts": 2,
-    "components/JudgePanel.tsx": 1,
-    "components/judge/JudgePlayerCardTools.tsx": 3,
-    "tests/feature/counter-removal.test.ts": 1,
-    "supabase/migrations/202605010156_enters_with_counters.sql": 1,
+    "supabase/migrations/202605010173_cast_from_graveyard.sql": 1,
     "tests/fixtures/test-cards.json": 1,
-    "tests/feature/enters-with-counters.test.ts": 2,
-    "supabase/migrations/202605010157_minus_one_counters.sql": 4,
-    "tests/feature/minus-one-counters.test.ts": 2
+    "lib/game/card-behavior-schema.ts": 2,
+    "tests/feature/liliana-untouched.test.ts": 3,
+    "lib/game/card-behavior-llm.ts": 1
   },
-  "anatomy_hits": 11,
-  "anatomy_misses": 13,
-  "repeated_reads_warned": 36,
+  "anatomy_hits": 8,
+  "anatomy_misses": 2,
+  "repeated_reads_warned": 5,
   "cerebrum_warnings": 0,
-  "stop_count": 4
+  "stop_count": 0
 }

@@ -149,7 +149,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type',
   'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
-  'add_player_counters', 'proliferate',
+  'add_player_counters', 'proliferate', 'grant_cast_from_graveyard',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -435,6 +435,13 @@ const CardBehaviorActionSchema = z.union([
     // Proliferate — choose any number of permanents with a +1/+1 counter; each
     // gets another. No fields (the choice happens at resolution).
     type: z.literal('proliferate'),
+  }),
+  // Grant the controller permission to cast cards from their graveyard this turn
+  // (Liliana, Untouched by Death's −3). `type_line` filters which cards qualify
+  // (a subtype substring, e.g. "Zombie"); omit/empty means any card.
+  z.object({
+    type: z.literal('grant_cast_from_graveyard'),
+    type_line: z.string().optional(),
   }),
   UnknownV2ActionSchema,
 ])

@@ -2347,3 +2347,19 @@
 | 11:54 | Edited tests/feature/liliana-untouched.test.ts | expanded (+40 lines) | ~544 |
 | 11:54 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~268 |
 | 12:05 | Liliana −2: loyalty targeting (worked via enqueue+chooseTriggerTarget once pump added to trigger_effect_target_type) + dynamic/negatable pump (apply_creature_effect resolves power/toughness as {count,negate}) | mig 172, schema PumpValueSchema, llm, test-cards Liliana -2, liliana-untouched.test LIL3-4 | 524 green, tsc/lint/build clean | ~26k |
+| 11:56 | Session end: 21 writes across 10 files (project_roadmap.md, ControllerListV4.tsx, 202605010171_conditional_mill.sql, card-behavior-schema.ts, card-behavior-llm.ts) | 18 reads | ~150608 tok |
+| 12:00 | Session end: 21 writes across 10 files (project_roadmap.md, ControllerListV4.tsx, 202605010171_conditional_mill.sql, card-behavior-schema.ts, card-behavior-llm.ts) | 18 reads | ~150608 tok |
+
+## Session: 2026-06-08 12:04
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:09 | Created supabase/migrations/202605010173_cast_from_graveyard.sql | — | ~6119 |
+| 13:09 | Edited tests/fixtures/test-cards.json | inline fix | ~44 |
+| 13:09 | Edited lib/game/card-behavior-schema.ts | expanded (+7 lines) | ~163 |
+| 13:10 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~42 |
+| 13:10 | Edited tests/feature/liliana-untouched.test.ts | expanded (+25 lines) | ~364 |
+| 13:10 | Edited tests/feature/liliana-untouched.test.ts | 10→15 lines | ~220 |
+| 13:12 | Edited tests/feature/liliana-untouched.test.ts | 3→2 lines | ~48 |
+| 13:12 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~261 |
+| 13:12 | Liliana -3 cast-from-graveyard: new `cast_from_graveyard` continuous-effect (player-scoped, type-filtered, ending/cleanup expiry) + `grant_cast_from_graveyard` effect branch + cast_card_from_hand accepts graveyard source w/ matching permission | mig 173, test-cards.json, card-behavior-schema.ts, card-behavior-llm.ts, liliana-untouched.test.ts | 525/525 green, tsc/lint/build clean | ~12k |

@@ -7245,7 +7245,9 @@
         "planeswalker",
         "liliana"
       ],
-      "related_bugs": ["bug-447"],
+      "related_bugs": [
+        "bug-447"
+      ],
       "occurrences": 1,
       "last_seen": "2026-06-08T11:00:00.000Z"
     },
@@ -7264,9 +7266,123 @@
         "regex-word-boundary",
         "card-catalog"
       ],
-      "related_bugs": ["bug-446"],
+      "related_bugs": [
+        "bug-446"
+      ],
       "occurrences": 1,
       "last_seen": "2026-06-08T11:40:00.000Z"
+    },
+    {
+      "id": "bug-448",
+      "timestamp": "2026-06-08T09:52:49.130Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010172_dynamic_pump_loyalty_target.sql",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 8→25 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T09:52:49.130Z"
+    },
+    {
+      "id": "bug-449",
+      "timestamp": "2026-06-08T09:53:12.768Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→9 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T09:53:12.768Z"
+    },
+    {
+      "id": "bug-450",
+      "timestamp": "2026-06-08T09:53:36.684Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Target creature gets -X/-X, X = Zombies you contr",
+      "fix": "Changed to \"Target creature gets -X/-X, X = Zombies you contr",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T09:53:36.684Z"
+    },
+    {
+      "id": "bug-451",
+      "timestamp": "2026-06-08T09:54:09.263Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/liliana-untouched.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T09:54:09.263Z"
+    },
+    {
+      "id": "bug-452",
+      "timestamp": "2026-06-08T11:09:27.398Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Cast Zombie spells from your graveyard this turn ",
+      "fix": "Changed to \"Cast Zombie spells from your graveyard this turn\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T11:09:27.398Z"
+    },
+    {
+      "id": "bug-453",
+      "timestamp": "2026-06-08T11:10:15.677Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/liliana-untouched.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T11:10:15.677Z"
+    },
+    {
+      "id": "bug-454",
+      "timestamp": "2026-06-08T11:12:37.068Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T11:12:37.068Z"
     }
   ]
 }
