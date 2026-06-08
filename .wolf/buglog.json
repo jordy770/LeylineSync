@@ -7383,6 +7383,169 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T11:12:37.068Z"
+    },
+    {
+      "id": "bug-455",
+      "timestamp": "2026-06-08T11:49:25.052Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {graveyard.map((card) => {; // A card with a flashback cost is castable from here — make",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-08T11:50:13.134Z"
+    },
+    {
+      "id": "bug-456",
+      "timestamp": "2026-06-08T12:05:23.158Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T12:05:23.158Z"
+    },
+    {
+      "id": "bug-457",
+      "timestamp": "2026-06-08T12:05:28.159Z",
+      "error_message": "Wrong return value",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Was returning: { keywords, triggers, activatedAbilities, spellEff",
+      "fix": "Now returns: { keywords, triggers, activatedAbilities, spellEff",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T12:05:28.159Z"
+    },
+    {
+      "id": "bug-458",
+      "timestamp": "2026-06-08T12:17:59.824Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Condition was: if (keywords === null)",
+      "fix": "Changed to: if (continuous === null)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T12:17:59.824Z"
+    },
+    {
+      "id": "bug-459",
+      "timestamp": "2026-06-08T12:18:09.161Z",
+      "error_message": "Wrong return value",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Was returning: { keywords, triggers, activatedAbilities, spellEff",
+      "fix": "Now returns: { keywords, staticBuffs, triggers, activatedAbilit",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T12:18:09.161Z"
+    },
+    {
+      "id": "bug-460",
+      "timestamp": "2026-06-08T12:18:32.553Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 29→95 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T12:18:32.553Z"
+    },
+    {
+      "id": "bug-461",
+      "timestamp": "2026-06-08T12:55:06.068Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: scope: e.affected as BuilderStaticScope,",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-08T12:55:26.698Z"
+    },
+    {
+      "id": "bug-462",
+      "timestamp": "2026-06-08T12:55:11.601Z",
+      "error_message": "Wrong return value",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Was returning: { type: 'pump', affected: 'controller', payload }",
+      "fix": "Now returns: { type: 'pump', affected: buff.scope, payload }",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T12:55:11.601Z"
+    },
+    {
+      "id": "bug-463",
+      "timestamp": "2026-06-08T12:55:40.209Z",
+      "error_message": "Type error",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T12:55:40.209Z"
+    },
+    {
+      "id": "bug-464",
+      "timestamp": "2026-06-08T00:00:00.000Z",
+      "error_message": "Unsupported ability cost: sacrifice_self (Commander's Sphere 'Sacrifice: Draw' never worked)",
+      "file": "supabase/migrations/202605010175_sacrifice_self_ability_cost.sql",
+      "root_cause": "The Zod schema (card-behavior-schema.ts CardBehaviorCostSchema) listed 'sacrifice_self' as a known activated-ability cost, but activate_ability (mig 162) only paid tap_self/mana/energy and raised on any other cost type. A schema-only capability with no engine support — passed validation, failed at runtime.",
+      "fix": "Reproduced activate_ability in mig 175 with a 'sacrifice_self' cost branch (v_has_sac) that calls put_in_graveyard on the source after other costs are paid and before the ability goes on the stack. put_action_on_stack tolerates a non-battlefield source, so the draw still resolves.",
+      "fix_lesson": "When triaging 'is X supported', a type in the Zod schema does NOT prove engine support — grep the migrations for the actual handler. The schema is permissive (validates author intent); the engine is the source of truth for what runs.",
+      "tags": [
+        "engine-schema-mismatch",
+        "activated-ability",
+        "sacrifice_self",
+        "sql",
+        "triage"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T00:00:00.000Z"
     }
   ]
 }

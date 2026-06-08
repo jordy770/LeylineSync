@@ -174,28 +174,37 @@ export type BuilderAbilityKind = (typeof BUILDER_ABILITY_KINDS)[number]['value']
 // editor. (Replaces the old bespoke `damage` kind; deal_damage is now just an effect.)
 export type BuilderActivatedAbility =
   | { kind: 'mana'; tapSelf: boolean; color: ManaProductionColor; amount: number }
-  | { kind: 'effect'; tapSelf: boolean; mana: string; effect: RegistryEffect }
+  | { kind: 'effect'; tapSelf: boolean; sacSelf: boolean; mana: string; effect: RegistryEffect }
 
 export function defaultActivatedAbility(kind: BuilderAbilityKind): BuilderActivatedAbility {
   if (kind === 'mana') {
     return { kind: 'mana', tapSelf: true, color: 'C', amount: 1 }
   }
-  return { kind: 'effect', tapSelf: true, mana: '', effect: effectDefault('deal_damage_target') }
+  return { kind: 'effect', tapSelf: true, sacSelf: false, mana: '', effect: effectDefault('deal_damage_target') }
 }
 
-// A static anthem / lord: "[Other] [<Type>] creatures you control get +P/+T".
-// Serializes to a `pump` continuous effect with affected:'controller'. An empty
-// creatureType means all your creatures; excludeSource = the "Other" wording
-// (the source permanent doesn't buff itself). Cemetery Reaper, Zombie Lord.
+// A static anthem / lord: "[Other] [<Type>] creatures [you control | everywhere]
+// get +P/+T". Serializes to a `pump` continuous effect — scope 'controller' =
+// "creatures you control" (affected:'controller'), scope 'all' = every creature
+// regardless of controller (affected:'all', e.g. Slivers). An empty creatureType
+// means all creatures; excludeSource = the "Other" wording (the source doesn't
+// buff itself). Cemetery Reaper, Zombie Lord, slivers.
+export const BUILDER_STATIC_SCOPES = [
+  { value: 'controller', label: 'you control' },
+  { value: 'all', label: '(anywhere)' },
+] as const
+export type BuilderStaticScope = (typeof BUILDER_STATIC_SCOPES)[number]['value']
+
 export type BuilderStaticBuff = {
   power: number
   toughness: number
   creatureType: string
   excludeSource: boolean
+  scope: BuilderStaticScope
 }
 
 export function defaultStaticBuff(): BuilderStaticBuff {
-  return { power: 1, toughness: 1, creatureType: '', excludeSource: false }
+  return { power: 1, toughness: 1, creatureType: '', excludeSource: false, scope: 'controller' }
 }
 
 export type BuilderForm = {
@@ -251,7 +260,7 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
     if (buff.excludeSource) {
       payload.exclude_source = true
     }
-    return { type: 'pump', affected: 'controller', payload }
+    return { type: 'pump', affected: buff.scope, payload }
   })
 
   const continuousEffects = [...keywordEffects, ...staticBuffEffects]
@@ -311,6 +320,9 @@ function activatedAbilityToJson(ability: BuilderActivatedAbility): Record<string
   const costs: Record<string, unknown>[] = []
   if (ability.tapSelf) {
     costs.push({ type: 'tap_self' })
+  }
+  if (ability.sacSelf) {
+    costs.push({ type: 'sacrifice_self' })
   }
   if (ability.mana.trim()) {
     costs.push({ type: 'mana', amount: ability.mana.trim() })
@@ -444,12 +456,15 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
     const costs = Array.isArray(e.costs) ? (e.costs as Record<string, unknown>[]) : []
     const effects = Array.isArray(e.effects) ? (e.effects as Record<string, unknown>[]) : []
 
-    // Costs must only be tap_self and/or a mana string.
+    // Costs must only be tap_self, sacrifice_self, and/or a mana string.
     let tapSelf = false
+    let sacSelf = false
     let mana = ''
     for (const cost of costs) {
       if (cost?.type === 'tap_self') {
         tapSelf = true
+      } else if (cost?.type === 'sacrifice_self') {
+        sacSelf = true
       } else if (cost?.type === 'mana' && typeof cost.amount === 'string') {
         mana = cost.amount
       } else {
@@ -463,7 +478,9 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
     const effect = effects[0]
 
     if (e.is_mana_ability === true) {
-      if (effect?.type !== 'add_mana' || mana) {
+      // Mana abilities have no sacrifice cost in the form — a sac'd mana ability
+      // round-trips to JSON rather than silently dropping the cost.
+      if (effect?.type !== 'add_mana' || mana || sacSelf) {
         return null
       }
       const color = effect.color
@@ -484,7 +501,7 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
       if (parsed === null) {
         return null
       }
-      abilities.push({ kind: 'effect', tapSelf, mana, effect: parsed })
+      abilities.push({ kind: 'effect', tapSelf, sacSelf, mana, effect: parsed })
     }
   }
   return abilities
@@ -544,13 +561,13 @@ function parseContinuousEffects(
   return { keywords, staticBuffs }
 }
 
-// A form-representable anthem is `{ type:'pump', affected:'controller', payload:{
-// power, toughness, [creature_type], [exclude_source:true] } }` — exactly what
-// buildScriptFromForm emits. Non-canonical payloads (empty creature_type,
-// exclude_source:false, extra keys) round-trip to JSON mode.
+// A form-representable anthem is `{ type:'pump', affected:'controller'|'all',
+// payload:{ power, toughness, [creature_type], [exclude_source:true] } }` —
+// exactly what buildScriptFromForm emits. Non-canonical payloads (empty
+// creature_type, exclude_source:false, extra keys) round-trip to JSON mode.
 function parseStaticBuff(e: Record<string, unknown>): BuilderStaticBuff | null {
   if (
-    e.affected !== 'controller' ||
+    (e.affected !== 'controller' && e.affected !== 'all') ||
     (e.source_zone_required !== undefined && e.source_zone_required !== 'battlefield') ||
     Object.keys(e).some((key) => !['type', 'effect_type', 'affected', 'source_zone_required', 'payload'].includes(key))
   ) {
@@ -583,6 +600,7 @@ function parseStaticBuff(e: Record<string, unknown>): BuilderStaticBuff | null {
     toughness: p.toughness,
     creatureType,
     excludeSource: p.exclude_source === true,
+    scope: e.affected as BuilderStaticScope,
   }
 }
 

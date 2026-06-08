@@ -2415,3 +2415,24 @@
 | 14:19 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+11 lines) | ~550 |
 | 14:19 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~152 |
 | 14:22 | Guided builder: static type-anthems (Cemetery Reaper) | card-behavior-builder.ts, CardBehaviorForm.tsx, CardBehaviorEditor.tsx, builder.test.ts | form wires "[Other] [Type] creatures you control get +P/+T" pump lords; 547/547 green | ~9k |
+| 14:22 | Session end: 12 writes across 4 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts) | 6 reads | ~37647 tok |
+| 14:55 | Edited lib/game/card-behavior-builder.ts | modified defaultStaticBuff() | ~282 |
+| 14:55 | Edited lib/game/card-behavior-builder.ts | modified if() | ~39 |
+| 14:55 | Edited lib/game/card-behavior-builder.ts | modified parseStaticBuff() | ~198 |
+| 14:55 | Edited lib/game/card-behavior-builder.ts | 7→8 lines | ~50 |
+| 14:55 | Edited components/CardBehaviorForm.tsx | 6→7 lines | ~46 |
+| 14:55 | Edited components/CardBehaviorForm.tsx | CSS: scope | ~190 |
+| 14:55 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~172 |
+| 14:56 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~137 |
+| 14:58 | Created supabase/migrations/202605010175_sacrifice_self_ability_cost.sql | — | ~2448 |
+| 14:58 | Edited lib/game/card-behavior-builder.ts | modified defaultActivatedAbility() | ~150 |
+| 14:58 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~103 |
+| 14:58 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~132 |
+| 14:58 | Edited lib/game/card-behavior-builder.ts | modified if() | ~79 |
+| 14:59 | Edited lib/game/card-behavior-builder.ts | inline fix | ~23 |
+| 14:59 | Edited components/CardBehaviorForm.tsx | CSS: sacSelf | ~245 |
+| 14:59 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~281 |
+| 15:00 | Created tests/feature/sacrifice-self-ability.test.ts | — | ~639 |
+| 15:00 | Edited package.json | inline fix | ~37 |
+| 15:01 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~50 |
+| 15:03 | Quick-wins: sliver scope toggle + sacrifice_self cost (Commander Sphere) | card-behavior-builder.ts, CardBehaviorForm.tsx, mig 175, test-cards.json, sacrifice-self-ability.test.ts | staticBuff scope all/controller; engine pays sacrifice_self (bug-464); 554/554 green | ~22k |

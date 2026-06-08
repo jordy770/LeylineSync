@@ -7,6 +7,7 @@ import {
   BUILDER_SPELL_EFFECT_TYPES,
   BUILDER_TRIGGER_EVENTS,
   KEYWORD_LABELS,
+  BUILDER_STATIC_SCOPES,
   defaultActivatedAbility,
   defaultEffect,
   defaultSpellEffect,
@@ -342,11 +343,24 @@ function StaticBuffEditor({
         value={buff.creatureType}
         disabled={disabled}
         placeholder="any type"
-        title="Creature type (blank = all your creatures)"
+        title="Creature type (blank = all creatures)"
         onChange={(event) => onChange({ ...buff, creatureType: event.target.value })}
         className={`${inputClass} w-32`}
       />
-      <span>creatures you control</span>
+      <span>creatures</span>
+      <select
+        value={buff.scope}
+        disabled={disabled}
+        title="Which creatures this affects"
+        onChange={(event) => onChange({ ...buff, scope: event.target.value as BuilderStaticBuff['scope'] })}
+        className={inputClass}
+      >
+        {BUILDER_STATIC_SCOPES.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
       <label className="flex items-center gap-1.5" title="Exclude this permanent (the &quot;Other&quot; wording)">
         <input
           type="checkbox"
@@ -695,17 +709,28 @@ function ActivatedAbilityEditor({
         </label>
 
         {ability.kind === 'effect' ? (
-          <label className="flex items-center gap-1.5">
-            Mana cost
-            <input
-              type="text"
-              value={ability.mana}
-              disabled={disabled}
-              placeholder="e.g. {2}{R}"
-              onChange={(event) => onChange({ ...ability, mana: event.target.value })}
-              className={`${inputClass} w-28`}
-            />
-          </label>
+          <>
+            <label className="flex items-center gap-1.5">
+              <input
+                type="checkbox"
+                checked={ability.sacSelf}
+                disabled={disabled}
+                onChange={(event) => onChange({ ...ability, sacSelf: event.target.checked })}
+              />
+              Sacrifice this
+            </label>
+            <label className="flex items-center gap-1.5">
+              Mana cost
+              <input
+                type="text"
+                value={ability.mana}
+                disabled={disabled}
+                placeholder="e.g. {2}{R}"
+                onChange={(event) => onChange({ ...ability, mana: event.target.value })}
+                className={`${inputClass} w-28`}
+              />
+            </label>
+          </>
         ) : null}
       </div>
 

@@ -166,6 +166,8 @@ const CASES: Case[] = [
   { name: 'static other-Zombie lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] }, form: true },
   { name: 'static inclusive typed lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie' } }] }, form: true },
   { name: 'static all-creatures anthem (no type) → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1 } }] }, form: true },
+  { name: 'static all-scope sliver lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver' } }] }, form: true },
+  { name: 'static all-scope other-sliver lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver', exclude_source: true } }] }, form: true },
   { name: 'static lord + keyword together → form', script: { continuous_effects: [{ type: 'flying', affected: 'source', source_zone_required: 'battlefield' }, { type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] }, form: true },
   // Non-canonical anthems bail to JSON (the form would round-trip them differently).
   { name: 'static pump affected source (aura, not anthem) → json', script: { continuous_effects: [{ type: 'pump', affected: 'source', payload: { power: 1, toughness: 1 } }] }, form: false },
@@ -217,6 +219,14 @@ test('exact build: Cemetery Reaper (other-Zombie anthem)', () => {
   assert.deepEqual(buildScriptFromForm(form!), {
     schema_version: 2,
     continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }],
+  })
+})
+
+test('exact build: sliver lord (all Slivers +1/+1, affected:all)', () => {
+  const form = parseScriptToForm({ continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver' } }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver' } }],
   })
 })
 
@@ -379,7 +389,7 @@ test('defaultSpellEffect shapes', () => {
 test('defaultActivatedAbility shapes', () => {
   assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, color: 'C', amount: 1 })
   // The generic 'effect' kind defaults to a targeted deal_damage (the old 'damage' kind).
-  assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
+  assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, sacSelf: false, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
 })
 
 // An activated ability of a non-damage effect (a new capability) is Form-representable.
