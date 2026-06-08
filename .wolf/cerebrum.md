@@ -8,6 +8,9 @@
 
 <!-- How the user likes things done. Code style, tools, patterns, communication. -->
 
+- **App is landscape-only.** Design/layout decisions can assume a wide viewport; do not optimize the controller UI for narrow portrait.
+- **Card interaction = tap to open a bottom sheet** (`CardActionSheet` in components/ControllerListV4.tsx), shared by hand AND played cards via single `selectedCard` state. Prefers this over drag (drag in v1/v2 felt bad). Sheet layout: pinned card preview on the LEFT, scrollable actions/abilities/target-pickers on the RIGHT, so the card stays visible while picking targets. Actions are behavior-engine-derived per card+zone, not hardcoded.
+
 ## Key Learnings
 
 - **Project:** LeylineSync
@@ -94,6 +97,10 @@
 ## Decision Log
 
 <!-- Significant technical decisions with rationale. Why X was chosen over Y. -->
+
+- [2026-06-08] **Card catalog vs behavior script are TWO layers — the importer only does the first.** A user reported "Liliana isn't in the card database / deckbuilder selector". Root cause split: (1) the Scryfall importer (import-scryfall-cards.mjs) maps DATA ONLY — name/mana_cost/type_line/oracle_text/power_toughness/keywords/image_url — and **never sets `cards.script`**; oracle_text is English prose, not executable. (2) The deck text-importer (import_deck_from_text, mig 139) matches `lower(cards.name)` exactly, so a card with no `cards` row shows as "missing" in the deckbuilder. So "not in the selector" = no catalog row (run `npm run import:cards`), and "abilities don't work" = no authored `script` (separate: AI route /api/cards/generate-behavior or the editor). **When asked to 'implement a card', distinguish: MISSING from the catalog (import) vs lacking a SCRIPT (author it).** Don't run `npm run import:cards` unprompted — it upserts ~tens-of-thousands of rows to the real Supabase.
+
+- [2026-06-08] **Conditional mill (mig 171, for Liliana +1 + graveyard-matters): `if_milled_type` + `then` on the mill effect.** "Mill N, if a <type> was milled, <then>". The mill branch of apply_triggered_ability_effects (reproduced from 163) tracks whether any milled card's type_line matched (checked BEFORE the card moves) and, once, recursively applies the `then` effects via apply_triggered_ability_effects (source as controller). **Liliana, Untouched by Death's REAL M19 abilities (I'd misremembered them as static/attack-trigger): +1 conditional mill (now ✅), −2 target −X/−X where X=Zombies you control (needs loyalty-ability TARGETING — doesn't exist — + a dynamic negative pump), −3 cast Zombie spells from graveyard (the deferred cast-from-graveyard frontier).** Authored her with +1 working and −2/−3 as labelled no-op stubs (`unsupported_*` types pass the schema's UnknownV2Action passthrough and are ignored by the applier). Tests LIL1-2. 522/522.
 
 - [2026-06-08] **Choose-a-creature-type (Tribal #6, mig 170): a new decision type that MIRRORS choose_player, with the chosen value INJECTED into count amounts.** apply_trigger_effects (reproduced from 163) parks a `choose_creature_type` decision (a curated fixed type list in options) carrying params.effects — same park/resume pattern as choose_player. submit_decision (reproduced from 154) validates the pick then rewrites the sub-effects, **`jsonb_set(e, '{amount,type_line}', chosen)` for any effect whose amount is a `{count:…}` object**, and applies them via apply_triggered_ability_effects with the deciding player as controller. So Distant Melody authors `{count: creatures_you_control}` WITHOUT a type_line and the choice fills it in. Schema: choose_creature_type added to the action union + KNOWN_V2_ACTION_TYPES. **GAP surfaced (pre-existing, NOT this feature): the draw branch floors at `greatest(1, amount)`, so a dynamic/count draw of 0 draws 1** — "draw for each X" with X=0 draws 1; a 1-line fix needs an apply_triggered_ability_effects reproduction, deferred to its own migration (tested CCT2 with a non-zero count to avoid the edge). Client decision UI deferred. Tests CCT1-2. 520/520. On `creature-damage-shields`.
 

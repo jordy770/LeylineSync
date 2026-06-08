@@ -6840,9 +6840,414 @@
         "create-or-replace",
         "dynamic-amount"
       ],
-      "related_bugs": ["bug-418"],
+      "related_bugs": [
+        "bug-418"
+      ],
       "occurrences": 1,
       "last_seen": "2026-06-07T21:20:00.000Z"
+    },
+    {
+      "id": "bug-422",
+      "timestamp": "2026-06-07T21:40:22.289Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `) — IN PROGRESS (mig 164, first slice). A `",
+      "fix": "Changed to `)~~ — ✅ **shipped (mig 164)**. A `",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T21:40:22.289Z"
+    },
+    {
+      "id": "bug-423",
+      "timestamp": "2026-06-07T21:55:24.167Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Had \"amount\"",
+      "fix": "Changed to \"creature_entered\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T21:55:24.167Z"
+    },
+    {
+      "id": "bug-424",
+      "timestamp": "2026-06-07T21:58:08.272Z",
+      "error_message": "Type error",
+      "file": "tests/feature/watcher-triggers.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T21:58:08.272Z"
+    },
+    {
+      "id": "bug-425",
+      "timestamp": "2026-06-07T21:59:02.579Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `) — the trigger engine fires only the source'",
+      "fix": "Changed to `)~~ — ✅ **shipped (mig 165)**. New triggered-abil",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T21:59:02.579Z"
+    },
+    {
+      "id": "bug-426",
+      "timestamp": "2026-06-07T22:07:30.676Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 9→17 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:07:30.676Z"
+    },
+    {
+      "id": "bug-427",
+      "timestamp": "2026-06-07T22:07:42.426Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:07:42.426Z"
+    },
+    {
+      "id": "bug-428",
+      "timestamp": "2026-06-07T22:09:38.886Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had \"X = number of creatures you control / in your gra",
+      "fix": "Changed to `{ \"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:09:38.886Z"
+    },
+    {
+      "id": "bug-429",
+      "timestamp": "2026-06-07T22:23:57.183Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 4→6 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:23:57.183Z"
+    },
+    {
+      "id": "bug-430",
+      "timestamp": "2026-06-07T22:24:04.313Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Had 't auto-tap; open the picker.\n  const color = addM",
+      "fix": "Changed to 'any'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-07T22:25:28.104Z"
+    },
+    {
+      "id": "bug-431",
+      "timestamp": "2026-06-07T22:24:39.110Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→4 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:24:39.110Z"
+    },
+    {
+      "id": "bug-432",
+      "timestamp": "2026-06-07T22:25:20.167Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Condition was: if (typeof color !== 'string' || !['W', 'U', 'B', 'R',)",
+      "fix": "Changed to: if (typeof color !== 'string' || !['W', 'U', 'B', 'R',)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:25:20.167Z"
+    },
+    {
+      "id": "bug-433",
+      "timestamp": "2026-06-07T22:25:38.138Z",
+      "error_message": "CSS fix: amount, commanderIdentity",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "amount: commanderEffect.amount, → anyColorEffect.amount,; commanderIdentity: true, → false,",
+      "fix": "Changed amount: commanderEffect.amount, → anyColorEffect.amount,; commanderIdentity: true, → false,",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:25:38.138Z"
+    },
+    {
+      "id": "bug-434",
+      "timestamp": "2026-06-07T22:28:54.271Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:28:54.271Z"
+    },
+    {
+      "id": "bug-435",
+      "timestamp": "2026-06-07T22:29:07.565Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
+      "root_cause": "Had `) — small, isolated: add an `",
+      "fix": "Changed to `)~~ — ✅ **shipped (mig — none; client + schema on",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:29:07.565Z"
+    },
+    {
+      "id": "bug-436",
+      "timestamp": "2026-06-07T22:41:26.615Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:41:26.615Z"
+    },
+    {
+      "id": "bug-437",
+      "timestamp": "2026-06-07T22:41:44.714Z",
+      "error_message": "Function not marked async",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-07T22:41:44.714Z"
+    },
+    {
+      "id": "bug-438",
+      "timestamp": "2026-06-08T07:50:32.056Z",
+      "error_message": "Missing await",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T07:50:32.056Z"
+    },
+    {
+      "id": "bug-439",
+      "timestamp": "2026-06-08T07:50:40.710Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T07:50:40.710Z"
+    },
+    {
+      "id": "bug-440",
+      "timestamp": "2026-06-08T07:52:59.673Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: // Opponents' planeswalkers — attackable targets in the decl; const opponentPlaneswalkers = boardCards | Also: {/* Planeswalker loyalty abilities (sorcery speed, once per ; {(script.loyalty_abilities?.length ?? 0) > 0 && !picking &&  | Also: const hasActions = canCast || isEquipment || manaAbilities.l",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-06-08T07:57:47.421Z"
+    },
+    {
+      "id": "bug-441",
+      "timestamp": "2026-06-08T07:55:11.552Z",
+      "error_message": "CSS fix: id",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "id: c.id, name: c.name, loyalty: Number((c.counters as Record<string, number> | undefined)?.loyalty ?? 0) → c.id, name: c.name, loyalty: Number(c.counters?.loyalty ?? 0)",
+      "fix": "Changed id: c.id, name: c.name, loyalty: Number((c.counters as Record<string, number> | undefined)?.loyalty ?? 0) → c.id, name: c.name, loyalty: Number(c.counters?.loyalty ?? 0)",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-08T07:58:10.677Z"
+    },
+    {
+      "id": "bug-442",
+      "timestamp": "2026-06-08T07:55:50.475Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "No early return/throw for edge case: entered !== null && entered !== undefined && entered >= turn",
+      "fix": "Added guard clause: if (entered !== null && entered !== undefine)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T07:55:50.475Z"
+    },
+    {
+      "id": "bug-443",
+      "timestamp": "2026-06-08T07:56:03.870Z",
+      "error_message": "Wrong operator: ?? should be ===",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Used \"??\" instead of \"===\"",
+      "fix": "Changed operator ?? → ===",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T07:56:03.870Z"
+    },
+    {
+      "id": "bug-444",
+      "timestamp": "2026-06-08T07:56:46.115Z",
+      "error_message": "Wrong reference: onCastAura should be onActivateLoyalty",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Used \"onCastAura\" instead of \"onActivateLoyalty\"",
+      "fix": "Changed onCastAura → onActivateLoyalty",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T07:56:46.115Z"
+    },
+    {
+      "id": "bug-445",
+      "timestamp": "2026-06-08T09:05:30.272Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 12→18 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T09:05:30.272Z"
+    },
+    {
+      "id": "bug-446",
+      "timestamp": "2026-06-08T11:00:00.000Z",
+      "error_message": "User: 'Liliana, Untouched by Death is not implemented in the card database' / 'doesn't exist in the card selector in the deckbuilder'",
+      "file": "scripts/import-scryfall-cards.mjs",
+      "root_cause": "TWO independent gaps. (1) CATALOG: she has no row in public.cards — the Scryfall import (npm run import:cards) was never run on the full oracle file (lib/oracle-cards-*.json, where she exists) or ran partially. The deck text-importer (import_deck_from_text, mig 139) matches lower(cards.name) exactly, so an unimported card shows as 'missing'. (2) BEHAVIOR: the importer maps DATA only (name/cost/type_line/oracle_text/power_toughness/keywords/image_url) and NEVER sets the `script` column — behavior scripts are authored separately (AI route /api/cards/generate-behavior or the editor). So even after import she'd have a null script and the engine couldn't run her abilities.",
+      "fix": "Catalog: run `npm run import:cards` (operational; writes to the real Supabase — left to the user). Behavior: authored her script (loyalty 4) with +1 (conditional mill, mig 171) working; -2 (needs loyalty targeting + dynamic pump) and -3 (cast-from-graveyard) left as labelled no-op stubs.",
+      "tags": [
+        "card-database",
+        "import",
+        "deckbuilder",
+        "card-script",
+        "planeswalker",
+        "liliana"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T11:00:00.000Z"
     }
   ]
 }

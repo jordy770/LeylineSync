@@ -234,6 +234,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('mill'),
     amount: AmountSchema,
     recipient: BehaviorRecipientSchema.optional(),
+    // "If at least one <type> card is milled this way, <then>." (Liliana +1.)
+    if_milled_type: z.string().optional(),
+    then: z.array(z.record(z.string(), z.unknown())).optional(),
   }),
   // Scry N — a resolution-time (Tier-B) decision: look at the top N of your
   // library, then reorder/bottom them. Untargeted (acts on the caster's library).

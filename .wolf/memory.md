@@ -2311,3 +2311,26 @@
 | 10:19 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~356 |
 | 10:19 | Session end: 1 writes across 1 files (project_roadmap.md) | 0 reads | ~381 tok |
 | 10:30 | Tribal #6: choose_creature_type (decision mirrors choose_player; submit_decision injects chosen type into count amounts' type_line; completes Distant Melody) | mig 170, schema, llm, test-cards Distant Melody, choose-creature-type.test | 520 green, tsc/lint/build clean; noted draw-floor-on-0 gap | ~30k |
+| 10:21 | Session end: 1 writes across 1 files (project_roadmap.md) | 0 reads | ~381 tok |
+| 10:22 | Session end: 1 writes across 1 files (project_roadmap.md) | 0 reads | ~381 tok |
+| 10:26 | Session end: 1 writes across 1 files (project_roadmap.md) | 0 reads | ~381 tok |
+| 10:35 | Session end: 1 writes across 1 files (project_roadmap.md) | 0 reads | ~381 tok |
+| 10:38 | Session end: 1 writes across 1 files (project_roadmap.md) | 0 reads | ~381 tok |
+| 10:45 | Session end: 1 writes across 1 files (project_roadmap.md) | 12 reads | ~127847 tok |
+| 10:52 | Session end: 1 writes across 1 files (project_roadmap.md) | 12 reads | ~127847 tok |
+| 11:00 | Session end: 1 writes across 1 files (project_roadmap.md) | 12 reads | ~127847 tok |
+| 11:05 | Edited components/ControllerListV4.tsx | 4→4 lines | ~76 |
+| 11:05 | Edited components/ControllerListV4.tsx | CSS: body | ~243 |
+| 11:05 | Edited components/ControllerListV4.tsx | 4→6 lines | ~51 |
+| 09:00 | CardActionSheet bottom-sheet -> two-column: pinned card preview (left) + scrollable actions/pickers (right) | components/ControllerListV4.tsx | tsc clean | ~3k |
+| 11:06 | Session end: 4 writes across 2 files (project_roadmap.md, ControllerListV4.tsx) | 12 reads | ~128332 tok |
+| 11:19 | Session end: 4 writes across 2 files (project_roadmap.md, ControllerListV4.tsx) | 13 reads | ~128332 tok |
+| 11:33 | Edited supabase/migrations/202605010171_conditional_mill.sql | 3→5 lines | ~32 |
+| 11:33 | Edited supabase/migrations/202605010171_conditional_mill.sql | expanded (+14 lines) | ~620 |
+| 11:33 | Edited lib/game/card-behavior-schema.ts | 5→8 lines | ~89 |
+| 11:34 | Edited lib/game/card-behavior-llm.ts | inline fix | ~188 |
+| 11:35 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~454 |
+| 11:35 | Created tests/feature/liliana-untouched.test.ts | — | ~782 |
+| 11:35 | Edited package.json | inline fix | ~24 |
+| 11:36 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified authored() | ~348 |
+| 11:45 | Liliana investigation + conditional mill (mig 171: if_milled_type+then on mill); answered why she's not in the catalog (import = data only, no script; she has no cards row → run import:cards); authored Liliana +1 working, -2/-3 stubs (bug-446) | mig 171, schema, llm, test-cards Liliana, liliana-untouched.test | 522 green, tsc/lint/build clean | ~36k |
