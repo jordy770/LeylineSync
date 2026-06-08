@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T18:37:24.040Z
-> Files: 89 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T18:54:55.283Z
+> Files: 91 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1276 tok)
+- `package.json` — Node.js package manifest (~1288 tok)
 
 ## .claude/
 
@@ -110,7 +110,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8984 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11109 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10447 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7685 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
@@ -170,6 +170,7 @@
 - `202605010181_watcher_nontoken_filter.sql` — `nontoken` watcher filter — "Whenever a NONTOKEN creature you control dies, …" (~873 tok)
 - `202605010182_amass.sql` — Amass N (War of the Spark) — "If you don't control an Army, create a 0/0 black (~4488 tok)
 - `202605010183_sacrifice_creature_cost.sql` — "Sacrifice a creature" as an activated-ability cost (Spark Reaper: "{2}{B}, (~3399 tok)
+- `202605010184_typed_keyword_grants.sql` — Typed keyword grants — "Zombies you control have flying" (Eternal Skylord), (~3029 tok)
 
 ## tests/
 
@@ -208,12 +209,13 @@
 - `target-player-draw.test.ts` — "Target player draws N" (Deep Analysis) = choose_player(any) → draw; the CHOSEN player draws, not the caster (can target self or opponent). (~700 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
 - `tribal-death-payoffs.test.ts` — Tribal death payoffs (Undead Unleashed) — confirm the watcher system handles (~723 tok)
+- `typed-keyword-grant.test.ts` — Typed keyword grants (mig 184) — "Zombies you control have flying" (Eternal (~681 tok)
 - `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)
 - `watcher-triggers.test.ts` — Other-scoped trigger events (roadmap Tribal #1, second half). `creature_entered` / (~1569 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~11215 tok)
+- `test-cards.json` (~11306 tok)
 
 ## tests/harness/
 

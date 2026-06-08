@@ -2614,3 +2614,10 @@
 | 20:37 | Created tests/feature/tribal-death-payoffs.test.ts | — | ~723 |
 | 20:37 | Edited package.json | inline fix | ~34 |
 | 20:38 | Verify tribal death payoffs (Vengeful Dead, Diregraf Captain) | tribal-death-payoffs.test.ts, fixtures | watcher death-drain confirmed (incl own death + lord combo); no code change; 617/617 | ~6k |
+| 20:38 | Session end: 179 writes across 33 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 28 reads | ~268701 tok |
+| 20:52 | Created supabase/migrations/202605010184_typed_keyword_grants.sql | — | ~3029 |
+| 20:53 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~110 |
+| 20:53 | Created tests/feature/typed-keyword-grant.test.ts | — | ~681 |
+| 20:53 | Edited package.json | inline fix | ~38 |
+| 20:54 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~214 |
+| 20:55 | Typed keyword grants (Eternal Skylord, Vizier) | mig 184, card-behavior-llm.ts, typed-keyword-grant.test.ts | 9 keyword accessors null-branch filtered by player+creature_type; 619/619 | ~28k |
