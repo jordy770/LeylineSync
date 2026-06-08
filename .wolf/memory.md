@@ -2363,3 +2363,15 @@
 | 13:12 | Edited tests/feature/liliana-untouched.test.ts | 3→2 lines | ~48 |
 | 13:12 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~261 |
 | 13:12 | Liliana -3 cast-from-graveyard: new `cast_from_graveyard` continuous-effect (player-scoped, type-filtered, ending/cleanup expiry) + `grant_cast_from_graveyard` effect branch + cast_card_from_hand accepts graveyard source w/ matching permission | mig 173, test-cards.json, card-behavior-schema.ts, card-behavior-llm.ts, liliana-untouched.test.ts | 525/525 green, tsc/lint/build clean | ~12k |
+| 13:14 | Session end: 8 writes across 5 files (202605010173_cast_from_graveyard.sql, test-cards.json, card-behavior-schema.ts, liliana-untouched.test.ts, card-behavior-llm.ts) | 10 reads | ~64319 tok |
+| 13:30 | Created supabase/migrations/202605010174_flashback_and_tapped_tokens.sql | — | ~2083 |
+| 13:30 | Edited lib/game/card-behavior-schema.ts | 7→9 lines | ~125 |
+| 13:30 | Edited lib/game/card-behavior-schema.ts | 2→6 lines | ~116 |
+| 13:30 | Edited lib/game/card-behavior.ts | 4→6 lines | ~71 |
+| 13:31 | Edited lib/game/card-behavior.ts | 4→5 lines | ~35 |
+| 13:31 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~203 |
+| 13:32 | Created tests/feature/army-of-the-damned.test.ts | — | ~1092 |
+| 13:32 | Edited package.json | inline fix | ~24 |
+| 13:34 | Edited lib/game/card-behavior-llm.ts | inline fix | ~159 |
+| 13:34 | Edited lib/game/card-behavior-llm.ts | modified Flashback() | ~192 |
+| 13:35 | Army of the Damned: flashback (cast_spell_effect accepts graveyard source w/ script `flashback` cost -> pays it, exiles card) + tapped tokens (create_token `tapped` flag) | mig 174, test-cards.json, card-behavior-schema.ts, card-behavior.ts, card-behavior-llm.ts, army-of-the-damned.test.ts | 528/528 green, tsc/lint/build clean | ~14k |

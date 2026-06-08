@@ -101,6 +101,8 @@ export type CardBehaviorScriptV2 = {
   // Planeswalker starting loyalty + loyalty abilities (preserved for the UI).
   loyalty?: number
   loyalty_abilities?: CardBehaviorLoyaltyAbility[]
+  // Flashback cost (preserved for the UI's "Flashback" graveyard action).
+  flashback?: string
 }
 
 export type AnyCardBehaviorScript = CardScript | CardBehaviorScriptV2
@@ -357,6 +359,7 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     continuous_effects: script.continuous_effects ?? [],
     loyalty: script.loyalty,
     loyalty_abilities: script.loyalty_abilities ?? [],
+    flashback: script.flashback,
   }
 }
 

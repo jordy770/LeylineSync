@@ -320,6 +320,8 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('create_token'),
     token: z.string(),
     count: z.number().optional(),
+    // The tokens enter tapped (Army of the Damned: "thirteen … tokens that are tapped").
+    tapped: z.boolean().optional(),
     // "Its controller creates a token" (Beast Within): the token is created under the
     // control of the spell's TARGET's controller, not the caster.
     recipient: z.literal('target_controller').optional(),
@@ -521,6 +523,10 @@ export const CardBehaviorScriptV2Schema = z.object({
     effects: z.array(CardBehaviorActionSchema),
   })).optional(),
   spell_effect: CardBehaviorSpellEffectSchema.optional(),
+  // Flashback: a mana cost the card can be cast for from the GRAVEYARD, after which
+  // it is exiled (Army of the Damned: "Flashback {7}{B}{B}{B}"). Read server-side by
+  // cast_spell_effect when the source is in the graveyard.
+  flashback: z.string().optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),
