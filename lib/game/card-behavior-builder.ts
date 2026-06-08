@@ -88,8 +88,37 @@ export type BuilderEffect =
 export const BUILDER_EFFECT_TYPES = effectsForContext('trigger')
 export type BuilderEffectType = BuilderEffect['type']
 
+// The "other-scoped" watcher events that take a filter (which entering/dying/
+// counter-getting creature the watcher reacts to). Self events ignore the filter.
+export const BUILDER_WATCHER_EVENTS = ['creature_entered', 'creature_died', 'creature_got_counter'] as const
+
+export const BUILDER_TRIGGER_CONTROLLERS = [
+  { value: 'you', label: 'you control' },
+  { value: 'opponent', label: 'an opponent controls' },
+  { value: 'any', label: 'anyone controls' },
+] as const
+export type BuilderTriggerController = (typeof BUILDER_TRIGGER_CONTROLLERS)[number]['value']
+
+// A watcher trigger's filter: which creature it fires on. typeLine '' = any type;
+// controller defaults to 'you' (the engine default — a bare watcher only sees your
+// creatures); excludeSelf = the "another …" wording. Cemetery/Champion tribal cards.
+export type BuilderTriggerFilter = {
+  typeLine: string
+  controller: BuilderTriggerController
+  excludeSelf: boolean
+}
+
+export function emptyTriggerFilter(): BuilderTriggerFilter {
+  return { typeLine: '', controller: 'you', excludeSelf: false }
+}
+
+export function isWatcherEvent(event: string): boolean {
+  return (BUILDER_WATCHER_EVENTS as readonly string[]).includes(event)
+}
+
 export type BuilderTrigger = {
   event: BuilderTriggerEvent
+  filter: BuilderTriggerFilter
   effects: BuilderEffect[]
 }
 
@@ -247,7 +276,7 @@ export function defaultEffect(key: BuilderEffectType | string): BuilderEffect {
 }
 
 export function defaultTrigger(): BuilderTrigger {
-  return { event: 'enters_the_battlefield', effects: [defaultEffect('gain_life')] }
+  return { event: 'enters_the_battlefield', filter: emptyTriggerFilter(), effects: [defaultEffect('gain_life')] }
 }
 
 // ─── Form → script JSON ────────────────────────────────────────────────────────
@@ -273,10 +302,25 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
 
   const continuousEffects = [...keywordEffects, ...staticBuffEffects]
 
-  const triggeredAbilities = form.triggers.map((trigger) => ({
-    event: trigger.event,
-    effects: trigger.effects.map(effectToJson),
-  }))
+  const triggeredAbilities = form.triggers.map((trigger) => {
+    const out: Record<string, unknown> = {
+      event: trigger.event,
+      effects: trigger.effects.map(effectToJson),
+    }
+    // The filter only applies to watcher events. Emit only the non-default parts:
+    // controller 'you' is the engine default, so it's omitted (a bare watcher
+    // already sees only your creatures); type/exclude are emitted when set.
+    if (isWatcherEvent(trigger.event)) {
+      const f = trigger.filter
+      const typeLine = f.typeLine.trim()
+      const filter: Record<string, unknown> = {}
+      if (typeLine !== '') filter.type_line = typeLine
+      if (f.controller !== 'you') filter.controller = f.controller
+      if (f.excludeSelf) filter.exclude_self = true
+      if (Object.keys(filter).length > 0) out.filter = filter
+    }
+    return out
+  })
 
   const activatedAbilities = form.activatedAbilities.map(activatedAbilityToJson)
 
@@ -671,8 +715,13 @@ function parseTriggers(value: unknown): BuilderTrigger[] | null {
     if (!event || !(BUILDER_TRIGGER_EVENTS.map((t) => t.value) as string[]).includes(event)) {
       return null
     }
-    // Reject anything beyond event + effects (e.g. targets, conditions).
-    if (Object.keys(e).some((key) => key !== 'event' && key !== 'effects' && key !== 'id')) {
+    // Reject anything beyond event + effects + filter (e.g. targets, conditions).
+    if (Object.keys(e).some((key) => key !== 'event' && key !== 'effects' && key !== 'id' && key !== 'filter')) {
+      return null
+    }
+
+    const filter = parseTriggerFilter(e.filter)
+    if (filter === null) {
       return null
     }
 
@@ -681,9 +730,39 @@ function parseTriggers(value: unknown): BuilderTrigger[] | null {
       return null
     }
 
-    triggers.push({ event: event as BuilderTriggerEvent, effects })
+    triggers.push({ event: event as BuilderTriggerEvent, filter, effects })
   }
   return triggers
+}
+
+// A watcher filter `{ type_line?, controller?, exclude_self? }` → the form model
+// (absent controller = 'you', the engine default). Any other key / wrong type →
+// null, so the script stays in JSON mode.
+function parseTriggerFilter(value: unknown): BuilderTriggerFilter | null {
+  if (value === undefined) {
+    return emptyTriggerFilter()
+  }
+  if (typeof value !== 'object' || value === null) {
+    return null
+  }
+  const f = value as Record<string, unknown>
+  if (Object.keys(f).some((key) => !['type_line', 'controller', 'exclude_self'].includes(key))) {
+    return null
+  }
+  if (f.type_line !== undefined && typeof f.type_line !== 'string') {
+    return null
+  }
+  if (f.controller !== undefined && !['you', 'opponent', 'any'].includes(f.controller as string)) {
+    return null
+  }
+  if (f.exclude_self !== undefined && typeof f.exclude_self !== 'boolean') {
+    return null
+  }
+  return {
+    typeLine: typeof f.type_line === 'string' ? f.type_line : '',
+    controller: (f.controller as BuilderTriggerController) ?? 'you',
+    excludeSelf: f.exclude_self === true,
+  }
 }
 
 function parseEffects(value: unknown): BuilderEffect[] | null {

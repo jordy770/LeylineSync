@@ -7905,6 +7905,153 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-06-08T00:00:00.000Z"
+    },
+    {
+      "id": "bug-486",
+      "timestamp": "2026-06-08T14:59:43.917Z",
+      "error_message": "CSS fix: type",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false → 'create_token', amount: 0, canTargetPlayer: false, canTargetCreature: false, needsTarget: false",
+      "fix": "Changed type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false → 'create_token', amount: 0, canTargetPlayer: false, canTargetCreature: false, needsTarget: false",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T14:59:43.917Z"
+    },
+    {
+      "id": "bug-487",
+      "timestamp": "2026-06-08T15:00:11.772Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 21→27 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:00:11.772Z"
+    },
+    {
+      "id": "bug-488",
+      "timestamp": "2026-06-08T15:09:49.770Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:09:49.770Z"
+    },
+    {
+      "id": "bug-489",
+      "timestamp": "2026-06-08T15:09:58.348Z",
+      "error_message": "Wrong return value",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Was returning: { event: 'enters_the_battlefield', effects: [defau",
+      "fix": "Now returns: { event: 'enters_the_battlefield', filter: emptyTr",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:09:58.348Z"
+    },
+    {
+      "id": "bug-490",
+      "timestamp": "2026-06-08T15:10:11.165Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→19 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:10:11.165Z"
+    },
+    {
+      "id": "bug-491",
+      "timestamp": "2026-06-08T15:10:39.854Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:10:39.854Z"
+    },
+    {
+      "id": "bug-492",
+      "timestamp": "2026-06-08T15:11:11.954Z",
+      "error_message": "Type error",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:11:11.954Z"
+    },
+    {
+      "id": "bug-493",
+      "timestamp": "2026-06-08T15:12:21.622Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/unit/card-behavior-builder.test.ts",
+      "root_cause": "Had 'gain_life'",
+      "fix": "Changed to ', controller: '",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:12:21.622Z"
+    },
+    {
+      "id": "bug-471",
+      "timestamp": "2026-06-08T00:00:00.000Z",
+      "error_message": "User: Champion of the Perished ('Whenever another Zombie you control enters, +1/+1 counter') couldn't be set in the guided form",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "The form's triggered abilities were event+effects only — no trigger FILTER. The watcher events (creature_entered/died/got_counter) need a filter (type_line/controller/exclude_self) to mean 'another Zombie you control', and it wasn't exposed (engine mig 165 + schema already supported it). A filtered trigger dropped to JSON mode.",
+      "fix": "Added BuilderTrigger.filter {typeLine, controller, excludeSelf} + parseTriggerFilter + a filter UI in TriggerEditor shown only for watcher events. Build omits controller when you (the engine default) and emits opponent/any explicitly.",
+      "fix_lesson": "The engine defaults an absent watcher controller to you (not any); any must be explicit. Match the form default to the engine default so a bare/omitted field round-trips to the same behavior.",
+      "tags": [
+        "guided-form",
+        "trigger-filter",
+        "watcher",
+        "tribal",
+        "champion-of-the-perished"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T00:00:00.000Z"
     }
   ]
 }

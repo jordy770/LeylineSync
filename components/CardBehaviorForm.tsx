@@ -8,6 +8,9 @@ import {
   BUILDER_TRIGGER_EVENTS,
   KEYWORD_LABELS,
   BUILDER_STATIC_SCOPES,
+  BUILDER_TRIGGER_CONTROLLERS,
+  isWatcherEvent,
+  type BuilderTriggerController,
   defaultActivatedAbility,
   defaultEffect,
   defaultSpellEffect,
@@ -477,6 +480,44 @@ function TriggerEditor({
           Remove
         </button>
       </div>
+
+      {/* Watcher filter — which OTHER creature this fires on (Champion of the Perished). */}
+      {isWatcherEvent(trigger.event) && (
+        <div className="flex flex-wrap items-center gap-2 rounded border border-slate-800 bg-slate-900/40 p-2 text-xs text-slate-300">
+          <span>Whenever a</span>
+          <input
+            type="text"
+            value={trigger.filter.typeLine}
+            disabled={disabled}
+            placeholder="any type"
+            title="Creature type the trigger watches (blank = any creature)"
+            onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, typeLine: event.target.value } })}
+            className={`${inputClass} w-28`}
+          />
+          <select
+            value={trigger.filter.controller}
+            disabled={disabled}
+            title="Whose creatures this watches"
+            onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, controller: event.target.value as BuilderTriggerController } })}
+            className={inputClass}
+          >
+            {BUILDER_TRIGGER_CONTROLLERS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <label className="flex items-center gap-1.5" title="Exclude this creature (the &quot;another&quot; wording)">
+            <input
+              type="checkbox"
+              checked={trigger.filter.excludeSelf}
+              disabled={disabled}
+              onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, excludeSelf: event.target.checked } })}
+            />
+            another (not this)
+          </label>
+        </div>
+      )}
 
       <div className="grid gap-2 border-l-2 border-slate-800 pl-3">
         {trigger.effects.map((effect, index) => (

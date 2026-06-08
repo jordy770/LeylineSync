@@ -189,6 +189,14 @@ const CASES: Case[] = [
   // Deep Analysis — "target player draws two" = choose_player(any) → draw, + flashback.
   { name: 'deep analysis choose_player draw + flashback → form', script: { schema_version: 2, flashback: '{1}{U}', spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] } }, form: true },
 
+  // Watcher triggers with a filter (Champion of the Perished) — now form-representable.
+  { name: 'champion of the perished (watcher filter) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', controller: 'you', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: true },
+  { name: 'watcher filter controller any → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_died', filter: { controller: 'any' }, effects: [{ type: 'draw', amount: 1 }] }] }, form: true },
+  { name: 'watcher filter type-only → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: true },
+  // Non-canonical filters bail to JSON.
+  { name: 'watcher filter unknown key → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { foo: 1 }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },
+  { name: 'watcher filter bad controller → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { controller: 'nobody' }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },
+
   // Edge cases
   { name: 'empty object', script: {}, form: true },
   { name: 'null script', script: null, form: true },
@@ -269,6 +277,23 @@ test('exact build: flashback alternate effect (draw 1, draw 3 on flashback)', ()
     spell_effect: { actions: [{ type: 'draw', amount: 1 }] },
     flashback: '{2}',
     flashback_effect: { actions: [{ type: 'draw', amount: 3 }] },
+  })
+})
+
+test('exact build: Champion of the Perished (watcher filter, controller you omitted)', () => {
+  const form = parseScriptToForm({ schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', controller: 'you', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }] })
+  // 'you' is the engine default, so it's omitted from the canonical JSON.
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }],
+  })
+})
+
+test('exact build: watcher filter controller opponent', () => {
+  const form = parseScriptToForm({ schema_version: 2, triggered_abilities: [{ event: 'creature_died', filter: { controller: 'opponent' }, effects: [{ type: 'draw', amount: 1 }] }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    triggered_abilities: [{ event: 'creature_died', filter: { controller: 'opponent' }, effects: [{ type: 'draw', amount: 1 }] }],
   })
 })
 
@@ -454,5 +479,5 @@ test('activated draw ability ({2}: draw) round-trips through the form', () => {
 })
 
 test('defaultTrigger shape', () => {
-  assert.deepEqual(defaultTrigger(), { event: 'enters_the_battlefield', effects: [{ type: 'gain_life', amount: 1 }] })
+  assert.deepEqual(defaultTrigger(), { event: 'enters_the_battlefield', filter: { typeLine: '', controller: 'you', excludeSelf: false }, effects: [{ type: 'gain_life', amount: 1 }] })
 })

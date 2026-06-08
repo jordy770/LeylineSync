@@ -2516,3 +2516,14 @@
 | 17:00 | Edited components/ControllerListV4.tsx | CSS: canTargetGraveyard | ~478 |
 | 17:00 | Edited components/ControllerListV4.tsx | CSS: targetCardId, active | ~317 |
 | 17:02 | Cemetery Reaper Stage 2: in-game graveyard-card picker | ControllerListV4.tsx | abilityPick.canTargetGraveyard lists graveyard creatures; create_token ability effect; hunk-split commit | ~9k |
+| 17:02 | Session end: 100 writes across 20 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 19 reads | ~184171 tok |
+| 17:09 | Edited lib/game/card-behavior-builder.ts | modified emptyTriggerFilter() | ~377 |
+| 17:09 | Edited lib/game/card-behavior-builder.ts | modified defaultTrigger() | ~48 |
+| 17:10 | Edited lib/game/card-behavior-builder.ts | added 5 condition(s) | ~244 |
+| 17:10 | Edited lib/game/card-behavior-builder.ts | added nullish coalescing | ~458 |
+| 17:10 | Edited components/CardBehaviorForm.tsx | 2→5 lines | ~38 |
+| 17:11 | Edited components/CardBehaviorForm.tsx | expanded (+38 lines) | ~596 |
+| 17:11 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~397 |
+| 17:11 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+17 lines) | ~327 |
+| 17:12 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~53 |
+| 17:14 | Guided form: watcher-trigger filter (Champion of the Perished) | card-behavior-builder.ts, CardBehaviorForm.tsx, builder.test.ts | BuilderTrigger.filter (type/controller/exclude_self); form-only; 587/587 | ~14k |
