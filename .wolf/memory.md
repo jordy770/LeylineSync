@@ -2396,3 +2396,22 @@
 | 14:06 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+7 lines) | ~277 |
 | 14:07 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+9 lines) | ~172 |
 | 14:08 | Guided builder now covers create_token `tapped` + spell context (registry) and top-level `flashback` (BuilderForm field + build/parse + widget); was previously schema/AI-only | card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts | 534/534 green, tsc/lint/build clean | ~9k |
+| 14:08 | Session end: 33 writes across 15 files (202605010173_cast_from_graveyard.sql, test-cards.json, card-behavior-schema.ts, liliana-untouched.test.ts, card-behavior-llm.ts) | 20 reads | ~173331 tok |
+
+## Session: 2026-06-08 14:10
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:17 | Edited lib/game/card-behavior-builder.ts | modified defaultStaticBuff() | ~394 |
+| 14:17 | Edited lib/game/card-behavior-builder.ts | added 2 condition(s) | ~177 |
+| 14:17 | Edited lib/game/card-behavior-builder.ts | parseKeywords() → parseContinuousEffects() | ~46 |
+| 14:18 | Edited lib/game/card-behavior-builder.ts | 2→2 lines | ~26 |
+| 14:18 | Edited lib/game/card-behavior-builder.ts | added 10 condition(s) | ~900 |
+| 14:18 | Edited components/CardBehaviorEditor.tsx | CSS: staticBuffs | ~46 |
+| 14:18 | Edited components/CardBehaviorForm.tsx | 13→15 lines | ~108 |
+| 14:19 | Edited components/CardBehaviorForm.tsx | CSS: staticBuffs, staticBuffs | ~110 |
+| 14:19 | Edited components/CardBehaviorForm.tsx | CSS: staticBuffs, disabled | ~449 |
+| 14:19 | Edited components/CardBehaviorForm.tsx | modified StaticBuffEditor() | ~581 |
+| 14:19 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+11 lines) | ~550 |
+| 14:19 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~152 |
+| 14:22 | Guided builder: static type-anthems (Cemetery Reaper) | card-behavior-builder.ts, CardBehaviorForm.tsx, CardBehaviorEditor.tsx, builder.test.ts | form wires "[Other] [Type] creatures you control get +P/+T" pump lords; 547/547 green | ~9k |

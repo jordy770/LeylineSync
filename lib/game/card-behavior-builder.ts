@@ -183,8 +183,26 @@ export function defaultActivatedAbility(kind: BuilderAbilityKind): BuilderActiva
   return { kind: 'effect', tapSelf: true, mana: '', effect: effectDefault('deal_damage_target') }
 }
 
+// A static anthem / lord: "[Other] [<Type>] creatures you control get +P/+T".
+// Serializes to a `pump` continuous effect with affected:'controller'. An empty
+// creatureType means all your creatures; excludeSource = the "Other" wording
+// (the source permanent doesn't buff itself). Cemetery Reaper, Zombie Lord.
+export type BuilderStaticBuff = {
+  power: number
+  toughness: number
+  creatureType: string
+  excludeSource: boolean
+}
+
+export function defaultStaticBuff(): BuilderStaticBuff {
+  return { power: 1, toughness: 1, creatureType: '', excludeSource: false }
+}
+
 export type BuilderForm = {
   keywords: BuilderKeyword[]
+  // Static type-anthems ("Other Zombies you control get +1/+1"). Serialized
+  // alongside keywords into continuous_effects.
+  staticBuffs: BuilderStaticBuff[]
   triggers: BuilderTrigger[]
   activatedAbilities: BuilderActivatedAbility[]
   // An ordered list of untargeted spell actions (instant/sorcery resolution),
@@ -197,6 +215,7 @@ export type BuilderForm = {
 
 export const EMPTY_BUILDER_FORM: BuilderForm = {
   keywords: [],
+  staticBuffs: [],
   triggers: [],
   activatedAbilities: [],
   spellEffect: [],
@@ -217,11 +236,25 @@ export function defaultTrigger(): BuilderTrigger {
 // ─── Form → script JSON ────────────────────────────────────────────────────────
 
 export function buildScriptFromForm(form: BuilderForm): CardScript | null {
-  const continuousEffects = form.keywords.map((keyword) => ({
+  const keywordEffects = form.keywords.map((keyword) => ({
     type: keyword,
     affected: 'source',
     source_zone_required: 'battlefield',
   }))
+
+  const staticBuffEffects = form.staticBuffs.map((buff) => {
+    const payload: Record<string, unknown> = { power: buff.power, toughness: buff.toughness }
+    const type = buff.creatureType.trim()
+    if (type !== '') {
+      payload.creature_type = type
+    }
+    if (buff.excludeSource) {
+      payload.exclude_source = true
+    }
+    return { type: 'pump', affected: 'controller', payload }
+  })
+
+  const continuousEffects = [...keywordEffects, ...staticBuffEffects]
 
   const triggeredAbilities = form.triggers.map((trigger) => ({
     event: trigger.event,
@@ -327,10 +360,11 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     flashback = s.flashback
   }
 
-  const keywords = parseKeywords(s.continuous_effects)
-  if (keywords === null) {
+  const continuous = parseContinuousEffects(s.continuous_effects)
+  if (continuous === null) {
     return null
   }
+  const { keywords, staticBuffs } = continuous
 
   const triggers = parseTriggers(s.triggered_abilities)
   if (triggers === null) {
@@ -353,7 +387,7 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     spellEffect = parsed
   }
 
-  return { keywords, triggers, activatedAbilities, spellEffect, flashback }
+  return { keywords, staticBuffs, triggers, activatedAbilities, spellEffect, flashback }
 }
 
 // Returns the form model for a spell_effect built from plain scry/surveil/draw
@@ -456,34 +490,100 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
   return abilities
 }
 
-function parseKeywords(value: unknown): BuilderKeyword[] | null {
+// Partitions continuous_effects into the two form-representable shapes — plain
+// source keywords and static controller anthems (pump lords). Any other shape
+// (auras, opponent debuffs, non-canonical payloads) → null, so the editor stays
+// in JSON mode rather than silently dropping data.
+function parseContinuousEffects(
+  value: unknown,
+): { keywords: BuilderKeyword[]; staticBuffs: BuilderStaticBuff[] } | null {
   if (value == null) {
-    return []
+    return { keywords: [], staticBuffs: [] }
   }
   if (!Array.isArray(value)) {
     return null
   }
 
   const keywords: BuilderKeyword[] = []
+  const staticBuffs: BuilderStaticBuff[] = []
   for (const entry of value) {
     if (typeof entry !== 'object' || entry === null) {
       return null
     }
     const e = entry as Record<string, unknown>
     const type = (e.type ?? e.effect_type) as string | undefined
-    // Only plain keyword effects on the source permanent are form-representable.
-    if (
-      !type ||
-      !(BUILDER_KEYWORDS as readonly string[]).includes(type) ||
-      (e.affected !== undefined && e.affected !== 'source') ||
-      (e.source_zone_required !== undefined && e.source_zone_required !== 'battlefield') ||
-      Object.keys(e).some((key) => !['type', 'effect_type', 'affected', 'source_zone_required'].includes(key))
-    ) {
+    if (!type) {
       return null
     }
-    keywords.push(type as BuilderKeyword)
+
+    // Plain keyword effect on the source permanent.
+    if ((BUILDER_KEYWORDS as readonly string[]).includes(type)) {
+      if (
+        (e.affected !== undefined && e.affected !== 'source') ||
+        (e.source_zone_required !== undefined && e.source_zone_required !== 'battlefield') ||
+        Object.keys(e).some((key) => !['type', 'effect_type', 'affected', 'source_zone_required'].includes(key))
+      ) {
+        return null
+      }
+      keywords.push(type as BuilderKeyword)
+      continue
+    }
+
+    // Static anthem: a controller-scoped pump with a canonical payload.
+    if (type === 'pump') {
+      const buff = parseStaticBuff(e)
+      if (buff === null) {
+        return null
+      }
+      staticBuffs.push(buff)
+      continue
+    }
+
+    return null
   }
-  return keywords
+  return { keywords, staticBuffs }
+}
+
+// A form-representable anthem is `{ type:'pump', affected:'controller', payload:{
+// power, toughness, [creature_type], [exclude_source:true] } }` — exactly what
+// buildScriptFromForm emits. Non-canonical payloads (empty creature_type,
+// exclude_source:false, extra keys) round-trip to JSON mode.
+function parseStaticBuff(e: Record<string, unknown>): BuilderStaticBuff | null {
+  if (
+    e.affected !== 'controller' ||
+    (e.source_zone_required !== undefined && e.source_zone_required !== 'battlefield') ||
+    Object.keys(e).some((key) => !['type', 'effect_type', 'affected', 'source_zone_required', 'payload'].includes(key))
+  ) {
+    return null
+  }
+  const payload = e.payload
+  if (typeof payload !== 'object' || payload === null) {
+    return null
+  }
+  const p = payload as Record<string, unknown>
+  if (
+    typeof p.power !== 'number' ||
+    typeof p.toughness !== 'number' ||
+    Object.keys(p).some((key) => !['power', 'toughness', 'creature_type', 'exclude_source'].includes(key))
+  ) {
+    return null
+  }
+  let creatureType = ''
+  if (p.creature_type !== undefined) {
+    if (typeof p.creature_type !== 'string' || p.creature_type.trim() === '') {
+      return null
+    }
+    creatureType = p.creature_type
+  }
+  if (p.exclude_source !== undefined && p.exclude_source !== true) {
+    return null
+  }
+  return {
+    power: p.power,
+    toughness: p.toughness,
+    creatureType,
+    excludeSource: p.exclude_source === true,
+  }
 }
 
 function parseTriggers(value: unknown): BuilderTrigger[] | null {

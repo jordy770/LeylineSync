@@ -162,6 +162,17 @@ const CASES: Case[] = [
   // A non-string flashback is not form-representable.
   { name: 'flashback non-string → json', script: { schema_version: 2, flashback: 7, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
 
+  // Static anthems / lords (pump on affected:'controller') — form-representable.
+  { name: 'static other-Zombie lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] }, form: true },
+  { name: 'static inclusive typed lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie' } }] }, form: true },
+  { name: 'static all-creatures anthem (no type) → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1 } }] }, form: true },
+  { name: 'static lord + keyword together → form', script: { continuous_effects: [{ type: 'flying', affected: 'source', source_zone_required: 'battlefield' }, { type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] }, form: true },
+  // Non-canonical anthems bail to JSON (the form would round-trip them differently).
+  { name: 'static pump affected source (aura, not anthem) → json', script: { continuous_effects: [{ type: 'pump', affected: 'source', payload: { power: 1, toughness: 1 } }] }, form: false },
+  { name: 'static pump empty creature_type → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: '' } }] }, form: false },
+  { name: 'static pump exclude_source false → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, exclude_source: false } }] }, form: false },
+  { name: 'static pump extra payload key → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, foo: 1 } }] }, form: false },
+
   // Edge cases
   { name: 'empty object', script: {}, form: true },
   { name: 'null script', script: null, form: true },
@@ -198,6 +209,14 @@ test('exact build: Army of the Damned (tapped tokens + flashback)', () => {
     schema_version: 2,
     spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] },
     flashback: '{7}{B}{B}{B}',
+  })
+})
+
+test('exact build: Cemetery Reaper (other-Zombie anthem)', () => {
+  const form = parseScriptToForm({ continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }],
   })
 })
 

@@ -10,6 +10,7 @@ import {
   defaultActivatedAbility,
   defaultEffect,
   defaultSpellEffect,
+  defaultStaticBuff,
   defaultTrigger,
   type BuilderActivatedAbility,
   type BuilderEffect,
@@ -17,6 +18,7 @@ import {
   type BuilderKeyword,
   type BuilderSpellEffect,
   type BuilderSpellEffectType,
+  type BuilderStaticBuff,
   type BuilderTrigger,
   type BuilderTriggerEvent,
 } from '@/lib/game/card-behavior-builder'
@@ -54,6 +56,14 @@ export default function CardBehaviorForm({
         ? value.keywords.filter((k) => k !== keyword)
         : [...value.keywords, keyword],
     })
+  }
+
+  const updateStaticBuff = (index: number, next: BuilderStaticBuff) => {
+    onChange({ ...value, staticBuffs: value.staticBuffs.map((b, i) => (i === index ? next : b)) })
+  }
+
+  const removeStaticBuff = (index: number) => {
+    onChange({ ...value, staticBuffs: value.staticBuffs.filter((_, i) => i !== index) })
   }
 
   const updateTrigger = (index: number, next: BuilderTrigger) => {
@@ -108,6 +118,39 @@ export default function CardBehaviorForm({
             )
           })}
         </div>
+      </section>
+
+      {/* Static buffs / anthems */}
+      <section className="grid gap-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Static buffs <span className="font-normal normal-case text-slate-500">(anthems / lords)</span>
+          </h3>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange({ ...value, staticBuffs: [...value.staticBuffs, defaultStaticBuff()] })}
+            className="rounded border border-slate-700 px-2 py-1 text-xs font-semibold text-slate-200 disabled:opacity-50"
+          >
+            + Add static buff
+          </button>
+        </div>
+
+        {value.staticBuffs.length === 0 ? (
+          <p className="text-xs text-slate-500">
+            No static buffs. Use these for &quot;[Other] [Type] creatures you control get +P/+T&quot;.
+          </p>
+        ) : (
+          value.staticBuffs.map((buff, index) => (
+            <StaticBuffEditor
+              key={index}
+              buff={buff}
+              disabled={disabled}
+              onChange={(next) => updateStaticBuff(index, next)}
+              onRemove={() => removeStaticBuff(index)}
+            />
+          ))
+        )}
       </section>
 
       {/* Triggered abilities */}
@@ -255,6 +298,72 @@ export default function CardBehaviorForm({
           Leave blank for no flashback. The cost re-casts the spell effect above from your graveyard.
         </p>
       </section>
+    </div>
+  )
+}
+
+function StaticBuffEditor({
+  buff,
+  onChange,
+  onRemove,
+  disabled,
+}: {
+  buff: BuilderStaticBuff
+  onChange: (next: BuilderStaticBuff) => void
+  onRemove: () => void
+  disabled: boolean
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 p-3 text-xs text-slate-300">
+      <input
+        type="number"
+        min={-99}
+        max={99}
+        value={buff.power}
+        disabled={disabled}
+        title="Power"
+        onChange={(event) => onChange({ ...buff, power: Number(event.target.value) })}
+        className={`${inputClass} w-16`}
+      />
+      <span>/</span>
+      <input
+        type="number"
+        min={-99}
+        max={99}
+        value={buff.toughness}
+        disabled={disabled}
+        title="Toughness"
+        onChange={(event) => onChange({ ...buff, toughness: Number(event.target.value) })}
+        className={`${inputClass} w-16`}
+      />
+      <span>to</span>
+      <input
+        type="text"
+        value={buff.creatureType}
+        disabled={disabled}
+        placeholder="any type"
+        title="Creature type (blank = all your creatures)"
+        onChange={(event) => onChange({ ...buff, creatureType: event.target.value })}
+        className={`${inputClass} w-32`}
+      />
+      <span>creatures you control</span>
+      <label className="flex items-center gap-1.5" title="Exclude this permanent (the &quot;Other&quot; wording)">
+        <input
+          type="checkbox"
+          checked={buff.excludeSource}
+          disabled={disabled}
+          onChange={(event) => onChange({ ...buff, excludeSource: event.target.checked })}
+        />
+        Other (not itself)
+      </label>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={onRemove}
+        className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+      >
+        ✕
+      </button>
     </div>
   )
 }
