@@ -2655,3 +2655,10 @@
 | 21:40 | Created tests/feature/activated-search-library.test.ts | — | ~791 |
 | 21:40 | Edited package.json | inline fix | ~28 |
 | 21:41 | Wayfarers Bauble: search_library as activated-ability effect (mig 187) | activate_ability routes search_library through spell_effect (like create_token); fixture+test only, form already supported | 630/630 green | ~6k |
+| 21:42 | Session end: 14 writes across 9 files (202605010186_exile_from_graveyard_effect.sql, card-behavior-schema.ts, card-behavior-registry.ts, test-cards.json, exile-from-graveyard-effect.test.ts) | 14 reads | ~83823 tok |
+| 21:47 | Edited supabase/migrations/202605010188_activated_destroy_permanent.sql | 9→8 lines | ~139 |
+| 21:47 | Edited supabase/migrations/202605010188_activated_destroy_permanent.sql | expanded (+13 lines) | ~297 |
+| 21:47 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~187 |
+| 21:47 | Created tests/feature/activated-destroy-permanent.test.ts | — | ~855 |
+| 21:48 | Edited package.json | inline fix | ~28 |
+| 21:49 | Unstable Obelisk: activated destroy of any permanent (mig 188) | activate_ability removal branch routes non-creature target_type to permanent_effect; fixture+test, form already supported | 633/633 green | ~6k |

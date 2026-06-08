@@ -8586,6 +8586,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T19:40:10.847Z"
+    },
+    {
+      "id": "bug-528",
+      "timestamp": "2026-06-08T19:47:43.850Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Wayfarer'",
+      "fix": "Changed to \"Unstable Obelisk Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T19:47:43.850Z"
     }
   ]
 }

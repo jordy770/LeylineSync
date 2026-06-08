@@ -71,6 +71,26 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-08T19:39:38.132Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010131_protection_color_and_targeting.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-08T19:45:49.204Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010113_permanent_effect.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-08T19:46:22.616Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010081_trigger_target_refinements.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-08T19:46:45.924Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010188_activated_destroy_permanent.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-08T19:47:08.564Z"
     }
   },
   "files_written": [
@@ -157,22 +177,54 @@
       "action": "edit",
       "tokens": 28,
       "at": "2026-06-08T19:40:31.409Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010188_activated_destroy_permanent.sql",
+      "action": "edit",
+      "tokens": 149,
+      "at": "2026-06-08T19:47:16.168Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010188_activated_destroy_permanent.sql",
+      "action": "edit",
+      "tokens": 318,
+      "at": "2026-06-08T19:47:25.562Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 187,
+      "at": "2026-06-08T19:47:43.845Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/activated-destroy-permanent.test.ts",
+      "action": "create",
+      "tokens": 855,
+      "at": "2026-06-08T19:47:59.644Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 28,
+      "at": "2026-06-08T19:48:09.148Z"
     }
   ],
   "edit_counts": {
     "supabase/migrations/202605010186_exile_from_graveyard_effect.sql": 3,
     "lib/game/card-behavior-schema.ts": 2,
     "lib/game/card-behavior-registry.ts": 1,
-    "tests/fixtures/test-cards.json": 2,
+    "tests/fixtures/test-cards.json": 3,
     "tests/feature/exile-from-graveyard-effect.test.ts": 1,
-    "package.json": 2,
+    "package.json": 3,
     "tests/unit/card-behavior-builder.test.ts": 1,
     "supabase/migrations/202605010187_activated_search_library.sql": 1,
-    "tests/feature/activated-search-library.test.ts": 1
+    "tests/feature/activated-search-library.test.ts": 1,
+    "supabase/migrations/202605010188_activated_destroy_permanent.sql": 2,
+    "tests/feature/activated-destroy-permanent.test.ts": 1
   },
   "anatomy_hits": 11,
-  "anatomy_misses": 3,
+  "anatomy_misses": 7,
   "repeated_reads_warned": 4,
   "cerebrum_warnings": 0,
-  "stop_count": 1
+  "stop_count": 2
 }
