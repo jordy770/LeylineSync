@@ -2383,3 +2383,16 @@
 | 13:50 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~481 |
 | 13:50 | Edited components/ControllerListV4.tsx | 6→7 lines | ~63 |
 | 13:53 | Flashback UI slice: graveyard cards with a flashback cost are tappable (FB badge) -> CardActionSheet shows a Flashback cast button -> reuses spellEffect handler (server applies flashback) | components/ControllerListV4.tsx | tsc/lint/build clean | ~6k |
+| 13:53 | Session end: 24 writes across 10 files (202605010173_cast_from_graveyard.sql, test-cards.json, card-behavior-schema.ts, liliana-untouched.test.ts, card-behavior-llm.ts) | 15 reads | ~140965 tok |
+| 13:57 | Session end: 24 writes across 10 files (202605010173_cast_from_graveyard.sql, test-cards.json, card-behavior-schema.ts, liliana-untouched.test.ts, card-behavior-llm.ts) | 15 reads | ~140965 tok |
+| 14:02 | Session end: 24 writes across 10 files (202605010173_cast_from_graveyard.sql, test-cards.json, card-behavior-schema.ts, liliana-untouched.test.ts, card-behavior-llm.ts) | 17 reads | ~156227 tok |
+| 14:04 | Edited lib/game/card-behavior-registry.ts | 9→11 lines | ~140 |
+| 14:05 | Edited lib/game/card-behavior-builder.ts | 15→19 lines | ~180 |
+| 14:05 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~310 |
+| 14:05 | Edited lib/game/card-behavior-builder.ts | added 2 condition(s) | ~142 |
+| 14:05 | Edited lib/game/card-behavior-builder.ts | 2→2 lines | ~22 |
+| 14:05 | Edited components/CardBehaviorEditor.tsx | CSS: flashback | ~87 |
+| 14:06 | Edited components/CardBehaviorForm.tsx | CSS: flashback | ~251 |
+| 14:06 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+7 lines) | ~277 |
+| 14:07 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+9 lines) | ~172 |
+| 14:08 | Guided builder now covers create_token `tapped` + spell context (registry) and top-level `flashback` (BuilderForm field + build/parse + widget); was previously schema/AI-only | card-behavior-registry.ts, card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts | 534/534 green, tsc/lint/build clean | ~9k |

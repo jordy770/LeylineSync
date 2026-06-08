@@ -32,6 +32,7 @@ const emptyBuilderForm = (): BuilderForm => ({
   triggers: [...EMPTY_BUILDER_FORM.triggers],
   activatedAbilities: [...EMPTY_BUILDER_FORM.activatedAbilities],
   spellEffect: [...EMPTY_BUILDER_FORM.spellEffect],
+  flashback: EMPTY_BUILDER_FORM.flashback,
 })
 
 const scriptToText = (script: CardScript | null | undefined) =>

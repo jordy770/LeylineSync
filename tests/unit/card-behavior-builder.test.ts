@@ -155,6 +155,13 @@ const CASES: Case[] = [
   { name: 'trigger lose_life no recipient → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'lose_life', amount: 2 }] }] }, form: true },
   { name: 'trigger create_token no count → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'create_token', token: 'Goblin Token' }] }] }, form: true },
 
+  // Spell create_token with tapped (Army of the Damned) — form-representable.
+  { name: 'spell create_token tapped → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] } }, form: true },
+  // Flashback (top-level) round-trips through the form.
+  { name: 'flashback spell → form', script: { schema_version: 2, flashback: '{7}{B}{B}{B}', spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] } }, form: true },
+  // A non-string flashback is not form-representable.
+  { name: 'flashback non-string → json', script: { schema_version: 2, flashback: 7, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
+
   // Edge cases
   { name: 'empty object', script: {}, form: true },
   { name: 'null script', script: null, form: true },
@@ -185,6 +192,15 @@ for (const c of CASES.filter((x) => x.form)) {
 }
 
 // Exact-shape pins — lock the JSON a couple of representative forms emit.
+test('exact build: Army of the Damned (tapped tokens + flashback)', () => {
+  const form = parseScriptToForm({ schema_version: 2, flashback: '{7}{B}{B}{B}', spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] },
+    flashback: '{7}{B}{B}{B}',
+  })
+})
+
 test('exact build: Opt (scry+draw)', () => {
   const form = parseScriptToForm({ schema_version: 2, spell_effect: { actions: [{ type: 'scry', amount: 1 }, { type: 'draw', amount: 1 }] } })
   assert.deepEqual(buildScriptFromForm(form!), {

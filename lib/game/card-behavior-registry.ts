@@ -278,10 +278,12 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   {
     type: 'create_token',
     label: 'Create token(s)',
-    contexts: ['trigger'],
+    contexts: ['trigger', 'spell'],
     fields: [
       { name: 'count', kind: 'number', label: 'Count', default: 1, min: 1, max: 20, optional: true },
       { name: 'token', kind: 'select', label: 'Token', default: EFFECT_TOKEN_NAMES[0], options: TOKEN_OPTIONS },
+      // Army of the Damned: "tokens that are tapped".
+      { name: 'tapped', kind: 'boolean', label: 'Enter tapped', default: false, optional: true },
     ],
   },
   // Add OR remove counters (negative amount / "remove all" removes — fading, Hex Parasite).

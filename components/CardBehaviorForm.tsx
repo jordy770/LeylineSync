@@ -237,6 +237,24 @@ export default function CardBehaviorForm({
           ))
         )}
       </section>
+
+      {/* Flashback (cast the spell effect above from the graveyard, then exile) */}
+      <section className="grid gap-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          Flashback <span className="font-normal normal-case text-slate-500">(cast from graveyard, then exile)</span>
+        </h3>
+        <input
+          type="text"
+          value={value.flashback}
+          disabled={disabled}
+          onChange={(event) => onChange({ ...value, flashback: event.target.value })}
+          placeholder="e.g. {7}{B}{B}{B}"
+          className={inputClass}
+        />
+        <p className="text-xs text-slate-500">
+          Leave blank for no flashback. The cost re-casts the spell effect above from your graveyard.
+        </p>
+      </section>
     </div>
   )
 }

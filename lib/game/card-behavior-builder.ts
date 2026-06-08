@@ -190,6 +190,9 @@ export type BuilderForm = {
   // An ordered list of untargeted spell actions (instant/sorcery resolution),
   // e.g. Opt = [scry 1, draw 1]. Empty = no spell effect.
   spellEffect: BuilderSpellEffect[]
+  // Flashback cost ("{7}{B}{B}{B}"); empty = no flashback. Pairs with spellEffect
+  // (the spell you re-cast from the graveyard). Army of the Damned.
+  flashback: string
 }
 
 export const EMPTY_BUILDER_FORM: BuilderForm = {
@@ -197,6 +200,7 @@ export const EMPTY_BUILDER_FORM: BuilderForm = {
   triggers: [],
   activatedAbilities: [],
   spellEffect: [],
+  flashback: '',
 }
 
 // ─── Defaults / factories ──────────────────────────────────────────────────────
@@ -229,13 +233,15 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
   // Serialize spell actions through the registry so multi-field effects
   // (e.g. search_library's count/to/filter) keep all their data, not just amount.
   const spellEffectActions = form.spellEffect.map((a) => registryEffectToJson(a))
+  const flashback = form.flashback.trim()
 
   // Nothing authored → no script (clears behavior).
   if (
     continuousEffects.length === 0 &&
     triggeredAbilities.length === 0 &&
     activatedAbilities.length === 0 &&
-    spellEffectActions.length === 0
+    spellEffectActions.length === 0 &&
+    flashback === ''
   ) {
     return null
   }
@@ -252,6 +258,9 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
   }
   if (spellEffectActions.length > 0) {
     script.spell_effect = { actions: spellEffectActions }
+  }
+  if (flashback !== '') {
+    script.flashback = flashback
   }
 
   return script as CardScript
@@ -303,9 +312,19 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     'triggered_abilities',
     'activated_abilities',
     'spell_effect',
+    'flashback',
   ])
   if (Object.keys(s).some((key) => !knownKeys.has(key))) {
     return null
+  }
+
+  // Flashback must be a string (a mana cost) when present; anything else → JSON mode.
+  let flashback = ''
+  if (s.flashback !== undefined) {
+    if (typeof s.flashback !== 'string') {
+      return null
+    }
+    flashback = s.flashback
   }
 
   const keywords = parseKeywords(s.continuous_effects)
@@ -334,7 +353,7 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     spellEffect = parsed
   }
 
-  return { keywords, triggers, activatedAbilities, spellEffect }
+  return { keywords, triggers, activatedAbilities, spellEffect, flashback }
 }
 
 // Returns the form model for a spell_effect built from plain scry/surveil/draw
