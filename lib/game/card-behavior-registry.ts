@@ -273,7 +273,11 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   // Targeted deal_damage (Lightning Bolt) — spell only; the engine routes a trigger
   // "deal damage to any target" against each opponent, so triggers use the shape above.
   { type: 'deal_damage', variant: 'deal_damage_target', label: 'Deal damage to a target', contexts: ['spell'], fields: [amountField('Amount'), damageTargetField] },
-  { type: 'draw', label: 'You draw cards', contexts: ['trigger', 'spell', 'rider'], fields: [amountField('Amount')] },
+  // Neutral subject ("Draw cards", not "You draw cards"): the drawer is the
+  // effect's controller — the source's controller in a trigger/spell, the caster
+  // in a `then` rider, and the CHOSEN player inside choose_player. A caster-centric
+  // "you" label misread inside choose_player (the chosen player draws, not you).
+  { type: 'draw', label: 'Draw cards', contexts: ['trigger', 'spell', 'rider'], fields: [amountField('Amount')] },
   { type: 'mill', label: 'Mill cards', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField()] },
   {
     type: 'create_token',
@@ -333,11 +337,13 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   },
   {
     type: 'choose_player',
-    label: 'Choose a player, then…',
+    // The inner effects apply to the CHOSEN player (the engine forces each inner
+    // effect's recipient to that player), so the subject is bound here, not "you".
+    label: 'Choose a player, then that player…',
     contexts: ['trigger', 'spell'],
     fields: [
       { name: 'filter', kind: 'enum', label: 'Player', default: 'opponent', options: CHOOSE_PLAYER_FILTERS, optional: true },
-      { name: 'effects', kind: 'effect-list', label: 'Then', itemContext: 'trigger' },
+      { name: 'effects', kind: 'effect-list', label: 'That player:', itemContext: 'trigger' },
     ],
   },
   // Single-target removal (Doom Blade, Disenchant, Anguished Unmaking, …). Targets

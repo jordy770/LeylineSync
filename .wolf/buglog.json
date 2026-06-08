@@ -7546,6 +7546,41 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T00:00:00.000Z"
+    },
+    {
+      "id": "bug-465",
+      "timestamp": "2026-06-08T13:15:19.922Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 9→11 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T13:15:19.922Z"
+    },
+    {
+      "id": "bug-466",
+      "timestamp": "2026-06-08T00:00:00.000Z",
+      "error_message": "User: 'it is not explained correctly because it says you draw .. cards after choose player'",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "The guided form rendered choose_player's inner effects with caster-centric labels — draw showed 'You draw cards'. But the engine forces every inner effect's recipient to 'controller' and applies them to the CHOSEN player (submit_decision, mig 170), so inside choose_player the subject is the chosen player, not 'you'. The label contradicted the behavior.",
+      "fix": "Neutralized the draw label to 'Draw cards' (the drawer is the effect's controller in every context), and bound the subject at the wrapper: choose_player label 'Choose a player, then that player...' and its effects-list label 'That player:'. Could not add a dedicated chosen-context draw variant because resolveEffectDef disambiguates variants by field-shape and a chosen-draw has the same [amount] shape as base draw.",
+      "fix_lesson": "When an effect is reused in a context that rebinds its subject (choose_player rebinds recipient to the chosen player), prefer a subject-neutral label + a wrapper that names the subject, over a same-shape variant the registry can't disambiguate.",
+      "tags": [
+        "guided-form",
+        "labeling",
+        "choose_player",
+        "registry",
+        "ux"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T00:00:00.000Z"
     }
   ]
 }

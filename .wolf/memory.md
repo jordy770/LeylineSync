@@ -2436,3 +2436,11 @@
 | 15:00 | Edited package.json | inline fix | ~37 |
 | 15:01 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~50 |
 | 15:03 | Quick-wins: sliver scope toggle + sacrifice_self cost (Commander Sphere) | card-behavior-builder.ts, CardBehaviorForm.tsx, mig 175, test-cards.json, sacrifice-self-ability.test.ts | staticBuff scope all/controller; engine pays sacrifice_self (bug-464); 554/554 green | ~22k |
+| 15:04 | Session end: 31 writes across 8 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 9 reads | ~62306 tok |
+| 15:15 | Edited lib/game/card-behavior-registry.ts | modified subject() | ~126 |
+| 15:15 | Edited lib/game/card-behavior-registry.ts | 9→11 lines | ~151 |
+| 15:16 | Created tests/feature/target-player-draw.test.ts | — | ~778 |
+| 15:16 | Edited package.json | inline fix | ~37 |
+| 15:16 | Edited tests/unit/card-behavior-builder.test.ts | 2→5 lines | ~114 |
+| 15:16 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+9 lines) | ~153 |
+| 15:19 | choose_player draw label fix + Deep Analysis proof | card-behavior-registry.ts, target-player-draw.test.ts, builder.test.ts | draw label neutral, choose_player subject bound; chosen player draws not caster; 559/559 | ~18k |

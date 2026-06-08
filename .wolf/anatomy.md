@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T13:01:04.288Z
-> Files: 70 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T13:16:36.842Z
+> Files: 73 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1161 tok)
+- `package.json` — Node.js package manifest (~1172 tok)
 
 ## .claude/
 
@@ -111,7 +111,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11467 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~6982 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10252 tok)
-- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9784 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9931 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7122 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3434 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
@@ -161,8 +161,7 @@
 - `202605010172_dynamic_pump_loyalty_target.sql` — Dynamic / negatable pump + pump as a targetable effect (for Liliana, Untouched by (~2878 tok)
 - `202605010173_cast_from_graveyard.sql` — Cast-from-graveyard permission (Liliana, Untouched by Death's -3: (~6119 tok)
 - `202605010174_flashback_and_tapped_tokens.sql` — Army of the Damned: "Create thirteen 2/2 black Zombie creature tokens that are (~2083 tok)
-- `202605010175_sacrifice_self_ability_cost.sql` — Reproduces activate_ability (from mig 162) adding the `sacrifice_self` activated-ability cost (Commander's Sphere). Sacrifices the source via put_in_graveyard after other costs, before the ability hits the stack. (~2400 tok)
-- `202605010175_sacrifice_self_ability_cost.sql` — Sacrifice-self as an activated-ability cost (Commander's Sphere: "Sacrifice (~2448 tok)
+- `202605010175_sacrifice_self_ability_cost.sql` — Reproduces activate_ability (from mig 162) adding the `sacrifice_self` activated-ability cost (Commander's Sphere). Sacrifices the source via put_in_graveyard after other costs, before the ability hits the stack. (~2448 tok)
 
 ## tests/
 
@@ -170,7 +169,6 @@
 ## tests/feature/
 
 - `army-of-the-damned.test.ts` — Army of the Damned — "Create thirteen 2/2 black Zombie creature tokens that are (~1092 tok)
-- `sacrifice-self-ability.test.ts` — Sacrifice-self activated cost (Commander's Sphere, mig 175): source → graveyard as a cost, then draw resolves; can't re-activate. (~600 tok)
 - `assassins-trophy.test.ts` — Assassin's Trophy (mig 152) — "Destroy target permanent an opponent controls. Its (~769 tok)
 - `beast-within.test.ts` — Beast Within (card request) — "Destroy target permanent. Its controller creates a (~1132 tok)
 - `choose-creature-type.test.ts` — Choose a creature type (roadmap Tribal #6). A choose_creature_type effect parks a (~732 tok)
@@ -189,7 +187,10 @@
 - `planeswalker-combat.test.ts` — Planeswalker combat (roadmap Tribal #4, slice 2). A creature can attack a planeswalker; (~960 tok)
 - `planeswalkers.test.ts` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). A planeswalker enters (~1298 tok)
 - `proliferate.test.ts` — Proliferate (Atraxa, Praetors' Voice end step, Karn's Bastion, etc.). The engine (~1083 tok)
+- `sacrifice-self-ability.test.ts` — Sacrifice-self activated cost (Commander's Sphere, mig 175): source → graveyard as a cost, then draw resolves; can't re-activate. (~600 tok)
+- `target-player-draw.test.ts` — "Target player draws N" (Deep Analysis) = choose_player(any) → draw; the CHOSEN player draws, not the caster (can target self or opponent). (~700 tok)
 - `sacrifice-self-ability.test.ts` — Sacrifice-self as an activated-ability cost (mig 175). Commander's Sphere's (~639 tok)
+- `target-player-draw.test.ts` — "Target player draws N cards" (Deep Analysis) is modelled as choose_player (~778 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
 - `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)
 - `watcher-triggers.test.ts` — Other-scoped trigger events (roadmap Tribal #1, second half). `creature_entered` / (~1569 tok)
@@ -208,7 +209,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~10692 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~10930 tok)
 
 ## vercel/
 

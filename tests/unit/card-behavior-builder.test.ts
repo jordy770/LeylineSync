@@ -175,6 +175,9 @@ const CASES: Case[] = [
   { name: 'static pump exclude_source false → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, exclude_source: false } }] }, form: false },
   { name: 'static pump extra payload key → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, foo: 1 } }] }, form: false },
 
+  // Deep Analysis — "target player draws two" = choose_player(any) → draw, + flashback.
+  { name: 'deep analysis choose_player draw + flashback → form', script: { schema_version: 2, flashback: '{1}{U}', spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] } }, form: true },
+
   // Edge cases
   { name: 'empty object', script: {}, form: true },
   { name: 'null script', script: null, form: true },
@@ -227,6 +230,15 @@ test('exact build: sliver lord (all Slivers +1/+1, affected:all)', () => {
   assert.deepEqual(buildScriptFromForm(form!), {
     schema_version: 2,
     continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver' } }],
+  })
+})
+
+test('exact build: Deep Analysis (target player draws two + flashback)', () => {
+  const form = parseScriptToForm({ schema_version: 2, flashback: '{1}{U}', spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] },
+    flashback: '{1}{U}',
   })
 })
 
