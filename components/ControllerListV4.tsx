@@ -124,6 +124,7 @@ function renderAbilityCost(costs: CardBehaviorCost[]): string {
       case 'sacrifice_self': return 'Sacrifice'
       case 'discard': return `Discard ${cost.amount ?? '?'}`
       case 'exile_self': return 'Exile'
+      case 'exile_from_graveyard': return 'Exile a creature from a graveyard'
       default: return cost.type
     }
   }).join(' ')
@@ -344,7 +345,7 @@ function cardMatchesTargetType(typeLine: string | null | undefined, tt: string |
 // vocabulary). draw is untargeted; the rest target a creature (deal_damage also a
 // player). Returns null for anything else → the ability renders "Soon".
 const ABILITY_EFFECT_TYPES = [
-  'deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap', 'add_counters', 'pump', 'grant_keyword', 'gain_control', 'draw',
+  'deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap', 'add_counters', 'pump', 'grant_keyword', 'gain_control', 'draw', 'create_token',
 ]
 function getAbilityEffect(
   effects: CardBehaviorAction[],
@@ -355,6 +356,11 @@ function getAbilityEffect(
   if (!e || !e.type) return null
   if (e.type === 'draw') {
     return { type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false }
+  }
+  if (e.type === 'create_token') {
+    // Untargeted effect; any target the ability needs comes from its COST (e.g.
+    // Cemetery Reaper's "exile a creature card from a graveyard").
+    return { type: 'create_token', amount: 0, canTargetPlayer: false, canTargetCreature: false, needsTarget: false }
   }
   if (e.type === 'deal_damage') {
     if (typeof e.amount !== 'number') return null
@@ -2255,7 +2261,7 @@ function CardActionSheet({
   const [dmgAlloc, setDmgAlloc] = useState<Record<string, number>>({})
   // When set, showing the target picker for an activated ability.
   const [abilityPick, setAbilityPick] = useState<
-    { index: number; type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null
+    { index: number; type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean; canTargetGraveyard?: boolean } | null
   >(null)
   // Attachment picker: 'aura' = choose the creature an Aura enters enchanting;
   // 'equip' = choose the creature to equip this Equipment onto.
@@ -2282,6 +2288,11 @@ function CardActionSheet({
       c.type_line?.toLowerCase().includes('creature') &&
       creatureMatchesController(c, playerId, spellTargetController) &&
       !creatureProtectedFrom(c, spellColors),
+  )
+  // Creature cards in ANY graveyard — the choices for an "exile a creature card
+  // from a graveyard" activated-ability cost (Cemetery Reaper).
+  const graveyardCreatures = boardCards.filter(
+    (c) => c.zone === 'graveyard' && c.type_line?.toLowerCase().includes('creature'),
   )
   // Permanent targets for a permanent_effect spell: any board card whose type line
   // matches the effect's target_type, under the same controller restriction.
@@ -2982,11 +2993,15 @@ function CardActionSheet({
             {otherAbilities.map(({ ability, index }) => {
               const eff = getAbilityEffect(ability.effects)
               const hasTap = ability.costs.some((c) => c.type === 'tap_self')
+              // A graveyard-exile COST needs a creature card chosen from a graveyard
+              // (Cemetery Reaper), even when the effect itself is untargeted.
+              const needsGraveyardCard = ability.costs.some((c) => c.type === 'exile_from_graveyard')
               const supported = Boolean(eff)
               const targetAvailable = Boolean(
                 eff && (!eff.needsTarget || eff.canTargetPlayer || (eff.canTargetCreature && targetableCreatures.length > 0)),
               )
-              const available = supported && canCastInstants && (!hasTap || !card.is_tapped) && targetAvailable
+              const graveyardAvailable = !needsGraveyardCard || graveyardCreatures.length > 0
+              const available = supported && canCastInstants && (!hasTap || !card.is_tapped) && targetAvailable && graveyardAvailable
               return (
                 <button
                   key={index}
@@ -2994,7 +3009,9 @@ function CardActionSheet({
                   disabled={!available}
                   onClick={() => {
                     if (!eff) return
-                    if (eff.needsTarget) {
+                    if (needsGraveyardCard) {
+                      setAbilityPick({ index, type: eff.type, amount: eff.amount, canTargetPlayer: false, canTargetCreature: false, canTargetGraveyard: true })
+                    } else if (eff.needsTarget) {
                       setAbilityPick({ index, type: eff.type, amount: eff.amount, canTargetPlayer: eff.canTargetPlayer, canTargetCreature: eff.canTargetCreature })
                     } else {
                       void onActivateAbility(card.id, index)
@@ -3052,10 +3069,23 @@ function CardActionSheet({
         {abilityPick && (
           <div className="mb-3 space-y-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {abilityPick.type === 'deal_damage'
-                ? `Deal ${abilityPick.amount} damage to`
-                : `${ABILITY_VERB[abilityPick.type] ?? 'Affect'} which target?`}
+              {abilityPick.canTargetGraveyard
+                ? 'Exile which creature card from a graveyard?'
+                : abilityPick.type === 'deal_damage'
+                  ? `Deal ${abilityPick.amount} damage to`
+                  : `${ABILITY_VERB[abilityPick.type] ?? 'Affect'} which target?`}
             </p>
+            {abilityPick.canTargetGraveyard && graveyardCreatures.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetCardId: c.id }); onClose() }}
+                className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
+              >
+                <span className="truncate font-bold text-white">{c.name}</span>
+                <span className="ml-2 shrink-0 text-[10px] uppercase tracking-wide text-slate-500">graveyard</span>
+              </button>
+            ))}
             {abilityPick.canTargetPlayer && players.map((p) => (
               <button
                 key={p.player_id}
