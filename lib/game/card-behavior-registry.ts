@@ -329,6 +329,24 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     ],
   },
   { type: 'amass', label: 'Amass N (grow a Zombie Army)', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
+  {
+    type: 'destroy_all',
+    label: 'Destroy all creatures (board wipe)',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      { name: 'scope', kind: 'enum', label: 'Which', default: 'all', options: [{ value: 'all', label: 'all creatures' }, { value: 'you', label: 'creatures you control' }, { value: 'opponent', label: "opponents' creatures" }], optional: true },
+      { name: 'creature_type', kind: 'text', label: 'Creature type', default: '', optional: true },
+    ],
+  },
+  {
+    type: 'return_all_from_graveyard',
+    label: 'Return all from your graveyard (mass reanimate)',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      { name: 'to', kind: 'enum', label: 'To', default: 'battlefield', options: [{ value: 'battlefield', label: 'the battlefield' }, { value: 'hand', label: 'your hand' }], optional: true },
+      { name: 'creature_type', kind: 'text', label: 'Creature type', default: '', optional: true },
+    ],
+  },
   { type: 'scry', label: 'Scry N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   { type: 'surveil', label: 'Surveil N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   {

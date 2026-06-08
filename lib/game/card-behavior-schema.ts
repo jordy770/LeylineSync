@@ -156,6 +156,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
+  'destroy_all', 'return_all_from_graveyard',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -387,6 +388,18 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('amass'),
     amount: z.number(),
+  }),
+  // Mass destroy (board wipe) — all matching battlefield creatures, optional type.
+  z.object({
+    type: z.literal('destroy_all'),
+    scope: z.enum(['all', 'you', 'opponent']).optional(),
+    creature_type: z.string().optional(),
+  }),
+  // Mass reanimate — return ALL matching creature cards from your graveyard.
+  z.object({
+    type: z.literal('return_all_from_graveyard'),
+    to: z.enum(['battlefield', 'hand']).optional(),
+    creature_type: z.string().optional(),
   }),
   // Targeted creature effects cast as a spell (destroy/exile/bounce/tap/untap).
   // `targets` > 1 makes it a multi-target spell ("destroy up to N target

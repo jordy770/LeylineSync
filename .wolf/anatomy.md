@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T18:54:55.283Z
-> Files: 91 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T19:04:15.512Z
+> Files: 93 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1288 tok)
+- `package.json` — Node.js package manifest (~1301 tok)
 
 ## .claude/
 
@@ -111,8 +111,8 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8984 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
-- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10447 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7685 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10721 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7839 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -171,6 +171,7 @@
 - `202605010182_amass.sql` — Amass N (War of the Spark) — "If you don't control an Army, create a 0/0 black (~4488 tok)
 - `202605010183_sacrifice_creature_cost.sql` — "Sacrifice a creature" as an activated-ability cost (Spark Reaper: "{2}{B}, (~3399 tok)
 - `202605010184_typed_keyword_grants.sql` — Typed keyword grants — "Zombies you control have flying" (Eternal Skylord), (~3029 tok)
+- `202605010185_mass_destroy_and_reanimate.sql` — Mass destroy + mass reanimate (Zombie Apocalypse: "Return all Zombie creature (~4769 tok)
 
 ## tests/
 
@@ -197,6 +198,7 @@
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
 - `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~1730 tok)
 - `mana-ability-multicolor.test.ts` — Mana abilities with an activation cost + multiple produced colours (mig 180). (~582 tok)
+- `mass-destroy-reanimate.test.ts` — Mass destroy + mass reanimate (mig 185). Zombie Apocalypse: "Return all Zombie (~743 tok)
 - `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
 - `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
 - `nontoken-watcher.test.ts` — `nontoken` watcher filter (mig 181) — "Whenever a NONTOKEN creature you control (~749 tok)
@@ -215,7 +217,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~11306 tok)
+- `test-cards.json` (~11428 tok)
 
 ## tests/harness/
 
@@ -227,7 +229,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13358 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13462 tok)
 
 ## vercel/
 

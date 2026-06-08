@@ -2621,3 +2621,14 @@
 | 20:53 | Edited package.json | inline fix | ~38 |
 | 20:54 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~214 |
 | 20:55 | Typed keyword grants (Eternal Skylord, Vizier) | mig 184, card-behavior-llm.ts, typed-keyword-grant.test.ts | 9 keyword accessors null-branch filtered by player+creature_type; 619/619 | ~28k |
+| 20:56 | Session end: 184 writes across 35 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 30 reads | ~282267 tok |
+| 21:02 | Created supabase/migrations/202605010185_mass_destroy_and_reanimate.sql | — | ~4769 |
+| 21:02 | Edited lib/game/card-behavior-schema.ts | expanded (+12 lines) | ~178 |
+| 21:02 | Edited lib/game/card-behavior-schema.ts | 1→2 lines | ~36 |
+| 21:03 | Edited lib/game/card-behavior-registry.ts | expanded (+18 lines) | ~243 |
+| 21:03 | Edited lib/game/card-behavior-registry.ts | 9→9 lines | ~138 |
+| 21:03 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~140 |
+| 21:04 | Created tests/feature/mass-destroy-reanimate.test.ts | — | ~743 |
+| 21:04 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~126 |
+| 21:04 | Edited package.json | inline fix | ~38 |
+| 21:05 | Mass destroy + reanimate (Zombie Apocalypse) | mig 185, schema/registry, mass-destroy-reanimate.test.ts | destroy_all + return_all_from_graveyard helpers; 623/623 | ~30k |
