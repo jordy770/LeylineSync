@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T19:33:12.505Z
-> Files: 95 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T19:40:31.396Z
+> Files: 97 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1315 tok)
+- `package.json` — Node.js package manifest (~1329 tok)
 
 ## .claude/
 
@@ -173,12 +173,14 @@
 - `202605010184_typed_keyword_grants.sql` — Typed keyword grants — "Zombies you control have flying" (Eternal Skylord), (~3029 tok)
 - `202605010185_mass_destroy_and_reanimate.sql` — Mass destroy + mass reanimate (Zombie Apocalypse: "Return all Zombie creature (~4769 tok)
 - `202605010186_exile_from_graveyard_effect.sql` — "Exile target card from a graveyard" as a targeted EFFECT (Withered Wretch: (~4524 tok)
+- `202605010187_activated_search_library.sql` — search_library as an ACTIVATED-ability effect (Wayfarer's Bauble: "{1}, {T}, (~3771 tok)
 
 ## tests/
 
 
 ## tests/feature/
 
+- `activated-search-library.test.ts` — search_library as an ACTIVATED-ability effect (mig 187). Wayfarer's Bauble: (~791 tok)
 - `amass.test.ts` — Amass N (mig 182) — "If you don't control an Army, create a 0/0 black Zombie (~885 tok)
 - `army-of-the-damned.test.ts` — Army of the Damned — "Create thirteen 2/2 black Zombie creature tokens that are (~1092 tok)
 - `assassins-trophy.test.ts` — Assassin's Trophy (mig 152) — "Destroy target permanent an opponent controls. Its (~769 tok)
@@ -219,7 +221,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~11530 tok)
+- `test-cards.json` (~11684 tok)
 
 ## tests/harness/
 

@@ -8570,6 +8570,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T20:00:00.000Z"
+    },
+    {
+      "id": "bug-527",
+      "timestamp": "2026-06-08T19:40:10.847Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Withered Wretch Test\"",
+      "fix": "Changed to \"Wayfarer'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T19:40:10.847Z"
     }
   ]
 }

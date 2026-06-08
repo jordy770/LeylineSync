@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-05-27T13:42:32.489Z",
   "lifetime": {
-    "total_tokens_estimated": 26133494,
-    "total_reads": 3547,
-    "total_writes": 13160,
+    "total_tokens_estimated": 26207758,
+    "total_reads": 3559,
+    "total_writes": 13170,
     "total_sessions": 59,
-    "anatomy_hits": 2699,
-    "anatomy_misses": 843,
+    "anatomy_hits": 2709,
+    "anatomy_misses": 845,
     "repeated_reads_blocked": 5107,
-    "estimated_savings_vs_bare_cli": 102707723
+    "estimated_savings_vs_bare_cli": 102709723
   },
   "sessions": [
     {
@@ -92319,6 +92319,145 @@
         "writes_count": 193,
         "repeated_reads_blocked": 78,
         "anatomy_lookups": 28
+      }
+    },
+    {
+      "id": "session-2026-06-08-2110",
+      "started": "2026-06-08T19:10:35.340Z",
+      "ended": "2026-06-08T19:35:52.176Z",
+      "reads": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010178_exile_from_graveyard_cost.sql",
+          "tokens_estimated": 3073,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/cemetery-reaper.test.ts",
+          "tokens_estimated": 980,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010172_dynamic_pump_loyalty_target.sql",
+          "tokens_estimated": 2878,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010183_sacrifice_creature_cost.sql",
+          "tokens_estimated": 3399,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 7839,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 10721,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+          "tokens_estimated": 8984,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010185_mass_destroy_and_reanimate.sql",
+          "tokens_estimated": 4769,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+          "tokens_estimated": 11428,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+          "tokens_estimated": 13462,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010129_set_pt_creature_spell.sql",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010186_exile_from_graveyard_effect.sql",
+          "tokens_estimated": 4411,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 46,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+          "tokens_estimated": 170,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+          "tokens_estimated": 204,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+          "tokens_estimated": 148,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/exile-from-graveyard-effect.test.ts",
+          "tokens_estimated": 898,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 28,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/unit/card-behavior-builder.test.ts",
+          "tokens_estimated": 132,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010186_exile_from_graveyard_effect.sql",
+          "tokens_estimated": 352,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010186_exile_from_graveyard_effect.sql",
+          "tokens_estimated": 342,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 67533,
+        "output_tokens_estimated": 6731,
+        "reads_count": 12,
+        "writes_count": 10,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 10
       }
     }
   ],

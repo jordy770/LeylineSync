@@ -2649,3 +2649,9 @@
 | 21:32 | Edited supabase/migrations/202605010186_exile_from_graveyard_effect.sql | expanded (+8 lines) | ~329 |
 | 21:33 | Edited supabase/migrations/202605010186_exile_from_graveyard_effect.sql | expanded (+17 lines) | ~319 |
 | 21:34 | Withered Wretch: exile-target-from-graveyard EFFECT (mig 186) | activate_ability + new stack action/handler + CHECK constraint; schema/registry/fixture/test | 628/628 green | ~9k |
+| 21:35 | Session end: 10 writes across 7 files (202605010186_exile_from_graveyard_effect.sql, card-behavior-schema.ts, card-behavior-registry.ts, test-cards.json, exile-from-graveyard-effect.test.ts) | 12 reads | ~74264 tok |
+| 21:39 | Created supabase/migrations/202605010187_activated_search_library.sql | — | ~3771 |
+| 21:40 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~176 |
+| 21:40 | Created tests/feature/activated-search-library.test.ts | — | ~791 |
+| 21:40 | Edited package.json | inline fix | ~28 |
+| 21:41 | Wayfarers Bauble: search_library as activated-ability effect (mig 187) | activate_ability routes search_library through spell_effect (like create_token); fixture+test only, form already supported | 630/630 green | ~6k |

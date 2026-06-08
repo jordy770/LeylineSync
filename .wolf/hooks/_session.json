@@ -61,6 +61,16 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-08T19:33:04.653Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010186_exile_from_graveyard_effect.sql": {
+      "count": 5,
+      "tokens": 4524,
+      "first_read": "2026-06-08T19:38:00.122Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/feature/search-library-variants.test.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-08T19:39:38.132Z"
     }
   },
   "files_written": [
@@ -123,20 +133,46 @@
       "action": "edit",
       "tokens": 342,
       "at": "2026-06-08T19:33:12.516Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010187_activated_search_library.sql",
+      "action": "create",
+      "tokens": 4040,
+      "at": "2026-06-08T19:39:31.561Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 176,
+      "at": "2026-06-08T19:40:10.843Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/activated-search-library.test.ts",
+      "action": "create",
+      "tokens": 791,
+      "at": "2026-06-08T19:40:26.449Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 28,
+      "at": "2026-06-08T19:40:31.409Z"
     }
   ],
   "edit_counts": {
     "supabase/migrations/202605010186_exile_from_graveyard_effect.sql": 3,
     "lib/game/card-behavior-schema.ts": 2,
     "lib/game/card-behavior-registry.ts": 1,
-    "tests/fixtures/test-cards.json": 1,
+    "tests/fixtures/test-cards.json": 2,
     "tests/feature/exile-from-graveyard-effect.test.ts": 1,
-    "package.json": 1,
-    "tests/unit/card-behavior-builder.test.ts": 1
+    "package.json": 2,
+    "tests/unit/card-behavior-builder.test.ts": 1,
+    "supabase/migrations/202605010187_activated_search_library.sql": 1,
+    "tests/feature/activated-search-library.test.ts": 1
   },
-  "anatomy_hits": 10,
-  "anatomy_misses": 2,
-  "repeated_reads_warned": 0,
+  "anatomy_hits": 11,
+  "anatomy_misses": 3,
+  "repeated_reads_warned": 4,
   "cerebrum_warnings": 0,
-  "stop_count": 0
+  "stop_count": 1
 }
