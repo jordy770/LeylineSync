@@ -2322,6 +2322,8 @@ function CardActionSheet({
   // from there for that cost (the server then exiles it). Supported here for the
   // untargeted programs Army of the Damned-style cards use.
   const flashbackCost = script.flashback ?? null
+  // Additional "Pay N life" flashback cost (Deep Analysis); the server charges it.
+  const flashbackLife = script.flashback_life ?? 0
   const fbSorcerySpeed = card.cards?.type_line?.toLowerCase().includes('sorcery') ?? false
   const canFlashback =
     !!flashbackCost &&
@@ -2504,12 +2506,17 @@ function CardActionSheet({
         {canFlashback && !picking && !attachPick && (
           <button
             type="button"
-            aria-label={`Flashback ${flashbackCost}`}
+            aria-label={`Flashback ${flashbackCost}${flashbackLife > 0 ? `, pay ${flashbackLife} life` : ''}`}
             onClick={handleFlashback}
             className="mb-3 flex w-full items-center justify-between rounded-2xl bg-purple-400 px-4 py-3.5 transition active:scale-95"
           >
             <span className="font-black text-purple-950">Flashback</span>
-            <ManaCostDisplay manaCost={flashbackCost} dark />
+            <span className="flex items-center gap-1.5">
+              <ManaCostDisplay manaCost={flashbackCost} dark />
+              {flashbackLife > 0 && (
+                <span className="font-black text-purple-950">+ {flashbackLife} life</span>
+              )}
+            </span>
           </button>
         )}
 
