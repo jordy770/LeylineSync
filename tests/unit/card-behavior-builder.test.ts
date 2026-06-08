@@ -212,6 +212,8 @@ const CASES: Case[] = [
   // Amass — a simple amount effect, form-representable in trigger + spell.
   { name: 'amass trigger (Lazotep Reaver) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'amass', amount: 1 }] }] }, form: true },
   { name: 'amass spell → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'amass', amount: 4 }] } }, form: true },
+  // Withered Wretch: exile_from_graveyard as a targeted activated-ability EFFECT.
+  { name: 'withered wretch (exile_from_graveyard effect) → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{1}' }], effects: [{ type: 'exile_from_graveyard' }] }] }, form: true },
 
   // Edge cases
   { name: 'empty object', script: {}, form: true },

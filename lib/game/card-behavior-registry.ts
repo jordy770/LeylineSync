@@ -347,6 +347,13 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
       { name: 'creature_type', kind: 'text', label: 'Creature type', default: '', optional: true },
     ],
   },
+  // "Exile target card from a graveyard" (Withered Wretch). Wired in the engine
+  // only for ACTIVATED abilities (activate_ability carries the chosen graveyard
+  // card as the target). Spell context is required because the activated-ability
+  // effect picker draws from effectsForContext('spell'); as an actual instant/
+  // sorcery action it has no target path and is a silent no-op (don't author it
+  // as a spell). No fields — the graveyard card is chosen in-game, not authored.
+  { type: 'exile_from_graveyard', label: 'Exile target card from a graveyard (ability)', contexts: ['spell'], fields: [] },
   { type: 'scry', label: 'Scry N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   { type: 'surveil', label: 'Surveil N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   {

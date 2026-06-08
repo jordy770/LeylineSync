@@ -156,7 +156,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
-  'destroy_all', 'return_all_from_graveyard',
+  'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -400,6 +400,13 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('return_all_from_graveyard'),
     to: z.enum(['battlefield', 'hand']).optional(),
     creature_type: z.string().optional(),
+  }),
+  // "Exile target card from a graveyard" as a targeted EFFECT (Withered Wretch).
+  // The graveyard card is the ability's target (passed at activation); distinct
+  // from the exile_from_graveyard COST, which consumes a card to pay for an ability.
+  z.object({
+    type: z.literal('exile_from_graveyard'),
+    target_ref: z.string().optional(),
   }),
   // Targeted creature effects cast as a spell (destroy/exile/bounce/tap/untap).
   // `targets` > 1 makes it a multi-target spell ("destroy up to N target

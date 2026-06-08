@@ -2632,3 +2632,20 @@
 | 21:04 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~126 |
 | 21:04 | Edited package.json | inline fix | ~38 |
 | 21:05 | Mass destroy + reanimate (Zombie Apocalypse) | mig 185, schema/registry, mass-destroy-reanimate.test.ts | destroy_all + return_all_from_graveyard helpers; 623/623 | ~30k |
+| 21:05 | Session end: 193 writes across 37 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 30 reads | ~289018 tok |
+
+## Session: 2026-06-08 21:10
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:27 | Created supabase/migrations/202605010186_exile_from_graveyard_effect.sql | — | ~4117 |
+| 21:27 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~46 |
+| 21:27 | Edited lib/game/card-behavior-schema.ts | expanded (+7 lines) | ~170 |
+| 21:30 | Edited lib/game/card-behavior-registry.ts | expanded (+7 lines) | ~204 |
+| 21:30 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~148 |
+| 21:30 | Created tests/feature/exile-from-graveyard-effect.test.ts | — | ~898 |
+| 21:31 | Edited package.json | inline fix | ~28 |
+| 21:31 | Edited tests/unit/card-behavior-builder.test.ts | 3→5 lines | ~132 |
+| 21:32 | Edited supabase/migrations/202605010186_exile_from_graveyard_effect.sql | expanded (+8 lines) | ~329 |
+| 21:33 | Edited supabase/migrations/202605010186_exile_from_graveyard_effect.sql | expanded (+17 lines) | ~319 |
+| 21:34 | Withered Wretch: exile-target-from-graveyard EFFECT (mig 186) | activate_ability + new stack action/handler + CHECK constraint; schema/registry/fixture/test | 628/628 green | ~9k |
