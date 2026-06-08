@@ -137,6 +137,9 @@ const CardBehaviorCostSchema = z.union([
   z.object({ type: z.literal('mana'), amount: z.string() }),
   z.object({ type: z.literal('pay_life'), amount: z.number() }),
   z.object({ type: z.literal('sacrifice_self') }),
+  // "Sacrifice a creature" as a cost (Spark Reaper, Vampiric Rites) — the chosen
+  // creature you control is passed at activation.
+  z.object({ type: z.literal('sacrifice_creature') }),
   z.object({ type: z.literal('discard'), amount: z.number() }),
   z.object({ type: z.literal('exile_self'), from_zone: BehaviorZoneSchema.optional() }),
   // "Exile a creature card from a graveyard" (Cemetery Reaper). type_line filters

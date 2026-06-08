@@ -140,6 +140,8 @@ const CASES: Case[] = [
   { name: 'activated deal_damage bare', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }], effects: [{ type: 'deal_damage', amount: 1, target_type: ['creature', 'player'] }] }] }, form: true },
   { name: 'activated mana', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }], effects: [{ type: 'add_mana', color: 'G', amount: 1 }] }] }, form: true },
   { name: 'activated commander-identity mana (Command Tower)', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }], effects: [{ type: 'add_mana', color: 'commander', amount: 1 }] }] }, form: true },
+  // Spark Reaper: a sacrifice-a-creature activated cost (single effect → form).
+  { name: 'spark reaper (sacrifice-a-creature cost) → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}{B}' }, { type: 'sacrifice_creature' }], effects: [{ type: 'draw', amount: 1 }] }] }, form: true },
   // Dimir Signet: a mana ability with a {1} cost + two produced colours.
   { name: 'Dimir Signet (mana cost + multi-colour) → form', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }, { type: 'add_mana', color: 'B', amount: 1 }] }] }, form: true },
 
@@ -484,7 +486,7 @@ test('defaultSpellEffect shapes', () => {
 test('defaultActivatedAbility shapes', () => {
   assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, mana: '', colors: [{ color: 'C', amount: 1 }] })
   // The generic 'effect' kind defaults to a targeted deal_damage (the old 'damage' kind).
-  assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, sacSelf: false, exileFromGraveyard: false, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
+  assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, sacSelf: false, sacCreature: false, exileFromGraveyard: false, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
 })
 
 // An activated ability of a non-damage effect (a new capability) is Form-representable.

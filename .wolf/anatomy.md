@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T18:15:04.115Z
-> Files: 86 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T18:25:35.153Z
+> Files: 88 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1251 tok)
+- `package.json` — Node.js package manifest (~1264 tok)
 
 ## .claude/
 
@@ -74,7 +74,7 @@
 ## components/
 
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4152 tok)
-- `CardBehaviorForm.tsx` — inputClass (~9408 tok)
+- `CardBehaviorForm.tsx` — inputClass (~9538 tok)
 - `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~58607 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
@@ -109,10 +109,10 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8908 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8984 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11109 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10447 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7630 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7685 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -169,6 +169,7 @@
 - `202605010180_mana_ability_cost_multicolor.sql` — Mana abilities with an activation cost and/or multiple produced colours (~1153 tok)
 - `202605010181_watcher_nontoken_filter.sql` — `nontoken` watcher filter — "Whenever a NONTOKEN creature you control dies, …" (~873 tok)
 - `202605010182_amass.sql` — Amass N (War of the Spark) — "If you don't control an Army, create a 0/0 black (~4488 tok)
+- `202605010183_sacrifice_creature_cost.sql` — "Sacrifice a creature" as an activated-ability cost (Spark Reaper: "{2}{B}, (~3399 tok)
 
 ## tests/
 
@@ -201,6 +202,7 @@
 - `planeswalker-combat.test.ts` — Planeswalker combat (roadmap Tribal #4, slice 2). A creature can attack a planeswalker; (~960 tok)
 - `planeswalkers.test.ts` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). A planeswalker enters (~1298 tok)
 - `proliferate.test.ts` — Proliferate (Atraxa, Praetors' Voice end step, Karn's Bastion, etc.). The engine (~1083 tok)
+- `sacrifice-creature-cost.test.ts` — "Sacrifice a creature" activated-ability cost (mig 183). Spark Reaper (~862 tok)
 - `sacrifice-self-ability.test.ts` — Sacrifice-self activated cost (Commander's Sphere, mig 175): source → graveyard as a cost, then draw resolves; can't re-activate. (~600 tok)
 - `sacrifice-self-ability.test.ts` — Sacrifice-self as an activated-ability cost (mig 175). Commander's Sphere's (~639 tok)
 - `target-player-draw.test.ts` — "Target player draws N" (Deep Analysis) = choose_player(any) → draw; the CHOSEN player draws, not the caster (can target self or opponent). (~700 tok)
@@ -210,7 +212,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~10655 tok)
+- `test-cards.json` (~10889 tok)
 
 ## tests/harness/
 
@@ -222,7 +224,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13258 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13358 tok)
 
 ## vercel/
 

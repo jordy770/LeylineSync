@@ -2593,3 +2593,19 @@
 | 20:14 | Edited tests/unit/card-behavior-builder.test.ts | 2→6 lines | ~137 |
 | 20:15 | Edited package.json | inline fix | ~33 |
 | 20:16 | Amass N (6 WAR Zombie cards) | mig 182, schema/registry/llm, amass.test.ts | amass helper + reproduced apply_triggered_ability_effects; Zombie Army 0/0 token; 610/610 | ~30k |
+| 20:16 | Session end: 162 writes across 30 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 26 reads | ~252735 tok |
+| 20:22 | Created supabase/migrations/202605010183_sacrifice_creature_cost.sql | — | ~3399 |
+| 20:22 | Edited lib/game/card-behavior-schema.ts | 1→4 lines | ~68 |
+| 20:23 | Edited lib/game/card-behavior-builder.ts | modified defaultActivatedAbility() | ~150 |
+| 20:23 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~76 |
+| 20:23 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~145 |
+| 20:23 | Edited lib/game/card-behavior-builder.ts | inline fix | ~23 |
+| 20:23 | Edited lib/game/card-behavior-builder.ts | inline fix | ~33 |
+| 20:24 | Edited components/CardBehaviorForm.tsx | CSS: Rites, sacCreature | ~180 |
+| 20:24 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~254 |
+| 20:24 | Created tests/feature/sacrifice-creature-cost.test.ts | — | ~862 |
+| 20:24 | Edited tests/feature/sacrifice-creature-cost.test.ts | inline fix | ~28 |
+| 20:25 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~63 |
+| 20:25 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~116 |
+| 20:25 | Edited package.json | inline fix | ~33 |
+| 20:26 | sacrifice-a-creature cost + multi-effect activated abilities (Spark Reaper, Vampiric Rites) | mig 183, schema/builder, CardBehaviorForm.tsx, sacrifice-creature-cost.test.ts | new cost + spell_effect route for >1 effect; 615/615 | ~20k |

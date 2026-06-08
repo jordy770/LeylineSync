@@ -209,13 +209,13 @@ export type BuilderAbilityKind = (typeof BUILDER_ABILITY_KINDS)[number]['value']
 export type BuilderManaOutput = { color: ManaProductionColor; amount: number }
 export type BuilderActivatedAbility =
   | { kind: 'mana'; tapSelf: boolean; mana: string; colors: BuilderManaOutput[] }
-  | { kind: 'effect'; tapSelf: boolean; sacSelf: boolean; exileFromGraveyard: boolean; mana: string; effect: RegistryEffect }
+  | { kind: 'effect'; tapSelf: boolean; sacSelf: boolean; sacCreature: boolean; exileFromGraveyard: boolean; mana: string; effect: RegistryEffect }
 
 export function defaultActivatedAbility(kind: BuilderAbilityKind): BuilderActivatedAbility {
   if (kind === 'mana') {
     return { kind: 'mana', tapSelf: true, mana: '', colors: [{ color: 'C', amount: 1 }] }
   }
-  return { kind: 'effect', tapSelf: true, sacSelf: false, exileFromGraveyard: false, mana: '', effect: effectDefault('deal_damage_target') }
+  return { kind: 'effect', tapSelf: true, sacSelf: false, sacCreature: false, exileFromGraveyard: false, mana: '', effect: effectDefault('deal_damage_target') }
 }
 
 // A static anthem / lord: "[Other] [<Type>] creatures [you control | everywhere]
@@ -402,6 +402,9 @@ function activatedAbilityToJson(ability: BuilderActivatedAbility): Record<string
   if (ability.sacSelf) {
     costs.push({ type: 'sacrifice_self' })
   }
+  if (ability.sacCreature) {
+    costs.push({ type: 'sacrifice_creature' })
+  }
   if (ability.exileFromGraveyard) {
     costs.push({ type: 'exile_from_graveyard', type_line: 'creature' })
   }
@@ -563,6 +566,7 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
     // the "creature" filter (Cemetery Reaper); other filters round-trip to JSON.
     let tapSelf = false
     let sacSelf = false
+    let sacCreature = false
     let exileFromGraveyard = false
     let mana = ''
     for (const cost of costs) {
@@ -570,6 +574,8 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
         tapSelf = true
       } else if (cost?.type === 'sacrifice_self') {
         sacSelf = true
+      } else if (cost?.type === 'sacrifice_creature') {
+        sacCreature = true
       } else if (cost?.type === 'exile_from_graveyard' && (cost.type_line === undefined || cost.type_line === 'creature')) {
         exileFromGraveyard = true
       } else if (cost?.type === 'mana' && typeof cost.amount === 'string') {
@@ -582,7 +588,7 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
     if (e.is_mana_ability === true) {
       // Mana abilities: tap and/or an optional mana cost (no sacrifice / graveyard
       // exile); one or more add_mana effects, each a fixed/any/commander colour.
-      if (sacSelf || exileFromGraveyard || effects.length < 1) {
+      if (sacSelf || sacCreature || exileFromGraveyard || effects.length < 1) {
         return null
       }
       const colors: BuilderManaOutput[] = []
@@ -607,7 +613,7 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
       if (parsed === null) {
         return null
       }
-      abilities.push({ kind: 'effect', tapSelf, sacSelf, exileFromGraveyard, mana, effect: parsed })
+      abilities.push({ kind: 'effect', tapSelf, sacSelf, sacCreature, exileFromGraveyard, mana, effect: parsed })
     }
   }
   return abilities

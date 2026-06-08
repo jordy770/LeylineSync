@@ -828,6 +828,15 @@ function ActivatedAbilityEditor({
               />
               Sacrifice this
             </label>
+            <label className="flex items-center gap-1.5" title="Spark Reaper / Vampiric Rites: sacrifice a creature you control as a cost">
+              <input
+                type="checkbox"
+                checked={ability.sacCreature}
+                disabled={disabled}
+                onChange={(event) => onChange({ ...ability, sacCreature: event.target.checked })}
+              />
+              Sacrifice a creature
+            </label>
             <label className="flex items-center gap-1.5" title="Cemetery Reaper: exile a creature card from any graveyard as a cost">
               <input
                 type="checkbox"
