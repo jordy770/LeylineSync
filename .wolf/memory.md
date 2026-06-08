@@ -2543,3 +2543,10 @@
 | 17:45 | Edited tests/unit/card-behavior-builder.test.ts | 2→6 lines | ~184 |
 | 17:45 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~171 |
 | 17:47 | Guided form: choose_creature_type + pump_all (Crippling Fear authorable) | card-behavior-registry.ts, builder.test.ts | 2 registry entries + scope field; no builder/component change; 594/594 | ~10k |
+| 17:47 | Session end: 121 writes across 22 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 23 reads | ~221612 tok |
+| 17:54 | Created supabase/migrations/202605010180_mana_ability_cost_multicolor.sql | — | ~1153 |
+| 17:54 | Edited tests/harness/scenario.ts | modified activateMana() | ~196 |
+| 17:55 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~135 |
+| 17:55 | Created tests/feature/mana-ability-multicolor.test.ts | — | ~582 |
+| 17:55 | Edited package.json | inline fix | ~35 |
+| 17:56 | Dimir Signet: activate_mana_ability (cost + multi-colour) | mig 180, scenario.ts, mana-ability-multicolor.test.ts | new RPC pays {1}+tap+adds U,B; 596/596 (engine stage) | ~16k |

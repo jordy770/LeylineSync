@@ -565,6 +565,22 @@ export class Scenario {
     )
   }
 
+  /** Activate a mana ability (cost + multi-colour) as the acting seat; returns the pool. */
+  async activateMana(
+    sourceCardId: string,
+    index = 0,
+    generic: Record<string, number> | null = null,
+  ): Promise<Record<string, number>> {
+    return this.run(() =>
+      rpc(this.client, 'activate_mana_ability', {
+        p_session_id: this.sessionId,
+        p_source_card_id: sourceCardId,
+        p_ability_index: index,
+        p_generic_payment: generic,
+      }),
+    ) as Promise<Record<string, number>>
+  }
+
   /** Activate loyalty ability `index` on a planeswalker the acting seat controls. */
   async activateLoyalty(sourceCardId: string, index = 0): Promise<unknown> {
     return this.run(() =>
