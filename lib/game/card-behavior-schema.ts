@@ -182,6 +182,15 @@ const CountAmountSchema = z.object({
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
 }).strict()
 
+// A pump power/toughness driven by a count, optionally negated (Liliana −2: -X/-X
+// where X = Zombies you control → { count, type_line, negate: true }).
+const PumpValueSchema = z.object({
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'devotion']),
+  type_line: z.string().optional(),
+  color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
+  negate: z.boolean().optional(),
+}).strict()
+
 // An effect amount: a fixed number, the literal "X" for a variable spell (chosen at
 // cast time, paid as {X} generic mana, substituted server-side), or a dynamic
 // counter- / count-referencing amount.
@@ -347,8 +356,9 @@ const CardBehaviorActionSchema = z.union([
   }),
   z.object({
     type: z.literal('pump'),
-    power: z.number().optional(),
-    toughness: z.number().optional(),
+    // A fixed delta, or a dynamic { count, …, negate? } value (Liliana −2: -X/-X).
+    power: z.union([z.number(), PumpValueSchema]).optional(),
+    toughness: z.union([z.number(), PumpValueSchema]).optional(),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,

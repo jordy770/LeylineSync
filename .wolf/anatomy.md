@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T09:36:11.370Z
-> Files: 62 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T09:54:47.521Z
+> Files: 64 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -12,7 +12,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~13432 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~13536 tok)
 
 ## .claude/rules/
 
@@ -109,9 +109,9 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11467 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5525 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~9832 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~9940 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9737 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6736 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6900 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3397 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -125,6 +125,7 @@
 
 ## scripts/
 
+- `import-scryfall-cards.mjs` — defaultInputFile: flushBatch, upsertBatchWithRetry, getSupabaseErrorMessage + 15 more (~3086 tok)
 
 ## supabase/
 
@@ -156,6 +157,7 @@
 - `202605010169_planeswalker_combat.sql` — Planeswalker combat (roadmap Tribal #4, slice 2). Attack a planeswalker; its (~6877 tok)
 - `202605010170_choose_creature_type.sql` — Choose a creature type (roadmap Tribal #6). "Choose a creature type, then <effect>" (~9295 tok)
 - `202605010171_conditional_mill.sql` — Conditional mill (for Liliana, Untouched by Death's +1 and graveyard-matters cards). (~3803 tok)
+- `202605010172_dynamic_pump_loyalty_target.sql` — Dynamic / negatable pump + pump as a targetable effect (for Liliana, Untouched by (~2878 tok)
 
 ## tests/
 
@@ -174,7 +176,7 @@
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
 - `enters-with-counters.test.ts` — "Enters the battlefield with N counters" (roadmap Counters #3). A REPLACEMENT applied (~1031 tok)
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
-- `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~782 tok)
+- `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~1312 tok)
 - `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
 - `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
 - `planeswalker-combat.test.ts` — Planeswalker combat (roadmap Tribal #4, slice 2). A creature can attack a planeswalker; (~960 tok)
@@ -186,7 +188,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~9449 tok)
+- `test-cards.json` (~9483 tok)
 
 ## tests/harness/
 

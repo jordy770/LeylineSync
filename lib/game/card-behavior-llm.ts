@@ -262,7 +262,7 @@ The engine supports these sections:
 4. spell_effect — for Instants and Sorceries (the effect when the spell resolves): { "actions": [ ... ] }.
    Actions:
    - deal_damage { "type": "deal_damage", "amount": N, "target_type": ... } — "any target" -> ["creature","player"]. Add "divided": true for "deal N damage divided as you choose among any number of target creatures and/or players" (Forked Bolt): { "type": "deal_damage", "amount": 2, "divided": true, "target_type": ["creature","player"] }. The caster allocates N across targets at cast.
-   - pump      { "type": "pump", "power": N, "toughness": N, "target_type": "creature" } — until end of turn.
+   - pump      { "type": "pump", "power": N, "toughness": N, "target_type": "creature" } — until end of turn. power/toughness may be a fixed number (positive or negative) OR a count value { "count": "creatures_you_control", "type_line": "Zombie", "negate": true } for a dynamic boost/debuff. Liliana, Untouched by Death −2 ("target creature gets -X/-X where X = Zombies you control") = power and toughness each { "count": "creatures_you_control", "type_line": "Zombie", "negate": true }.
    - destroy   { "type": "destroy", "target_type": "creature" } — "destroy target creature" (to its owner's graveyard).
    - exile     { "type": "exile", "target_type": "creature" } — "exile target creature" (to its owner's exile zone).
     - bounce    { "type": "bounce", "target_type": "creature" } — "return target creature to its owner's hand".

@@ -2337,3 +2337,13 @@
 | 11:38 | Session end: 12 writes across 8 files (project_roadmap.md, ControllerListV4.tsx, 202605010171_conditional_mill.sql, card-behavior-schema.ts, card-behavior-llm.ts) | 17 reads | ~148690 tok |
 | 11:42 | Edited scripts/import-scryfall-cards.mjs | 6→7 lines | ~70 |
 | 11:48 | FOUND root cause (bug-447): importer skipped ALL planeswalkers — isExtraCardObject typeLine.includes('plane') matches 'planeswalker'. Fixed to /\bplane\b/. Re-run import:cards to load PWs | scripts/import-scryfall-cards.mjs, buglog, cerebrum | lint clean | ~6k |
+| 11:44 | Session end: 13 writes across 9 files (project_roadmap.md, ControllerListV4.tsx, 202605010171_conditional_mill.sql, card-behavior-schema.ts, card-behavior-llm.ts) | 17 reads | ~148764 tok |
+| 11:52 | Edited supabase/migrations/202605010172_dynamic_pump_loyalty_target.sql | 4→6 lines | ~29 |
+| 11:52 | Edited supabase/migrations/202605010172_dynamic_pump_loyalty_target.sql | added 2 condition(s) | ~353 |
+| 11:53 | Edited lib/game/card-behavior-schema.ts | 8→9 lines | ~128 |
+| 11:53 | Edited lib/game/card-behavior-schema.ts | expanded (+9 lines) | ~190 |
+| 11:53 | Edited tests/fixtures/test-cards.json | inline fix | ~91 |
+| 11:53 | Edited lib/game/card-behavior-llm.ts | inline fix | ~140 |
+| 11:54 | Edited tests/feature/liliana-untouched.test.ts | expanded (+40 lines) | ~544 |
+| 11:54 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~268 |
+| 12:05 | Liliana −2: loyalty targeting (worked via enqueue+chooseTriggerTarget once pump added to trigger_effect_target_type) + dynamic/negatable pump (apply_creature_effect resolves power/toughness as {count,negate}) | mig 172, schema PumpValueSchema, llm, test-cards Liliana -2, liliana-untouched.test LIL3-4 | 524 green, tsc/lint/build clean | ~26k |

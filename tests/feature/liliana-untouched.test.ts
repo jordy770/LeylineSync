@@ -42,6 +42,46 @@ test('LIL1 +1 drains when a Zombie is milled', async () => {
   })
 })
 
+// LIL3 — her -2: target creature gets -X/-X where X = Zombies you control.
+test('LIL3 -2 debuffs a target by your Zombie count', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    const lil = await s.spawn('A', 'Liliana, Untouched by Death', 'battlefield')
+    await s.spawnCreature('A', 'Grave Shambler Test') // Zombie
+    await s.spawnCreature('A', 'Grave Shambler Test') // Zombie → X = 2
+    const victim = await s.spawnCreature('B', 'Air Elemental Test') // 4/4
+
+    await s.as('A').activateLoyalty(lil, 1) // -2 (targeted)
+    const trig = await s.topStackItem()
+    await s.as('A').chooseTriggerTarget(trig!.id, victim)
+    await s.as('A').resolveStack()
+
+    assert.equal(await loyalty(s, lil), 2) // 4 − 2
+    assert.equal(await s.effectivePower(victim), 2) // 4 − 2
+    assert.equal(await s.effectiveToughness(victim), 2) // 4 − 2
+  })
+})
+
+// LIL4 — a lethal -X/-X (toughness to 0) sends the creature to the graveyard.
+test('LIL4 -2 can be lethal', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    const lil = await s.spawn('A', 'Liliana, Untouched by Death', 'battlefield')
+    await s.spawnCreature('A', 'Grave Shambler Test')
+    await s.spawnCreature('A', 'Grave Shambler Test') // X = 2
+    const victim = await s.spawnCreature('B', 'Grave Shambler Test') // a 2/2
+
+    await s.as('A').activateLoyalty(lil, 1)
+    const trig = await s.topStackItem()
+    await s.as('A').chooseTriggerTarget(trig!.id, victim)
+    await s.as('A').resolveStack()
+
+    assert.equal(await s.zoneOf(victim), 'graveyard') // 2/2 − 2/2 = 0 toughness → dies
+  })
+})
+
 // LIL2 — milling no Zombies does NOT drain.
 test('LIL2 +1 does not drain without a Zombie milled', async () => {
   await withRolledBackTx(async (client) => {
