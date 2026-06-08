@@ -140,6 +140,8 @@ const CASES: Case[] = [
   { name: 'activated deal_damage bare', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }], effects: [{ type: 'deal_damage', amount: 1, target_type: ['creature', 'player'] }] }] }, form: true },
   { name: 'activated mana', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }], effects: [{ type: 'add_mana', color: 'G', amount: 1 }] }] }, form: true },
   { name: 'activated commander-identity mana (Command Tower)', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }], effects: [{ type: 'add_mana', color: 'commander', amount: 1 }] }] }, form: true },
+  // Dimir Signet: a mana ability with a {1} cost + two produced colours.
+  { name: 'Dimir Signet (mana cost + multi-colour) → form', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }, { type: 'add_mana', color: 'B', amount: 1 }] }] }, form: true },
 
   // V1 / top-level `actions` key → JSON (not in known top-level keys)
   { name: 'v1 actions pump', script: { actions: [{ type: 'pump', power: 3, toughness: 3, target_type: 'creature' }] }, form: false },
@@ -309,6 +311,14 @@ test('exact build: Crippling Fear (choose_creature_type → mass -3/-3 to non-ch
   })
 })
 
+test('exact build: Dimir Signet ({1},{T}: add U + B)', () => {
+  const form = parseScriptToForm({ schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }, { type: 'add_mana', color: 'B', amount: 1 }] }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }, { type: 'add_mana', color: 'B', amount: 1 }] }],
+  })
+})
+
 test('exact build: Opt (scry+draw)', () => {
   const form = parseScriptToForm({ schema_version: 2, spell_effect: { actions: [{ type: 'scry', amount: 1 }, { type: 'draw', amount: 1 }] } })
   assert.deepEqual(buildScriptFromForm(form!), {
@@ -466,7 +476,7 @@ test('defaultSpellEffect shapes', () => {
 })
 
 test('defaultActivatedAbility shapes', () => {
-  assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, color: 'C', amount: 1 })
+  assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, mana: '', colors: [{ color: 'C', amount: 1 }] })
   // The generic 'effect' kind defaults to a targeted deal_damage (the old 'damage' kind).
   assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, sacSelf: false, exileFromGraveyard: false, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
 })

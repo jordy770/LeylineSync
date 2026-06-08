@@ -841,33 +841,73 @@ function ActivatedAbilityEditor({
             </label>
           </>
         ) : null}
+
+        {ability.kind === 'mana' ? (
+          <label className="flex items-center gap-1.5" title="An activation mana cost, e.g. Dimir Signet pays {1}">
+            Mana cost
+            <input
+              type="text"
+              value={ability.mana}
+              disabled={disabled}
+              placeholder="e.g. {1}"
+              onChange={(event) => onChange({ ...ability, mana: event.target.value })}
+              className={`${inputClass} w-24`}
+            />
+          </label>
+        ) : null}
       </div>
 
       {/* Effect row */}
       {ability.kind === 'mana' ? (
-        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
-          <span>Add</span>
-          <input
-            type="number"
-            min={1}
-            max={9}
-            value={ability.amount}
+        <div className="grid gap-2 text-xs text-slate-300">
+          {ability.colors.map((out, ci) => (
+            <div key={ci} className="flex flex-wrap items-center gap-2">
+              <span>Add</span>
+              <input
+                type="number"
+                min={1}
+                max={9}
+                value={out.amount}
+                disabled={disabled}
+                onChange={(event) =>
+                  onChange({ ...ability, colors: ability.colors.map((o, i) => (i === ci ? { ...o, amount: Math.max(1, Number(event.target.value)) } : o)) })
+                }
+                className={`${inputClass} w-16`}
+              />
+              <select
+                value={out.color}
+                disabled={disabled}
+                onChange={(event) =>
+                  onChange({ ...ability, colors: ability.colors.map((o, i) => (i === ci ? { ...o, color: event.target.value as ManaColor } : o)) })
+                }
+                className={inputClass}
+              >
+                {BUILDER_MANA_COLORS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {ability.colors.length > 1 && (
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onChange({ ...ability, colors: ability.colors.filter((_, i) => i !== ci) })}
+                  className="text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
             disabled={disabled}
-            onChange={(event) => onChange({ ...ability, amount: Math.max(1, Number(event.target.value)) })}
-            className={`${inputClass} w-16`}
-          />
-          <select
-            value={ability.color}
-            disabled={disabled}
-            onChange={(event) => onChange({ ...ability, color: event.target.value as ManaColor })}
-            className={inputClass}
+            onClick={() => onChange({ ...ability, colors: [...ability.colors, { color: 'C', amount: 1 }] })}
+            className="justify-self-start rounded border border-slate-700 px-2 py-1 text-xs text-slate-300 disabled:opacity-50"
           >
-            {BUILDER_MANA_COLORS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            + Add colour
+          </button>
         </div>
       ) : (
         // Generic effect: a registry effect editor (type dropdown + its fields),

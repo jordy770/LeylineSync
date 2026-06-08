@@ -2550,3 +2550,20 @@
 | 17:55 | Created tests/feature/mana-ability-multicolor.test.ts | — | ~582 |
 | 17:55 | Edited package.json | inline fix | ~35 |
 | 17:56 | Dimir Signet: activate_mana_ability (cost + multi-colour) | mig 180, scenario.ts, mana-ability-multicolor.test.ts | new RPC pays {1}+tap+adds U,B; 596/596 (engine stage) | ~16k |
+| 17:58 | Edited lib/game/actions.ts | added nullish coalescing | ~186 |
+| 17:58 | Edited components/ControllerListV4.tsx | CSS: activateManaAbility | ~109 |
+| 17:59 | Edited components/ControllerListV4.tsx | 3→4 lines | ~25 |
+| 17:59 | Edited components/ControllerListV4.tsx | 2→3 lines | ~113 |
+| 17:59 | Edited components/ControllerListV4.tsx | 3→4 lines | ~23 |
+| 17:59 | Edited components/ControllerListV4.tsx | CSS: onActivateManaAbility | ~95 |
+| 17:59 | Edited components/ControllerListV4.tsx | 4→4 lines | ~86 |
+| 18:00 | Edited components/ControllerListV4.tsx | CSS: active, hover, length | ~560 |
+| 18:02 | Edited lib/game/card-behavior-builder.ts | modified defaultActivatedAbility() | ~262 |
+| 18:02 | Edited lib/game/card-behavior-builder.ts | added 2 condition(s) | ~117 |
+| 18:02 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~387 |
+| 18:03 | Edited components/CardBehaviorForm.tsx | expanded (+14 lines) | ~257 |
+| 18:03 | Edited components/CardBehaviorForm.tsx | expanded (+26 lines) | ~607 |
+| 18:04 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~38 |
+| 18:04 | Edited tests/unit/card-behavior-builder.test.ts | 1→3 lines | ~185 |
+| 18:04 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~194 |
+| 18:06 | Guided form: multi-colour mana ability + cost (Dimir Signet) | card-behavior-builder.ts, CardBehaviorForm.tsx, builder.test.ts | mana ability colors[] list + mana cost; 599/599; Dimir Signet all 3 layers done | ~16k |

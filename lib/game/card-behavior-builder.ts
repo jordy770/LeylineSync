@@ -201,13 +201,17 @@ export type BuilderAbilityKind = (typeof BUILDER_ABILITY_KINDS)[number]['value']
 // `effect` is the generic "{cost}: <effect>" ability — the effect is any registry
 // effect (deal_damage / destroy / draw / pump / …), edited via the shared effect
 // editor. (Replaces the old bespoke `damage` kind; deal_damage is now just an effect.)
+// A mana ability taps (and/or pays an optional mana cost) to add one or more
+// fixed-colour mana. A single-colour entry is the common case (Command Tower);
+// multiple colours + a `mana` cost is Dimir Signet ("{1},{T}: Add {U}{B}").
+export type BuilderManaOutput = { color: ManaProductionColor; amount: number }
 export type BuilderActivatedAbility =
-  | { kind: 'mana'; tapSelf: boolean; color: ManaProductionColor; amount: number }
+  | { kind: 'mana'; tapSelf: boolean; mana: string; colors: BuilderManaOutput[] }
   | { kind: 'effect'; tapSelf: boolean; sacSelf: boolean; exileFromGraveyard: boolean; mana: string; effect: RegistryEffect }
 
 export function defaultActivatedAbility(kind: BuilderAbilityKind): BuilderActivatedAbility {
   if (kind === 'mana') {
-    return { kind: 'mana', tapSelf: true, color: 'C', amount: 1 }
+    return { kind: 'mana', tapSelf: true, mana: '', colors: [{ color: 'C', amount: 1 }] }
   }
   return { kind: 'effect', tapSelf: true, sacSelf: false, exileFromGraveyard: false, mana: '', effect: effectDefault('deal_damage_target') }
 }
@@ -374,10 +378,17 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
 
 function activatedAbilityToJson(ability: BuilderActivatedAbility): Record<string, unknown> {
   if (ability.kind === 'mana') {
+    const manaCosts: Record<string, unknown>[] = []
+    if (ability.tapSelf) {
+      manaCosts.push({ type: 'tap_self' })
+    }
+    if (ability.mana.trim()) {
+      manaCosts.push({ type: 'mana', amount: ability.mana.trim() })
+    }
     return {
       is_mana_ability: true,
-      costs: ability.tapSelf ? [{ type: 'tap_self' }] : [],
-      effects: [{ type: 'add_mana', color: ability.color, amount: ability.amount }],
+      costs: manaCosts,
+      effects: ability.colors.map((c) => ({ type: 'add_mana', color: c.color, amount: c.amount })),
     }
   }
 
@@ -565,32 +576,31 @@ function parseActivatedAbilities(value: unknown): BuilderActivatedAbility[] | nu
       }
     }
 
-    if (effects.length !== 1) {
-      return null
-    }
-    const effect = effects[0]
-
     if (e.is_mana_ability === true) {
-      // Mana abilities have no sacrifice / graveyard-exile cost in the form — such
-      // a mana ability round-trips to JSON rather than silently dropping the cost.
-      if (effect?.type !== 'add_mana' || mana || sacSelf || exileFromGraveyard) {
+      // Mana abilities: tap and/or an optional mana cost (no sacrifice / graveyard
+      // exile); one or more add_mana effects, each a fixed/any/commander colour.
+      if (sacSelf || exileFromGraveyard || effects.length < 1) {
         return null
       }
-      const color = effect.color
-      if (typeof color !== 'string' || !['W', 'U', 'B', 'R', 'G', 'C', 'commander', 'any'].includes(color)) {
-        return null
+      const colors: BuilderManaOutput[] = []
+      for (const eff of effects) {
+        if (eff?.type !== 'add_mana' || Object.keys(eff).some((k) => !['type', 'color', 'amount'].includes(k))) {
+          return null
+        }
+        const color = eff.color
+        if (typeof color !== 'string' || !['W', 'U', 'B', 'R', 'G', 'C', 'commander', 'any'].includes(color)) {
+          return null
+        }
+        colors.push({ color: color as ManaProductionColor, amount: typeof eff.amount === 'number' ? eff.amount : 1 })
       }
-      abilities.push({
-        kind: 'mana',
-        tapSelf,
-        color: color as ManaProductionColor,
-        amount: typeof effect.amount === 'number' ? effect.amount : 1,
-      })
+      abilities.push({ kind: 'mana', tapSelf, mana, colors })
     } else {
-      // Generic "{cost}: <effect>" — the single effect must be a registry effect
-      // the form can represent (parsed in spell context, where the targeted
-      // creature effects + draw live). Otherwise the whole script stays in JSON mode.
-      const parsed = effectFromJson(effect, 'spell')
+      // Generic "{cost}: <effect>" — exactly one effect, a registry effect the form
+      // can represent (parsed in spell context). Otherwise the script stays in JSON.
+      if (effects.length !== 1) {
+        return null
+      }
+      const parsed = effectFromJson(effects[0], 'spell')
       if (parsed === null) {
         return null
       }

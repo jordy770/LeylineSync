@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T15:55:24.029Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T16:04:26.512Z
 > Files: 82 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -74,8 +74,8 @@
 ## components/
 
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4152 tok)
-- `CardBehaviorForm.tsx` — inputClass (~8779 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~57965 tok)
+- `CardBehaviorForm.tsx` — inputClass (~9280 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~58607 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
 ## components/board/
@@ -108,8 +108,8 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11467 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8629 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8822 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10976 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~10411 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7537 tok)
@@ -218,7 +218,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~12735 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~13036 tok)
 
 ## vercel/
 
