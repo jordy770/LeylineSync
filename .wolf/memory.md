@@ -2334,3 +2334,6 @@
 | 11:35 | Edited package.json | inline fix | ~24 |
 | 11:36 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | modified authored() | ~348 |
 | 11:45 | Liliana investigation + conditional mill (mig 171: if_milled_type+then on mill); answered why she's not in the catalog (import = data only, no script; she has no cards row → run import:cards); authored Liliana +1 working, -2/-3 stubs (bug-446) | mig 171, schema, llm, test-cards Liliana, liliana-untouched.test | 522 green, tsc/lint/build clean | ~36k |
+| 11:38 | Session end: 12 writes across 8 files (project_roadmap.md, ControllerListV4.tsx, 202605010171_conditional_mill.sql, card-behavior-schema.ts, card-behavior-llm.ts) | 17 reads | ~148690 tok |
+| 11:42 | Edited scripts/import-scryfall-cards.mjs | 6→7 lines | ~70 |
+| 11:48 | FOUND root cause (bug-447): importer skipped ALL planeswalkers — isExtraCardObject typeLine.includes('plane') matches 'planeswalker'. Fixed to /\bplane\b/. Re-run import:cards to load PWs | scripts/import-scryfall-cards.mjs, buglog, cerebrum | lint clean | ~6k |

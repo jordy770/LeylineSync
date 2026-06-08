@@ -7245,9 +7245,28 @@
         "planeswalker",
         "liliana"
       ],
-      "related_bugs": [],
+      "related_bugs": ["bug-447"],
       "occurrences": 1,
       "last_seen": "2026-06-08T11:00:00.000Z"
+    },
+    {
+      "id": "bug-447",
+      "timestamp": "2026-06-08T11:40:00.000Z",
+      "error_message": "EVERY planeswalker is missing from the cards catalog (e.g. Liliana, Untouched by Death) — the Scryfall import silently skips them. (Corrects bug-446's wrong 'import never ran' hypothesis: the import RAN but dropped all planeswalkers.)",
+      "file": "scripts/import-scryfall-cards.mjs",
+      "root_cause": "isExtraCardObject (the playableOnly filter that drops tokens/emblems/Planechase planes/etc.) used `typeLine.includes('plane')` to catch Planechase 'Plane —' cards — but the substring 'plane' ALSO matches 'planeS WALKER', so every planeswalker's type_line ('Legendary Planeswalker — …') returned true and was skipped as an 'extra'.",
+      "fix": "Replaced `typeLine.includes('plane')` with a word-boundary test `/\\bplane\\b/.test(typeLine)` — 'planeswalker' has no boundary after 'plane' (next char 's'), so it is kept; 'Plane — Dominaria' still matches and is skipped. Re-run `npm run import:cards` to load the planeswalkers.",
+      "tags": [
+        "import",
+        "substring-false-positive",
+        "planeswalker",
+        "filter",
+        "regex-word-boundary",
+        "card-catalog"
+      ],
+      "related_bugs": ["bug-446"],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T11:40:00.000Z"
     }
   ]
 }
