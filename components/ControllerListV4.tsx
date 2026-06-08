@@ -2436,22 +2436,28 @@ function CardActionSheet({
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="absolute inset-x-0 bottom-0 z-50 rounded-t-3xl border-t border-white/10 bg-[#181C28] px-4 pb-6 pt-4"
+        className="absolute inset-x-0 bottom-0 z-50 flex max-h-[85vh] flex-col rounded-t-3xl border-t border-white/10 bg-[#181C28] px-4 pb-6 pt-4"
       >
         {/* Drag handle */}
-        <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/15" />
+        <div className="mx-auto mb-4 h-1 w-10 shrink-0 rounded-full bg-white/15" />
 
-        {/* Card header */}
-        <div className="mb-5 flex items-center gap-3">
+        {/* Two-column body: pinned card preview (left) + scrollable actions (right) */}
+        <div className="flex min-h-0 flex-1 items-start gap-4">
+          {/* Card preview — pinned; tap to zoom for full detail */}
           {imageUrl && (
             <button
               type="button"
               onClick={() => setZoomed(true)}
-              className="h-[68px] w-[49px] shrink-0 overflow-hidden rounded-lg shadow-lg active:scale-95 transition-transform"
+              className="w-[160px] shrink-0 overflow-hidden rounded-xl shadow-lg active:scale-95 transition-transform"
             >
-              <img src={imageUrl} alt={card.name} className="h-full w-full object-cover object-top" />
+              <img src={imageUrl} alt={card.name} className="w-full object-cover" />
             </button>
           )}
+
+          {/* Scrollable actions column */}
+          <div className="flex min-w-0 flex-1 flex-col overflow-y-auto pr-1">
+          {/* Card header text */}
+          <div className="mb-5 flex items-start gap-3">
           <div className="min-w-0 flex-1">
             <p className="truncate text-base font-black text-white">{card.name}</p>
             <p className="truncate text-[11px] text-slate-400">{card.cards?.type_line ?? card.zone}</p>
@@ -3161,6 +3167,8 @@ function CardActionSheet({
         {!hasActions && (
           <p className="py-2 text-center text-sm text-slate-700">No actions available</p>
         )}
+          </div>
+        </div>
       </motion.div>
 
       {/* Card zoom overlay */}
