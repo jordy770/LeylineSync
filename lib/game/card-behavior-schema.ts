@@ -149,7 +149,7 @@ const CardBehaviorCostSchema = z.union([
 const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
-  'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type',
+  'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type',
   'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard',
@@ -367,6 +367,18 @@ const CardBehaviorActionSchema = z.union([
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+  }),
+  // Mass, until-end-of-turn P/T pump applied to every creature matching the filter
+  // (Crippling Fear). scope 'all' (default) = any controller; 'controller' = yours.
+  // creature_type + exclude_type:true = "creatures that AREN'T of the chosen type".
+  // Pairs with choose_creature_type, which injects the chosen type into creature_type.
+  z.object({
+    type: z.literal('pump_all'),
+    power: z.number(),
+    toughness: z.number(),
+    scope: z.enum(['all', 'controller']).optional(),
+    creature_type: z.string().optional(),
+    exclude_type: z.boolean().optional(),
   }),
   // Targeted creature effects cast as a spell (destroy/exile/bounce/tap/untap).
   // `targets` > 1 makes it a multi-target spell ("destroy up to N target

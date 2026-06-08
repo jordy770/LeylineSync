@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T14:55:44.130Z
-> Files: 78 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T15:39:13.212Z
+> Files: 80 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1208 tok)
+- `package.json` — Node.js package manifest (~1218 tok)
 
 ## .claude/
 
@@ -74,8 +74,8 @@
 ## components/
 
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4152 tok)
-- `CardBehaviorForm.tsx` — inputClass (~8248 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~57351 tok)
+- `CardBehaviorForm.tsx` — inputClass (~8779 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~57965 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
 ## components/board/
@@ -109,10 +109,10 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11467 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~7695 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10707 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~8629 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10976 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9931 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7364 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7537 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -165,6 +165,7 @@
 - `202605010176_flashback_life_cost.sql` — Flashback with an additional "Pay N life" cost (Deep Analysis: "Flashback— (~2138 tok)
 - `202605010177_flashback_alternate_effect.sql` — Flashback that does DIFFERENT/extra stuff than the hand cast (the "Increasing" (~2362 tok)
 - `202605010178_exile_from_graveyard_cost.sql` — "Exile a creature card from a graveyard" as an activated-ability cost, plus (~3073 tok)
+- `202605010179_mass_typed_debuff.sql` — Crippling Fear — "Choose a creature type. Each creature that isn't of the (~7295 tok)
 
 ## tests/
 
@@ -181,6 +182,7 @@
 - `counter-doubling.test.ts` — Counter doubling — Doubling Season (roadmap Counters #5, half 1). A static (~1248 tok)
 - `counter-placement-trigger.test.ts` — Counter-placement trigger event (roadmap Tribal #3). `creature_got_counter` fires (~1243 tok)
 - `counter-removal.test.ts` — Counter removal (roadmap Counters #1). Reuses the add_counters pipeline: a NEGATIVE (~1811 tok)
+- `crippling-fear.test.ts` — Crippling Fear (mig 179) — "Choose a creature type. Each creature that isn't of (~943 tok)
 - `dynamic-counter-amounts.test.ts` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2). A (~1830 tok)
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
 - `enters-with-counters.test.ts` — "Enters the battlefield with N counters" (roadmap Counters #3). A REPLACEMENT applied (~1031 tok)
@@ -214,7 +216,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~11703 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~12413 tok)
 
 ## vercel/
 

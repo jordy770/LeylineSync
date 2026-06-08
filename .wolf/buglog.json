@@ -8052,6 +8052,74 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T00:00:00.000Z"
+    },
+    {
+      "id": "bug-495",
+      "timestamp": "2026-06-08T15:37:02.304Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Had 'mill'",
+      "fix": "Changed to 'pump_all'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:37:02.304Z"
+    },
+    {
+      "id": "bug-496",
+      "timestamp": "2026-06-08T15:37:17.154Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:37:17.154Z"
+    },
+    {
+      "id": "bug-497",
+      "timestamp": "2026-06-08T15:39:06.677Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/crippling-fear.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T15:39:06.677Z"
+    },
+    {
+      "id": "bug-472",
+      "timestamp": "2026-06-08T00:00:00.000Z",
+      "error_message": "Crippling Fear (choose a creature type; other creatures get -3/-3 until EOT) was not implementable",
+      "file": "supabase/migrations/202605010179_mass_typed_debuff.sql",
+      "root_cause": "No mass P/T debuff effect with a type EXCLUSION and an until-EOT duration; choose_creature_type only injected the chosen type into count-amounts, not into a mass-pump filter.",
+      "fix": "Added pump_all (temporary mass pump via apply_mass_pump_until_eot), extended the P/T fold with payload.exclude_type (invert the type filter), and made choose_creature_type inject the chosen type into pump_all.creature_type + apply it via the helper. The -X/-X kills via the lethal SBA (effective toughness).",
+      "fix_lesson": "When the injection must live in a huge function (submit_decision), do the whole sub-feature there rather than ALSO reproducing a second giant (apply_triggered_ability_effects) — fewer hand-copied lines, lower regression risk.",
+      "tags": [
+        "crippling-fear",
+        "mass-debuff",
+        "pump_all",
+        "exclude_type",
+        "choose_creature_type",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T00:00:00.000Z"
     }
   ]
 }

@@ -2527,3 +2527,12 @@
 | 17:11 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+17 lines) | ~327 |
 | 17:12 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~53 |
 | 17:14 | Guided form: watcher-trigger filter (Champion of the Perished) | card-behavior-builder.ts, CardBehaviorForm.tsx, builder.test.ts | BuilderTrigger.filter (type/controller/exclude_self); form-only; 587/587 | ~14k |
+| 17:14 | Session end: 109 writes across 20 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 20 reads | ~192019 tok |
+| 17:36 | Created supabase/migrations/202605010179_mass_typed_debuff.sql | — | ~7295 |
+| 17:36 | Edited lib/game/card-behavior-schema.ts | expanded (+12 lines) | ~244 |
+| 17:37 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~61 |
+| 17:37 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~289 |
+| 17:38 | Created tests/feature/crippling-fear.test.ts | — | ~940 |
+| 17:39 | Edited tests/feature/crippling-fear.test.ts | added optional chaining | ~347 |
+| 17:39 | Edited package.json | inline fix | ~36 |
+| 17:41 | Crippling Fear: mass typed debuff (pump_all + exclude_type) | mig 179, card-behavior-schema/llm, crippling-fear.test.ts | choose_creature_type -> pump_all -3/-3 to non-chosen-type, until EOT; 589/589 | ~34k |
