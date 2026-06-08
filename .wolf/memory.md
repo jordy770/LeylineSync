@@ -2444,3 +2444,6 @@
 | 15:16 | Edited tests/unit/card-behavior-builder.test.ts | 2→5 lines | ~114 |
 | 15:16 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+9 lines) | ~153 |
 | 15:19 | choose_player draw label fix + Deep Analysis proof | card-behavior-registry.ts, target-player-draw.test.ts, builder.test.ts | draw label neutral, choose_player subject bound; chosen player draws not caster; 559/559 | ~18k |
+| 15:19 | Session end: 37 writes across 10 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 12 reads | ~85022 tok |
+| 15:24 | Edited components/CardBehaviorForm.tsx | modified return() | ~116 |
+| 15:25 | Render effect-list field label (choose_player subject visible) | CardBehaviorForm.tsx | EffectListControl now shows "That player:"/"Then" headers; build clean | ~6k |

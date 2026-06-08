@@ -7581,6 +7581,27 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T00:00:00.000Z"
+    },
+    {
+      "id": "bug-467",
+      "timestamp": "2026-06-08T00:00:00.000Z",
+      "error_message": "User: 'the draw 2 states you draw' — choose_player's 'That player:' subject label was invisible in the form",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "EffectListControl never rendered its field.label, so the effect-list header (choose_player effects = \"That player:\", may = \"Then\", rider = \"Then you…\") was dropped. The nested draw row showed only \"Draw cards\" with no subject binding, reading as subjectless/you.",
+      "fix": "Render field.label as a small header above the nested effect rows in EffectListControl. Now choose_player shows \"That player:\" above the inner Draw cards row.",
+      "fix_lesson": "A registry/wrapper label only helps if the component actually renders it — verify the render path, not just the data.",
+      "tags": [
+        "guided-form",
+        "rendering",
+        "choose_player",
+        "effect-list",
+        "ux"
+      ],
+      "related_bugs": [
+        "bug-466"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T00:00:00.000Z"
     }
   ]
 }

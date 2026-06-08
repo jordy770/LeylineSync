@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T13:16:36.842Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T13:24:35.324Z
 > Files: 73 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -74,7 +74,7 @@
 ## components/
 
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4120 tok)
-- `CardBehaviorForm.tsx` — inputClass (~7436 tok)
+- `CardBehaviorForm.tsx` — inputClass (~7479 tok)
 - `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~57230 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
@@ -188,8 +188,8 @@
 - `planeswalkers.test.ts` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). A planeswalker enters (~1298 tok)
 - `proliferate.test.ts` — Proliferate (Atraxa, Praetors' Voice end step, Karn's Bastion, etc.). The engine (~1083 tok)
 - `sacrifice-self-ability.test.ts` — Sacrifice-self activated cost (Commander's Sphere, mig 175): source → graveyard as a cost, then draw resolves; can't re-activate. (~600 tok)
-- `target-player-draw.test.ts` — "Target player draws N" (Deep Analysis) = choose_player(any) → draw; the CHOSEN player draws, not the caster (can target self or opponent). (~700 tok)
 - `sacrifice-self-ability.test.ts` — Sacrifice-self as an activated-ability cost (mig 175). Commander's Sphere's (~639 tok)
+- `target-player-draw.test.ts` — "Target player draws N" (Deep Analysis) = choose_player(any) → draw; the CHOSEN player draws, not the caster (can target self or opponent). (~700 tok)
 - `target-player-draw.test.ts` — "Target player draws N cards" (Deep Analysis) is modelled as choose_player (~778 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
 - `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)

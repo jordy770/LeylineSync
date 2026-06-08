@@ -643,6 +643,9 @@ function EffectListControl({
   const types = effectsForContext(field.itemContext)
   return (
     <div className="grid w-full gap-2 rounded border border-slate-800 bg-slate-900/40 p-2">
+      {field.label ? (
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{field.label}</p>
+      ) : null}
       {value.length === 0 ? (
         <p className="text-xs text-slate-500">No effects.</p>
       ) : (
