@@ -220,6 +220,8 @@ export type BuilderForm = {
   // Flashback cost ("{7}{B}{B}{B}"); empty = no flashback. Pairs with spellEffect
   // (the spell you re-cast from the graveyard). Army of the Damned.
   flashback: string
+  // Additional "Pay N life" flashback cost (0 = none). Deep Analysis = mana + 3 life.
+  flashbackLife: number
 }
 
 export const EMPTY_BUILDER_FORM: BuilderForm = {
@@ -229,6 +231,7 @@ export const EMPTY_BUILDER_FORM: BuilderForm = {
   activatedAbilities: [],
   spellEffect: [],
   flashback: '',
+  flashbackLife: 0,
 }
 
 // ─── Defaults / factories ──────────────────────────────────────────────────────
@@ -276,6 +279,11 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
   // (e.g. search_library's count/to/filter) keep all their data, not just amount.
   const spellEffectActions = form.spellEffect.map((a) => registryEffectToJson(a))
   const flashback = form.flashback.trim()
+  const flashbackLife = Math.max(0, Math.floor(form.flashbackLife))
+  // A flashback may carry a mana cost, a "pay N life" cost, or both. Either makes
+  // the card flashback-castable (the engine needs the `flashback` key present even
+  // for a life-only cost), so emit `flashback` whenever there's any flashback.
+  const hasFlashback = flashback !== '' || flashbackLife > 0
 
   // Nothing authored → no script (clears behavior).
   if (
@@ -283,7 +291,7 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
     triggeredAbilities.length === 0 &&
     activatedAbilities.length === 0 &&
     spellEffectActions.length === 0 &&
-    flashback === ''
+    !hasFlashback
   ) {
     return null
   }
@@ -301,8 +309,11 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
   if (spellEffectActions.length > 0) {
     script.spell_effect = { actions: spellEffectActions }
   }
-  if (flashback !== '') {
-    script.flashback = flashback
+  if (hasFlashback) {
+    script.flashback = flashback // may be '' for a life-only flashback
+    if (flashbackLife > 0) {
+      script.flashback_life = flashbackLife
+    }
   }
 
   return script as CardScript
@@ -358,6 +369,7 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     'activated_abilities',
     'spell_effect',
     'flashback',
+    'flashback_life',
   ])
   if (Object.keys(s).some((key) => !knownKeys.has(key))) {
     return null
@@ -370,6 +382,15 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
       return null
     }
     flashback = s.flashback
+  }
+
+  // flashback_life is an optional positive integer ("Pay N life").
+  let flashbackLife = 0
+  if (s.flashback_life !== undefined) {
+    if (typeof s.flashback_life !== 'number' || !Number.isInteger(s.flashback_life) || s.flashback_life <= 0) {
+      return null
+    }
+    flashbackLife = s.flashback_life
   }
 
   const continuous = parseContinuousEffects(s.continuous_effects)
@@ -399,7 +420,7 @@ export function parseScriptToForm(script: unknown): BuilderForm | null {
     spellEffect = parsed
   }
 
-  return { keywords, staticBuffs, triggers, activatedAbilities, spellEffect, flashback }
+  return { keywords, staticBuffs, triggers, activatedAbilities, spellEffect, flashback, flashbackLife }
 }
 
 // Returns the form model for a spell_effect built from plain scry/surveil/draw

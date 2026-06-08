@@ -2447,3 +2447,22 @@
 | 15:19 | Session end: 37 writes across 10 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 12 reads | ~85022 tok |
 | 15:24 | Edited components/CardBehaviorForm.tsx | modified return() | ~116 |
 | 15:25 | Render effect-list field label (choose_player subject visible) | CardBehaviorForm.tsx | EffectListControl now shows "That player:"/"Then" headers; build clean | ~6k |
+| 15:25 | Session end: 38 writes across 10 files (card-behavior-builder.ts, CardBehaviorEditor.tsx, CardBehaviorForm.tsx, card-behavior-builder.test.ts, 202605010175_sacrifice_self_ability_cost.sql) | 12 reads | ~86447 tok |
+| 15:36 | Created supabase/migrations/202605010176_flashback_life_cost.sql | — | ~2138 |
+| 15:36 | Edited lib/game/card-behavior-schema.ts | 2→5 lines | ~97 |
+| 15:36 | Edited lib/game/card-behavior.ts | 3→5 lines | ~53 |
+| 15:36 | Edited lib/game/card-behavior.ts | 2→3 lines | ~23 |
+| 15:37 | Edited lib/game/card-behavior-builder.ts | 13→16 lines | ~134 |
+| 15:37 | Edited lib/game/card-behavior-builder.ts | modified if() | ~217 |
+| 15:37 | Edited lib/game/card-behavior-builder.ts | added 1 condition(s) | ~60 |
+| 15:38 | Edited lib/game/card-behavior-builder.ts | added 2 condition(s) | ~199 |
+| 15:38 | Edited lib/game/card-behavior-builder.ts | inline fix | ~30 |
+| 15:38 | Edited components/CardBehaviorEditor.tsx | CSS: flashbackLife | ~28 |
+| 15:38 | Edited components/CardBehaviorForm.tsx | CSS: flashbackLife | ~342 |
+| 15:39 | Edited lib/game/card-behavior-llm.ts | inline fix | ~150 |
+| 15:39 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~124 |
+| 15:40 | Created tests/feature/flashback-life.test.ts | — | ~662 |
+| 15:40 | Edited tests/unit/card-behavior-builder.test.ts | 2→7 lines | ~274 |
+| 15:40 | Edited tests/unit/card-behavior-builder.test.ts | 8→9 lines | ~155 |
+| 15:40 | Edited package.json | inline fix | ~36 |
+| 15:42 | Flashback "Pay N life" cost (Deep Analysis) | mig 176, card-behavior-schema/builder/llm, CardBehaviorForm.tsx, flashback-life.test.ts | flashback_life integer; engine deducts + validates life; 565/565 | ~20k |

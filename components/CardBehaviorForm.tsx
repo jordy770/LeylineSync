@@ -287,16 +287,33 @@ export default function CardBehaviorForm({
         <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
           Flashback <span className="font-normal normal-case text-slate-500">(cast from graveyard, then exile)</span>
         </h3>
-        <input
-          type="text"
-          value={value.flashback}
-          disabled={disabled}
-          onChange={(event) => onChange({ ...value, flashback: event.target.value })}
-          placeholder="e.g. {7}{B}{B}{B}"
-          className={inputClass}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="text"
+            value={value.flashback}
+            disabled={disabled}
+            onChange={(event) => onChange({ ...value, flashback: event.target.value })}
+            placeholder="e.g. {7}{B}{B}{B}"
+            className={`${inputClass} flex-1`}
+          />
+          <label className="flex items-center gap-1.5 text-xs text-slate-300">
+            + pay
+            <input
+              type="number"
+              min={0}
+              max={99}
+              value={value.flashbackLife}
+              disabled={disabled}
+              title="Additional life payment (e.g. Deep Analysis pays 3 life)"
+              onChange={(event) => onChange({ ...value, flashbackLife: Math.max(0, Number(event.target.value)) })}
+              className={`${inputClass} w-16`}
+            />
+            life
+          </label>
+        </div>
         <p className="text-xs text-slate-500">
           Leave blank for no flashback. The cost re-casts the spell effect above from your graveyard.
+          Add a life payment for costs like Deep Analysis ({'{1}{U}'}, pay 3 life).
         </p>
       </section>
     </div>

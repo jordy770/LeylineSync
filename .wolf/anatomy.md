@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T13:24:35.324Z
-> Files: 73 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T13:40:34.266Z
+> Files: 75 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1172 tok)
+- `package.json` — Node.js package manifest (~1183 tok)
 
 ## .claude/
 
@@ -73,8 +73,8 @@
 
 ## components/
 
-- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4120 tok)
-- `CardBehaviorForm.tsx` — inputClass (~7479 tok)
+- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4135 tok)
+- `CardBehaviorForm.tsx` — inputClass (~7696 tok)
 - `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~57230 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 
@@ -109,11 +109,11 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11467 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~6982 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10252 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~7263 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~10373 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9931 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7122 tok)
-- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3434 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7187 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3472 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
 - `use-judge-card-tools.ts` — Exports useJudgeCardTools (~1636 tok)
@@ -162,6 +162,7 @@
 - `202605010173_cast_from_graveyard.sql` — Cast-from-graveyard permission (Liliana, Untouched by Death's -3: (~6119 tok)
 - `202605010174_flashback_and_tapped_tokens.sql` — Army of the Damned: "Create thirteen 2/2 black Zombie creature tokens that are (~2083 tok)
 - `202605010175_sacrifice_self_ability_cost.sql` — Reproduces activate_ability (from mig 162) adding the `sacrifice_self` activated-ability cost (Commander's Sphere). Sacrifices the source via put_in_graveyard after other costs, before the ability hits the stack. (~2448 tok)
+- `202605010176_flashback_life_cost.sql` — Flashback with an additional "Pay N life" cost (Deep Analysis: "Flashback— (~2138 tok)
 
 ## tests/
 
@@ -180,6 +181,7 @@
 - `dynamic-counter-amounts.test.ts` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2). A (~1830 tok)
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
 - `enters-with-counters.test.ts` — "Enters the battlefield with N counters" (roadmap Counters #3). A REPLACEMENT applied (~1031 tok)
+- `flashback-life.test.ts` — Flashback with an additional "Pay N life" cost (mig 176). Deep Analysis's (~662 tok)
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
 - `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~1730 tok)
 - `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
@@ -190,14 +192,13 @@
 - `sacrifice-self-ability.test.ts` — Sacrifice-self activated cost (Commander's Sphere, mig 175): source → graveyard as a cost, then draw resolves; can't re-activate. (~600 tok)
 - `sacrifice-self-ability.test.ts` — Sacrifice-self as an activated-ability cost (mig 175). Commander's Sphere's (~639 tok)
 - `target-player-draw.test.ts` — "Target player draws N" (Deep Analysis) = choose_player(any) → draw; the CHOSEN player draws, not the caster (can target self or opponent). (~700 tok)
-- `target-player-draw.test.ts` — "Target player draws N cards" (Deep Analysis) is modelled as choose_player (~778 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
 - `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)
 - `watcher-triggers.test.ts` — Other-scoped trigger events (roadmap Tribal #1, second half). `creature_entered` / (~1569 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~9790 tok)
+- `test-cards.json` (~9896 tok)
 
 ## tests/harness/
 
@@ -209,7 +210,7 @@
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~10930 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~11160 tok)
 
 ## vercel/
 

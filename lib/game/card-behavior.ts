@@ -103,6 +103,8 @@ export type CardBehaviorScriptV2 = {
   loyalty_abilities?: CardBehaviorLoyaltyAbility[]
   // Flashback cost (preserved for the UI's "Flashback" graveyard action).
   flashback?: string
+  // Additional "Pay N life" flashback cost (Deep Analysis).
+  flashback_life?: number
 }
 
 export type AnyCardBehaviorScript = CardScript | CardBehaviorScriptV2
@@ -360,6 +362,7 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     loyalty: script.loyalty,
     loyalty_abilities: script.loyalty_abilities ?? [],
     flashback: script.flashback,
+    flashback_life: script.flashback_life,
   }
 }
 

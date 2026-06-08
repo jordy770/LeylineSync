@@ -7602,6 +7602,74 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-06-08T00:00:00.000Z"
+    },
+    {
+      "id": "bug-468",
+      "timestamp": "2026-06-08T13:37:55.402Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Condition was: if (flashback !== '')",
+      "fix": "Changed to: if (hasFlashback)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T13:37:55.402Z"
+    },
+    {
+      "id": "bug-469",
+      "timestamp": "2026-06-08T13:38:23.822Z",
+      "error_message": "Wrong return value",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Was returning: { keywords, staticBuffs, triggers, activatedAbilit",
+      "fix": "Now returns: { keywords, staticBuffs, triggers, activatedAbilit",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T13:38:23.822Z"
+    },
+    {
+      "id": "bug-470",
+      "timestamp": "2026-06-08T13:39:52.080Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Commander'",
+      "fix": "Changed to \"Deep Analysis Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T13:39:52.080Z"
+    },
+    {
+      "id": "bug-468",
+      "timestamp": "2026-06-08T00:00:00.000Z",
+      "error_message": "User: 'Deep Analysis has flashback cost of mana with -3 life' — flashback modelled mana only",
+      "file": "supabase/migrations/202605010176_flashback_life_cost.sql",
+      "root_cause": "The flashback model was a bare mana-cost string; an additional \"Pay N life\" flashback cost (Deep Analysis: Flashback {1}{U}, Pay 3 life) had nowhere to live, so the life payment was silently missing.",
+      "fix": "Added an optional flashback_life integer (separate from the flashback mana string). mig 176 reproduces cast_spell_effect and, in the graveyard/flashback branch, deducts flashback_life from the caster life (raises if life < cost). Wired through schema, card-behavior type/normalize, builder build/parse, the form (a +pay-N-life input), and the LLM doc.",
+      "fix_lesson": "Additional/alternative costs (pay life, sacrifice, discard) are distinct from the mana cost — model them as separate fields, not by overloading the mana string.",
+      "tags": [
+        "flashback",
+        "alternative-cost",
+        "pay-life",
+        "sql",
+        "schema",
+        "guided-form"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-08T00:00:00.000Z"
     }
   ]
 }

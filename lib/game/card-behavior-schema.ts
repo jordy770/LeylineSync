@@ -527,6 +527,9 @@ export const CardBehaviorScriptV2Schema = z.object({
   // it is exiled (Army of the Damned: "Flashback {7}{B}{B}{B}"). Read server-side by
   // cast_spell_effect when the source is in the graveyard.
   flashback: z.string().optional(),
+  // An additional "Pay N life" flashback cost (Deep Analysis: "Flashback—{1}{U},
+  // Pay 3 life"). Paid alongside `flashback` only on a graveyard (flashback) cast.
+  flashback_life: z.number().int().positive().optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),

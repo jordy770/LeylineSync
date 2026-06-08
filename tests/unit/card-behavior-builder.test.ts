@@ -161,6 +161,11 @@ const CASES: Case[] = [
   { name: 'flashback spell → form', script: { schema_version: 2, flashback: '{7}{B}{B}{B}', spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] } }, form: true },
   // A non-string flashback is not form-representable.
   { name: 'flashback non-string → json', script: { schema_version: 2, flashback: 7, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
+  // Flashback with an extra "pay N life" cost (Deep Analysis) round-trips.
+  { name: 'flashback + flashback_life → form', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 3, spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] } }, form: true },
+  // flashback_life must be a positive integer.
+  { name: 'flashback_life zero → json', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 0, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
+  { name: 'flashback_life non-integer → json', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 1.5, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
 
   // Static anthems / lords (pump on affected:'controller') — form-representable.
   { name: 'static other-Zombie lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] }, form: true },
@@ -233,12 +238,13 @@ test('exact build: sliver lord (all Slivers +1/+1, affected:all)', () => {
   })
 })
 
-test('exact build: Deep Analysis (target player draws two + flashback)', () => {
-  const form = parseScriptToForm({ schema_version: 2, flashback: '{1}{U}', spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] } })
+test('exact build: Deep Analysis (target player draws two + flashback, pay 3 life)', () => {
+  const form = parseScriptToForm({ schema_version: 2, flashback: '{1}{U}', flashback_life: 3, spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] } })
   assert.deepEqual(buildScriptFromForm(form!), {
     schema_version: 2,
     spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] },
     flashback: '{1}{U}',
+    flashback_life: 3,
   })
 })
 
