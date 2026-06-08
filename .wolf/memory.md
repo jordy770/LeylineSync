@@ -2508,3 +2508,11 @@
 | 16:55 | Edited package.json | inline fix | ~36 |
 | 16:55 | Edited tests/unit/card-behavior-builder.test.ts | inline fix | ~58 |
 | 16:57 | Cemetery Reaper: exile-from-graveyard cost + create_token in abilities | mig 178, schema/builder/llm, CardBehaviorForm.tsx, cemetery-reaper.test.ts | new activated cost + token effect; engine+form+tests; picker pending; 577/577 | ~30k |
+| 16:59 | Edited components/ControllerListV4.tsx | 3→4 lines | ~60 |
+| 16:59 | Edited components/ControllerListV4.tsx | 3→3 lines | ~51 |
+| 16:59 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~139 |
+| 16:59 | Edited components/ControllerListV4.tsx | 3→3 lines | ~58 |
+| 16:59 | Edited components/ControllerListV4.tsx | 6→11 lines | ~149 |
+| 17:00 | Edited components/ControllerListV4.tsx | CSS: canTargetGraveyard | ~478 |
+| 17:00 | Edited components/ControllerListV4.tsx | CSS: targetCardId, active | ~317 |
+| 17:02 | Cemetery Reaper Stage 2: in-game graveyard-card picker | ControllerListV4.tsx | abilityPick.canTargetGraveyard lists graveyard creatures; create_token ability effect; hunk-split commit | ~9k |
