@@ -146,7 +146,7 @@ const CardBehaviorCostSchema = z.union([
 const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
-  'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player',
+  'pump', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type',
   'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate',
@@ -274,6 +274,12 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('choose_player'),
     filter: z.enum(['opponent', 'any']).optional(),
+    effects: z.array(z.record(z.string(), z.unknown())),
+  }),
+  // "Choose a creature type, then …" (Distant Melody). The chosen type is injected
+  // into any sub-effect's count-amount type_line (e.g. count creatures_you_control).
+  z.object({
+    type: z.literal('choose_creature_type'),
     effects: z.array(z.record(z.string(), z.unknown())),
   }),
   // Sacrifice `count` creatures: the sacrificing player (you, or the opponent for

@@ -2291,3 +2291,23 @@
 | 09:58 | Edited components/ControllerListV4.tsx | CSS: loyalty | ~181 |
 | 09:58 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~244 |
 | 10:05 | Tribal #4 slice 3: planeswalker CLIENT UI (loyalty section in CardActionSheet + attack-target picker for PWs in DeclareAttackersLayout; actions activateLoyaltyAbility + declareAttacker PW target; normalize preserves loyalty_abilities; hide loyalty_turn chip) | actions.ts, card-behavior.ts, ControllerListV4.tsx | 518 green, tsc/lint/build clean (client slice, no UI test) | ~26k |
+| 10:01 | Session end: 19 writes across 4 files (actions.ts, card-behavior.ts, ControllerListV4.tsx, project_roadmap.md) | 3 reads | ~74433 tok |
+| 10:15 | Edited supabase/migrations/202605010170_choose_creature_type.sql | expanded (+10 lines) | ~332 |
+| 10:15 | Edited supabase/migrations/202605010170_choose_creature_type.sql | 2→3 lines | ~20 |
+| 10:15 | Edited supabase/migrations/202605010170_choose_creature_type.sql | added 1 condition(s) | ~115 |
+| 10:16 | Edited supabase/migrations/202605010170_choose_creature_type.sql | added 1 condition(s) | ~328 |
+| 10:16 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~131 |
+| 10:16 | Edited lib/game/card-behavior-schema.ts | inline fix | ~33 |
+| 10:16 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~262 |
+| 10:17 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~205 |
+| 10:17 | Created tests/feature/choose-creature-type.test.ts | — | ~681 |
+| 10:17 | Edited package.json | inline fix | ~25 |
+| 10:18 | Edited tests/feature/choose-creature-type.test.ts | 17→19 lines | ~269 |
+
+## Session: 2026-06-08 10:18
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:19 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | inline fix | ~356 |
+| 10:19 | Session end: 1 writes across 1 files (project_roadmap.md) | 0 reads | ~381 tok |
+| 10:30 | Tribal #6: choose_creature_type (decision mirrors choose_player; submit_decision injects chosen type into count amounts' type_line; completes Distant Melody) | mig 170, schema, llm, test-cards Distant Melody, choose-creature-type.test | 520 green, tsc/lint/build clean; noted draw-floor-on-0 gap | ~30k |

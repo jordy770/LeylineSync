@@ -1,18 +1,18 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T07:58:55.732Z
-> Files: 58 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T08:19:08.867Z
+> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1112 tok)
+- `package.json` — Node.js package manifest (~1125 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~12937 tok)
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~13154 tok)
 
 ## .claude/rules/
 
@@ -109,9 +109,9 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11467 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~5525 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~9577 tok)
+- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~9729 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~9737 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6590 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~6681 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3397 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -154,6 +154,7 @@
 - `202605010167_counter_placement_trigger.sql` — Counter-placement trigger event (roadmap Tribal #3). "Whenever ~ / a creature you (~466 tok)
 - `202605010168_planeswalkers.sql` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). (~2363 tok)
 - `202605010169_planeswalker_combat.sql` — Planeswalker combat (roadmap Tribal #4, slice 2). Attack a planeswalker; its (~6877 tok)
+- `202605010170_choose_creature_type.sql` — Choose a creature type (roadmap Tribal #6). "Choose a creature type, then <effect>" (~9295 tok)
 
 ## tests/
 
@@ -162,6 +163,7 @@
 
 - `assassins-trophy.test.ts` — Assassin's Trophy (mig 152) — "Destroy target permanent an opponent controls. Its (~769 tok)
 - `beast-within.test.ts` — Beast Within (card request) — "Destroy target permanent. Its controller creates a (~1132 tok)
+- `choose-creature-type.test.ts` — Choose a creature type (roadmap Tribal #6). A choose_creature_type effect parks a (~732 tok)
 - `commander-identity-mana.test.ts` — Commander-identity mana (mig 151) — "Add one mana of any color in your commander's (~662 tok)
 - `count-amounts.test.ts` — Count-based dynamic amounts (roadmap Tribal #2). An effect "amount" of (~968 tok)
 - `counter-doubling.test.ts` — Counter doubling — Doubling Season (roadmap Counters #5, half 1). A static (~1248 tok)
@@ -182,7 +184,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~8981 tok)
+- `test-cards.json` (~9096 tok)
 
 ## tests/harness/
 
