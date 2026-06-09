@@ -2771,3 +2771,14 @@
 | 13:02 | Edited package.json | inline fix | ~21 |
 | 13:03 | Edited tests/feature/undermine.test.ts | 2→3 lines | ~60 |
 | 13:04 | Undermine: life-loss rider on a counterspell (mig 190) | handle_counter_spell + schema field; fixture + test | 662/662 green; works live (no client change) | ~7k |
+| 13:04 | Session end: 12 writes across 9 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 13 reads | ~33309 tok |
+| 13:58 | Session end: 12 writes across 9 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 13 reads | ~33309 tok |
+| 14:20 | Session end: 12 writes across 9 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 18 reads | ~51406 tok |
+| 14:25 | Session end: 12 writes across 9 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 64 reads | ~148231 tok |
+| 15:49 | Edited supabase/migrations/202605010191_sacrifice_tally_tokens.sql | modified tally() | ~284 |
+| 15:50 | Edited supabase/migrations/202605010191_sacrifice_tally_tokens.sql | modified select() | ~199 |
+| 15:50 | Edited lib/game/card-behavior-schema.ts | 4→6 lines | ~94 |
+| 15:51 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~149 |
+| 15:51 | Created tests/feature/sacrifice-tally-tokens.test.ts | — | ~836 |
+| 15:51 | Edited package.json | inline fix | ~23 |
+| 15:53 | Syphon Flesh: sacrifice-tally -> create_token count (mig 191) | reproduced apply_trigger_effects+submit_decision + schema; fixture+multiplayer test | 664/664 green | ~12k |

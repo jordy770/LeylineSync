@@ -66,6 +66,281 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-09T11:01:10.319Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/.wolf": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:38.221Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010156_enters_with_counters.sql": {
+      "count": 1,
+      "tokens": 710,
+      "first_read": "2026-06-09T12:20:41.421Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010170_choose_creature_type.sql": {
+      "count": 2,
+      "tokens": 9295,
+      "first_read": "2026-06-09T12:20:42.405Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010163_beast_within.sql": {
+      "count": 1,
+      "tokens": 1973,
+      "first_read": "2026-06-09T12:20:42.494Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010173_cast_from_graveyard.sql": {
+      "count": 1,
+      "tokens": 6119,
+      "first_read": "2026-06-09T12:20:43.008Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010134_auras_and_attachment.sql": {
+      "count": 4,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:45.295Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql": {
+      "count": 9,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:45.360Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010161_dynamic_counter_amounts.sql": {
+      "count": 3,
+      "tokens": 4488,
+      "first_read": "2026-06-09T12:20:45.436Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010162_dynamic_amounts_spells_abilities.sql": {
+      "count": 1,
+      "tokens": 6624,
+      "first_read": "2026-06-09T12:20:45.592Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts": {
+      "count": 14,
+      "tokens": 8015,
+      "first_read": "2026-06-09T12:20:45.669Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010072_activated_abilities.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:45.892Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010052_blocker_damage_order.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:45.976Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010049_combat_keywords_and_multiple_blockers.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:46.020Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010110_each_opponent_sacrifice.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:46.223Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010183_sacrifice_creature_cost.sql": {
+      "count": 1,
+      "tokens": 3399,
+      "first_read": "2026-06-09T12:20:46.441Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010174_flashback_and_tapped_tokens.sql": {
+      "count": 1,
+      "tokens": 2083,
+      "first_read": "2026-06-09T12:20:46.672Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010180_mana_ability_cost_multicolor.sql": {
+      "count": 1,
+      "tokens": 1153,
+      "first_read": "2026-06-09T12:20:49.228Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010185_mass_destroy_and_reanimate.sql": {
+      "count": 2,
+      "tokens": 4769,
+      "first_read": "2026-06-09T12:20:49.305Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010108_sacrifice_and_reanimate.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:49.358Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010189_mana_ability_pay_life_cost.sql": {
+      "count": 1,
+      "tokens": 1337,
+      "first_read": "2026-06-09T12:20:49.622Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010151_commander_identity_mana.sql": {
+      "count": 1,
+      "tokens": 1357,
+      "first_read": "2026-06-09T12:20:49.715Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010166_count_dynamic_amounts.sql": {
+      "count": 4,
+      "tokens": 1734,
+      "first_read": "2026-06-09T12:20:49.943Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010105_put_action_builder_registry.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:51.536Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010140_skip_eliminated_players.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:52.993Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts": {
+      "count": 6,
+      "tokens": 10012,
+      "first_read": "2026-06-09T12:20:53.117Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/00000000000000_baseline.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:20:55.630Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts": {
+      "count": 3,
+      "tokens": 11021,
+      "first_read": "2026-06-09T12:20:57.859Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json": {
+      "count": 3,
+      "tokens": 12445,
+      "first_read": "2026-06-09T12:20:59.020Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010131_protection_color_and_targeting.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:01.800Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010133_protection_cant_be_blocked.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:05.579Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/tests/feature/typed-lords.test.ts": {
+      "count": 1,
+      "tokens": 913,
+      "first_read": "2026-06-09T12:21:06.331Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/tests/feature/enters-with-counters.test.ts": {
+      "count": 1,
+      "tokens": 1031,
+      "first_read": "2026-06-09T12:21:08.922Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010119_activated_ability_effects.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:09.086Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010186_exile_from_graveyard_effect.sql": {
+      "count": 1,
+      "tokens": 4524,
+      "first_read": "2026-06-09T12:21:14.165Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010087_finalize_stack_resolution.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:18.242Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010094_spell_effect_program.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:18.955Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/lib/game/deck-insights.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:20.157Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010098_tier1_effect_vocabulary.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:20.627Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010076_triggered_abilities.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:24.811Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010077_dies_and_attacks_triggers.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:25.055Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/_hosted_schema.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:26.129Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010082_more_trigger_events.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:29.432Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010179_mass_typed_debuff.sql": {
+      "count": 1,
+      "tokens": 7295,
+      "first_read": "2026-06-09T12:21:40.816Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/.claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md": {
+      "count": 2,
+      "tokens": 13536,
+      "first_read": "2026-06-09T12:21:50.041Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010084_put_in_graveyard_chokepoint.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:51.933Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/00000000000000_baseline.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:55.198Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations_archive/202605010085_effective_script_accessor.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:56.617Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010096_more_decisions.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:21:57.909Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010135_equipment_and_equip.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:22:07.784Z"
+    },
+    "C:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010190_counter_controller_loses_life.sql": {
+      "count": 1,
+      "tokens": 1089,
+      "first_read": "2026-06-09T12:22:14.513Z"
+    },
+    "C:/Users/Jordy/AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5e0ee197-0f2c-4876-b32b-199f7759e87e/tasks/wzw04k0xm.output": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T12:24:10.415Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010109_x_spells.sql": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-09T13:36:51.647Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010181_watcher_nontoken_filter.sql": {
+      "count": 1,
+      "tokens": 873,
+      "first_read": "2026-06-09T13:37:45.419Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010170_choose_creature_type.sql": {
+      "count": 1,
+      "tokens": 9295,
+      "first_read": "2026-06-09T13:47:58.498Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010191_sacrifice_tally_tokens.sql": {
+      "count": 2,
+      "tokens": 9647,
+      "first_read": "2026-06-09T13:49:39.600Z"
     }
   },
   "files_written": [
@@ -140,6 +415,42 @@
       "action": "edit",
       "tokens": 60,
       "at": "2026-06-09T11:03:06.367Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010191_sacrifice_tally_tokens.sql",
+      "action": "edit",
+      "tokens": 304,
+      "at": "2026-06-09T13:49:50.974Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010191_sacrifice_tally_tokens.sql",
+      "action": "edit",
+      "tokens": 213,
+      "at": "2026-06-09T13:50:06.338Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 94,
+      "at": "2026-06-09T13:50:17.036Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 149,
+      "at": "2026-06-09T13:51:07.451Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/sacrifice-tally-tokens.test.ts",
+      "action": "create",
+      "tokens": 836,
+      "at": "2026-06-09T13:51:22.756Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 23,
+      "at": "2026-06-09T13:51:27.814Z"
     }
   ],
   "edit_counts": {
@@ -147,15 +458,17 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 2,
-    "package.json": 2,
+    "tests/fixtures/test-cards.json": 3,
+    "package.json": 3,
     "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
-    "lib/game/card-behavior-schema.ts": 1,
-    "tests/feature/undermine.test.ts": 2
+    "lib/game/card-behavior-schema.ts": 2,
+    "tests/feature/undermine.test.ts": 2,
+    "supabase/migrations/202605010191_sacrifice_tally_tokens.sql": 2,
+    "tests/feature/sacrifice-tally-tokens.test.ts": 1
   },
-  "anatomy_hits": 10,
-  "anatomy_misses": 3,
-  "repeated_reads_warned": 2,
+  "anatomy_hits": 35,
+  "anatomy_misses": 32,
+  "repeated_reads_warned": 53,
   "cerebrum_warnings": 0,
-  "stop_count": 2
+  "stop_count": 6
 }

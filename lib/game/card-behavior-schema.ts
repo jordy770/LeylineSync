@@ -329,7 +329,9 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('create_token'),
     token: z.string(),
-    count: z.number().optional(),
+    // A fixed count, or {count:'sacrificed_this_way'} — the number of creatures
+    // sacrificed by a preceding edict in the same program (Syphon Flesh).
+    count: z.union([z.number(), z.object({ count: z.literal('sacrificed_this_way') })]).optional(),
     // The tokens enter tapped (Army of the Damned: "thirteen … tokens that are tapped").
     tapped: z.boolean().optional(),
     // "Its controller creates a token" (Beast Within): the token is created under the

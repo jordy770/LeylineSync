@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T11:03:06.354Z
-> Files: 108 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T13:51:27.800Z
+> Files: 110 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1400 tok)
+- `package.json` — Node.js package manifest (~1413 tok)
 
 ## .claude/
 
@@ -113,7 +113,7 @@
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10012 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11021 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8015 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8079 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -179,6 +179,7 @@
 - `202605010188_activated_destroy_permanent.sql` — Activated destroy/exile/bounce/tap/untap of a NON-creature permanent (Unstable (~3925 tok)
 - `202605010189_mana_ability_pay_life_cost.sql` — `pay_life` as a mana-ability activation cost (Talisman of Dominance: "{T}, Pay 1 (~1337 tok)
 - `202605010190_counter_controller_loses_life.sql` — Undermine — "Counter target spell. Its controller loses 2 life." A life-loss (~1089 tok)
+- `202605010191_sacrifice_tally_tokens.sql` — Syphon Flesh — "Each other player sacrifices a creature. Create a 2/2 black (~9752 tok)
 
 ## tests/
 
@@ -220,6 +221,7 @@
 - `sacrifice-creature-cost.test.ts` — "Sacrifice a creature" activated-ability cost (mig 183). Spark Reaper (~862 tok)
 - `sacrifice-self-ability.test.ts` — Sacrifice-self activated cost (Commander's Sphere, mig 175): source → graveyard as a cost, then draw resolves; can't re-activate. (~600 tok)
 - `sacrifice-self-ability.test.ts` — Sacrifice-self as an activated-ability cost (mig 175). Commander's Sphere's (~639 tok)
+- `sacrifice-tally-tokens.test.ts` — Syphon Flesh (mig 191) — "Each other player sacrifices a creature. You create a (~836 tok)
 - `target-player-draw.test.ts` — "Target player draws N" (Deep Analysis) = choose_player(any) → draw; the CHOSEN player draws, not the caster (can target self or opponent). (~700 tok)
 - `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
 - `tribal-death-payoffs.test.ts` — Tribal death payoffs (Undead Unleashed) — confirm the watcher system handles (~723 tok)
@@ -232,7 +234,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~12445 tok)
+- `test-cards.json` (~12579 tok)
 
 ## tests/harness/
 
