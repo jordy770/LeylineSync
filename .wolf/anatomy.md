@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T16:28:54.497Z
-> Files: 123 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T16:38:39.265Z
+> Files: 125 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1492 tok)
+- `package.json` — Node.js package manifest (~1502 tok)
 
 ## .claude/
 
@@ -113,7 +113,7 @@
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10116 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11372 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8489 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8493 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -186,6 +186,7 @@
 - `202605010195_intimidate_hexproof.sql` — Intimidate + hexproof enforcement. (~5939 tok)
 - `202605010196_mana_value_rider.sql` — Feed the Swarm — "Destroy target creature or enchantment an opponent controls. (~1620 tok)
 - `202605010197_may_cost_condition.sql` — Liliana's Devotee — "…you may pay {1}{B}. If you do, create a Zombie." Adds an (~9991 tok)
+- `202605010198_each_player_sacrifice.sql` — Necrotic Hex — "Each player sacrifices six creatures of their choice. You create (~4814 tok)
 
 ## tests/
 
@@ -226,6 +227,7 @@
 - `menace.test.ts` — Menace enforcement (mig 194) — "can't be blocked except by two or more (~897 tok)
 - `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
 - `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
+- `necrotic-hex.test.ts` — Necrotic Hex (mig 198) — "Each player sacrifices six creatures of their choice. (~714 tok)
 - `nontoken-watcher.test.ts` — `nontoken` watcher filter (mig 181) — "Whenever a NONTOKEN creature you control (~749 tok)
 - `planeswalker-combat.test.ts` — Planeswalker combat (roadmap Tribal #4, slice 2). A creature can attack a planeswalker; (~960 tok)
 - `planeswalkers.test.ts` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). A planeswalker enters (~1298 tok)
@@ -247,7 +249,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~14146 tok)
+- `test-cards.json` (~14274 tok)
 
 ## tests/harness/
 

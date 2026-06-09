@@ -331,7 +331,7 @@ const CardBehaviorActionSchema = z.union([
   // an edict) chooses among permanents they control. Default filter is creatures.
   z.object({
     type: z.literal('sacrifice'),
-    who: z.enum(['you', 'opponent', 'each_opponent']).optional(),
+    who: z.enum(['you', 'opponent', 'each_opponent', 'each_player']).optional(),
     count: z.number().optional(),
     filter: z.object({ type_line: z.string().optional() }).optional(),
   }),

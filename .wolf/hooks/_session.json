@@ -406,6 +406,11 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-09T16:28:02.201Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010198_each_player_sacrifice.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T16:37:36.344Z"
     }
   },
   "files_written": [
@@ -894,6 +899,36 @@
       "action": "edit",
       "tokens": 22,
       "at": "2026-06-09T16:28:54.510Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010198_each_player_sacrifice.sql",
+      "action": "edit",
+      "tokens": 189,
+      "at": "2026-06-09T16:37:44.321Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 37,
+      "at": "2026-06-09T16:37:55.034Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 144,
+      "at": "2026-06-09T16:38:20.063Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/necrotic-hex.test.ts",
+      "action": "create",
+      "tokens": 714,
+      "at": "2026-06-09T16:38:34.043Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 22,
+      "at": "2026-06-09T16:38:39.279Z"
     }
   ],
   "edit_counts": {
@@ -901,10 +936,10 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 10,
-    "package.json": 10,
+    "tests/fixtures/test-cards.json": 11,
+    "package.json": 11,
     "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
-    "lib/game/card-behavior-schema.ts": 9,
+    "lib/game/card-behavior-schema.ts": 10,
     "tests/feature/undermine.test.ts": 2,
     "supabase/migrations/202605010191_sacrifice_tally_tokens.sql": 2,
     "tests/feature/sacrifice-tally-tokens.test.ts": 1,
@@ -923,11 +958,13 @@
     "supabase/migrations/202605010196_mana_value_rider.sql": 1,
     "tests/feature/feed-the-swarm.test.ts": 2,
     "supabase/migrations/202605010197_may_cost_condition.sql": 2,
-    "tests/feature/liliana-devotee.test.ts": 1
+    "tests/feature/liliana-devotee.test.ts": 1,
+    "supabase/migrations/202605010198_each_player_sacrifice.sql": 1,
+    "tests/feature/necrotic-hex.test.ts": 1
   },
   "anatomy_hits": 40,
-  "anatomy_misses": 40,
+  "anatomy_misses": 41,
   "repeated_reads_warned": 66,
   "cerebrum_warnings": 0,
-  "stop_count": 14
+  "stop_count": 15
 }

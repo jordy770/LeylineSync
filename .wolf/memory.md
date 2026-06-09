@@ -2861,3 +2861,10 @@
 | 18:28 | Created tests/feature/liliana-devotee.test.ts | — | ~1000 |
 | 18:28 | Edited package.json | inline fix | ~22 |
 | 18:30 | Liliana Devotee (mig 197): may gains condition+cost (you-may-pay primitive) | apply_trigger_effects+submit_decision + schema; fixture+test | 686/686 green | ~9k |
+| 18:30 | Session end: 81 writes across 27 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 81 reads | ~224023 tok |
+| 18:37 | Edited supabase/migrations/202605010198_each_player_sacrifice.sql | expanded (+6 lines) | ~177 |
+| 18:37 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~37 |
+| 18:38 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~144 |
+| 18:38 | Created tests/feature/necrotic-hex.test.ts | — | ~714 |
+| 18:38 | Edited package.json | inline fix | ~22 |
+| 18:39 | Necrotic Hex (mig 198): who=each_player sacrifice + fixed tapped tokens | apply_trigger_effects + schema; fixture+test | 687/687 green | ~5k |
