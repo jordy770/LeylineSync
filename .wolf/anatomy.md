@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T14:39:26.785Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T14:42:28.572Z
 > Files: 114 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -75,7 +75,7 @@
 ## components/
 
 - `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4174 tok)
-- `CardBehaviorForm.tsx` — inputClass (~10751 tok)
+- `CardBehaviorForm.tsx` — inputClass (~11226 tok)
 - `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~58658 tok)
 - `JudgePanel.tsx` — JudgePanel (~1516 tok)
 

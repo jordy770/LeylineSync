@@ -2804,3 +2804,8 @@
 | 16:39 | Created tests/feature/creatures-died-this-turn.test.ts | — | ~967 |
 | 16:39 | Edited package.json | inline fix | ~26 |
 | 16:40 | creatures_died_this_turn count source (mig 193) | put_in_graveyard tally + resolve_count_amount + schema/registry; conditional + Standard Bearer | 669/669 green | ~9k |
+| 16:41 | Edited components/CardBehaviorForm.tsx | added 1 condition(s) | ~340 |
+| 16:42 | Edited components/CardBehaviorForm.tsx | 18→21 lines | ~222 |
+| 16:42 | Edited components/CardBehaviorForm.tsx | modified EffectEditor() | ~366 |
+| 16:42 | Edited components/CardBehaviorForm.tsx | CSS: count, onMove | ~123 |
+| 16:43 | Reorderable effect lists (up/down) in SpellActionList + EffectListControl | components/CardBehaviorForm.tsx | tsc/lint/669 green (UI-only, no runtime test) | ~3k |

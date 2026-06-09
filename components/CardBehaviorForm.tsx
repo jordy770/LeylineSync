@@ -354,6 +354,32 @@ export default function CardBehaviorForm({
 
 // A reusable ordered list of untargeted spell actions (a dropdown + the action's
 // fields + remove), shared by the Spell effect and Flashback effect sections.
+// Move an array item to a new index (no-op if out of range). Used by the
+// reorderable effect/action lists.
+function moveItem<T>(arr: T[], from: number, to: number): T[] {
+  if (to < 0 || to >= arr.length) return arr
+  const next = arr.slice()
+  const [item] = next.splice(from, 1)
+  next.splice(to, 0, item)
+  return next
+}
+
+// Up/down controls for reordering a list item.
+function ReorderButtons({ index, count, onMove, disabled }: {
+  index: number
+  count: number
+  onMove: (to: number) => void
+  disabled: boolean
+}) {
+  const btn = 'px-1 text-xs leading-none text-slate-500 hover:text-slate-200 disabled:opacity-30'
+  return (
+    <span className="flex items-center">
+      <button type="button" title="Move up" disabled={disabled || index === 0} onClick={() => onMove(index - 1)} className={btn}>↑</button>
+      <button type="button" title="Move down" disabled={disabled || index === count - 1} onClick={() => onMove(index + 1)} className={btn}>↓</button>
+    </span>
+  )
+}
+
 function SpellActionList({
   actions,
   onChange,
@@ -391,14 +417,17 @@ function SpellActionList({
             disabled={disabled}
             onChange={(next) => onChange(actions.map((a, i) => (i === index ? (next as BuilderSpellEffect) : a)))}
           />
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => onChange(actions.filter((_, i) => i !== index))}
-            className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
-          >
-            ✕
-          </button>
+          <span className="ml-auto flex items-center gap-1.5">
+            <ReorderButtons index={index} count={actions.length} disabled={disabled} onMove={(to) => onChange(moveItem(actions, index, to))} />
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => onChange(actions.filter((_, i) => i !== index))}
+              className="text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+            >
+              ✕
+            </button>
+          </span>
         </div>
       ))}
     </>
@@ -668,12 +697,14 @@ function EffectEditor({
   onChange,
   onRemove,
   disabled,
+  reorder,
 }: {
   effect: FlatEffect
   context: EffectContext
   onChange: (next: FlatEffect) => void
   onRemove: () => void
   disabled: boolean
+  reorder?: { index: number; count: number; onMove: (to: number) => void }
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -692,14 +723,17 @@ function EffectEditor({
 
       <EffectFields effect={effect} disabled={disabled} onChange={onChange} />
 
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={onRemove}
-        className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
-      >
-        ✕
-      </button>
+      <span className="ml-auto flex items-center gap-1.5">
+        {reorder ? <ReorderButtons index={reorder.index} count={reorder.count} disabled={disabled} onMove={reorder.onMove} /> : null}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={onRemove}
+          className="text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+        >
+          ✕
+        </button>
+      </span>
     </div>
   )
 }
@@ -868,6 +902,7 @@ function EffectListControl({
             disabled={disabled}
             onChange={(next) => onChange(value.map((e, i) => (i === index ? next : e)))}
             onRemove={() => onChange(value.filter((_, i) => i !== index))}
+            reorder={{ index, count: value.length, onMove: (to) => onChange(moveItem(value, index, to)) }}
           />
         ))
       )}

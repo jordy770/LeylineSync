@@ -356,6 +356,11 @@
       "count": 1,
       "tokens": 1734,
       "first_read": "2026-06-09T14:37:18.329Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx": {
+      "count": 3,
+      "tokens": 10751,
+      "first_read": "2026-06-09T14:40:52.035Z"
     }
   },
   "files_written": [
@@ -568,6 +573,30 @@
       "action": "edit",
       "tokens": 26,
       "at": "2026-06-09T14:39:26.798Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 340,
+      "at": "2026-06-09T14:41:59.677Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 222,
+      "at": "2026-06-09T14:42:09.006Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 366,
+      "at": "2026-06-09T14:42:21.777Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/components/CardBehaviorForm.tsx",
+      "action": "edit",
+      "tokens": 123,
+      "at": "2026-06-09T14:42:28.587Z"
     }
   ],
   "edit_counts": {
@@ -587,11 +616,12 @@
     "lib/game/card-behavior-builder.ts": 2,
     "tests/feature/conditional-effect.test.ts": 1,
     "supabase/migrations/202605010193_creatures_died_this_turn.sql": 1,
-    "tests/feature/creatures-died-this-turn.test.ts": 1
+    "tests/feature/creatures-died-this-turn.test.ts": 1,
+    "components/CardBehaviorForm.tsx": 4
   },
-  "anatomy_hits": 36,
+  "anatomy_hits": 37,
   "anatomy_misses": 34,
-  "repeated_reads_warned": 53,
+  "repeated_reads_warned": 55,
   "cerebrum_warnings": 0,
   "stop_count": 9
 }
