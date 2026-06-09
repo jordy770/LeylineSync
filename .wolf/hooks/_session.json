@@ -381,6 +381,11 @@
       "count": 1,
       "tokens": 960,
       "first_read": "2026-06-09T15:10:44.351Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010195_intimidate_hexproof.sql": {
+      "count": 4,
+      "tokens": 5760,
+      "first_read": "2026-06-09T15:24:26.028Z"
     }
   },
   "files_written": [
@@ -737,6 +742,66 @@
       "action": "edit",
       "tokens": 33,
       "at": "2026-06-09T15:17:03.085Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010195_intimidate_hexproof.sql",
+      "action": "edit",
+      "tokens": 58,
+      "at": "2026-06-09T15:24:32.802Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010195_intimidate_hexproof.sql",
+      "action": "edit",
+      "tokens": 42,
+      "at": "2026-06-09T15:24:48.089Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010195_intimidate_hexproof.sql",
+      "action": "edit",
+      "tokens": 44,
+      "at": "2026-06-09T15:24:54.490Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010195_intimidate_hexproof.sql",
+      "action": "edit",
+      "tokens": 326,
+      "at": "2026-06-09T15:25:11.068Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010195_intimidate_hexproof.sql",
+      "action": "edit",
+      "tokens": 283,
+      "at": "2026-06-09T15:25:32.521Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 48,
+      "at": "2026-06-09T15:26:03.192Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 29,
+      "at": "2026-06-09T15:26:10.424Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 313,
+      "at": "2026-06-09T15:26:26.428Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/intimidate-hexproof.test.ts",
+      "action": "create",
+      "tokens": 1114,
+      "at": "2026-06-09T15:26:45.318Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 21,
+      "at": "2026-06-09T15:26:53.294Z"
     }
   ],
   "edit_counts": {
@@ -744,8 +809,8 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 7,
-    "package.json": 7,
+    "tests/fixtures/test-cards.json": 8,
+    "package.json": 8,
     "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
     "lib/game/card-behavior-schema.ts": 7,
     "tests/feature/undermine.test.ts": 2,
@@ -753,18 +818,20 @@
     "tests/feature/sacrifice-tally-tokens.test.ts": 1,
     "supabase/migrations/202605010192_conditional_effect.sql": 1,
     "lib/game/card-behavior-registry.ts": 2,
-    "lib/game/card-behavior-builder.ts": 4,
+    "lib/game/card-behavior-builder.ts": 6,
     "tests/feature/conditional-effect.test.ts": 1,
     "supabase/migrations/202605010193_creatures_died_this_turn.sql": 1,
     "tests/feature/creatures-died-this-turn.test.ts": 1,
     "components/CardBehaviorForm.tsx": 4,
     "tests/feature/precon-compositions.test.ts": 2,
     "supabase/migrations/202605010194_menace_enforcement.sql": 11,
-    "tests/feature/menace.test.ts": 1
+    "tests/feature/menace.test.ts": 1,
+    "supabase/migrations/202605010195_intimidate_hexproof.sql": 5,
+    "tests/feature/intimidate-hexproof.test.ts": 1
   },
   "anatomy_hits": 39,
-  "anatomy_misses": 36,
-  "repeated_reads_warned": 62,
+  "anatomy_misses": 37,
+  "repeated_reads_warned": 65,
   "cerebrum_warnings": 0,
-  "stop_count": 11
+  "stop_count": 12
 }

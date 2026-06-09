@@ -2833,3 +2833,15 @@
 | 17:16 | Edited lib/game/card-behavior-builder.ts | 5→6 lines | ~40 |
 | 17:17 | Edited lib/game/card-behavior-builder.ts | 4→5 lines | ~33 |
 | 17:18 | Menace enforcement (mig 194): CHECK+register+accessor+advance_step + builder keyword | caught awk over-capture reverting resolve_combat_damage | 676/676 green | ~14k |
+| 17:18 | Session end: 59 writes across 21 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 76 reads | ~201006 tok |
+| 17:24 | Edited supabase/migrations/202605010195_intimidate_hexproof.sql | 7→9 lines | ~54 |
+| 17:24 | Edited supabase/migrations/202605010195_intimidate_hexproof.sql | 5→7 lines | ~40 |
+| 17:24 | Edited supabase/migrations/202605010195_intimidate_hexproof.sql | 3→5 lines | ~41 |
+| 17:25 | Edited supabase/migrations/202605010195_intimidate_hexproof.sql | expanded (+15 lines) | ~304 |
+| 17:25 | Edited supabase/migrations/202605010195_intimidate_hexproof.sql | added 2 condition(s) | ~264 |
+| 17:26 | Edited lib/game/card-behavior-builder.ts | 6→8 lines | ~48 |
+| 17:26 | Edited lib/game/card-behavior-builder.ts | 3→5 lines | ~29 |
+| 17:26 | Edited tests/fixtures/test-cards.json | 1→6 lines | ~313 |
+| 17:26 | Created tests/feature/intimidate-hexproof.test.ts | — | ~1114 |
+| 17:26 | Edited package.json | inline fix | ~21 |
+| 17:28 | Intimidate + hexproof enforcement (mig 195): declare_blocker + put_action_on_stack + register/CHECK/accessors + form keywords | 5 fixtures + test | 681/681 green | ~13k |

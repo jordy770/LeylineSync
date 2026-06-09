@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T15:17:03.071Z
-> Files: 117 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T15:26:53.276Z
+> Files: 119 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1458 tok)
+- `package.json` — Node.js package manifest (~1470 tok)
 
 ## .claude/
 
@@ -110,7 +110,7 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10092 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10116 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11372 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8273 tok)
@@ -183,6 +183,7 @@
 - `202605010192_conditional_effect.sql` — Conditional effect — "If <state condition>, <effects>." A new COMPOSITION (~4175 tok)
 - `202605010193_creatures_died_this_turn.sql` — "Creatures that died under your control this turn" — a new count source for (~1599 tok)
 - `202605010194_menace_enforcement.sql` — Menace enforcement — "can't be blocked except by two or more creatures." Three (~4532 tok)
+- `202605010195_intimidate_hexproof.sql` — Intimidate + hexproof enforcement. (~5939 tok)
 
 ## tests/
 
@@ -212,6 +213,7 @@
 - `flashback-alternate-effect.test.ts` — Flashback that does a DIFFERENT/extra effect than the hand cast (the (~842 tok)
 - `flashback-life.test.ts` — Flashback with an additional "Pay N life" cost (mig 176). Deep Analysis's (~662 tok)
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
+- `intimidate-hexproof.test.ts` — Intimidate + hexproof enforcement (mig 195). (~1114 tok)
 - `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~1730 tok)
 - `lilianas-mastery.test.ts` — Liliana's Mastery — "Zombies you control get +1/+1. When Liliana's Mastery enters (~876 tok)
 - `mana-ability-multicolor.test.ts` — Mana abilities with an activation cost + multiple produced colours (mig 180). (~582 tok)
@@ -241,7 +243,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~13409 tok)
+- `test-cards.json` (~13705 tok)
 
 ## tests/harness/
 
