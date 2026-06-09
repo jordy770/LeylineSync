@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T09:06:13.040Z
-> Files: 106 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T11:03:06.354Z
+> Files: 108 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1391 tok)
+- `package.json` — Node.js package manifest (~1400 tok)
 
 ## .claude/
 
@@ -113,7 +113,7 @@
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10012 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11021 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~7948 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8015 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -178,6 +178,7 @@
 - `202605010187_activated_search_library.sql` — search_library as an ACTIVATED-ability effect (Wayfarer's Bauble: "{1}, {T}, (~3771 tok)
 - `202605010188_activated_destroy_permanent.sql` — Activated destroy/exile/bounce/tap/untap of a NON-creature permanent (Unstable (~3925 tok)
 - `202605010189_mana_ability_pay_life_cost.sql` — `pay_life` as a mana-ability activation cost (Talisman of Dominance: "{T}, Pay 1 (~1337 tok)
+- `202605010190_counter_controller_loses_life.sql` — Undermine — "Counter target spell. Its controller loses 2 life." A life-loss (~1089 tok)
 
 ## tests/
 
@@ -226,11 +227,12 @@
 - `typed-keyword-grant.test.ts` — Typed keyword grants (mig 184) — "Zombies you control have flying" (Eternal (~681 tok)
 - `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)
 - `undead-augur.test.ts` — Undead Augur — "Whenever a Zombie you control dies, you draw a card and you (~834 tok)
+- `undermine.test.ts` — Undermine — "Counter target spell. Its controller loses 2 life." (mig 190). A (~842 tok)
 - `watcher-triggers.test.ts` — Other-scoped trigger events (roadmap Tribal #1, second half). `creature_entered` / (~1569 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~12354 tok)
+- `test-cards.json` (~12445 tok)
 
 ## tests/harness/
 

@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-05-27T13:42:32.489Z",
   "lifetime": {
-    "total_tokens_estimated": 27202054,
-    "total_reads": 3717,
-    "total_writes": 13356,
+    "total_tokens_estimated": 27240826,
+    "total_reads": 3737,
+    "total_writes": 13368,
     "total_sessions": 69,
-    "anatomy_hits": 2814,
-    "anatomy_misses": 898,
-    "repeated_reads_blocked": 5227,
-    "estimated_savings_vs_bare_cli": 103471480
+    "anatomy_hits": 2832,
+    "anatomy_misses": 900,
+    "repeated_reads_blocked": 5231,
+    "estimated_savings_vs_bare_cli": 103475080
   },
   "sessions": [
     {
@@ -94470,6 +94470,220 @@
         "writes_count": 0,
         "repeated_reads_blocked": 51,
         "anatomy_lookups": 21
+      }
+    },
+    {
+      "id": "session-2026-06-09-1059",
+      "started": "2026-06-09T08:59:00.739Z",
+      "ended": "2026-06-09T09:08:11.378Z",
+      "reads": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.wolf/cerebrum.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/tribal-death-payoffs.test.ts",
+          "tokens_estimated": 723,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/nontoken-watcher.test.ts",
+          "tokens_estimated": 749,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/typed-lords.test.ts",
+          "tokens_estimated": 913,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/army-of-the-damned.test.ts",
+          "tokens_estimated": 1092,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/amass.test.ts",
+          "tokens_estimated": 885,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/cemetery-reaper.test.ts",
+          "tokens_estimated": 980,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 9754,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/undead-augur.test.ts",
+          "tokens_estimated": 834,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/lilianas-mastery.test.ts",
+          "tokens_estimated": 876,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/undead-augur.test.ts",
+          "tokens_estimated": 834,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/__ua_roundtrip.mts",
+          "tokens_estimated": 195,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/lilianas-mastery.test.ts",
+          "tokens_estimated": 876,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/scripts/_lm_roundtrip.mjs",
+          "tokens_estimated": 289,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+          "tokens_estimated": 350,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 36,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 16806,
+        "output_tokens_estimated": 2580,
+        "reads_count": 10,
+        "writes_count": 6,
+        "repeated_reads_blocked": 2,
+        "anatomy_lookups": 9
+      }
+    },
+    {
+      "id": "session-2026-06-09-1059",
+      "started": "2026-06-09T08:59:00.739Z",
+      "ended": "2026-06-09T09:12:00.771Z",
+      "reads": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/.wolf/cerebrum.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/tribal-death-payoffs.test.ts",
+          "tokens_estimated": 723,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/nontoken-watcher.test.ts",
+          "tokens_estimated": 749,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/typed-lords.test.ts",
+          "tokens_estimated": 913,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/army-of-the-damned.test.ts",
+          "tokens_estimated": 1092,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/amass.test.ts",
+          "tokens_estimated": 885,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/cemetery-reaper.test.ts",
+          "tokens_estimated": 980,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/harness/scenario.ts",
+          "tokens_estimated": 9754,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/undead-augur.test.ts",
+          "tokens_estimated": 834,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/lilianas-mastery.test.ts",
+          "tokens_estimated": 876,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/undead-augur.test.ts",
+          "tokens_estimated": 834,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/__ua_roundtrip.mts",
+          "tokens_estimated": 195,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/lilianas-mastery.test.ts",
+          "tokens_estimated": 876,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/scripts/_lm_roundtrip.mjs",
+          "tokens_estimated": 289,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+          "tokens_estimated": 350,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+          "tokens_estimated": 36,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 16806,
+        "output_tokens_estimated": 2580,
+        "reads_count": 10,
+        "writes_count": 6,
+        "repeated_reads_blocked": 2,
+        "anatomy_lookups": 9
       }
     }
   ],

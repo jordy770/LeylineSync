@@ -51,6 +51,21 @@
       "count": 1,
       "tokens": 876,
       "first_read": "2026-06-09T09:05:39.260Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010110_each_opponent_sacrifice.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T10:51:57.812Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/lib/game/actions.ts": {
+      "count": 1,
+      "tokens": 11645,
+      "first_read": "2026-06-09T11:00:28.198Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/feature/cant-be-countered.test.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T11:01:10.319Z"
     }
   },
   "files_written": [
@@ -89,6 +104,42 @@
       "action": "edit",
       "tokens": 36,
       "at": "2026-06-09T09:06:13.055Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010190_counter_controller_loses_life.sql",
+      "action": "create",
+      "tokens": 1167,
+      "at": "2026-06-09T11:01:46.385Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 105,
+      "at": "2026-06-09T11:01:55.903Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 112,
+      "at": "2026-06-09T11:02:04.901Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/undermine.test.ts",
+      "action": "create",
+      "tokens": 813,
+      "at": "2026-06-09T11:02:20.281Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 21,
+      "at": "2026-06-09T11:02:28.435Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/undermine.test.ts",
+      "action": "edit",
+      "tokens": 60,
+      "at": "2026-06-09T11:03:06.367Z"
     }
   ],
   "edit_counts": {
@@ -96,12 +147,15 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 1,
-    "package.json": 1
+    "tests/fixtures/test-cards.json": 2,
+    "package.json": 2,
+    "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
+    "lib/game/card-behavior-schema.ts": 1,
+    "tests/feature/undermine.test.ts": 2
   },
-  "anatomy_hits": 9,
-  "anatomy_misses": 1,
+  "anatomy_hits": 10,
+  "anatomy_misses": 3,
   "repeated_reads_warned": 2,
   "cerebrum_warnings": 0,
-  "stop_count": 0
+  "stop_count": 2
 }

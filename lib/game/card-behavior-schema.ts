@@ -230,6 +230,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('counter'),
     target_ref: z.string().optional(),
     target_type: z.literal('spell').optional(),
+    // Undermine: "…Its controller loses N life." The COUNTERED spell's controller
+    // loses this much life (applied even if that spell can't be countered).
+    controller_loses_life: z.number().int().nonnegative().optional(),
   }),
   z.object({
     type: z.literal('gain_life'),
