@@ -27,6 +27,7 @@ export const BUILDER_KEYWORDS = [
   'first_strike',
   'double_strike',
   'deathtouch',
+  'menace',
 ] as const
 export type BuilderKeyword = (typeof BUILDER_KEYWORDS)[number]
 
@@ -895,4 +896,5 @@ export const KEYWORD_LABELS: Record<BuilderKeyword, string> = {
   first_strike: 'First strike',
   double_strike: 'Double strike',
   deathtouch: 'Deathtouch',
+  menace: 'Menace',
 }

@@ -2815,3 +2815,21 @@
 | 16:53 | Edited package.json | inline fix | ~26 |
 | 16:53 | Edited tests/feature/precon-compositions.test.ts | 4→5 lines | ~83 |
 | 16:54 | Precon batch: Murder + Mire Triton + Open the Graves (compositions) | 3 fixtures + 1 test | 673/673 green | ~5k |
+| 16:54 | Session end: 43 writes across 19 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 72 reads | ~190454 tok |
+| 17:00 | Edited supabase/migrations/202605010194_menace_enforcement.sql | expanded (+15 lines) | ~219 |
+| 17:02 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 15→16 lines | ~101 |
+| 17:02 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 11→12 lines | ~75 |
+| 17:02 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 5→6 lines | ~51 |
+| 17:03 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~96 |
+| 17:03 | Created tests/feature/menace.test.ts | — | ~897 |
+| 17:03 | Edited package.json | inline fix | ~21 |
+| 17:05 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 14→14 lines | ~178 |
+| 17:07 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 6→7 lines | ~44 |
+| 17:07 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 5→6 lines | ~34 |
+| 17:07 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 5→6 lines | ~52 |
+| 17:16 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 8→9 lines | ~53 |
+| 17:16 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 5→6 lines | ~34 |
+| 17:16 | Edited supabase/migrations/202605010194_menace_enforcement.sql | 5→6 lines | ~52 |
+| 17:16 | Edited lib/game/card-behavior-builder.ts | 5→6 lines | ~40 |
+| 17:17 | Edited lib/game/card-behavior-builder.ts | 4→5 lines | ~33 |
+| 17:18 | Menace enforcement (mig 194): CHECK+register+accessor+advance_step + builder keyword | caught awk over-capture reverting resolve_combat_damage | 676/676 green | ~14k |

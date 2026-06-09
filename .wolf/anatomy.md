@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T14:53:34.217Z
-> Files: 115 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T15:17:03.071Z
+> Files: 117 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1450 tok)
+- `package.json` — Node.js package manifest (~1458 tok)
 
 ## .claude/
 
@@ -110,7 +110,7 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10082 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10092 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11372 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8273 tok)
@@ -182,6 +182,7 @@
 - `202605010191_sacrifice_tally_tokens.sql` — Syphon Flesh — "Each other player sacrifices a creature. Create a 2/2 black (~9752 tok)
 - `202605010192_conditional_effect.sql` — Conditional effect — "If <state condition>, <effects>." A new COMPOSITION (~4175 tok)
 - `202605010193_creatures_died_this_turn.sql` — "Creatures that died under your control this turn" — a new count source for (~1599 tok)
+- `202605010194_menace_enforcement.sql` — Menace enforcement — "can't be blocked except by two or more creatures." Three (~4532 tok)
 
 ## tests/
 
@@ -216,6 +217,7 @@
 - `mana-ability-multicolor.test.ts` — Mana abilities with an activation cost + multiple produced colours (mig 180). (~582 tok)
 - `mana-ability-pay-life.test.ts` — `pay_life` as a mana-ability cost (mig 189). Talisman of Dominance: "{T}: Add (~797 tok)
 - `mass-destroy-reanimate.test.ts` — Mass destroy + mass reanimate (mig 185). Zombie Apocalypse: "Return all Zombie (~743 tok)
+- `menace.test.ts` — Menace enforcement (mig 194) — "can't be blocked except by two or more (~897 tok)
 - `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
 - `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
 - `nontoken-watcher.test.ts` — `nontoken` watcher filter (mig 181) — "Whenever a NONTOKEN creature you control (~749 tok)
@@ -239,7 +241,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~13327 tok)
+- `test-cards.json` (~13409 tok)
 
 ## tests/harness/
 
