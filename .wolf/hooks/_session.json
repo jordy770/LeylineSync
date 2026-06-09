@@ -597,6 +597,30 @@
       "action": "edit",
       "tokens": 123,
       "at": "2026-06-09T14:42:28.587Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 372,
+      "at": "2026-06-09T14:52:32.548Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/precon-compositions.test.ts",
+      "action": "create",
+      "tokens": 1186,
+      "at": "2026-06-09T14:52:53.792Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 26,
+      "at": "2026-06-09T14:53:04.244Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/precon-compositions.test.ts",
+      "action": "edit",
+      "tokens": 83,
+      "at": "2026-06-09T14:53:34.231Z"
     }
   ],
   "edit_counts": {
@@ -604,8 +628,8 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 5,
-    "package.json": 5,
+    "tests/fixtures/test-cards.json": 6,
+    "package.json": 6,
     "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
     "lib/game/card-behavior-schema.ts": 7,
     "tests/feature/undermine.test.ts": 2,
@@ -617,11 +641,12 @@
     "tests/feature/conditional-effect.test.ts": 1,
     "supabase/migrations/202605010193_creatures_died_this_turn.sql": 1,
     "tests/feature/creatures-died-this-turn.test.ts": 1,
-    "components/CardBehaviorForm.tsx": 4
+    "components/CardBehaviorForm.tsx": 4,
+    "tests/feature/precon-compositions.test.ts": 2
   },
   "anatomy_hits": 37,
   "anatomy_misses": 34,
   "repeated_reads_warned": 55,
   "cerebrum_warnings": 0,
-  "stop_count": 9
+  "stop_count": 10
 }

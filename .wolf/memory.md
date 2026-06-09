@@ -2809,3 +2809,9 @@
 | 16:42 | Edited components/CardBehaviorForm.tsx | modified EffectEditor() | ~366 |
 | 16:42 | Edited components/CardBehaviorForm.tsx | CSS: count, onMove | ~123 |
 | 16:43 | Reorderable effect lists (up/down) in SpellActionList + EffectListControl | components/CardBehaviorForm.tsx | tsc/lint/669 green (UI-only, no runtime test) | ~3k |
+| 16:43 | Session end: 39 writes across 18 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 72 reads | ~188787 tok |
+| 16:52 | Edited tests/fixtures/test-cards.json | 1→4 lines | ~372 |
+| 16:52 | Created tests/feature/precon-compositions.test.ts | — | ~1186 |
+| 16:53 | Edited package.json | inline fix | ~26 |
+| 16:53 | Edited tests/feature/precon-compositions.test.ts | 4→5 lines | ~83 |
+| 16:54 | Precon batch: Murder + Mire Triton + Open the Graves (compositions) | 3 fixtures + 1 test | 673/673 green | ~5k |

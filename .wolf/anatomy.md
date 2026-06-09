@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T14:42:28.572Z
-> Files: 114 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T14:53:34.217Z
+> Files: 115 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1438 tok)
+- `package.json` — Node.js package manifest (~1450 tok)
 
 ## .claude/
 
@@ -221,6 +221,7 @@
 - `nontoken-watcher.test.ts` — `nontoken` watcher filter (mig 181) — "Whenever a NONTOKEN creature you control (~749 tok)
 - `planeswalker-combat.test.ts` — Planeswalker combat (roadmap Tribal #4, slice 2). A creature can attack a planeswalker; (~960 tok)
 - `planeswalkers.test.ts` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). A planeswalker enters (~1298 tok)
+- `precon-compositions.test.ts` — Precon cards that compose entirely from existing primitives (no new engine): (~1201 tok)
 - `proliferate.test.ts` — Proliferate (Atraxa, Praetors' Voice end step, Karn's Bastion, etc.). The engine (~1083 tok)
 - `sacrifice-creature-cost.test.ts` — "Sacrifice a creature" activated-ability cost (mig 183). Spark Reaper (~862 tok)
 - `sacrifice-self-ability.test.ts` — Sacrifice-self activated cost (Commander's Sphere, mig 175): source → graveyard as a cost, then draw resolves; can't re-activate. (~600 tok)
@@ -238,7 +239,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~12971 tok)
+- `test-cards.json` (~13327 tok)
 
 ## tests/harness/
 
