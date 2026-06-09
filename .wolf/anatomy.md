@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T15:26:53.276Z
-> Files: 119 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T16:21:47.928Z
+> Files: 121 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1470 tok)
+- `package.json` — Node.js package manifest (~1481 tok)
 
 ## .claude/
 
@@ -113,7 +113,7 @@
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10116 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11372 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8273 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8338 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -184,6 +184,7 @@
 - `202605010193_creatures_died_this_turn.sql` — "Creatures that died under your control this turn" — a new count source for (~1599 tok)
 - `202605010194_menace_enforcement.sql` — Menace enforcement — "can't be blocked except by two or more creatures." Three (~4532 tok)
 - `202605010195_intimidate_hexproof.sql` — Intimidate + hexproof enforcement. (~5939 tok)
+- `202605010196_mana_value_rider.sql` — Feed the Swarm — "Destroy target creature or enchantment an opponent controls. (~1620 tok)
 
 ## tests/
 
@@ -210,6 +211,7 @@
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
 - `enters-with-counters.test.ts` — "Enters the battlefield with N counters" (roadmap Counters #3). A REPLACEMENT applied (~1031 tok)
 - `exile-from-graveyard-effect.test.ts` — "Exile target card from a graveyard" as a targeted EFFECT (mig 186). Withered (~898 tok)
+- `feed-the-swarm.test.ts` — Feed the Swarm (mig 196) — "Destroy target creature or enchantment an opponent (~656 tok)
 - `flashback-alternate-effect.test.ts` — Flashback that does a DIFFERENT/extra effect than the hand cast (the (~842 tok)
 - `flashback-life.test.ts` — Flashback with an additional "Pay N life" cost (mig 176). Deep Analysis's (~662 tok)
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
@@ -243,7 +245,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~13705 tok)
+- `test-cards.json` (~13931 tok)
 
 ## tests/harness/
 

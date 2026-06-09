@@ -386,6 +386,16 @@
       "count": 4,
       "tokens": 5760,
       "first_read": "2026-06-09T15:24:26.028Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010196_mana_value_rider.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T16:18:57.351Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/tests/feature/targeted-spell-riders.test.ts": {
+      "count": 1,
+      "tokens": 1031,
+      "first_read": "2026-06-09T16:21:27.657Z"
     }
   },
   "files_written": [
@@ -802,6 +812,42 @@
       "action": "edit",
       "tokens": 21,
       "at": "2026-06-09T15:26:53.294Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010196_mana_value_rider.sql",
+      "action": "edit",
+      "tokens": 159,
+      "at": "2026-06-09T16:19:06.722Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 116,
+      "at": "2026-06-09T16:19:16.291Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 244,
+      "at": "2026-06-09T16:19:56.563Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/feed-the-swarm.test.ts",
+      "action": "create",
+      "tokens": 701,
+      "at": "2026-06-09T16:20:09.984Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 24,
+      "at": "2026-06-09T16:20:14.982Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/feed-the-swarm.test.ts",
+      "action": "create",
+      "tokens": 656,
+      "at": "2026-06-09T16:21:47.941Z"
     }
   ],
   "edit_counts": {
@@ -809,10 +855,10 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 8,
-    "package.json": 8,
+    "tests/fixtures/test-cards.json": 9,
+    "package.json": 9,
     "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
-    "lib/game/card-behavior-schema.ts": 7,
+    "lib/game/card-behavior-schema.ts": 8,
     "tests/feature/undermine.test.ts": 2,
     "supabase/migrations/202605010191_sacrifice_tally_tokens.sql": 2,
     "tests/feature/sacrifice-tally-tokens.test.ts": 1,
@@ -827,11 +873,13 @@
     "supabase/migrations/202605010194_menace_enforcement.sql": 11,
     "tests/feature/menace.test.ts": 1,
     "supabase/migrations/202605010195_intimidate_hexproof.sql": 5,
-    "tests/feature/intimidate-hexproof.test.ts": 1
+    "tests/feature/intimidate-hexproof.test.ts": 1,
+    "supabase/migrations/202605010196_mana_value_rider.sql": 1,
+    "tests/feature/feed-the-swarm.test.ts": 2
   },
-  "anatomy_hits": 39,
-  "anatomy_misses": 37,
+  "anatomy_hits": 40,
+  "anatomy_misses": 38,
   "repeated_reads_warned": 65,
   "cerebrum_warnings": 0,
-  "stop_count": 12
+  "stop_count": 13
 }

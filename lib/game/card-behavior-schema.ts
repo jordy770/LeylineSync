@@ -114,7 +114,9 @@ const ThenRiderSchema = z
   .array(
     z.object({
       type: z.enum(['lose_life', 'gain_life', 'draw']),
-      amount: z.number().int().nonnegative(),
+      // A fixed number, or {mana_value_of:'target'} = the targeted/destroyed
+      // permanent's mana value (Feed the Swarm: "lose life equal to its mana value").
+      amount: z.union([z.number().int().nonnegative(), z.object({ mana_value_of: z.literal('target') })]),
     }),
   )
   .optional()

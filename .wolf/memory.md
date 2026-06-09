@@ -2845,3 +2845,11 @@
 | 17:26 | Created tests/feature/intimidate-hexproof.test.ts | — | ~1114 |
 | 17:26 | Edited package.json | inline fix | ~21 |
 | 17:28 | Intimidate + hexproof enforcement (mig 195): declare_blocker + put_action_on_stack + register/CHECK/accessors + form keywords | 5 fixtures + test | 681/681 green | ~13k |
+| 17:28 | Session end: 69 writes across 23 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 77 reads | ~209044 tok |
+| 18:19 | Edited supabase/migrations/202605010196_mana_value_rider.sql | added 1 condition(s) | ~148 |
+| 18:19 | Edited lib/game/card-behavior-schema.ts | 8→10 lines | ~116 |
+| 18:19 | Edited tests/fixtures/test-cards.json | 1→4 lines | ~244 |
+| 18:20 | Created tests/feature/feed-the-swarm.test.ts | — | ~701 |
+| 18:20 | Edited package.json | inline fix | ~24 |
+| 18:21 | Created tests/feature/feed-the-swarm.test.ts | — | ~656 |
+| 18:22 | Feed the Swarm (mig 196): card_mana_value + dynamic then-rider amount | helper + handle_permanent_effect + schema; fixture+test | 683/683 green | ~7k |
