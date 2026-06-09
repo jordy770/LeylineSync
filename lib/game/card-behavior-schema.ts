@@ -289,6 +289,15 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('may'),
     prompt: z.string().optional(),
+    // Optional gate: the may is only offered when this count condition holds
+    // (Liliana's Devotee: "if a creature died this turn, you may …").
+    condition: z.object({
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn']),
+      type_line: z.string().optional(),
+      at_least: z.number().int().positive(),
+    }).optional(),
+    // Optional mana cost paid on confirm before the effects run ("you may pay {1}{B}").
+    cost: z.string().optional(),
     // Inner effects kept loose to avoid a self-referential schema; the engine
     // applies them (untargeted / creature-target) at confirm time.
     effects: z.array(z.record(z.string(), z.unknown())),

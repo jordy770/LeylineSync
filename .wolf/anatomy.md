@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T16:21:47.928Z
-> Files: 121 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T16:28:54.497Z
+> Files: 123 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1481 tok)
+- `package.json` — Node.js package manifest (~1492 tok)
 
 ## .claude/
 
@@ -113,7 +113,7 @@
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10116 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11372 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8338 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8489 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -185,6 +185,7 @@
 - `202605010194_menace_enforcement.sql` — Menace enforcement — "can't be blocked except by two or more creatures." Three (~4532 tok)
 - `202605010195_intimidate_hexproof.sql` — Intimidate + hexproof enforcement. (~5939 tok)
 - `202605010196_mana_value_rider.sql` — Feed the Swarm — "Destroy target creature or enchantment an opponent controls. (~1620 tok)
+- `202605010197_may_cost_condition.sql` — Liliana's Devotee — "…you may pay {1}{B}. If you do, create a Zombie." Adds an (~9991 tok)
 
 ## tests/
 
@@ -216,6 +217,7 @@
 - `flashback-life.test.ts` — Flashback with an additional "Pay N life" cost (mig 176). Deep Analysis's (~662 tok)
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
 - `intimidate-hexproof.test.ts` — Intimidate + hexproof enforcement (mig 195). (~1114 tok)
+- `liliana-devotee.test.ts` — Liliana's Devotee (mig 197) — "At the beginning of your end step, if a creature (~1000 tok)
 - `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~1730 tok)
 - `lilianas-mastery.test.ts` — Liliana's Mastery — "Zombies you control get +1/+1. When Liliana's Mastery enters (~876 tok)
 - `mana-ability-multicolor.test.ts` — Mana abilities with an activation cost + multiple produced colours (mig 180). (~582 tok)
@@ -245,7 +247,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~13931 tok)
+- `test-cards.json` (~14146 tok)
 
 ## tests/harness/
 

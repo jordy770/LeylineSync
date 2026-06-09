@@ -2853,3 +2853,11 @@
 | 18:20 | Edited package.json | inline fix | ~24 |
 | 18:21 | Created tests/feature/feed-the-swarm.test.ts | — | ~656 |
 | 18:22 | Feed the Swarm (mig 196): card_mana_value + dynamic then-rider amount | helper + handle_permanent_effect + schema; fixture+test | 683/683 green | ~7k |
+| 18:23 | Session end: 75 writes across 25 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 79 reads | ~211975 tok |
+| 18:27 | Edited supabase/migrations/202605010197_may_cost_condition.sql | modified gate() | ~339 |
+| 18:27 | Edited supabase/migrations/202605010197_may_cost_condition.sql | added 1 condition(s) | ~312 |
+| 18:27 | Edited lib/game/card-behavior-schema.ts | expanded (+9 lines) | ~230 |
+| 18:28 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~230 |
+| 18:28 | Created tests/feature/liliana-devotee.test.ts | — | ~1000 |
+| 18:28 | Edited package.json | inline fix | ~22 |
+| 18:30 | Liliana Devotee (mig 197): may gains condition+cost (you-may-pay primitive) | apply_trigger_effects+submit_decision + schema; fixture+test | 686/686 green | ~9k |
