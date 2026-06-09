@@ -2794,3 +2794,13 @@
 | 16:30 | Created tests/feature/conditional-effect.test.ts | — | ~600 |
 | 16:30 | Edited package.json | inline fix | ~26 |
 | 16:32 | conditional effect: state-gated composition primitive (mig 192) | resolver branch + schema/registry/builder; form-settable + tested | 666/666 green | ~9k |
+| 16:32 | Session end: 27 writes across 15 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 69 reads | ~171948 tok |
+| 16:38 | Created supabase/migrations/202605010193_creatures_died_this_turn.sql | — | ~1599 |
+| 16:38 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~76 |
+| 16:38 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~46 |
+| 16:38 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~68 |
+| 16:38 | Edited lib/game/card-behavior-registry.ts | 5→6 lines | ~130 |
+| 16:39 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~277 |
+| 16:39 | Created tests/feature/creatures-died-this-turn.test.ts | — | ~967 |
+| 16:39 | Edited package.json | inline fix | ~26 |
+| 16:40 | creatures_died_this_turn count source (mig 193) | put_in_graveyard tally + resolve_count_amount + schema/registry; conditional + Standard Bearer | 669/669 green | ~9k |

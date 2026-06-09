@@ -346,6 +346,16 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-09T14:27:57.640Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/local-bootstrap/00_baseline.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T14:36:25.919Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010166_count_dynamic_amounts.sql": {
+      "count": 1,
+      "tokens": 1734,
+      "first_read": "2026-06-09T14:37:18.329Z"
     }
   },
   "files_written": [
@@ -510,6 +520,54 @@
       "action": "edit",
       "tokens": 26,
       "at": "2026-06-09T14:30:37.009Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010193_creatures_died_this_turn.sql",
+      "action": "create",
+      "tokens": 1713,
+      "at": "2026-06-09T14:38:06.698Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 76,
+      "at": "2026-06-09T14:38:14.847Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 46,
+      "at": "2026-06-09T14:38:20.868Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 68,
+      "at": "2026-06-09T14:38:27.068Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 130,
+      "at": "2026-06-09T14:38:38.442Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 277,
+      "at": "2026-06-09T14:39:05.143Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/creatures-died-this-turn.test.ts",
+      "action": "create",
+      "tokens": 967,
+      "at": "2026-06-09T14:39:22.171Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 26,
+      "at": "2026-06-09T14:39:26.798Z"
     }
   ],
   "edit_counts": {
@@ -517,21 +575,23 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 4,
-    "package.json": 4,
+    "tests/fixtures/test-cards.json": 5,
+    "package.json": 5,
     "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
-    "lib/game/card-behavior-schema.ts": 4,
+    "lib/game/card-behavior-schema.ts": 7,
     "tests/feature/undermine.test.ts": 2,
     "supabase/migrations/202605010191_sacrifice_tally_tokens.sql": 2,
     "tests/feature/sacrifice-tally-tokens.test.ts": 1,
     "supabase/migrations/202605010192_conditional_effect.sql": 1,
-    "lib/game/card-behavior-registry.ts": 1,
+    "lib/game/card-behavior-registry.ts": 2,
     "lib/game/card-behavior-builder.ts": 2,
-    "tests/feature/conditional-effect.test.ts": 1
+    "tests/feature/conditional-effect.test.ts": 1,
+    "supabase/migrations/202605010193_creatures_died_this_turn.sql": 1,
+    "tests/feature/creatures-died-this-turn.test.ts": 1
   },
-  "anatomy_hits": 35,
-  "anatomy_misses": 33,
+  "anatomy_hits": 36,
+  "anatomy_misses": 34,
   "repeated_reads_warned": 53,
   "cerebrum_warnings": 0,
-  "stop_count": 8
+  "stop_count": 9
 }

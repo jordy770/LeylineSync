@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T14:30:36.995Z
-> Files: 112 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T14:39:26.785Z
+> Files: 114 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1424 tok)
+- `package.json` — Node.js package manifest (~1438 tok)
 
 ## .claude/
 
@@ -112,8 +112,8 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10082 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
-- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11342 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8249 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11372 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8273 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -181,6 +181,7 @@
 - `202605010190_counter_controller_loses_life.sql` — Undermine — "Counter target spell. Its controller loses 2 life." A life-loss (~1089 tok)
 - `202605010191_sacrifice_tally_tokens.sql` — Syphon Flesh — "Each other player sacrifices a creature. Create a 2/2 black (~9752 tok)
 - `202605010192_conditional_effect.sql` — Conditional effect — "If <state condition>, <effects>." A new COMPOSITION (~4175 tok)
+- `202605010193_creatures_died_this_turn.sql` — "Creatures that died under your control this turn" — a new count source for (~1599 tok)
 
 ## tests/
 
@@ -201,6 +202,7 @@
 - `counter-doubling.test.ts` — Counter doubling — Doubling Season (roadmap Counters #5, half 1). A static (~1248 tok)
 - `counter-placement-trigger.test.ts` — Counter-placement trigger event (roadmap Tribal #3). `creature_got_counter` fires (~1243 tok)
 - `counter-removal.test.ts` — Counter removal (roadmap Counters #1). Reuses the add_counters pipeline: a NEGATIVE (~1811 tok)
+- `creatures-died-this-turn.test.ts` — "Creatures that died under your control this turn" count source (mig 193) — (~967 tok)
 - `crippling-fear.test.ts` — Crippling Fear (mig 179) — "Choose a creature type. Each creature that isn't of (~943 tok)
 - `dynamic-counter-amounts.test.ts` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2). A (~1830 tok)
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
@@ -236,7 +238,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~12712 tok)
+- `test-cards.json` (~12971 tok)
 
 ## tests/harness/
 

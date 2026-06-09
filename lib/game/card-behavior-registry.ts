@@ -423,6 +423,7 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
             { value: 'creatures_you_control', label: 'creatures you control' },
             { value: 'lands_you_control', label: 'lands you control' },
             { value: 'cards_in_graveyard', label: 'cards in your graveyard' },
+            { value: 'creatures_died_this_turn', label: 'creatures died under your control this turn' },
           ] },
           { name: 'type_line', kind: 'text', label: 'Of type (blank = any)', default: '' },
           { name: 'at_least', kind: 'number', label: 'Is at least', default: 1, min: 1, max: 99 },
