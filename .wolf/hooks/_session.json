@@ -929,6 +929,24 @@
       "action": "edit",
       "tokens": 22,
       "at": "2026-06-09T16:38:39.279Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 187,
+      "at": "2026-06-09T22:10:21.591Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/enter-the-god-eternals.test.ts",
+      "action": "create",
+      "tokens": 716,
+      "at": "2026-06-09T22:10:38.865Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 24,
+      "at": "2026-06-09T22:10:59.790Z"
     }
   ],
   "edit_counts": {
@@ -936,8 +954,8 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 11,
-    "package.json": 11,
+    "tests/fixtures/test-cards.json": 12,
+    "package.json": 12,
     "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
     "lib/game/card-behavior-schema.ts": 10,
     "tests/feature/undermine.test.ts": 2,
@@ -960,11 +978,12 @@
     "supabase/migrations/202605010197_may_cost_condition.sql": 2,
     "tests/feature/liliana-devotee.test.ts": 1,
     "supabase/migrations/202605010198_each_player_sacrifice.sql": 1,
-    "tests/feature/necrotic-hex.test.ts": 1
+    "tests/feature/necrotic-hex.test.ts": 1,
+    "tests/feature/enter-the-god-eternals.test.ts": 1
   },
   "anatomy_hits": 40,
   "anatomy_misses": 41,
   "repeated_reads_warned": 66,
   "cerebrum_warnings": 0,
-  "stop_count": 15
+  "stop_count": 16
 }

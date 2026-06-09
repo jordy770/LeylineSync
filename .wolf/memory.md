@@ -2868,3 +2868,8 @@
 | 18:38 | Created tests/feature/necrotic-hex.test.ts | — | ~714 |
 | 18:38 | Edited package.json | inline fix | ~22 |
 | 18:39 | Necrotic Hex (mig 198): who=each_player sacrifice + fixed tapped tokens | apply_trigger_effects + schema; fixture+test | 687/687 green | ~5k |
+| 18:39 | Session end: 86 writes across 29 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 82 reads | ~225129 tok |
+| 00:10 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~187 |
+| 00:10 | Created tests/feature/enter-the-god-eternals.test.ts | — | ~716 |
+| 00:10 | Edited package.json | inline fix | ~24 |
+| 00:12 | Enter the God-Eternals: multi-effect composition (damage+lifegain+choose_player mill+amass) | fixture + integration test | 688/688 green; no engine change | ~4k |

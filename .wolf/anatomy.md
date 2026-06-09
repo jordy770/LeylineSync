@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T16:38:39.265Z
-> Files: 125 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T22:10:59.774Z
+> Files: 126 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1502 tok)
+- `package.json` — Node.js package manifest (~1514 tok)
 
 ## .claude/
 
@@ -211,6 +211,7 @@
 - `crippling-fear.test.ts` — Crippling Fear (mig 179) — "Choose a creature type. Each creature that isn't of (~943 tok)
 - `dynamic-counter-amounts.test.ts` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2). A (~1830 tok)
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
+- `enter-the-god-eternals.test.ts` — Enter the God-Eternals — a multi-effect spell composed entirely from existing (~716 tok)
 - `enters-with-counters.test.ts` — "Enters the battlefield with N counters" (roadmap Counters #3). A REPLACEMENT applied (~1031 tok)
 - `exile-from-graveyard-effect.test.ts` — "Exile target card from a graveyard" as a targeted EFFECT (mig 186). Withered (~898 tok)
 - `feed-the-swarm.test.ts` — Feed the Swarm (mig 196) — "Destroy target creature or enchantment an opponent (~656 tok)
@@ -249,7 +250,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~14274 tok)
+- `test-cards.json` (~14447 tok)
 
 ## tests/harness/
 
