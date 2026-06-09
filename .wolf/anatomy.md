@@ -1,11 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-08T21:17:54.615Z
-> Files: 102 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T09:06:13.040Z
+> Files: 106 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `package.json` — Node.js package manifest (~1370 tok)
+- `__ua_roundtrip.mts` — Declares script (~182 tok)
+- `package.json` — Node.js package manifest (~1391 tok)
 
 ## .claude/
 
@@ -126,6 +127,7 @@
 
 ## scripts/
 
+- `_lm_roundtrip.mjs` — Declares script (~270 tok)
 - `import-scryfall-cards.mjs` — defaultInputFile: flushBatch, upsertBatchWithRetry, getSupabaseErrorMessage + 15 more (~3086 tok)
 
 ## supabase/
@@ -204,6 +206,7 @@
 - `flashback-life.test.ts` — Flashback with an additional "Pay N life" cost (mig 176). Deep Analysis's (~662 tok)
 - `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
 - `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~1730 tok)
+- `lilianas-mastery.test.ts` — Liliana's Mastery — "Zombies you control get +1/+1. When Liliana's Mastery enters (~876 tok)
 - `mana-ability-multicolor.test.ts` — Mana abilities with an activation cost + multiple produced colours (mig 180). (~582 tok)
 - `mana-ability-pay-life.test.ts` — `pay_life` as a mana-ability cost (mig 189). Talisman of Dominance: "{T}: Add (~797 tok)
 - `mass-destroy-reanimate.test.ts` — Mass destroy + mass reanimate (mig 185). Zombie Apocalypse: "Return all Zombie (~743 tok)
@@ -222,11 +225,12 @@
 - `trigger-deal-damage-target.test.ts` — Targeted deal_damage from a TRIGGERED ability (Flame Mage: "When this enters, (~627 tok)
 - `typed-keyword-grant.test.ts` — Typed keyword grants (mig 184) — "Zombies you control have flying" (Eternal (~681 tok)
 - `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)
+- `undead-augur.test.ts` — Undead Augur — "Whenever a Zombie you control dies, you draw a card and you (~834 tok)
 - `watcher-triggers.test.ts` — Other-scoped trigger events (roadmap Tribal #1, second half). `creature_entered` / (~1569 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~12050 tok)
+- `test-cards.json` (~12354 tok)
 
 ## tests/harness/
 

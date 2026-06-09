@@ -2704,3 +2704,61 @@
 | 23:17 | Edited tests/unit/card-behavior-builder.test.ts | expanded (+8 lines) | ~246 |
 | 23:17 | Edited components/CardBehaviorEditor.tsx | CSS: keywordGrants | ~68 |
 | 23:19 | Typed keyword grants now form-settable (Eternal Skylord/Vizier) | builder keywordGrants model + KeywordGrantEditor widget + unit tests | 656/656; 62/87 settable | ~10k |
+| 23:25 | Session end: 52 writes across 18 files (202605010186_exile_from_graveyard_effect.sql, card-behavior-schema.ts, card-behavior-registry.ts, test-cards.json, exile-from-graveyard-effect.test.ts) | 23 reads | ~179257 tok |
+
+## Session: 2026-06-09 09:57
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-09 09:57
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-09 10:23
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-09 10:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-09 10:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-09 10:56
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-09 10:56
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-09 10:56
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-09 10:57
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-09 10:59
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:03 | Created tests/feature/undead-augur.test.ts | — | ~834 |
+| 11:03 | Created __ua_roundtrip.mts | — | ~182 |
+| 11:04 | Created tests/feature/lilianas-mastery.test.ts | — | ~876 |
+| 11:04 | Created scripts/_lm_roundtrip.mjs | — | ~270 |
+| 11:06 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~350 |
+| 11:06 | Edited package.json | inline fix | ~36 |
+| 11:07 | Parallel-build experiment: Undead Augur + Liliana Mastery (2 agents, parallel authoring + serial integration) | 2 fixtures + 2 tests | 660/660 green | ~110k |
