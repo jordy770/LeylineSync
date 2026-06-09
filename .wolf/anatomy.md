@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T13:51:27.800Z
-> Files: 110 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T14:30:36.995Z
+> Files: 112 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1413 tok)
+- `package.json` — Node.js package manifest (~1424 tok)
 
 ## .claude/
 
@@ -110,10 +110,10 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10012 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10082 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
-- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11021 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8079 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11342 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8249 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -180,6 +180,7 @@
 - `202605010189_mana_ability_pay_life_cost.sql` — `pay_life` as a mana-ability activation cost (Talisman of Dominance: "{T}, Pay 1 (~1337 tok)
 - `202605010190_counter_controller_loses_life.sql` — Undermine — "Counter target spell. Its controller loses 2 life." A life-loss (~1089 tok)
 - `202605010191_sacrifice_tally_tokens.sql` — Syphon Flesh — "Each other player sacrifices a creature. Create a 2/2 black (~9752 tok)
+- `202605010192_conditional_effect.sql` — Conditional effect — "If <state condition>, <effects>." A new COMPOSITION (~4175 tok)
 
 ## tests/
 
@@ -195,6 +196,7 @@
 - `cemetery-reaper.test.ts` — Cemetery Reaper's activated ability (mig 178): "{2}{B}, {T}, Exile a creature (~980 tok)
 - `choose-creature-type.test.ts` — Choose a creature type (roadmap Tribal #6). A choose_creature_type effect parks a (~732 tok)
 - `commander-identity-mana.test.ts` — Commander-identity mana (mig 151) — "Add one mana of any color in your commander's (~662 tok)
+- `conditional-effect.test.ts` — Conditional effect (mig 192) — "If <count> is at least N, <effects>." A state- (~600 tok)
 - `count-amounts.test.ts` — Count-based dynamic amounts (roadmap Tribal #2). An effect "amount" of (~968 tok)
 - `counter-doubling.test.ts` — Counter doubling — Doubling Season (roadmap Counters #5, half 1). A static (~1248 tok)
 - `counter-placement-trigger.test.ts` — Counter-placement trigger event (roadmap Tribal #3). `creature_got_counter` fires (~1243 tok)
@@ -234,7 +236,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~12579 tok)
+- `test-cards.json` (~12712 tok)
 
 ## tests/harness/
 

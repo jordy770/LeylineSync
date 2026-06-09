@@ -74,6 +74,7 @@ export type BuilderEffect =
   | { type: 'discard'; count: number }
   | { type: 'may'; prompt: string; effects: BuilderEffect[] }
   | { type: 'choose_player'; filter: string; effects: BuilderEffect[] }
+  | { type: 'conditional'; condition: { count: string; type_line: string; at_least: number }; effects: BuilderEffect[] }
   | { type: 'destroy'; target: string }
   | { type: 'exile'; target: string }
   | { type: 'bounce'; target: string }
@@ -144,6 +145,7 @@ export type BuilderSpellEffect =
   | { type: 'discard'; count: number }
   | { type: 'may'; prompt: string; effects: BuilderEffect[] }
   | { type: 'choose_player'; filter: string; effects: BuilderEffect[] }
+  | { type: 'conditional'; condition: { count: string; type_line: string; at_least: number }; effects: BuilderEffect[] }
   | { type: 'destroy'; target: string }
   | { type: 'exile'; target: string }
   | { type: 'bounce'; target: string }

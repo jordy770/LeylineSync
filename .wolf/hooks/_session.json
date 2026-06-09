@@ -341,6 +341,11 @@
       "count": 2,
       "tokens": 9647,
       "first_read": "2026-06-09T13:49:39.600Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010192_conditional_effect.sql": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-09T14:27:57.640Z"
     }
   },
   "files_written": [
@@ -451,6 +456,60 @@
       "action": "edit",
       "tokens": 23,
       "at": "2026-06-09T13:51:27.814Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010192_conditional_effect.sql",
+      "action": "edit",
+      "tokens": 310,
+      "at": "2026-06-09T14:28:06.428Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 50,
+      "at": "2026-06-09T14:28:42.843Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 256,
+      "at": "2026-06-09T14:28:51.484Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-registry.ts",
+      "action": "edit",
+      "tokens": 466,
+      "at": "2026-06-09T14:29:03.513Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 213,
+      "at": "2026-06-09T14:29:14.984Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-builder.ts",
+      "action": "edit",
+      "tokens": 213,
+      "at": "2026-06-09T14:29:23.451Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 149,
+      "at": "2026-06-09T14:30:17.589Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/conditional-effect.test.ts",
+      "action": "create",
+      "tokens": 600,
+      "at": "2026-06-09T14:30:31.799Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 26,
+      "at": "2026-06-09T14:30:37.009Z"
     }
   ],
   "edit_counts": {
@@ -458,17 +517,21 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 3,
-    "package.json": 3,
+    "tests/fixtures/test-cards.json": 4,
+    "package.json": 4,
     "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
-    "lib/game/card-behavior-schema.ts": 2,
+    "lib/game/card-behavior-schema.ts": 4,
     "tests/feature/undermine.test.ts": 2,
     "supabase/migrations/202605010191_sacrifice_tally_tokens.sql": 2,
-    "tests/feature/sacrifice-tally-tokens.test.ts": 1
+    "tests/feature/sacrifice-tally-tokens.test.ts": 1,
+    "supabase/migrations/202605010192_conditional_effect.sql": 1,
+    "lib/game/card-behavior-registry.ts": 1,
+    "lib/game/card-behavior-builder.ts": 2,
+    "tests/feature/conditional-effect.test.ts": 1
   },
   "anatomy_hits": 35,
-  "anatomy_misses": 32,
+  "anatomy_misses": 33,
   "repeated_reads_warned": 53,
   "cerebrum_warnings": 0,
-  "stop_count": 6
+  "stop_count": 8
 }

@@ -407,6 +407,31 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     ],
   },
   {
+    // "If you control N+ <type> [creatures/lands] / cards in graveyard, …" — a
+    // state-gated composition wrapper. The condition is read by the engine; the
+    // inner effects run only when it holds.
+    type: 'conditional',
+    label: 'If (a count is at least N), then…',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      {
+        name: 'condition',
+        kind: 'object',
+        label: 'Condition',
+        fields: [
+          { name: 'count', kind: 'enum', label: 'Count of', default: 'creatures_you_control', options: [
+            { value: 'creatures_you_control', label: 'creatures you control' },
+            { value: 'lands_you_control', label: 'lands you control' },
+            { value: 'cards_in_graveyard', label: 'cards in your graveyard' },
+          ] },
+          { name: 'type_line', kind: 'text', label: 'Of type (blank = any)', default: '' },
+          { name: 'at_least', kind: 'number', label: 'Is at least', default: 1, min: 1, max: 99 },
+        ],
+      },
+      { name: 'effects', kind: 'effect-list', label: 'Then:', itemContext: 'trigger' },
+    ],
+  },
+  {
     // "Choose a creature type, then …" (Crippling Fear, Distant Melody). The chosen
     // type is injected into the inner effects (a pump_all's creature_type, or a
     // count-amount's type_line) — leave those blank.

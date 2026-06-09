@@ -156,7 +156,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
-  'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard',
+  'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -296,6 +296,18 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('choose_player'),
     filter: z.enum(['opponent', 'any']).optional(),
+    effects: z.array(z.record(z.string(), z.unknown())),
+  }),
+  // "If <state condition>, <effects>." A count-based gate (you control / lands /
+  // graveyard) that runs the inner effects when the count meets `at_least`. Inner
+  // effects are the non-decision vocabulary. Kept loose like may/choose_player.
+  z.object({
+    type: z.literal('conditional'),
+    condition: z.object({
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard']),
+      type_line: z.string().optional(),
+      at_least: z.number().int().positive(),
+    }),
     effects: z.array(z.record(z.string(), z.unknown())),
   }),
   // "Choose a creature type, then …" (Distant Melody). The chosen type is injected

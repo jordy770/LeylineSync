@@ -2782,3 +2782,15 @@
 | 15:51 | Created tests/feature/sacrifice-tally-tokens.test.ts | — | ~836 |
 | 15:51 | Edited package.json | inline fix | ~23 |
 | 15:53 | Syphon Flesh: sacrifice-tally -> create_token count (mig 191) | reproduced apply_trigger_effects+submit_decision + schema; fixture+multiplayer test | 664/664 green | ~12k |
+| 15:53 | Session end: 18 writes across 11 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 68 reads | ~169665 tok |
+| 16:04 | Session end: 18 writes across 11 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 68 reads | ~169665 tok |
+| 16:28 | Edited supabase/migrations/202605010192_conditional_effect.sql | modified coalesce() | ~289 |
+| 16:28 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~50 |
+| 16:28 | Edited lib/game/card-behavior-schema.ts | expanded (+12 lines) | ~256 |
+| 16:29 | Edited lib/game/card-behavior-registry.ts | expanded (+25 lines) | ~466 |
+| 16:29 | Edited lib/game/card-behavior-builder.ts | 13→14 lines | ~213 |
+| 16:29 | Edited lib/game/card-behavior-builder.ts | 12→13 lines | ~213 |
+| 16:30 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~149 |
+| 16:30 | Created tests/feature/conditional-effect.test.ts | — | ~600 |
+| 16:30 | Edited package.json | inline fix | ~26 |
+| 16:32 | conditional effect: state-gated composition primitive (mig 192) | resolver branch + schema/registry/builder; form-settable + tested | 666/666 green | ~9k |
