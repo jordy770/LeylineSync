@@ -2873,3 +2873,15 @@
 | 00:10 | Created tests/feature/enter-the-god-eternals.test.ts | — | ~716 |
 | 00:10 | Edited package.json | inline fix | ~24 |
 | 00:12 | Enter the God-Eternals: multi-effect composition (damage+lifegain+choose_player mill+amass) | fixture + integration test | 688/688 green; no engine change | ~4k |
+| 00:12 | Session end: 89 writes across 30 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 82 reads | ~226056 tok |
+| 00:20 | Edited supabase/migrations/202605010199_curse_of_disturbance.sql | expanded (+11 lines) | ~259 |
+| 00:20 | Edited supabase/migrations/202605010199_curse_of_disturbance.sql | 5→6 lines | ~45 |
+| 00:21 | Edited supabase/migrations/202605010199_curse_of_disturbance.sql | modified public() | ~367 |
+| 00:21 | Edited lib/game/card-behavior-schema.ts | 3→4 lines | ~57 |
+| 00:21 | Edited lib/game/card-behavior-schema.ts | 4→7 lines | ~92 |
+| 00:22 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~164 |
+| 00:22 | Created tests/feature/curse-of-disturbance.test.ts | — | ~939 |
+| 00:22 | Edited package.json | inline fix | ~26 |
+| 00:24 | Edited tests/feature/curse-of-disturbance.test.ts | added 1 condition(s) | ~124 |
+| 00:27 | Edited tests/feature/curse-of-disturbance.test.ts | drainStack() → resolveStack() | ~22 |
+| 00:28 | Curse of Disturbance (mig 199, XL): player-aura via ETB choose_player + curse_attacked continuous effect + declare_attacker trigger | 690/690 green | ~16k |

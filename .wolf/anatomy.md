@@ -1,12 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T22:10:59.774Z
-> Files: 126 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T22:27:19.293Z
+> Files: 128 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1514 tok)
+- `package.json` — Node.js package manifest (~1527 tok)
 
 ## .claude/
 
@@ -113,7 +113,7 @@
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10116 tok)
 - `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11372 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8493 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8563 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
 - `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
@@ -187,6 +187,7 @@
 - `202605010196_mana_value_rider.sql` — Feed the Swarm — "Destroy target creature or enchantment an opponent controls. (~1620 tok)
 - `202605010197_may_cost_condition.sql` — Liliana's Devotee — "…you may pay {1}{B}. If you do, create a Zombie." Adds an (~9991 tok)
 - `202605010198_each_player_sacrifice.sql` — Necrotic Hex — "Each player sacrifices six creatures of their choice. You create (~4814 tok)
+- `202605010199_curse_of_disturbance.sql` — Curse of Disturbance — "Enchant player. Whenever enchanted player is attacked, (~6114 tok)
 
 ## tests/
 
@@ -209,6 +210,7 @@
 - `counter-removal.test.ts` — Counter removal (roadmap Counters #1). Reuses the add_counters pipeline: a NEGATIVE (~1811 tok)
 - `creatures-died-this-turn.test.ts` — "Creatures that died under your control this turn" count source (mig 193) — (~967 tok)
 - `crippling-fear.test.ts` — Crippling Fear (mig 179) — "Choose a creature type. Each creature that isn't of (~943 tok)
+- `curse-of-disturbance.test.ts` — Curse of Disturbance (mig 199) — "Enchant player. Whenever enchanted player is (~1062 tok)
 - `dynamic-counter-amounts.test.ts` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2). A (~1830 tok)
 - `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
 - `enter-the-god-eternals.test.ts` — Enter the God-Eternals — a multi-effect spell composed entirely from existing (~716 tok)
@@ -250,7 +252,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~14447 tok)
+- `test-cards.json` (~14593 tok)
 
 ## tests/harness/
 

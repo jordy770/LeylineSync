@@ -411,6 +411,11 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-09T16:37:36.344Z"
+    },
+    "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010199_curse_of_disturbance.sql": {
+      "count": 3,
+      "tokens": 5790,
+      "first_read": "2026-06-09T22:20:23.137Z"
     }
   },
   "files_written": [
@@ -947,6 +952,66 @@
       "action": "edit",
       "tokens": 24,
       "at": "2026-06-09T22:10:59.790Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010199_curse_of_disturbance.sql",
+      "action": "edit",
+      "tokens": 277,
+      "at": "2026-06-09T22:20:32.179Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010199_curse_of_disturbance.sql",
+      "action": "edit",
+      "tokens": 48,
+      "at": "2026-06-09T22:20:56.683Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/supabase/migrations/202605010199_curse_of_disturbance.sql",
+      "action": "edit",
+      "tokens": 393,
+      "at": "2026-06-09T22:21:12.820Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 57,
+      "at": "2026-06-09T22:21:49.394Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/lib/game/card-behavior-schema.ts",
+      "action": "edit",
+      "tokens": 92,
+      "at": "2026-06-09T22:21:57.094Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/fixtures/test-cards.json",
+      "action": "edit",
+      "tokens": 164,
+      "at": "2026-06-09T22:22:05.773Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/curse-of-disturbance.test.ts",
+      "action": "create",
+      "tokens": 939,
+      "at": "2026-06-09T22:22:22.385Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/package.json",
+      "action": "edit",
+      "tokens": 26,
+      "at": "2026-06-09T22:22:27.515Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/curse-of-disturbance.test.ts",
+      "action": "edit",
+      "tokens": 124,
+      "at": "2026-06-09T22:24:37.302Z"
+    },
+    {
+      "file": "c:/Users/Jordy/dev/LeylineSync/tests/feature/curse-of-disturbance.test.ts",
+      "action": "edit",
+      "tokens": 22,
+      "at": "2026-06-09T22:27:19.305Z"
     }
   ],
   "edit_counts": {
@@ -954,10 +1019,10 @@
     "__ua_roundtrip.mts": 1,
     "tests/feature/lilianas-mastery.test.ts": 1,
     "scripts/_lm_roundtrip.mjs": 1,
-    "tests/fixtures/test-cards.json": 12,
-    "package.json": 12,
+    "tests/fixtures/test-cards.json": 13,
+    "package.json": 13,
     "supabase/migrations/202605010190_counter_controller_loses_life.sql": 1,
-    "lib/game/card-behavior-schema.ts": 10,
+    "lib/game/card-behavior-schema.ts": 12,
     "tests/feature/undermine.test.ts": 2,
     "supabase/migrations/202605010191_sacrifice_tally_tokens.sql": 2,
     "tests/feature/sacrifice-tally-tokens.test.ts": 1,
@@ -979,11 +1044,13 @@
     "tests/feature/liliana-devotee.test.ts": 1,
     "supabase/migrations/202605010198_each_player_sacrifice.sql": 1,
     "tests/feature/necrotic-hex.test.ts": 1,
-    "tests/feature/enter-the-god-eternals.test.ts": 1
+    "tests/feature/enter-the-god-eternals.test.ts": 1,
+    "supabase/migrations/202605010199_curse_of_disturbance.sql": 3,
+    "tests/feature/curse-of-disturbance.test.ts": 3
   },
   "anatomy_hits": 40,
-  "anatomy_misses": 41,
-  "repeated_reads_warned": 66,
+  "anatomy_misses": 42,
+  "repeated_reads_warned": 68,
   "cerebrum_warnings": 0,
-  "stop_count": 16
+  "stop_count": 17
 }

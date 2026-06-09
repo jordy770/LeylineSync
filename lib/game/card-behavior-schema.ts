@@ -159,6 +159,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
+  'curse_attack_zombie',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -516,6 +517,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('grant_cast_from_graveyard'),
     type_line: z.string().optional(),
   }),
+  // "Enchant player" curse: registers an attack-trigger on the recipient player
+  // (the chosen enchanted player) — Curse of Disturbance. JSON/AI-authored.
+  z.object({ type: z.literal('curse_attack_zombie') }),
   UnknownV2ActionSchema,
 ])
 
