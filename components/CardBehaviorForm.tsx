@@ -563,6 +563,24 @@ function KeywordGrantEditor({
           </option>
         ))}
       </select>
+      <label className="flex items-center gap-1.5" title="Exclude this permanent (the &quot;Other&quot; wording)">
+        <input
+          type="checkbox"
+          checked={grant.excludeSource}
+          disabled={disabled}
+          onChange={(event) => onChange({ ...grant, excludeSource: event.target.checked })}
+        />
+        Other (not itself)
+      </label>
+      <label className="flex items-center gap-1.5" title="Only token creatures (&quot;Zombie tokens you control have …&quot;)">
+        <input
+          type="checkbox"
+          checked={grant.tokenOnly}
+          disabled={disabled}
+          onChange={(event) => onChange({ ...grant, tokenOnly: event.target.checked })}
+        />
+        Tokens only
+      </label>
       <button
         type="button"
         disabled={disabled}

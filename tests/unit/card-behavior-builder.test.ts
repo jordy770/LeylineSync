@@ -197,9 +197,26 @@ const CASES: Case[] = [
   { name: 'typed keyword grant deathtouch → form', script: { schema_version: 2, continuous_effects: [{ type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Zombie' } }] }, form: true },
   { name: 'keyword grant all-scope no type → form', script: { schema_version: 2, continuous_effects: [{ type: 'trample', affected: 'all' }] }, form: true },
   { name: 'keyword grant + source keyword + lord together → form', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'source', source_zone_required: 'battlefield' }, { type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Zombie' } }, { type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie' } }] }, form: true },
+  // Keyword-grant payload filters (mig 200): exclude_source ("other") + token_only.
+  { name: 'keyword grant exclude_source (Vela intimidate) → form', script: { schema_version: 2, continuous_effects: [{ type: 'intimidate', affected: 'controller', payload: { exclude_source: true } }] }, form: true },
+  { name: 'keyword grant token_only (Gleaming Overseer) → form', script: { schema_version: 2, continuous_effects: [{ type: 'hexproof', affected: 'controller', payload: { creature_type: 'Zombie', token_only: true } }, { type: 'menace', affected: 'controller', payload: { creature_type: 'Zombie', token_only: true } }] }, form: true },
+  { name: 'dual-type lord (Death Baron) → form', script: { schema_version: 2, continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Skeleton' } }, { type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }, { type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Skeleton' } }, { type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Zombie', exclude_source: true } }] }, form: true },
+  // Mass keyword grant until EOT (mig 202): Lord of the Accursed's activated ability.
+  { name: 'grant_keyword_all activated (Lord of the Accursed) → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{1}{B}' }, { type: 'tap_self' }], effects: [{ type: 'grant_keyword_all', keyword: 'menace', creature_type: 'Zombie', scope: 'all' }] }] }, form: true },
+  // Lazotep Plating's spell program (amass + scoped hexproof incl. the player).
+  { name: 'grant_keyword_all spell (Lazotep Plating) → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'amass', amount: 1 }, { type: 'grant_keyword_all', keyword: 'hexproof', scope: 'controller', includes_player: true }] } }, form: true },
+  // Lieutenant conditional (mig 205) with the commanders_you_control count.
+  { name: 'Lieutenant conditional (Loyal Subordinate) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'beginning_of_combat', effects: [{ type: 'conditional', condition: { count: 'commanders_you_control', type_line: '', at_least: 1 }, effects: [{ type: 'lose_life', amount: 3, recipient: 'each_opponent' }] }] }] }, form: true },
+  // creature_left watcher (mig 201, Vela's trigger half).
+  { name: 'creature_left watcher (Vela) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_left', filter: { controller: 'you' }, effects: [{ type: 'lose_life', amount: 1, recipient: 'each_opponent' }] }] }, form: true },
+  // choose_color ETB (mig 209, Heraldic Banner).
+  { name: 'choose_color anthem (Heraldic Banner) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'choose_color', anthem: { power: 1, toughness: 0, scope: 'controller' } }] }] }, form: true },
+  // Board wipe + reanimate-one (mig 208, Necromantic Selection).
+  { name: 'mass_destroy_reanimate_one (Necromantic Selection) → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'mass_destroy_reanimate_one' }] } }, form: true },
   // Non-canonical keyword grants bail to JSON.
   { name: 'keyword grant empty creature_type → json', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: '' } }] }, form: false },
   { name: 'keyword grant extra payload key → json', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie', foo: 1 } }] }, form: false },
+  { name: 'keyword grant exclude_source false (non-canonical) → json', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie', exclude_source: false } }] }, form: false },
   // Non-canonical anthems bail to JSON (the form would round-trip them differently).
   { name: 'static pump affected source (aura, not anthem) → json', script: { continuous_effects: [{ type: 'pump', affected: 'source', payload: { power: 1, toughness: 1 } }] }, form: false },
   { name: 'static pump empty creature_type → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: '' } }] }, form: false },

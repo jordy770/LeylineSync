@@ -42,11 +42,14 @@ export const BUILDER_TRIGGER_EVENTS = [
   { value: 'blocks', label: 'When it blocks' },
   { value: 'becomes_targeted', label: 'When it becomes the target of a spell or ability' },
   { value: 'beginning_of_upkeep', label: 'At the beginning of your upkeep' },
+  { value: 'beginning_of_combat', label: 'At the beginning of combat on your turn' },
   { value: 'beginning_of_draw_step', label: 'At the beginning of your draw step' },
   { value: 'beginning_of_end_step', label: 'At the beginning of your end step' },
+  { value: 'beginning_of_each_end_step', label: 'At the beginning of EACH end step' },
   { value: 'creature_entered', label: 'When another/a creature enters (use filter)' },
   { value: 'creature_died', label: 'When a creature dies (use filter)' },
   { value: 'creature_got_counter', label: 'When a creature gets a +1/+1 counter (use filter)' },
+  { value: 'creature_left', label: 'When a creature leaves the battlefield (use filter)' },
 ] as const
 export type BuilderTriggerEvent = (typeof BUILDER_TRIGGER_EVENTS)[number]['value']
 
@@ -94,7 +97,7 @@ export type BuilderEffectType = BuilderEffect['type']
 
 // The "other-scoped" watcher events that take a filter (which entering/dying/
 // counter-getting creature the watcher reacts to). Self events ignore the filter.
-export const BUILDER_WATCHER_EVENTS = ['creature_entered', 'creature_died', 'creature_got_counter'] as const
+export const BUILDER_WATCHER_EVENTS = ['creature_entered', 'creature_died', 'creature_got_counter', 'creature_left'] as const
 
 export const BUILDER_TRIGGER_CONTROLLERS = [
   { value: 'you', label: 'you control' },
@@ -259,10 +262,14 @@ export type BuilderKeywordGrant = {
   keyword: BuilderKeyword
   creatureType: string
   scope: BuilderStaticScope
+  // "OTHER Zombies you control have …" — the grant skips the source card (mig 200).
+  excludeSource: boolean
+  // "Zombie TOKENS you control have …" — only token creatures (mig 200).
+  tokenOnly: boolean
 }
 
 export function defaultKeywordGrant(): BuilderKeywordGrant {
-  return { keyword: 'flying', creatureType: '', scope: 'controller' }
+  return { keyword: 'flying', creatureType: '', scope: 'controller', excludeSource: false, tokenOnly: false }
 }
 
 export type BuilderForm = {
@@ -335,9 +342,19 @@ export function buildScriptFromForm(form: BuilderForm): CardScript | null {
 
   const keywordGrantEffects = form.keywordGrants.map((grant) => {
     const out: Record<string, unknown> = { type: grant.keyword, affected: grant.scope }
+    const payload: Record<string, unknown> = {}
     const type = grant.creatureType.trim()
     if (type !== '') {
-      out.payload = { creature_type: type }
+      payload.creature_type = type
+    }
+    if (grant.excludeSource) {
+      payload.exclude_source = true
+    }
+    if (grant.tokenOnly) {
+      payload.token_only = true
+    }
+    if (Object.keys(payload).length > 0) {
+      out.payload = payload
     }
     return out
   })
@@ -728,9 +745,10 @@ function parseContinuousEffects(
 }
 
 // A form-representable typed keyword grant is `{ type:<keyword>, affected:
-// 'controller'|'all', [payload:{ creature_type }] }` — exactly what
-// buildScriptFromForm emits. Extra keys, a non-string creature_type, or an empty
-// creature_type string (should be omitted, not '') round-trip to JSON mode.
+// 'controller'|'all', [payload:{ creature_type, exclude_source, token_only }] }`
+// — exactly what buildScriptFromForm emits. Extra keys, a non-string
+// creature_type, an empty creature_type string (should be omitted, not ''), or
+// a non-`true` flag round-trip to JSON mode.
 function parseKeywordGrant(e: Record<string, unknown>, keyword: BuilderKeyword): BuilderKeywordGrant | null {
   if (
     (e.affected !== 'controller' && e.affected !== 'all') ||
@@ -739,12 +757,14 @@ function parseKeywordGrant(e: Record<string, unknown>, keyword: BuilderKeyword):
     return null
   }
   let creatureType = ''
+  let excludeSource = false
+  let tokenOnly = false
   if (e.payload !== undefined) {
     if (typeof e.payload !== 'object' || e.payload === null) {
       return null
     }
     const p = e.payload as Record<string, unknown>
-    if (Object.keys(p).some((key) => key !== 'creature_type')) {
+    if (Object.keys(p).some((key) => !['creature_type', 'exclude_source', 'token_only'].includes(key))) {
       return null
     }
     if (p.creature_type !== undefined) {
@@ -753,8 +773,20 @@ function parseKeywordGrant(e: Record<string, unknown>, keyword: BuilderKeyword):
       }
       creatureType = p.creature_type
     }
+    if (p.exclude_source !== undefined) {
+      if (p.exclude_source !== true) {
+        return null
+      }
+      excludeSource = true
+    }
+    if (p.token_only !== undefined) {
+      if (p.token_only !== true) {
+        return null
+      }
+      tokenOnly = true
+    }
   }
-  return { keyword, creatureType, scope: e.affected as BuilderStaticScope }
+  return { keyword, creatureType, scope: e.affected as BuilderStaticScope, excludeSource, tokenOnly }
 }
 
 // A form-representable anthem is `{ type:'pump', affected:'controller'|'all',

@@ -84,12 +84,27 @@ export const CardActionSchema = z.union([
 
 // .strict() at the top level catches hallucinated top-level keys —
 // the most common mistake when writing scripts by hand or with an LLM.
+// Characteristic-defining P/T (layer 7a, mig 149): "~'s power and toughness are
+// each equal to the number of creatures you control" (*/* cards). Inherent data
+// read straight from the script by card_cda_value — version-agnostic, so both
+// the V1 and V2 schemas accept it. (Caught missing by validate:fixtures.)
+const CdaValueSchema = z.object({
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard']),
+  type_line: z.string().optional(),
+  plus: z.number().int().optional(),
+})
+const CdaSchema = z.object({
+  power: CdaValueSchema.optional(),
+  toughness: CdaValueSchema.optional(),
+})
+
 export const CardScriptV1Schema = z.object({
   actions: z.array(CardActionSchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),
   triggers: z.array(z.string()).optional(),
   // Equipment: the mana cost of its equip ability (e.g. "{1}").
   equip_cost: z.string().optional(),
+  cda: CdaSchema.optional(),
 }).strict()
 
 // ─── V2 schemas ──────────────────────────────────────────────────────────────
@@ -123,7 +138,7 @@ const ThenRiderSchema = z
 
 const KNOWN_V2_COST_TYPES = [
   'tap_self', 'untap_self', 'mana', 'pay_life',
-  'sacrifice_self', 'discard', 'exile_self', 'energy',
+  'sacrifice_self', 'discard', 'exile_self', 'energy', 'tap_creatures', 'remove_counters',
 ] as const
 
 const UnknownCostSchema = z.object({
@@ -148,10 +163,16 @@ const CardBehaviorCostSchema = z.union([
   // the exiled card (default "creature"); the chosen card is passed at activation.
   z.object({ type: z.literal('exile_from_graveyard'), type_line: z.string().optional() }),
   z.object({ type: z.literal('energy'), amount: z.number() }),
+  // "Tap N untapped <type> creatures you control" as a cost (Gravespawn
+  // Sovereign, mig 212). The engine auto-picks which to tap.
+  z.object({ type: z.literal('tap_creatures'), count: z.number().int().positive(), type_line: z.string().optional() }),
+  // "Remove N <kind> counters from this permanent" as a cost (Grimoire of the
+  // Dead, mig 214). Bag counters on the SOURCE.
+  z.object({ type: z.literal('remove_counters'), counter_type: z.string(), amount: z.number().int().positive() }),
   UnknownCostSchema,
 ])
 
-const KNOWN_V2_ACTION_TYPES = [
+export const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type',
@@ -159,7 +180,7 @@ const KNOWN_V2_ACTION_TYPES = [
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
-  'curse_attack_zombie',
+  'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -187,7 +208,7 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'devotion']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion']),
   type_line: z.string().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
 }).strict()
@@ -195,7 +216,7 @@ const CountAmountSchema = z.object({
 // A pump power/toughness driven by a count, optionally negated (Liliana −2: -X/-X
 // where X = Zombies you control → { count, type_line, negate: true }).
 const PumpValueSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'devotion']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion']),
   type_line: z.string().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
   negate: z.boolean().optional(),
@@ -208,7 +229,7 @@ const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema, C
 
 // Which kind of counter an add_counters effect places. "plus_one_one" is the
 // engine's fast +1/+1 column; everything else lives in the jsonb counter bag.
-const PermanentCounterTypeSchema = z.enum(['plus_one_one', 'minus_one_one', 'charge', 'quest', 'generic']).optional()
+const PermanentCounterTypeSchema = z.enum(['plus_one_one', 'minus_one_one', 'charge', 'quest', 'study', 'generic']).optional()
 // Player counters live on game_session_players. "poison" >= 10 loses the game.
 const PlayerCounterTypeSchema = z.enum(['poison', 'energy', 'experience'])
 
@@ -236,6 +257,9 @@ const CardBehaviorActionSchema = z.union([
     // Undermine: "…Its controller loses N life." The COUNTERED spell's controller
     // loses this much life (applied even if that spell can't be countered).
     controller_loses_life: z.number().int().nonnegative().optional(),
+    // Sinister Sabotage: "…Surveil N." The counter's CASTER surveils after the
+    // counter resolves (applied even if the target can't be countered).
+    surveil: z.number().int().nonnegative().optional(),
   }),
   z.object({
     type: z.literal('gain_life'),
@@ -293,7 +317,7 @@ const CardBehaviorActionSchema = z.union([
     // Optional gate: the may is only offered when this count condition holds
     // (Liliana's Devotee: "if a creature died this turn, you may …").
     condition: z.object({
-      count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn']),
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn']),
       type_line: z.string().optional(),
       at_least: z.number().int().positive(),
     }).optional(),
@@ -315,11 +339,20 @@ const CardBehaviorActionSchema = z.union([
   // effects are the non-decision vocabulary. Kept loose like may/choose_player.
   z.object({
     type: z.literal('conditional'),
-    condition: z.object({
-      count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn']),
-      type_line: z.string().optional(),
-      at_least: z.number().int().positive(),
-    }),
+    condition: z.union([
+      z.object({
+        count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn']),
+        type_line: z.string().optional(),
+        at_least: z.number().int().positive(),
+      }),
+      // "If it was kicked" (mig 211) / counter-state conditions: the source's
+      // (or your) counter bag, via resolve_dynamic_amount.
+      z.object({
+        counters: z.string(),
+        of: z.enum(['self', 'you']),
+        at_least: z.number().int().positive(),
+      }),
+    ]),
     effects: z.array(z.record(z.string(), z.unknown())),
   }),
   // "Choose a creature type, then …" (Distant Melody). The chosen type is injected
@@ -343,6 +376,8 @@ const CardBehaviorActionSchema = z.union([
     to: z.enum(['hand', 'battlefield']).optional(),
     count: z.number().optional(),
     filter: z.object({ type_line: z.string().optional() }).optional(),
+    // Battlefield returns enter tapped (mig 218, Victimize).
+    tapped: z.boolean().optional(),
   }),
   // Surveil N — Tier-B: look at the top N of your library, put any number into
   // your graveyard, the rest back on top. Untargeted.
@@ -418,6 +453,43 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('amass'),
     amount: z.number(),
   }),
+  // Gravespawn Sovereign (mig 212) — activated-ability-only targeted effect:
+  // put target creature card from ANY graveyard onto the battlefield under
+  // your control. The target is chosen at activation.
+  z.object({
+    type: z.literal('reanimate_from_graveyard'),
+    target_type: z.literal('graveyard_creature').optional(),
+  }),
+  // Heraldic Banner (mig 209) — "As this enters, choose a color"; the chosen
+  // colour is baked into a colour-filtered anthem registered on resolution.
+  z.object({
+    type: z.literal('choose_color'),
+    anthem: z.object({
+      power: z.number(),
+      toughness: z.number(),
+      scope: z.enum(['all', 'controller']).optional(),
+    }).optional(),
+  }),
+  // Necromantic Selection (mig 208) — destroy all creatures, then the caster
+  // returns ONE creature destroyed this way to the battlefield under THEIR
+  // control. (Type/colour addition + self-exile are not modelled.)
+  z.object({
+    type: z.literal('mass_destroy_reanimate_one'),
+  }),
+  // Mass keyword grant until end of turn (mig 202) — "All Zombies gain menace
+  // until end of turn" (Lord of the Accursed), "you and permanents you control
+  // gain hexproof" (Lazotep Plating: scope controller + includes_player).
+  z.object({
+    type: z.literal('grant_keyword_all'),
+    keyword: z.enum([
+      'flying', 'reach', 'deathtouch', 'trample', 'vigilance', 'haste',
+      'indestructible', 'first_strike', 'double_strike', 'menace',
+      'intimidate', 'hexproof',
+    ]),
+    scope: z.enum(['all', 'controller']).optional(),
+    creature_type: z.string().optional(),
+    includes_player: z.boolean().optional(),
+  }),
   // Mass destroy (board wipe) — all matching battlefield creatures, optional type.
   z.object({
     type: z.literal('destroy_all'),
@@ -429,6 +501,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('return_all_from_graveyard'),
     to: z.enum(['battlefield', 'hand']).optional(),
     creature_type: z.string().optional(),
+    // 'all_graveyards' (mig 214, Grimoire of the Dead): sweep EVERY graveyard;
+    // the cards enter under YOUR control. Omit for your own graveyard only.
+    from: z.literal('all_graveyards').optional(),
   }),
   // "Exile target card from a graveyard" as a targeted EFFECT (Withered Wretch).
   // The graveyard card is the ability's target (passed at activation); distinct
@@ -452,6 +527,18 @@ const CardBehaviorActionSchema = z.union([
     // Assassin's Trophy: the destroyed permanent's controller may search their
     // library for a basic land, put it onto the battlefield, then shuffle.
     controller_searches_basic_land: z.boolean().optional(),
+    // NEGATIVE type restriction (mig 220, Cruel Revival "Destroy target
+    // NON-Zombie creature"): the target may not match this type line.
+    exclude_type_line: z.string().optional(),
+    // Caster graveyard-return rider (mig 220, Cruel Revival "Return up to one
+    // target Zombie card from your graveyard to your hand"): parks a pick for
+    // the caster after the removal resolves.
+    then_return_from_graveyard: z.object({
+      filter: z.object({ type_line: z.string().optional() }).optional(),
+      to: z.enum(['hand', 'battlefield']).optional(),
+      count: z.number().int().positive().optional(),
+      tapped: z.boolean().optional(),
+    }).optional(),
   }),
   // Grant a keyword to a target creature until end of turn (trigger-only today).
   z.object({
@@ -586,11 +673,53 @@ export const CardBehaviorScriptV2Schema = z.object({
   doubles_counters: z.boolean().optional(),
   // "Enters the battlefield with N counters on it" — a REPLACEMENT, applied as the
   // card enters (before SBA), so a 0/0 that enters with +1/+1 counters survives.
-  // counter_type defaults +1/+1.
+  // counter_type defaults +1/+1. The amount may also be a dynamic count spec or
+  // an ARRAY of specs summed (mig 210 — Unbreathing Horde: a counter "for each
+  // other Zombie you control and each Zombie card in your graveyard").
   enters_with_counters: z.object({
-    amount: z.number().int().positive(),
+    amount: z.union([
+      z.number().int().positive(),
+      CountAmountSchema,
+      z.array(CountAmountSchema).nonempty(),
+    ]),
     counter_type: PermanentCounterTypeSchema,
   }).optional(),
+  // "If this creature would be dealt damage, prevent that damage and remove a
+  // +1/+1 counter from it" (Unbreathing Horde, mig 210). The whole damage event
+  // is prevented; ONE counter is removed per event.
+  damage_removes_counters: z.boolean().optional(),
+  // Alternative graveyard cast cost (mig 213, Scourge of Nel Toth): "You may
+  // cast this from your graveyard by paying <mana> and sacrificing N creatures
+  // rather than paying its mana cost." Self-granted — no permission needed.
+  graveyard_cast_cost: z.object({
+    mana: z.string().optional(),
+    sacrifice_creatures: z.number().int().nonnegative().optional(),
+  }).optional(),
+  // Optional kicker cost (mig 211) — "Kicker {5}{B}": an additional mana cost
+  // the caster may pay; paying it stamps 'kicked' on the permanent, read by a
+  // conditional with { "counters": "kicked", "of": "self" }.
+  kicker: z.string().optional(),
+  // "When this creature dies, if it had no +1/+1 counters on it, return it
+  // with a +1/+1 counter" (mig 219, undying).
+  undying: z.boolean().optional(),
+  // Characteristic-defining P/T (layer 7a, mig 149) — */* cards.
+  cda: CdaSchema.optional(),
+  // "This land enters tapped" (mig 217) — true, or conditional:
+  // { unless: { count, type_line?, at_least } } (Sunken Hollow) /
+  // { unless: { hand_has_type: ['Island','Swamp'] } } (Choked Estuary).
+  enters_tapped: z.union([
+    z.literal(true),
+    z.object({
+      unless: z.union([
+        z.object({
+          count: z.enum(['creatures_you_control', 'lands_you_control', 'basic_lands_you_control', 'cards_in_graveyard']),
+          type_line: z.string().optional(),
+          at_least: z.number().int().positive(),
+        }),
+        z.object({ hand_has_type: z.array(z.string()).nonempty() }),
+      ]),
+    }),
+  ]).optional(),
   // Planeswalker starting loyalty (a loyalty counter set as it enters).
   loyalty: z.number().int().positive().optional(),
   // Planeswalker loyalty abilities — +N / −N / 0; cost is paid by adjusting loyalty,

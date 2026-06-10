@@ -1,0 +1,29 @@
+{
+  "_readme": "Curated REAL-CARD behavior scripts for cards whose test fixture lives under a different name (or that need no fixture). deck:triage merges these over fixture-derived scripts when emitting the copy-paste Scripts section. Keys are exact card names (case-insensitive match). Grows deck by deck.",
+
+  "Sol Ring": { "schema_version": 2, "activated_abilities": [ { "is_mana_ability": true, "costs": [ { "type": "tap_self" } ], "effects": [ { "type": "add_mana", "color": "C", "amount": 2 } ] } ] },
+
+  "Arcane Signet": { "schema_version": 2, "activated_abilities": [ { "is_mana_ability": true, "costs": [ { "type": "tap_self" } ], "effects": [ { "type": "add_mana", "color": "commander", "amount": 1 } ] } ] },
+
+  "Command Tower": { "schema_version": 2, "activated_abilities": [ { "is_mana_ability": true, "costs": [ { "type": "tap_self" } ], "effects": [ { "type": "add_mana", "color": "commander", "amount": 1 } ] } ] },
+
+  "Champion of the Perished": { "schema_version": 2, "triggered_abilities": [ { "event": "creature_entered", "filter": { "type_line": "Zombie", "exclude_self": true }, "effects": [ { "type": "add_counters", "amount": 1 } ] } ] },
+
+  "Eternal Skylord": { "schema_version": 2, "triggered_abilities": [ { "event": "enters_the_battlefield", "effects": [ { "type": "amass", "amount": 2 } ] } ], "continuous_effects": [ { "type": "flying", "affected": "controller", "payload": { "creature_type": "Zombie", "token_only": true } } ] },
+
+  "Vizier of the Scorpion": { "schema_version": 2, "triggered_abilities": [ { "event": "enters_the_battlefield", "effects": [ { "type": "amass", "amount": 1 } ] } ], "continuous_effects": [ { "type": "deathtouch", "affected": "controller", "payload": { "creature_type": "Zombie", "token_only": true } } ] },
+
+  "Gray Merchant of Asphodel": { "schema_version": 2, "triggered_abilities": [ { "event": "enters_the_battlefield", "effects": [ { "type": "lose_life", "amount": { "count": "devotion", "color": "B" }, "recipient": "each_opponent" }, { "type": "gain_life", "amount": { "count": "devotion", "color": "B" }, "recipient": "controller" } ] } ] },
+
+  "Josu Vess, Lich Knight": { "schema_version": 2, "kicker": "{5}{B}", "continuous_effects": [ { "type": "menace", "affected": "source", "source_zone_required": "battlefield" } ], "triggered_abilities": [ { "event": "enters_the_battlefield", "effects": [ { "type": "conditional", "condition": { "counters": "kicked", "of": "self", "at_least": 1 }, "effects": [ { "type": "create_token", "token": "Zombie Knight Token", "count": 8 } ] } ] } ] },
+
+  "Crippling Fear": { "schema_version": 2, "spell_effect": { "actions": [ { "type": "choose_creature_type", "effects": [ { "type": "pump_all", "power": -3, "toughness": -3, "scope": "all", "exclude_type": true } ] } ] } },
+
+  "Pilfered Plans": { "schema_version": 2, "spell_effect": { "actions": [ { "type": "choose_player", "filter": "any", "effects": [ { "type": "mill", "amount": 2, "recipient": "controller" } ] }, { "type": "draw", "amount": 2 } ] } },
+
+  "Submerged Boneyard": { "schema_version": 2, "enters_tapped": true, "activated_abilities": [ { "is_mana_ability": true, "costs": [ { "type": "tap_self" } ], "effects": [ { "type": "add_mana", "color": "U", "amount": 1 } ] }, { "is_mana_ability": true, "costs": [ { "type": "tap_self" } ], "effects": [ { "type": "add_mana", "color": "B", "amount": 1 } ] } ] },
+
+  "Dismal Backwater": { "schema_version": 2, "enters_tapped": true, "triggered_abilities": [ { "event": "enters_the_battlefield", "effects": [ { "type": "gain_life", "amount": 1 } ] } ], "activated_abilities": [ { "is_mana_ability": true, "costs": [ { "type": "tap_self" } ], "effects": [ { "type": "add_mana", "color": "U", "amount": 1 } ] }, { "is_mana_ability": true, "costs": [ { "type": "tap_self" } ], "effects": [ { "type": "add_mana", "color": "B", "amount": 1 } ] } ] },
+
+  "Temple of Deceit": { "schema_version": 2, "enters_tapped": true, "triggered_abilities": [ { "event": "enters_the_battlefield", "effects": [ { "type": "scry", "amount": 1 } ] } ], "activated_abilities": [ { "is_mana_ability": true, "costs": [ { "type": "tap_self" } ], "effects": [ { "type": "add_mana", "color": "U", "amount": 1 } ] }, { "is_mana_ability": true, "costs": [ { "type": "tap_self" } ], "effects": [ { "type": "add_mana", "color": "B", "amount": 1 } ] } ] }
+}

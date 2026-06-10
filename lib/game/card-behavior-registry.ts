@@ -74,6 +74,7 @@ export const EFFECT_TOKEN_NAMES = [
   'Soldier Token',
   'Saproling Token',
   'Zombie Token',
+  'Zombie Knight Token',
   'Goblin Token',
   'Beast Token',
   'Spirit Token',
@@ -331,6 +332,48 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     ],
   },
   { type: 'amass', label: 'Amass N (grow a Zombie Army)', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
+  // Necromantic Selection (mig 208): board wipe + caster picks one destroyed
+  // creature to reanimate under their control.
+  {
+    type: 'mass_destroy_reanimate_one',
+    label: 'Destroy all creatures, then return one under your control',
+    contexts: ['spell'],
+    fields: [],
+  },
+  // Mass keyword grant until end of turn (mig 202): "All Zombies gain menace
+  // until end of turn" (Lord of the Accursed), "permanents you control gain
+  // hexproof" (Lazotep Plating — its "you" half is includes_player). Works as a
+  // trigger effect, a spell action, or an activated-ability effect.
+  {
+    type: 'grant_keyword_all',
+    label: 'All creatures gain a keyword (until end of turn)',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      {
+        name: 'keyword',
+        kind: 'enum',
+        label: 'Keyword',
+        default: 'menace',
+        options: [
+          { value: 'flying', label: 'flying' },
+          { value: 'reach', label: 'reach' },
+          { value: 'deathtouch', label: 'deathtouch' },
+          { value: 'trample', label: 'trample' },
+          { value: 'vigilance', label: 'vigilance' },
+          { value: 'haste', label: 'haste' },
+          { value: 'indestructible', label: 'indestructible' },
+          { value: 'first_strike', label: 'first strike' },
+          { value: 'double_strike', label: 'double strike' },
+          { value: 'menace', label: 'menace' },
+          { value: 'intimidate', label: 'intimidate' },
+          { value: 'hexproof', label: 'hexproof' },
+        ],
+      },
+      massPumpScopeField,
+      { name: 'creature_type', kind: 'text', label: 'Creature type', default: '', optional: true },
+      { name: 'includes_player', kind: 'boolean', label: 'You gain it too (player hexproof)', default: false, optional: true },
+    ],
+  },
   {
     type: 'destroy_all',
     label: 'Destroy all creatures (board wipe)',
@@ -356,6 +399,30 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   // sorcery action it has no target path and is a silent no-op (don't author it
   // as a spell). No fields — the graveyard card is chosen in-game, not authored.
   { type: 'exile_from_graveyard', label: 'Exile target card from a graveyard (ability)', contexts: ['spell'], fields: [] },
+  // "Put target creature card from a graveyard onto the battlefield under your
+  // control" (Gravespawn Sovereign, mig 212). Same activated-ability-only caveat
+  // as exile_from_graveyard: the graveyard card is chosen in-game at activation.
+  { type: 'reanimate_from_graveyard', label: 'Reanimate target graveyard creature under your control (ability)', contexts: ['spell'], fields: [] },
+  // "As ~ enters, choose a color. Creatures you control of the chosen color get
+  // +X/+Y" (Heraldic Banner, mig 209). The colour is picked in-game; the anthem
+  // shape is authored here.
+  {
+    type: 'choose_color',
+    label: 'Choose a color, then anthem that color',
+    contexts: ['trigger'],
+    fields: [
+      {
+        name: 'anthem',
+        kind: 'object',
+        label: 'Chosen-color creatures get',
+        fields: [
+          { name: 'power', kind: 'number', label: 'Power', default: 1, min: -99, max: 99 },
+          { name: 'toughness', kind: 'number', label: 'Toughness', default: 0, min: -99, max: 99 },
+          massPumpScopeField,
+        ],
+      },
+    ],
+  },
   { type: 'scry', label: 'Scry N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   { type: 'surveil', label: 'Surveil N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   {
@@ -424,6 +491,8 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
             { value: 'lands_you_control', label: 'lands you control' },
             { value: 'cards_in_graveyard', label: 'cards in your graveyard' },
             { value: 'creatures_died_this_turn', label: 'creatures died under your control this turn' },
+            { value: 'commanders_you_control', label: 'your commander on the battlefield (Lieutenant)' },
+            { value: 'graveyard_casts_this_turn', label: 'spells you cast from a graveyard this turn' },
           ] },
           { name: 'type_line', kind: 'text', label: 'Of type (blank = any)', default: '' },
           { name: 'at_least', kind: 'number', label: 'Is at least', default: 1, min: 1, max: 99 },
