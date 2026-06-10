@@ -36,6 +36,7 @@ declare
   v_milled_type text;
   v_milled_type_hit boolean;
   v_token_recipient uuid;
+  v_dmg_target uuid;
 begin
   for v_effect in
     select * from jsonb_array_elements(coalesce(p_effects, '[]'::jsonb))
@@ -196,6 +197,43 @@ begin
           returning id into v_new_token_id;
           perform public.register_card_continuous_effects(p_session_id, v_new_token_id);
         end loop;
+      end if;
+
+    elsif v_eff_type = 'deal_damage_all' then
+      -- Mass damage (mig 224): N damage to every creature matching the filter,
+      -- optionally to planeswalkers too. filter.with_keyword/without_keyword
+      -- gate on flying (Harbinger); filter.exclude_source skips this card
+      -- ("each OTHER creature"). One lethal sweep at the end (per-hit sweep off).
+      if v_eff_amount > 0 then
+        for v_dmg_target in
+          select gc.id
+          from public.game_cards gc join public.cards c on c.id = gc.card_id
+          where gc.session_id = p_session_id and gc.zone = 'battlefield'
+            and c.type_line ilike '%creature%'
+            and (not coalesce((v_effect -> 'filter' ->> 'exclude_source')::boolean, false)
+                 or gc.id is distinct from p_source_card_id)
+            and ((v_effect -> 'filter' ->> 'without_keyword') is distinct from 'flying'
+                 or not public.card_has_flying(p_session_id, gc.id))
+            and ((v_effect -> 'filter' ->> 'with_keyword') is distinct from 'flying'
+                 or public.card_has_flying(p_session_id, gc.id))
+        loop
+          perform public.apply_damage_to_creature(
+            p_session_id, v_dmg_target, v_eff_amount, p_source_card_id, false, false, false);
+        end loop;
+
+        if lower(coalesce(v_effect ->> 'targets', 'creatures')) = 'creatures_planeswalkers' then
+          for v_dmg_target in
+            select gc.id
+            from public.game_cards gc join public.cards c on c.id = gc.card_id
+            where gc.session_id = p_session_id and gc.zone = 'battlefield'
+              and c.type_line ilike '%planeswalker%'
+          loop
+            perform public.apply_damage_to_planeswalker(p_session_id, v_dmg_target, v_eff_amount);
+          end loop;
+        end if;
+
+        perform public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
+        perform public.move_zero_loyalty_planeswalkers_to_graveyard(p_session_id);
       end if;
 
     elsif v_eff_type = 'amass' then

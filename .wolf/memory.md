@@ -3130,3 +3130,15 @@
 | 22:10 | Dragons compositions: 8 fixtures + dragons-deck.test (Migration Path, Evolving Wilds, Verix kicked, Keiga dies-control, Lathliss watcher, Dragonmaster, Dragon's Hoard gold, Rapid Hybridization) + 3 Dragon tokens | test-cards.json, dragons-deck.test.ts | 8/8 green | ~14k |
 | 22:40 | Ureni (mig 223): look_top decision effect (dig N, may put matching card to battlefield, rest to bottom random) + bottom_cards_random helper | mig 223, apply_trigger_effects/submit_decision, schema, ureni.test | UR1-3 green | ~14k |
 | 22:55 | Upsert 21 Dragon cards (38 printings) + 3 token rows to hosted; pushed mig 223 | hosted catalog | 790/790 suite, tsc+lint clean | ~6k |
+| 16:13 | Session end: 169 writes across 75 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 60 reads | ~143650 tok |
+| 16:19 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 4→5 lines | ~28 |
+| 16:19 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified damage() | ~534 |
+| 16:19 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~35 |
+| 16:21 | Created tests/feature/deal-damage-all.test.ts | — | ~1116 |
+| 16:23 | Edited supabase/functions_src/cast_card_from_hand.sql | modified Checklands() | ~367 |
+| 16:24 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified filter() | ~163 |
+| 16:25 | Edited lib/game/card-behavior-schema.ts | 4→7 lines | ~109 |
+| 16:26 | Edited lib/game/card-behavior-schema.ts | modified Checklands() | ~83 |
+| 16:27 | Created tests/feature/checkland-min-power.test.ts | — | ~972 |
+| 16:29 | Edited tests/unit/registry-schema-drift.test.ts | "mass damage with keyword " → "mass damage with keyword " | ~36 |
+| 23:30 | Dragons Tier-1 (migs 224-225): deal_damage_all (Blasphemous Act/Storm's Wrath/Harbinger, flying filters + planeswalkers) + checklands (enters_tapped control_type) + watcher min_power filter (Elemental Bond/Temur Ascendancy) | migs 224-225, schema, 2 test files, card-scripts.json | 793/793 green, tsc+lint clean; upserted 8 cards, pushed migs | ~18k |

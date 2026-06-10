@@ -180,7 +180,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
-  'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top',
+  'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -453,6 +453,18 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('amass'),
     amount: z.number(),
   }),
+  // Mass damage (mig 224) — N to every creature (and optionally planeswalkers)
+  // matching the filter (Blasphemous Act, Storm's Wrath, Harbinger of the Hunt).
+  z.object({
+    type: z.literal('deal_damage_all'),
+    amount: z.number().int().positive(),
+    targets: z.enum(['creatures', 'creatures_planeswalkers']).optional(),
+    filter: z.object({
+      with_keyword: z.literal('flying').optional(),
+      without_keyword: z.literal('flying').optional(),
+      exclude_source: z.boolean().optional(),
+    }).optional(),
+  }),
   // Ureni (mig 223) — "Look at the top N cards of your library, you may put a
   // matching card onto the battlefield, the rest go to the bottom in a random
   // order." JSON/AI-authored (not in the guided form).
@@ -669,6 +681,9 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     // "a NONTOKEN creature …" (Midnight Reaper, Open the Graves) — the watcher
     // ignores token creatures entering/dying.
     nontoken: z.boolean().optional(),
+    // "a creature with power N or greater …" (mig 225 — Elemental Bond, Temur
+    // Ascendancy). Fires only when the entering creature's power is >= N.
+    min_power: z.number().int().optional(),
   }).optional(),
   targets: z.array(CardBehaviorTargetSchema).optional(),
   effects: z.array(CardBehaviorActionSchema),
@@ -729,6 +744,9 @@ export const CardBehaviorScriptV2Schema = z.object({
           at_least: z.number().int().positive(),
         }),
         z.object({ hand_has_type: z.array(z.string()).nonempty() }),
+        // Checklands (mig 225): untapped if you control a battlefield permanent
+        // of a listed type ("a Forest or an Island").
+        z.object({ control_type: z.array(z.string()).nonempty() }),
       ]),
     }),
   ]).optional(),

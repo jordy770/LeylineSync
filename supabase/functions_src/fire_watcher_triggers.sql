@@ -66,6 +66,15 @@ begin
         continue;
       end if;
 
+      -- Power filter (mig 225): "a creature with power N or greater enters"
+      -- (Elemental Bond, Temur Ascendancy). Reads the changed card's effective
+      -- power; non-creatures (no P/T) never qualify.
+      if v_filter ? 'min_power'
+         and coalesce(public.card_effective_power(p_session_id, p_changed_card_id), -1)
+             < (v_filter ->> 'min_power')::integer then
+        continue;
+      end if;
+
       -- Controller filter, relative to the WATCHER's controller.
       v_ctrl_ok := case v_f_controller
         when 'you' then p_changed_controller = v_watcher.controller

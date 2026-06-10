@@ -53,5 +53,21 @@
 
   "Lathliss, Dragon Queen": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"creature_entered","filter":{"type_line":"Dragon","controller":"you","exclude_self":true,"nontoken":true},"effects":[{"type":"create_token","token":"Dragon Token","count":1}]}]},
 
-  "Ureni of the Unwritten": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"look_top","count":8,"to":"battlefield","filter":{"type_line":"Dragon","creature":true}}]},{"event":"attacks","effects":[{"type":"look_top","count":8,"to":"battlefield","filter":{"type_line":"Dragon","creature":true}}]}]}
+  "Ureni of the Unwritten": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"look_top","count":8,"to":"battlefield","filter":{"type_line":"Dragon","creature":true}}]},{"event":"attacks","effects":[{"type":"look_top","count":8,"to":"battlefield","filter":{"type_line":"Dragon","creature":true}}]}]},
+
+  "Blasphemous Act": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage_all","amount":13}]}},
+
+  "Storm's Wrath": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage_all","amount":4,"targets":"creatures_planeswalkers"}]}},
+
+  "Harbinger of the Hunt": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{R}"}],"effects":[{"type":"deal_damage_all","amount":1,"filter":{"without_keyword":"flying"}}]},{"costs":[{"type":"mana","amount":"{2}{G}"}],"effects":[{"type":"deal_damage_all","amount":1,"filter":{"with_keyword":"flying","exclude_source":true}}]}]},
+
+  "Rootbound Crag": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Mountain","Forest"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]},
+
+  "Hinterland Harbor": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Forest","Island"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Sulfur Falls": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Island","Mountain"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]}]},
+
+  "Elemental Bond": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","min_power":3},"effects":[{"type":"draw","amount":1}]}]},
+
+  "Temur Ascendancy": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"controller"}],"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","min_power":4},"effects":[{"type":"may","prompt":"Draw a card?","effects":[{"type":"draw","amount":1}]}]}]}
 }

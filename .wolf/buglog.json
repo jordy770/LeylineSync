@@ -9574,6 +9574,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-10T14:05:52.162Z"
+    },
+    {
+      "id": "bug-589",
+      "timestamp": "2026-06-10T14:19:56.451Z",
+      "error_message": "Wrong reference: then should be deal_damage_all",
+      "file": "supabase/functions_src/activate_ability.sql",
+      "root_cause": "Used \"then\" instead of \"deal_damage_all\"",
+      "fix": "Changed then → deal_damage_all",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T14:19:56.451Z"
+    },
+    {
+      "id": "bug-590",
+      "timestamp": "2026-06-10T14:29:38.185Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/unit/registry-schema-drift.test.ts",
+      "root_cause": "Had 'mass damage with keyword filters (Blasphemous Act",
+      "fix": "Changed to 'mass damage with keyword filters (Blasphemous Act",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T14:29:38.185Z"
     }
   ]
 }

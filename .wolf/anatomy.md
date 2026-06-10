@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-10T14:07:14.125Z
-> Files: 39 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-10T14:29:38.166Z
+> Files: 45 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -111,7 +111,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12003 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~10526 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~10948 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -135,10 +135,13 @@
 
 ## supabase/functions_src/
 
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6090 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2217 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~6282 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~5424 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
-- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4066 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4288 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~946 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
@@ -161,7 +164,9 @@
 
 ## tests/feature/
 
+- `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
+- `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
 - `dragons-deck.test.ts` — Dragons deck — proving tests for the Tier-0 compositions (cards authored (~2449 tok)
 - `enters-tapped-lands.test.ts` — Enters-tapped lands (mig 217) — top-level `enters_tapped` read in (~1071 tok)
 - `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
@@ -182,6 +187,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1294 tok)
 
 ## vercel/
 
