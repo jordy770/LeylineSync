@@ -1139,6 +1139,23 @@ export async function joinGameSession(supabase: SupabaseClient, sessionId: strin
   return data as number
 }
 
+// Cycling (mig 228): discard a card with a cycling cost from hand, draw one.
+export async function cycleCard(
+  supabase: SupabaseClient,
+  sessionId: string,
+  cardId: string,
+  genericPayment?: Record<string, number>,
+) {
+  const { error } = await supabase.rpc('cycle_card', {
+    p_session_id: sessionId,
+    p_game_card_id: cardId,
+    p_generic_payment: genericPayment ?? null,
+  })
+  if (error) {
+    throw error
+  }
+}
+
 export async function lockGameSession(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('lock_game_session', {
     p_session_id: sessionId,

@@ -46,6 +46,7 @@ export function CardActionSheet({
   commanderIdentity,
   onTapForMana,
   onCastCard,
+  onCycleCard,
   onDealDamageToPlayer,
   onDealDamageToCreature,
   onPumpCreature,
@@ -78,6 +79,7 @@ export function CardActionSheet({
   commanderIdentity: ManaColor[]
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
   onCastCard: (cardId: string) => Promise<void>
+  onCycleCard: (cardId: string) => Promise<void>
   onDealDamageToPlayer: (cardId: string, targetPlayerId: string) => Promise<void>
   onDealDamageToCreature: (cardId: string, targetCardId: string) => Promise<void>
   onPumpCreature: (cardId: string, targetCardId: string) => Promise<void>
@@ -209,6 +211,9 @@ export function CardActionSheet({
   const flashbackCost = script.flashback ?? null
   // Additional "Pay N life" flashback cost (Deep Analysis); the server charges it.
   const flashbackLife = script.flashback_life ?? 0
+  // Cycling: a card in hand carrying a `cycling` cost can be discarded to draw.
+  const cyclingCost = script.cycling ?? null
+  const canCycle = !!cyclingCost && zone === 'hand' && pendingStackCount === 0
   const fbSorcerySpeed = card.cards?.type_line?.toLowerCase().includes('sorcery') ?? false
   const canFlashback =
     !!flashbackCost &&
@@ -283,7 +288,9 @@ export function CardActionSheet({
     onClose()
   }
 
-  const hasActions = canCast || canFlashback || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0 || (script.loyalty_abilities?.length ?? 0) > 0
+  const handleCycle = () => { void onCycleCard(card.id); onClose() }
+
+  const hasActions = canCast || canFlashback || canCycle || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0 || (script.loyalty_abilities?.length ?? 0) > 0
 
   return (
     <>
@@ -390,6 +397,19 @@ export function CardActionSheet({
               {isAura ? 'Cast - enchant a creature' : castLabel}
             </span>
             <ManaCostDisplay manaCost={card.cards?.mana_cost} dark={hasRequiredTargets} />
+          </button>
+        )}
+
+        {/* Cycling button (hand card with a cycling cost) */}
+        {canCycle && !picking && !attachPick && (
+          <button
+            type="button"
+            aria-label={`Cycling ${cyclingCost}`}
+            onClick={handleCycle}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl bg-sky-400 px-4 py-3.5 transition active:scale-95"
+          >
+            <span className="font-black text-sky-950">Cycle</span>
+            <ManaCostDisplay manaCost={cyclingCost} dark />
           </button>
         )}
 

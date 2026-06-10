@@ -728,6 +728,8 @@ export const CardBehaviorScriptV2Schema = z.object({
     mana: z.string().optional(),
     sacrifice_creatures: z.number().int().nonnegative().optional(),
   }).optional(),
+  // Cycling cost (mig 228) — "Cycling {2}: Discard this card, draw a card."
+  cycling: z.string().optional(),
   // Optional kicker cost (mig 211) — "Kicker {5}{B}": an additional mana cost
   // the caster may pay; paying it stamps 'kicked' on the permanent, read by a
   // conditional with { "counters": "kicked", "of": "self" }.

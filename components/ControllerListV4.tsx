@@ -9,6 +9,7 @@ import {
   addManaFromCard,
   advanceStep,
   castCardFromHand,
+  cycleCard,
   castSpellEffect,
   chooseTriggeredAbilityCreatureTarget,
   chooseTriggeredAbilityTargets,
@@ -392,6 +393,11 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       await castCardFromHand(supabase, sessionId, cardId)
       await refresh()
     },
+    // Cycling: discard a hand card with a cycling cost, draw one.
+    cycleCard: async (cardId: string) => {
+      await cycleCard(supabase, sessionId, cardId)
+      await refresh()
+    },
     // Aura cast — a permanent that enters attached to the chosen creature.
     castAura: async (cardId: string, targetCardId: string) => {
       await castCardFromHand(supabase, sessionId, cardId, undefined, targetCardId)
@@ -734,6 +740,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             commanderIdentity={commanderIdentityColors(cards)}
             onTapForMana={async (cardId, color) => { await actions.tapForMana(cardId, color) }}
             onCastCard={async (cardId) => { await actions.castSpell(cardId) }}
+            onCycleCard={async (cardId) => { await actions.cycleCard(cardId) }}
             onDealDamageToPlayer={async (cardId, targetPlayerId) => { await actions.dealDamageToPlayer(cardId, targetPlayerId) }}
             onDealDamageToCreature={async (cardId, targetCardId) => { await actions.dealDamageToCreature(cardId, targetCardId) }}
             onPumpCreature={async (cardId, targetCardId) => { await actions.pumpCreature(cardId, targetCardId) }}

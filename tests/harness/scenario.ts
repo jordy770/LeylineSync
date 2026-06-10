@@ -585,6 +585,17 @@ export class Scenario {
     ) as Promise<Record<string, number>>
   }
 
+  /** Cycle a card from the acting seat's hand (discard it, draw one). */
+  async cycle(cardId: string, generic: Record<string, number> | null = null): Promise<string | null> {
+    return this.run(() =>
+      rpc(this.client, 'cycle_card', {
+        p_session_id: this.sessionId,
+        p_game_card_id: cardId,
+        p_generic_payment: generic,
+      }),
+    ) as Promise<string | null>
+  }
+
   /** Activate loyalty ability `index` on a planeswalker the acting seat controls. */
   async activateLoyalty(sourceCardId: string, index = 0): Promise<unknown> {
     return this.run(() =>

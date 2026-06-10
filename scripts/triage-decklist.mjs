@@ -156,6 +156,8 @@ const COVERED_BY = new Map(Object.entries({
   'rapacious dragon': 'Rapacious Dragon Test (ETB two Treasures, mig 226)',
   'atarka, world render': 'Atarka World Render Test (reflexive attack watcher, mig 227)',
   'dragon tempest': 'Dragon Tempest Test (flying-enter haste; the damage half is deferred)',
+  'sheltered thicket': 'card-scripts.json (tapland + cycling, mig 228)',
+  'bountiful landscape': 'card-scripts.json (mana + sac-tutor + cycling, mig 228)',
 }))
 
 // ── Classify ─────────────────────────────────────────────────────────────────

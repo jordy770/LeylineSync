@@ -3168,3 +3168,15 @@
 | 17:07 | Created tests/feature/reflexive-watcher.test.ts | — | ~953 |
 | 17:09 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified filter() | ~367 |
 | 01:00 | Reflexive watchers (mig 227): the entering/attacking creature ITSELF gains the effect. enqueue_triggered_ability gains p_triggering_card_id; fire_attack_triggers broadcasts creature_attacks; fire_watcher_triggers gains has_keyword:flying filter (intrinsic-aware); apply_trigger_effects handles target:triggering_creature via apply_creature_effect. Atarka (double strike) + Dragon Tempest (haste half). | mig 227, schema, builder events, reflexive-watcher.test | 801/801 green, tsc+lint clean; pushed; upserted 2 | ~18k |
+| 17:14 | Session end: 201 writes across 85 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 65 reads | ~181684 tok |
+| 17:18 | Created supabase/functions_src/cycle_card.sql | — | ~815 |
+| 17:20 | Edited lib/game/actions.ts | added nullish coalescing | ~146 |
+| 17:21 | Edited components/controller/CardActionSheet.tsx | CSS: Cycling | ~91 |
+| 17:21 | Edited components/controller/CardActionSheet.tsx | 1→3 lines | ~70 |
+| 17:21 | Edited components/controller/CardActionSheet.tsx | CSS: onCycleCard | ~28 |
+| 17:22 | Edited components/controller/CardActionSheet.tsx | 2→3 lines | ~9 |
+| 17:22 | Edited components/controller/CardActionSheet.tsx | CSS: active | ~192 |
+| 17:23 | Edited components/ControllerListV4.tsx | CSS: Cycling, cycleCard | ~92 |
+| 17:23 | Created tests/feature/cycling.test.ts | — | ~601 |
+| 17:24 | Edited tests/feature/cycling.test.ts | 6→4 lines | ~57 |
+| 01:40 | Cycling (mig 228): top-level cycling cost + cycle_card RPC (pay, discard, draw) + badge prop + client Cycle button + cycling.test. Sheltered Thicket, Bountiful Landscape, Migration Path. FIXTURE CORRUPTION caught: a bash-heredoc \n wrote a literal newline into test-cards.json (bad control char) — repaired via raw text replace. | mig 228, cycle_card, schema, card-behavior.ts, CardActionSheet, ControllerListV4, actions | 804/804 green, tsc+lint clean; pushed | ~16k |

@@ -73,5 +73,9 @@
 
   "Atarka, World Render": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"creature_attacks","filter":{"type_line":"Dragon","controller":"you"},"effects":[{"type":"grant_keyword","keyword":"double_strike","target":"triggering_creature"}]}]},
 
-  "Dragon Tempest": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","has_keyword":"flying"},"effects":[{"type":"grant_keyword","keyword":"haste","target":"triggering_creature"}]}]}
+  "Dragon Tempest": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","has_keyword":"flying"},"effects":[{"type":"grant_keyword","keyword":"haste","target":"triggering_creature"}]}]},
+
+  "Sheltered Thicket": {"schema_version":2,"enters_tapped":true,"cycling":"{2}","activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]},
+
+  "Bountiful Landscape": {"schema_version":2,"cycling":"{G}{U}{R}","activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]}]}
 }

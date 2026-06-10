@@ -113,6 +113,7 @@ export type CardBehaviorScriptV2 = {
   damage_removes_counters?: boolean
   undying?: boolean
   kicker?: string
+  cycling?: string
   graveyard_cast_cost?: Record<string, unknown>
   enters_tapped?: true | Record<string, unknown>
   cant_be_countered?: boolean
@@ -155,7 +156,7 @@ const HANDLED_KEYWORDS = new Set([
 // top-level props in card-behavior-schema.ts.
 const BEHAVIOR_TOP_LEVEL_PROPS = [
   'loyalty_abilities', 'enters_with_counters', 'damage_removes_counters',
-  'undying', 'kicker', 'graveyard_cast_cost', 'enters_tapped',
+  'undying', 'kicker', 'graveyard_cast_cost', 'enters_tapped', 'cycling',
   'flashback', 'flashback_effect', 'cant_be_countered', 'doubles_counters', 'cda',
 ] as const
 
@@ -394,6 +395,7 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     damage_removes_counters: script.damage_removes_counters,
     undying: script.undying,
     kicker: script.kicker,
+    cycling: script.cycling,
     graveyard_cast_cost: script.graveyard_cast_cost,
     enters_tapped: script.enters_tapped,
     cant_be_countered: script.cant_be_countered,
