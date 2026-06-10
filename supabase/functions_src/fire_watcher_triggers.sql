@@ -75,6 +75,35 @@ begin
         continue;
       end if;
 
+      -- Keyword filter (mig 227): "a creature you control WITH FLYING enters"
+      -- (Dragon Tempest). Only 'flying' is supported (the common case). At the
+      -- entry instant the granted-flying row isn't registered yet (the resolver
+      -- registers AFTER the move), so check INTRINSIC flying — the card's own
+      -- keywords or a source-scoped flying continuous effect — OR an already
+      -- registered grant.
+      if lower(coalesce(v_filter ->> 'has_keyword', '')) = 'flying'
+         and not (
+           public.card_has_flying(p_session_id, p_changed_card_id)
+           or exists (
+             select 1
+             from public.game_cards gc
+             left join public.cards c on c.id = gc.card_id
+             where gc.id = p_changed_card_id and gc.session_id = p_session_id
+               and (
+                 coalesce(c.keywords::text, '') ilike '%flying%'
+                 or exists (
+                   select 1
+                   from jsonb_array_elements(
+                     coalesce(public.effective_script(p_session_id, gc.id) -> 'continuous_effects', '[]'::jsonb)) e
+                   where lower(coalesce(e ->> 'type', e ->> 'effect_type', '')) = 'flying'
+                     and coalesce(e ->> 'affected', 'source') in ('source', 'this')
+                 )
+               )
+           )
+         ) then
+        continue;
+      end if;
+
       -- Controller filter, relative to the WATCHER's controller.
       v_ctrl_ok := case v_f_controller
         when 'you' then p_changed_controller = v_watcher.controller
@@ -87,7 +116,8 @@ begin
 
       perform public.enqueue_triggered_ability(
         p_session_id, v_watcher.controller, v_watcher.id,
-        coalesce(v_watcher.card_name, p_event), v_ability -> 'effects'
+        coalesce(v_watcher.card_name, p_event), v_ability -> 'effects',
+        p_changed_card_id  -- the triggering creature, for reflexive "it gains …"
       );
     end loop;
   end loop;

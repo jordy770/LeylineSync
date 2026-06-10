@@ -50,6 +50,7 @@ export const BUILDER_TRIGGER_EVENTS = [
   { value: 'creature_died', label: 'When a creature dies (use filter)' },
   { value: 'creature_got_counter', label: 'When a creature gets a +1/+1 counter (use filter)' },
   { value: 'creature_left', label: 'When a creature leaves the battlefield (use filter)' },
+  { value: 'creature_attacks', label: 'When a creature attacks (use filter; "it gains …")' },
 ] as const
 export type BuilderTriggerEvent = (typeof BUILDER_TRIGGER_EVENTS)[number]['value']
 
@@ -97,7 +98,7 @@ export type BuilderEffectType = BuilderEffect['type']
 
 // The "other-scoped" watcher events that take a filter (which entering/dying/
 // counter-getting creature the watcher reacts to). Self events ignore the filter.
-export const BUILDER_WATCHER_EVENTS = ['creature_entered', 'creature_died', 'creature_got_counter', 'creature_left'] as const
+export const BUILDER_WATCHER_EVENTS = ['creature_entered', 'creature_died', 'creature_got_counter', 'creature_left', 'creature_attacks'] as const
 
 export const BUILDER_TRIGGER_CONTROLLERS = [
   { value: 'you', label: 'you control' },

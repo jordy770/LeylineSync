@@ -3155,3 +3155,16 @@
 | 16:46 | Edited components/controller/CardActionSheet.tsx | 2→7 lines | ~168 |
 | 16:48 | Edited lib/game/actions.ts | 4→5 lines | ~19 |
 | 00:10 | Treasure feature (mig 226): activate_mana_ability gains sacrifice_self cost + p_chosen_color for 'any' producers; client routes sac-cost mana abilities through activateManaAbility with the colour picker (needsColorChoice guard in CardActionSheet). Treasure Token + Rapacious Dragon. Atsushi/Gadrak still need modal-dies/impulse-exile/count semantics. | mig 226, activate_mana_ability, actions.ts, ControllerListV4, CardActionSheet, treasure.test | 798/798 green, tsc+lint clean; pushed | ~16k |
+| 16:52 | Session end: 190 writes across 82 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 63 reads | ~177503 tok |
+| 16:57 | Edited supabase/functions_src/apply_trigger_effects.sql | added 3 condition(s) | ~229 |
+| 16:58 | Edited supabase/functions_src/enqueue_triggered_ability.sql | modified public() | ~95 |
+| 16:58 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 3→4 lines | ~32 |
+| 16:59 | Edited supabase/functions_src/fire_watcher_triggers.sql | 4→5 lines | ~72 |
+| 17:01 | Edited supabase/functions_src/fire_attack_triggers.sql | modified broadcast() | ~194 |
+| 17:02 | Edited supabase/functions_src/enqueue_triggered_ability.sql | inline fix | ~31 |
+| 17:03 | Edited lib/game/card-behavior-schema.ts | modified watcher() | ~186 |
+| 17:04 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified filter() | ~200 |
+| 17:04 | Edited lib/game/card-behavior-schema.ts | 4→6 lines | ~97 |
+| 17:07 | Created tests/feature/reflexive-watcher.test.ts | — | ~953 |
+| 17:09 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified filter() | ~367 |
+| 01:00 | Reflexive watchers (mig 227): the entering/attacking creature ITSELF gains the effect. enqueue_triggered_ability gains p_triggering_card_id; fire_attack_triggers broadcasts creature_attacks; fire_watcher_triggers gains has_keyword:flying filter (intrinsic-aware); apply_trigger_effects handles target:triggering_creature via apply_creature_effect. Atarka (double strike) + Dragon Tempest (haste half). | mig 227, schema, builder events, reflexive-watcher.test | 801/801 green, tsc+lint clean; pushed; upserted 2 | ~18k |

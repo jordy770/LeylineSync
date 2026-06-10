@@ -4,7 +4,10 @@
 -- never re-extract from past migrations.
 
 create or replace function public.enqueue_triggered_ability(
-  p_session_id uuid, p_controller_id uuid, p_source_card_id uuid, p_label text, p_effects jsonb
+  p_session_id uuid, p_controller_id uuid, p_source_card_id uuid, p_label text, p_effects jsonb,
+  -- The creature that CAUSED a watcher to fire (entering/attacking), so a
+  -- reflexive effect ("it gains haste") can apply to it (mig 227).
+  p_triggering_card_id uuid default null
 ) returns void
 language plpgsql security definer set search_path = public
 as $$
@@ -80,10 +83,11 @@ begin
       'target_count', case when v_requires_target then public.trigger_effects_target_count(p_effects) else null end,
       'target_controller', case when v_requires_target then v_target_controller else null end,
       'timing', 'triggered',
-      'apnap_rank', v_apnap_rank
+      'apnap_rank', v_apnap_rank,
+      'triggering_card_id', p_triggering_card_id
     ),
     v_next_position
   );
 end;
 $$;
-grant execute on function public.enqueue_triggered_ability(uuid, uuid, uuid, text, jsonb) to authenticated;
+grant execute on function public.enqueue_triggered_ability(uuid, uuid, uuid, text, jsonb, uuid) to authenticated;

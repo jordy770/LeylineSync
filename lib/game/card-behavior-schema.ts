@@ -574,6 +574,10 @@ const CardBehaviorActionSchema = z.union([
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+    // Reflexive watcher (mig 227): 'triggering_creature' applies the grant to
+    // the entering/attacking creature that fired the watcher (Atarka, Dragon
+    // Tempest), no target pick.
+    target: z.literal('triggering_creature').optional(),
   }),
   // Fight: a creature you control fights a target creature. target_type/
   // target_controller describe the FOUGHT creature (the fighter is implicitly
@@ -684,6 +688,8 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     // "a creature with power N or greater …" (mig 225 — Elemental Bond, Temur
     // Ascendancy). Fires only when the entering creature's power is >= N.
     min_power: z.number().int().optional(),
+    // "a creature you control WITH FLYING …" (mig 227 — Dragon Tempest).
+    has_keyword: z.literal('flying').optional(),
   }).optional(),
   targets: z.array(CardBehaviorTargetSchema).optional(),
   effects: z.array(CardBehaviorActionSchema),

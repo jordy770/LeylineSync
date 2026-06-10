@@ -154,6 +154,8 @@ const COVERED_BY = new Map(Object.entries({
   "storm's wrath": "Storm's Wrath Test (mass damage + planeswalkers, mig 224)",
   'harbinger of the hunt': 'Harbinger of the Hunt Test (flying-filtered mass damage, mig 224)',
   'rapacious dragon': 'Rapacious Dragon Test (ETB two Treasures, mig 226)',
+  'atarka, world render': 'Atarka World Render Test (reflexive attack watcher, mig 227)',
+  'dragon tempest': 'Dragon Tempest Test (flying-enter haste; the damage half is deferred)',
 }))
 
 // ── Classify ─────────────────────────────────────────────────────────────────

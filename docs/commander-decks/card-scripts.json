@@ -69,5 +69,9 @@
 
   "Elemental Bond": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","min_power":3},"effects":[{"type":"draw","amount":1}]}]},
 
-  "Temur Ascendancy": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"controller"}],"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","min_power":4},"effects":[{"type":"may","prompt":"Draw a card?","effects":[{"type":"draw","amount":1}]}]}]}
+  "Temur Ascendancy": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"controller"}],"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","min_power":4},"effects":[{"type":"may","prompt":"Draw a card?","effects":[{"type":"draw","amount":1}]}]}]},
+
+  "Atarka, World Render": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"creature_attacks","filter":{"type_line":"Dragon","controller":"you"},"effects":[{"type":"grant_keyword","keyword":"double_strike","target":"triggering_creature"}]}]},
+
+  "Dragon Tempest": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","has_keyword":"flying"},"effects":[{"type":"grant_keyword","keyword":"haste","target":"triggering_creature"}]}]}
 }

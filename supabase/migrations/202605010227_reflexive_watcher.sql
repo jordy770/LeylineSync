@@ -1,7 +1,103 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- Reflexive watchers: the EVENT SUBJECT (entering/attacking creature) gains the
+-- effect with no target pick (Atarka "it gains double strike"; Dragon Tempest
+-- "it gains haste"). enqueue_triggered_ability gains p_triggering_card_id (DROP
+-- the 5-arg first); fire_watcher_triggers passes the changed card + gains a
+-- has_keyword:'flying' filter (INTRINSIC-aware, since the granted-flying row
+-- isn't registered at the entry instant); fire_attack_triggers broadcasts a new
+-- creature_attacks watcher event; apply_trigger_effects applies a
+-- target:'triggering_creature' effect via apply_creature_effect to
+-- payload.triggering_card_id.
+
+drop function if exists public.enqueue_triggered_ability(uuid, uuid, uuid, text, jsonb);
+
+create or replace function public.enqueue_triggered_ability(
+  p_session_id uuid, p_controller_id uuid, p_source_card_id uuid, p_label text, p_effects jsonb,
+  -- The creature that CAUSED a watcher to fire (entering/attacking), so a
+  -- reflexive effect ("it gains haste") can apply to it (mig 227).
+  p_triggering_card_id uuid default null
+) returns void
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_next_position integer;
+  v_target_type jsonb;
+  v_requires_target boolean;
+  v_target_controller text;
+  v_has_target boolean;
+  v_active_player_id uuid;
+  v_player_count integer;
+  v_controller_seat integer;
+  v_active_seat integer;
+  v_apnap_rank integer := 0;
+begin
+  if p_effects is null or jsonb_typeof(p_effects) <> 'array' or jsonb_array_length(p_effects) = 0 then
+    return;
+  end if;
+
+  v_target_type := public.trigger_effects_target_type(p_effects);
+  v_requires_target := v_target_type is not null;
+
+  if v_requires_target then
+    v_target_controller := coalesce(public.trigger_effects_target_controller(p_effects), 'any');
+
+    if public.behavior_target_type_is_creature_only(v_target_type) then
+      v_has_target := public.session_has_targetable_creature(p_session_id, p_controller_id, v_target_controller);
+    else
+      v_has_target := public.session_has_targetable_permanent(p_session_id, p_controller_id, v_target_controller, v_target_type);
+    end if;
+
+    if not v_has_target then
+      return;
+    end if;
+  end if;
+
+  -- APNAP rank: how far the controller sits from the active player in seat order.
+  -- 0 = active player (its triggers resolve last). Falls back to 0 if unknown.
+  select active_player_id into v_active_player_id
+  from public.game_turn_state where session_id = p_session_id;
+
+  select count(*) into v_player_count
+  from public.game_session_players where session_id = p_session_id;
+
+  select seat_number into v_controller_seat
+  from public.game_session_players
+  where session_id = p_session_id and player_id = p_controller_id;
+
+  select seat_number into v_active_seat
+  from public.game_session_players
+  where session_id = p_session_id and player_id = v_active_player_id;
+
+  if coalesce(v_player_count, 0) > 0 and v_controller_seat is not null and v_active_seat is not null then
+    v_apnap_rank := ((v_controller_seat - v_active_seat) % v_player_count + v_player_count) % v_player_count;
+  end if;
+
+  select coalesce(max(position), -1) + 1
+  into v_next_position
+  from public.game_stack_items
+  where session_id = p_session_id;
+
+  insert into public.game_stack_items (
+    session_id, controller_player_id, source_card_id, action_type, payload, position
+  )
+  values (
+    p_session_id, p_controller_id, p_source_card_id, 'triggered_ability',
+    jsonb_build_object(
+      'label', p_label,
+      'controller_player_id', p_controller_id,
+      'effects', p_effects,
+      'target_required', v_requires_target,
+      'target_type', case when v_requires_target then v_target_type else null end,
+      'target_count', case when v_requires_target then public.trigger_effects_target_count(p_effects) else null end,
+      'target_controller', case when v_requires_target then v_target_controller else null end,
+      'timing', 'triggered',
+      'apnap_rank', v_apnap_rank,
+      'triggering_card_id', p_triggering_card_id
+    ),
+    v_next_position
+  );
+end;
+$$;
+grant execute on function public.enqueue_triggered_ability(uuid, uuid, uuid, text, jsonb, uuid) to authenticated;
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,
@@ -440,3 +536,159 @@ begin
 end;
 $$;
 grant execute on function public.apply_trigger_effects(uuid, uuid, integer) to authenticated;
+
+create or replace function public.fire_watcher_triggers(
+  p_session_id uuid,
+  p_changed_card_id uuid,
+  p_changed_controller uuid,
+  p_event text
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_changed_type text;
+  v_changed_is_token boolean;
+  v_watcher record;
+  v_ability jsonb;
+  v_filter jsonb;
+  v_f_type text;
+  v_f_controller text;
+  v_exclude_self boolean;
+  v_ctrl_ok boolean;
+begin
+  select cards.type_line, coalesce(cards.is_token, false)
+  into v_changed_type, v_changed_is_token
+  from public.game_cards gc
+  join public.cards on cards.id = gc.card_id
+  where gc.id = p_changed_card_id and gc.session_id = p_session_id;
+
+  for v_watcher in
+    select gc.id, coalesce(gc.controller_player_id, gc.owner_id) as controller, c.name as card_name
+    from public.game_cards gc
+    join public.cards c on c.id = gc.card_id
+    where gc.session_id = p_session_id
+      and (gc.zone = 'battlefield' or gc.id = p_changed_card_id)
+    order by gc.controller_player_id, gc.id
+  loop
+    for v_ability in
+      select * from jsonb_array_elements(
+        coalesce(public.effective_script(p_session_id, v_watcher.id) -> 'triggered_abilities', '[]'::jsonb))
+    loop
+      if lower(coalesce(v_ability ->> 'event', '')) <> p_event then
+        continue;
+      end if;
+
+      v_filter := v_ability -> 'filter';
+      v_f_type := v_filter ->> 'type_line';
+      v_f_controller := lower(coalesce(v_filter ->> 'controller', 'you'));
+      v_exclude_self := coalesce((v_filter ->> 'exclude_self')::boolean, false);
+
+      -- "another …": skip when the changed card IS the watcher.
+      if v_exclude_self and v_watcher.id = p_changed_card_id then
+        continue;
+      end if;
+
+      -- "nontoken …": skip when the changed creature is a token.
+      if coalesce((v_filter ->> 'nontoken')::boolean, false) and v_changed_is_token then
+        continue;
+      end if;
+
+      -- Type filter: default "creature"; else substring-match the subtype.
+      if v_changed_type not ilike '%' || coalesce(v_f_type, 'creature') || '%' then
+        continue;
+      end if;
+
+      -- Power filter (mig 225): "a creature with power N or greater enters"
+      -- (Elemental Bond, Temur Ascendancy). Reads the changed card's effective
+      -- power; non-creatures (no P/T) never qualify.
+      if v_filter ? 'min_power'
+         and coalesce(public.card_effective_power(p_session_id, p_changed_card_id), -1)
+             < (v_filter ->> 'min_power')::integer then
+        continue;
+      end if;
+
+      -- Keyword filter (mig 227): "a creature you control WITH FLYING enters"
+      -- (Dragon Tempest). Only 'flying' is supported (the common case). At the
+      -- entry instant the granted-flying row isn't registered yet (the resolver
+      -- registers AFTER the move), so check INTRINSIC flying — the card's own
+      -- keywords or a source-scoped flying continuous effect — OR an already
+      -- registered grant.
+      if lower(coalesce(v_filter ->> 'has_keyword', '')) = 'flying'
+         and not (
+           public.card_has_flying(p_session_id, p_changed_card_id)
+           or exists (
+             select 1
+             from public.game_cards gc
+             left join public.cards c on c.id = gc.card_id
+             where gc.id = p_changed_card_id and gc.session_id = p_session_id
+               and (
+                 coalesce(c.keywords::text, '') ilike '%flying%'
+                 or exists (
+                   select 1
+                   from jsonb_array_elements(
+                     coalesce(public.effective_script(p_session_id, gc.id) -> 'continuous_effects', '[]'::jsonb)) e
+                   where lower(coalesce(e ->> 'type', e ->> 'effect_type', '')) = 'flying'
+                     and coalesce(e ->> 'affected', 'source') in ('source', 'this')
+                 )
+               )
+           )
+         ) then
+        continue;
+      end if;
+
+      -- Controller filter, relative to the WATCHER's controller.
+      v_ctrl_ok := case v_f_controller
+        when 'you' then p_changed_controller = v_watcher.controller
+        when 'opponent' then p_changed_controller is distinct from v_watcher.controller
+        else true
+      end;
+      if not v_ctrl_ok then
+        continue;
+      end if;
+
+      perform public.enqueue_triggered_ability(
+        p_session_id, v_watcher.controller, v_watcher.id,
+        coalesce(v_watcher.card_name, p_event), v_ability -> 'effects',
+        p_changed_card_id  -- the triggering creature, for reflexive "it gains …"
+      );
+    end loop;
+  end loop;
+end;
+$$;
+grant execute on function public.fire_watcher_triggers(uuid, uuid, uuid, text) to authenticated;
+grant execute on function public.fire_watcher_triggers(uuid, uuid, uuid, text) to service_role;
+
+-- supabase/functions_src/fire_attack_triggers.sql
+-- CANONICAL current definition (seeded from 00_baseline.sql).
+-- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
+-- never re-extract from past migrations.
+
+CREATE OR REPLACE FUNCTION "public"."fire_attack_triggers"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+declare
+  v_attacker_controller uuid;
+begin
+  perform public.fire_card_triggers(
+    NEW.session_id,
+    NEW.attacker_card_id,
+    array['attacks', 'declares_attack', 'attack']
+  );
+
+  -- Watcher broadcast (mig 227): "whenever a creature you control attacks"
+  -- (Atarka, World Render). The attacking creature is the event subject, so a
+  -- reflexive "it gains double strike" lands on it.
+  select coalesce(controller_player_id, owner_id) into v_attacker_controller
+  from public.game_cards
+  where id = NEW.attacker_card_id and session_id = NEW.session_id;
+
+  perform public.fire_watcher_triggers(
+    NEW.session_id, NEW.attacker_card_id, v_attacker_controller, 'creature_attacks'
+  );
+
+  return null;
+end;
+$$;

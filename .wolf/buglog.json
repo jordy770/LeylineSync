@@ -9638,6 +9638,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-10T14:46:35.579Z"
+    },
+    {
+      "id": "bug-593",
+      "timestamp": "2026-06-10T15:09:02.037Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/fire_watcher_triggers.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→28 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T15:09:02.037Z"
     }
   ]
 }
