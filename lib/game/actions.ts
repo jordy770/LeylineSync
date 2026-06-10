@@ -9,6 +9,7 @@ import type {
   GameActionLog,
   GameTurnState,
   GameZone,
+  ManaColor,
   ManaPool,
   StackItem,
   SupabaseErrorLike,
@@ -942,12 +943,15 @@ export async function activateManaAbility(
   sourceCardId: string,
   abilityIndex: number,
   genericPayment?: Record<string, number>,
+  // The colour chosen for an "any colour" producer (Treasure, mig 226).
+  chosenColor?: ManaColor,
 ) {
   const { error } = await supabase.rpc('activate_mana_ability', {
     p_session_id: sessionId,
     p_source_card_id: sourceCardId,
     p_ability_index: abilityIndex,
     p_generic_payment: genericPayment ?? null,
+    p_chosen_color: chosenColor ?? null,
   })
 
   if (error) {

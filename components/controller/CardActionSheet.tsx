@@ -838,7 +838,12 @@ export function CardActionSheet({
               // is one atomic activation: pay the cost(s), tap, add all colours via
               // activate_mana_ability (so the life/mana payment isn't skipped).
               const hasNonTapCost = ability.costs.some((c) => c.type !== 'tap_self')
-              if (hasNonTapCost || addManaEffects.length > 1) {
+              // A producer of "any"/"commander" mana needs a colour pick, so it
+              // always uses the per-colour buttons below (which route a sacrifice
+              // cost through activate_mana_ability with the chosen colour —
+              // Treasure) — never the single atomic button.
+              const needsColorChoice = addManaEffects.some((e) => e.color === 'any' || e.color === 'commander')
+              if ((hasNonTapCost || addManaEffects.length > 1) && !needsColorChoice) {
                 return [(
                   <button
                     key={`mana-${index}`}

@@ -322,6 +322,16 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       setErrorMessage('No mana ability found.')
       return
     }
+    // A mana ability with a SACRIFICE cost (Treasure) can't use the client-side
+    // tap-and-add path (it must sacrifice the source); route it through the
+    // engine's activate_mana_ability, passing the chosen colour for "any".
+    if (ability.costs.some((c) => c.type === 'sacrifice_self')) {
+      const normalized = normalizeCardBehaviorToV2(script, card?.cards?.type_line)
+      const index = (normalized.activated_abilities ?? []).findIndex((a) => a === ability)
+      await activateManaAbility(supabase, sessionId, cardId, Math.max(0, index), undefined, color)
+      await refresh()
+      return
+    }
     // A `color:'commander'` source produces a CHOSEN identity colour; the picker
     // passes the real colour (validated against the commander's identity server-side).
     const commanderEffect = ability.effects.find((e) => isAddManaBehaviorAction(e) && e.color === 'commander')

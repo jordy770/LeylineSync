@@ -1,7 +1,12 @@
--- supabase/functions_src/activate_mana_ability.sql
--- CANONICAL current definition (seeded from 202605010189_mana_ability_pay_life_cost.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- Treasure tokens (and the sac-for-mana family). activate_mana_ability gains:
+--   * a `sacrifice_self` cost (the source goes to the graveyard after producing
+--     mana; a token then ceases to exist), and
+--   * a `p_chosen_color` arg so an `add_mana` effect with color "any" produces
+--     the caller-picked colour (Treasure: "{T}, Sacrifice this: Add one mana of
+--     any color").
+-- Old 4-arg signature dropped first (defaulted-param overload ambiguity).
+
+drop function if exists public.activate_mana_ability(uuid, uuid, integer, jsonb);
 
 create or replace function public.activate_mana_ability(
   p_session_id uuid,

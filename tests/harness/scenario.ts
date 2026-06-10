@@ -572,6 +572,7 @@ export class Scenario {
     sourceCardId: string,
     index = 0,
     generic: Record<string, number> | null = null,
+    chosenColor: string | null = null,
   ): Promise<Record<string, number>> {
     return this.run(() =>
       rpc(this.client, 'activate_mana_ability', {
@@ -579,6 +580,7 @@ export class Scenario {
         p_source_card_id: sourceCardId,
         p_ability_index: index,
         p_generic_payment: generic,
+        p_chosen_color: chosenColor,
       }),
     ) as Promise<Record<string, number>>
   }

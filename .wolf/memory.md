@@ -3142,3 +3142,16 @@
 | 16:27 | Created tests/feature/checkland-min-power.test.ts | — | ~972 |
 | 16:29 | Edited tests/unit/registry-schema-drift.test.ts | "mass damage with keyword " → "mass damage with keyword " | ~36 |
 | 23:30 | Dragons Tier-1 (migs 224-225): deal_damage_all (Blasphemous Act/Storm's Wrath/Harbinger, flying filters + planeswalkers) + checklands (enters_tapped control_type) + watcher min_power filter (Elemental Bond/Temur Ascendancy) | migs 224-225, schema, 2 test files, card-scripts.json | 793/793 green, tsc+lint clean; upserted 8 cards, pushed migs | ~18k |
+| 16:33 | Session end: 179 writes across 78 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 62 reads | ~149120 tok |
+| 16:39 | Edited supabase/functions_src/activate_mana_ability.sql | modified public() | ~177 |
+| 16:39 | Edited supabase/functions_src/activate_mana_ability.sql | modified greatest() | ~102 |
+| 16:40 | Edited supabase/functions_src/activate_mana_ability.sql | modified greatest() | ~245 |
+| 16:40 | Edited supabase/functions_src/activate_mana_ability.sql | modified public() | ~135 |
+| 16:41 | Edited tests/harness/scenario.ts | modified activateMana() | ~145 |
+| 16:42 | Created tests/feature/treasure.test.ts | — | ~662 |
+| 16:42 | Edited tests/feature/treasure.test.ts | 3→2 lines | ~2 |
+| 16:44 | Edited lib/game/actions.ts | modified activateManaAbility() | ~167 |
+| 16:45 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~226 |
+| 16:46 | Edited components/controller/CardActionSheet.tsx | 2→7 lines | ~168 |
+| 16:48 | Edited lib/game/actions.ts | 4→5 lines | ~19 |
+| 00:10 | Treasure feature (mig 226): activate_mana_ability gains sacrifice_self cost + p_chosen_color for 'any' producers; client routes sac-cost mana abilities through activateManaAbility with the colour picker (needsColorChoice guard in CardActionSheet). Treasure Token + Rapacious Dragon. Atsushi/Gadrak still need modal-dies/impulse-exile/count semantics. | mig 226, activate_mana_ability, actions.ts, ControllerListV4, CardActionSheet, treasure.test | 798/798 green, tsc+lint clean; pushed | ~16k |
