@@ -1,19 +1,16 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T22:27:19.293Z
-> Files: 128 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-10T13:15:39.914Z
+> Files: 35 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `__ua_roundtrip.mts` — Declares script (~182 tok)
-- `package.json` — Node.js package manifest (~1527 tok)
 
 ## .claude/
 
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
-- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~13536 tok)
 
 ## .claude/rules/
 
@@ -74,20 +71,21 @@
 
 ## components/
 
-- `CardBehaviorEditor.tsx` — EMPTY_SCRIPT_PLACEHOLDER (~4174 tok)
-- `CardBehaviorForm.tsx` — inputClass (~11226 tok)
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~58658 tok)
-- `JudgePanel.tsx` — JudgePanel (~1516 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~35314 tok)
+- `GameSessionLobby.tsx` — GameSessionLobby (~4560 tok)
 
 ## components/board/
 
 
 ## components/controller/
 
+- `CardActionSheet.tsx` — Bottom-sheet card action UI (cast, flashback, equip, target pickers, mana/loyalty abilities) + private CardZoomOverlay. Extracted verbatim from ControllerListV4. (~8700 tok)
+- `CardDisplay.tsx` — Small display atoms: ManaSymbol, KeywordBadges, ManaCostDisplay, ManaPoolDisplay. (~660 tok)
+- `OpeningHandOverlay.tsx` — Full-screen opening-hand overlay (London mulligan): keep/mulligan buttons, bottom-card selection chips, waiting-for-others variant. Rendered by ControllerListV4 while any player has opening_hand_kept === false. (~1249 tok)
+- `shared.ts` — Pure helpers/constants extracted from ControllerListV4: SpellPlan + getSpellPlan, canCastHandSpell, targeting/protection filters, ability cost/effect renderers, mana colour constants. No JSX. (~3600 tok)
 
 ## components/judge/
 
-- `JudgePlayerCardTools.tsx` — Player counters a judge can dial in (poison gates the game at 10). (~3979 tok)
 
 ## components/layout/
 
@@ -103,21 +101,17 @@
 
 ## docs/commander-decks/
 
+- `card-scripts.json` (~1241 tok)
+- `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
 
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~11645 tok)
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10116 tok)
-- `card-behavior-llm.ts` — LLM-facing description of the card behavior script format. (~11285 tok)
-- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~11372 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~8563 tok)
-- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3523 tok)
-- `data.ts` — Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. (~6002 tok)
-- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2478 tok)
-- `use-judge-card-tools.ts` — Exports useJudgeCardTools (~1636 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12003 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~10524 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
 
@@ -127,8 +121,10 @@
 
 ## scripts/
 
-- `_lm_roundtrip.mjs` — Declares script (~270 tok)
-- `import-scryfall-cards.mjs` — defaultInputFile: flushBatch, upsertBatchWithRetry, getSupabaseErrorMessage + 15 more (~3086 tok)
+- `setup-local-test-db.mjs` — Rebuilds the LOCAL test-harness database from scratch. (~912 tok)
+- `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3016 tok)
+- `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2117 tok)
+- `validate-fixtures-offline.mts` — Offline fixture validation — no DB, no credentials (unlike validate:scripts, (~332 tok)
 
 ## supabase/
 
@@ -136,135 +132,52 @@
 ## supabase/functions/spawn-deck/
 
 
+## supabase/functions_src/
+
+- `advance_step.sql` — supabase/functions_src/advance_step.sql (~2217 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~5648 tok)
+- `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4066 tok)
+- `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
+- `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
+- `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
+- `mulligan_hand.sql` — supabase/functions_src/mulligan_hand.sql (~681 tok)
+- `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~937 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1136 tok)
+- `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~6133 tok)
+
 ## supabase/migrations/
 
-- `202605010150_targeted_spell_riders.sql` — Targeted spell RIDERS + the `nonland_permanent` target type (Anguished Unmaking). (~1727 tok)
-- `202605010151_commander_identity_mana.sql` — Commander-identity mana ("Add one mana of any color in your commander's color (~1357 tok)
-- `202605010152_assassins_trophy_rider.sql` — Assassin's Trophy — "Destroy target permanent an opponent controls. Its controller (~2006 tok)
-- `202605010153_proliferate.sql` — Proliferate (Atraxa, Praetors' Voice end step) — "Choose any number of permanents (~8315 tok)
-- `202605010154_multi_counter_model.sql` — Multi-counter model (Tier 1 + poison loss). (~15283 tok)
-- `202605010155_counter_removal.sql` — Counter removal authoring (roadmap Counters #1). (~6615 tok)
-- `202605010156_enters_with_counters.sql` — "Enters the battlefield with N counters" (roadmap Counters #3). (~710 tok)
-- `202605010157_minus_one_counters.sql` — −1/−1 counters (roadmap Counters #4, the Tier-2 P/T-touching item). (~7514 tok)
-- `202605010158_counter_doubling.sql` — Counter doubling — Doubling Season / Corpsejack Menace (roadmap Counters #5, half 1). (~6801 tok)
-- `202605010159_infect_toxic_wither.sql` — Infect / toxic / wither combat (roadmap Counters #7). (~9278 tok)
-- `202605010160_energy_cost.sql` — Energy as an activation cost (roadmap Counters #8, the consumable half). (~2431 tok)
-- `202605010161_dynamic_counter_amounts.sql` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2, unified). (~4488 tok)
-- `202605010162_dynamic_amounts_spells_abilities.sql` — Dynamic amounts on the SPELL + ACTIVATED-ABILITY surfaces (roadmap Counters #5b/#8b (~6624 tok)
-- `202605010163_beast_within.sql` — Beast Within — "Destroy target permanent. Its controller creates a 3/3 green Beast (~1973 tok)
-- `202605010164_typed_lords.sql` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). (~1738 tok)
-- `202605010165_watcher_triggers.sql` — Other-scoped trigger events (roadmap Tribal #1, second half). (~1707 tok)
-- `202605010166_count_dynamic_amounts.sql` — Count-based dynamic amounts (roadmap Tribal #2). "X = number of creatures you (~1734 tok)
-- `202605010167_counter_placement_trigger.sql` — Counter-placement trigger event (roadmap Tribal #3). "Whenever ~ / a creature you (~466 tok)
-- `202605010168_planeswalkers.sql` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). (~2363 tok)
-- `202605010169_planeswalker_combat.sql` — Planeswalker combat (roadmap Tribal #4, slice 2). Attack a planeswalker; its (~6877 tok)
-- `202605010170_choose_creature_type.sql` — Choose a creature type (roadmap Tribal #6). "Choose a creature type, then <effect>" (~9295 tok)
-- `202605010171_conditional_mill.sql` — Conditional mill (for Liliana, Untouched by Death's +1 and graveyard-matters cards). (~3803 tok)
-- `202605010172_dynamic_pump_loyalty_target.sql` — Dynamic / negatable pump + pump as a targetable effect (for Liliana, Untouched by (~2878 tok)
-- `202605010173_cast_from_graveyard.sql` — Cast-from-graveyard permission (Liliana, Untouched by Death's -3: (~6119 tok)
-- `202605010174_flashback_and_tapped_tokens.sql` — Army of the Damned: "Create thirteen 2/2 black Zombie creature tokens that are (~2083 tok)
-- `202605010175_sacrifice_self_ability_cost.sql` — Reproduces activate_ability (from mig 162) adding the `sacrifice_self` activated-ability cost (Commander's Sphere). Sacrifices the source via put_in_graveyard after other costs, before the ability hits the stack. (~2448 tok)
-- `202605010176_flashback_life_cost.sql` — Flashback with an additional "Pay N life" cost (Deep Analysis: "Flashback— (~2138 tok)
-- `202605010177_flashback_alternate_effect.sql` — Flashback that does DIFFERENT/extra stuff than the hand cast (the "Increasing" (~2362 tok)
-- `202605010178_exile_from_graveyard_cost.sql` — "Exile a creature card from a graveyard" as an activated-ability cost, plus (~3073 tok)
-- `202605010179_mass_typed_debuff.sql` — Crippling Fear — "Choose a creature type. Each creature that isn't of the (~7295 tok)
-- `202605010180_mana_ability_cost_multicolor.sql` — Mana abilities with an activation cost and/or multiple produced colours (~1153 tok)
-- `202605010181_watcher_nontoken_filter.sql` — `nontoken` watcher filter — "Whenever a NONTOKEN creature you control dies, …" (~873 tok)
-- `202605010182_amass.sql` — Amass N (War of the Spark) — "If you don't control an Army, create a 0/0 black (~4488 tok)
-- `202605010183_sacrifice_creature_cost.sql` — "Sacrifice a creature" as an activated-ability cost (Spark Reaper: "{2}{B}, (~3399 tok)
-- `202605010184_typed_keyword_grants.sql` — Typed keyword grants — "Zombies you control have flying" (Eternal Skylord), (~3029 tok)
-- `202605010185_mass_destroy_and_reanimate.sql` — Mass destroy + mass reanimate (Zombie Apocalypse: "Return all Zombie creature (~4769 tok)
-- `202605010186_exile_from_graveyard_effect.sql` — "Exile target card from a graveyard" as a targeted EFFECT (Withered Wretch: (~4524 tok)
-- `202605010187_activated_search_library.sql` — search_library as an ACTIVATED-ability effect (Wayfarer's Bauble: "{1}, {T}, (~3771 tok)
-- `202605010188_activated_destroy_permanent.sql` — Activated destroy/exile/bounce/tap/untap of a NON-creature permanent (Unstable (~3925 tok)
-- `202605010189_mana_ability_pay_life_cost.sql` — `pay_life` as a mana-ability activation cost (Talisman of Dominance: "{T}, Pay 1 (~1337 tok)
-- `202605010190_counter_controller_loses_life.sql` — Undermine — "Counter target spell. Its controller loses 2 life." A life-loss (~1089 tok)
-- `202605010191_sacrifice_tally_tokens.sql` — Syphon Flesh — "Each other player sacrifices a creature. Create a 2/2 black (~9752 tok)
-- `202605010192_conditional_effect.sql` — Conditional effect — "If <state condition>, <effects>." A new COMPOSITION (~4175 tok)
-- `202605010193_creatures_died_this_turn.sql` — "Creatures that died under your control this turn" — a new count source for (~1599 tok)
-- `202605010194_menace_enforcement.sql` — Menace enforcement — "can't be blocked except by two or more creatures." Three (~4532 tok)
-- `202605010195_intimidate_hexproof.sql` — Intimidate + hexproof enforcement. (~5939 tok)
-- `202605010196_mana_value_rider.sql` — Feed the Swarm — "Destroy target creature or enchantment an opponent controls. (~1620 tok)
-- `202605010197_may_cost_condition.sql` — Liliana's Devotee — "…you may pay {1}{B}. If you do, create a Zombie." Adds an (~9991 tok)
-- `202605010198_each_player_sacrifice.sql` — Necrotic Hex — "Each player sacrifices six creatures of their choice. You create (~4814 tok)
-- `202605010199_curse_of_disturbance.sql` — Curse of Disturbance — "Enchant player. Whenever enchanted player is attacked, (~6114 tok)
+- `202605010216_hot_path_indexes.sql` — Hot-path indexes (perf, no behavior change). (~299 tok)
+
+## supabase/migrations/ (200-215, 2026-06-10)
+
 
 ## tests/
 
 
 ## tests/feature/
 
-- `activated-destroy-permanent.test.ts` — Activated destroy of a NON-creature permanent (mig 188). Unstable Obelisk: (~855 tok)
-- `activated-search-library.test.ts` — search_library as an ACTIVATED-ability effect (mig 187). Wayfarer's Bauble: (~791 tok)
-- `amass.test.ts` — Amass N (mig 182) — "If you don't control an Army, create a 0/0 black Zombie (~885 tok)
-- `army-of-the-damned.test.ts` — Army of the Damned — "Create thirteen 2/2 black Zombie creature tokens that are (~1092 tok)
-- `assassins-trophy.test.ts` — Assassin's Trophy (mig 152) — "Destroy target permanent an opponent controls. Its (~769 tok)
-- `beast-within.test.ts` — Beast Within (card request) — "Destroy target permanent. Its controller creates a (~1132 tok)
-- `cemetery-reaper.test.ts` — Cemetery Reaper's activated ability (mig 178): "{2}{B}, {T}, Exile a creature (~980 tok)
-- `choose-creature-type.test.ts` — Choose a creature type (roadmap Tribal #6). A choose_creature_type effect parks a (~732 tok)
-- `commander-identity-mana.test.ts` — Commander-identity mana (mig 151) — "Add one mana of any color in your commander's (~662 tok)
-- `conditional-effect.test.ts` — Conditional effect (mig 192) — "If <count> is at least N, <effects>." A state- (~600 tok)
-- `count-amounts.test.ts` — Count-based dynamic amounts (roadmap Tribal #2). An effect "amount" of (~968 tok)
-- `counter-doubling.test.ts` — Counter doubling — Doubling Season (roadmap Counters #5, half 1). A static (~1248 tok)
-- `counter-placement-trigger.test.ts` — Counter-placement trigger event (roadmap Tribal #3). `creature_got_counter` fires (~1243 tok)
-- `counter-removal.test.ts` — Counter removal (roadmap Counters #1). Reuses the add_counters pipeline: a NEGATIVE (~1811 tok)
-- `creatures-died-this-turn.test.ts` — "Creatures that died under your control this turn" count source (mig 193) — (~967 tok)
-- `crippling-fear.test.ts` — Crippling Fear (mig 179) — "Choose a creature type. Each creature that isn't of (~943 tok)
-- `curse-of-disturbance.test.ts` — Curse of Disturbance (mig 199) — "Enchant player. Whenever enchanted player is (~1062 tok)
-- `dynamic-counter-amounts.test.ts` — State-referencing dynamic amounts (roadmap Counters #5 half 2 + #8 half 2). A (~1830 tok)
-- `energy-cost.test.ts` — Energy as an activation cost (roadmap Counters #8, consumable half). An activated (~993 tok)
-- `enter-the-god-eternals.test.ts` — Enter the God-Eternals — a multi-effect spell composed entirely from existing (~716 tok)
-- `enters-with-counters.test.ts` — "Enters the battlefield with N counters" (roadmap Counters #3). A REPLACEMENT applied (~1031 tok)
-- `exile-from-graveyard-effect.test.ts` — "Exile target card from a graveyard" as a targeted EFFECT (mig 186). Withered (~898 tok)
-- `feed-the-swarm.test.ts` — Feed the Swarm (mig 196) — "Destroy target creature or enchantment an opponent (~656 tok)
-- `flashback-alternate-effect.test.ts` — Flashback that does a DIFFERENT/extra effect than the hand cast (the (~842 tok)
-- `flashback-life.test.ts` — Flashback with an additional "Pay N life" cost (mig 176). Deep Analysis's (~662 tok)
-- `infect-toxic-wither.test.ts` — Infect / toxic / wither combat (roadmap Counters #7). Combat damage routed into the (~1760 tok)
-- `intimidate-hexproof.test.ts` — Intimidate + hexproof enforcement (mig 195). (~1114 tok)
-- `liliana-devotee.test.ts` — Liliana's Devotee (mig 197) — "At the beginning of your end step, if a creature (~1000 tok)
-- `liliana-untouched.test.ts` — Liliana, Untouched by Death — her +1 (conditional mill). "Mill three cards. If at (~1730 tok)
-- `lilianas-mastery.test.ts` — Liliana's Mastery — "Zombies you control get +1/+1. When Liliana's Mastery enters (~876 tok)
-- `mana-ability-multicolor.test.ts` — Mana abilities with an activation cost + multiple produced colours (mig 180). (~582 tok)
-- `mana-ability-pay-life.test.ts` — `pay_life` as a mana-ability cost (mig 189). Talisman of Dominance: "{T}: Add (~797 tok)
-- `mass-destroy-reanimate.test.ts` — Mass destroy + mass reanimate (mig 185). Zombie Apocalypse: "Return all Zombie (~743 tok)
-- `menace.test.ts` — Menace enforcement (mig 194) — "can't be blocked except by two or more (~897 tok)
-- `minus-one-counters.test.ts` — −1/−1 counters (roadmap Counters #4). Stored as the bag key 'minus_one_one' (so (~1559 tok)
-- `multi-counter.test.ts` — Multi-counter model (Tier 1 + poison loss). The engine kept plus_one_counters on (~1943 tok)
-- `necrotic-hex.test.ts` — Necrotic Hex (mig 198) — "Each player sacrifices six creatures of their choice. (~714 tok)
-- `nontoken-watcher.test.ts` — `nontoken` watcher filter (mig 181) — "Whenever a NONTOKEN creature you control (~749 tok)
-- `planeswalker-combat.test.ts` — Planeswalker combat (roadmap Tribal #4, slice 2). A creature can attack a planeswalker; (~960 tok)
-- `planeswalkers.test.ts` — Planeswalkers — core framework (roadmap Tribal #4, slice 1). A planeswalker enters (~1298 tok)
-- `precon-compositions.test.ts` — Precon cards that compose entirely from existing primitives (no new engine): (~1201 tok)
-- `proliferate.test.ts` — Proliferate (Atraxa, Praetors' Voice end step, Karn's Bastion, etc.). The engine (~1083 tok)
-- `sacrifice-creature-cost.test.ts` — "Sacrifice a creature" activated-ability cost (mig 183). Spark Reaper (~862 tok)
-- `sacrifice-self-ability.test.ts` — Sacrifice-self activated cost (Commander's Sphere, mig 175): source → graveyard as a cost, then draw resolves; can't re-activate. (~600 tok)
-- `sacrifice-self-ability.test.ts` — Sacrifice-self as an activated-ability cost (mig 175). Commander's Sphere's (~639 tok)
-- `sacrifice-tally-tokens.test.ts` — Syphon Flesh (mig 191) — "Each other player sacrifices a creature. You create a (~836 tok)
-- `target-player-draw.test.ts` — "Target player draws N" (Deep Analysis) = choose_player(any) → draw; the CHOSEN player draws, not the caster (can target self or opponent). (~700 tok)
-- `targeted-spell-riders.test.ts` — Targeted spell riders + nonland_permanent target (mig 150) — Anguished Unmaking: (~1031 tok)
-- `tribal-death-payoffs.test.ts` — Tribal death payoffs (Undead Unleashed) — confirm the watcher system handles (~723 tok)
-- `trigger-deal-damage-target.test.ts` — Targeted deal_damage from a TRIGGERED ability (Flame Mage: "When this enters, (~627 tok)
-- `typed-keyword-grant.test.ts` — Typed keyword grants (mig 184) — "Zombies you control have flying" (Eternal (~681 tok)
-- `typed-lords.test.ts` — Typed lords / tribal anthems (roadmap Tribal #1, first slice). A `pump` continuous (~913 tok)
-- `undead-augur.test.ts` — Undead Augur — "Whenever a Zombie you control dies, you draw a card and you (~834 tok)
-- `undermine.test.ts` — Undermine — "Counter target spell. Its controller loses 2 life." (mig 190). A (~842 tok)
-- `watcher-triggers.test.ts` — Other-scoped trigger events (roadmap Tribal #1, second half). `creature_entered` / (~1569 tok)
+- `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
+- `enters-tapped-lands.test.ts` — Enters-tapped lands (mig 217) — top-level `enters_tapped` read in (~1071 tok)
+- `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
+- `game-start.test.ts` — Game start sequence (mig 221) — random first player, 7-card opening hands, (~1843 tok)
+- `undying.test.ts` — Undying (mig 219) — "When this creature dies, if it had no +1/+1 counters on (~820 tok)
+- `victimize.test.ts` — Victimize (mig 218) — "Choose two target creature cards in your graveyard. (~849 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~14593 tok)
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9754 tok)
-- `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~673 tok)
 
 ## tests/regression/
 
 
 ## tests/unit/
 
-- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~14521 tok)
+- `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
 
 ## vercel/
 

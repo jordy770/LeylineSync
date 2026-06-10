@@ -8811,6 +8811,705 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-08T21:16:15.671Z"
+    },
+    {
+      "id": "bug-542",
+      "timestamp": "2026-06-09T09:06:07.449Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Skylord Test\"",
+      "fix": "Changed to \"Undead Augur Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T09:06:07.450Z"
+    },
+    {
+      "id": "bug-543",
+      "timestamp": "2026-06-09T11:02:04.905Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Undead Augur Test\"",
+      "fix": "Changed to \"Undermine Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T11:02:04.905Z"
+    },
+    {
+      "id": "bug-544",
+      "timestamp": "2026-06-09T11:03:06.372Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/feature/undermine.test.ts",
+      "root_cause": "Had ')\n    await s.setTurn({ phase: '",
+      "fix": "Changed to ')\n    await s.setMana('",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T11:03:06.372Z"
+    },
+    {
+      "id": "bug-545",
+      "timestamp": "2026-06-09T13:51:07.456Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Undermine Test\"",
+      "fix": "Changed to \"Syphon Flesh Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T13:51:07.456Z"
+    },
+    {
+      "id": "bug-546",
+      "timestamp": "2026-06-09T14:30:17.593Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Syphon Flesh Test\"",
+      "fix": "Changed to \"Conditional Drain Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T14:30:17.593Z"
+    },
+    {
+      "id": "bug-547",
+      "timestamp": "2026-06-09T14:38:20.872Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Had 'devotion'",
+      "fix": "Changed to 'creatures_died_this_turn'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T14:38:20.872Z"
+    },
+    {
+      "id": "bug-548",
+      "timestamp": "2026-06-09T14:39:05.148Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Conditional Drain Test\"",
+      "fix": "Changed to \"Death Drain Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T14:39:05.148Z"
+    },
+    {
+      "id": "bug-549",
+      "timestamp": "2026-06-09T14:41:59.681Z",
+      "error_message": "Missing guard clause",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "No early return/throw for edge case: to < 0 || to >= arr.length",
+      "fix": "Added guard clause: if (to < 0 || to >= arr.length)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T14:41:59.681Z"
+    },
+    {
+      "id": "bug-550",
+      "timestamp": "2026-06-09T15:03:21.927Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Murder Test\"",
+      "fix": "Changed to \"Menace Brute Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T15:03:21.927Z"
+    },
+    {
+      "id": "bug-551",
+      "timestamp": "2026-06-09T16:28:29.930Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Death Drain Test\"",
+      "fix": "Changed to \"Liliana'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T16:28:29.930Z"
+    },
+    {
+      "id": "bug-552",
+      "timestamp": "2026-06-09T16:37:55.039Z",
+      "error_message": "Wrong reference: optional should be each_player",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Used \"optional\" instead of \"each_player\"",
+      "fix": "Changed optional → each_player",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T16:37:55.039Z"
+    },
+    {
+      "id": "bug-553",
+      "timestamp": "2026-06-09T16:38:20.068Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Syphon Flesh Test\"",
+      "fix": "Changed to \"Necrotic Hex Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T16:38:20.068Z"
+    },
+    {
+      "id": "bug-554",
+      "timestamp": "2026-06-09T22:10:21.597Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Murder Test\"",
+      "fix": "Changed to \"Enter the God-Eternals Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T22:10:21.597Z"
+    },
+    {
+      "id": "bug-555",
+      "timestamp": "2026-06-09T22:22:05.779Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Open the Graves Test\"",
+      "fix": "Changed to \"Curse of Disturbance Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T22:22:05.779Z"
+    },
+    {
+      "id": "bug-556",
+      "timestamp": "2026-06-09T22:24:37.308Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/curse-of-disturbance.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T22:24:37.308Z"
+    },
+    {
+      "id": "bug-557",
+      "timestamp": "2026-06-09T22:27:19.311Z",
+      "error_message": "Wrong return value",
+      "file": "tests/feature/curse-of-disturbance.test.ts",
+      "root_cause": "Was returning: await drainStack(s)",
+      "fix": "Now returns: await s.resolveStack()",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T22:27:19.311Z"
+    },
+    {
+      "id": "bug-558",
+      "timestamp": "2026-06-10T07:53:34.230Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 29→44 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T07:53:34.230Z"
+    },
+    {
+      "id": "bug-559",
+      "timestamp": "2026-06-10T07:54:48.711Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T07:54:48.711Z"
+    },
+    {
+      "id": "bug-560",
+      "timestamp": "2026-06-10T08:00:22.663Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:00:22.663Z"
+    },
+    {
+      "id": "bug-561",
+      "timestamp": "2026-06-10T08:19:00.223Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:19:00.223Z"
+    },
+    {
+      "id": "bug-562",
+      "timestamp": "2026-06-10T08:19:28.134Z",
+      "error_message": "Wrong reference: sacrifice should be grant_keyword_all",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Used \"sacrifice\" instead of \"grant_keyword_all\"",
+      "fix": "Changed sacrifice → grant_keyword_all",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:19:28.134Z"
+    },
+    {
+      "id": "bug-563",
+      "timestamp": "2026-06-10T08:23:15.801Z",
+      "error_message": "Type error",
+      "file": "tests/feature/mass-keyword-grant.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:23:15.801Z"
+    },
+    {
+      "id": "bug-564",
+      "timestamp": "2026-06-10T08:29:32.624Z",
+      "error_message": "Wrong reference: sacrifice should be conditional",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Used \"sacrifice\" instead of \"conditional\"",
+      "fix": "Changed sacrifice → conditional",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:29:32.624Z"
+    },
+    {
+      "id": "bug-565",
+      "timestamp": "2026-06-10T08:38:28.804Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/cast_card_from_hand.sql",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 17→42 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:38:28.804Z"
+    },
+    {
+      "id": "bug-566",
+      "timestamp": "2026-06-10T08:39:09.523Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-llm.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:39:09.523Z"
+    },
+    {
+      "id": "bug-567",
+      "timestamp": "2026-06-10T08:43:03.167Z",
+      "error_message": "Incorrect value in code",
+      "file": "supabase/functions_src/submit_decision.sql",
+      "root_cause": "Had 'proliferate'",
+      "fix": "Changed to 'reanimate_destroyed'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:43:03.167Z"
+    },
+    {
+      "id": "bug-568",
+      "timestamp": "2026-06-10T08:45:38.683Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/necromantic-selection.test.ts",
+      "root_cause": "17 lines replaced/restructured",
+      "fix": "Rewrote 30→19 lines (17 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:45:38.683Z"
+    },
+    {
+      "id": "bug-569",
+      "timestamp": "2026-06-10T08:52:14.883Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→17 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T08:52:14.883Z"
+    },
+    {
+      "id": "bug-570",
+      "timestamp": "2026-06-10T09:11:12.024Z",
+      "error_message": "Wrong reference: then should be return_all_from_graveyard",
+      "file": "supabase/functions_src/activate_ability.sql",
+      "root_cause": "Used \"then\" instead of \"return_all_from_graveyard\"",
+      "fix": "Changed then → return_all_from_graveyard",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T09:11:12.024Z"
+    },
+    {
+      "id": "bug-571",
+      "timestamp": "2026-06-10T09:16:02.161Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/havengul-lich.test.ts",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 26→37 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T09:16:02.161Z"
+    },
+    {
+      "id": "bug-572",
+      "timestamp": "2026-06-10T09:17:02.077Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-registry.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T09:17:02.077Z"
+    },
+    {
+      "id": "bug-573",
+      "timestamp": "2026-06-10T13:30:00Z",
+      "error_message": "extract-functions seeder over-captured pay_mana_cost (2 create stmts) and missed mig 121's redefinition",
+      "file": "scripts/extract-functions.mjs",
+      "root_cause": "Function bodies can close with a TAGGED dollar quote ($_$;) — searching for a bare '$$;' line runs past the real end into the next function; and the naive line scan returned null on those files so a LATER definition was skipped.",
+      "fix": "Dollar-quote-aware extractor: capture the `as $TAG$` opening tag and close at `\n$TAG$;`; per-fn create-stmt count check caught it.",
+      "tags": [
+        "extractor",
+        "dollar-quoting",
+        "over-capture",
+        "functions_src"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10"
+    },
+    {
+      "id": "bug-574",
+      "timestamp": "2026-06-10T13:31:00Z",
+      "error_message": "Setup failed: function public.cast_card_from_hand(uuid, uuid, jsonb, uuid) does not exist (mig 211 apply)",
+      "file": "supabase/functions_src/cast_card_from_hand.sql",
+      "root_cause": "Changed a function's signature (added p_kicked) but the canonical file's trailing GRANT still named the OLD argument list, which the prelude had just dropped.",
+      "fix": "When changing a signature, update the grant lines in the functions_src file too, plus the prelude `drop function` (bug-421 ambiguity).",
+      "tags": [
+        "signature-change",
+        "grant",
+        "migration"
+      ],
+      "related_bugs": [
+        "bug-421"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-10"
+    },
+    {
+      "id": "bug-575",
+      "timestamp": "2026-06-10T13:32:00Z",
+      "error_message": "GD1: 'Target is not a legal creature for this spell' on Grimoire's discard ability",
+      "file": "supabase/functions_src/activate_ability.sql",
+      "root_cause": "Cost-consumed targets ride p_target_card_id (exile_from_graveyard convention); the discarded hand card leaked into the EFFECT's target slot and add_counters routed to the targeted creature path.",
+      "fix": "After paying a discard cost, set p_target_card_id := null (the cost consumed the slot; these abilities' effects are untargeted).",
+      "tags": [
+        "activate_ability",
+        "cost-target-slot",
+        "discard"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10"
+    },
+    {
+      "id": "bug-576",
+      "timestamp": "2026-06-10T13:33:00Z",
+      "error_message": "Lieutenant conditional round-trip: parseScriptToForm returned null when condition omitted type_line",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "The registry's strict object-field parse requires every non-optional sub-field present; the form's canonical conditional JSON carries type_line:'' (bug-230 family — the serializer can't drop an empty nested sub-field).",
+      "fix": "Author conditional conditions with type_line:'' (canonical form shape) when form-settability matters; engine accepts both.",
+      "tags": [
+        "builder",
+        "object-field",
+        "conditional",
+        "round-trip"
+      ],
+      "related_bugs": [
+        "bug-230"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-10"
+    },
+    {
+      "id": "bug-577",
+      "timestamp": "2026-06-10T10:49:16.332Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "scripts/setup-local-test-db.mjs",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T10:49:16.332Z"
+    },
+    {
+      "id": "bug-578",
+      "timestamp": "2026-06-10T17:00:00Z",
+      "error_message": "supabase db push: invalid byte sequence for encoding UTF8: 0x97 (SQLSTATE 22021) applying 202605010202_grant_keyword_all.sql",
+      "file": "supabase/migrations/202605010202_grant_keyword_all.sql",
+      "root_cause": "The migration was composed by a Python heredoc using open(path,'w') WITHOUT encoding= — on Windows that defaults to cp1252, so em-dashes in the header comment were written as byte 0x97 (invalid UTF-8). The local setup script read with Node's 'utf8' (which silently substitutes U+FFFD), so local applies passed; supabase db push sends raw bytes and hosted Postgres rejected them.",
+      "fix": "Re-encoded the file cp1252->UTF-8 (em-dashes restored, 0 stray bytes). PREVENTION: scripts/setup-local-test-db.mjs now strict-decodes every SQL file (TextDecoder fatal:true) and fails loudly with the filename before applying; scanned all migrations/functions_src/lib/tests — only this one file was affected. Rule: Python writes on Windows must always pass encoding='utf-8'.",
+      "tags": [
+        "encoding",
+        "utf8",
+        "cp1252",
+        "windows",
+        "db-push",
+        "migration"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10"
+    },
+    {
+      "id": "bug-579",
+      "timestamp": "2026-06-10T12:14:30.454Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/triage-decklist.mjs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→4 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T12:14:30.454Z"
+    },
+    {
+      "id": "bug-580",
+      "timestamp": "2026-06-10T12:20:03.128Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/put_in_graveyard.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 18→30 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T12:20:03.128Z"
+    },
+    {
+      "id": "bug-581",
+      "timestamp": "2026-06-10T12:26:48.778Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/fleshbag-overseer.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 15→21 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T12:26:48.778Z"
+    },
+    {
+      "id": "bug-582",
+      "timestamp": "2026-06-10T12:37:23.369Z",
+      "error_message": "Null/undefined access in ",
+      "file": "scripts/triage-decklist.mjs",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T12:37:23.369Z"
+    },
+    {
+      "id": "bug-583",
+      "timestamp": "2026-06-10T20:00:00Z",
+      "error_message": "Deck editor shows 'needs behaviour' for Liliana, Untouched by Death and Unbreathing Horde despite correct scripts in the catalog",
+      "file": "lib/game/card-behavior.ts",
+      "root_cause": "scriptHasBehavior() only recognized the five classic sections (actions/continuous_effects/triggered_abilities/activated_abilities/spell_effect). Scripts consisting ONLY of top-level engine props (loyalty_abilities, enters_with_counters, damage_removes_counters, undying, kicker, graveyard_cast_cost, enters_tapped, flashback, cant_be_countered, doubles_counters, cda) classified as 'needs'. normalizeV2Script also silently DROPPED the newer props on round-trip.",
+      "fix": "BEHAVIOR_TOP_LEVEL_PROPS list in scriptHasBehavior + CardBehaviorScriptV2/normalizeV2Script passthrough for all engine-read top-level props; pinned by tests/unit/card-config-status.test.ts (incl. a normalize round-trip preservation test).",
+      "tags": [
+        "deck-editor",
+        "badge",
+        "top-level-props",
+        "normalize",
+        "drift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10"
+    },
+    {
+      "id": "bug-584",
+      "timestamp": "2026-06-10T13:15:39.932Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T13:15:39.932Z"
     }
   ]
 }

@@ -2885,3 +2885,224 @@
 | 00:24 | Edited tests/feature/curse-of-disturbance.test.ts | added 1 condition(s) | ~124 |
 | 00:27 | Edited tests/feature/curse-of-disturbance.test.ts | drainStack() → resolveStack() | ~22 |
 | 00:28 | Curse of Disturbance (mig 199, XL): player-aura via ETB choose_player + curse_attacked continuous effect + declare_attacker trigger | 690/690 green | ~16k |
+| 00:28 | Session end: 99 writes across 32 files (undead-augur.test.ts, __ua_roundtrip.mts, lilianas-mastery.test.ts, _lm_roundtrip.mjs, test-cards.json) | 83 reads | ~233988 tok |
+
+## Session: 2026-06-10 09:36
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-10 09:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-10 09:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-10 09:48
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:50 | Created scripts/_gen_mig200.mjs | — | ~1037 |
+| 09:52 | Created tests/feature/death-baron.test.ts | — | ~1004 |
+| 09:53 | Edited lib/game/card-behavior-builder.ts | modified defaultKeywordGrant() | ~141 |
+| 09:53 | Edited lib/game/card-behavior-builder.ts | added 3 condition(s) | ~156 |
+| 09:53 | Edited lib/game/card-behavior-builder.ts | added 4 condition(s) | ~459 |
+| 09:54 | Edited components/CardBehaviorForm.tsx | CSS: excludeSource, tokenOnly | ~337 |
+| 09:54 | Edited lib/game/card-behavior-llm.ts | inline fix | ~129 |
+| 09:55 | Edited tests/unit/card-behavior-builder.test.ts | modified filters() | ~537 |
+| 09:57 | Created tests/feature/gleaming-overseer.test.ts | — | ~738 |
+| 09:59 | Created supabase/migrations/202605010201_creature_left_watcher.sql | — | ~700 |
+| 09:59 | Edited lib/game/card-behavior-builder.ts | 3→4 lines | ~81 |
+| 09:59 | Edited lib/game/card-behavior-builder.ts | inline fix | ~36 |
+| 10:00 | Edited lib/game/card-behavior-llm.ts | inline fix | ~142 |
+| 10:01 | Created tests/feature/vela-night-clad.test.ts | — | ~1312 |
+| 10:05 | Edited lib/game/card-behavior-schema.ts | expanded (+14 lines) | ~223 |
+| 10:05 | Edited lib/game/card-behavior-schema.ts | 4→4 lines | ~63 |
+| 10:07 | Created scripts/run-tests.mjs | — | ~416 |
+| 10:08 | Created scripts/extract-functions.mjs | — | ~819 |
+| 10:09 | Created scripts/new-migration.mjs | — | ~516 |
+| 10:16 | Created scripts/extract-functions.mjs | — | ~1019 |
+| 10:30 | Mig 200 keyword-grant filters (exclude_source/token_only on 12 accessors) | mig 200, builder/form/llm, death-baron+gleaming-overseer tests | green | ~25k |
+| 10:50 | Mig 201 creature_left watcher (Vela) + mig 202 grant_keyword_all (ATAE+activate_ability repro) | migs 201-202, schema, vela test | green | ~20k |
+| 11:10 | WORKFLOW: supabase/functions_src/ (25 canonical fn sources, dollar-quote-aware extractor) + scripts/new-migration.mjs + glob test runner scripts/run-tests.mjs (npm test no longer lists files) | scripts/*, functions_src/* | 704/704 green | ~15k |
+| 10:19 | Edited lib/game/card-behavior-registry.ts | modified turn() | ~467 |
+| 10:19 | Edited lib/game/card-behavior-llm.ts | 2→3 lines | ~322 |
+| 10:20 | Edited supabase/functions_src/put_action_on_stack.sql | added 2 condition(s) | ~291 |
+| 10:21 | Created tests/feature/mass-keyword-grant.test.ts | — | ~1322 |
+| 10:22 | Edited tests/feature/mass-keyword-grant.test.ts | 12→14 lines | ~230 |
+| 10:23 | Edited tests/feature/mass-keyword-grant.test.ts | modified castPlating() | ~897 |
+| 10:24 | Edited supabase/functions_src/handle_counter_spell.sql | 6→7 lines | ~51 |
+| 10:24 | Edited supabase/functions_src/handle_counter_spell.sql | modified rider() | ~456 |
+| 10:24 | Edited lib/game/card-behavior-schema.ts | 4→7 lines | ~127 |
+| 10:25 | Edited lib/game/card-behavior-llm.ts | inline fix | ~114 |
+| 10:26 | Created tests/feature/sinister-sabotage.test.ts | — | ~978 |
+| 10:27 | Edited supabase/functions_src/fire_turn_step_triggers.sql | 6→9 lines | ~135 |
+| 10:27 | Edited supabase/functions_src/resolve_count_amount.sql | modified count() | ~132 |
+| 10:28 | Edited lib/game/card-behavior-builder.ts | 1→2 lines | ~47 |
+| 10:28 | Edited lib/game/card-behavior-registry.ts | 2→3 lines | ~65 |
+| 10:29 | Edited lib/game/card-behavior-llm.ts | 2→3 lines | ~270 |
+| 10:29 | Edited lib/game/card-behavior-llm.ts | inline fix | ~53 |
+| 10:31 | Created tests/feature/loyal-subordinate.test.ts | — | ~817 |
+| 10:32 | Edited supabase/functions_src/fire_turn_step_triggers.sql | expanded (+16 lines) | ~285 |
+| 10:32 | Edited supabase/functions_src/resolve_count_amount.sql | expanded (+9 lines) | ~247 |
+| 10:33 | Edited supabase/functions_src/cast_spell_effect.sql | 5→7 lines | ~86 |
+| 10:33 | Edited supabase/functions_src/cast_card_from_hand.sql | 4→6 lines | ~70 |
+| 10:34 | Created tests/feature/laboratory-drudge.test.ts | — | ~1208 |
+| 10:36 | Created tests/feature/laboratory-drudge.test.ts | — | ~986 |
+| 10:37 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified permission() | ~110 |
+| 10:38 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→6 lines | ~38 |
+| 10:38 | Edited supabase/functions_src/cast_card_from_hand.sql | modified TURN() | ~535 |
+| 10:39 | Edited lib/game/card-behavior-llm.ts | 1→2 lines | ~214 |
+| 10:39 | Created tests/feature/gisa-and-geralf.test.ts | — | ~1098 |
+| 12:10 | Lord of the Accursed + Lazotep Plating (migs 202-203): grant_keyword_all + player-hexproof gate; registry/schema/LLM wired | mass-keyword-grant.test (MK1-4) | green | ~18k |
+| 12:25 | Sinister Sabotage (mig 204): surveil rider on counter via enqueue_triggered_ability | sinister-sabotage.test (SS1-2) | green | ~8k |
+| 12:40 | Loyal Subordinate (mig 205): beginning_of_combat event + commanders_you_control count | loyal-subordinate.test (LS1-3) | green | ~8k |
+| 12:55 | Laboratory Drudge (mig 206): note_graveyard_cast turn-stamp + graveyard_casts_this_turn + beginning_of_each_end_step | laboratory-drudge.test (LD1-3) | green | ~9k |
+| 13:05 | Gisa and Geralf (mig 207): static cast_from_graveyard registration + once_per_turn bag stamp in cast_card_from_hand | gisa-and-geralf.test (GG1-4) | 720/720 green, tsc clean | ~10k |
+| 10:43 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~41 |
+| 10:43 | Edited supabase/functions_src/submit_decision.sql | modified Selection() | ~388 |
+| 10:43 | Edited supabase/functions_src/apply_trigger_effects.sql | 4→5 lines | ~25 |
+| 10:43 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Selection() | ~523 |
+| 10:44 | Created tests/feature/necromantic-selection.test.ts | — | ~1033 |
+| 10:45 | Edited tests/feature/necromantic-selection.test.ts | modified return() | ~234 |
+| 10:47 | Edited supabase/functions_src/card_layered_power.sql | modified and() | ~115 |
+| 10:47 | Edited supabase/functions_src/card_layered_toughness.sql | modified and() | ~115 |
+| 10:47 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Banner() | ~307 |
+| 10:48 | Edited supabase/functions_src/submit_decision.sql | 6→11 lines | ~120 |
+| 10:48 | Edited supabase/functions_src/submit_decision.sql | modified Banner() | ~373 |
+| 10:49 | Created tests/feature/heraldic-banner.test.ts | — | ~560 |
+| 10:50 | Edited supabase/functions_src/apply_damage_to_creature.sql | modified shield() | ~330 |
+| 10:51 | Edited supabase/functions_src/apply_enters_with_counters.sql | modified coalesce() | ~352 |
+| 10:52 | Edited lib/game/card-behavior-schema.ts | expanded (+10 lines) | ~256 |
+| 10:53 | Edited lib/game/card-behavior-llm.ts | inline fix | ~256 |
+| 10:53 | Created tests/feature/unbreathing-horde.test.ts | — | ~1038 |
+| 10:54 | Edited supabase/functions_src/cast_card_from_hand.sql | modified public() | ~64 |
+| 10:55 | Edited supabase/functions_src/cast_card_from_hand.sql | added 1 condition(s) | ~351 |
+| 10:56 | Edited supabase/functions_src/cast_card_from_hand.sql | inline fix | ~28 |
+| 10:58 | Created tests/feature/josu-vess.test.ts | — | ~924 |
+| 11:02 | Edited supabase/functions_src/activate_ability.sql | 3→5 lines | ~40 |
+| 11:02 | Edited supabase/functions_src/activate_ability.sql | modified greatest() | ~177 |
+| 11:02 | Edited supabase/functions_src/activate_ability.sql | added 1 condition(s) | ~363 |
+| 11:03 | Edited supabase/functions_src/activate_ability.sql | modified Sovereign() | ~405 |
+| 11:04 | Created tests/feature/gravespawn-sovereign.test.ts | — | ~808 |
+| 11:05 | Edited supabase/functions_src/cast_card_from_hand.sql | modified public() | ~74 |
+| 11:05 | Edited supabase/functions_src/cast_card_from_hand.sql | 4→8 lines | ~44 |
+| 11:05 | Edited supabase/functions_src/cast_card_from_hand.sql | expanded (+12 lines) | ~188 |
+| 11:06 | Edited supabase/functions_src/cast_card_from_hand.sql | 9→13 lines | ~146 |
+| 11:06 | Edited supabase/functions_src/cast_card_from_hand.sql | added 3 condition(s) | ~707 |
+| 11:07 | Created tests/feature/scourge-nel-toth.test.ts | — | ~669 |
+| 11:09 | Created supabase/functions_src/return_all_from_graveyard.sql | — | ~594 |
+| 11:09 | Edited supabase/functions_src/activate_ability.sql | 3→7 lines | ~59 |
+| 11:09 | Edited supabase/functions_src/activate_ability.sql | modified greatest() | ~233 |
+| 11:10 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 7→10 lines | ~144 |
+| 11:10 | Edited supabase/functions_src/activate_ability.sql | modified cost() | ~517 |
+| 11:10 | Edited supabase/functions_src/activate_ability.sql | modified Untargeted() | ~331 |
+| 11:11 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~30 |
+| 11:12 | Created tests/feature/grimoire-of-the-dead.test.ts | — | ~1125 |
+| 11:13 | Edited supabase/functions_src/activate_ability.sql | 7→9 lines | ~131 |
+| 11:14 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified card_id() | ~196 |
+| 11:14 | Edited supabase/functions_src/cast_card_from_hand.sql | modified permission() | ~100 |
+| 11:14 | Edited supabase/functions_src/activate_ability.sql | modified Lich() | ~411 |
+| 11:15 | Created tests/feature/havengul-lich.test.ts | — | ~642 |
+| 11:16 | Edited tests/feature/havengul-lich.test.ts | expanded (+11 lines) | ~462 |
+| 11:17 | Edited lib/game/card-behavior-registry.ts | expanded (+24 lines) | ~344 |
+| 11:17 | Edited tests/unit/card-behavior-builder.test.ts | modified EOT() | ~732 |
+| 11:20 | Edited tests/feature/grimoire-of-the-dead.test.ts | removed 5 lines | ~2 |
+| 13:40 | Necromantic Selection (mig 208) + Heraldic Banner (mig 209): mass_destroy_reanimate_one + reanimate_destroyed decision; choose_color + colour-filtered anthem fold | tests NS1-2, HB1 | green | ~22k |
+| 13:50 | Unbreathing Horde (mig 210): dynamic enters_with_counters (array of count specs) + damage_removes_counters shield | tests UH1-3 | green | ~10k |
+| 14:00 | Josu Vess (mig 211): kicker via p_kicked + 'kicked' bag marker + conditional {counters:kicked,of:self}; Zombie Knight Token seeded | tests JV1-3 | green | ~10k |
+| 14:10 | Gravespawn Sovereign (mig 212): tap_creatures cost + reanimate_from_graveyard stack action/handler | tests GS1-2 | green | ~9k |
+| 14:20 | Scourge of Nel Toth (mig 213): graveyard_cast_cost alt cost (mana + sacrifice_creatures, p_sacrifice_ids) | tests SN1-2 | green | ~9k |
+| 14:30 | Grimoire of the Dead (mig 214): discard + remove_counters costs, untargeted add_counters route, return_all_from_graveyard from:all_graveyards under-your-control | tests GD1-3 | green | ~12k |
+| 14:40 | Havengul Lich (mig 215, partial): card_id on grant_cast_from_graveyard (targeted until-EOT permission) | tests HL1-3 | green | ~8k |
+| 14:50 | Builder sweep: registry entries choose_color + reanimate_from_graveyard; 7 new round-trip cases; canonical conditional type_line:'' fix | unit 288/288 | 751/751 full suite, tsc+lint clean | ~6k |
+| 11:23 | Session end: 98 writes across 43 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 26 reads | ~120163 tok |
+| 11:40 | Session end: 98 writes across 43 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 46 reads | ~51361 tok |
+| 12:13 | Created app/controller/[id]/page.tsx | — | ~372 |
+| 12:13 | Created tests/unit/registry-schema-drift.test.ts | — | ~1202 |
+| 15:20 | Hygiene batch: untracked 165MB oracle dump + .wolf transients (gitignored, files stay on disk); deleted vercel/ (99 dead files), controller-style-lab, ControllerListV2/V3 (V4 now DEFAULT route, V1 via ?v=1); registry↔schema drift test (4 invariants, JSON_ONLY allowlist of 8) | .gitignore, app/controller/[id]/page.tsx, tests/unit/registry-schema-drift.test.ts | tsc+lint clean, 306/306 unit | ~8k |
+| 12:15 | Session end: 100 writes across 45 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 46 reads | ~52935 tok |
+| 12:21 | Created supabase/migrations/202605010216_hot_path_indexes.sql | — | ~299 |
+| 12:22 | Created scripts/validate-fixtures-offline.mts | — | ~332 |
+| 12:23 | Edited lib/game/card-behavior-schema.ts | modified T() | ~278 |
+| 12:23 | Edited lib/game/card-behavior-schema.ts | 4→6 lines | ~100 |
+| 12:31 | Edited components/ControllerListV4.tsx | 3→2 lines | ~27 |
+| 12:31 | Edited components/ControllerListV4.tsx | inline fix | ~21 |
+| 12:31 | Edited components/ControllerListV4.tsx | expanded (+16 lines) | ~132 |
+| 12:33 | Extracted CardActionSheet + pure helpers + display atoms from ControllerListV4 into components/controller/{shared.ts,CardDisplay.tsx,CardActionSheet.tsx}; verbatim move, tsc clean, lint 2 pre-existing img warnings | components/ControllerListV4.tsx, components/controller/* | success | ~30000 |
+| 16:10 | Improvements batch 2: mig 216 hot-path indexes (continuous_effects session+type+card, game_cards session+zone+controller); validate:fixtures offline script (CAUGHT missing `cda` Zod schema — fixed in V1+V2); CardActionSheet extraction (V4 4542→2920 lines; controller/shared.ts 466 + CardDisplay.tsx 86 + CardActionSheet.tsx 1131, byte-identical moves via agent) | mig 216, scripts/validate-fixtures-offline.mts, components/controller/* | 755/755 full suite, tsc+lint clean | ~30k |
+| 12:35 | Session end: 107 writes across 48 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 46 reads | ~64207 tok |
+| 12:49 | Edited scripts/setup-local-test-db.mjs | added error handling | ~224 |
+| 17:00 | FIX: mig 202 was cp1252-encoded (Python open() without encoding; 0x97 em-dashes) -> db push rejected it; re-encoded to UTF-8, repo-wide scan clean, setup script now strict-decodes SQL before applying | mig 202, scripts/setup-local-test-db.mjs, buglog | 132 files re-applied ok, MK tests green | ~6k |
+| 12:49 | Session end: 108 writes across 49 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 47 reads | ~64447 tok |
+| 12:55 | Session end: 108 writes across 49 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 47 reads | ~64447 tok |
+| 12:59 | Created docs/commander-decks/next-deck.txt | — | ~175 |
+| 12:59 | Created scripts/triage-decklist.mjs | — | ~1760 |
+| 13:00 | Edited scripts/triage-decklist.mjs | modified importer() | ~215 |
+| 17:30 | Deck-triage workflow: docs/commander-decks/next-deck.txt paste target + scripts/triage-decklist.mjs (npm run deck:triage) — buckets each card vs oracle dump + fixtures into implemented / works-as-is / needs-build (with oracle text); README documents the loop | next-deck.txt, triage-decklist.mjs, package.json, README | smoke-tested on krenko list (64 cards parsed clean) | ~7k |
+| 13:01 | Session end: 111 writes across 51 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 47 reads | ~66750 tok |
+| 14:02 | Session end: 111 writes across 51 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 48 reads | ~66750 tok |
+| 14:09 | Session end: 111 writes across 51 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 48 reads | ~66750 tok |
+| 14:14 | Edited scripts/triage-decklist.mjs | modified for() | ~379 |
+| 14:14 | Edited scripts/triage-decklist.mjs | added 1 condition(s) | ~117 |
+| 14:14 | Edited scripts/triage-decklist.mjs | 4→4 lines | ~65 |
+| 14:15 | Edited supabase/functions_src/cast_card_from_hand.sql | 5→8 lines | ~48 |
+| 14:15 | Edited supabase/functions_src/cast_card_from_hand.sql | modified coalesce() | ~661 |
+| 14:15 | Edited supabase/functions_src/resolve_count_amount.sql | modified count() | ~212 |
+| 14:17 | Created tests/feature/enters-tapped-lands.test.ts | — | ~1071 |
+| 14:18 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~183 |
+| 14:18 | Edited supabase/functions_src/submit_decision.sql | modified tapped() | ~199 |
+| 14:18 | Edited lib/game/card-behavior-schema.ts | 6→8 lines | ~92 |
+| 14:19 | Created tests/feature/victimize.test.ts | — | ~849 |
+| 14:20 | Edited supabase/functions_src/put_in_graveyard.sql | modified Undying() | ~282 |
+| 14:20 | Edited supabase/functions_src/put_in_graveyard.sql | expanded (+20 lines) | ~413 |
+| 14:21 | Created tests/feature/undying.test.ts | — | ~820 |
+| 14:22 | Edited supabase/functions_src/build_stack_payload_permanent_simple.sql | added 1 condition(s) | ~389 |
+| 14:23 | Edited supabase/functions_src/handle_permanent_effect.sql | modified coalesce() | ~579 |
+| 14:24 | Edited lib/game/card-behavior-schema.ts | modified rider() | ~304 |
+| 14:24 | Created tests/feature/cruel-revival.test.ts | — | ~964 |
+| 14:26 | Created tests/feature/fleshbag-overseer.test.ts | — | ~1193 |
+| 14:26 | Edited tests/feature/fleshbag-overseer.test.ts | expanded (+6 lines) | ~311 |
+| 14:29 | Edited scripts/triage-decklist.mjs | expanded (+7 lines) | ~162 |
+| 18:30 | Gisa deck gap batch (migs 217-220): enters_tapped lands (+unless count/hand_has_type, basic_lands count source), return_from_graveyard tapped (Victimize), undying in put_in_graveyard (Geralf's Mindcrusher), exclude_type_line + then_return_from_graveyard rider on permanent_effect (Cruel Revival); Fleshbag/Overseer composition tests; triage COVERED_BY alias map | migs 217-220, fixtures, 6 test files, triage-decklist.mjs | 765/765 green, tsc clean, deck triage: 73/73 covered | ~45k |
+| 14:30 | Session end: 132 writes across 59 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 51 reads | ~76548 tok |
+| 14:35 | Created docs/commander-decks/card-scripts.json | — | ~1241 |
+| 14:37 | Edited scripts/triage-decklist.mjs | added 1 import(s) | ~67 |
+| 14:37 | Edited scripts/triage-decklist.mjs | added 4 condition(s) | ~276 |
+| 14:37 | Edited scripts/triage-decklist.mjs | added nullish coalescing | ~484 |
+| 14:38 | Edited scripts/triage-decklist.mjs | added 1 condition(s) | ~68 |
+| 19:00 | deck:triage now emits copy-paste script JSON per card (override file docs/commander-decks/card-scripts.json > fixture-derived; validateCardScript-gated; token-catalog dependency note incl. amass's implicit Zombie Army) | triage-decklist.mjs, card-scripts.json (13 curated), package.json (tsx import) | 69 validated scripts in next-deck.triage.md, 0 invalid | ~12k |
+| 14:38 | Session end: 137 writes across 60 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 52 reads | ~81012 tok |
+| 14:46 | Created scripts/upsert-deck-scripts.mjs | — | ~2117 |
+| 19:30 | deck:upsert (scripts/upsert-deck-scripts.mjs): batch-writes resolved scripts onto HOSTED cards.script by name (all printings), service-role via import:cards env pattern; dry-run default, --apply/--force, creates missing token rows from fixture stats. APPLIED Gisa deck: 68 cards/113 printings updated, 9 already current, Sol Ring kept (user's differing script), 3 token rows created | upsert-deck-scripts.mjs, package.json | hosted catalog now fully scripted for the deck | ~10k |
+| 14:48 | Session end: 138 writes across 61 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 52 reads | ~83280 tok |
+| 14:53 | Edited lib/game/card-behavior.ts | modified scriptHasBehavior() | ~361 |
+| 14:53 | Edited lib/game/card-behavior.ts | expanded (+11 lines) | ~221 |
+| 14:53 | Edited lib/game/card-behavior.ts | expanded (+9 lines) | ~170 |
+| 14:53 | Created tests/unit/card-config-status.test.ts | — | ~891 |
+| 20:00 | FIX deck-editor badge: scriptHasBehavior now counts top-level engine props (loyalty_abilities, enters_with_counters, undying, kicker, ...); normalizeV2Script preserves them (was silently dropping); 5 unit tests pin it | lib/game/card-behavior.ts, tests/unit/card-config-status.test.ts | Liliana + Unbreathing Horde badge as scripted; tsc clean | ~6k |
+| 14:54 | Session end: 142 writes across 63 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 53 reads | ~84923 tok |
+| 15:05 | Edited supabase/functions_src/advance_step.sql | modified 8a() | ~361 |
+| 15:06 | Created supabase/functions_src/start_game_session.sql | — | ~1078 |
+| 15:06 | Created supabase/functions_src/mulligan_hand.sql | — | ~681 |
+| 15:06 | Created supabase/functions_src/keep_opening_hand.sql | — | ~643 |
+| 15:08 | Created tests/feature/game-start.test.ts | — | ~1847 |
+| 15:08 | Edited tests/feature/game-start.test.ts | 5→5 lines | ~95 |
+| 15:10 | Created supabase/functions_src/get_session_players.sql | — | ~406 |
+| 15:11 | Edited lib/game/actions.ts | added 3 condition(s) | ~417 |
+| 15:14 | Edited components/GameSessionLobby.tsx | 4→4 lines | ~23 |
+| 15:14 | Edited components/GameSessionLobby.tsx | lockGameSession() → startGameSession() | ~178 |
+| 15:14 | Edited components/GameSessionLobby.tsx | 6→6 lines | ~93 |
+| 15:15 | Created components/controller/OpeningHandOverlay.tsx | — | ~1249 |
+| 15:15 | Edited components/ControllerListV4.tsx | 2→4 lines | ~21 |
+| 15:15 | Edited components/ControllerListV4.tsx | added 1 import(s) | ~49 |
+| 15:15 | Edited components/ControllerListV4.tsx | expanded (+7 lines) | ~171 |
+| 15:15 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~262 |
+| 15:17 | Game-start client slice: lobby Lock->Start game (startGameSession + status msg); new OpeningHandOverlay (keep/mulligan/bottom-N chips, waiting variant); wired into ControllerListV4 via playersNotKept + keepOpeningHand/mulliganHand + refresh | GameSessionLobby.tsx, controller/OpeningHandOverlay.tsx, ControllerListV4.tsx | tsc clean, eslint clean on touched files | ~30k |
+| 21:00 | Game start sequence (migs 221-222): start_game_session (creator-only lock + RANDOM first player + 7-card hands + 2P skip_next_draw per CR 103.8a), mulligan_hand (London reshuffle+7), keep_opening_hand (bottom N = mulligans), advance_step consumes skip flag; get_session_players returns mulligans/opening_hand_kept; lobby Lock -> "Start game"; OpeningHandOverlay in V4 (keep/mulligan/bottom-picker/waiting) | migs 221-222, 3 new fn_src, actions/types, GameSessionLobby, controller/OpeningHandOverlay.tsx, game-start.test (GT1-5) | 779/779 green, tsc+lint clean | ~40k |
+| 15:19 | Session end: 158 writes across 72 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 57 reads | ~123922 tok |
+| 15:23 | Session end: 158 writes across 72 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 57 reads | ~123922 tok |
