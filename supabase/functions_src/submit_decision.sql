@@ -105,7 +105,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'proliferate') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -260,6 +260,30 @@ begin
         update public.game_cards set zone = 'hand', zone_position = v_pos, is_tapped = false where id = v_card;
       end if;
     end loop;
+    perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'look_top' then
+    -- Ureni (mig 223): the chosen card (0 or 1) goes to the battlefield under
+    -- the deciding player's control (fires ETB); every OTHER looked-at card goes
+    -- to the bottom of the library in a random order.
+    v_dest := coalesce(v_decision.params ->> 'to', 'battlefield');
+    for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
+    loop
+      select coalesce(max(zone_position), -1) + 1 into v_pos
+      from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = 'battlefield';
+      select turn_number into v_turn from public.game_turn_state where session_id = v_decision.session_id;
+      update public.game_cards
+      set zone = 'battlefield', zone_position = v_pos, controller_player_id = owner_id,
+          is_tapped = false, damage_marked = 0, plus_one_counters = 0,
+          entered_battlefield_turn_number = coalesce(v_turn, 0)
+      where id = v_card;
+    end loop;
+    perform public.bottom_cards_random(
+      v_decision.session_id, v_decision.deciding_player_id,
+      (select coalesce(array_agg((e)::uuid), array[]::uuid[])
+       from jsonb_array_elements_text(v_decision.params -> 'looked_at') e
+       where (e)::uuid <> all(coalesce(v_chosen_ids, array[]::uuid[]))));
     perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 

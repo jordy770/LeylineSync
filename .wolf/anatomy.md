@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-10T13:15:39.914Z
-> Files: 35 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-10T14:07:14.125Z
+> Files: 39 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -110,7 +110,8 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12003 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~10524 tok)
+- `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~10526 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -122,7 +123,7 @@
 ## scripts/
 
 - `setup-local-test-db.mjs` — Rebuilds the LOCAL test-harness database from scratch. (~912 tok)
-- `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3016 tok)
+- `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3330 tok)
 - `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2117 tok)
 - `validate-fixtures-offline.mts` — Offline fixture validation — no DB, no credentials (unlike validate:scripts, (~332 tok)
 
@@ -135,7 +136,7 @@
 ## supabase/functions_src/
 
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2217 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~5648 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~6282 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4066 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
@@ -145,11 +146,12 @@
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~937 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1136 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~6133 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~6538 tok)
 
 ## supabase/migrations/
 
 - `202605010216_hot_path_indexes.sql` — Hot-path indexes (perf, no behavior change). (~299 tok)
+- `202605010223_ureni_look_top.sql` — Ureni of the Unwritten (the Dragons commander) — "Whenever Ureni enters or (~13399 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -160,10 +162,12 @@
 ## tests/feature/
 
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
+- `dragons-deck.test.ts` — Dragons deck — proving tests for the Tier-0 compositions (cards authored (~2449 tok)
 - `enters-tapped-lands.test.ts` — Enters-tapped lands (mig 217) — top-level `enters_tapped` read in (~1071 tok)
 - `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
 - `game-start.test.ts` — Game start sequence (mig 221) — random first player, 7-card opening hands, (~1843 tok)
 - `undying.test.ts` — Undying (mig 219) — "When this creature dies, if it had no +1/+1 counters on (~820 tok)
+- `ureni.test.ts` — Ureni of the Unwritten (mig 223) — "Whenever Ureni enters or attacks, look at (~1186 tok)
 - `victimize.test.ts` — Victimize (mig 218) — "Choose two target creature cards in your graveyard. (~849 tok)
 
 ## tests/fixtures/

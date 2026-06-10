@@ -28,6 +28,7 @@ declare
   v_options jsonb;
   v_decision_id uuid;
   v_filter text;
+  v_looked uuid[];
   v_name text;
   v_len integer;
   v_decider uuid;
@@ -251,6 +252,48 @@ begin
       );
       if v_decision_id is null then v_i := v_i + 1; continue; end if;
 
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
+    elsif v_type = 'look_top' then
+      -- "Look at the top N cards of your library. You may put a matching card
+      -- onto the battlefield. Put the rest on the bottom in a random order."
+      -- (Ureni of the Unwritten, mig 223.) The looked-at set is the top N; the
+      -- pickable options are the cards in it that match the filter.
+      v_filter := v_effect -> 'filter' ->> 'type_line';
+      select coalesce(array_agg(t.id order by t.zone_position asc, t.id asc), array[]::uuid[])
+        into v_looked
+      from (
+        select id, zone_position from public.game_cards
+        where session_id = p_session_id and owner_id = v_controller and zone = 'library'
+        order by zone_position asc, id asc
+        limit coalesce((v_effect ->> 'count')::integer, 1)
+      ) t;
+
+      if cardinality(v_looked) = 0 then v_i := v_i + 1; continue; end if;
+
+      select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
+        into v_options
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.id = any(v_looked)
+        and (v_filter is null or c.type_line ilike '%' || v_filter || '%')
+        and (not coalesce((v_effect -> 'filter' ->> 'creature')::boolean, false)
+             or c.type_line ilike '%creature%');
+
+      -- No matching card to put down: the whole looked-at set still goes to the
+      -- bottom in a random order. No decision is parked.
+      if jsonb_array_length(v_options) = 0 then
+        perform public.bottom_cards_random(p_session_id, v_controller, v_looked);
+        v_i := v_i + 1; continue;
+      end if;
+
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'look_top',
+        'You may put a card onto the battlefield; the rest go to the bottom',
+        v_options, 0, 1,
+        jsonb_build_object('to', coalesce(v_effect ->> 'to', 'battlefield'),
+                           'looked_at', to_jsonb(v_looked)))
+      returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
 

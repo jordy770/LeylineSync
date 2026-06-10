@@ -180,7 +180,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
-  'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard',
+  'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -229,7 +229,7 @@ const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema, C
 
 // Which kind of counter an add_counters effect places. "plus_one_one" is the
 // engine's fast +1/+1 column; everything else lives in the jsonb counter bag.
-const PermanentCounterTypeSchema = z.enum(['plus_one_one', 'minus_one_one', 'charge', 'quest', 'study', 'generic']).optional()
+const PermanentCounterTypeSchema = z.enum(['plus_one_one', 'minus_one_one', 'charge', 'quest', 'study', 'gold', 'generic']).optional()
 // Player counters live on game_session_players. "poison" >= 10 loses the game.
 const PlayerCounterTypeSchema = z.enum(['poison', 'energy', 'experience'])
 
@@ -452,6 +452,18 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('amass'),
     amount: z.number(),
+  }),
+  // Ureni (mig 223) — "Look at the top N cards of your library, you may put a
+  // matching card onto the battlefield, the rest go to the bottom in a random
+  // order." JSON/AI-authored (not in the guided form).
+  z.object({
+    type: z.literal('look_top'),
+    count: z.number().int().positive(),
+    to: z.enum(['battlefield', 'hand']).optional(),
+    filter: z.object({
+      type_line: z.string().optional(),
+      creature: z.boolean().optional(),
+    }).optional(),
   }),
   // Gravespawn Sovereign (mig 212) — activated-ability-only targeted effect:
   // put target creature card from ANY graveyard onto the battlefield under

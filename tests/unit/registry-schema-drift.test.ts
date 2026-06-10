@@ -32,6 +32,7 @@ const JSON_ONLY: Record<string, string> = {
   prevent_damage: 'Fog-style shields (mig 126) are JSON-only; no form demand yet',
   grant_cast_from_graveyard: 'permission grant (Liliana -3 / Havengul Lich); loyalty + targeted-activated surfaces are not form-modelled',
   curse_attack_zombie: 'bespoke Curse of Disturbance composition (mig 199); intentionally not a general-purpose form effect',
+  look_top: 'impulse-dig + put-onto-battlefield (Ureni, mig 223); JSON/AI-authored, no guided-form widget yet',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

@@ -3106,3 +3106,27 @@
 | 21:00 | Game start sequence (migs 221-222): start_game_session (creator-only lock + RANDOM first player + 7-card hands + 2P skip_next_draw per CR 103.8a), mulligan_hand (London reshuffle+7), keep_opening_hand (bottom N = mulligans), advance_step consumes skip flag; get_session_players returns mulligans/opening_hand_kept; lobby Lock -> "Start game"; OpeningHandOverlay in V4 (keep/mulligan/bottom-picker/waiting) | migs 221-222, 3 new fn_src, actions/types, GameSessionLobby, controller/OpeningHandOverlay.tsx, game-start.test (GT1-5) | 779/779 green, tsc+lint clean | ~40k |
 | 15:19 | Session end: 158 writes across 72 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 57 reads | ~123922 tok |
 | 15:23 | Session end: 158 writes across 72 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 57 reads | ~123922 tok |
+| 15:31 | Session end: 158 writes across 72 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 57 reads | ~123922 tok |
+| 15:42 | Edited scripts/triage-decklist.mjs | 5→3 lines | ~25 |
+| 15:43 | Session end: 159 writes across 72 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 57 reads | ~124701 tok |
+| 15:47 | Session end: 159 writes across 72 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 57 reads | ~124701 tok |
+| 15:55 | Edited lib/game/card-behavior-schema.ts | inline fix | ~39 |
+| 15:55 | Edited lib/game/card-behavior-registry.ts | 5→7 lines | ~65 |
+| 15:59 | Created tests/feature/dragons-deck.test.ts | — | ~2449 |
+| 16:01 | Edited scripts/triage-decklist.mjs | added 1 condition(s) | ~171 |
+| 16:03 | Edited supabase/functions_src/apply_trigger_effects.sql | modified from() | ~656 |
+| 16:03 | Edited supabase/functions_src/apply_trigger_effects.sql | 1→2 lines | ~10 |
+| 16:03 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~44 |
+| 16:03 | Edited supabase/functions_src/submit_decision.sql | modified Ureni() | ~419 |
+| 16:05 | Edited supabase/migrations/202605010223_ureni_look_top.sql | modified public() | ~502 |
+| 16:07 | Created tests/feature/ureni.test.ts | — | ~1186 |
+
+## Session: 2026-06-10 (Dragons deck, Opus)
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:30 | Triage fix: multi-face cards (DFC) flatten card_faces text; override-only cards count as implemented | scripts/triage-decklist.mjs | Dragons deck readable | ~4k |
+| 21:50 | Dragons Tier-0: 11 mana sources (pain lands, talismans, taplands, Mossfire) into card-scripts.json; gold counter enum | card-scripts.json, schema/registry | re-skins of tested fixtures | ~8k |
+| 22:10 | Dragons compositions: 8 fixtures + dragons-deck.test (Migration Path, Evolving Wilds, Verix kicked, Keiga dies-control, Lathliss watcher, Dragonmaster, Dragon's Hoard gold, Rapid Hybridization) + 3 Dragon tokens | test-cards.json, dragons-deck.test.ts | 8/8 green | ~14k |
+| 22:40 | Ureni (mig 223): look_top decision effect (dig N, may put matching card to battlefield, rest to bottom random) + bottom_cards_random helper | mig 223, apply_trigger_effects/submit_decision, schema, ureni.test | UR1-3 green | ~14k |
+| 22:55 | Upsert 21 Dragon cards (38 printings) + 3 token rows to hosted; pushed mig 223 | hosted catalog | 790/790 suite, tsc+lint clean | ~6k |

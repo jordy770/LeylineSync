@@ -131,6 +131,8 @@ const counterTypeField: FieldDescriptor = {
     { value: 'minus_one_one', label: '−1/−1' },
     { value: 'charge', label: 'charge' },
     { value: 'quest', label: 'quest' },
+    { value: 'study', label: 'study' },
+    { value: 'gold', label: 'gold' },
     { value: 'generic', label: 'generic' },
   ],
   optional: true,

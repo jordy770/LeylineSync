@@ -1,17 +1,3 @@
-# PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage
-#
-# Format (same as the in-app importer): one "1 Card Name" line per card,
-# `#` comments and section headers (Commander / Creatures / Deck / ...) are
-# ignored. "1x Card Name" and bare "Card Name" lines work too.
-#
-# The triage script writes docs/commander-decks/next-deck.triage.md showing,
-# for every card: already-implemented (a test fixture exists), works-as-is
-# (no rules text / only supported keywords), or needs-building (with its
-# oracle text, ready to plan from).
-#
-# When this deck is done, copy this file to <deck-name>.txt and paste the
-# next list here.
-
 Commander
 1 Ureni of the Unwritten
 

@@ -70,12 +70,29 @@ if (!oracleFile) {
 }
 console.log(`Oracle dump: lib/${oracleFile} (loading...)`)
 const oracle = new Map()
-for (const c of JSON.parse(readFileSync(path.join(libDir, oracleFile), 'utf8'))) {
+// Multi-face cards (DFC / omen / split) keep their text in card_faces, not the
+// top-level fields — flatten it so classification sees the real rules text.
+const flatten = (c) => {
+  if (!Array.isArray(c.card_faces) || c.card_faces.length === 0) return c
+  return {
+    name: c.name,
+    type_line: c.type_line && c.type_line !== 'Card // Card'
+      ? c.type_line
+      : c.card_faces.map((f) => f.type_line).filter(Boolean).join(' // '),
+    oracle_text: c.card_faces.map((f) => f.oracle_text).filter(Boolean).join('\n//\n'),
+  }
+}
+const dump = JSON.parse(readFileSync(path.join(libDir, oracleFile), 'utf8'))
+// Pass 1: exact full names ALWAYS win (so basic Mountain never loses to a
+// DFC whose front face is named "Mountain ...").
+for (const c of dump) {
   const key = c.name.toLowerCase()
-  if (!oracle.has(key)) oracle.set(key, c)
-  // Double-faced cards: also index the front face name.
+  if (!oracle.has(key)) oracle.set(key, flatten(c))
+}
+// Pass 2: front-face names as fallbacks only.
+for (const c of dump) {
   const front = c.name.split(' // ')[0].toLowerCase()
-  if (!oracle.has(front)) oracle.set(front, c)
+  if (!oracle.has(front)) oracle.set(front, flatten(c))
 }
 
 const fixtures = JSON.parse(readFileSync(path.join(root, 'tests/fixtures/test-cards.json'), 'utf8'))
@@ -124,6 +141,15 @@ const COVERED_BY = new Map(Object.entries({
   'temple of deceit': 'enters_tapped + ETB scry 1 (both tested, mig 217)',
   'sunken hollow': 'Sunken Hollow Test (basic-land condition, mig 217)',
   'choked estuary': 'Choked Estuary Test (hand_has_type condition, mig 217)',
+  'ureni of the unwritten': 'Ureni Test (look_top dig-8, mig 223)',
+  'migration path': 'Migration Path Test (search 2 basics tapped, mig 217/111)',
+  'evolving wilds': 'Evolving Wilds Test (sac-tutor basic, mig 187)',
+  'verix bladewing': 'Verix Bladewing Test (kicker, mig 211)',
+  'keiga, the tide star': 'Keiga Test (dies-gain-control, mig 106)',
+  'lathliss, dragon queen': 'Lathliss Test (Dragon-enters watcher token; activated pump deferred)',
+  'dragonmaster outcast': 'Dragonmaster Outcast Test (conditional 6 lands → Dragon)',
+  "dragon's hoard": "Dragon's Hoard Test (gold counters + draw + any mana)",
+  'rapid hybridization': 'Rapid Hybridization Test (destroy + Frog Lizard)',
 }))
 
 // ── Classify ─────────────────────────────────────────────────────────────────
@@ -143,11 +169,15 @@ for (const card of cards) {
     continue
   }
   const enriched = { card, type: entry.type_line ?? '', text: (entry.oracle_text ?? '').trim() }
-  const covered = COVERED_BY.get(card.name.toLowerCase())
-  if (fixtureNames.has(card.name.toLowerCase())) {
+  const key = card.name.toLowerCase()
+  const covered = COVERED_BY.get(key)
+  if (fixtureNames.has(key)) {
     buckets.implemented.push(enriched)
   } else if (covered) {
     buckets.implemented.push({ ...enriched, via: covered })
+  } else if (scriptOverrides.has(key)) {
+    // A curated script exists (card-scripts.json) — covered, no fixture needed.
+    buckets.implemented.push({ ...enriched, via: 'card-scripts.json (curated)' })
   } else if (/^basic land/i.test(enriched.type) || enriched.text === '' || isKeywordsOnly(enriched.text)) {
     buckets.works.push(enriched)
   } else {
