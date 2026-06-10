@@ -1147,6 +1147,50 @@ export async function lockGameSession(supabase: SupabaseClient, sessionId: strin
   return data as boolean
 }
 
+// Start the game (mig 221): locks the session, picks a RANDOM first player,
+// deals every player a 7-card opening hand, and opens the keep/mulligan
+// sequence. Creator-only; every player needs a spawned deck.
+export async function startGameSession(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('start_game_session', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as { first_player_id: string; players: number }
+}
+
+// London mulligan: your hand shuffles back, you draw seven again.
+export async function mulliganHand(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('mulligan_hand', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number // total mulligans taken
+}
+
+// Keep the opening hand, bottoming exactly one card per mulligan taken.
+export async function keepOpeningHand(
+  supabase: SupabaseClient,
+  sessionId: string,
+  bottomCardIds: string[] = [],
+) {
+  const { error } = await supabase.rpc('keep_opening_hand', {
+    p_session_id: sessionId,
+    p_bottom_card_ids: bottomCardIds,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
 export async function finishGameSession(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('finish_game_session', {
     p_session_id: sessionId,

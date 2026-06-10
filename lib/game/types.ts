@@ -24,6 +24,10 @@ export type GameSessionPlayer = {
   life_total: number
   // Player counter bag (poison/energy/experience). Empty when the player has none.
   counters?: Record<string, number> | null
+  // Opening-hand state (mig 221/222): times mulliganed + whether the hand was
+  // kept. opening_hand_kept is true for sessions started before the feature.
+  mulligans?: number
+  opening_hand_kept?: boolean
   joined_at?: string
 }
 
