@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T22:37:40.059Z
-> Files: 129 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T23:43:22.781Z
+> Files: 131 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -103,7 +103,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~8369 tok)
+- `card-scripts.json` (~8443 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -113,7 +113,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~15434 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~15616 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -144,7 +144,7 @@
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~14411 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~15283 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7622 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
@@ -160,7 +160,7 @@
 - `fire_becomes_target_triggers.sql` — supabase/functions_src/fire_becomes_target_triggers.sql (~801 tok)
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~612 tok)
 - `fire_turn_step_triggers.sql` — supabase/functions_src/fire_turn_step_triggers.sql (~673 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1629 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1875 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~938 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
@@ -208,6 +208,7 @@
 - `202605010250_scourge_throne.sql` — 202605010250_scourge_throne — Scourge of the Throne (dethrone + an (~24914 tok)
 - `202605010251_reality_shift_manifest.sql` — 202605010251_reality_shift_manifest — Reality Shift (manifest). (~7696 tok)
 - `202605010252_selvalas_stampede.sql` — 202605010252_selvalas_stampede — Selvala's Stampede (council's dilemma (~26213 tok)
+- `202605010253_discover_pantlaza.sql` — 202605010253_discover_pantlaza — discover + Pantlaza, Sun-Favored (the (~17255 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -228,6 +229,7 @@
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
 - `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
+- `discover.test.ts` — mig 253 — discover + Pantlaza, Sun-Favored (the Veloci-Ramp-Tor commander). (~978 tok)
 - `divide-damage.test.ts` — Divided damage from triggers/abilities (mig 233): (~1212 tok)
 - `dragon-lands.test.ts` — mig 237 — three Dragon-deck lands: (~1000 tok)
 - `dragons-combat-damage.test.ts` — mig 247 — Broodcaller Scourge + Parapet Thrasher: "Whenever one or more (~1436 tok)
@@ -259,7 +261,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~31538 tok)
+- `test-cards.json` (~31749 tok)
 
 ## tests/harness/
 
@@ -271,7 +273,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~2115 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~2152 tok)
 
 ## vercel/
 

@@ -186,7 +186,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'pay_x_mana_damage', 'bounce_up_to', 'exile_until_nonland',
   'put_from_hand', 'destroy_up_to', 'put_from_command_zone', 'play_hideaway',
   'goad', 'territorial_attack', 'if_attacking_most_life', 'untap_all_attackers', 'extra_combat',
-  'exile_and_manifest', 'vote_wild_free',
+  'exile_and_manifest', 'vote_wild_free', 'discover',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -475,6 +475,16 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('exile_until_nonland'),
     free_cast_max_mana_value: z.number().int().positive().optional(),
+  }),
+  // Discover X (Pantlaza, mig 253): exile from the top until a nonland with
+  // mana value <= X; cast it free or put it into your hand; the rest bottom
+  // in a random order. amount may be the triggering creature's mana value.
+  z.object({
+    type: z.literal('discover'),
+    amount: z.union([
+      z.number().int().nonnegative(),
+      z.object({ mana_value_of: z.literal('triggering_creature') }).strict(),
+    ]),
   }),
   // "You may put a permanent card with mana value <= that damage from your
   // hand onto the battlefield" (Broodcaller Scourge, mig 247). The cap reads
@@ -952,6 +962,9 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
   // copied_script, turning exactly one mode's abilities on.
   mode: z.string().optional(),
   chosen: z.string().optional(),
+  // "This ability triggers only once each turn" (mig 253, Pantlaza) —
+  // watcher events only; stamped on the card's counter bag at fire time.
+  once_per_turn: z.boolean().optional(),
   // For the other-scoped events creature_entered / creature_died: which entering/dying
   // creature this watcher fires on. type_line = a subtype match (e.g. "Zombie");
   // controller is relative to this card's controller; exclude_self:true = "another …".

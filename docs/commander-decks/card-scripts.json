@@ -171,5 +171,7 @@
 
   "Reality Shift": {"schema_version":2,"spell_effect":{"actions":[{"type":"exile_and_manifest","target_type":"creature"}]}},
 
-  "Selvala's Stampede": {"schema_version":2,"spell_effect":{"actions":[{"type":"vote_wild_free"},{"type":"put_from_hand","count":"free_votes","filter":{"permanent":true}}]}}
+  "Selvala's Stampede": {"schema_version":2,"spell_effect":{"actions":[{"type":"vote_wild_free"},{"type":"put_from_hand","count":"free_votes","filter":{"permanent":true}}]}},
+
+  "Pantlaza, Sun-Favored": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","once_per_turn":true,"filter":{"controller":"you","type_line":"Dinosaur"},"effects":[{"type":"discover","amount":{"mana_value_of":"triggering_creature"}}]}]}
 }

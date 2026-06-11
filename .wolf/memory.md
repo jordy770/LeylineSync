@@ -3584,3 +3584,15 @@
 | 03:50 | FINAL 3 (migs 250-252): Scourge of the Throne (fire_attack_triggers stamps defender; if_attacking_most_life guard + once_per_turn stamp; untap_all_attackers; extra_combat via game_turn_state.extra_combats, advance_step loops end_of_combat->beginning_of_combat), Reality Shift manifest (exile_and_manifest kind: blank 2/2 via manifested marker + copied_script {} + unexpiring set_pt; register skips manifested; turn_manifest_up RPC), Selvala's Stampede (vote_wild_free chain decision; tally on stack payload; wild reveal-to-battlefield + bottom-random rest; put_from_hand count from payload key free_votes, 0 skips). DECK COMPLETE: 92/92 (86 implemented + 6 as-is), triage NEEDS BUILD 0. | migs 250-252, 11 files, 3 test files | 880/880 green, tsc+lint clean | ~30k |
 | 00:41 | Session end: 142 writes across 44 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 23 reads | ~89163 tok |
 | 04:05 | New deck added: Veloci-Ramp-Tor (Pantlaza, Sun-Favored - Naya Dinosaurs). Triage 90 cards: 11 implemented / 8 as-is / 71 NEEDS BUILD. Dragons list archived to ureni-dragons.txt; Veloci now in next-deck.txt. Key new mechanics: discover (Pantlaza - close cousin of exile_until_nonland mig 245), enrage family (needs a dealt-damage trigger event), rest is mostly land/ramp compositions of existing primitives. | next-deck.txt, ureni-dragons.txt | triaged | ~2k |
+| 01:28 | Session end: 142 writes across 44 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 23 reads | ~89163 tok |
+| 01:41 | Edited supabase/functions_src/fire_watcher_triggers.sql | added 1 condition(s) | ~307 |
+| 01:41 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~884 |
+| 01:42 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~19 |
+| 01:42 | Edited lib/game/card-behavior-schema.ts | modified X() | ~255 |
+| 01:42 | Edited lib/game/card-behavior-schema.ts | modified gate() | ~154 |
+| 01:42 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~65 |
+| 01:42 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~398 |
+| 01:42 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~124 |
+| 01:42 | Created tests/feature/discover.test.ts | — | ~978 |
+| 01:43 | Edited supabase/migrations/202605010253_discover_pantlaza.sql | modified X() | ~188 |
+| 04:40 | Dino deck opener (mig 253): discover X (exile-top until nonland MV<=X, reuses cast_exiled_free pick, skipped cards bottom-random; X = triggering creature's MV) + generic once_per_turn watcher gate (watcher_once_turn stamp). Pantlaza, Sun-Favored FULL. | mig 253, fire_watcher_triggers, apply_trigger_effects, schema, discover.test | 882/882 green, tsc+lint clean, Veloci triage 12/8/70 | ~8k |

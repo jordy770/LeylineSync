@@ -54,6 +54,24 @@ begin
         continue;
       end if;
 
+      -- "This ability triggers only once each turn" (mig 253, Pantlaza):
+      -- stamped on the WATCHER's counter bag at fire time. One shared stamp
+      -- per card (fine for cards with a single once-per-turn watcher).
+      if coalesce((v_ability ->> 'once_per_turn')::boolean, false) then
+        if (select gc2.counters ->> 'watcher_once_turn'
+            from public.game_cards gc2 where gc2.id = v_watcher.id)
+           = (select ts.turn_number::text from public.game_turn_state ts
+              where ts.session_id = p_session_id) then
+          continue;
+        end if;
+        update public.game_cards gc2
+        set counters = coalesce(gc2.counters, '{}'::jsonb)
+              || jsonb_build_object('watcher_once_turn',
+                   (select ts.turn_number::text from public.game_turn_state ts
+                    where ts.session_id = p_session_id))
+        where gc2.id = v_watcher.id;
+      end if;
+
       v_filter := v_ability -> 'filter';
       v_f_type := v_filter ->> 'type_line';
       v_f_controller := lower(coalesce(v_filter ->> 'controller', 'you'));
