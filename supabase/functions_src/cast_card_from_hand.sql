@@ -225,12 +225,16 @@ begin
       elsif jsonb_typeof(v_enters_tapped) = 'object' then
         v_land_tapped := true;
         v_unless := v_enters_tapped -> 'unless';
+        -- Each condition is independent so a card may OR several (Temple of the
+        -- Dragon Queen: enters tapped unless you revealed a Dragon from hand OR
+        -- you control a Dragon). Any satisfied condition untaps it.
         if v_unless ? 'count' then
           if public.resolve_count_amount(p_session_id, auth.uid(), v_unless)
              >= coalesce((v_unless ->> 'at_least')::integer, 1) then
             v_land_tapped := false;
           end if;
-        elsif v_unless ? 'hand_has_type' then
+        end if;
+        if v_unless ? 'hand_has_type' then
           if exists (
             select 1
             from public.game_cards gc
@@ -242,7 +246,8 @@ begin
           ) then
             v_land_tapped := false;
           end if;
-        elsif v_unless ? 'control_type' then
+        end if;
+        if v_unless ? 'control_type' then
           -- Checklands (mig 225): "enters tapped unless you control a Forest or
           -- an Island." Untapped when you control a battlefield permanent whose
           -- type line matches any of the listed types.

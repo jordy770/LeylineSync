@@ -3305,3 +3305,12 @@
 | 17:26 | Edited supabase/migrations/202605010236_exert_and_transform.sql | modified if() | ~219 |
 | 17:29 | Edited tests/feature/exert-and-transform.test.ts | modified hasFlying() | ~129 |
 | 16:40 | Batch (mig 236): Glorybringer (exert: declare_attacker p_exert -> 'exerted' marker skips next untap + enqueues top-level `exert` targeted effects) + Nogi (cost_reduction + attacks-trigger conditional -> untargeted set_pt 5/5 + grant_keyword flying to source; Dragon type-add cosmetic/TBD) + Steel Hellkite (firebreathing {2}:+1/+0 self-target; X-destroy deferred). | mig 236, declare_attacker, advance_step, apply_triggered_ability_effects, schema, scenario.ts harness, exert-and-transform.test | 832/832 green, tsc+lint clean | ~16k |
+| 17:32 | Session end: 103 writes across 40 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 29 reads | ~97764 tok |
+| 17:45 | Edited supabase/functions_src/cast_card_from_hand.sql | modified coalesce() | ~288 |
+| 17:45 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~50 |
+| 17:46 | Edited tests/fixtures/test-cards.json | 1→4 lines | ~570 |
+| 17:46 | Edited docs/commander-decks/card-scripts.json | expanded (+6 lines) | ~354 |
+| 17:47 | Edited supabase/migrations/202605010237_dragon_lands.sql | modified Approximations() | ~210 |
+| 17:47 | Created tests/feature/dragon-lands.test.ts | — | ~940 |
+| 17:47 | Edited tests/feature/dragon-lands.test.ts | 3→6 lines | ~111 |
+| 17:30 | Dragon lands (mig 237): enters_tapped `unless` conditions made INDEPENDENT/OR (Temple: control Dragon OR revealed Dragon); return_from_graveyard added to activate_ability's spell_effect routing (Haven's sac-return). Path of Ancestry (tapland + any), Temple of the Dragon Queen (conditional tapland + any), Haven of the Spirit Dragon (C + any + {2}{T}sac return Dragon from gy). Any-color approximations + Path scry deferred. | mig 237, cast_card_from_hand, activate_ability, dragon-lands.test | 835/835 green, tsc+lint clean | ~9k |

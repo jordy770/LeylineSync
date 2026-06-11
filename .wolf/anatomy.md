@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T15:29:03.918Z
-> Files: 80 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T15:47:41.548Z
+> Files: 82 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -101,7 +101,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~5462 tok)
+- `card-scripts.json` (~5734 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -135,14 +135,14 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6246 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6253 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2507 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~7117 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7133 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
-- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4623 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4693 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2441 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~1925 tok)
@@ -176,6 +176,7 @@
 - `202605010234_spell_cast_watcher.sql` — 202605010234_spell_cast_watcher — "whenever you/an opponent cast a spell". (~15190 tok)
 - `202605010235_becomes_target_and_power.sql` — 202605010235_becomes_target_and_power — Eshki + Thunderbreak Regent. (~10543 tok)
 - `202605010236_exert_and_transform.sql` — 202605010236_exert_and_transform — Glorybringer (exert) + Nogi (transform). (~11437 tok)
+- `202605010237_dragon_lands.sql` — 202605010237_dragon_lands — Path of Ancestry, Temple of the Dragon Queen, Haven. (~11022 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -193,6 +194,7 @@
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
 - `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
 - `divide-damage.test.ts` — Divided damage from triggers/abilities (mig 233): (~1212 tok)
+- `dragon-lands.test.ts` — mig 237 — three Dragon-deck lands: (~1000 tok)
 - `dragons-deck.test.ts` — Dragons deck — proving tests for the Tier-0 compositions (cards authored (~2449 tok)
 - `enters-tapped-lands.test.ts` — Enters-tapped lands (mig 217) — top-level `enters_tapped` read in (~1071 tok)
 - `exert-and-transform.test.ts` — mig 236 — three cards: (~1238 tok)
@@ -210,7 +212,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~25432 tok)
+- `test-cards.json` (~25984 tok)
 
 ## tests/harness/
 
@@ -251,5 +253,5 @@
 ## vercel/styles/
 
 
-- `tests/feature/exert-and-transform.test.ts` — Glorybringer exert + Nogi transform + Steel Hellkite firebreathing. ~700 tok
-- `supabase/migrations/202605010236_exert_and_transform.sql` — exert (declare_attacker p_exert + untap skip) + untargeted set_pt. ~3k tok
+- `tests/feature/dragon-lands.test.ts` — Path of Ancestry / Temple of the Dragon Queen / Haven of the Spirit Dragon. ~600 tok
+- `supabase/migrations/202605010237_dragon_lands.sql` — enters_tapped OR conditions + return_from_graveyard activated routing. ~1.5k tok

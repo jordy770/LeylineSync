@@ -113,5 +113,11 @@
 
   "Nogi, Draco-Zealot": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"type_line":"Dragon","amount":1}}],"triggered_abilities":[{"event":"attacks","effects":[{"type":"conditional","condition":{"count":"creatures_you_control","type_line":"Dragon","at_least":3},"effects":[{"type":"set_pt","power":5,"toughness":5},{"type":"grant_keyword","keyword":"flying"}]}]}]},
 
-  "Steel Hellkite": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}"}],"effects":[{"type":"pump","power":1,"toughness":0,"target_type":"creature"}]}]}
+  "Steel Hellkite": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}"}],"effects":[{"type":"pump","power":1,"toughness":0,"target_type":"creature"}]}]},
+
+  "Path of Ancestry": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Temple of the Dragon Queen": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Dragon"],"hand_has_type":["Dragon"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Haven of the Spirit Dragon": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"costs":[{"type":"mana","amount":"{2}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"return_from_graveyard","filter":{"type_line":"Dragon"},"to":"hand"}]}]}
 }
