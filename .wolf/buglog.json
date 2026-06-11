@@ -10575,6 +10575,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T21:37:09.879Z"
+    },
+    {
+      "id": "bug-651",
+      "timestamp": "2026-06-11T21:53:49.061Z",
+      "error_message": "Wrong reference: then should be put_from_hand_pick",
+      "file": "supabase/functions_src/submit_decision.sql",
+      "root_cause": "Used \"then\" instead of \"put_from_hand_pick\"",
+      "fix": "Changed then → put_from_hand_pick",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T21:53:49.061Z"
+    },
+    {
+      "id": "bug-652",
+      "timestamp": "2026-06-11T21:54:10.126Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T21:54:10.126Z"
+    },
+    {
+      "id": "bug-653",
+      "timestamp": "2026-06-11T21:55:51.298Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010247_dragons_combat_damage.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→20 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T21:55:51.298Z"
     }
   ]
 }

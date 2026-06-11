@@ -40,6 +40,12 @@ declare
   v_lethal_per_blocker integer;
   v_total_player_damage integer := 0;
   v_total_creature_damage integer := 0;
+  -- Dragon combat damage per damaged PLAYER (mig 247, Broodcaller Scourge /
+  -- Parapet Thrasher): {player_id: total}. Attackers all belong to the
+  -- active player, so the watcher controller is implicit.
+  v_dragon_player_damage jsonb := '{}'::jsonb;
+  v_dragon_key text;
+  v_dragon_watcher uuid;
   v_destroyed_count integer := 0;
   v_resolved_count integer := 0;
   v_minus_dealt boolean := false;
@@ -275,6 +281,14 @@ begin
               p_session_id, v_assignment.defending_player_id, v_attacker_damage,
               v_assignment.attacker_card_id, true
             );
+            -- Dragon tally (mig 247).
+            if exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+                       where gc.id = v_assignment.attacker_card_id and c.type_line ilike '%dragon%') then
+              v_dragon_player_damage := jsonb_set(v_dragon_player_damage,
+                array[v_assignment.defending_player_id::text],
+                to_jsonb(coalesce((v_dragon_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                         + v_attacker_damage));
+            end if;
           end if;
           -- Toxic N: poison in addition to dealing combat damage to the player.
           if v_attacker_toxic > 0 then
@@ -395,6 +409,14 @@ begin
                 p_session_id, v_assignment.defending_player_id, v_trample_amount,
                 v_assignment.attacker_card_id, true
               );
+              -- Dragon tally (mig 247).
+              if exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+                         where gc.id = v_assignment.attacker_card_id and c.type_line ilike '%dragon%') then
+                v_dragon_player_damage := jsonb_set(v_dragon_player_damage,
+                  array[v_assignment.defending_player_id::text],
+                  to_jsonb(coalesce((v_dragon_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                           + v_trample_amount));
+              end if;
             end if;
             if v_attacker_toxic > 0 then
               perform public.add_player_poison(p_session_id, v_assignment.defending_player_id, v_attacker_toxic);
@@ -445,6 +467,26 @@ begin
   set dealt_deathtouch_damage = false
   where session_id = p_session_id
     and dealt_deathtouch_damage = true;
+
+  -- "Whenever one or more Dragons you control deal combat damage to a player"
+  -- (mig 247, Broodcaller Scourge / Parapet Thrasher): one trigger per damaged
+  -- player for each of the ACTIVE player's battlefield permanents whose script
+  -- listens, carrying the total Dragon damage + the damaged player.
+  for v_dragon_key in select jsonb_object_keys(v_dragon_player_damage)
+  loop
+    for v_dragon_watcher in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = v_turn_state.active_player_id
+      order by gc.zone_position, gc.id
+    loop
+      perform public.fire_card_triggers(
+        p_session_id, v_dragon_watcher, array['dragons_combat_damage'],
+        jsonb_build_object(
+          'event_amount', (v_dragon_player_damage ->> v_dragon_key)::integer,
+          'event_player_id', v_dragon_key));
+    end loop;
+  end loop;
 
   v_finish_state := public.maybe_finish_game_session(p_session_id);
 

@@ -184,6 +184,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand', 'divide_damage',
   'return_self_to_hand', 'copy_permanent', 'become_copy', 'shuffle_into_library',
   'pay_x_mana_damage', 'bounce_up_to', 'exile_until_nonland',
+  'put_from_hand', 'destroy_up_to',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -469,6 +470,27 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('exile_until_nonland'),
     free_cast_max_mana_value: z.number().int().positive().optional(),
+  }),
+  // "You may put a permanent card with mana value <= that damage from your
+  // hand onto the battlefield" (Broodcaller Scourge, mig 247). The cap reads
+  // the trigger payload's event_amount (dragons_combat_damage).
+  z.object({
+    type: z.literal('put_from_hand'),
+    count: z.number().int().positive().optional(),
+    filter: z.object({
+      permanent: z.boolean().optional(),
+      max_mana_value: z.union([z.number().int(), z.literal('event_amount')]).optional(),
+    }).strict().optional(),
+  }),
+  // "Destroy target <filter>" via a parked pick that may be declined
+  // (Parapet Thrasher mode, mig 247).
+  z.object({
+    type: z.literal('destroy_up_to'),
+    count: z.number().int().positive().optional(),
+    target_filter: z.object({
+      controller: z.enum(['any', 'opponent', 'you']).optional(),
+      type_line: z.string().optional(),
+    }).strict().optional(),
   }),
   // "Return up to N target … to its owner's hand" via a parked pick
   // (Hammerhead Tyrant, mig 244). max_mana_value:'triggering_spell' caps the

@@ -3479,3 +3479,26 @@
 | 23:37 | Created tests/feature/opportunistic-dragon.test.ts | — | ~810 |
 | 23:37 | Edited supabase/migrations/202605010246_opportunistic_dragon.sql | expanded (+13 lines) | ~262 |
 | 00:20 | Opportunistic Dragon (mig 246): gain_control duration 'while_source' (unexpiring control row sourced by the thief; acting_source rides into apply_creature_effect; fire_zone_change_triggers reverts on thief leave); lose_abilities = copied_script stub blanking script + cant_attack_unless 99 gate. gain_control joined permanent-targeted family. Approx: block restriction + Human-or-artifact type check not enforced. | mig 246, trigger_effect_target_type, ATAE, apply_creature_effect, fire_zone_change_triggers, schema, opportunistic-dragon.test | 863/863 green, tsc+lint clean, triage 76/6/10 | ~8k |
+| 23:40 | Session end: 48 writes across 24 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 11 reads | ~44796 tok |
+| 23:52 | Edited supabase/functions_src/resolve_combat_damage.sql | modified PLAYER() | ~101 |
+| 23:52 | Edited supabase/functions_src/resolve_combat_damage.sql | modified jsonb_set() | ~286 |
+| 23:52 | Edited supabase/functions_src/resolve_combat_damage.sql | modified jsonb_set() | ~295 |
+| 23:53 | Edited supabase/functions_src/resolve_combat_damage.sql | modified fire_card_triggers() | ~274 |
+| 23:53 | Edited supabase/functions_src/fire_card_triggers.sql | modified public() | ~77 |
+| 23:53 | Edited supabase/functions_src/fire_card_triggers.sql | modified public() | ~136 |
+| 23:53 | Edited supabase/functions_src/enqueue_triggered_ability.sql | modified public() | ~136 |
+| 23:53 | Edited supabase/functions_src/enqueue_triggered_ability.sql | modified public() | ~82 |
+| 23:53 | Edited supabase/functions_src/apply_trigger_effects.sql | added 2 condition(s) | ~1012 |
+| 23:53 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~72 |
+| 23:53 | Edited supabase/functions_src/submit_decision.sql | modified Scourge() | ~393 |
+| 23:54 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~31 |
+| 23:54 | Edited lib/game/card-behavior-schema.ts | expanded (+21 lines) | ~312 |
+| 23:54 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~111 |
+| 23:54 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~722 |
+| 23:54 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~376 |
+| 23:55 | Created tests/feature/dragons-combat-damage.test.ts | — | ~1357 |
+| 23:55 | Edited supabase/migrations/202605010247_dragons_combat_damage.sql | modified if() | ~391 |
+| 23:56 | Edited tests/feature/dragons-combat-damage.test.ts | inline fix | ~1 |
+| 23:56 | Edited tests/feature/dragons-combat-damage.test.ts | inline fix | ~1 |
+| 23:56 | Edited tests/feature/dragons-combat-damage.test.ts | inline fix | ~1 |
+| 01:05 | Batch mig 247 (2 cards): dragons_combat_damage event (resolve_combat_damage tallies Dragon damage per damaged player, unblocked+trample; broadcasts with event_amount/event_player_id via fire_card_triggers/enqueue p_extra param - OLD OVERLOADS DROPPED). Broodcaller Scourge (put_from_hand pick capped at event_amount) + Parapet Thrasher (modal: destroy_up_to/destroy_pick + 4-each-opponent + impulse; approximations: no once-per-turn mode memory, each-OTHER-opponent->each opponent). Gotcha: resolveCombat needs setTurn combat_damage step first; PS Get-Content -Raw mangles UTF-8 em-dashes (fixed via Edit tool). | mig 247, resolve_combat_damage, fire_card_triggers, enqueue_triggered_ability, apply_trigger_effects, submit_decision, schema, dragons-combat-damage.test | 866/866 green, tsc+lint clean, triage 78/6/8 | ~12k |

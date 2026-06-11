@@ -7,7 +7,10 @@ create or replace function public.enqueue_triggered_ability(
   p_session_id uuid, p_controller_id uuid, p_source_card_id uuid, p_label text, p_effects jsonb,
   -- The creature that CAUSED a watcher to fire (entering/attacking), so a
   -- reflexive effect ("it gains haste") can apply to it (mig 227).
-  p_triggering_card_id uuid default null
+  p_triggering_card_id uuid default null,
+  -- Extra event context merged onto the payload (mig 247: event_amount /
+  -- event_player_id for dragons_combat_damage).
+  p_extra jsonb default null
 ) returns void
 language plpgsql security definer set search_path = public
 as $$
@@ -85,9 +88,9 @@ begin
       'timing', 'triggered',
       'apnap_rank', v_apnap_rank,
       'triggering_card_id', p_triggering_card_id
-    ),
+    ) || coalesce(p_extra, '{}'::jsonb),
     v_next_position
   );
 end;
 $$;
-grant execute on function public.enqueue_triggered_ability(uuid, uuid, uuid, text, jsonb, uuid) to authenticated;
+grant execute on function public.enqueue_triggered_ability(uuid, uuid, uuid, text, jsonb, uuid, jsonb) to authenticated;

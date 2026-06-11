@@ -46,6 +46,8 @@ const JSON_ONLY: Record<string, string> = {
   pay_x_mana_damage: 'pay any amount of a colour, deal that much damage to a picked target (Leyline Tyrant, mig 244); JSON/AI-authored',
   bounce_up_to: 'parked bounce pick with a triggering-spell mana-value cap (Hammerhead Tyrant, mig 244); JSON/AI-authored',
   exile_until_nonland: 'exile-top-until-nonland with a free-cast window (Breaching Dragonstorm, mig 245); JSON/AI-authored',
+  put_from_hand: 'put a hand permanent onto the battlefield, capped at the combat-damage event amount (Broodcaller Scourge, mig 247); JSON/AI-authored',
+  destroy_up_to: 'parked destroy pick that may be declined (Parapet Thrasher, mig 247); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

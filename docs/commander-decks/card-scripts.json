@@ -151,5 +151,9 @@
 
   "Breaching Dragonstorm": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"exile_until_nonland","free_cast_max_mana_value":8}]},{"event":"creature_entered","filter":{"type_line":"Dragon","controller":"you"},"effects":[{"type":"return_self_to_hand"}]}]},
 
-  "Opportunistic Dragon": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"gain_control","duration":"while_source","lose_abilities":true,"target_type":"permanent","target_controller":"opponent"}]}]}
+  "Opportunistic Dragon": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"gain_control","duration":"while_source","lose_abilities":true,"target_type":"permanent","target_controller":"opponent"}]}]},
+
+  "Broodcaller Scourge": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dragons_combat_damage","effects":[{"type":"put_from_hand","filter":{"permanent":true,"max_mana_value":"event_amount"}}]}]},
+
+  "Parapet Thrasher": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dragons_combat_damage","effects":[{"type":"choose_one","prompt":"Choose one","modes":[{"label":"Destroy target artifact that opponent controls","actions":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"opponent","type_line":"artifact"}}]},{"label":"Deal 4 damage to each other opponent","actions":[{"type":"deal_damage","amount":4,"recipient":"each_opponent"}]},{"label":"Exile the top card of your library; you may play it","actions":[{"type":"impulse","count":1}]}]}]}]}
 }

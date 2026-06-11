@@ -6,7 +6,10 @@
 create or replace function public.fire_card_triggers(
   p_session_id uuid,
   p_game_card_id uuid,
-  p_events text[]
+  p_events text[],
+  -- Extra payload merged onto the enqueued trigger (mig 247: event_amount /
+  -- event_player_id for dragons_combat_damage).
+  p_extra jsonb default null
 ) returns void
 language plpgsql
 security definer
@@ -55,11 +58,13 @@ begin
         v_controller,
         p_game_card_id,
         coalesce(v_card_name, v_ability ->> 'id', v_event),
-        v_ability -> 'effects'
+        v_ability -> 'effects',
+        null,
+        p_extra
       );
     end if;
   end loop;
 end;
 $$;
-grant execute on function public.fire_card_triggers(uuid, uuid, text[]) to authenticated;
-grant execute on function public.fire_card_triggers(uuid, uuid, text[]) to service_role;
+grant execute on function public.fire_card_triggers(uuid, uuid, text[], jsonb) to authenticated;
+grant execute on function public.fire_card_triggers(uuid, uuid, text[], jsonb) to service_role;

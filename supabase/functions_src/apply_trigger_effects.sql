@@ -586,6 +586,54 @@ begin
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
 
+    elsif v_type = 'put_from_hand' then
+      -- "You may put a permanent card with mana value less than or equal to
+      -- that damage from your hand onto the battlefield" (Broodcaller
+      -- Scourge, mig 247). The cap rides the trigger payload (event_amount).
+      v_amount := case when (v_effect -> 'filter' ->> 'max_mana_value') = 'event_amount'
+                       then nullif(v_item.payload ->> 'event_amount', '')::integer
+                       else nullif(v_effect -> 'filter' ->> 'max_mana_value', '')::integer end;
+      select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
+        into v_options
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.owner_id = v_controller and gc.zone = 'hand'
+        and (not coalesce((v_effect -> 'filter' ->> 'permanent')::boolean, true)
+             or c.type_line ilike '%creature%' or c.type_line ilike '%artifact%'
+             or c.type_line ilike '%enchantment%' or c.type_line ilike '%land%'
+             or c.type_line ilike '%planeswalker%' or c.type_line ilike '%battle%')
+        and (v_amount is null or public.mana_value(c.mana_cost) <= v_amount);
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'put_from_hand_pick',
+        'You may put a card from your hand onto the battlefield',
+        v_options, 0, greatest(1, coalesce((v_effect ->> 'count')::integer, 1)), '{}'::jsonb)
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
+    elsif v_type = 'destroy_up_to' then
+      -- "Destroy target artifact that opponent controls" as a parked pick
+      -- (Parapet Thrasher mode, mig 247). "That opponent" is approximated as
+      -- any matching opponent permanent. Picking nothing declines.
+      select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
+        into v_options
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and (case lower(coalesce(v_effect -> 'target_filter' ->> 'controller', 'opponent'))
+               when 'opponent' then coalesce(gc.controller_player_id, gc.owner_id) is distinct from v_controller
+               when 'you' then coalesce(gc.controller_player_id, gc.owner_id) = v_controller
+               else true end)
+        and (coalesce(v_effect -> 'target_filter' ->> 'type_line', '') = ''
+             or c.type_line ilike '%' || (v_effect -> 'target_filter' ->> 'type_line') || '%');
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'destroy_pick',
+        'Destroy up to ' || coalesce(v_effect ->> 'count', '1'),
+        v_options, 0, greatest(1, coalesce((v_effect ->> 'count')::integer, 1)), '{}'::jsonb)
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
     elsif v_type = 'pay_x_mana_damage' then
       -- "You may pay any amount of {R}. When you do, it deals that much
       -- damage to any target." (Leyline Tyrant dies trigger, mig 244.) Parks

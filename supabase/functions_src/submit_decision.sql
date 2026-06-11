@@ -110,7 +110,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -453,6 +453,33 @@ begin
                              and x.owner_id = gc.owner_id and x.zone = 'hand')
       where gc.id = v_card;
     end if;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'put_from_hand_pick' then
+    -- Broodcaller Scourge (mig 247): each picked hand card enters the
+    -- battlefield under the decider's control. Empty = declined.
+    select turn_number into v_turn
+    from public.game_turn_state where session_id = v_decision.session_id;
+    foreach v_card in array v_chosen_ids
+    loop
+      update public.game_cards gc
+      set zone = 'battlefield', controller_player_id = v_decision.deciding_player_id,
+          is_tapped = false, entered_battlefield_turn_number = coalesce(v_turn, 0),
+          zone_position = (select coalesce(max(zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = v_decision.session_id
+                             and x.owner_id = gc.owner_id and x.zone = 'battlefield')
+      where gc.id = v_card;
+      perform public.register_card_continuous_effects(v_decision.session_id, v_card);
+    end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'destroy_pick' then
+    -- Parapet Thrasher mode (mig 247): destroy each picked permanent.
+    foreach v_card in array v_chosen_ids
+    loop
+      perform public.put_in_graveyard(v_decision.session_id, v_card);
+    end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
   elsif v_decision.decision_type = 'bounce_pick' then
