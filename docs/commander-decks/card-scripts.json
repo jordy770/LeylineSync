@@ -119,5 +119,9 @@
 
   "Temple of the Dragon Queen": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Dragon"],"hand_has_type":["Dragon"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
 
-  "Haven of the Spirit Dragon": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"costs":[{"type":"mana","amount":"{2}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"return_from_graveyard","filter":{"type_line":"Dragon"},"to":"hand"}]}]}
+  "Haven of the Spirit Dragon": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"costs":[{"type":"mana","amount":"{2}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"return_from_graveyard","filter":{"type_line":"Dragon"},"to":"hand"}]}]},
+
+  "Nesting Dragon": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Dragon Egg Token"}]}]},
+
+  "Sarkhan, Soul Aflame": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"type_line":"Dragon","amount":1}}]}
 }

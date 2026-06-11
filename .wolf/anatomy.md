@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T15:47:41.548Z
-> Files: 82 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T15:59:25.475Z
+> Files: 85 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -101,7 +101,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~5734 tok)
+- `card-scripts.json` (~5863 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -150,7 +150,8 @@
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1017 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~306 tok)
 - `fire_becomes_target_triggers.sql` — supabase/functions_src/fire_becomes_target_triggers.sql (~801 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1394 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1399 tok)
+- `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~639 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
@@ -177,6 +178,7 @@
 - `202605010235_becomes_target_and_power.sql` — 202605010235_becomes_target_and_power — Eshki + Thunderbreak Regent. (~10543 tok)
 - `202605010236_exert_and_transform.sql` — 202605010236_exert_and_transform — Glorybringer (exert) + Nogi (transform). (~11437 tok)
 - `202605010237_dragon_lands.sql` — 202605010237_dragon_lands — Path of Ancestry, Temple of the Dragon Queen, Haven. (~11022 tok)
+- `202605010238_landfall.sql` — 202605010238_landfall — Nesting Dragon (landfall) + Sarkhan cost reduction. (~2096 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -201,6 +203,7 @@
 - `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
 - `gadrak.test.ts` — Gadrak, the Crown-Scourge (mig 229) — (~1191 tok)
 - `game-start.test.ts` — Game start sequence (mig 221) — random first player, 7-card opening hands, (~1843 tok)
+- `landfall.test.ts` — mig 238 — Nesting Dragon (landfall) + Sarkhan cost reduction. (~843 tok)
 - `monstrosity.test.ts` — Monstrosity (mig 232) — Stormbreath Dragon: "{5}{R}{R}: Monstrosity 3. When (~781 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
 - `reflexive-watcher.test.ts` — Reflexive watchers (mig 227) — the entering/attacking creature ITSELF gains (~953 tok)
@@ -212,7 +215,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~25984 tok)
+- `test-cards.json` (~26597 tok)
 
 ## tests/harness/
 
@@ -253,5 +256,5 @@
 ## vercel/styles/
 
 
-- `tests/feature/dragon-lands.test.ts` — Path of Ancestry / Temple of the Dragon Queen / Haven of the Spirit Dragon. ~600 tok
-- `supabase/migrations/202605010237_dragon_lands.sql` — enters_tapped OR conditions + return_from_graveyard activated routing. ~1.5k tok
+- `tests/feature/landfall.test.ts` — Nesting Dragon landfall (Egg->Hatchling chain) + Sarkhan cost reduction. ~500 tok
+- `supabase/migrations/202605010238_landfall.sql` — land_entered watcher event. ~1k tok

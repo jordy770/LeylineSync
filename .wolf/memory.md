@@ -3314,3 +3314,13 @@
 | 17:47 | Created tests/feature/dragon-lands.test.ts | — | ~940 |
 | 17:47 | Edited tests/feature/dragon-lands.test.ts | 3→6 lines | ~111 |
 | 17:30 | Dragon lands (mig 237): enters_tapped `unless` conditions made INDEPENDENT/OR (Temple: control Dragon OR revealed Dragon); return_from_graveyard added to activate_ability's spell_effect routing (Haven's sac-return). Path of Ancestry (tapland + any), Temple of the Dragon Queen (conditional tapland + any), Haven of the Spirit Dragon (C + any + {2}{T}sac return Dragon from gy). Any-color approximations + Path scry deferred. | mig 237, cast_card_from_hand, activate_ability, dragon-lands.test | 835/835 green, tsc+lint clean | ~9k |
+| 17:49 | Session end: 110 writes across 42 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 30 reads | ~100397 tok |
+| 17:57 | Edited supabase/functions_src/fire_zone_change_triggers.sql | modified Landfall() | ~142 |
+| 17:57 | Edited supabase/functions_src/fire_watcher_triggers.sql | anything() → land_entered() | ~116 |
+| 17:57 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~350 |
+| 17:58 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~353 |
+| 17:58 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~265 |
+| 17:58 | Edited supabase/migrations/202605010238_landfall.sql | 4→9 lines | ~197 |
+| 17:59 | Created tests/feature/landfall.test.ts | — | ~841 |
+| 17:59 | Edited tests/feature/landfall.test.ts | 5→5 lines | ~68 |
+| 18:15 | Landfall (mig 238): land_entered watcher event (fire_zone_change_triggers broadcast on entry; fire_watcher_triggers type-default 'land'). Nesting Dragon (FULL: landfall -> Dragon Egg token -> dies -> Dragon Hatchling token; seeded Egg+Hatchling token catalog rows with scripts) + Sarkhan Soul Aflame (cost_reduction half only; become-copy deferred). | mig 238, fire_zone_change_triggers, fire_watcher_triggers, test-cards.json tokens, landfall.test | 837/837 green, tsc+lint clean | ~10k |

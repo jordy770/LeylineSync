@@ -10170,6 +10170,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T15:47:01.954Z"
+    },
+    {
+      "id": "bug-626",
+      "timestamp": "2026-06-11T15:58:06.163Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Path of Ancestry Test\"",
+      "fix": "Changed to \"Nesting Dragon Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T15:58:06.163Z"
+    },
+    {
+      "id": "bug-627",
+      "timestamp": "2026-06-11T15:58:58.906Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010238_landfall.sql",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 4→9 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T15:58:58.906Z"
     }
   ]
 }

@@ -21,6 +21,13 @@ begin
       NEW.session_id, NEW.id,
       coalesce(NEW.controller_player_id, NEW.owner_id), 'creature_entered'
     );
+    -- Landfall (mig 238, Nesting Dragon): "whenever a land you control enters."
+    -- Fired for every entry; the watcher's type filter defaults to 'land' for
+    -- this event, so only land entries actually match.
+    perform public.fire_watcher_triggers(
+      NEW.session_id, NEW.id,
+      coalesce(NEW.controller_player_id, NEW.owner_id), 'land_entered'
+    );
   end if;
 
   -- Dies (moves from the battlefield to the graveyard).
