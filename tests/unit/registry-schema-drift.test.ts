@@ -38,6 +38,7 @@ const JSON_ONLY: Record<string, string> = {
   choose_one: 'modal trigger ("choose one —", Atsushi, mig 230); JSON/AI-authored, no guided-form widget yet',
   monstrosity: 'become-monstrous once + on_monstrous rider (Stormbreath, mig 232); JSON/AI-authored',
   damage_each_opponent_by_hand: 'per-opponent hand-size damage (Stormbreath monstrosity rider, mig 232); JSON/AI-authored',
+  divide_damage: 'divided damage among targets via a parked decision (Dragonlord Atarka / Skarrgan, mig 233); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T12:55:34.686Z
-> Files: 67 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T13:09:03.109Z
+> Files: 71 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -101,7 +101,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~4411 tok)
+- `card-scripts.json` (~4728 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -111,7 +111,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~11768 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12027 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -135,16 +135,18 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6094 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6246 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2372 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~6784 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~6661 tok)
+- `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~7117 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~6759 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4553 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2359 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~1698 tok)
+- `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1017 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~306 tok)
 - `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1335 tok)
@@ -157,7 +159,7 @@
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2062 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1399 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~6786 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~7306 tok)
 
 ## supabase/migrations/
 
@@ -167,6 +169,7 @@
 - `202605010230_atsushi.sql` — 202605010230_atsushi — Atsushi, the Blazing Sky. (~26980 tok)
 - `202605010231_cost_reduction.sql` — 202605010231_cost_reduction — generic-mana cost reduction. (~9725 tok)
 - `202605010232_monstrosity.sql` — 202605010232_monstrosity — Stormbreath Dragon's monstrosity. (~12816 tok)
+- `202605010233_divide_damage.sql` — 202605010233_divide_damage — divided damage from triggers/abilities. (~21620 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -182,6 +185,7 @@
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
 - `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
+- `divide-damage.test.ts` — Divided damage from triggers/abilities (mig 233): (~1212 tok)
 - `dragons-deck.test.ts` — Dragons deck — proving tests for the Tier-0 compositions (cards authored (~2449 tok)
 - `enters-tapped-lands.test.ts` — Enters-tapped lands (mig 217) — top-level `enters_tapped` read in (~1071 tok)
 - `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
@@ -197,7 +201,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~23468 tok)
+- `test-cards.json` (~23996 tok)
 
 ## tests/harness/
 
@@ -209,7 +213,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1426 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1463 tok)
 
 ## vercel/
 
@@ -238,5 +242,7 @@
 ## vercel/styles/
 
 
-- `tests/feature/monstrosity.test.ts` — Stormbreath Dragon: monstrosity counters + marker + per-opponent hand-size burn. ~500 tok
-- `supabase/migrations/202605010232_monstrosity.sql` — monstrosity effect + damage_each_opponent_by_hand. ~1.5k tok
+- `supabase/functions_src/divide_damage_options.sql` — legal-target option list for a divide_damage decision. ~500 tok
+- `supabase/functions_src/apply_damage_allocations.sql` — applies a resolved divided-damage split (creature/PW/player). ~500 tok
+- `tests/feature/divide-damage.test.ts` — Dragonlord Atarka ETB + Skarrgan Riot/activated divided damage. ~900 tok
+- `supabase/migrations/202605010233_divide_damage.sql` — divide_damage decision + helpers + activate condition gate. ~3k tok

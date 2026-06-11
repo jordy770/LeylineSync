@@ -90,6 +90,17 @@ begin
     raise exception 'Use the mana ability flow for mana abilities';
   end if;
 
+  -- Activation condition (mig 233, Skarrgan Hellkite: "Activate only if this
+  -- creature has a +1/+1 counter on it"). A {counters, of, at_least} spec read
+  -- via resolve_dynamic_amount before any cost is paid.
+  if v_ability -> 'condition' is not null then
+    if public.resolve_dynamic_amount(p_session_id, p_source_card_id, auth.uid(), v_ability -> 'condition')
+       < coalesce((v_ability -> 'condition' ->> 'at_least')::integer, 1)
+    then
+      raise exception 'This ability cannot be activated right now';
+    end if;
+  end if;
+
   -- Parse costs
   for v_cost in select * from jsonb_array_elements(coalesce(v_ability -> 'costs', '[]'::jsonb))
   loop
@@ -303,7 +314,7 @@ begin
       p_source_card_id
     );
 
-  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity') then
+  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity', 'divide_damage') then
     -- A single create_token / search_library / grant_keyword_all effect
     -- routes through a spell_effect stack item so it reuses the spell-effect
     -- resolver (incl. the `tapped` flag and tutor `filter`). Wayfarer's Bauble.

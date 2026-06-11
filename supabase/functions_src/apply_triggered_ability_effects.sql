@@ -472,6 +472,13 @@ begin
         );
       end if;
 
+    elsif v_eff_type = 'grant_keyword' then
+      -- Untargeted single grant → the source permanent (Skarrgan's Riot haste
+      -- mode). apply_creature_effect writes the keyword continuous effect.
+      if p_source_card_id is not null then
+        perform public.apply_creature_effect(p_session_id, 'grant_keyword', p_source_card_id, v_effect);
+      end if;
+
     elsif v_eff_type = 'conditional' then
       -- "If <condition>, <effects>." A count-based gate: resolve the condition's
       -- count ({count, type_line?}) and, when it meets `at_least`, recursively

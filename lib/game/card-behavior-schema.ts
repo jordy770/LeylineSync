@@ -181,7 +181,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
   'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
-  'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand',
+  'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand', 'divide_damage',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -417,6 +417,18 @@ const CardBehaviorActionSchema = z.union([
   // (Stormbreath's become-monstrous rider).
   z.object({
     type: z.literal('damage_each_opponent_by_hand'),
+  }),
+  // "Deal N damage divided as you choose among …" (Dragonlord Atarka ETB /
+  // Skarrgan Hellkite). Parks a divide_damage decision; the player allocates N
+  // among legal targets (creatures/planeswalkers/players per target_filter).
+  z.object({
+    type: z.literal('divide_damage'),
+    amount: z.number().int().positive(),
+    max_targets: z.number().int().positive().optional(),
+    target_filter: z.object({
+      controller: z.enum(['any', 'opponent', 'you']).optional(),
+      types: z.array(z.enum(['creature', 'planeswalker', 'player'])).optional(),
+    }).strict().optional(),
   }),
   // A modal trigger ("choose one —"): pick `choose` (default 1) of the modes;
   // each mode's untargeted `actions` resolve. Inner actions kept loose (see may).
@@ -700,6 +712,12 @@ const CardBehaviorActivatedAbilitySchema = z.object({
   is_mana_ability: z.boolean().optional(),
   timing: z.string().optional(),
   source_zone_required: BehaviorZoneSchema.optional(),
+  // "Activate only if …" gate (Skarrgan Hellkite: a +1/+1 counter on this).
+  condition: z.object({
+    counters: z.string(),
+    of: z.enum(['self', 'source', 'this', 'you', 'your', 'controller']).optional(),
+    at_least: z.number().int().positive(),
+  }).strict().optional(),
 })
 
 const CardBehaviorTriggeredAbilitySchema = z.object({

@@ -96,6 +96,23 @@ begin
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
 
+    elsif v_type = 'divide_damage' then
+      -- "Deal N damage divided as you choose among target …" from a TRIGGER
+      -- (Dragonlord Atarka ETB). Park a divide_damage decision listing the legal
+      -- targets; submit_decision validates the allocations (sum = N) and applies.
+      v_options := public.divide_damage_options(p_session_id, v_controller, v_effect -> 'target_filter');
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'divide_damage',
+        'Divide ' || coalesce((v_effect ->> 'amount')::integer, 1) || ' damage',
+        v_options, 1, jsonb_array_length(v_options),
+        jsonb_build_object(
+          'amount', coalesce((v_effect ->> 'amount')::integer, 1),
+          'max_targets', nullif(v_effect ->> 'max_targets', '')::integer))
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
     elsif v_type in ('scry', 'surveil') then
       v_amount := coalesce((v_effect ->> 'amount')::integer, 1);
       select coalesce(

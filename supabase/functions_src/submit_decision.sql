@@ -159,6 +159,39 @@ begin
       perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
     end if;
 
+  elsif v_decision.decision_type = 'divide_damage' then
+    -- Validate + apply a divided-damage allocation (Dragonlord Atarka / Skarrgan).
+    -- p_result.allocations = [{game_card_id|player_id, amount}], summing to the
+    -- parked amount, each target an offered option, count within max_targets.
+    declare
+      v_allocs jsonb := case when jsonb_typeof(p_result -> 'allocations') = 'array' then p_result -> 'allocations' else '[]'::jsonb end;
+      v_dd_amount integer := coalesce((v_decision.params ->> 'amount')::integer, 0);
+      v_dd_max integer := coalesce((v_decision.params ->> 'max_targets')::integer, jsonb_array_length(v_decision.options));
+      v_dd_n integer := jsonb_array_length(v_allocs);
+    begin
+      if v_dd_n < 1 or v_dd_n > v_dd_max then
+        raise exception 'Must allocate to between 1 and % target(s)', v_dd_max;
+      end if;
+      if exists (select 1 from jsonb_array_elements(v_allocs) a where coalesce((a ->> 'amount')::integer, 0) < 1) then
+        raise exception 'Each allocation must be at least 1 damage';
+      end if;
+      if (select coalesce(sum((value ->> 'amount')::integer), 0) from jsonb_array_elements(v_allocs)) <> v_dd_amount then
+        raise exception 'Allocations must total % damage', v_dd_amount;
+      end if;
+      if exists (
+        select 1 from jsonb_array_elements(v_allocs) a
+        where not exists (
+          select 1 from jsonb_array_elements(v_decision.options) o
+          where ((a ->> 'game_card_id') is not null and (o ->> 'game_card_id') = (a ->> 'game_card_id'))
+             or ((a ->> 'player_id') is not null and (o ->> 'player_id') = (a ->> 'player_id'))
+        )
+      ) then
+        raise exception 'Allocation targets a permanent or player that was not offered';
+      end if;
+      perform public.apply_damage_allocations(v_decision.session_id, v_allocs);
+    end;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
   elsif v_decision.decision_type = 'scry' then
     with ordered as (
       select (t.value)::uuid as id, 0 as section, t.ord as ordnum from jsonb_array_elements_text(v_top) with ordinality as t(value, ord)

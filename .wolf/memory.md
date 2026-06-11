@@ -3246,3 +3246,20 @@
 | 14:55 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~197 |
 | 14:55 | Created tests/feature/monstrosity.test.ts | — | ~781 |
 | 13:20 | Stormbreath Dragon (mig 232): monstrosity effect (once-marker in counter bag + N +1/+1 counters + on_monstrous rider, routed via activate_ability spell_effect list) + damage_each_opponent_by_hand (per-opponent life loss = their own hand size). Flying/haste/protection-white work as-is. Fixture + card-scripts + monstrosity.test. | mig 232, activate_ability, apply_triggered_ability_effects, schema, registry-drift, monstrosity.test | 818/818 green, tsc+lint clean | ~9k |
+| 14:57 | Session end: 52 writes across 25 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 21 reads | ~63516 tok |
+| 15:03 | Created supabase/functions_src/divide_damage_options.sql | — | ~676 |
+| 15:04 | Created supabase/functions_src/apply_damage_allocations.sql | — | ~592 |
+| 15:04 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~346 |
+| 15:04 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~575 |
+| 15:05 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~44 |
+| 15:05 | Edited supabase/functions_src/activate_ability.sql | modified coalesce() | ~189 |
+| 15:06 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~134 |
+| 15:06 | Edited lib/game/card-behavior-schema.ts | expanded (+12 lines) | ~225 |
+| 15:06 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~29 |
+| 15:06 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~73 |
+| 15:06 | Edited supabase/migrations/202605010233_divide_damage.sql | modified divide_damage_options() | ~320 |
+| 15:07 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+7 lines) | ~108 |
+| 15:08 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~548 |
+| 15:08 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~457 |
+| 15:09 | Created tests/feature/divide-damage.test.ts | — | ~1212 |
+| 14:10 | Divided damage from triggers/abilities (mig 233): divide_damage_options + apply_damage_allocations helpers; apply_trigger_effects parks a divide_damage decision (Atarka ETB), submit_decision validates (sum=amount, offered targets, max_targets) + applies; activate_ability routes divide_damage via spell_effect list (Skarrgan) + honours an "Activate only if" {counters,of,at_least} condition; untargeted single grant_keyword -> source (Riot haste). Dragonlord Atarka + Skarrgan Hellkite (Riot via choose_one). Fixtures + card-scripts + divide-damage.test (DV1-4). | mig 233, divide_damage_options, apply_damage_allocations, apply_trigger_effects, submit_decision, activate_ability, apply_triggered_ability_effects, schema, divide-damage.test | 822/822 green, tsc+lint clean | ~22k |
