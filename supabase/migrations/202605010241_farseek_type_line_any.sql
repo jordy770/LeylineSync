@@ -1,7 +1,12 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010241_farseek_type_line_any — Farseek + Flooded Grove.
+--   • search_library gains filter.type_line_any: OR over several type words
+--     ("search your library for a Plains, Island, Swamp, or Mountain card" —
+--     Farseek; note Forest is NOT in the list).
+--   • Flooded Grove needs NO engine change: its {G/U} activation cost on a
+--     mana ability already flows through pay_mana_cost's hybrid support
+--     (mig 121); the card is script-only (see card-scripts.json).
+-- Generated from supabase/functions_src (apply_trigger_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,

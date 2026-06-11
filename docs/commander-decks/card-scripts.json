@@ -129,5 +129,9 @@
 
   "Will of the Temur": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Choose one","may_choose_both_if_commander":true,"modes":[{"label":"Create a token copy of target permanent (a 4/4 with flying)","actions":[{"type":"copy_permanent","target_filter":{"controller":"any"},"except":{"power":4,"toughness":4,"keywords":["flying"]}}]},{"label":"Draw cards equal to the greatest mana value among permanents you control","actions":[{"type":"draw","amount":{"count":"greatest_mana_value_you_control"}}]}]}]}},
 
-  "Reflections of Littjara": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"choose_creature_type","effects":[]}]},{"event":"spell_cast","filter":{"controller":"you","type_line":"$chosen"},"effects":[{"type":"copy_permanent","target":"triggering_creature"}]}]}
+  "Reflections of Littjara": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"choose_creature_type","effects":[]}]},{"event":"spell_cast","filter":{"controller":"you","type_line":"$chosen"},"effects":[{"type":"copy_permanent","target":"triggering_creature"}]}]},
+
+  "Farseek": {"schema_version":2,"spell_effect":{"actions":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line_any":["Plains","Island","Swamp","Mountain"]}}]}},
+
+  "Flooded Grove": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{G/U}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":2}]},{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{G/U}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1},{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{G/U}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":2}]}]}
 }

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T16:48:30.661Z
-> Files: 94 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T16:55:03.395Z
+> Files: 96 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -102,7 +102,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~6282 tok)
+- `card-scripts.json` (~6524 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -112,7 +112,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12852 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12908 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -140,7 +140,7 @@
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2773 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~8787 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~8895 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7133 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
@@ -186,6 +186,7 @@
 - `202605010238_landfall.sql` — 202605010238_landfall — Nesting Dragon (landfall) + Sarkhan cost reduction. (~2096 tok)
 - `202605010239_copy_permanent.sql` — 202605010239_copy_permanent — token-copy primitive (Will of the Temur, (~21363 tok)
 - `202605010240_become_copy.sql` — 202605010240_become_copy — an existing card becomes a copy (Deceptive (~20948 tok)
+- `202605010241_farseek_type_line_any.sql` — 202605010241_farseek_type_line_any — Farseek + Flooded Grove. (~8996 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -209,6 +210,7 @@
 - `dragons-deck.test.ts` — Dragons deck — proving tests for the Tier-0 compositions (cards authored (~2449 tok)
 - `enters-tapped-lands.test.ts` — Enters-tapped lands (mig 217) — top-level `enters_tapped` read in (~1071 tok)
 - `exert-and-transform.test.ts` — mig 236 — three cards: (~1238 tok)
+- `farseek-flooded-grove.test.ts` — mig 241 — Farseek + Flooded Grove. (~809 tok)
 - `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
 - `gadrak.test.ts` — Gadrak, the Crown-Scourge (mig 229) — (~1191 tok)
 - `game-start.test.ts` — Game start sequence (mig 221) — random first player, 7-card opening hands, (~1843 tok)
@@ -224,7 +226,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~27340 tok)
+- `test-cards.json` (~27731 tok)
 
 ## tests/harness/
 

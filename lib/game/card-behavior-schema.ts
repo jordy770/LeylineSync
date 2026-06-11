@@ -304,7 +304,13 @@ const CardBehaviorActionSchema = z.union([
     to: z.enum(['hand', 'battlefield', 'top', 'graveyard']).optional(),
     tapped: z.boolean().optional(),
     reveal: z.boolean().optional(),
-    filter: z.object({ type_line: z.string().optional(), name: z.string().optional() }).optional(),
+    // type_line_any: OR over several type words ("a Plains, Island, Swamp, or
+    // Mountain card" — Farseek, mig 241).
+    filter: z.object({
+      type_line: z.string().optional(),
+      type_line_any: z.array(z.string()).optional(),
+      name: z.string().optional(),
+    }).optional(),
   }),
   // Discard `count` cards. `who` is the discarding player — 'you' (controller,
   // default) or 'opponent' (Mind Rot). `random: true` discards at random (no

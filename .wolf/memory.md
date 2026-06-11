@@ -3378,3 +3378,10 @@
 | 18:47 | Edited supabase/functions_src/advance_step.sql | 18→20 lines | ~262 |
 | 18:48 | Edited supabase/migrations/202605010240_become_copy.sql | modified public() | ~496 |
 | 20:15 | Become-copy (mig 240): game_cards.copy_original_card_id/copy_revert_at_turn + become_copy() (card_id flip, copied_script carry, except-grants as plain rows, optional fire_etb); become_copy parked pick (the pick IS the 'may'); revert_copy_before_leave BEFORE-UPDATE trigger (graveyard card = printed original); advance_step end-step revert for until-EOT. Deceptive Frostkite FULL + Sarkhan Soul Aflame copy half (now fully faithful as Dragon-enters watcher). | mig 240, become_copy, revert_copy_before_leave, apply_trigger_effects, submit_decision, advance_step, schema, become-copy.test | 846/846 green, tsc+lint clean, triage 65/6/21 | ~12k |
+| 18:51 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~147 |
+| 18:52 | Edited supabase/functions_src/apply_trigger_effects.sql | modified type_line_any() | ~272 |
+| 18:53 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~590 |
+| 18:53 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~332 |
+| 18:54 | Created tests/feature/farseek-flooded-grove.test.ts | — | ~809 |
+| 18:55 | Edited supabase/migrations/202605010241_farseek_type_line_any.sql | 2→7 lines | ~130 |
+| 20:35 | Farseek + Flooded Grove (mig 241): search_library filter.type_line_any OR-filter (Plains/Island/Swamp/Mountain, no Forest); Flooded Grove script-only ({G/U} hybrid activation cost already supported by pay_mana_cost mig 121). | mig 241, apply_trigger_effects, schema, farseek-flooded-grove.test | 848/848 green, tsc+lint clean, triage 67/6/19 | ~4k |
