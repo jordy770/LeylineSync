@@ -3427,3 +3427,22 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 22:00 | Become the Avalanche (mig 243): pump_all wired into program resolver; apply_mass_pump_until_eot resolves count-based P/T at apply time; counts creatures_you_control+min_power and cards_in_hand. | mig 243, apply_mass_pump_until_eot, apply_trigger_effects, resolve_count_amount, schema, become-the-avalanche.test | 853/853 green, tsc+lint clean, triage 70/6/16 | ~6k |
+| 23:15 | Created supabase/functions_src/mana_value.sql | — | ~258 |
+| 23:15 | Edited supabase/functions_src/resolve_count_amount.sql | reduced (-8 lines) | ~132 |
+| 23:16 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified reduction() | ~144 |
+| 23:16 | Edited supabase/functions_src/apply_trigger_effects.sql | added 2 condition(s) | ~982 |
+| 23:16 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~57 |
+| 23:16 | Edited supabase/functions_src/submit_decision.sql | modified Tyrant() | ~675 |
+| 23:16 | Edited supabase/functions_src/cast_card_from_hand.sql | 4→5 lines | ~28 |
+| 23:16 | Edited supabase/functions_src/cast_card_from_hand.sql | 2→2 lines | ~26 |
+| 23:17 | Edited supabase/functions_src/cast_card_from_hand.sql | modified and() | ~606 |
+| 23:17 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~38 |
+| 23:17 | Edited lib/game/card-behavior-schema.ts | expanded (+23 lines) | ~424 |
+| 23:17 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~114 |
+| 23:17 | Edited tests/fixtures/test-cards.json | 2→5 lines | ~757 |
+| 23:17 | Edited docs/commander-decks/card-scripts.json | expanded (+6 lines) | ~360 |
+| 23:18 | Created tests/feature/tyrants-thundermane.test.ts | — | ~1803 |
+| 23:19 | Edited supabase/migrations/202605010244_tyrants_thundermane.sql | modified mana_value() | ~323 |
+| 23:19 | Edited supabase/migrations/202605010244_tyrants_thundermane.sql | expanded (+15 lines) | ~273 |
+| 23:20 | Edited tests/feature/tyrants-thundermane.test.ts | 4→4 lines | ~89 |
+| 23:05 | Batch mig 244 (3 cards): Leyline Tyrant (mana_does_not_empty turned out ALREADY enforced by clear_mana_pool_for_step - script-only + new pay_x_mana_damage parked decision), Hammerhead Tyrant (bounce_up_to/bounce_pick with mana_value cap from triggering spell; new public.mana_value helper), Thundermane Dragon (cast_from_library_top permission in cast_card_from_hand: top-card gate + min_power filter + grant_haste rider; CHECK constraint extended). | mig 244, mana_value, resolve_count_amount, register, apply_trigger_effects, submit_decision, cast_card_from_hand, schema, tyrants-thundermane.test | 858/858 green, tsc+lint clean, triage 73/6/13 | ~13k |

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T21:07:12.972Z
-> Files: 104 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T21:20:50.142Z
+> Files: 107 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -103,7 +103,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~6759 tok)
+- `card-scripts.json` (~7044 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -113,7 +113,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~13198 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~13526 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -143,11 +143,11 @@
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~3226 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~8996 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~9969 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7133 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
-- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4693 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5263 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2441 tok)
 - `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
@@ -162,16 +162,17 @@
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
+- `mana_value.sql` — supabase/functions_src/mana_value.sql (~258 tok)
 - `mulligan_hand.sql` — supabase/functions_src/mulligan_hand.sql (~681 tok)
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2165 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
-- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2062 tok)
-- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1792 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2124 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1682 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~778 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~8260 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~8925 tok)
 - `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~351 tok)
 
 ## supabase/migrations/
@@ -193,6 +194,7 @@
 - `202605010241_farseek_type_line_any.sql` — 202605010241_farseek_type_line_any — Farseek + Flooded Grove. (~8996 tok)
 - `202605010242_kessig_chaos_warp.sql` — 202605010242_kessig_chaos_warp — Kessig Wolf Run + Chaos Warp. (~10419 tok)
 - `202605010243_become_the_avalanche.sql` — 202605010243_become_the_avalanche — Become the Avalanche. (~11319 tok)
+- `202605010244_tyrants_thundermane.sql` — 202605010244_tyrants_thundermane — Leyline Tyrant + Hammerhead Tyrant + (~28222 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -228,13 +230,14 @@
 - `reflexive-watcher.test.ts` — Reflexive watchers (mig 227) — the entering/attacking creature ITSELF gains (~953 tok)
 - `spell-cast-watcher.test.ts` — Spell-cast watcher (mig 234): (~722 tok)
 - `treasure.test.ts` — Treasure tokens (mig 226) — "{T}, Sacrifice this artifact: Add one mana of (~660 tok)
+- `tyrants-thundermane.test.ts` — mig 244 — Leyline Tyrant + Hammerhead Tyrant + Thundermane Dragon. (~1802 tok)
 - `undying.test.ts` — Undying (mig 219) — "When this creature dies, if it had no +1/+1 counters on (~820 tok)
 - `ureni.test.ts` — Ureni of the Unwritten (mig 223) — "Whenever Ureni enters or attacks, look at (~1186 tok)
 - `victimize.test.ts` — Victimize (mig 218) — "Choose two target creature cards in your graveyard. (~849 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~28216 tok)
+- `test-cards.json` (~28807 tok)
 
 ## tests/harness/
 
@@ -246,7 +249,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1624 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1700 tok)
 
 ## vercel/
 

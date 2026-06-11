@@ -139,5 +139,11 @@
 
   "Chaos Warp": {"schema_version":2,"spell_effect":{"actions":[{"type":"shuffle_into_library","target_type":"permanent","then_reveal_top_to_battlefield":true}]}},
 
-  "Become the Avalanche": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":{"count":"creatures_you_control","min_power":4}},{"type":"pump_all","scope":"controller","power":{"count":"cards_in_hand"},"toughness":{"count":"cards_in_hand"}}]}}
+  "Become the Avalanche": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":{"count":"creatures_you_control","min_power":4}},{"type":"pump_all","scope":"controller","power":{"count":"cards_in_hand"},"toughness":{"count":"cards_in_hand"}}]}},
+
+  "Leyline Tyrant": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"mana_does_not_empty","affected":"controller","colors":["R"]}],"triggered_abilities":[{"event":"dies","effects":[{"type":"pay_x_mana_damage","color":"R","target_filter":{"controller":"any","types":["creature","player"]}}]}]},
+
+  "Hammerhead Tyrant": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you"},"effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"opponent","nonland":true,"max_mana_value":"triggering_spell"}}]}]},
+
+  "Thundermane Dragon": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"cast_from_library_top","affected":"controller","payload":{"creature":true,"min_power":4,"grant_haste":true}}]}
 }

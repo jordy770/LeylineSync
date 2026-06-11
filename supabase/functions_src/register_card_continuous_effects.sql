@@ -93,7 +93,11 @@ begin
       -- {type_line, amount}; reduced_mana_cost sums these for the caster. Defaults
       -- to affected:'controller' (not a source-keyword), so affected_player_id is
       -- the controller.
-      'cost_reduction'
+      'cost_reduction',
+      -- STATIC cast-from-the-top-of-your-library permission (mig 244,
+      -- Thundermane Dragon): payload {creature, min_power, grant_haste};
+      -- cast_card_from_hand's library gate consumes it.
+      'cast_from_library_top'
     ) then
       raise exception 'Unsupported continuous effect type: %', v_effect_type;
     end if;

@@ -111,18 +111,10 @@ begin
 
   elsif v_count = 'greatest_mana_value_you_control' then
     -- "the greatest mana value among permanents you control" (Will of the
-    -- Temur draw mode, mig 239). Parsed from mana_cost text: numeric symbols
-    -- add their value, X adds 0, every other symbol ({R}, {G/U}, …) adds 1.
-    select coalesce(max(mv.v), 0)::integer into v_n
+    -- Temur draw mode, mig 239; mana_value helper since mig 244).
+    select coalesce(max(public.mana_value(c.mana_cost)), 0)::integer into v_n
     from public.game_cards g
     join public.cards c on c.id = g.card_id
-    cross join lateral (
-      select coalesce(sum(case when t.sym ~ '^[0-9]+$' then t.sym::integer
-                               when upper(t.sym) = 'X' then 0
-                               else 1 end), 0) as v
-      from regexp_matches(coalesce(c.mana_cost, ''), '\{([^}]+)\}', 'g') r(arr),
-           lateral (select r.arr[1] as sym) t
-    ) mv
     where g.session_id = p_session_id
       and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
       and g.zone = 'battlefield';

@@ -36,6 +36,7 @@ declare
   v_enters_tapped jsonb;
   v_land_tapped boolean := false;
   v_unless jsonb;
+  v_lib_perm jsonb;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required';
@@ -83,7 +84,7 @@ begin
   where game_cards.id = p_game_card_id
     and game_cards.session_id = p_session_id
     and game_cards.owner_id = auth.uid()
-    and game_cards.zone in ('hand', 'graveyard', 'exile')
+    and game_cards.zone in ('hand', 'graveyard', 'exile', 'library')
   for update of game_cards;
 
   if not found then
@@ -172,6 +173,45 @@ begin
         and (ce.payload -> 'card_ids') ? p_game_card_id::text
     ) then
       raise exception 'You do not have permission to play that card from exile';
+    end if;
+  end if;
+
+  -- A LIBRARY source must be the TOP card of the owner's library, unlocked by
+  -- a cast_from_library_top permission (mig 244, Thundermane Dragon) whose
+  -- payload filter matches ({creature, min_power} read against the card).
+  -- payload.grant_haste gives the cast card haste until end of turn ("if you
+  -- cast a creature spell this way, it gains haste").
+  if v_card.zone = 'library' then
+    if exists (
+      select 1 from public.game_cards lib
+      where lib.session_id = p_session_id and lib.owner_id = auth.uid() and lib.zone = 'library'
+        and (lib.zone_position < v_card.zone_position
+             or (lib.zone_position = v_card.zone_position and lib.id < v_card.id))
+    ) then
+      raise exception 'Only the top card of your library can be cast this way';
+    end if;
+    select ce.payload into v_lib_perm
+    from public.game_continuous_effects ce
+    left join public.game_cards sc on sc.id = ce.source_card_id
+    where ce.session_id = p_session_id
+      and ce.effect_type = 'cast_from_library_top'
+      and ce.affected_player_id = auth.uid()
+      and (ce.source_zone_required is null or sc.zone = ce.source_zone_required)
+      and (not coalesce((ce.payload ->> 'creature')::boolean, false)
+           or coalesce(v_card_type_line, '') ilike '%creature%')
+      and ((ce.payload ->> 'min_power') is null
+           or coalesce(public.card_effective_power(p_session_id, p_game_card_id), -1)
+              >= (ce.payload ->> 'min_power')::integer)
+    limit 1;
+    if v_lib_perm is null then
+      raise exception 'You do not have permission to cast that card from your library';
+    end if;
+    if coalesce((v_lib_perm ->> 'grant_haste')::boolean, false) then
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload,
+        source_zone_required, expires_at_phase, expires_at_step)
+      values (p_session_id, p_game_card_id, p_game_card_id, 'haste',
+        jsonb_build_object('until_end_of_turn', true), 'battlefield', 'ending', 'cleanup');
     end if;
   end if;
 

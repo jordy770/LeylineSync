@@ -43,6 +43,8 @@ const JSON_ONLY: Record<string, string> = {
   copy_permanent: 'token copy via parked pick or of the triggering card (Will of the Temur / Reflections of Littjara, mig 239); JSON/AI-authored',
   become_copy: 'an existing card becomes a copy, with on-leave/end-of-turn reverts (Deceptive Frostkite / Sarkhan Soul Aflame, mig 240); JSON/AI-authored',
   shuffle_into_library: 'shuffle target permanent into its owner\'s library + reveal-top rider (Chaos Warp, mig 242); JSON/AI-authored',
+  pay_x_mana_damage: 'pay any amount of a colour, deal that much damage to a picked target (Leyline Tyrant, mig 244); JSON/AI-authored',
+  bounce_up_to: 'parked bounce pick with a triggering-spell mana-value cap (Hammerhead Tyrant, mig 244); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

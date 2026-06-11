@@ -110,7 +110,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -417,6 +417,50 @@ begin
         v_decision.session_id, v_decision.deciding_player_id, v_card,
         v_decision.params -> 'except');
     end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'bounce_pick' then
+    -- Hammerhead Tyrant (mig 244): bounce each picked permanent to its
+    -- OWNER's hand (the bounce primitive resets controller/taps properly).
+    foreach v_card in array v_chosen_ids
+    loop
+      perform public.apply_creature_effect(v_decision.session_id, 'bounce', v_card, '{}'::jsonb);
+    end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'pay_x_mana_damage' then
+    -- Leyline Tyrant (mig 244): amount 0 / no pick declines. Validated here
+    -- in the apply section (divide_damage precedent) — an exception rolls the
+    -- whole transaction back.
+    declare
+      v_px_amount integer := greatest(0, coalesce((p_result ->> 'amount')::integer, 0));
+      v_px_color text := upper(coalesce(v_decision.params ->> 'color', 'R'));
+      v_px_pool integer;
+    begin
+      if v_px_amount > 0 then
+        if not exists (
+          select 1 from jsonb_array_elements(v_decision.options) o
+          where ((p_result ->> 'game_card_id') is not null and (o ->> 'game_card_id') = (p_result ->> 'game_card_id'))
+             or ((p_result ->> 'player_id') is not null and (o ->> 'player_id') = (p_result ->> 'player_id'))
+        ) then
+          raise exception 'A target from the offered list is required';
+        end if;
+        select coalesce((mana_pool ->> v_px_color)::integer, 0) into v_px_pool
+        from public.game_players
+        where session_id = v_decision.session_id and player_id = v_decision.deciding_player_id;
+        if coalesce(v_px_pool, 0) < v_px_amount then
+          raise exception 'Not enough {%} mana: have %', v_px_color, coalesce(v_px_pool, 0);
+        end if;
+        update public.game_players
+        set mana_pool = jsonb_set(mana_pool, array[v_px_color], to_jsonb(v_px_pool - v_px_amount))
+        where session_id = v_decision.session_id and player_id = v_decision.deciding_player_id;
+        perform public.apply_damage_allocations(v_decision.session_id,
+          jsonb_build_array(
+            case when (p_result ->> 'game_card_id') is not null
+                 then jsonb_build_object('game_card_id', p_result ->> 'game_card_id', 'amount', v_px_amount)
+                 else jsonb_build_object('player_id', p_result ->> 'player_id', 'amount', v_px_amount) end));
+      end if;
+    end;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
   elsif v_decision.decision_type = 'become_copy' then

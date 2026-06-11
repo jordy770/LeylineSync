@@ -529,6 +529,56 @@ begin
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
 
+    elsif v_type = 'pay_x_mana_damage' then
+      -- "You may pay any amount of {R}. When you do, it deals that much
+      -- damage to any target." (Leyline Tyrant dies trigger, mig 244.) Parks
+      -- the legal targets + the colour; submit_decision validates the amount
+      -- against the payer's pool, deducts it, and applies the damage. Amount 0
+      -- (or no pick) declines.
+      v_options := public.divide_damage_options(p_session_id, v_controller, v_effect -> 'target_filter');
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'pay_x_mana_damage',
+        'Pay any amount of {' || upper(coalesce(v_effect ->> 'color', 'R')) || '}: that much damage to a target',
+        v_options, 0, 1,
+        jsonb_build_object('color', upper(coalesce(v_effect ->> 'color', 'R'))))
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
+    elsif v_type = 'bounce_up_to' then
+      -- "Return up to one target nonland permanent an opponent controls with
+      -- mana value less than or equal to that spell's mana value to its
+      -- owner's hand" (Hammerhead Tyrant, mig 244). The MV ceiling is the
+      -- TRIGGERING cast card's mana value when target_filter.max_mana_value =
+      -- 'triggering_spell'. Picking nothing declines ("up to one").
+      v_amount := null;
+      if (v_effect -> 'target_filter' ->> 'max_mana_value') = 'triggering_spell' then
+        select public.mana_value(c.mana_cost) into v_amount
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.id = nullif(v_item.payload ->> 'triggering_card_id', '')::uuid
+          and gc.session_id = p_session_id;
+      end if;
+      select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
+        into v_options
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and (case lower(coalesce(v_effect -> 'target_filter' ->> 'controller', 'opponent'))
+               when 'opponent' then coalesce(gc.controller_player_id, gc.owner_id) is distinct from v_controller
+               when 'you' then coalesce(gc.controller_player_id, gc.owner_id) = v_controller
+               else true end)
+        and (not coalesce((v_effect -> 'target_filter' ->> 'nonland')::boolean, false)
+             or c.type_line not ilike '%land%')
+        and (v_amount is null or public.mana_value(c.mana_cost) <= v_amount);
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'bounce_pick',
+        'Return up to ' || coalesce(v_effect ->> 'count', '1') || ' to its owner''s hand',
+        v_options, 0, greatest(1, coalesce((v_effect ->> 'count')::integer, 1)), '{}'::jsonb)
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
     elsif v_type = 'pump_all' then
       -- Mass until-EOT pump from the program (mig 243, Become the Avalanche).
       -- Previously pump_all only ran inside choose_creature_type's apply path;

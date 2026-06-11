@@ -183,6 +183,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
   'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand', 'divide_damage',
   'return_self_to_hand', 'copy_permanent', 'become_copy', 'shuffle_into_library',
+  'pay_x_mana_damage', 'bounce_up_to',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -443,6 +444,29 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('shuffle_into_library'),
     target_type: z.literal('permanent').optional(),
     then_reveal_top_to_battlefield: z.boolean().optional(),
+  }),
+  // "You may pay any amount of {R}. When you do, it deals that much damage to
+  // any target." (Leyline Tyrant dies trigger, mig 244.) Parks a decision; the
+  // amount is validated against the payer's mana pool at submit time.
+  z.object({
+    type: z.literal('pay_x_mana_damage'),
+    color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
+    target_filter: z.object({
+      controller: z.enum(['any', 'opponent', 'you']).optional(),
+      types: z.array(z.enum(['creature', 'planeswalker', 'player'])).optional(),
+    }).strict().optional(),
+  }),
+  // "Return up to N target … to its owner's hand" via a parked pick
+  // (Hammerhead Tyrant, mig 244). max_mana_value:'triggering_spell' caps the
+  // options at the TRIGGERING cast card's mana value.
+  z.object({
+    type: z.literal('bounce_up_to'),
+    count: z.number().int().positive().optional(),
+    target_filter: z.object({
+      controller: z.enum(['any', 'opponent', 'you']).optional(),
+      nonland: z.boolean().optional(),
+      max_mana_value: z.literal('triggering_spell').optional(),
+    }).strict().optional(),
   }),
   // "Deal N damage divided as you choose among …" (Dragonlord Atarka ETB /
   // Skarrgan Hellkite). Parks a divide_damage decision; the player allocates N
