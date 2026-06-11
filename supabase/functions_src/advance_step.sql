@@ -84,6 +84,12 @@ begin
       and ce.affected_player_id = v_current_state.active_player_id
       and coalesce((ce.payload ->> 'created_turn')::integer, 0) < v_current_state.turn_number;
 
+    -- Territorial Hellkite (mig 249): an unconsumed must_attack pin lapses
+    -- when the combat is over (end step).
+    update public.game_cards
+    set counters = counters - 'must_attack'
+    where session_id = p_session_id and counters ? 'must_attack';
+
     -- Hellkite Courser (mig 248): "return it to the command zone at the
     -- beginning of the next end step" — processed when the end step is left.
     for v_revert in

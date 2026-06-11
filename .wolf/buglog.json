@@ -10735,6 +10735,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T22:11:26.103Z"
+    },
+    {
+      "id": "bug-661",
+      "timestamp": "2026-06-11T22:19:34.122Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T22:19:34.122Z"
+    },
+    {
+      "id": "bug-662",
+      "timestamp": "2026-06-11T22:21:21.838Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010249_goad_territorial.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→31 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T22:21:21.838Z"
     }
   ]
 }

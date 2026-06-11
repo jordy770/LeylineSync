@@ -3528,3 +3528,23 @@
 | 00:12 | Edited supabase/migrations/202605010248_courser_mosswort.sql | modified command_zone_pick() | ~221 |
 | 00:13 | Edited tests/feature/courser-mosswort.test.ts | 2→5 lines | ~82 |
 | 02:10 | Batch mig 248 (2 cards): Hellkite Courser (put_from_command_zone/command_zone_pick: borrow commander w/ haste + return_to_command counter marker; advance_step end-step return) + Mosswort Bridge hideaway (look_top to:'exile' + min_picks + hideaway_card marker on source; play_hideaway free-play behind condition gate; condition count form + total_power_you_control count). Gotcha: dev_spawn_card rejects zone 'command' (move row via SQL in tests). | mig 248, resolve_count_amount, apply_trigger_effects, submit_decision, advance_step, activate_ability, schema, courser-mosswort.test | 870/870 green, tsc+lint clean, triage 81/6/5 | ~11k |
+| 00:15 | Session end: 92 writes across 33 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 16 reads | ~66904 tok |
+| 00:18 | Edited supabase/functions_src/apply_creature_effect.sql | 4→5 lines | ~24 |
+| 00:18 | Edited supabase/functions_src/apply_creature_effect.sql | added 1 condition(s) | ~357 |
+| 00:18 | Edited supabase/functions_src/trigger_effect_target_type.sql | 2→2 lines | ~44 |
+| 00:18 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified coalesce() | ~180 |
+| 00:18 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~247 |
+| 00:19 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Hellkite() | ~343 |
+| 00:19 | Edited supabase/functions_src/declare_attacker.sql | added 2 condition(s) | ~381 |
+| 00:19 | Edited supabase/functions_src/declare_attacker.sql | added 1 condition(s) | ~218 |
+| 00:19 | Edited supabase/functions_src/advance_step.sql | modified Hellkite() | ~89 |
+| 00:19 | Edited lib/game/card-behavior-schema.ts | 2→4 lines | ~107 |
+| 00:19 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~35 |
+| 00:19 | Edited lib/game/card-behavior-schema.ts | modified creature() | ~270 |
+| 00:19 | Edited lib/game/card-behavior-schema.ts | 3→5 lines | ~72 |
+| 00:19 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~102 |
+| 00:20 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~703 |
+| 00:20 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~387 |
+| 00:20 | Created tests/feature/goad-territorial.test.ts | — | ~1713 |
+| 00:21 | Edited supabase/migrations/202605010249_goad_territorial.sql | modified goad() | ~526 |
+| 02:55 | Batch mig 249 (2 cards): goad (goaded row + expiry turn+players-1; declare_attacker cant-attack-goader gate; watcher filter goaded:true; recipient triggering_controller) for Vengeful Ancestor + territorial_attack (random fresh-opponent must_attack pin, last_attacked memory stamped only for scripts using it, tap when no pick; pin lapses at end step) for Territorial Hellkite. Approx: attack-each-combat not forced. | mig 249, apply_creature_effect, trigger_effect_target_type, fire_watcher_triggers, apply_trigger_effects, declare_attacker, advance_step, schema, goad-territorial.test | 874/874 green, tsc+lint clean, triage 83/6/3 | ~11k |

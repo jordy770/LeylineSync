@@ -161,5 +161,9 @@
 
   "Hellkite Courser": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"put_from_command_zone"}]}]},
 
-  "Mosswort Bridge": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"look_top","count":4,"to":"exile","min_picks":1}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]},{"costs":[{"type":"mana","amount":"{G}"},{"type":"tap_self"}],"condition":{"count":"total_power_you_control","at_least":10},"effects":[{"type":"play_hideaway"}]}]}
+  "Mosswort Bridge": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"look_top","count":4,"to":"exile","min_picks":1}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]},{"costs":[{"type":"mana","amount":"{G}"},{"type":"tap_self"}],"condition":{"count":"total_power_you_control","at_least":10},"effects":[{"type":"play_hideaway"}]}]},
+
+  "Vengeful Ancestor": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"goad","target_type":"creature","target_controller":"opponent"}]},{"event":"attacks","effects":[{"type":"goad","target_type":"creature","target_controller":"opponent"}]},{"event":"creature_attacks","filter":{"controller":"any","goaded":true},"effects":[{"type":"deal_damage","amount":1,"recipient":"triggering_controller"}]}]},
+
+  "Territorial Hellkite": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"beginning_of_combat","effects":[{"type":"territorial_attack"}]}]}
 }

@@ -185,6 +185,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'return_self_to_hand', 'copy_permanent', 'become_copy', 'shuffle_into_library',
   'pay_x_mana_damage', 'bounce_up_to', 'exile_until_nonland',
   'put_from_hand', 'destroy_up_to', 'put_from_command_zone', 'play_hideaway',
+  'goad', 'territorial_attack',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -195,7 +196,9 @@ const UnknownV2ActionSchema = z.object({
 }).passthrough()
 
 // Fixed (non-chosen) recipient for auto-resolving triggered-ability effects.
-const BehaviorRecipientSchema = z.enum(['controller', 'each_opponent', 'active_player', 'each_player', 'all_players'])
+// 'triggering_controller' (mig 249): the event subject's controller (Vengeful
+// Ancestor: "a goaded creature attacks → 1 damage to ITS controller").
+const BehaviorRecipientSchema = z.enum(['controller', 'each_opponent', 'active_player', 'each_player', 'all_players', 'triggering_controller'])
 
 // Optional controller restriction on a chosen creature target.
 // "an opponent controls" -> opponent; "you control" -> you/controller/self.
@@ -488,6 +491,21 @@ const CardBehaviorActionSchema = z.union([
   // beginning of the next end step." (Hellkite Courser, mig 248.)
   z.object({
     type: z.literal('put_from_command_zone'),
+  }),
+  // Goad target creature (Vengeful Ancestor, mig 249): until the goader's
+  // next turn it can't attack the goader while another opponent exists; the
+  // attack-each-combat half is not forced.
+  z.object({
+    type: z.literal('goad'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Territorial Hellkite (mig 249): pick a random opponent it didn't attack
+  // during your last combat and pin this combat's defender to them; no legal
+  // pick taps the source.
+  z.object({
+    type: z.literal('territorial_attack'),
   }),
   // Play the card this source hid with hideaway (Mosswort Bridge, mig 248):
   // a permanent card enters the battlefield free; the activation gate is the
@@ -914,6 +932,8 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     min_power: z.number().int().optional(),
     // "a creature you control WITH FLYING …" (mig 227 — Dragon Tempest).
     has_keyword: z.literal('flying').optional(),
+    // "whenever a GOADED creature attacks" (mig 249 — Vengeful Ancestor).
+    goaded: z.boolean().optional(),
   }).optional(),
   targets: z.array(CardBehaviorTargetSchema).optional(),
   effects: z.array(CardBehaviorActionSchema),

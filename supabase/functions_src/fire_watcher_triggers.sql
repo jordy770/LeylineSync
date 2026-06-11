@@ -69,6 +69,18 @@ begin
         continue;
       end if;
 
+      -- "whenever a GOADED creature attacks" (mig 249, Vengeful Ancestor):
+      -- only fire when the event subject carries an active goaded row.
+      if coalesce((v_filter ->> 'goaded')::boolean, false)
+         and not exists (
+           select 1 from public.game_continuous_effects ce
+           where ce.session_id = p_session_id
+             and ce.effect_type = 'goaded'
+             and ce.affected_card_id = p_changed_card_id
+         ) then
+        continue;
+      end if;
+
       -- Type filter: default "creature" for permanent watchers; spell_cast
       -- (Taurean Mauler) matches a SPELL of any type; land_entered (Nesting
       -- Dragon landfall) defaults to 'land' so only land entries match.

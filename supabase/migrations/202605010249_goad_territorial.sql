@@ -1,7 +1,508 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010249_goad_territorial — Vengeful Ancestor (goad) + Territorial
+-- Hellkite.
+--   • goad (targeted creature effect): a 'goaded' row carrying the goader,
+--     expiring before the goader's next turn (turn + players - 1).
+--     declare_attacker rejects attacking the goader while another opponent
+--     exists. Watcher filter goaded:true + recipient 'triggering_controller'
+--     deliver "whenever a goaded creature attacks, 1 damage to its
+--     controller".
+--   • territorial_attack: at the beginning of combat, a random opponent the
+--     source didn't attack during its controller's last combat is pinned via
+--     a must_attack marker (declare_attacker enforces the WHO; the pin lapses
+--     at end step); no legal pick taps the source. last_attacked is stamped
+--     only for creatures whose script uses territorial_attack.
+-- Approximations: goad's/the pin's must-ATTACK-each-combat half is not
+-- forced (no forced-action system).
+-- Generated from supabase/functions_src (apply_creature_effect, trigger_effect_target_type, fire_watcher_triggers, apply_trigger_effects, declare_attacker, advance_step) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+-- goaded joins the allowed continuous-effect types (latest list mig 244).
+alter table public.game_continuous_effects
+  drop constraint if exists game_continuous_effects_effect_type_check;
+alter table public.game_continuous_effects
+  add constraint game_continuous_effects_effect_type_check
+  check (effect_type = any (array[
+    'mana_does_not_empty', 'additional_land_plays', 'haste', 'vigilance',
+    'indestructible', 'trample', 'first_strike', 'double_strike', 'flying',
+    'reach', 'deathtouch', 'pump', 'control', 'set_pt', 'protection', 'switch_pt',
+    'infect', 'wither', 'toxic', 'cast_from_graveyard', 'menace',
+    'intimidate', 'hexproof', 'curse_attacked', 'play_from_exile', 'cost_reduction',
+    'cast_from_library_top', 'goaded'
+  ]));
+
+create or replace function public.apply_creature_effect(
+  p_session_id uuid,
+  p_kind text,
+  p_target_card_id uuid,
+  p_params jsonb default '{}'::jsonb
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_amount integer;
+  v_pump_power integer;
+  v_pump_tough integer;
+  v_target_owner_id uuid;
+  v_next_position integer;
+  v_keyword text;
+  v_acting_controller uuid;
+  v_duration text;
+  v_prev_controller uuid;
+  v_counter_type text;
+  v_all boolean;
+  v_top_card uuid;
+  v_top_type text;
+  v_turn integer;
+  v_goad_players integer;
+begin
+  if p_target_card_id is null then
+    return;
+  end if;
+
+  -- Amount may be a number, "X" (→0), or { counters, of } resolved against game state.
+  -- of:"you" → the acting controller; of:"target" → this target permanent.
+  v_amount := public.resolve_dynamic_amount(
+    p_session_id, null,
+    nullif(p_params ->> 'acting_controller', '')::uuid,
+    p_params -> 'amount',
+    p_target_card_id);
+
+  if p_kind = 'deal_damage' then
+    if v_amount > 0 then
+      perform public.apply_damage_to_creature(
+        p_session_id, p_target_card_id, v_amount, null, false,
+        coalesce((p_params ->> 'deathtouch')::boolean, false)
+      );
+    end if;
+
+  elsif p_kind = 'destroy' then
+    perform public.put_in_graveyard(p_session_id, p_target_card_id);
+
+  elsif p_kind = 'exile' then
+    select owner_id into v_target_owner_id
+    from public.game_cards
+    where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
+    if found then
+      select coalesce(max(zone_position), -1) + 1 into v_next_position
+      from public.game_cards
+      where session_id = p_session_id and owner_id = v_target_owner_id and zone = 'exile';
+      update public.game_cards
+      set zone = 'exile', zone_position = v_next_position, controller_player_id = owner_id,
+          is_tapped = false, damage_marked = 0, dealt_deathtouch_damage = false, plus_one_counters = 0
+      where id = p_target_card_id;
+    end if;
+
+  elsif p_kind = 'bounce' then
+    select owner_id into v_target_owner_id
+    from public.game_cards
+    where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
+    if found then
+      select coalesce(max(zone_position), -1) + 1 into v_next_position
+      from public.game_cards
+      where session_id = p_session_id and owner_id = v_target_owner_id and zone = 'hand';
+      update public.game_cards
+      set zone = 'hand', zone_position = v_next_position, controller_player_id = owner_id,
+          is_tapped = false, damage_marked = 0, dealt_deathtouch_damage = false, plus_one_counters = 0
+      where id = p_target_card_id;
+    end if;
+
+  elsif p_kind = 'shuffle_into_library' then
+    -- Chaos Warp (mig 242): the OWNER shuffles the target into their library
+    -- (modelled as inserting at a random position), then reveals the top card
+    -- of that library; a permanent card goes onto the battlefield under the
+    -- owner's control. Tokens shuffled in simply cease (the cease trigger).
+    select owner_id into v_target_owner_id
+    from public.game_cards
+    where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
+    if found then
+      select floor(random() * (count(*) + 1))::integer into v_next_position
+      from public.game_cards
+      where session_id = p_session_id and owner_id = v_target_owner_id and zone = 'library';
+      update public.game_cards
+      set zone_position = zone_position + 1
+      where session_id = p_session_id and owner_id = v_target_owner_id and zone = 'library'
+        and zone_position >= v_next_position;
+      update public.game_cards
+      set zone = 'library', zone_position = v_next_position, controller_player_id = owner_id,
+          is_tapped = false, damage_marked = 0, dealt_deathtouch_damage = false, plus_one_counters = 0
+      where id = p_target_card_id;
+
+      if coalesce((p_params ->> 'then_reveal_top_to_battlefield')::boolean, false) then
+        select gc.id, c.type_line into v_top_card, v_top_type
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id and gc.owner_id = v_target_owner_id and gc.zone = 'library'
+        order by gc.zone_position asc, gc.id asc
+        limit 1;
+        if v_top_card is not null and (
+             v_top_type ilike '%creature%' or v_top_type ilike '%artifact%'
+             or v_top_type ilike '%enchantment%' or v_top_type ilike '%land%'
+             or v_top_type ilike '%planeswalker%' or v_top_type ilike '%battle%') then
+          select turn_number into v_turn
+          from public.game_turn_state where session_id = p_session_id;
+          update public.game_cards gc
+          set zone = 'battlefield', controller_player_id = gc.owner_id, is_tapped = false,
+              entered_battlefield_turn_number = coalesce(v_turn, 0),
+              zone_position = (select coalesce(max(zone_position), -1) + 1
+                               from public.game_cards x
+                               where x.session_id = p_session_id and x.owner_id = gc.owner_id
+                                 and x.zone = 'battlefield')
+          where gc.id = v_top_card;
+          perform public.register_card_continuous_effects(p_session_id, v_top_card);
+        end if;
+      end if;
+    end if;
+
+  elsif p_kind in ('tap', 'untap') then
+    update public.game_cards
+    set is_tapped = (p_kind = 'tap')
+    where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
+
+  elsif p_kind = 'add_counters' then
+    v_counter_type := p_params ->> 'counter_type';
+    v_all := coalesce((p_params ->> 'all')::boolean, false);
+    if v_amount <> 0 or v_all then
+      -- Doubling Season etc: the recipient's controller's replacement multiplies
+      -- counters PUT ON it. Removal (negative) / `all` are not doubled.
+      if v_amount > 0 then
+        v_amount := v_amount * public.counter_factor(
+          p_session_id,
+          (select controller_player_id from public.game_cards
+           where id = p_target_card_id and session_id = p_session_id));
+      end if;
+      if public.is_plus_one_counter(v_counter_type) then
+        update public.game_cards
+        set plus_one_counters = case when v_all then 0 else greatest(0, plus_one_counters + v_amount) end
+        where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
+      else
+        update public.game_cards
+        set counters = case when v_all then counters - lower(v_counter_type)
+                            else public.adjust_counter_bag(counters, lower(v_counter_type), v_amount) end
+        where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
+      end if;
+      -- Any counter change can annihilate (+1/+1 vs −1/−1) or drop toughness to lethal.
+      perform public.recheck_counter_state(p_session_id);
+    end if;
+
+  elsif p_kind = 'pump' then
+    if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
+      -- power/toughness may be a fixed number OR a { count, … } object; negate per
+      -- value (Liliana −2: -X/-X where X = Zombies you control). Count is relative to
+      -- the acting controller.
+      v_pump_power := public.resolve_dynamic_amount(
+        p_session_id, p_target_card_id,
+        nullif(p_params ->> 'acting_controller', '')::uuid,
+        p_params -> 'power', p_target_card_id);
+      if coalesce((p_params -> 'power' ->> 'negate')::boolean, false) then
+        v_pump_power := -v_pump_power;
+      end if;
+      v_pump_tough := public.resolve_dynamic_amount(
+        p_session_id, p_target_card_id,
+        nullif(p_params ->> 'acting_controller', '')::uuid,
+        p_params -> 'toughness', p_target_card_id);
+      if coalesce((p_params -> 'toughness' ->> 'negate')::boolean, false) then
+        v_pump_tough := -v_pump_tough;
+      end if;
+      perform public.create_pt_pump(p_session_id, p_target_card_id, v_pump_power, v_pump_tough);
+      -- A debuff dropping toughness to ≤ 0 is lethal.
+      if v_pump_tough < 0 then
+        perform public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
+      end if;
+    end if;
+
+  elsif p_kind = 'set_pt' then
+    if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload,
+        source_zone_required, expires_at_phase, expires_at_step
+      )
+      values (
+        p_session_id, p_target_card_id, p_target_card_id, 'set_pt',
+        jsonb_build_object(
+          'power', coalesce((p_params ->> 'power')::integer, 0),
+          'toughness', coalesce((p_params ->> 'toughness')::integer, 0),
+          'until_end_of_turn', true
+        ),
+        'battlefield', 'ending', 'cleanup'
+      );
+    end if;
+
+  elsif p_kind = 'grant_keyword' then
+    v_keyword := lower(coalesce(p_params ->> 'keyword', ''));
+    if v_keyword not in (
+      'flying', 'reach', 'trample', 'vigilance', 'haste',
+      'first_strike', 'double_strike', 'deathtouch', 'indestructible'
+    ) then
+      raise exception 'Unsupported keyword grant: %', v_keyword;
+    end if;
+    if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload,
+        source_zone_required, expires_at_phase, expires_at_step
+      )
+      values (
+        p_session_id, p_target_card_id, p_target_card_id, v_keyword,
+        jsonb_build_object('until_end_of_turn', true),
+        'battlefield', 'ending', 'cleanup'
+      );
+    end if;
+
+  elsif p_kind = 'goad' then
+    -- Goad (mig 249, Vengeful Ancestor): "until your next turn, that creature
+    -- attacks each combat if able and attacks a player other than you if
+    -- able." A 'goaded' row carrying the goader, expiring before the goader's
+    -- next turn (current turn + players - 1). Enforced: declare_attacker
+    -- rejects attacking the goader while another opponent exists; the
+    -- must-attack-each-combat half is NOT forced (approximation).
+    if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
+      select turn_number into v_turn
+      from public.game_turn_state where session_id = p_session_id;
+      select count(*) into v_goad_players
+      from public.game_session_players where session_id = p_session_id;
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload, expires_at_turn_number)
+      values (
+        p_session_id,
+        coalesce(nullif(p_params ->> 'acting_source', '')::uuid, p_target_card_id),
+        p_target_card_id, 'goaded',
+        jsonb_build_object('goaded_by', p_params ->> 'acting_controller'),
+        coalesce(v_turn, 0) + greatest(1, coalesce(v_goad_players, 2) - 1));
+    end if;
+
+  elsif p_kind = 'gain_control' then
+    v_acting_controller := nullif(p_params ->> 'acting_controller', '')::uuid;
+    if v_acting_controller is null then
+      raise exception 'gain_control requires an acting controller';
+    end if;
+    v_duration := lower(coalesce(p_params ->> 'duration', 'permanent'));
+    if v_duration not in ('permanent', 'end_of_turn', 'while_source') then
+      raise exception 'Unsupported gain_control duration: %', v_duration;
+    end if;
+    select controller_player_id into v_prev_controller
+    from public.game_cards
+    where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
+    if found then
+      update public.game_cards
+      set controller_player_id = v_acting_controller,
+          is_tapped = case when coalesce((p_params ->> 'untap')::boolean, false) then false else is_tapped end
+      where id = p_target_card_id;
+      if coalesce((p_params ->> 'haste')::boolean, false) then
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_card_id, effect_type, payload,
+          source_zone_required, expires_at_phase, expires_at_step
+        )
+        values (
+          p_session_id, p_target_card_id, p_target_card_id, 'haste',
+          jsonb_build_object('until_end_of_turn', true),
+          'battlefield', 'ending', 'cleanup'
+        );
+      end if;
+      if v_duration = 'end_of_turn' then
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_card_id, effect_type, payload,
+          source_zone_required, expires_at_phase, expires_at_step
+        )
+        values (
+          p_session_id, p_target_card_id, p_target_card_id, 'control',
+          jsonb_build_object('original_controller', v_prev_controller),
+          'battlefield', 'ending', 'cleanup'
+        );
+      elsif v_duration = 'while_source' then
+        -- "For as long as ~ remains on the battlefield, gain control of that
+        -- permanent" (mig 246, Opportunistic Dragon): an UNexpiring control
+        -- row sourced by the STEALING permanent; fire_zone_change_triggers
+        -- reverts when it leaves. lose_abilities blanks the stolen
+        -- permanent's script (a copied_script stub that also blocks
+        -- attacking via the cant_attack_unless gate; blocking is NOT
+        -- restricted — approximation).
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_card_id, effect_type, payload)
+        values (
+          p_session_id,
+          coalesce(nullif(p_params ->> 'acting_source', '')::uuid, p_target_card_id),
+          p_target_card_id, 'control',
+          jsonb_build_object(
+            'original_controller', v_prev_controller,
+            'while_source', true,
+            'lose_abilities', coalesce((p_params ->> 'lose_abilities')::boolean, false)));
+        if coalesce((p_params ->> 'lose_abilities')::boolean, false) then
+          update public.game_cards
+          set copied_script = '{"schema_version":2,"cant_attack_unless":{"count":"artifacts_you_control","at_least":99}}'::jsonb
+          where id = p_target_card_id and session_id = p_session_id;
+        end if;
+      end if;
+    end if;
+
+  else
+    raise exception 'Unsupported creature effect kind: %', p_kind;
+  end if;
+end;
+$$;
+grant execute on function public.apply_creature_effect(uuid, text, uuid, jsonb) to authenticated;
+
+create or replace function public.trigger_effect_target_type(p_effect jsonb)
+returns jsonb language sql immutable as $$
+  select case
+    when lower(coalesce(p_effect ->> 'type', '')) in
+         ('deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap',
+          'add_counters', 'grant_keyword', 'fight', 'gain_control', 'set_pt', 'pump', 'goad')
+         and public.behavior_target_type_is_creature_only(p_effect -> 'target_type')
+      then '"creature"'::jsonb
+    when lower(coalesce(p_effect ->> 'type', '')) in
+         ('destroy', 'exile', 'bounce', 'tap', 'untap', 'shuffle_into_library', 'gain_control')
+         and public.behavior_target_type_is_permanent_only(p_effect -> 'target_type')
+      then p_effect -> 'target_type'
+    else null
+  end;
+$$;
+grant all on function public.trigger_effect_target_type(jsonb) to anon, authenticated, service_role;
+
+create or replace function public.fire_watcher_triggers(
+  p_session_id uuid,
+  p_changed_card_id uuid,
+  p_changed_controller uuid,
+  p_event text
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_changed_type text;
+  v_changed_is_token boolean;
+  v_watcher record;
+  v_ability jsonb;
+  v_filter jsonb;
+  v_f_type text;
+  v_f_controller text;
+  v_exclude_self boolean;
+  v_ctrl_ok boolean;
+begin
+  -- Token at either level: catalog tokens (cards.is_token) or copy tokens
+  -- (game_cards.is_token, mig 239).
+  select cards.type_line, coalesce(cards.is_token, false) or coalesce(gc.is_token, false)
+  into v_changed_type, v_changed_is_token
+  from public.game_cards gc
+  join public.cards on cards.id = gc.card_id
+  where gc.id = p_changed_card_id and gc.session_id = p_session_id;
+
+  for v_watcher in
+    select gc.id, coalesce(gc.controller_player_id, gc.owner_id) as controller, c.name as card_name
+    from public.game_cards gc
+    join public.cards c on c.id = gc.card_id
+    where gc.session_id = p_session_id
+      and (gc.zone = 'battlefield' or gc.id = p_changed_card_id)
+    order by gc.controller_player_id, gc.id
+  loop
+    for v_ability in
+      select * from jsonb_array_elements(
+        coalesce(public.effective_script(p_session_id, v_watcher.id) -> 'triggered_abilities', '[]'::jsonb))
+    loop
+      if lower(coalesce(v_ability ->> 'event', '')) <> p_event then
+        continue;
+      end if;
+
+      -- Mode gate (mig 245, Frontier Siege Dragons mode): see fire_card_triggers.
+      if (v_ability ? 'mode')
+         and (v_ability ->> 'mode') is distinct from (v_ability ->> 'chosen') then
+        continue;
+      end if;
+
+      v_filter := v_ability -> 'filter';
+      v_f_type := v_filter ->> 'type_line';
+      v_f_controller := lower(coalesce(v_filter ->> 'controller', 'you'));
+      v_exclude_self := coalesce((v_filter ->> 'exclude_self')::boolean, false);
+
+      -- "another …": skip when the changed card IS the watcher.
+      if v_exclude_self and v_watcher.id = p_changed_card_id then
+        continue;
+      end if;
+
+      -- "nontoken …": skip when the changed creature is a token.
+      if coalesce((v_filter ->> 'nontoken')::boolean, false) and v_changed_is_token then
+        continue;
+      end if;
+
+      -- "whenever a GOADED creature attacks" (mig 249, Vengeful Ancestor):
+      -- only fire when the event subject carries an active goaded row.
+      if coalesce((v_filter ->> 'goaded')::boolean, false)
+         and not exists (
+           select 1 from public.game_continuous_effects ce
+           where ce.session_id = p_session_id
+             and ce.effect_type = 'goaded'
+             and ce.affected_card_id = p_changed_card_id
+         ) then
+        continue;
+      end if;
+
+      -- Type filter: default "creature" for permanent watchers; spell_cast
+      -- (Taurean Mauler) matches a SPELL of any type; land_entered (Nesting
+      -- Dragon landfall) defaults to 'land' so only land entries match.
+      if v_changed_type not ilike '%' || coalesce(v_f_type,
+           case p_event when 'spell_cast' then '' when 'land_entered' then 'land' else 'creature' end) || '%' then
+        continue;
+      end if;
+
+      -- Power filter (mig 225): "a creature with power N or greater enters"
+      -- (Elemental Bond, Temur Ascendancy). Reads the changed card's effective
+      -- power; non-creatures (no P/T) never qualify.
+      if v_filter ? 'min_power'
+         and coalesce(public.card_effective_power(p_session_id, p_changed_card_id), -1)
+             < (v_filter ->> 'min_power')::integer then
+        continue;
+      end if;
+
+      -- Keyword filter (mig 227): "a creature you control WITH FLYING enters"
+      -- (Dragon Tempest). Only 'flying' is supported (the common case). At the
+      -- entry instant the granted-flying row isn't registered yet (the resolver
+      -- registers AFTER the move), so check INTRINSIC flying — the card's own
+      -- keywords or a source-scoped flying continuous effect — OR an already
+      -- registered grant.
+      if lower(coalesce(v_filter ->> 'has_keyword', '')) = 'flying'
+         and not (
+           public.card_has_flying(p_session_id, p_changed_card_id)
+           or exists (
+             select 1
+             from public.game_cards gc
+             left join public.cards c on c.id = gc.card_id
+             where gc.id = p_changed_card_id and gc.session_id = p_session_id
+               and (
+                 coalesce(c.keywords::text, '') ilike '%flying%'
+                 or exists (
+                   select 1
+                   from jsonb_array_elements(
+                     coalesce(public.effective_script(p_session_id, gc.id) -> 'continuous_effects', '[]'::jsonb)) e
+                   where lower(coalesce(e ->> 'type', e ->> 'effect_type', '')) = 'flying'
+                     and coalesce(e ->> 'affected', 'source') in ('source', 'this')
+                 )
+               )
+           )
+         ) then
+        continue;
+      end if;
+
+      -- Controller filter, relative to the WATCHER's controller.
+      v_ctrl_ok := case v_f_controller
+        when 'you' then p_changed_controller = v_watcher.controller
+        when 'opponent' then p_changed_controller is distinct from v_watcher.controller
+        else true
+      end;
+      if not v_ctrl_ok then
+        continue;
+      end if;
+
+      perform public.enqueue_triggered_ability(
+        p_session_id, v_watcher.controller, v_watcher.id,
+        coalesce(v_watcher.card_name, p_event), v_ability -> 'effects',
+        p_changed_card_id  -- the triggering creature, for reflexive "it gains …"
+      );
+    end loop;
+  end loop;
+end;
+$$;
+grant execute on function public.fire_watcher_triggers(uuid, uuid, uuid, text) to authenticated;
+grant execute on function public.fire_watcher_triggers(uuid, uuid, uuid, text) to service_role;
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,
@@ -829,3 +1330,558 @@ begin
 end;
 $$;
 grant execute on function public.apply_trigger_effects(uuid, uuid, integer) to authenticated;
+
+create or replace function public.declare_attacker(
+  p_session_id uuid,
+  p_attacker_card_id uuid,
+  p_defending_player_id uuid,
+  p_defending_planeswalker_id uuid default null,
+  p_exert boolean default false
+) returns public.game_combat_assignments
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_session_status text;
+  v_turn_state public.game_turn_state;
+  v_attacker record;
+  v_pw record;
+  v_defending_player uuid := p_defending_player_id;
+  v_assignment public.game_combat_assignments;
+  v_curse record;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  -- Attacking a planeswalker: the defending player is its controller.
+  if p_defending_planeswalker_id is not null then
+    select coalesce(gc.controller_player_id, gc.owner_id) as controller, c.type_line
+    into v_pw
+    from public.game_cards gc
+    join public.cards c on c.id = gc.card_id
+    where gc.id = p_defending_planeswalker_id
+      and gc.session_id = p_session_id
+      and gc.zone = 'battlefield';
+    if not found or coalesce(v_pw.type_line, '') not ilike '%planeswalker%' then
+      raise exception 'Defending planeswalker not found on the battlefield';
+    end if;
+    v_defending_player := v_pw.controller;
+  end if;
+
+  if not public.is_session_player(p_session_id, v_defending_player) then
+    raise exception 'Defending player is not a player in this session';
+  end if;
+
+  if v_defending_player = auth.uid() then
+    raise exception 'A player cannot attack themselves';
+  end if;
+
+  select status
+  into v_session_status
+  from public.game_sessions
+  where id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Game session not found';
+  end if;
+
+  if v_session_status = 'finished' then
+    raise exception 'Cannot declare attackers in a finished game session';
+  end if;
+
+  select *
+  into v_turn_state
+  from public.game_turn_state
+  where session_id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Turn state not found';
+  end if;
+
+  if v_turn_state.active_player_id <> auth.uid() then
+    raise exception 'Only the active player can declare attackers';
+  end if;
+
+  if v_turn_state.step <> 'declare_attackers' then
+    raise exception 'Attackers can only be declared during Declare Attackers Step';
+  end if;
+
+  select
+    game_cards.id,
+    game_cards.is_tapped,
+    game_cards.entered_battlefield_turn_number,
+    cards.type_line
+  into v_attacker
+  from public.game_cards
+  join public.cards
+    on cards.id = game_cards.card_id
+  where game_cards.id = p_attacker_card_id
+    and game_cards.session_id = p_session_id
+    and coalesce(game_cards.controller_player_id, game_cards.owner_id) = auth.uid()
+    and game_cards.zone = 'battlefield'
+  for update of game_cards;
+
+  if not found then
+    raise exception 'Attacker card not found, not on battlefield, or not controlled by active player';
+  end if;
+
+  if coalesce(v_attacker.type_line, '') not ilike '%creature%' then
+    raise exception 'Only creatures can be declared as attackers';
+  end if;
+
+  if v_attacker.is_tapped then
+    raise exception 'Tapped creatures cannot be declared as attackers';
+  end if;
+
+  if coalesce(v_attacker.entered_battlefield_turn_number, v_turn_state.turn_number) >= v_turn_state.turn_number
+    and not public.card_has_haste(p_session_id, p_attacker_card_id)
+  then
+    raise exception 'Creature has summoning sickness';
+  end if;
+
+  -- Attack restriction (Gadrak: "can't attack unless you control four or more
+  -- artifacts"). A top-level script prop {count, at_least}; the count is read
+  -- for the attacking player (auth.uid()).
+  declare
+    v_restrict jsonb := public.effective_script(p_session_id, p_attacker_card_id) -> 'cant_attack_unless';
+  begin
+    if v_restrict is not null
+       and public.resolve_count_amount(p_session_id, auth.uid(), v_restrict)
+           < coalesce((v_restrict ->> 'at_least')::integer, 1)
+    then
+      raise exception 'This creature cannot attack: an attack condition is not met';
+    end if;
+  end;
+
+  -- Goad (mig 249): a goaded creature can't attack the player who goaded it
+  -- while another opponent is available ("attacks a player other than you if
+  -- able"). With only one opponent, attacking the goader is legal.
+  if exists (
+    select 1 from public.game_continuous_effects ce
+    where ce.session_id = p_session_id and ce.effect_type = 'goaded'
+      and ce.affected_card_id = p_attacker_card_id
+      and nullif(ce.payload ->> 'goaded_by', '')::uuid = v_defending_player
+  ) and exists (
+    select 1 from public.game_session_players sp
+    where sp.session_id = p_session_id
+      and sp.player_id not in (auth.uid(), v_defending_player)
+  ) then
+    raise exception 'This creature is goaded: it must attack a player other than its goader';
+  end if;
+
+  -- Territorial Hellkite (mig 249): a must_attack marker pins THIS combat's
+  -- defender to the randomly chosen opponent.
+  if (select gc.counters ->> 'must_attack' from public.game_cards gc where gc.id = p_attacker_card_id)
+       is not null
+     and (select gc.counters ->> 'must_attack' from public.game_cards gc where gc.id = p_attacker_card_id)
+       is distinct from v_defending_player::text then
+    raise exception 'This creature must attack the randomly chosen player this combat';
+  end if;
+
+  update public.game_cards
+  set is_tapped = true
+  where id = p_attacker_card_id
+    and not public.card_has_vigilance(p_session_id, p_attacker_card_id);
+
+  insert into public.game_combat_assignments (
+    session_id,
+    turn_number,
+    attacker_card_id,
+    attacking_player_id,
+    defending_player_id,
+    defending_planeswalker_id
+  )
+  values (
+    p_session_id,
+    v_turn_state.turn_number,
+    p_attacker_card_id,
+    auth.uid(),
+    v_defending_player,
+    p_defending_planeswalker_id
+  )
+  returning * into v_assignment;
+
+  -- Remember the defender + consume the pin (mig 249, Territorial Hellkite's
+  -- "an opponent that this creature didn't attack during your last combat").
+  -- Only stamped for creatures whose script uses territorial_attack, so the
+  -- counter bag stays clean for everything else.
+  if (select gc.counters ? 'must_attack' from public.game_cards gc where gc.id = p_attacker_card_id)
+     or public.effective_script(p_session_id, p_attacker_card_id)::text like '%territorial_attack%' then
+    update public.game_cards
+    set counters = (coalesce(counters, '{}'::jsonb) - 'must_attack')
+          || jsonb_build_object('last_attacked', v_defending_player::text)
+    where id = p_attacker_card_id and session_id = p_session_id;
+  end if;
+
+  -- Exert (mig 236, Glorybringer): "You may exert this creature as it attacks.
+  -- When you do, <effects>." Exerting marks it (so it skips its next untap, see
+  -- advance_step) and enqueues the exert effects (a targeted attack trigger).
+  if p_exert then
+    declare
+      v_exert jsonb := public.effective_script(p_session_id, p_attacker_card_id) -> 'exert';
+    begin
+      if v_exert is not null and jsonb_typeof(v_exert) = 'array' then
+        update public.game_cards
+        set counters = public.adjust_counter_bag(coalesce(counters, '{}'::jsonb), 'exerted', 1)
+        where id = p_attacker_card_id and session_id = p_session_id;
+        perform public.enqueue_triggered_ability(
+          p_session_id, auth.uid(), p_attacker_card_id, 'Exert', v_exert);
+      end if;
+    end;
+  end if;
+
+  -- Curse of Disturbance: when the defending player is attacked, each curse
+  -- enchanting them makes its controller create a 2/2 black Zombie — and "each
+  -- opponent attacking that player does the same" (the attacking player too).
+  for v_curse in
+    select ce.source_card_id, coalesce(gc.controller_player_id, gc.owner_id) as curse_controller
+    from public.game_continuous_effects ce
+    join public.game_cards gc on gc.id = ce.source_card_id
+      and gc.session_id = p_session_id and gc.zone = 'battlefield'
+    where ce.session_id = p_session_id
+      and ce.effect_type = 'curse_attacked'
+      and ce.affected_player_id = v_defending_player
+  loop
+    perform public.enqueue_triggered_ability(
+      p_session_id, v_curse.curse_controller, v_curse.source_card_id,
+      'Curse of Disturbance', jsonb_build_array(jsonb_build_object('type', 'create_token', 'token', 'Zombie Token')));
+    if auth.uid() is distinct from v_curse.curse_controller then
+      perform public.enqueue_triggered_ability(
+        p_session_id, auth.uid(), v_curse.source_card_id,
+        'Curse of Disturbance', jsonb_build_array(jsonb_build_object('type', 'create_token', 'token', 'Zombie Token')));
+    end if;
+  end loop;
+
+  return v_assignment;
+end;
+$$;
+grant execute on function public.declare_attacker(uuid, uuid, uuid, uuid, boolean) to authenticated;
+grant execute on function public.declare_attacker(uuid, uuid, uuid, uuid, boolean) to service_role;
+
+create or replace function public.advance_step(p_session_id uuid)
+returns public.game_turn_state
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_current_state public.game_turn_state;
+  v_session_status text;
+  v_required_player_id uuid;
+  v_next_active_player_id uuid;
+  v_next_priority_player_id uuid;
+  v_next_phase text;
+  v_next_step text;
+  v_next_turn_number integer;
+  v_next_lands_played_this_turn integer;
+  v_drawn_card_id uuid;
+  v_next_hand_position integer;
+  v_revert uuid;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select status
+  into v_session_status
+  from public.game_sessions
+  where id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Game session not found';
+  end if;
+
+  if v_session_status = 'finished' then
+    raise exception 'Cannot advance a finished game session';
+  end if;
+
+  select *
+  into v_current_state
+  from public.game_turn_state
+  where session_id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Turn state not found';
+  end if;
+
+  v_required_player_id := coalesce(v_current_state.priority_player_id, v_current_state.active_player_id);
+
+  if v_required_player_id <> auth.uid() then
+    raise exception 'Only the priority player can advance the step';
+  end if;
+
+  perform public.clear_mana_pool_for_step(
+    p_session_id,
+    v_current_state.phase,
+    v_current_state.step
+  );
+
+  perform public.expire_continuous_effects_for_step(
+    p_session_id,
+    v_current_state.turn_number,
+    v_current_state.phase,
+    v_current_state.step
+  );
+
+  -- Impulse play windows (mig 230, Atsushi: "until the end of your next turn").
+  -- A play_from_exile permission survives the turn it was created in and expires
+  -- when its owner leaves the end step of a LATER turn (their next turn).
+  if v_current_state.step = 'end' then
+    delete from public.game_continuous_effects ce
+    where ce.session_id = p_session_id
+      and ce.effect_type = 'play_from_exile'
+      and ce.affected_player_id = v_current_state.active_player_id
+      and coalesce((ce.payload ->> 'created_turn')::integer, 0) < v_current_state.turn_number;
+
+    -- Territorial Hellkite (mig 249): an unconsumed must_attack pin lapses
+    -- when the combat is over (end step).
+    update public.game_cards
+    set counters = counters - 'must_attack'
+    where session_id = p_session_id and counters ? 'must_attack';
+
+    -- Hellkite Courser (mig 248): "return it to the command zone at the
+    -- beginning of the next end step" — processed when the end step is left.
+    for v_revert in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and gc.counters ? 'return_to_command'
+    loop
+      update public.game_cards gc
+      set zone = 'command', is_tapped = false, damage_marked = 0,
+          controller_player_id = gc.owner_id,
+          counters = gc.counters - 'return_to_command',
+          zone_position = (select coalesce(max(zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = p_session_id and x.owner_id = gc.owner_id
+                             and x.zone = 'command')
+      where gc.id = v_revert;
+    end loop;
+
+    -- Become-copy "until end of turn" (mig 240, Sarkhan, Soul Aflame): revert
+    -- when the end step is left. Every effect row the copy sources is dropped
+    -- (incl. the except-keyword grants), card_id flips back to the original,
+    -- and the re-register restores the original's script effects.
+    for v_revert in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and gc.copy_revert_at_turn is not null
+        and gc.copy_revert_at_turn <= v_current_state.turn_number
+    loop
+      delete from public.game_continuous_effects
+      where session_id = p_session_id and source_card_id = v_revert;
+      update public.game_cards
+      set card_id = copy_original_card_id,
+          copied_script = null,
+          copy_original_card_id = null,
+          copy_revert_at_turn = null
+      where id = v_revert;
+      perform public.register_card_continuous_effects(p_session_id, v_revert);
+    end loop;
+  end if;
+
+  v_next_active_player_id := v_current_state.active_player_id;
+  v_next_priority_player_id := v_current_state.active_player_id;
+  v_next_turn_number := v_current_state.turn_number;
+  v_next_lands_played_this_turn := coalesce(v_current_state.lands_played_this_turn, 0);
+  v_next_phase := v_current_state.phase;
+  v_next_step := v_current_state.step;
+
+  case v_current_state.step
+    when 'untap' then
+      delete from public.game_combat_assignments
+      where session_id = p_session_id;
+
+      -- Exert (mig 236, Glorybringer): an exerted creature "won't untap during
+      -- your next untap step." Skip untapping it this once, then clear the marker
+      -- so it untaps normally next time.
+      update public.game_cards
+      set is_tapped = false
+      where session_id = p_session_id
+        and owner_id = v_current_state.active_player_id
+        and zone = 'battlefield'
+        and is_tapped = true
+        and coalesce((counters ->> 'exerted')::integer, 0) = 0;
+
+      update public.game_cards
+      set counters = counters - 'exerted'
+      where session_id = p_session_id
+        and owner_id = v_current_state.active_player_id
+        and zone = 'battlefield'
+        and counters ? 'exerted';
+
+      v_next_phase := 'beginning';
+      v_next_step := 'upkeep';
+    when 'upkeep' then
+      v_next_phase := 'beginning';
+      v_next_step := 'draw';
+    when 'draw' then
+      if coalesce(v_current_state.skip_next_draw, false) then
+        -- CR 103.8a (mig 221): in a TWO-player game the starting player skips
+        -- the draw step of their first turn. start_game_session sets the flag;
+        -- consume it instead of drawing.
+        update public.game_turn_state
+        set skip_next_draw = false
+        where session_id = p_session_id;
+      else
+        select coalesce(max(zone_position), -1) + 1
+        into v_next_hand_position
+        from public.game_cards
+        where session_id = p_session_id
+          and owner_id = v_current_state.active_player_id
+          and zone = 'hand';
+
+        select id
+        into v_drawn_card_id
+        from public.game_cards
+        where session_id = p_session_id
+          and owner_id = v_current_state.active_player_id
+          and zone = 'library'
+        order by zone_position asc, id asc
+        limit 1
+        for update skip locked;
+
+        if v_drawn_card_id is null then
+          raise exception 'Library is empty';
+        end if;
+
+        update public.game_cards
+        set
+          zone = 'hand',
+          zone_position = v_next_hand_position,
+          is_tapped = false,
+          damage_marked = 0
+        where id = v_drawn_card_id;
+      end if;
+
+      v_next_phase := 'main_1';
+      v_next_step := 'precombat_main';
+    when 'precombat_main' then
+      v_next_phase := 'combat';
+      v_next_step := 'beginning_of_combat';
+    when 'beginning_of_combat' then
+      v_next_phase := 'combat';
+      v_next_step := 'declare_attackers';
+    when 'declare_attackers' then
+      v_next_phase := 'combat';
+      v_next_step := 'declare_blockers';
+
+      select defending_player_id
+      into v_next_priority_player_id
+      from public.game_combat_assignments
+      where session_id = p_session_id
+        and turn_number = v_current_state.turn_number
+        and blocker_card_id is null
+      order by created_at
+      limit 1;
+
+      v_next_priority_player_id := coalesce(v_next_priority_player_id, v_current_state.active_player_id);
+    when 'declare_blockers' then
+      -- Menace: a blocked attacker with menace must have two or more blockers.
+      -- Checked here (block declaration is finished) — a lone blocker is illegal.
+      -- Blockers live one-row-per-blocker in game_combat_blockers.
+      if exists (
+        select 1
+        from public.game_combat_blockers cb
+        where cb.session_id = p_session_id
+          and cb.turn_number = v_current_state.turn_number
+          and public.card_has_menace(p_session_id, cb.attacker_card_id)
+        group by cb.attacker_card_id
+        having count(*) = 1
+      ) then
+        raise exception 'A creature with menace must be blocked by two or more creatures';
+      end if;
+
+      v_next_priority_player_id := v_current_state.active_player_id;
+      v_next_phase := 'combat';
+      v_next_step := 'combat_damage';
+    when 'combat_damage' then
+      v_next_phase := 'combat';
+      v_next_step := 'end_of_combat';
+    when 'end_of_combat' then
+      delete from public.game_combat_assignments
+      where session_id = p_session_id;
+
+      v_next_phase := 'main_2';
+      v_next_step := 'postcombat_main';
+    when 'postcombat_main' then
+      v_next_phase := 'ending';
+      v_next_step := 'end';
+    when 'end' then
+      v_next_phase := 'ending';
+      v_next_step := 'cleanup';
+    when 'cleanup' then
+      delete from public.game_combat_assignments
+      where session_id = p_session_id;
+
+      update public.game_cards
+      set damage_marked = 0
+      where session_id = p_session_id
+        and damage_marked <> 0;
+
+      -- Hand the turn to the next LIVING player by seat order (skip eliminated).
+      select next_player.player_id
+      into v_next_active_player_id
+      from public.game_session_players current_player
+      join public.game_session_players next_player
+        on next_player.session_id = current_player.session_id
+       and next_player.seat_number > current_player.seat_number
+       and next_player.life_total > 0
+      where current_player.session_id = p_session_id
+        and current_player.player_id = v_current_state.active_player_id
+      order by next_player.seat_number
+      limit 1;
+
+      if v_next_active_player_id is null then
+        select player_id
+        into v_next_active_player_id
+        from public.game_session_players
+        where session_id = p_session_id
+          and life_total > 0
+        order by seat_number
+        limit 1;
+      end if;
+
+      if v_next_active_player_id is null then
+        raise exception 'No players found for game session';
+      end if;
+
+      v_next_priority_player_id := v_next_active_player_id;
+      v_next_turn_number := v_current_state.turn_number + 1;
+      v_next_lands_played_this_turn := 0;
+      v_next_phase := 'beginning';
+      v_next_step := 'untap';
+    else
+      raise exception 'Unsupported turn step: %', v_current_state.step;
+  end case;
+
+  update public.game_turn_state
+  set
+    active_player_id = v_next_active_player_id,
+    priority_player_id = v_next_priority_player_id,
+    priority_cycle_started_by = null,
+    priority_pass_count = 0,
+    lands_played_this_turn = v_next_lands_played_this_turn,
+    turn_number = v_next_turn_number,
+    phase = v_next_phase,
+    step = v_next_step
+  where session_id = p_session_id
+  returning * into v_current_state;
+
+  return v_current_state;
+end;
+$$;
+grant execute on function public.advance_step(uuid) to authenticated;

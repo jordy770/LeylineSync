@@ -50,6 +50,8 @@ const JSON_ONLY: Record<string, string> = {
   destroy_up_to: 'parked destroy pick that may be declined (Parapet Thrasher, mig 247); JSON/AI-authored',
   put_from_command_zone: 'borrow a commander from the command zone until the next end step (Hellkite Courser, mig 248); JSON/AI-authored',
   play_hideaway: 'play the source\'s hideaway card free behind a condition gate (Mosswort Bridge, mig 248); JSON/AI-authored',
+  goad: 'goaded row + can\'t-attack-the-goader gate (Vengeful Ancestor, mig 249); JSON/AI-authored',
+  territorial_attack: 'random forced-defender pin with last-combat memory (Territorial Hellkite, mig 249); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

@@ -28,6 +28,7 @@ declare
   v_top_card uuid;
   v_top_type text;
   v_turn integer;
+  v_goad_players integer;
 begin
   if p_target_card_id is null then
     return;
@@ -218,6 +219,28 @@ begin
         jsonb_build_object('until_end_of_turn', true),
         'battlefield', 'ending', 'cleanup'
       );
+    end if;
+
+  elsif p_kind = 'goad' then
+    -- Goad (mig 249, Vengeful Ancestor): "until your next turn, that creature
+    -- attacks each combat if able and attacks a player other than you if
+    -- able." A 'goaded' row carrying the goader, expiring before the goader's
+    -- next turn (current turn + players - 1). Enforced: declare_attacker
+    -- rejects attacking the goader while another opponent exists; the
+    -- must-attack-each-combat half is NOT forced (approximation).
+    if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
+      select turn_number into v_turn
+      from public.game_turn_state where session_id = p_session_id;
+      select count(*) into v_goad_players
+      from public.game_session_players where session_id = p_session_id;
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload, expires_at_turn_number)
+      values (
+        p_session_id,
+        coalesce(nullif(p_params ->> 'acting_source', '')::uuid, p_target_card_id),
+        p_target_card_id, 'goaded',
+        jsonb_build_object('goaded_by', p_params ->> 'acting_controller'),
+        coalesce(v_turn, 0) + greatest(1, coalesce(v_goad_players, 2) - 1));
     end if;
 
   elsif p_kind = 'gain_control' then

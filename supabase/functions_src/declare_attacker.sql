@@ -133,6 +133,31 @@ begin
     end if;
   end;
 
+  -- Goad (mig 249): a goaded creature can't attack the player who goaded it
+  -- while another opponent is available ("attacks a player other than you if
+  -- able"). With only one opponent, attacking the goader is legal.
+  if exists (
+    select 1 from public.game_continuous_effects ce
+    where ce.session_id = p_session_id and ce.effect_type = 'goaded'
+      and ce.affected_card_id = p_attacker_card_id
+      and nullif(ce.payload ->> 'goaded_by', '')::uuid = v_defending_player
+  ) and exists (
+    select 1 from public.game_session_players sp
+    where sp.session_id = p_session_id
+      and sp.player_id not in (auth.uid(), v_defending_player)
+  ) then
+    raise exception 'This creature is goaded: it must attack a player other than its goader';
+  end if;
+
+  -- Territorial Hellkite (mig 249): a must_attack marker pins THIS combat's
+  -- defender to the randomly chosen opponent.
+  if (select gc.counters ->> 'must_attack' from public.game_cards gc where gc.id = p_attacker_card_id)
+       is not null
+     and (select gc.counters ->> 'must_attack' from public.game_cards gc where gc.id = p_attacker_card_id)
+       is distinct from v_defending_player::text then
+    raise exception 'This creature must attack the randomly chosen player this combat';
+  end if;
+
   update public.game_cards
   set is_tapped = true
   where id = p_attacker_card_id
@@ -155,6 +180,18 @@ begin
     p_defending_planeswalker_id
   )
   returning * into v_assignment;
+
+  -- Remember the defender + consume the pin (mig 249, Territorial Hellkite's
+  -- "an opponent that this creature didn't attack during your last combat").
+  -- Only stamped for creatures whose script uses territorial_attack, so the
+  -- counter bag stays clean for everything else.
+  if (select gc.counters ? 'must_attack' from public.game_cards gc where gc.id = p_attacker_card_id)
+     or public.effective_script(p_session_id, p_attacker_card_id)::text like '%territorial_attack%' then
+    update public.game_cards
+    set counters = (coalesce(counters, '{}'::jsonb) - 'must_attack')
+          || jsonb_build_object('last_attacked', v_defending_player::text)
+    where id = p_attacker_card_id and session_id = p_session_id;
+  end if;
 
   -- Exert (mig 236, Glorybringer): "You may exert this creature as it attacks.
   -- When you do, <effects>." Exerting marks it (so it skips its next untap, see
