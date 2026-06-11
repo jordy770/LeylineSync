@@ -187,6 +187,12 @@ begin
   )
   returning * into v_stack;
 
+  -- "Whenever you/an opponent cast a spell" (mig 234, Taurean Mauler): broadcast
+  -- the cast to spell_cast watchers. The caster is the source's controller.
+  if p_source_card_id is not null then
+    perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'spell_cast');
+  end if;
+
   -- Non-permanent spell leaves its cast zone on cast: a hand cast goes to the
   -- graveyard; a flashback cast (from the graveyard) is exiled instead.
   if v_is_flashback then

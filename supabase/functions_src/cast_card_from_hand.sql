@@ -411,6 +411,10 @@ begin
     v_next_stack_position
   );
 
+  -- "Whenever you/an opponent cast a spell" (mig 234, Taurean Mauler): a permanent
+  -- spell is a spell too. (Lands return earlier, so they don't reach here.)
+  perform public.fire_watcher_triggers(p_session_id, p_game_card_id, auth.uid(), 'spell_cast');
+
   update public.game_turn_state
   set
     priority_player_id = active_player_id,

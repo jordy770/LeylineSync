@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T13:09:03.109Z
-> Files: 71 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T14:08:52.702Z
+> Files: 73 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -101,7 +101,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~4728 tok)
+- `card-scripts.json` (~4903 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -111,7 +111,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12027 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12078 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -140,16 +140,16 @@
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2372 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~7117 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~6759 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~6974 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
-- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4553 tok)
-- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2359 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4623 tok)
+- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2441 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~1698 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1017 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~306 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1335 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1394 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
@@ -170,6 +170,7 @@
 - `202605010231_cost_reduction.sql` — 202605010231_cost_reduction — generic-mana cost reduction. (~9725 tok)
 - `202605010232_monstrosity.sql` — 202605010232_monstrosity — Stormbreath Dragon's monstrosity. (~12816 tok)
 - `202605010233_divide_damage.sql` — 202605010233_divide_damage — divided damage from triggers/abilities. (~21620 tok)
+- `202605010234_spell_cast_watcher.sql` — 202605010234_spell_cast_watcher — "whenever you/an opponent cast a spell". (~15190 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -194,6 +195,7 @@
 - `monstrosity.test.ts` — Monstrosity (mig 232) — Stormbreath Dragon: "{5}{R}{R}: Monstrosity 3. When (~781 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
 - `reflexive-watcher.test.ts` — Reflexive watchers (mig 227) — the entering/attacking creature ITSELF gains (~953 tok)
+- `spell-cast-watcher.test.ts` — Spell-cast watcher (mig 234): (~722 tok)
 - `treasure.test.ts` — Treasure tokens (mig 226) — "{T}, Sacrifice this artifact: Add one mana of (~660 tok)
 - `undying.test.ts` — Undying (mig 219) — "When this creature dies, if it had no +1/+1 counters on (~820 tok)
 - `ureni.test.ts` — Ureni of the Unwritten (mig 223) — "Whenever Ureni enters or attacks, look at (~1186 tok)
@@ -201,7 +203,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~23996 tok)
+- `test-cards.json` (~24352 tok)
 
 ## tests/harness/
 
@@ -213,7 +215,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1463 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1498 tok)
 
 ## vercel/
 
@@ -242,7 +244,5 @@
 ## vercel/styles/
 
 
-- `supabase/functions_src/divide_damage_options.sql` — legal-target option list for a divide_damage decision. ~500 tok
-- `supabase/functions_src/apply_damage_allocations.sql` — applies a resolved divided-damage split (creature/PW/player). ~500 tok
-- `tests/feature/divide-damage.test.ts` — Dragonlord Atarka ETB + Skarrgan Riot/activated divided damage. ~900 tok
-- `supabase/migrations/202605010233_divide_damage.sql` — divide_damage decision + helpers + activate condition gate. ~3k tok
+- `tests/feature/spell-cast-watcher.test.ts` — Taurean Mauler (opponent-cast counter) + Encroaching Dragonstorm (ETB ramp + Dragon-enters self-bounce). ~600 tok
+- `supabase/migrations/202605010234_spell_cast_watcher.sql` — spell_cast broadcast + watcher type bypass + return_self_to_hand. ~2k tok

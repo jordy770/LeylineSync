@@ -472,6 +472,19 @@ begin
         );
       end if;
 
+    elsif v_eff_type = 'return_self_to_hand' then
+      -- "Return this permanent to its owner's hand" (Encroaching/Breaching
+      -- Dragonstorm, when a Dragon you control enters).
+      if p_source_card_id is not null then
+        update public.game_cards gc
+        set zone = 'hand',
+            zone_position = (select coalesce(max(zone_position), -1) + 1 from public.game_cards
+                             where session_id = p_session_id and owner_id = gc.owner_id and zone = 'hand'),
+            controller_player_id = gc.owner_id, is_tapped = false, damage_marked = 0, plus_one_counters = 0
+        where gc.id = p_source_card_id and gc.session_id = p_session_id and gc.zone = 'battlefield';
+        perform public.rebuild_scripted_continuous_effects(p_session_id);
+      end if;
+
     elsif v_eff_type = 'grant_keyword' then
       -- Untargeted single grant → the source permanent (Skarrgan's Riot haste
       -- mode). apply_creature_effect writes the keyword continuous effect.

@@ -61,8 +61,10 @@ begin
         continue;
       end if;
 
-      -- Type filter: default "creature"; else substring-match the subtype.
-      if v_changed_type not ilike '%' || coalesce(v_f_type, 'creature') || '%' then
+      -- Type filter: default "creature" for permanent watchers; for spell_cast
+      -- (Taurean Mauler) the changed card is a SPELL of any type, so default to
+      -- match-anything (a watcher may still set type_line, e.g. "a Dragon spell").
+      if v_changed_type not ilike '%' || coalesce(v_f_type, case when p_event = 'spell_cast' then '' else 'creature' end) || '%' then
         continue;
       end if;
 

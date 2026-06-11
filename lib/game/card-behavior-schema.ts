@@ -182,6 +182,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
   'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
   'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand', 'divide_damage',
+  'return_self_to_hand',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -417,6 +418,10 @@ const CardBehaviorActionSchema = z.union([
   // (Stormbreath's become-monstrous rider).
   z.object({
     type: z.literal('damage_each_opponent_by_hand'),
+  }),
+  // "Return this permanent to its owner's hand" (Encroaching/Breaching Dragonstorm).
+  z.object({
+    type: z.literal('return_self_to_hand'),
   }),
   // "Deal N damage divided as you choose among …" (Dragonlord Atarka ETB /
   // Skarrgan Hellkite). Parks a divide_damage decision; the player allocates N

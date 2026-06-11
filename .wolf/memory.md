@@ -3263,3 +3263,16 @@
 | 15:08 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~457 |
 | 15:09 | Created tests/feature/divide-damage.test.ts | — | ~1212 |
 | 14:10 | Divided damage from triggers/abilities (mig 233): divide_damage_options + apply_damage_allocations helpers; apply_trigger_effects parks a divide_damage decision (Atarka ETB), submit_decision validates (sum=amount, offered targets, max_targets) + applies; activate_ability routes divide_damage via spell_effect list (Skarrgan) + honours an "Activate only if" {counters,of,at_least} condition; untargeted single grant_keyword -> source (Riot haste). Dragonlord Atarka + Skarrgan Hellkite (Riot via choose_one). Fixtures + card-scripts + divide-damage.test (DV1-4). | mig 233, divide_damage_options, apply_damage_allocations, apply_trigger_effects, submit_decision, activate_ability, apply_triggered_ability_effects, schema, divide-damage.test | 822/822 green, tsc+lint clean | ~22k |
+| 15:10 | Session end: 67 writes across 29 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 22 reads | ~70108 tok |
+| 16:04 | Edited supabase/functions_src/fire_watcher_triggers.sql | 4→6 lines | ~110 |
+| 16:04 | Edited supabase/functions_src/cast_spell_effect.sql | expanded (+6 lines) | ~116 |
+| 16:04 | Edited supabase/functions_src/cast_card_from_hand.sql | 11→15 lines | ~131 |
+| 16:06 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+13 lines) | ~223 |
+| 16:06 | Edited lib/game/card-behavior-schema.ts | 5→9 lines | ~98 |
+| 16:07 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~36 |
+| 16:07 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~72 |
+| 16:07 | Edited supabase/migrations/202605010234_spell_cast_watcher.sql | expanded (+11 lines) | ~291 |
+| 16:08 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~380 |
+| 16:08 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~376 |
+| 16:08 | Created tests/feature/spell-cast-watcher.test.ts | — | ~722 |
+| 14:55 | Spell-cast watcher (mig 234): cast_spell_effect + cast_card_from_hand broadcast 'spell_cast' (lands excluded); fire_watcher_triggers bypasses the creature-type default for spell_cast (controller you/opponent relative to watcher). + return_self_to_hand effect. Taurean Mauler (opponent casts -> may +1/+1; changeling NOT modelled) + Encroaching Dragonstorm (ETB search 2 basics + Dragon-enters self-bounce). Fixtures + card-scripts + spell-cast-watcher.test (SC1/SC2). | mig 234, fire_watcher_triggers, cast_spell_effect, cast_card_from_hand, apply_triggered_ability_effects, schema, spell-cast-watcher.test | 824/824 green, tsc+lint clean | ~13k |
