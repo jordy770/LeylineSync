@@ -137,5 +137,7 @@
 
   "Kessig Wolf Run": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{X}{R}{G}"},{"type":"tap_self"}],"effects":[{"type":"pump","power":"X","toughness":0,"target_type":"creature"},{"type":"grant_keyword","keyword":"trample","target_type":"creature"}]}]},
 
-  "Chaos Warp": {"schema_version":2,"spell_effect":{"actions":[{"type":"shuffle_into_library","target_type":"permanent","then_reveal_top_to_battlefield":true}]}}
+  "Chaos Warp": {"schema_version":2,"spell_effect":{"actions":[{"type":"shuffle_into_library","target_type":"permanent","then_reveal_top_to_battlefield":true}]}},
+
+  "Become the Avalanche": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":{"count":"creatures_you_control","min_power":4}},{"type":"pump_all","scope":"controller","power":{"count":"cards_in_hand"},"toughness":{"count":"cards_in_hand"}}]}}
 }

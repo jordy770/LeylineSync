@@ -10405,15 +10405,15 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 4→6 lines (3 removed)",
+      "fix": "Rewrote 4→6 lines (3 removed) | Also: power: z.number(),; toughness: z.number(),",
       "tags": [
         "auto-detected",
         "refactor",
         "ts"
       ],
       "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-06-11T21:00:35.708Z"
+      "occurrences": 2,
+      "last_seen": "2026-06-11T21:05:20.112Z"
     },
     {
       "id": "bug-641",

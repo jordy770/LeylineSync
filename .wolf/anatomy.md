@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T21:02:17.470Z
-> Files: 101 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T21:07:12.972Z
+> Files: 104 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -103,7 +103,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~6684 tok)
+- `card-scripts.json` (~6759 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -113,7 +113,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~13076 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~13198 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -142,7 +142,8 @@
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2773 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~3226 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~8895 tok)
+- `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~8996 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7133 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
@@ -166,7 +167,7 @@
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2062 tok)
-- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1642 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1792 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~778 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
@@ -191,6 +192,7 @@
 - `202605010240_become_copy.sql` — 202605010240_become_copy — an existing card becomes a copy (Deceptive (~20948 tok)
 - `202605010241_farseek_type_line_any.sql` — 202605010241_farseek_type_line_any — Farseek + Flooded Grove. (~8996 tok)
 - `202605010242_kessig_chaos_warp.sql` — 202605010242_kessig_chaos_warp — Kessig Wolf Run + Chaos Warp. (~10419 tok)
+- `202605010243_become_the_avalanche.sql` — 202605010243_become_the_avalanche — Become the Avalanche. (~11319 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -202,6 +204,7 @@
 
 - `atsushi.test.ts` — Atsushi, the Blazing Sky (mig 230) — a MODAL dies trigger ("choose one"): (~1292 tok)
 - `become-copy.test.ts` — mig 240 — become_copy: an EXISTING card becomes a copy of another. (~1756 tok)
+- `become-the-avalanche.test.ts` — mig 243 — Become the Avalanche: "Draw a card for each creature you control (~662 tok)
 - `becomes-target-and-power.test.ts` — mig 235 — three cards: (~1397 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
 - `copy-permanent.test.ts` — mig 239 — token-copy primitive (Will of the Temur + Reflections of Littjara). (~2624 tok)
@@ -231,7 +234,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~28049 tok)
+- `test-cards.json` (~28216 tok)
 
 ## tests/harness/
 

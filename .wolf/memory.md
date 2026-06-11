@@ -3411,3 +3411,19 @@
 | 23:01 | Edited supabase/migrations/202605010242_kessig_chaos_warp.sql | modified if() | ~405 |
 | 23:02 | Created tests/feature/kessig-chaos-warp.test.ts | — | ~1297 |
 | 21:40 | Kessig Wolf Run + Chaos Warp (mig 242): activate_ability p_x_value (X paid as generic, 'X' substituted into effects; OLD 6-arg overload DROPPED per bug-236a pattern; harness activate gains xValue); multi-effect ability path now carries target_card_id; apply_creature_effect kind shuffle_into_library (random-pos insert + reveal-top-permanent-to-battlefield rider; tokens cease); trigger_effect_target_type canonical file created (first edit since mig 172). | mig 242, activate_ability, apply_creature_effect, trigger_effect_target_type, schema, scenario.ts, kessig-chaos-warp.test | 852/852 green, tsc+lint clean, triage 69/6/17 | ~10k |
+| 23:05 | Edited lib/game/card-behavior-schema.ts | 8→10 lines | ~124 |
+| 23:05 | Edited lib/game/card-behavior-schema.ts | 5→9 lines | ~184 |
+| 23:05 | Created supabase/functions_src/apply_mass_pump_until_eot.sql | — | ~651 |
+| 23:05 | Edited supabase/functions_src/apply_trigger_effects.sql | expanded (+7 lines) | ~113 |
+| 23:05 | Edited supabase/functions_src/resolve_count_amount.sql | modified min_power() | ~183 |
+| 23:05 | Edited supabase/functions_src/resolve_count_amount.sql | modified count() | ~89 |
+| 23:06 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~299 |
+| 23:06 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~122 |
+| 23:06 | Created tests/feature/become-the-avalanche.test.ts | — | ~662 |
+| 23:07 | Edited supabase/migrations/202605010243_become_the_avalanche.sql | expanded (+6 lines) | ~143 |
+
+## Session: 2026-06-11 23:08
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:00 | Become the Avalanche (mig 243): pump_all wired into program resolver; apply_mass_pump_until_eot resolves count-based P/T at apply time; counts creatures_you_control+min_power and cards_in_hand. | mig 243, apply_mass_pump_until_eot, apply_trigger_effects, resolve_count_amount, schema, become-the-avalanche.test | 853/853 green, tsc+lint clean, triage 70/6/16 | ~6k |

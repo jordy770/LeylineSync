@@ -1,7 +1,61 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010243_become_the_avalanche — Become the Avalanche.
+--   • pump_all is wired into the program resolver (previously it only ran
+--     inside choose_creature_type's apply path).
+--   • apply_mass_pump_until_eot resolves count-based power/toughness at apply
+--     time ("+X/+X where X is the number of cards in your hand"); plain
+--     integers behave exactly as before (Crippling Fear unchanged).
+--   • resolve_count_amount: creatures_you_control gains min_power (effective
+--     power >= N), and a new cards_in_hand count.
+-- Generated from supabase/functions_src (apply_mass_pump_until_eot, apply_trigger_effects, resolve_count_amount) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+create or replace function public.apply_mass_pump_until_eot(
+  p_session_id uuid,
+  p_source_card_id uuid,
+  p_controller_id uuid,
+  p_effect jsonb
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_power integer;
+  v_tough integer;
+begin
+  v_power := public.resolve_dynamic_amount(
+    p_session_id, p_source_card_id, p_controller_id, p_effect -> 'power');
+  if coalesce((p_effect -> 'power' ->> 'negate')::boolean, false) then
+    v_power := -v_power;
+  end if;
+  v_tough := public.resolve_dynamic_amount(
+    p_session_id, p_source_card_id, p_controller_id, p_effect -> 'toughness');
+  if coalesce((p_effect -> 'toughness' ->> 'negate')::boolean, false) then
+    v_tough := -v_tough;
+  end if;
+
+  -- scope 'controller' => only that player's creatures (affected_player_id set);
+  -- 'all' (default) => every creature, any controller (affected_player_id null).
+  insert into public.game_continuous_effects (
+    session_id, source_card_id, affected_player_id, effect_type, payload,
+    expires_at_phase, expires_at_step
+  ) values (
+    p_session_id, p_source_card_id,
+    case when lower(coalesce(p_effect ->> 'scope', 'all')) = 'controller' then p_controller_id else null end,
+    'pump',
+    jsonb_build_object(
+      'power', coalesce(v_power, 0),
+      'toughness', coalesce(v_tough, 0),
+      'creature_type', p_effect ->> 'creature_type',
+      'exclude_type', coalesce((p_effect ->> 'exclude_type')::boolean, false)
+    ),
+    'ending', 'cleanup'
+  );
+  -- A -X/-X can drop creatures to 0 toughness; the SBA reads effective toughness.
+  perform public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
+end;
+$$;
+grant execute on function public.apply_mass_pump_until_eot(uuid, uuid, uuid, jsonb) to authenticated;
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,
@@ -580,3 +634,154 @@ begin
 end;
 $$;
 grant execute on function public.apply_trigger_effects(uuid, uuid, integer) to authenticated;
+
+create or replace function public.resolve_count_amount(
+  p_session_id uuid,
+  p_controller_id uuid,
+  p_spec jsonb
+) returns integer
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  v_count text := lower(coalesce(p_spec ->> 'count', ''));
+  v_type text := p_spec ->> 'type_line';
+  v_color text := upper(coalesce(p_spec ->> 'color', ''));
+  v_n integer := 0;
+begin
+  if v_count = 'creatures_you_control' then
+    -- min_power (mig 243, Become the Avalanche): only creatures with
+    -- effective power >= N count.
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and c.type_line ilike '%creature%'
+      and (v_type is null or c.type_line ilike '%' || v_type || '%')
+      and ((p_spec ->> 'min_power') is null
+           or coalesce(public.card_effective_power(p_session_id, g.id), -1)
+              >= (p_spec ->> 'min_power')::integer);
+
+  elsif v_count = 'lands_you_control' then
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and c.type_line ilike '%land%';
+
+  elsif v_count = 'basic_lands_you_control' then
+    -- "unless you control two or more basic lands" (mig 217, Sunken Hollow).
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and c.type_line ilike '%basic%'
+      and c.type_line ilike '%land%';
+
+  elsif v_count = 'cards_in_hand' then
+    -- "where X is the number of cards in your hand" (Become the Avalanche).
+    select count(*)::integer into v_n
+    from public.game_cards g
+    where g.session_id = p_session_id
+      and g.owner_id = p_controller_id
+      and g.zone = 'hand';
+
+  elsif v_count = 'cards_in_graveyard' then
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and g.owner_id = p_controller_id
+      and g.zone = 'graveyard'
+      and (v_type is null or c.type_line ilike '%' || v_type || '%');
+
+  elsif v_count = 'commanders_you_control' then
+    -- "If you control your commander" (Lieutenant, mig 205): battlefield cards
+    -- you control flagged is_commander. Used as a conditional's count.
+    select count(*)::integer into v_n
+    from public.game_cards g
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and g.is_commander = true;
+
+  elsif v_count = 'creatures_died_this_turn' then
+    -- Turn-stamped: only valid for the current turn (lazy reset).
+    select case when sp.turn_creatures_died_turn = ts.turn_number then sp.turn_creatures_died else 0 end
+    into v_n
+    from public.game_session_players sp
+    join public.game_turn_state ts on ts.session_id = sp.session_id
+    where sp.session_id = p_session_id and sp.player_id = p_controller_id;
+
+  elsif v_count = 'nontoken_creatures_died_this_turn' then
+    -- Game-wide: every NONTOKEN creature that died this turn under ANY player's
+    -- control (Gadrak, the Crown-Scourge). Sums the per-controller turn-stamped
+    -- tally across all players (each contributes 0 once its stamp goes stale).
+    select coalesce(sum(case when sp.turn_nontoken_creatures_died_turn = ts.turn_number
+                             then sp.turn_nontoken_creatures_died else 0 end), 0)::integer
+    into v_n
+    from public.game_session_players sp
+    join public.game_turn_state ts on ts.session_id = sp.session_id
+    where sp.session_id = p_session_id;
+
+  elsif v_count = 'artifacts_you_control' then
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and c.type_line ilike '%artifact%';
+
+  elsif v_count = 'greatest_mana_value_you_control' then
+    -- "the greatest mana value among permanents you control" (Will of the
+    -- Temur draw mode, mig 239). Parsed from mana_cost text: numeric symbols
+    -- add their value, X adds 0, every other symbol ({R}, {G/U}, …) adds 1.
+    select coalesce(max(mv.v), 0)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    cross join lateral (
+      select coalesce(sum(case when t.sym ~ '^[0-9]+$' then t.sym::integer
+                               when upper(t.sym) = 'X' then 0
+                               else 1 end), 0) as v
+      from regexp_matches(coalesce(c.mana_cost, ''), '\{([^}]+)\}', 'g') r(arr),
+           lateral (select r.arr[1] as sym) t
+    ) mv
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield';
+
+  elsif v_count = 'graveyard_casts_this_turn' then
+    -- Spells you cast from a graveyard this turn (flashback or a cast-from-
+    -- graveyard permission). Turn-stamped like creatures_died (mig 206).
+    select case when sp.turn_graveyard_casts_turn = ts.turn_number then sp.turn_graveyard_casts else 0 end
+    into v_n
+    from public.game_session_players sp
+    join public.game_turn_state ts on ts.session_id = sp.session_id
+    where sp.session_id = p_session_id and sp.player_id = p_controller_id;
+
+  elsif v_count = 'devotion' and v_color <> '' then
+    select coalesce(sum(
+      (length(c.mana_cost) - length(replace(c.mana_cost, '{' || v_color || '}', ''))) / 3
+    ), 0)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and c.mana_cost is not null;
+  end if;
+
+  return greatest(0, coalesce(v_n, 0));
+end;
+$$;
+grant execute on function public.resolve_count_amount(uuid, uuid, jsonb) to authenticated;
+grant execute on function public.resolve_count_amount(uuid, uuid, jsonb) to service_role;

@@ -210,8 +210,12 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'devotion']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'devotion']),
   type_line: z.string().optional(),
+  // creatures_you_control only: count creatures with effective power >= N
+  // (Become the Avalanche: "for each creature you control with power 4 or
+  // greater").
+  min_power: z.number().int().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
 }).strict()
 
@@ -556,8 +560,10 @@ const CardBehaviorActionSchema = z.union([
   // Pairs with choose_creature_type, which injects the chosen type into creature_type.
   z.object({
     type: z.literal('pump_all'),
-    power: z.number(),
-    toughness: z.number(),
+    // A fixed delta, or a count-based amount (Become the Avalanche: +X/+X
+    // where X = cards in your hand) resolved at apply time.
+    power: z.union([z.number(), CountAmountSchema]),
+    toughness: z.union([z.number(), CountAmountSchema]),
     scope: z.enum(['all', 'controller']).optional(),
     creature_type: z.string().optional(),
     exclude_type: z.boolean().optional(),

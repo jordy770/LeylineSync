@@ -20,6 +20,8 @@ declare
   v_n integer := 0;
 begin
   if v_count = 'creatures_you_control' then
+    -- min_power (mig 243, Become the Avalanche): only creatures with
+    -- effective power >= N count.
     select count(*)::integer into v_n
     from public.game_cards g
     join public.cards c on c.id = g.card_id
@@ -27,7 +29,10 @@ begin
       and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
       and g.zone = 'battlefield'
       and c.type_line ilike '%creature%'
-      and (v_type is null or c.type_line ilike '%' || v_type || '%');
+      and (v_type is null or c.type_line ilike '%' || v_type || '%')
+      and ((p_spec ->> 'min_power') is null
+           or coalesce(public.card_effective_power(p_session_id, g.id), -1)
+              >= (p_spec ->> 'min_power')::integer);
 
   elsif v_count = 'lands_you_control' then
     select count(*)::integer into v_n
@@ -48,6 +53,14 @@ begin
       and g.zone = 'battlefield'
       and c.type_line ilike '%basic%'
       and c.type_line ilike '%land%';
+
+  elsif v_count = 'cards_in_hand' then
+    -- "where X is the number of cards in your hand" (Become the Avalanche).
+    select count(*)::integer into v_n
+    from public.game_cards g
+    where g.session_id = p_session_id
+      and g.owner_id = p_controller_id
+      and g.zone = 'hand';
 
   elsif v_count = 'cards_in_graveyard' then
     select count(*)::integer into v_n
