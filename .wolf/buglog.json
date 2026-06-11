@@ -10767,6 +10767,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T22:21:21.838Z"
+    },
+    {
+      "id": "bug-663",
+      "timestamp": "2026-06-11T22:32:00.361Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010250_scourge_throne.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→16 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T22:32:00.361Z"
+    },
+    {
+      "id": "bug-664",
+      "timestamp": "2026-06-11T22:35:40.619Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/apply_trigger_effects.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→14 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T22:35:40.619Z"
     }
   ]
 }

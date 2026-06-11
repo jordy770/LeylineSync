@@ -252,8 +252,18 @@ begin
       delete from public.game_combat_assignments
       where session_id = p_session_id;
 
-      v_next_phase := 'main_2';
-      v_next_step := 'postcombat_main';
+      -- Extra combat phase (mig 250, Scourge of the Throne): consume one
+      -- pending extra combat and loop back instead of moving to main 2.
+      if coalesce(v_current_state.extra_combats, 0) > 0 then
+        update public.game_turn_state
+        set extra_combats = extra_combats - 1
+        where session_id = p_session_id;
+        v_next_phase := 'combat';
+        v_next_step := 'beginning_of_combat';
+      else
+        v_next_phase := 'main_2';
+        v_next_step := 'postcombat_main';
+      end if;
     when 'postcombat_main' then
       v_next_phase := 'ending';
       v_next_step := 'end';

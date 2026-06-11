@@ -185,7 +185,8 @@ export const KNOWN_V2_ACTION_TYPES = [
   'return_self_to_hand', 'copy_permanent', 'become_copy', 'shuffle_into_library',
   'pay_x_mana_damage', 'bounce_up_to', 'exile_until_nonland',
   'put_from_hand', 'destroy_up_to', 'put_from_command_zone', 'play_hideaway',
-  'goad', 'territorial_attack',
+  'goad', 'territorial_attack', 'if_attacking_most_life', 'untap_all_attackers', 'extra_combat',
+  'exile_and_manifest', 'vote_wild_free',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -480,11 +481,20 @@ const CardBehaviorActionSchema = z.union([
   // the trigger payload's event_amount (dragons_combat_damage).
   z.object({
     type: z.literal('put_from_hand'),
-    count: z.number().int().positive().optional(),
+    // A number, or a stack-payload key holding the number (mig 252,
+    // Selvala's Stampede: 'free_votes' tallied by the vote chain).
+    count: z.union([z.number().int().positive(), z.string()]).optional(),
     filter: z.object({
       permanent: z.boolean().optional(),
       max_mana_value: z.union([z.number().int(), z.literal('event_amount')]).optional(),
     }).strict().optional(),
+  }),
+  // Council's dilemma (Selvala's Stampede, mig 252): starting with the
+  // caster, each player votes wild or free; wild reveals creatures from the
+  // top onto the battlefield, free counts ride the payload for a following
+  // put_from_hand.
+  z.object({
+    type: z.literal('vote_wild_free'),
   }),
   // "You may put a commander you own from the command zone onto the
   // battlefield. It gains haste. Return it to the command zone at the
@@ -506,6 +516,31 @@ const CardBehaviorActionSchema = z.union([
   // pick taps the source.
   z.object({
     type: z.literal('territorial_attack'),
+  }),
+  // Dethrone / Scourge of the Throne (mig 250): the inner untargeted effects
+  // run only when the attack's defender has the most life or is tied for it;
+  // once_per_turn gates via a turn stamp on the source.
+  z.object({
+    type: z.literal('if_attacking_most_life'),
+    once_per_turn: z.boolean().optional(),
+    effects: z.array(z.record(z.string(), z.unknown())),
+  }),
+  // "Untap all attacking creatures" (mig 250, Scourge of the Throne).
+  z.object({
+    type: z.literal('untap_all_attackers'),
+  }),
+  // "Exile target creature. Its controller manifests the top card of their
+  // library." (Reality Shift, mig 251.) The manifested card is a blank 2/2;
+  // turn_manifest_up flips a creature card face up for its mana cost.
+  z.object({
+    type: z.literal('exile_and_manifest'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // "After this phase, there is an additional combat phase" (mig 250).
+  z.object({
+    type: z.literal('extra_combat'),
   }),
   // Play the card this source hid with hideaway (Mosswort Bridge, mig 248):
   // a permanent card enters the battlefield free; the activation gate is the

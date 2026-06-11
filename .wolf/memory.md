@@ -3548,3 +3548,37 @@
 | 00:20 | Created tests/feature/goad-territorial.test.ts | — | ~1713 |
 | 00:21 | Edited supabase/migrations/202605010249_goad_territorial.sql | modified goad() | ~526 |
 | 02:55 | Batch mig 249 (2 cards): goad (goaded row + expiry turn+players-1; declare_attacker cant-attack-goader gate; watcher filter goaded:true; recipient triggering_controller) for Vengeful Ancestor + territorial_attack (random fresh-opponent must_attack pin, last_attacked memory stamped only for scripts using it, tap when no pick; pin lapses at end step) for Territorial Hellkite. Approx: attack-each-combat not forced. | mig 249, apply_creature_effect, trigger_effect_target_type, fire_watcher_triggers, apply_trigger_effects, declare_attacker, advance_step, schema, goad-territorial.test | 874/874 green, tsc+lint clean, triage 83/6/3 | ~11k |
+| 00:24 | Session end: 110 writes across 36 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 19 reads | ~75104 tok |
+| 00:30 | Edited supabase/functions_src/advance_step.sql | modified phase() | ~169 |
+| 00:30 | Edited supabase/functions_src/fire_attack_triggers.sql | 5→8 lines | ~84 |
+| 00:30 | Edited supabase/functions_src/apply_trigger_effects.sql | added 2 condition(s) | ~450 |
+| 00:30 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+16 lines) | ~207 |
+| 00:30 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~31 |
+| 00:30 | Edited lib/game/card-behavior-schema.ts | modified Hellkite() | ~253 |
+| 00:30 | Edited tests/unit/registry-schema-drift.test.ts | 2→5 lines | ~132 |
+| 00:30 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~453 |
+| 00:31 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~216 |
+| 00:31 | Created tests/feature/scourge-throne.test.ts | — | ~979 |
+| 00:32 | Edited supabase/migrations/202605010250_scourge_throne.sql | expanded (+12 lines) | ~267 |
+| 00:32 | Edited supabase/functions_src/apply_creature_effect.sql | modified Shift() | ~690 |
+| 00:32 | Edited supabase/functions_src/trigger_effect_target_type.sql | 2→3 lines | ~53 |
+| 00:32 | Edited supabase/functions_src/register_card_continuous_effects.sql | expanded (+7 lines) | ~107 |
+| 00:33 | Created supabase/functions_src/turn_manifest_up.sql | — | ~655 |
+| 00:33 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~38 |
+| 00:33 | Edited lib/game/card-behavior-schema.ts | expanded (+9 lines) | ~173 |
+| 00:33 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~67 |
+| 00:33 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~338 |
+| 00:33 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~161 |
+| 00:33 | Created tests/feature/reality-shift.test.ts | — | ~1052 |
+| 00:34 | Edited supabase/migrations/202605010251_reality_shift_manifest.sql | modified exile_and_manifest() | ~212 |
+| 00:35 | Edited supabase/functions_src/apply_trigger_effects.sql | added 2 condition(s) | ~266 |
+| 00:35 | Edited supabase/functions_src/apply_trigger_effects.sql | modified dilemma() | ~449 |
+| 00:36 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~1170 |
+| 00:36 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~43 |
+| 00:36 | Edited lib/game/card-behavior-schema.ts | modified dilemma() | ~215 |
+| 00:36 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~66 |
+| 00:36 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~284 |
+| 00:36 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~86 |
+| 00:37 | Created tests/feature/selvalas-stampede.test.ts | — | ~1095 |
+| 00:37 | Edited supabase/migrations/202605010252_selvalas_stampede.sql | expanded (+8 lines) | ~177 |
+| 03:50 | FINAL 3 (migs 250-252): Scourge of the Throne (fire_attack_triggers stamps defender; if_attacking_most_life guard + once_per_turn stamp; untap_all_attackers; extra_combat via game_turn_state.extra_combats, advance_step loops end_of_combat->beginning_of_combat), Reality Shift manifest (exile_and_manifest kind: blank 2/2 via manifested marker + copied_script {} + unexpiring set_pt; register skips manifested; turn_manifest_up RPC), Selvala's Stampede (vote_wild_free chain decision; tally on stack payload; wild reveal-to-battlefield + bottom-random rest; put_from_hand count from payload key free_votes, 0 skips). DECK COMPLETE: 92/92 (86 implemented + 6 as-is), triage NEEDS BUILD 0. | migs 250-252, 11 files, 3 test files | 880/880 green, tsc+lint clean | ~30k |

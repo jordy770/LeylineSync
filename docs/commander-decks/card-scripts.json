@@ -165,5 +165,11 @@
 
   "Vengeful Ancestor": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"goad","target_type":"creature","target_controller":"opponent"}]},{"event":"attacks","effects":[{"type":"goad","target_type":"creature","target_controller":"opponent"}]},{"event":"creature_attacks","filter":{"controller":"any","goaded":true},"effects":[{"type":"deal_damage","amount":1,"recipient":"triggering_controller"}]}]},
 
-  "Territorial Hellkite": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"beginning_of_combat","effects":[{"type":"territorial_attack"}]}]}
+  "Territorial Hellkite": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"beginning_of_combat","effects":[{"type":"territorial_attack"}]}]},
+
+  "Scourge of the Throne": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"attacks","effects":[{"type":"if_attacking_most_life","effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one"}]},{"type":"if_attacking_most_life","once_per_turn":true,"effects":[{"type":"untap_all_attackers"},{"type":"extra_combat"}]}]}]},
+
+  "Reality Shift": {"schema_version":2,"spell_effect":{"actions":[{"type":"exile_and_manifest","target_type":"creature"}]}},
+
+  "Selvala's Stampede": {"schema_version":2,"spell_effect":{"actions":[{"type":"vote_wild_free"},{"type":"put_from_hand","count":"free_votes","filter":{"permanent":true}}]}}
 }

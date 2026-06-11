@@ -10,10 +10,13 @@ CREATE OR REPLACE FUNCTION "public"."fire_attack_triggers"() RETURNS "trigger"
 declare
   v_attacker_controller uuid;
 begin
+  -- The defender rides as event context (mig 250: dethrone's "attacks the
+  -- player with the most life").
   perform public.fire_card_triggers(
     NEW.session_id,
     NEW.attacker_card_id,
-    array['attacks', 'declares_attack', 'attack']
+    array['attacks', 'declares_attack', 'attack'],
+    jsonb_build_object('event_player_id', NEW.defending_player_id)
   );
 
   -- Watcher broadcast (mig 227): "whenever a creature you control attacks"

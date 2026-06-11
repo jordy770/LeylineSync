@@ -472,6 +472,94 @@ begin
     end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
+  elsif v_decision.decision_type = 'vote' then
+    -- Council's dilemma (mig 252, Selvala's Stampede). Record the vote on
+    -- the stack payload; park the next voter, or — when the queue is empty —
+    -- tally and apply: wild reveals from the CASTER's library until that
+    -- many creature cards entered under them (other revealed cards bottom in
+    -- a random order), free rides the payload for the following
+    -- put_from_hand action.
+    declare
+      v_vote text := lower(coalesce(p_result ->> 'value', ''));
+      v_vq jsonb := coalesce(v_decision.params -> 'queue', '[]'::jsonb);
+      v_stk public.game_stack_items;
+      v_wild integer;
+      v_free integer;
+      v_caster uuid;
+      v_found integer := 0;
+      v_scanned integer := 0;
+      v_lib_size integer;
+      v_rest uuid[] := array[]::uuid[];
+      v_scan_id uuid;
+      v_scan_creature boolean;
+    begin
+      if v_vote not in ('wild', 'free') then
+        raise exception 'Vote must be wild or free';
+      end if;
+      update public.game_stack_items
+      set payload = jsonb_set(payload, '{votes}', coalesce(payload -> 'votes', '[]'::jsonb) || to_jsonb(v_vote))
+      where id = v_decision.source_stack_item_id
+      returning * into v_stk;
+
+      if jsonb_array_length(v_vq) > 0 then
+        insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+        values (v_decision.session_id, (v_vq ->> 0)::uuid, v_decision.source_stack_item_id, 'vote',
+          'Vote wild or free',
+          '[{"value":"wild"},{"value":"free"}]'::jsonb, 1, 1,
+          jsonb_build_object('queue',
+            (select coalesce(jsonb_agg(t.value), '[]'::jsonb)
+             from jsonb_array_elements(v_vq) with ordinality t(value, ord)
+             where t.ord > 1)));
+      else
+        select count(*) into v_wild
+        from jsonb_array_elements_text(coalesce(v_stk.payload -> 'votes', '[]'::jsonb)) v(val)
+        where v.val = 'wild';
+        select count(*) into v_free
+        from jsonb_array_elements_text(coalesce(v_stk.payload -> 'votes', '[]'::jsonb)) v(val)
+        where v.val = 'free';
+        v_caster := coalesce(nullif(v_stk.payload ->> 'controller_player_id', '')::uuid, v_stk.controller_player_id);
+
+        select count(*) into v_lib_size
+        from public.game_cards
+        where session_id = v_decision.session_id and owner_id = v_caster and zone = 'library';
+        select turn_number into v_turn
+        from public.game_turn_state where session_id = v_decision.session_id;
+
+        while v_found < v_wild and v_scanned < v_lib_size loop
+          select gc.id, (c.type_line ilike '%creature%')
+          into v_scan_id, v_scan_creature
+          from public.game_cards gc join public.cards c on c.id = gc.card_id
+          where gc.session_id = v_decision.session_id and gc.owner_id = v_caster and gc.zone = 'library'
+            and gc.id <> all(v_rest)
+          order by gc.zone_position asc, gc.id asc limit 1;
+          exit when v_scan_id is null;
+          v_scanned := v_scanned + 1;
+          if v_scan_creature then
+            update public.game_cards gc
+            set zone = 'battlefield', controller_player_id = v_caster, is_tapped = false,
+                entered_battlefield_turn_number = coalesce(v_turn, 0),
+                zone_position = (select coalesce(max(zone_position), -1) + 1
+                                 from public.game_cards x
+                                 where x.session_id = v_decision.session_id
+                                   and x.owner_id = gc.owner_id and x.zone = 'battlefield')
+            where gc.id = v_scan_id;
+            perform public.register_card_continuous_effects(v_decision.session_id, v_scan_id);
+            v_found := v_found + 1;
+          else
+            v_rest := v_rest || v_scan_id;
+          end if;
+        end loop;
+        if cardinality(v_rest) > 0 then
+          perform public.bottom_cards_random(v_decision.session_id, v_caster, v_rest);
+        end if;
+
+        update public.game_stack_items
+        set payload = payload || jsonb_build_object('free_votes', v_free)
+        where id = v_decision.source_stack_item_id;
+        perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+      end if;
+    end;
+
   elsif v_decision.decision_type = 'command_zone_pick' then
     -- Hellkite Courser (mig 248): the picked commander enters the battlefield
     -- with haste (until end of turn) and a return_to_command marker the end

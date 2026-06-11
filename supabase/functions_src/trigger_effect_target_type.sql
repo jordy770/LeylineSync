@@ -11,7 +11,8 @@ returns jsonb language sql immutable as $$
   select case
     when lower(coalesce(p_effect ->> 'type', '')) in
          ('deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap',
-          'add_counters', 'grant_keyword', 'fight', 'gain_control', 'set_pt', 'pump', 'goad')
+          'add_counters', 'grant_keyword', 'fight', 'gain_control', 'set_pt', 'pump', 'goad',
+          'exile_and_manifest')
          and public.behavior_target_type_is_creature_only(p_effect -> 'target_type')
       then '"creature"'::jsonb
     when lower(coalesce(p_effect ->> 'type', '')) in

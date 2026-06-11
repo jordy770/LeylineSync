@@ -52,6 +52,11 @@ const JSON_ONLY: Record<string, string> = {
   play_hideaway: 'play the source\'s hideaway card free behind a condition gate (Mosswort Bridge, mig 248); JSON/AI-authored',
   goad: 'goaded row + can\'t-attack-the-goader gate (Vengeful Ancestor, mig 249); JSON/AI-authored',
   territorial_attack: 'random forced-defender pin with last-combat memory (Territorial Hellkite, mig 249); JSON/AI-authored',
+  if_attacking_most_life: 'dethrone-style defender-has-most-life guard (Scourge of the Throne, mig 250); JSON/AI-authored',
+  untap_all_attackers: 'untap every attacking creature (Scourge of the Throne, mig 250); JSON/AI-authored',
+  extra_combat: 'queue an additional combat phase (Scourge of the Throne, mig 250); JSON/AI-authored',
+  exile_and_manifest: 'exile target creature + its controller manifests the top card (Reality Shift, mig 251); JSON/AI-authored',
+  vote_wild_free: 'council\'s dilemma vote chain (Selvala\'s Stampede, mig 252); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

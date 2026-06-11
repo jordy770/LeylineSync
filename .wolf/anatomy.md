@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T22:21:21.808Z
-> Files: 122 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T22:37:40.059Z
+> Files: 129 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -103,7 +103,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~8158 tok)
+- `card-scripts.json` (~8369 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -113,7 +113,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~14943 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~15434 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -139,13 +139,13 @@
 
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6640 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
-- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3069 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~3944 tok)
+- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3187 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~4626 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~13413 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7421 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~14411 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7622 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5263 tok)
@@ -156,7 +156,7 @@
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~2461 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1069 tok)
-- `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~306 tok)
+- `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~354 tok)
 - `fire_becomes_target_triggers.sql` — supabase/functions_src/fire_becomes_target_triggers.sql (~801 tok)
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~612 tok)
 - `fire_turn_step_triggers.sql` — supabase/functions_src/fire_turn_step_triggers.sql (~673 tok)
@@ -170,14 +170,15 @@
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2165 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
-- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2124 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2201 tok)
 - `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~5628 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1832 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~778 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~10561 tok)
-- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~358 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~11715 tok)
+- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~366 tok)
+- `turn_manifest_up.sql` — supabase/functions_src/turn_manifest_up.sql (~655 tok)
 
 ## supabase/migrations/
 
@@ -204,6 +205,9 @@
 - `202605010247_dragons_combat_damage.sql` — 202605010247_dragons_combat_damage — Broodcaller Scourge + Parapet Thrasher. (~29175 tok)
 - `202605010248_courser_mosswort.sql` — 202605010248_courser_mosswort — Hellkite Courser + Mosswort Bridge. (~34720 tok)
 - `202605010249_goad_territorial.sql` — 202605010249_goad_territorial — Vengeful Ancestor (goad) + Territorial (~24930 tok)
+- `202605010250_scourge_throne.sql` — 202605010250_scourge_throne — Scourge of the Throne (dethrone + an (~24914 tok)
+- `202605010251_reality_shift_manifest.sql` — 202605010251_reality_shift_manifest — Reality Shift (manifest). (~7696 tok)
+- `202605010252_selvalas_stampede.sql` — 202605010252_selvalas_stampede — Selvala's Stampede (council's dilemma (~26213 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -240,7 +244,10 @@
 - `monstrosity.test.ts` — Monstrosity (mig 232) — Stormbreath Dragon: "{5}{R}{R}: Monstrosity 3. When (~781 tok)
 - `opportunistic-dragon.test.ts` — mig 246 — Opportunistic Dragon: "When this creature enters, choose target (~810 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
+- `reality-shift.test.ts` — mig 251 — Reality Shift (manifest): "Exile target creature. Its controller (~1052 tok)
 - `reflexive-watcher.test.ts` — Reflexive watchers (mig 227) — the entering/attacking creature ITSELF gains (~953 tok)
+- `scourge-throne.test.ts` — mig 250 — Scourge of the Throne: dethrone + an additional combat phase. (~979 tok)
+- `selvalas-stampede.test.ts` — mig 252 — Selvala's Stampede (council's dilemma voting): starting with the (~1095 tok)
 - `siege-dragonstorm.test.ts` — mig 245 — Frontier Siege + Breaching Dragonstorm. (~1740 tok)
 - `spell-cast-watcher.test.ts` — Spell-cast watcher (mig 234): (~722 tok)
 - `treasure.test.ts` — Treasure tokens (mig 226) — "{T}, Sacrifice this artifact: Add one mana of (~660 tok)
@@ -252,7 +259,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~31012 tok)
+- `test-cards.json` (~31538 tok)
 
 ## tests/harness/
 
@@ -264,7 +271,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1952 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~2115 tok)
 
 ## vercel/
 

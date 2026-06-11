@@ -52,6 +52,13 @@ begin
     return 0;
   end if;
 
+  -- A manifested (face-down) card has no abilities and no printed keywords
+  -- (mig 251, Reality Shift); its 2/2 set_pt row is not script-flagged, so
+  -- the delete above leaves it alone.
+  if coalesce(v_source_card.counters, '{}'::jsonb) ? 'manifested' then
+    return 0;
+  end if;
+
   v_script := public.effective_script(p_session_id, p_source_card_id);
 
   select coalesce(cards.keywords, '[]'::jsonb)

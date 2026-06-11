@@ -49,7 +49,23 @@ begin
       p_session_id, p_source_card_id, p_controller_id, v_effect -> 'amount');
     v_recipient := lower(coalesce(v_effect ->> 'recipient', ''));
 
-    if v_eff_type = 'add_mana' then
+    if v_eff_type = 'untap_all_attackers' then
+      -- "Untap all attacking creatures" (mig 250, Scourge of the Throne).
+      update public.game_cards gc
+      set is_tapped = false
+      from public.game_combat_assignments ca
+      where ca.session_id = p_session_id and ca.attacker_card_id = gc.id
+        and gc.session_id = p_session_id and gc.zone = 'battlefield';
+
+    elsif v_eff_type = 'extra_combat' then
+      -- "After this phase, there is an additional combat phase" (mig 250):
+      -- advance_step loops end_of_combat back to beginning_of_combat once per
+      -- pending extra combat.
+      update public.game_turn_state
+      set extra_combats = coalesce(extra_combats, 0) + 1
+      where session_id = p_session_id;
+
+    elsif v_eff_type = 'add_mana' then
       -- Mana from a resolved trigger (mig 245, Frontier Siege Khans mode:
       -- "At the beginning of each of your main phases, add {G}{G}"). Fixed
       -- colours only; goes to the trigger's controller.
