@@ -422,10 +422,11 @@ const CardBehaviorActionSchema = z.union([
     recipient: z.literal('target_controller').optional(),
   }),
   // Impulse draw (Atsushi): exile the top `count` cards of your library and gain
-  // permission to play them until the end of your next turn.
+  // permission to play them until the end of your next turn. count 'X' is the
+  // caster-chosen X of an X spell (Zenith Festival), substituted at cast.
   z.object({
     type: z.literal('impulse'),
-    count: z.number().int().positive(),
+    count: z.union([z.number().int().positive(), z.literal('X')]),
   }),
   // Monstrosity N (Stormbreath Dragon): become monstrous once (N +1/+1 counters +
   // a marker); `on_monstrous` fires only the first time it becomes monstrous.

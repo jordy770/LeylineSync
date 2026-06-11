@@ -155,5 +155,7 @@
 
   "Broodcaller Scourge": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dragons_combat_damage","effects":[{"type":"put_from_hand","filter":{"permanent":true,"max_mana_value":"event_amount"}}]}]},
 
-  "Parapet Thrasher": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dragons_combat_damage","effects":[{"type":"choose_one","prompt":"Choose one","modes":[{"label":"Destroy target artifact that opponent controls","actions":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"opponent","type_line":"artifact"}}]},{"label":"Deal 4 damage to each other opponent","actions":[{"type":"deal_damage","amount":4,"recipient":"each_opponent"}]},{"label":"Exile the top card of your library; you may play it","actions":[{"type":"impulse","count":1}]}]}]}]}
+  "Parapet Thrasher": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dragons_combat_damage","effects":[{"type":"choose_one","prompt":"Choose one","modes":[{"label":"Destroy target artifact that opponent controls","actions":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"opponent","type_line":"artifact"}}]},{"label":"Deal 4 damage to each other opponent","actions":[{"type":"deal_damage","amount":4,"recipient":"each_opponent"}]},{"label":"Exile the top card of your library; you may play it","actions":[{"type":"impulse","count":1}]}]}]}]},
+
+  "Zenith Festival": {"schema_version":2,"spell_effect":{"actions":[{"type":"impulse","count":"X"}]}}
 }

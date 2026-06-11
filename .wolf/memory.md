@@ -3502,3 +3502,8 @@
 | 23:56 | Edited tests/feature/dragons-combat-damage.test.ts | inline fix | ~1 |
 | 23:56 | Edited tests/feature/dragons-combat-damage.test.ts | inline fix | ~1 |
 | 01:05 | Batch mig 247 (2 cards): dragons_combat_damage event (resolve_combat_damage tallies Dragon damage per damaged player, unblocked+trample; broadcasts with event_amount/event_player_id via fire_card_triggers/enqueue p_extra param - OLD OVERLOADS DROPPED). Broodcaller Scourge (put_from_hand pick capped at event_amount) + Parapet Thrasher (modal: destroy_up_to/destroy_pick + 4-each-opponent + impulse; approximations: no once-per-turn mode memory, each-OTHER-opponent->each opponent). Gotcha: resolveCombat needs setTurn combat_damage step first; PS Get-Content -Raw mangles UTF-8 em-dashes (fixed via Edit tool). | mig 247, resolve_combat_damage, fire_card_triggers, enqueue_triggered_ability, apply_trigger_effects, submit_decision, schema, dragons-combat-damage.test | 866/866 green, tsc+lint clean, triage 78/6/8 | ~12k |
+| 00:00 | Edited lib/game/card-behavior-schema.ts | modified draw() | ~101 |
+| 00:00 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~426 |
+| 00:00 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~220 |
+| 00:01 | Created tests/feature/zenith-festival.test.ts | — | ~503 |
+| 01:30 | Zenith Festival: NO engine change (cast_spell_effect already substitutes top-level count 'X'; impulse does the rest). Schema: impulse count may be 'X'. Harmonize not modelled (documented). | schema, fixtures, card-scripts, zenith-festival.test | 867/867 green, tsc+lint clean, triage 79/6/7 | ~3k |
