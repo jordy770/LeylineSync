@@ -1,7 +1,11 @@
--- supabase/functions_src/apply_damage_to_creature.sql
--- CANONICAL current definition (seeded from 202605010159_infect_toxic_wither.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010254_enrage — the enrage event ("whenever this creature is dealt
+-- damage"): apply_damage_to_creature broadcasts dealt_damage/enrage triggers
+-- with the damage amount BEFORE the lethal sweep, so a dying creature still
+-- enrages. Cards: Ripjaw Raptor (draw), Ranging Raptors (basic-land search),
+-- and the script-only Marauding Raptor (creature cost reduction + 2 damage
+-- to each other entering creature — which chains into enrage).
+-- Generated from supabase/functions_src (apply_damage_to_creature) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_damage_to_creature(
   p_session_id uuid,

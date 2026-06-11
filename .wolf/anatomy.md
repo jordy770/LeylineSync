@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T23:43:22.781Z
-> Files: 131 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T23:47:37.211Z
+> Files: 134 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -103,7 +103,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~8443 tok)
+- `card-scripts.json` (~8635 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -142,6 +142,7 @@
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~3187 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~4626 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
+- `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1127 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~15283 tok)
@@ -209,6 +210,7 @@
 - `202605010251_reality_shift_manifest.sql` — 202605010251_reality_shift_manifest — Reality Shift (manifest). (~7696 tok)
 - `202605010252_selvalas_stampede.sql` — 202605010252_selvalas_stampede — Selvala's Stampede (council's dilemma (~26213 tok)
 - `202605010253_discover_pantlaza.sql` — 202605010253_discover_pantlaza — discover + Pantlaza, Sun-Favored (the (~17255 tok)
+- `202605010254_enrage.sql` — 202605010254_enrage — the enrage event ("whenever this creature is dealt (~1219 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -234,6 +236,7 @@
 - `dragon-lands.test.ts` — mig 237 — three Dragon-deck lands: (~1000 tok)
 - `dragons-combat-damage.test.ts` — mig 247 — Broodcaller Scourge + Parapet Thrasher: "Whenever one or more (~1436 tok)
 - `dragons-deck.test.ts` — Dragons deck — proving tests for the Tier-0 compositions (cards authored (~2449 tok)
+- `enrage.test.ts` — mig 254 — enrage: "whenever this creature is dealt damage", broadcast from (~1122 tok)
 - `enters-tapped-lands.test.ts` — Enters-tapped lands (mig 217) — top-level `enters_tapped` read in (~1071 tok)
 - `exert-and-transform.test.ts` — mig 236 — three cards: (~1238 tok)
 - `farseek-flooded-grove.test.ts` — mig 241 — Farseek + Flooded Grove. (~809 tok)
@@ -261,7 +264,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~31749 tok)
+- `test-cards.json` (~32180 tok)
 
 ## tests/harness/
 

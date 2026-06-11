@@ -3596,3 +3596,9 @@
 | 01:42 | Created tests/feature/discover.test.ts | — | ~978 |
 | 01:43 | Edited supabase/migrations/202605010253_discover_pantlaza.sql | modified X() | ~188 |
 | 04:40 | Dino deck opener (mig 253): discover X (exile-top until nonland MV<=X, reuses cast_exiled_free pick, skipped cards bottom-random; X = triggering creature's MV) + generic once_per_turn watcher gate (watcher_once_turn stamp). Pantlaza, Sun-Favored FULL. | mig 253, fire_watcher_triggers, apply_trigger_effects, schema, discover.test | 882/882 green, tsc+lint clean, Veloci triage 12/8/70 | ~8k |
+| 01:46 | Edited supabase/functions_src/apply_damage_to_creature.sql | modified Enrage() | ~141 |
+| 01:46 | Edited tests/fixtures/test-cards.json | 2→5 lines | ~475 |
+| 01:46 | Edited docs/commander-decks/card-scripts.json | expanded (+6 lines) | ~266 |
+| 01:47 | Created tests/feature/enrage.test.ts | — | ~1122 |
+| 01:47 | Edited supabase/migrations/202605010254_enrage.sql | modified event() | ~120 |
+| 05:10 | Enrage (mig 254): apply_damage_to_creature broadcasts dealt_damage/enrage with event_amount BEFORE the lethal sweep. Ripjaw Raptor (draw), Ranging Raptors (basic search), Marauding Raptor (script-only: creature cost_reduction + reflexive 2 dmg to entering creatures - chains into enrage, EN2 proves the whole loop). | mig 254, apply_damage_to_creature, fixtures, enrage.test | 885/885 green, tsc+lint clean, Veloci triage 15/8/67 | ~6k |
