@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T10:59:42.986Z
-> Files: 65 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T12:55:34.686Z
+> Files: 67 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -101,7 +101,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~4271 tok)
+- `card-scripts.json` (~4411 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -111,7 +111,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~11601 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~11768 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -135,11 +135,11 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6090 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6094 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2372 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~6784 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~6116 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~6661 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4553 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2359 tok)
@@ -166,6 +166,7 @@
 - `202605010229_gadrak.sql` — 202605010229_gadrak — Gadrak, the Crown-Scourge. (~9649 tok)
 - `202605010230_atsushi.sql` — 202605010230_atsushi — Atsushi, the Blazing Sky. (~26980 tok)
 - `202605010231_cost_reduction.sql` — 202605010231_cost_reduction — generic-mana cost reduction. (~9725 tok)
+- `202605010232_monstrosity.sql` — 202605010232_monstrosity — Stormbreath Dragon's monstrosity. (~12816 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -186,6 +187,7 @@
 - `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
 - `gadrak.test.ts` — Gadrak, the Crown-Scourge (mig 229) — (~1191 tok)
 - `game-start.test.ts` — Game start sequence (mig 221) — random first player, 7-card opening hands, (~1843 tok)
+- `monstrosity.test.ts` — Monstrosity (mig 232) — Stormbreath Dragon: "{5}{R}{R}: Monstrosity 3. When (~781 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
 - `reflexive-watcher.test.ts` — Reflexive watchers (mig 227) — the entering/attacking creature ITSELF gains (~953 tok)
 - `treasure.test.ts` — Treasure tokens (mig 226) — "{T}, Sacrifice this artifact: Add one mana of (~660 tok)
@@ -195,7 +197,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~23223 tok)
+- `test-cards.json` (~23468 tok)
 
 ## tests/harness/
 
@@ -207,7 +209,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1360 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1426 tok)
 
 ## vercel/
 
@@ -236,6 +238,5 @@
 ## vercel/styles/
 
 
-- `supabase/functions_src/reduced_mana_cost.sql` — generic-mana cost reduction helper (self prop + static continuous effects). ~600 tok
-- `tests/feature/cost-reduction.test.ts` — Dragonlord's Servant (static) + Draconic Lore (self) generic reduction. ~600 tok
-- `supabase/migrations/202605010231_cost_reduction.sql` — cost_reduction continuous type + reduced_mana_cost + cast-path wiring. ~2k tok
+- `tests/feature/monstrosity.test.ts` — Stormbreath Dragon: monstrosity counters + marker + per-opponent hand-size burn. ~500 tok
+- `supabase/migrations/202605010232_monstrosity.sql` — monstrosity effect + damage_each_opponent_by_hand. ~1.5k tok

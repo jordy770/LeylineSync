@@ -3234,3 +3234,15 @@
 | 12:59 | Created tests/feature/cost-reduction.test.ts | — | ~942 |
 | 12:59 | Edited tests/feature/cost-reduction.test.ts | inline fix | ~25 |
 | 12:40 | Cost reduction (mig 231): reduced_mana_cost helper reduces generic mana by self cost_reduction script prop (Draconic Lore) + static cost_reduction continuous effects matching the cast card's type (Dragonlord's Servant/Sarkhan). register whitelist += cost_reduction; effect_type CHECK += cost_reduction; wired into cast_card_from_hand + cast_spell_effect. Fixtures + card-scripts + cost-reduction.test. | mig 231, reduced_mana_cost, register_card_continuous_effects, cast_card_from_hand, cast_spell_effect, schema, cost-reduction.test | 816/816 green, tsc+lint clean | ~12k |
+| 13:02 | Session end: 42 writes across 22 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 19 reads | ~54424 tok |
+| 14:53 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~39 |
+| 14:53 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 3→5 lines | ~22 |
+| 14:54 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified coalesce() | ~535 |
+| 14:54 | Edited lib/game/card-behavior-schema.ts | modified draw() | ~218 |
+| 14:54 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~24 |
+| 14:54 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~97 |
+| 14:54 | Edited supabase/migrations/202605010232_monstrosity.sql | modified effect() | ~198 |
+| 14:55 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~268 |
+| 14:55 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~197 |
+| 14:55 | Created tests/feature/monstrosity.test.ts | — | ~781 |
+| 13:20 | Stormbreath Dragon (mig 232): monstrosity effect (once-marker in counter bag + N +1/+1 counters + on_monstrous rider, routed via activate_ability spell_effect list) + damage_each_opponent_by_hand (per-opponent life loss = their own hand size). Flying/haste/protection-white work as-is. Fixture + card-scripts + monstrosity.test. | mig 232, activate_ability, apply_triggered_ability_effects, schema, registry-drift, monstrosity.test | 818/818 green, tsc+lint clean | ~9k |

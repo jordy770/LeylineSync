@@ -36,6 +36,8 @@ const JSON_ONLY: Record<string, string> = {
   deal_damage_all: 'mass damage with keyword filters (Blasphemous Act / Storm Wrath / Harbinger, mig 224); JSON/AI-authored',
   impulse: 'exile-top-N + play-until-end-of-next-turn (Atsushi, mig 230); JSON/AI-authored, no guided-form widget yet',
   choose_one: 'modal trigger ("choose one —", Atsushi, mig 230); JSON/AI-authored, no guided-form widget yet',
+  monstrosity: 'become-monstrous once + on_monstrous rider (Stormbreath, mig 232); JSON/AI-authored',
+  damage_each_opponent_by_hand: 'per-opponent hand-size damage (Stormbreath monstrosity rider, mig 232); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

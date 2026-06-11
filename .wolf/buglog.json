@@ -9848,6 +9848,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T10:58:03.817Z"
+    },
+    {
+      "id": "bug-606",
+      "timestamp": "2026-06-11T12:53:50.404Z",
+      "error_message": "Wrong reference: then should be monstrosity",
+      "file": "supabase/functions_src/activate_ability.sql",
+      "root_cause": "Used \"then\" instead of \"monstrosity\"",
+      "fix": "Changed then → monstrosity",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T12:53:50.404Z"
+    },
+    {
+      "id": "bug-607",
+      "timestamp": "2026-06-11T12:54:50.229Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010232_monstrosity.sql",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 4→10 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T12:54:50.229Z"
+    },
+    {
+      "id": "bug-608",
+      "timestamp": "2026-06-11T12:55:13.682Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Dragonlord'",
+      "fix": "Changed to \"Stormbreath Dragon Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T12:55:13.682Z"
     }
   ]
 }

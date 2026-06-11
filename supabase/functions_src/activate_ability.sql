@@ -303,7 +303,7 @@ begin
       p_source_card_id
     );
 
-  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all') then
+  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity') then
     -- A single create_token / search_library / grant_keyword_all effect
     -- routes through a spell_effect stack item so it reuses the spell-effect
     -- resolver (incl. the `tapped` flag and tutor `filter`). Wayfarer's Bauble.

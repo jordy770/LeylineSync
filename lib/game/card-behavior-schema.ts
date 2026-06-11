@@ -181,7 +181,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
   'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
-  'impulse', 'choose_one',
+  'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -405,6 +405,18 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('impulse'),
     count: z.number().int().positive(),
+  }),
+  // Monstrosity N (Stormbreath Dragon): become monstrous once (N +1/+1 counters +
+  // a marker); `on_monstrous` fires only the first time it becomes monstrous.
+  z.object({
+    type: z.literal('monstrosity'),
+    amount: z.number().int().positive(),
+    on_monstrous: z.array(z.record(z.string(), z.unknown())).optional(),
+  }),
+  // "Deals damage to each opponent equal to the cards in that player's hand"
+  // (Stormbreath's become-monstrous rider).
+  z.object({
+    type: z.literal('damage_each_opponent_by_hand'),
   }),
   // A modal trigger ("choose one —"): pick `choose` (default 1) of the modes;
   // each mode's untargeted `actions` resolve. Inner actions kept loose (see may).
