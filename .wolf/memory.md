@@ -3446,3 +3446,25 @@
 | 23:19 | Edited supabase/migrations/202605010244_tyrants_thundermane.sql | expanded (+15 lines) | ~273 |
 | 23:20 | Edited tests/feature/tyrants-thundermane.test.ts | 4→4 lines | ~89 |
 | 23:05 | Batch mig 244 (3 cards): Leyline Tyrant (mana_does_not_empty turned out ALREADY enforced by clear_mana_pool_for_step - script-only + new pay_x_mana_damage parked decision), Hammerhead Tyrant (bounce_up_to/bounce_pick with mana_value cap from triggering spell; new public.mana_value helper), Thundermane Dragon (cast_from_library_top permission in cast_card_from_hand: top-card gate + min_power filter + grant_haste rider; CHECK constraint extended). | mig 244, mana_value, resolve_count_amount, register, apply_trigger_effects, submit_decision, cast_card_from_hand, schema, tyrants-thundermane.test | 858/858 green, tsc+lint clean, triage 73/6/13 | ~13k |
+| 23:23 | Session end: 18 writes across 12 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 4 reads | ~23819 tok |
+| 23:28 | Created supabase/functions_src/fire_card_triggers.sql | — | ~558 |
+| 23:28 | Edited supabase/functions_src/fire_watcher_triggers.sql | added 1 condition(s) | ~88 |
+| 23:28 | Edited supabase/functions_src/fire_turn_step_triggers.sql | 9→13 lines | ~214 |
+| 23:28 | Edited supabase/functions_src/apply_trigger_effects.sql | expanded (+10 lines) | ~390 |
+| 23:29 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Dragonstorm() | ~770 |
+| 23:29 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~276 |
+| 23:29 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+17 lines) | ~293 |
+| 23:29 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~62 |
+| 23:29 | Edited supabase/functions_src/submit_decision.sql | modified select() | ~566 |
+| 23:29 | Edited lib/game/card-behavior-schema.ts | 5→8 lines | ~123 |
+| 23:29 | Edited lib/game/card-behavior-schema.ts | modified gate() | ~164 |
+| 23:30 | Edited lib/game/card-behavior-schema.ts | 6→11 lines | ~162 |
+| 23:30 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~21 |
+| 23:30 | Edited lib/game/card-behavior-schema.ts | expanded (+9 lines) | ~191 |
+| 23:30 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~72 |
+| 23:30 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~688 |
+| 23:30 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~327 |
+| 23:31 | Created tests/feature/siege-dragonstorm.test.ts | — | ~1708 |
+| 23:31 | Edited tests/feature/siege-dragonstorm.test.ts | 5→8 lines | ~124 |
+| 23:32 | Edited supabase/migrations/202605010245_siege_dragonstorm.sql | modified exile_until_nonland() | ~299 |
+| 23:45 | Batch mig 245 (2 cards): Frontier Siege (mode gate {mode,chosen:'$chosen'} on triggered abilities, gated in fire_card_triggers [NEW canonical file] + fire_watcher_triggers; choose_creature_type custom options; beginning_of_main turn-step event; add_mana from triggers; fight fighter:'triggering_creature') + Breaching Dragonstorm (exile_until_nonland + cast_exiled_free pick: permanent->battlefield free, decline->hand; lands stay exiled). | mig 245, fire_card_triggers, fire_watcher_triggers, fire_turn_step_triggers, apply_trigger_effects, apply_triggered_ability_effects, submit_decision, schema, siege-dragonstorm.test | 862/862 green, tsc+lint clean, triage 75/6/11 | ~12k |

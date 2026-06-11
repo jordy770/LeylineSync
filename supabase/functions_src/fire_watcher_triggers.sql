@@ -48,6 +48,12 @@ begin
         continue;
       end if;
 
+      -- Mode gate (mig 245, Frontier Siege Dragons mode): see fire_card_triggers.
+      if (v_ability ? 'mode')
+         and (v_ability ->> 'mode') is distinct from (v_ability ->> 'chosen') then
+        continue;
+      end if;
+
       v_filter := v_ability -> 'filter';
       v_f_type := v_filter ->> 'type_line';
       v_f_controller := lower(coalesce(v_filter ->> 'controller', 'you'));

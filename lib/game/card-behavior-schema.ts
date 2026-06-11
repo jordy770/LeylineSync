@@ -183,7 +183,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
   'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand', 'divide_damage',
   'return_self_to_hand', 'copy_permanent', 'become_copy', 'shuffle_into_library',
-  'pay_x_mana_damage', 'bounce_up_to',
+  'pay_x_mana_damage', 'bounce_up_to', 'exile_until_nonland',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -373,8 +373,13 @@ const CardBehaviorActionSchema = z.union([
   }),
   // "Choose a creature type, then …" (Distant Melody). The chosen type is injected
   // into any sub-effect's count-amount type_line (e.g. count creatures_you_control).
+  // `options` replaces the curated type list with arbitrary words (Frontier
+  // Siege: ["Khans","Dragons"]); the pick also bakes into copied_script via
+  // the "$chosen" placeholder either way.
   z.object({
     type: z.literal('choose_creature_type'),
+    prompt: z.string().optional(),
+    options: z.array(z.string()).optional(),
     effects: z.array(z.record(z.string(), z.unknown())),
   }),
   // Sacrifice `count` creatures: the sacrificing player (you, or the opponent for
@@ -455,6 +460,15 @@ const CardBehaviorActionSchema = z.union([
       controller: z.enum(['any', 'opponent', 'you']).optional(),
       types: z.array(z.enum(['creature', 'planeswalker', 'player'])).optional(),
     }).strict().optional(),
+  }),
+  // "Exile cards from the top of your library until you exile a nonland card"
+  // (Breaching Dragonstorm, mig 245). The lands stay exiled; the nonland may
+  // be free-cast (approximated: a permanent card enters the battlefield
+  // directly) when its mana value is within the window, else / on decline it
+  // goes to your hand.
+  z.object({
+    type: z.literal('exile_until_nonland'),
+    free_cast_max_mana_value: z.number().int().positive().optional(),
   }),
   // "Return up to N target … to its owner's hand" via a parked pick
   // (Hammerhead Tyrant, mig 244). max_mana_value:'triggering_spell' caps the
@@ -728,6 +742,9 @@ const CardBehaviorActionSchema = z.union([
   // one you control). Each deals damage equal to its power to the other.
   z.object({
     type: z.literal('fight'),
+    // fighter:'triggering_creature' — the EVENT SUBJECT fights the picked
+    // target instead of the watcher itself (Frontier Siege Dragons mode).
+    fighter: z.literal('triggering_creature').optional(),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
@@ -825,6 +842,12 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
   event: z.string(),
   source_zone_required: BehaviorZoneSchema.optional(),
   condition: z.record(z.string(), z.unknown()).optional(),
+  // Mode gate (mig 245, Frontier Siege "choose Khans or Dragons"): the ability
+  // is live only when chosen equals mode. Author chosen as the literal
+  // "$chosen"; the ETB choose_creature_type pick bakes the picked word into
+  // copied_script, turning exactly one mode's abilities on.
+  mode: z.string().optional(),
+  chosen: z.string().optional(),
   // For the other-scoped events creature_entered / creature_died: which entering/dying
   // creature this watcher fires on. type_line = a subtype match (e.g. "Zombie");
   // controller is relative to this card's controller; exclude_self:true = "another …".

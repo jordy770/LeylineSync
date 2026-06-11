@@ -259,10 +259,20 @@ begin
       return v_decision_id;
 
     elsif v_type = 'choose_creature_type' then
-      -- A curated creature-type list (the chooser picks one).
-      v_options := '[{"type":"Zombie"},{"type":"Human"},{"type":"Elf"},{"type":"Goblin"},{"type":"Soldier"},{"type":"Wizard"},{"type":"Vampire"},{"type":"Spirit"},{"type":"Beast"},{"type":"Dragon"},{"type":"Merfolk"},{"type":"Knight"},{"type":"Cleric"},{"type":"Warrior"},{"type":"Angel"},{"type":"Demon"},{"type":"Elemental"},{"type":"Snake"},{"type":"Insect"}]'::jsonb;
+      -- A curated creature-type list, or the effect's own `options` words
+      -- (mig 245, Frontier Siege: "choose Khans or Dragons"). Either way the
+      -- chosen word is baked into the source's copied_script wherever the
+      -- script holds the '"$chosen"' placeholder (submit_decision).
+      if jsonb_typeof(v_effect -> 'options') = 'array' and jsonb_array_length(v_effect -> 'options') > 0 then
+        select jsonb_agg(jsonb_build_object('type', value))
+          into v_options
+        from jsonb_array_elements_text(v_effect -> 'options');
+      else
+        v_options := '[{"type":"Zombie"},{"type":"Human"},{"type":"Elf"},{"type":"Goblin"},{"type":"Soldier"},{"type":"Wizard"},{"type":"Vampire"},{"type":"Spirit"},{"type":"Beast"},{"type":"Dragon"},{"type":"Merfolk"},{"type":"Knight"},{"type":"Cleric"},{"type":"Warrior"},{"type":"Angel"},{"type":"Demon"},{"type":"Elemental"},{"type":"Snake"},{"type":"Insect"}]'::jsonb;
+      end if;
       insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
-      values (p_session_id, v_controller, p_stack_item_id, 'choose_creature_type', 'Choose a creature type', v_options, 1, 1,
+      values (p_session_id, v_controller, p_stack_item_id, 'choose_creature_type',
+        coalesce(v_effect ->> 'prompt', 'Choose a creature type'), v_options, 1, 1,
         jsonb_build_object('effects', coalesce(v_effect -> 'effects', '[]'::jsonb)))
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
@@ -529,6 +539,53 @@ begin
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
 
+    elsif v_type = 'exile_until_nonland' then
+      -- Breaching Dragonstorm (mig 245): exile from the top of your library
+      -- until a nonland is exiled (the lands STAY exiled, per the card). The
+      -- nonland parks a pick when its mana value is within the free window:
+      -- choosing it puts a PERMANENT card onto the battlefield ("cast it
+      -- without paying its mana cost", approximated as a direct entry —
+      -- instants/sorceries go to hand instead), declining puts it into your
+      -- hand. Above the window it goes straight to hand.
+      v_tid := null;
+      loop
+        select gc.id, c.type_line, c.mana_cost into v_tid, v_filter, v_name
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id and gc.owner_id = v_controller and gc.zone = 'library'
+        order by gc.zone_position asc, gc.id asc limit 1;
+        exit when v_tid is null;
+        update public.game_cards gc
+        set zone = 'exile', controller_player_id = gc.owner_id, is_tapped = false,
+            zone_position = (select coalesce(max(zone_position), -1) + 1
+                             from public.game_cards x
+                             where x.session_id = p_session_id and x.owner_id = gc.owner_id and x.zone = 'exile')
+        where gc.id = v_tid;
+        exit when v_filter not ilike '%land%';
+        v_tid := null;
+      end loop;
+      if v_tid is null then v_i := v_i + 1; continue; end if;
+      if public.mana_value(v_name) > coalesce((v_effect ->> 'free_cast_max_mana_value')::integer, 8) then
+        -- Too big for the free window: straight to hand.
+        update public.game_cards gc
+        set zone = 'hand',
+            zone_position = (select coalesce(max(zone_position), -1) + 1
+                             from public.game_cards x
+                             where x.session_id = p_session_id and x.owner_id = gc.owner_id and x.zone = 'hand')
+        where gc.id = v_tid;
+        v_i := v_i + 1; continue;
+      end if;
+      select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name)), '[]'::jsonb)
+        into v_options
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.id = v_tid;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'cast_exiled_free',
+        'Cast it without paying its mana cost? (Declining puts it into your hand)',
+        v_options, 0, 1, '{}'::jsonb)
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
     elsif v_type = 'pay_x_mana_damage' then
       -- "You may pay any amount of {R}. When you do, it deals that much
       -- damage to any target." (Leyline Tyrant dies trigger, mig 244.) Parks
@@ -617,8 +674,14 @@ begin
           );
         end loop;
       else
+        -- fighter:'triggering_creature' (mig 245, Frontier Siege Dragons
+        -- mode): the EVENT SUBJECT fights the picked target, not the watcher.
         perform public.apply_targeted_triggered_ability_effects(
-          p_session_id, v_controller, v_item.source_card_id, jsonb_build_array(v_effect), v_target
+          p_session_id, v_controller,
+          case when (v_effect ->> 'fighter') = 'triggering_creature'
+               then coalesce(nullif(v_item.payload ->> 'triggering_card_id', '')::uuid, v_item.source_card_id)
+               else v_item.source_card_id end,
+          jsonb_build_array(v_effect), v_target
         );
       end if;
     end if;

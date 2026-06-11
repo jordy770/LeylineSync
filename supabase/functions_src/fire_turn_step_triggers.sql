@@ -21,6 +21,10 @@ begin
     -- "At the beginning of combat on your turn" (mig 205, Loyal Subordinate).
     -- The controller filter below already scopes to the ACTIVE player's permanents.
     when 'beginning_of_combat' then array['beginning_of_combat', 'begin_combat']
+    -- "At the beginning of each of your main phases" (mig 245, Frontier Siege
+    -- Khans mode): both main steps broadcast beginning_of_main.
+    when 'precombat_main' then array['beginning_of_main', 'precombat_main']
+    when 'postcombat_main' then array['beginning_of_main', 'postcombat_main']
     when 'end' then array['beginning_of_end_step', 'end_step', 'beginning_of_end']
     else null
   end;

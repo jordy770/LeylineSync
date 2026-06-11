@@ -110,7 +110,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -417,6 +417,42 @@ begin
         v_decision.session_id, v_decision.deciding_player_id, v_card,
         v_decision.params -> 'except');
     end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'cast_exiled_free' then
+    -- Breaching Dragonstorm (mig 245). Chosen: a PERMANENT card enters the
+    -- battlefield under the decider's control (free-cast approximation;
+    -- instants/sorceries go to hand instead). Declined: the card goes to its
+    -- owner's hand.
+    select (o.value ->> 'game_card_id')::uuid into v_card
+    from jsonb_array_elements(v_decision.options) o limit 1;
+    if cardinality(v_chosen_ids) > 0 and exists (
+      select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.id = v_card and gc.session_id = v_decision.session_id
+        and (c.type_line ilike '%creature%' or c.type_line ilike '%artifact%'
+             or c.type_line ilike '%enchantment%' or c.type_line ilike '%land%'
+             or c.type_line ilike '%planeswalker%' or c.type_line ilike '%battle%')
+    ) then
+      select turn_number into v_turn
+      from public.game_turn_state where session_id = v_decision.session_id;
+      update public.game_cards gc
+      set zone = 'battlefield', controller_player_id = v_decision.deciding_player_id,
+          is_tapped = false, entered_battlefield_turn_number = coalesce(v_turn, 0),
+          zone_position = (select coalesce(max(zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = v_decision.session_id
+                             and x.owner_id = gc.owner_id and x.zone = 'battlefield')
+      where gc.id = v_card;
+      perform public.register_card_continuous_effects(v_decision.session_id, v_card);
+    else
+      update public.game_cards gc
+      set zone = 'hand',
+          zone_position = (select coalesce(max(zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = v_decision.session_id
+                             and x.owner_id = gc.owner_id and x.zone = 'hand')
+      where gc.id = v_card;
+    end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
   elsif v_decision.decision_type = 'bounce_pick' then

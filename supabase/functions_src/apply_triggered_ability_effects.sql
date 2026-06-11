@@ -49,7 +49,24 @@ begin
       p_session_id, p_source_card_id, p_controller_id, v_effect -> 'amount');
     v_recipient := lower(coalesce(v_effect ->> 'recipient', ''));
 
-    if v_eff_type = 'gain_life' then
+    if v_eff_type = 'add_mana' then
+      -- Mana from a resolved trigger (mig 245, Frontier Siege Khans mode:
+      -- "At the beginning of each of your main phases, add {G}{G}"). Fixed
+      -- colours only; goes to the trigger's controller.
+      if p_controller_id is not null and v_eff_amount > 0
+         and upper(coalesce(v_effect ->> 'color', '')) in ('W', 'U', 'B', 'R', 'G', 'C') then
+        insert into public.game_players (session_id, player_id, mana_pool)
+        values (p_session_id, p_controller_id, jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0))
+        on conflict (session_id, player_id) do nothing;
+        update public.game_players
+        set mana_pool = jsonb_set(
+              coalesce(mana_pool, jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0)),
+              array[upper(v_effect ->> 'color')],
+              to_jsonb(coalesce((mana_pool ->> upper(v_effect ->> 'color'))::integer, 0) + v_eff_amount))
+        where session_id = p_session_id and player_id = p_controller_id;
+      end if;
+
+    elsif v_eff_type = 'gain_life' then
       if v_eff_amount > 0 then
         if v_recipient in ('each_player', 'all_players') then
           select array_agg(player_id) into v_recipients
