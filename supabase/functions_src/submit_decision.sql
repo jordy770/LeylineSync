@@ -38,6 +38,11 @@ declare
   v_effects_rewritten jsonb;
   v_decision_id uuid;
   v_pe jsonb;
+  v_old_effects jsonb;
+  v_new_effects jsonb;
+  v_mode_actions jsonb;
+  v_resume integer;
+  v_eff_script jsonb;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required';
@@ -105,7 +110,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -149,13 +154,36 @@ begin
     -- trigger_modal — they resolve via resolve_top_of_stack, so this is a no-op
     -- for them.
     if coalesce((v_decision.params ->> 'trigger_modal')::boolean, false) then
-      select source_card_id into v_src_card from public.game_stack_items where id = v_decision.source_stack_item_id;
+      -- Splice the chosen modes' actions into the parked program at
+      -- resume_index and resume (mig 239). The actions then run through the
+      -- FULL program resolver, so modes may contain parking actions
+      -- (copy_permanent, choose_player, …); plain untargeted actions reach the
+      -- same untargeted applier as before via the program's fallthrough.
+      select payload -> 'effects', coalesce((payload ->> 'resume_index')::integer, 0)
+        into v_old_effects, v_resume
+      from public.game_stack_items where id = v_decision.source_stack_item_id;
+      v_mode_actions := '[]'::jsonb;
       for v_idx in select (value)::integer from jsonb_array_elements_text(v_chosen)
       loop
-        perform public.apply_triggered_ability_effects(
-          v_decision.session_id, v_decision.deciding_player_id, v_src_card,
-          coalesce(v_decision.options -> v_idx -> 'actions', '[]'::jsonb));
+        v_mode_actions := v_mode_actions || coalesce(v_decision.options -> v_idx -> 'actions', '[]'::jsonb);
       end loop;
+      -- effects := effects[0:resume) || mode_actions || effects[resume:]
+      select coalesce(jsonb_agg(q.elem order by q.pos), '[]'::jsonb) into v_new_effects
+      from (
+        select t.elem, t.ord::numeric as pos
+        from jsonb_array_elements(coalesce(v_old_effects, '[]'::jsonb)) with ordinality t(elem, ord)
+        where t.ord <= v_resume
+        union all
+        select t.elem, v_resume + t.ord / 1000.0
+        from jsonb_array_elements(v_mode_actions) with ordinality t(elem, ord)
+        union all
+        select t.elem, t.ord::numeric
+        from jsonb_array_elements(coalesce(v_old_effects, '[]'::jsonb)) with ordinality t(elem, ord)
+        where t.ord > v_resume
+      ) q;
+      update public.game_stack_items
+      set payload = jsonb_set(payload, '{effects}', v_new_effects)
+      where id = v_decision.source_stack_item_id;
       perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
     end if;
 
@@ -379,6 +407,18 @@ begin
     end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
+  elsif v_decision.decision_type = 'copy_permanent' then
+    -- Token copy (mig 239, Will of the Temur): create a token that's a copy of
+    -- the picked permanent, with the parked `except` overrides (set_pt +
+    -- keyword grants), then resume the program.
+    foreach v_card in array v_chosen_ids
+    loop
+      perform public.create_copy_token(
+        v_decision.session_id, v_decision.deciding_player_id, v_card,
+        v_decision.params -> 'except');
+    end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
   elsif v_decision.decision_type = 'choose_player' then
     v_chosen_player := nullif(v_decision.result ->> 'player_id', '')::uuid;
     select source_card_id into v_src_card from public.game_stack_items where id = v_decision.source_stack_item_id;
@@ -412,6 +452,20 @@ begin
   elsif v_decision.decision_type = 'choose_creature_type' then
     v_chosen_type := nullif(v_decision.result ->> 'type', '');
     select source_card_id into v_src_card from public.game_stack_items where id = v_decision.source_stack_item_id;
+    -- Persist the chosen type into the source card's own script when it uses
+    -- the '$chosen' placeholder (mig 239, Reflections of Littjara: its
+    -- spell_cast watcher's type filter becomes the chosen type). The baked
+    -- script lands in copied_script, which effective_script prefers and which
+    -- survives rebuilds. The chosen type comes from the curated options list,
+    -- so the text substitution is safe.
+    if v_src_card is not null then
+      v_eff_script := public.effective_script(v_decision.session_id, v_src_card);
+      if v_eff_script is not null and v_eff_script::text like '%"$chosen"%' then
+        update public.game_cards
+        set copied_script = replace(v_eff_script::text, '"$chosen"', to_jsonb(v_chosen_type)::text)::jsonb
+        where id = v_src_card and session_id = v_decision.session_id;
+      end if;
+    end if;
     -- Inject the chosen type into any count-based amount's type_line (Distant Melody)
     -- and into a pump_all's creature_type (Crippling Fear: "creatures that aren't the
     -- chosen type get -3/-3 until end of turn").

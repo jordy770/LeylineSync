@@ -1,10 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T15:59:25.475Z
-> Files: 85 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T16:35:56.124Z
+> Files: 90 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
+- `scratch-mv.mjs` — Declares c (~215 tok)
 
 ## .claude/
 
@@ -101,7 +102,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~5863 tok)
+- `card-scripts.json` (~6105 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -111,7 +112,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12185 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12514 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -139,31 +140,33 @@
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2507 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~7117 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~7930 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7133 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4693 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2441 tok)
+- `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
+- `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~1925 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1017 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~306 tok)
 - `fire_becomes_target_triggers.sql` — supabase/functions_src/fire_becomes_target_triggers.sql (~801 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1399 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1438 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~639 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
 - `mulligan_hand.sql` — supabase/functions_src/mulligan_hand.sql (~681 tok)
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2165 tok)
-- `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1112 tok)
+- `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2062 tok)
-- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1399 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1642 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~778 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~7306 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~8053 tok)
 
 ## supabase/migrations/
 
@@ -179,6 +182,7 @@
 - `202605010236_exert_and_transform.sql` — 202605010236_exert_and_transform — Glorybringer (exert) + Nogi (transform). (~11437 tok)
 - `202605010237_dragon_lands.sql` — 202605010237_dragon_lands — Path of Ancestry, Temple of the Dragon Queen, Haven. (~11022 tok)
 - `202605010238_landfall.sql` — 202605010238_landfall — Nesting Dragon (landfall) + Sarkhan cost reduction. (~2096 tok)
+- `202605010239_copy_permanent.sql` — 202605010239_copy_permanent — token-copy primitive (Will of the Temur, (~21363 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -191,6 +195,7 @@
 - `atsushi.test.ts` — Atsushi, the Blazing Sky (mig 230) — a MODAL dies trigger ("choose one"): (~1292 tok)
 - `becomes-target-and-power.test.ts` — mig 235 — three cards: (~1397 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
+- `copy-permanent.test.ts` — mig 239 — token-copy primitive (Will of the Temur + Reflections of Littjara). (~2624 tok)
 - `cost-reduction.test.ts` — Cost reduction (mig 231) — reduced_mana_cost shaves generic mana at cast: (~942 tok)
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
@@ -215,7 +220,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~26597 tok)
+- `test-cards.json` (~27056 tok)
 
 ## tests/harness/
 
@@ -227,7 +232,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1498 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1540 tok)
 
 ## vercel/
 
@@ -255,6 +260,3 @@
 
 ## vercel/styles/
 
-
-- `tests/feature/landfall.test.ts` — Nesting Dragon landfall (Egg->Hatchling chain) + Sarkhan cost reduction. ~500 tok
-- `supabase/migrations/202605010238_landfall.sql` — land_entered watcher event. ~1k tok

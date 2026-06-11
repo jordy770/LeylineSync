@@ -3324,3 +3324,36 @@
 | 17:59 | Created tests/feature/landfall.test.ts | — | ~841 |
 | 17:59 | Edited tests/feature/landfall.test.ts | 5→5 lines | ~68 |
 | 18:15 | Landfall (mig 238): land_entered watcher event (fire_zone_change_triggers broadcast on entry; fire_watcher_triggers type-default 'land'). Nesting Dragon (FULL: landfall -> Dragon Egg token -> dies -> Dragon Hatchling token; seeded Egg+Hatchling token catalog rows with scripts) + Sarkhan Soul Aflame (cost_reduction half only; become-copy deferred). | mig 238, fire_zone_change_triggers, fire_watcher_triggers, test-cards.json tokens, landfall.test | 837/837 green, tsc+lint clean | ~10k |
+| 18:01 | Session end: 118 writes across 45 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 33 reads | ~102761 tok |
+
+## Session: 2026-06-11 18:13
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:27 | Created supabase/functions_src/create_copy_token.sql | — | ~943 |
+| 18:27 | Created supabase/functions_src/cease_token_if_off_battlefield.sql | — | ~308 |
+| 18:27 | Edited supabase/functions_src/put_in_graveyard.sql | 2→4 lines | ~88 |
+| 18:27 | Edited supabase/functions_src/fire_watcher_triggers.sql | 2→4 lines | ~65 |
+| 18:27 | Edited supabase/functions_src/resolve_count_amount.sql | expanded (+18 lines) | ~256 |
+| 18:28 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~315 |
+| 18:28 | Edited supabase/functions_src/apply_trigger_effects.sql | added 3 condition(s) | ~686 |
+| 18:28 | Edited supabase/functions_src/submit_decision.sql | 3→8 lines | ~47 |
+| 18:28 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~49 |
+| 18:28 | Edited supabase/functions_src/submit_decision.sql | modified coalesce() | ~498 |
+| 18:28 | Edited supabase/functions_src/submit_decision.sql | modified copy() | ~218 |
+| 18:29 | Edited supabase/functions_src/submit_decision.sql | modified replace() | ~317 |
+| 18:30 | Edited supabase/migrations/202605010239_copy_permanent.sql | modified public() | ~696 |
+| 18:30 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~42 |
+| 18:30 | Edited lib/game/card-behavior-schema.ts | inline fix | ~80 |
+| 18:30 | Edited lib/game/card-behavior-schema.ts | expanded (+22 lines) | ~386 |
+| 18:30 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~78 |
+| 18:31 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~569 |
+| 18:32 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~290 |
+| 18:33 | Created tests/feature/copy-permanent.test.ts | — | ~2517 |
+| 18:34 | Created scratch-mv.mjs | — | ~215 |
+| 18:35 | Edited tests/feature/copy-permanent.test.ts | inline fix | ~17 |
+| 18:35 | Edited tests/feature/copy-permanent.test.ts | 4→5 lines | ~80 |
+| 18:35 | Edited tests/feature/copy-permanent.test.ts | 3→4 lines | ~63 |
+| 18:35 | Edited tests/feature/copy-permanent.test.ts | 3→4 lines | ~69 |
+| 18:35 | Edited tests/feature/copy-permanent.test.ts | 4→6 lines | ~93 |
+| 19:35 | Copy primitive (mig 239): game_cards.is_token + create_copy_token (copy = same card_id + copied_script carryover; except -> set_pt + keyword rows); copy_permanent program action (parked pick / triggering_creature); choose_mode trigger_modal now SPLICES chosen actions into the program (modes can park); may_choose_both_if_commander; choose_creature_type bakes '$chosen' into copied_script; greatest_mana_value_you_control count. Will of the Temur (draw mode = caster, not target player) + Reflections of Littjara FULL. | mig 239, create_copy_token, cease_token, apply_trigger_effects, submit_decision, put_in_graveyard, fire_watcher, resolve_count_amount, schema, copy-permanent.test | 842/842 green, tsc+lint clean, triage 64/6/22 | ~14k |

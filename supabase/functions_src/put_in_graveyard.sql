@@ -21,7 +21,9 @@ declare
   v_next_bf_position integer;
 begin
   select g.owner_id, coalesce(g.controller_player_id, g.owner_id), (c.type_line ilike '%creature%'),
-         coalesce(c.is_token, false), coalesce(g.plus_one_counters, 0)
+         -- Token at either level: catalog tokens (cards.is_token) or copy
+         -- tokens (game_cards.is_token, mig 239).
+         coalesce(c.is_token, false) or coalesce(g.is_token, false), coalesce(g.plus_one_counters, 0)
   into v_owner_id, v_controller_id, v_is_creature, v_is_token, v_had_counters
   from public.game_cards g
   join public.cards c on c.id = g.card_id

@@ -90,7 +90,14 @@ begin
         coalesce(v_effect ->> 'prompt', 'Choose one'),
         v_options,
         coalesce((v_effect ->> 'choose')::integer, 1),
-        coalesce((v_effect ->> 'choose')::integer, 1),
+        -- "If you control a commander as you cast this spell, you may choose
+        -- both" (Will of the Temur, mig 239): the commander check raises the
+        -- ceiling to every mode; the minimum stays at `choose`.
+        case when coalesce((v_effect ->> 'may_choose_both_if_commander')::boolean, false)
+              and public.resolve_count_amount(p_session_id, v_controller,
+                    '{"count":"commanders_you_control"}'::jsonb) >= 1
+             then jsonb_array_length(v_options)
+             else coalesce((v_effect ->> 'choose')::integer, 1) end,
         jsonb_build_object('trigger_modal', true))
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
@@ -430,6 +437,45 @@ begin
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
+
+    elsif v_type = 'copy_permanent' then
+      -- Token copy (mig 239). Two shapes:
+      --   • target:'triggering_creature' — copy the event subject directly, no
+      --     pick (Reflections of Littjara: the cast spell's card becomes a
+      --     battlefield token copy).
+      --   • otherwise park a copy_permanent decision over battlefield
+      --     permanents matching target_filter (Will of the Temur: "create a
+      --     token that's a copy of target permanent").
+      -- `except` ({power,toughness,keywords}) rides in params and becomes a
+      -- set_pt override + keyword grants on the copy; added TYPES are not
+      -- modelled.
+      if (v_effect ->> 'target') = 'triggering_creature' then
+        if nullif(v_item.payload ->> 'triggering_card_id', '')::uuid is not null then
+          perform public.create_copy_token(
+            p_session_id, v_controller,
+            nullif(v_item.payload ->> 'triggering_card_id', '')::uuid,
+            v_effect -> 'except');
+        end if;
+      else
+        select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
+          into v_options
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id and gc.zone = 'battlefield'
+          and (coalesce(v_effect -> 'target_filter' ->> 'type_line', '') = ''
+               or c.type_line ilike '%' || (v_effect -> 'target_filter' ->> 'type_line') || '%')
+          and (case lower(coalesce(v_effect -> 'target_filter' ->> 'controller', 'any'))
+                 when 'you' then coalesce(gc.controller_player_id, gc.owner_id) = v_controller
+                 when 'opponent' then coalesce(gc.controller_player_id, gc.owner_id) is distinct from v_controller
+                 else true end);
+        if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+        insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+        values (p_session_id, v_controller, p_stack_item_id, 'copy_permanent',
+          'Choose a permanent to copy', v_options, 1, 1,
+          jsonb_build_object('except', v_effect -> 'except'))
+        returning id into v_decision_id;
+        update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+        return v_decision_id;
+      end if;
 
     elsif v_type = 'prevent_damage' then
       perform public.add_damage_prevention(

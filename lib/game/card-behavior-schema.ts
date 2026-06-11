@@ -182,7 +182,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
   'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
   'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand', 'divide_damage',
-  'return_self_to_hand',
+  'return_self_to_hand', 'copy_permanent',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -210,7 +210,7 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'devotion']),
   type_line: z.string().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
 }).strict()
@@ -444,10 +444,32 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('choose_one'),
     prompt: z.string().optional(),
     choose: z.number().int().positive().optional(),
+    // "If you control a commander as you cast this spell, you may choose both"
+    // (Will of the Temur): raises max_choices to every mode when the chooser
+    // controls a commander.
+    may_choose_both_if_commander: z.boolean().optional(),
     modes: z.array(z.object({
       label: z.string().optional(),
       actions: z.array(z.record(z.string(), z.unknown())),
     })),
+  }),
+  // Token copy of a permanent (mig 239). Parks a pick over battlefield
+  // permanents matching target_filter (Will of the Temur), or with
+  // target:'triggering_creature' copies the event subject directly (Reflections
+  // of Littjara copying the cast spell). `except` overrides the copy's base
+  // P/T (set_pt) and grants keywords; added TYPES are not modelled.
+  z.object({
+    type: z.literal('copy_permanent'),
+    target: z.literal('triggering_creature').optional(),
+    target_filter: z.object({
+      controller: z.enum(['any', 'opponent', 'you']).optional(),
+      type_line: z.string().optional(),
+    }).strict().optional(),
+    except: z.object({
+      power: z.number().int().optional(),
+      toughness: z.number().int().optional(),
+      keywords: z.array(z.string()).optional(),
+    }).strict().optional(),
   }),
   z.object({
     // A negative amount (or all=true) REMOVES counters; counter_type defaults +1/+1.

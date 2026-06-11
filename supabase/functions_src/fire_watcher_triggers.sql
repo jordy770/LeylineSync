@@ -24,7 +24,9 @@ declare
   v_exclude_self boolean;
   v_ctrl_ok boolean;
 begin
-  select cards.type_line, coalesce(cards.is_token, false)
+  -- Token at either level: catalog tokens (cards.is_token) or copy tokens
+  -- (game_cards.is_token, mig 239).
+  select cards.type_line, coalesce(cards.is_token, false) or coalesce(gc.is_token, false)
   into v_changed_type, v_changed_is_token
   from public.game_cards gc
   join public.cards on cards.id = gc.card_id
