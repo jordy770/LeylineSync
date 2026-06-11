@@ -1,7 +1,401 @@
--- supabase/functions_src/apply_triggered_ability_effects.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010235_becomes_target_and_power — Eshki + Thunderbreak Regent.
+--   • resolve_dynamic_amount gains a {power_of:'source'|'target'} amount ("damage
+--     equal to Eshki's power"). Eshki's power tiers reuse the spell_cast watcher
+--     (mig 234) with the existing min_power filter (4 / 6).
+--   • fire_becomes_target_triggers + a broadcast from put_action_on_stack
+--     implement "Whenever a <type> you control becomes the target of a spell or
+--     ability an opponent controls, …" (Thunderbreak Regent). The targeting
+--     player is injected into the damage effect as recipient_player_id.
+--   • apply_triggered_ability_effects: lose_life/deal_damage honour an injected
+--     recipient_player_id (a specific player, e.g. "deals 3 to THAT player").
+-- Generated from supabase/functions_src (resolve_dynamic_amount,
+-- fire_becomes_target_triggers, put_action_on_stack, apply_triggered_ability_effects).
+
+create or replace function public.resolve_dynamic_amount(
+  p_session_id uuid,
+  p_source_card_id uuid,
+  p_controller_id uuid,
+  p_amount jsonb,
+  p_target_card_id uuid default null
+) returns integer
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  v_txt text;
+  v_kind text;
+  v_of text;
+  v_card uuid;
+  v_count integer := 0;
+begin
+  if p_amount is null then
+    return 0;
+  end if;
+
+  if jsonb_typeof(p_amount) in ('number', 'string') then
+    v_txt := p_amount #>> '{}';
+    if v_txt = 'X' then
+      return 0; -- triggered/source effects have no chosen X
+    end if;
+    -- NO clamp: a NEGATIVE literal removes counters (mig 155 removal path).
+    return coalesce(floor(v_txt::numeric)::integer, 0);
+  end if;
+
+  if jsonb_typeof(p_amount) = 'object' then
+    -- Count-based amount ("number of creatures you control", devotion, …).
+    if p_amount ? 'count' then
+      return public.resolve_count_amount(p_session_id, p_controller_id, p_amount);
+    end if;
+
+    -- Power of a permanent ("damage equal to Eshki's power"). of: source | target.
+    if p_amount ? 'power_of' then
+      v_of := lower(coalesce(p_amount ->> 'power_of', 'source'));
+      v_card := case when v_of = 'target' then p_target_card_id else p_source_card_id end;
+      return greatest(0, coalesce(public.card_effective_power(p_session_id, v_card), 0));
+    end if;
+
+    v_kind := lower(coalesce(p_amount ->> 'counters', ''));
+    v_of := lower(coalesce(p_amount ->> 'of', 'self'));
+
+    if v_of in ('you', 'your', 'controller') then
+      select coalesce((counters ->> v_kind)::integer, 0)
+      into v_count
+      from public.game_session_players
+      where session_id = p_session_id and player_id = p_controller_id;
+
+      return greatest(0, coalesce(v_count, 0));
+    end if;
+
+    -- self / source / this → the source permanent; target → the targeted permanent.
+    if v_of = 'target' then
+      v_card := p_target_card_id;
+    else
+      v_card := p_source_card_id;
+    end if;
+
+    if public.is_plus_one_counter(v_kind) then
+      select coalesce(plus_one_counters, 0)
+      into v_count
+      from public.game_cards
+      where id = v_card and session_id = p_session_id;
+    else
+      select coalesce((counters ->> v_kind)::integer, 0)
+      into v_count
+      from public.game_cards
+      where id = v_card and session_id = p_session_id;
+    end if;
+
+    return greatest(0, coalesce(v_count, 0));
+  end if;
+
+  return 0;
+end;
+$$;
+grant execute on function public.resolve_dynamic_amount(uuid, uuid, uuid, jsonb, uuid) to authenticated;
+grant execute on function public.resolve_dynamic_amount(uuid, uuid, uuid, jsonb, uuid) to service_role;
+
+create or replace function public.fire_becomes_target_triggers(
+  p_session_id uuid,
+  p_target_card_id uuid,
+  p_targeting_player uuid
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_target_type text;
+  v_target_controller uuid;
+  v_watcher record;
+  v_ability jsonb;
+  v_filter jsonb;
+  v_f_type text;
+begin
+  if p_target_card_id is null or p_targeting_player is null then
+    return;
+  end if;
+
+  select c.type_line, coalesce(gc.controller_player_id, gc.owner_id)
+  into v_target_type, v_target_controller
+  from public.game_cards gc join public.cards c on c.id = gc.card_id
+  where gc.id = p_target_card_id and gc.session_id = p_session_id and gc.zone = 'battlefield';
+  if not found then
+    return;
+  end if;
+
+  for v_watcher in
+    select gc.id, coalesce(gc.controller_player_id, gc.owner_id) as controller, c.name as card_name
+    from public.game_cards gc join public.cards c on c.id = gc.card_id
+    where gc.session_id = p_session_id and gc.zone = 'battlefield'
+    order by gc.controller_player_id, gc.id
+  loop
+    -- The targeted permanent must be controlled by the watcher (yours) and the
+    -- targeting player must be an opponent of the watcher.
+    if v_target_controller is distinct from v_watcher.controller then continue; end if;
+    if p_targeting_player = v_watcher.controller then continue; end if;
+
+    for v_ability in
+      select * from jsonb_array_elements(
+        coalesce(public.effective_script(p_session_id, v_watcher.id) -> 'triggered_abilities', '[]'::jsonb))
+    loop
+      if lower(coalesce(v_ability ->> 'event', '')) <> 'becomes_target' then continue; end if;
+      v_filter := v_ability -> 'filter';
+      v_f_type := v_filter ->> 'type_line';
+      if v_f_type is not null and v_target_type not ilike '%' || v_f_type || '%' then continue; end if;
+
+      perform public.enqueue_triggered_ability(
+        p_session_id, v_watcher.controller, v_watcher.id,
+        coalesce(v_watcher.card_name, 'becomes_target'),
+        (select jsonb_agg(e || jsonb_build_object('recipient_player_id', p_targeting_player::text))
+         from jsonb_array_elements(v_ability -> 'effects') e),
+        p_target_card_id);
+    end loop;
+  end loop;
+end;
+$$;
+grant execute on function public.fire_becomes_target_triggers(uuid, uuid, uuid) to authenticated;
+grant execute on function public.fire_becomes_target_triggers(uuid, uuid, uuid) to service_role;
+
+create or replace function public.put_action_on_stack(
+  p_session_id uuid,
+  p_action_type text,
+  p_payload jsonb,
+  p_source_card_id uuid default null
+)
+returns public.game_stack_items
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_session_status text;
+  v_turn_state public.game_turn_state;
+  v_action_timing text;
+  v_target_controller text;
+  v_source_type_line text;
+  v_source_zone text;
+  v_source_mana_cost text;
+  v_generic_payment jsonb;
+  v_x_value integer;
+  v_pending_stack_count integer;
+  v_next_graveyard_position integer;
+  v_next_position integer;
+  v_builder_fn text;
+  v_built_payload jsonb;
+  v_stack_item public.game_stack_items;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select status
+  into v_session_status
+  from public.game_sessions
+  where id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Game session not found';
+  end if;
+
+  if v_session_status = 'finished' then
+    raise exception 'Cannot put actions on the stack in a finished game session';
+  end if;
+
+  select *
+  into v_turn_state
+  from public.game_turn_state
+  where session_id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Turn state not found';
+  end if;
+
+  if coalesce(v_turn_state.priority_player_id, v_turn_state.active_player_id) <> auth.uid() then
+    raise exception 'Only the priority player can put actions on the stack';
+  end if;
+
+  select builder_fn
+  into v_builder_fn
+  from public.stack_action_handlers
+  where action_type = p_action_type;
+
+  if v_builder_fn is null then
+    raise exception 'Unsupported stack action type: %', p_action_type;
+  end if;
+
+  if p_source_card_id is not null then
+    select cards.type_line, cards.mana_cost, game_cards.zone
+    into v_source_type_line, v_source_mana_cost, v_source_zone
+    from public.game_cards
+    join public.cards
+      on cards.id = game_cards.card_id
+    where game_cards.id = p_source_card_id
+      and game_cards.session_id = p_session_id
+      and game_cards.owner_id = auth.uid();
+
+    if not found then
+      raise exception 'Source card not found or not owned by current user';
+    end if;
+  end if;
+
+  v_action_timing := lower(nullif(p_payload ->> 'timing', ''));
+
+  if v_action_timing is null then
+    if v_source_type_line ilike '%instant%' then
+      v_action_timing := 'instant';
+    elsif v_source_type_line ilike '%sorcery%' then
+      v_action_timing := 'sorcery';
+    else
+      raise exception 'Action timing is required for non-Instant and non-Sorcery sources';
+    end if;
+  end if;
+
+  if v_action_timing not in ('instant', 'sorcery') then
+    raise exception 'Unsupported action timing: %', v_action_timing;
+  end if;
+
+  if p_action_type = 'counter_spell' and v_action_timing <> 'instant' then
+    raise exception 'Counterspell actions must use instant timing';
+  end if;
+
+  if v_action_timing = 'sorcery' then
+    if v_turn_state.active_player_id <> auth.uid() then
+      raise exception 'Sorcery actions can only be used by the active player';
+    end if;
+
+    if v_turn_state.step not in ('precombat_main', 'postcombat_main') then
+      raise exception 'Sorcery actions can only be used during a main phase';
+    end if;
+
+    select count(*)
+    into v_pending_stack_count
+    from public.game_stack_items
+    where session_id = p_session_id
+      and status = 'pending';
+
+    if v_pending_stack_count > 0 then
+      raise exception 'Sorcery actions can only be used while the stack is empty';
+    end if;
+  end if;
+
+  v_generic_payment := p_payload -> 'generic_payment';
+  v_x_value := coalesce((p_payload ->> 'x_value')::integer, 0);
+  v_target_controller := coalesce(lower(nullif(p_payload ->> 'target_controller', '')), 'any');
+
+  execute format('select public.%I($1, $2, $3, $4, $5)', v_builder_fn)
+    into v_built_payload
+    using p_session_id, auth.uid(), p_payload, v_action_timing, v_target_controller;
+
+  -- Protection (CR 702.16e): a creature with protection from any of the source's
+  -- colours can't be targeted. The target rode through the builder as target_card_id.
+  if v_built_payload ? 'target_card_id'
+     and public.card_has_protection_from_any(
+           p_session_id,
+           nullif(v_built_payload ->> 'target_card_id', '')::uuid,
+           public.card_color_set(v_source_mana_cost))
+  then
+    raise exception 'Target has protection from this spell''s colour';
+  end if;
+
+  -- Hexproof: a permanent can't be targeted by a spell/ability an OPPONENT controls
+  -- (the actor here is auth.uid(); you can still target your own hexproof permanents).
+  if v_built_payload ? 'target_card_id'
+     and public.card_has_hexproof(p_session_id, nullif(v_built_payload ->> 'target_card_id', '')::uuid)
+     and (select coalesce(gc.controller_player_id, gc.owner_id)
+          from public.game_cards gc
+          where gc.id = nullif(v_built_payload ->> 'target_card_id', '')::uuid
+            and gc.session_id = p_session_id) is distinct from auth.uid()
+  then
+    raise exception 'Target has hexproof and can''t be targeted by an opponent';
+  end if;
+
+  -- PLAYER hexproof (mig 203, Lazotep Plating "You … gain hexproof"): a player
+  -- covered by an active hexproof grant with payload.includes_player can't be
+  -- targeted by an opponent's spell/ability (targeting yourself stays legal).
+  if v_built_payload ? 'target_player_id'
+     and nullif(v_built_payload ->> 'target_player_id', '')::uuid is distinct from auth.uid()
+     and exists (
+       select 1 from public.game_continuous_effects effects
+       where effects.session_id = p_session_id
+         and effects.effect_type = 'hexproof'
+         and effects.affected_card_id is null
+         and (effects.payload ->> 'includes_player')::boolean is true
+         and (effects.affected_player_id is null
+              or effects.affected_player_id = nullif(v_built_payload ->> 'target_player_id', '')::uuid)
+     )
+  then
+    raise exception 'Target player has hexproof and can''t be targeted by an opponent';
+  end if;
+
+  if p_source_card_id is not null and v_source_zone = 'hand' then
+    perform public.pay_mana_cost(p_session_id, auth.uid(), v_source_mana_cost, v_generic_payment, v_x_value);
+  end if;
+
+  select coalesce(max(position), -1) + 1
+  into v_next_position
+  from public.game_stack_items
+  where session_id = p_session_id;
+
+  insert into public.game_stack_items (
+    session_id,
+    controller_player_id,
+    source_card_id,
+    action_type,
+    payload,
+    position
+  )
+  values (
+    p_session_id,
+    auth.uid(),
+    p_source_card_id,
+    p_action_type,
+    v_built_payload,
+    v_next_position
+  )
+  returning * into v_stack_item;
+
+  -- "Becomes the target of a spell or ability an opponent controls" (mig 235,
+  -- Thunderbreak Regent). The target is locked in; the actor is auth.uid().
+  if v_built_payload ? 'target_card_id' then
+    perform public.fire_becomes_target_triggers(
+      p_session_id, nullif(v_built_payload ->> 'target_card_id', '')::uuid, auth.uid());
+  end if;
+
+  if p_source_card_id is not null
+    and v_source_zone = 'hand'
+    and (
+      v_source_type_line ilike '%instant%'
+      or v_source_type_line ilike '%sorcery%'
+    )
+  then
+    select coalesce(max(zone_position), -1) + 1
+    into v_next_graveyard_position
+    from public.game_cards
+    where session_id = p_session_id
+      and owner_id = auth.uid()
+      and zone = 'graveyard';
+
+    update public.game_cards
+    set
+      zone = 'graveyard',
+      zone_position = v_next_graveyard_position,
+      is_tapped = false,
+      damage_marked = 0
+    where id = p_source_card_id;
+  end if;
+
+  return v_stack_item;
+end;
+$$;
+grant execute on function public.put_action_on_stack(uuid, text, jsonb, uuid) to authenticated;
 
 create or replace function public.apply_triggered_ability_effects(
   p_session_id uuid,

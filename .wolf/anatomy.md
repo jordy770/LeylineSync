@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T14:08:52.702Z
-> Files: 73 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T14:41:02.776Z
+> Files: 78 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -101,7 +101,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~4903 tok)
+- `card-scripts.json` (~5171 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -111,7 +111,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12078 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12127 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -140,7 +140,7 @@
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2372 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~7117 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~6974 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7059 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4623 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2441 tok)
@@ -149,15 +149,18 @@
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1017 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~306 tok)
+- `fire_becomes_target_triggers.sql` — supabase/functions_src/fire_becomes_target_triggers.sql (~801 tok)
 - `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1394 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
 - `mulligan_hand.sql` — supabase/functions_src/mulligan_hand.sql (~681 tok)
+- `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2165 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1112 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2062 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1399 tok)
+- `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~778 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
 - `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~7306 tok)
 
@@ -171,6 +174,7 @@
 - `202605010232_monstrosity.sql` — 202605010232_monstrosity — Stormbreath Dragon's monstrosity. (~12816 tok)
 - `202605010233_divide_damage.sql` — 202605010233_divide_damage — divided damage from triggers/abilities. (~21620 tok)
 - `202605010234_spell_cast_watcher.sql` — 202605010234_spell_cast_watcher — "whenever you/an opponent cast a spell". (~15190 tok)
+- `202605010235_becomes_target_and_power.sql` — 202605010235_becomes_target_and_power — Eshki + Thunderbreak Regent. (~10543 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -181,6 +185,7 @@
 ## tests/feature/
 
 - `atsushi.test.ts` — Atsushi, the Blazing Sky (mig 230) — a MODAL dies trigger ("choose one"): (~1292 tok)
+- `becomes-target-and-power.test.ts` — mig 235 — three cards: (~1397 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
 - `cost-reduction.test.ts` — Cost reduction (mig 231) — reduced_mana_cost shaves generic mana at cast: (~942 tok)
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
@@ -203,7 +208,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~24352 tok)
+- `test-cards.json` (~24882 tok)
 
 ## tests/harness/
 
@@ -244,5 +249,6 @@
 ## vercel/styles/
 
 
-- `tests/feature/spell-cast-watcher.test.ts` — Taurean Mauler (opponent-cast counter) + Encroaching Dragonstorm (ETB ramp + Dragon-enters self-bounce). ~600 tok
-- `supabase/migrations/202605010234_spell_cast_watcher.sql` — spell_cast broadcast + watcher type bypass + return_self_to_hand. ~2k tok
+- `supabase/functions_src/fire_becomes_target_triggers.sql` — "becomes the target of an opponent's spell/ability" watcher (Thunderbreak Regent). ~500 tok
+- `tests/feature/becomes-target-and-power.test.ts` — Eshki power tiers + Thunderbreak punisher + Spit Flame removal. ~900 tok
+- `supabase/migrations/202605010235_becomes_target_and_power.sql` — power_of amount + becomes_target event + recipient_player_id. ~2.5k tok

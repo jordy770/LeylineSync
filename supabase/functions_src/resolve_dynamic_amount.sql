@@ -41,6 +41,13 @@ begin
       return public.resolve_count_amount(p_session_id, p_controller_id, p_amount);
     end if;
 
+    -- Power of a permanent ("damage equal to Eshki's power"). of: source | target.
+    if p_amount ? 'power_of' then
+      v_of := lower(coalesce(p_amount ->> 'power_of', 'source'));
+      v_card := case when v_of = 'target' then p_target_card_id else p_source_card_id end;
+      return greatest(0, coalesce(public.card_effective_power(p_session_id, v_card), 0));
+    end if;
+
     v_kind := lower(coalesce(p_amount ->> 'counters', ''));
     v_of := lower(coalesce(p_amount ->> 'of', 'self'));
 

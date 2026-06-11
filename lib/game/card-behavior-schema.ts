@@ -227,7 +227,10 @@ const PumpValueSchema = z.object({
 // An effect amount: a fixed number, the literal "X" for a variable spell (chosen at
 // cast time, paid as {X} generic mana, substituted server-side), or a dynamic
 // counter- / count-referencing amount.
-const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema, CountAmountSchema])
+// "Damage equal to <permanent>'s power" (Eshki — its own power).
+const PowerOfSchema = z.object({ power_of: z.enum(['source', 'target']) }).strict()
+
+const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema, CountAmountSchema, PowerOfSchema])
 
 // Which kind of counter an add_counters effect places. "plus_one_one" is the
 // engine's fast +1/+1 column; everything else lives in the jsonb counter bag.

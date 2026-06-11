@@ -101,5 +101,11 @@
 
   "Taurean Mauler": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"opponent"},"effects":[{"type":"may","prompt":"Put a +1/+1 counter?","effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one"}]}]}]},
 
-  "Encroaching Dragonstorm": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]},{"event":"creature_entered","filter":{"type_line":"Dragon","controller":"you"},"effects":[{"type":"return_self_to_hand"}]}]}
+  "Encroaching Dragonstorm": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]},{"event":"creature_entered","filter":{"type_line":"Dragon","controller":"you"},"effects":[{"type":"return_self_to_hand"}]}]},
+
+  "Eshki, Temur's Roar": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","type_line":"creature"},"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one"}]},{"event":"spell_cast","filter":{"controller":"you","type_line":"creature","min_power":4},"effects":[{"type":"draw","amount":1}]},{"event":"spell_cast","filter":{"controller":"you","type_line":"creature","min_power":6},"effects":[{"type":"lose_life","amount":{"power_of":"source"},"recipient":"each_opponent"}]}]},
+
+  "Thunderbreak Regent": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"becomes_target","filter":{"type_line":"Dragon"},"effects":[{"type":"deal_damage","amount":3}]}]},
+
+  "Spit Flame": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage","amount":4,"target_type":"creature"}]}}
 }

@@ -207,6 +207,13 @@ begin
   )
   returning * into v_stack_item;
 
+  -- "Becomes the target of a spell or ability an opponent controls" (mig 235,
+  -- Thunderbreak Regent). The target is locked in; the actor is auth.uid().
+  if v_built_payload ? 'target_card_id' then
+    perform public.fire_becomes_target_triggers(
+      p_session_id, nullif(v_built_payload ->> 'target_card_id', '')::uuid, auth.uid());
+  end if;
+
   if p_source_card_id is not null
     and v_source_zone = 'hand'
     and (

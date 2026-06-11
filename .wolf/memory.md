@@ -3276,3 +3276,16 @@
 | 16:08 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~376 |
 | 16:08 | Created tests/feature/spell-cast-watcher.test.ts | — | ~722 |
 | 14:55 | Spell-cast watcher (mig 234): cast_spell_effect + cast_card_from_hand broadcast 'spell_cast' (lands excluded); fire_watcher_triggers bypasses the creature-type default for spell_cast (controller you/opponent relative to watcher). + return_self_to_hand effect. Taurean Mauler (opponent casts -> may +1/+1; changeling NOT modelled) + Encroaching Dragonstorm (ETB search 2 basics + Dragon-enters self-bounce). Fixtures + card-scripts + spell-cast-watcher.test (SC1/SC2). | mig 234, fire_watcher_triggers, cast_spell_effect, cast_card_from_hand, apply_triggered_ability_effects, schema, spell-cast-watcher.test | 824/824 green, tsc+lint clean | ~13k |
+| 16:11 | Session end: 78 writes across 32 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 24 reads | ~76743 tok |
+| 16:34 | Edited supabase/functions_src/resolve_dynamic_amount.sql | expanded (+7 lines) | ~155 |
+| 16:34 | Edited lib/game/card-behavior-schema.ts | 1→4 lines | ~76 |
+| 16:35 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~294 |
+| 16:36 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | added 1 condition(s) | ~150 |
+| 16:37 | Created supabase/functions_src/fire_becomes_target_triggers.sql | — | ~801 |
+| 16:37 | Edited supabase/functions_src/put_action_on_stack.sql | added 1 condition(s) | ~151 |
+| 16:39 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~279 |
+| 16:39 | Edited docs/commander-decks/card-scripts.json | expanded (+6 lines) | ~368 |
+| 16:39 | Edited supabase/migrations/202605010235_becomes_target_and_power.sql | expanded (+8 lines) | ~245 |
+| 16:40 | Created tests/feature/becomes-target-and-power.test.ts | — | ~1367 |
+| 16:41 | Edited tests/feature/becomes-target-and-power.test.ts | 3→6 lines | ~75 |
+| 15:45 | Batch (mig 235): Eshki (3 spell_cast watchers w/ existing min_power filter for the power-4/6 tiers + new {power_of:'source'} dynamic amount) + Thunderbreak Regent (becomes_target event: fire_becomes_target_triggers from put_action_on_stack, targeting player injected as recipient_player_id into the damage effect) + Spit Flame (4 dmg to creature; graveyard recursion deferred - watchers don't fire from graveyard). | mig 235, resolve_dynamic_amount, fire_becomes_target_triggers, put_action_on_stack, apply_triggered_ability_effects, schema, becomes-target-and-power.test | 828/828 green, tsc+lint clean | ~16k |
