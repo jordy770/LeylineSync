@@ -1,10 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T16:55:03.395Z
-> Files: 96 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T20:42:17.883Z
+> Files: 97 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
+- `scratch-check-hosted.mjs` — Declares loadEnvFile (~567 tok)
 - `scratch-mv.mjs` — Declares c (~215 tok)
 
 ## .claude/

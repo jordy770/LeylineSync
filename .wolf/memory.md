@@ -3385,3 +3385,8 @@
 | 18:54 | Created tests/feature/farseek-flooded-grove.test.ts | — | ~809 |
 | 18:55 | Edited supabase/migrations/202605010241_farseek_type_line_any.sql | 2→7 lines | ~130 |
 | 20:35 | Farseek + Flooded Grove (mig 241): search_library filter.type_line_any OR-filter (Plains/Island/Swamp/Mountain, no Forest); Flooded Grove script-only ({G/U} hybrid activation cost already supported by pay_mana_cost mig 121). | mig 241, apply_trigger_effects, schema, farseek-flooded-grove.test | 848/848 green, tsc+lint clean, triage 67/6/19 | ~4k |
+| 18:57 | Session end: 52 writes across 21 files (create_copy_token.sql, cease_token_if_off_battlefield.sql, put_in_graveyard.sql, fire_watcher_triggers.sql, resolve_count_amount.sql) | 26 reads | ~125402 tok |
+| 22:38 | Session end: 52 writes across 21 files (create_copy_token.sql, cease_token_if_off_battlefield.sql, put_in_graveyard.sql, fire_watcher_triggers.sql, resolve_count_amount.sql) | 26 reads | ~125402 tok |
+| 22:40 | Created scratch-check-hosted.mjs | — | ~341 |
+| 22:42 | Created scratch-check-hosted.mjs | — | ~567 |
+| 20:55 | Hosted upsert: deck:upsert --apply --force (direct node call; npm eats flags after --). 30 cards / 51 printings updated, 67 already current; forced Migration Path (added cycling) + Sol Ring (legacy v1 script). Created Dragon Egg Token + Dragon Hatchling Token (dep scan misses tokens referenced from token scripts). Verify: 0 to update / 118 current. NOTE: hosted still needs db push of migs 229-241 for the new action types. | hosted cards table | all current | ~3k |

@@ -140,6 +140,8 @@
 
 ## Do-Not-Repeat
 
+- [2026-06-11] **deck:upsert flags do not survive npm:** `npm run deck:upsert -- --apply --force` still runs a DRY RUN (npm consumes the flags; it even warns about --force). Call the script directly: `node --import tsx scripts/upsert-deck-scripts.mjs --apply [--force]`. Also: the token-dep scan only reads DECK-card scripts, so a token referenced from another TOKEN's script (Dragon Egg -> Dragon Hatchling) must be created on hosted manually.
+
 - [2026-06-11] **PS 5.1 + git commit -m here-strings: no embedded double-quoted phrases.** A "quoted phrase with spaces" inside the message gets split by native arg passing (git sees pathspecs; commit fails). Reword to avoid inner double quotes, or commit via the Bash tool.
 
 - **Windows Python file writes MUST pass encoding='utf-8'** (bug: mig 202 / SQLSTATE 22021 at db push). `open(path, 'w')` on Windows defaults to cp1252 â€” em-dashes become 0x97, invalid UTF-8. Node tools (writeFileSync, the Edit tool) are safe; Python heredocs are the hazard. The local setup script now STRICT-decodes every SQL file before applying (fatal TextDecoder) so an encoding regression fails at `npm run test:db:setup` with the filename, not at hosted `db push`.
