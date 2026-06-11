@@ -25,6 +25,9 @@ declare
   v_prev_controller uuid;
   v_counter_type text;
   v_all boolean;
+  v_top_card uuid;
+  v_top_type text;
+  v_turn integer;
 begin
   if p_target_card_id is null then
     return;
@@ -75,6 +78,52 @@ begin
       set zone = 'hand', zone_position = v_next_position, controller_player_id = owner_id,
           is_tapped = false, damage_marked = 0, dealt_deathtouch_damage = false, plus_one_counters = 0
       where id = p_target_card_id;
+    end if;
+
+  elsif p_kind = 'shuffle_into_library' then
+    -- Chaos Warp (mig 242): the OWNER shuffles the target into their library
+    -- (modelled as inserting at a random position), then reveals the top card
+    -- of that library; a permanent card goes onto the battlefield under the
+    -- owner's control. Tokens shuffled in simply cease (the cease trigger).
+    select owner_id into v_target_owner_id
+    from public.game_cards
+    where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
+    if found then
+      select floor(random() * (count(*) + 1))::integer into v_next_position
+      from public.game_cards
+      where session_id = p_session_id and owner_id = v_target_owner_id and zone = 'library';
+      update public.game_cards
+      set zone_position = zone_position + 1
+      where session_id = p_session_id and owner_id = v_target_owner_id and zone = 'library'
+        and zone_position >= v_next_position;
+      update public.game_cards
+      set zone = 'library', zone_position = v_next_position, controller_player_id = owner_id,
+          is_tapped = false, damage_marked = 0, dealt_deathtouch_damage = false, plus_one_counters = 0
+      where id = p_target_card_id;
+
+      if coalesce((p_params ->> 'then_reveal_top_to_battlefield')::boolean, false) then
+        select gc.id, c.type_line into v_top_card, v_top_type
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id and gc.owner_id = v_target_owner_id and gc.zone = 'library'
+        order by gc.zone_position asc, gc.id asc
+        limit 1;
+        if v_top_card is not null and (
+             v_top_type ilike '%creature%' or v_top_type ilike '%artifact%'
+             or v_top_type ilike '%enchantment%' or v_top_type ilike '%land%'
+             or v_top_type ilike '%planeswalker%' or v_top_type ilike '%battle%') then
+          select turn_number into v_turn
+          from public.game_turn_state where session_id = p_session_id;
+          update public.game_cards gc
+          set zone = 'battlefield', controller_player_id = gc.owner_id, is_tapped = false,
+              entered_battlefield_turn_number = coalesce(v_turn, 0),
+              zone_position = (select coalesce(max(zone_position), -1) + 1
+                               from public.game_cards x
+                               where x.session_id = p_session_id and x.owner_id = gc.owner_id
+                                 and x.zone = 'battlefield')
+          where gc.id = v_top_card;
+          perform public.register_card_continuous_effects(p_session_id, v_top_card);
+        end if;
+      end if;
     end if;
 
   elsif p_kind in ('tap', 'untap') then

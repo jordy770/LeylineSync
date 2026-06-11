@@ -182,7 +182,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
   'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
   'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand', 'divide_damage',
-  'return_self_to_hand', 'copy_permanent', 'become_copy',
+  'return_self_to_hand', 'copy_permanent', 'become_copy', 'shuffle_into_library',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -432,6 +432,14 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('return_self_to_hand'),
   }),
+  // "The owner of target permanent shuffles it into their library" (Chaos
+  // Warp, mig 242). then_reveal_top_to_battlefield adds the rider: reveal the
+  // owner's top card; a permanent card goes onto the battlefield.
+  z.object({
+    type: z.literal('shuffle_into_library'),
+    target_type: z.literal('permanent').optional(),
+    then_reveal_top_to_battlefield: z.boolean().optional(),
+  }),
   // "Deal N damage divided as you choose among …" (Dragonlord Atarka ETB /
   // Skarrgan Hellkite). Parks a divide_damage decision; the player allocates N
   // among legal targets (creatures/planeswalkers/players per target_filter).
@@ -533,9 +541,11 @@ const CardBehaviorActionSchema = z.union([
   }),
   z.object({
     type: z.literal('pump'),
-    // A fixed delta, or a dynamic { count, …, negate? } value (Liliana −2: -X/-X).
-    power: z.union([z.number(), PumpValueSchema]).optional(),
-    toughness: z.union([z.number(), PumpValueSchema]).optional(),
+    // A fixed delta, a dynamic { count, …, negate? } value (Liliana −2: -X/-X),
+    // or the literal 'X' for an {X}-cost activated ability (Kessig Wolf Run —
+    // substituted server-side at activation).
+    power: z.union([z.number(), z.literal('X'), PumpValueSchema]).optional(),
+    toughness: z.union([z.number(), z.literal('X'), PumpValueSchema]).optional(),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,

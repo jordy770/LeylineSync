@@ -133,5 +133,9 @@
 
   "Farseek": {"schema_version":2,"spell_effect":{"actions":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line_any":["Plains","Island","Swamp","Mountain"]}}]}},
 
-  "Flooded Grove": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{G/U}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":2}]},{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{G/U}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1},{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{G/U}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":2}]}]}
+  "Flooded Grove": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{G/U}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":2}]},{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{G/U}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1},{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{G/U}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":2}]}]},
+
+  "Kessig Wolf Run": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{X}{R}{G}"},{"type":"tap_self"}],"effects":[{"type":"pump","power":"X","toughness":0,"target_type":"creature"},{"type":"grant_keyword","keyword":"trample","target_type":"creature"}]}]},
+
+  "Chaos Warp": {"schema_version":2,"spell_effect":{"actions":[{"type":"shuffle_into_library","target_type":"permanent","then_reveal_top_to_battlefield":true}]}}
 }

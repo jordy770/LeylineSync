@@ -3390,3 +3390,24 @@
 | 22:40 | Created scratch-check-hosted.mjs | — | ~341 |
 | 22:42 | Created scratch-check-hosted.mjs | — | ~567 |
 | 20:55 | Hosted upsert: deck:upsert --apply --force (direct node call; npm eats flags after --). 30 cards / 51 printings updated, 67 already current; forced Migration Path (added cycling) + Sol Ring (legacy v1 script). Created Dragon Egg Token + Dragon Hatchling Token (dep scan misses tokens referenced from token scripts). Verify: 0 to update / 118 current. NOTE: hosted still needs db push of migs 229-241 for the new action types. | hosted cards table | all current | ~3k |
+| 22:43 | Session end: 54 writes across 22 files (create_copy_token.sql, cease_token_if_off_battlefield.sql, put_in_graveyard.sql, fire_watcher_triggers.sql, resolve_count_amount.sql) | 27 reads | ~128492 tok |
+| 21:05 | User pushed migs 229-241 to hosted themselves � hosted engine + catalog scripts now in sync through mig 241. Dragons deck (73/92 cards) fully playable online. | hosted DB | in sync | ~0k |
+| 22:52 | Session end: 54 writes across 22 files (create_copy_token.sql, cease_token_if_off_battlefield.sql, put_in_graveyard.sql, fire_watcher_triggers.sql, resolve_count_amount.sql) | 27 reads | ~128492 tok |
+| 22:53 | Session end: 54 writes across 22 files (create_copy_token.sql, cease_token_if_off_battlefield.sql, put_in_graveyard.sql, fire_watcher_triggers.sql, resolve_count_amount.sql) | 27 reads | ~128492 tok |
+| 22:59 | Edited supabase/functions_src/activate_ability.sql | modified public() | ~86 |
+| 22:59 | Edited supabase/functions_src/activate_ability.sql | modified cost() | ~325 |
+| 22:59 | Edited supabase/functions_src/activate_ability.sql | 15→19 lines | ~284 |
+| 22:59 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~31 |
+| 22:59 | Edited supabase/functions_src/apply_creature_effect.sql | 3→6 lines | ~27 |
+| 23:00 | Edited supabase/functions_src/apply_creature_effect.sql | modified Warp() | ~715 |
+| 23:00 | Created supabase/functions_src/trigger_effect_target_type.sql | — | ~351 |
+| 23:00 | Edited lib/game/card-behavior-schema.ts | 4→6 lines | ~113 |
+| 23:00 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~27 |
+| 23:00 | Edited lib/game/card-behavior-schema.ts | expanded (+8 lines) | ~156 |
+| 23:00 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~84 |
+| 23:00 | Edited tests/harness/scenario.ts | modified activate() | ~162 |
+| 23:01 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~578 |
+| 23:01 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~345 |
+| 23:01 | Edited supabase/migrations/202605010242_kessig_chaos_warp.sql | modified if() | ~405 |
+| 23:02 | Created tests/feature/kessig-chaos-warp.test.ts | — | ~1297 |
+| 21:40 | Kessig Wolf Run + Chaos Warp (mig 242): activate_ability p_x_value (X paid as generic, 'X' substituted into effects; OLD 6-arg overload DROPPED per bug-236a pattern; harness activate gains xValue); multi-effect ability path now carries target_card_id; apply_creature_effect kind shuffle_into_library (random-pos insert + reveal-top-permanent-to-battlefield rider; tokens cease); trigger_effect_target_type canonical file created (first edit since mig 172). | mig 242, activate_ability, apply_creature_effect, trigger_effect_target_type, schema, scenario.ts, kessig-chaos-warp.test | 852/852 green, tsc+lint clean, triage 69/6/17 | ~10k |

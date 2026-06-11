@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T20:42:17.883Z
-> Files: 97 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T21:02:17.470Z
+> Files: 101 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -103,7 +103,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~6524 tok)
+- `card-scripts.json` (~6684 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -113,7 +113,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12908 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~13076 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -137,9 +137,10 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6253 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6636 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2773 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~3226 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~8895 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7133 tok)
@@ -170,6 +171,7 @@
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
 - `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~8260 tok)
+- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~351 tok)
 
 ## supabase/migrations/
 
@@ -188,6 +190,7 @@
 - `202605010239_copy_permanent.sql` — 202605010239_copy_permanent — token-copy primitive (Will of the Temur, (~21363 tok)
 - `202605010240_become_copy.sql` — 202605010240_become_copy — an existing card becomes a copy (Deceptive (~20948 tok)
 - `202605010241_farseek_type_line_any.sql` — 202605010241_farseek_type_line_any — Farseek + Flooded Grove. (~8996 tok)
+- `202605010242_kessig_chaos_warp.sql` — 202605010242_kessig_chaos_warp — Kessig Wolf Run + Chaos Warp. (~10419 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -215,6 +218,7 @@
 - `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
 - `gadrak.test.ts` — Gadrak, the Crown-Scourge (mig 229) — (~1191 tok)
 - `game-start.test.ts` — Game start sequence (mig 221) — random first player, 7-card opening hands, (~1843 tok)
+- `kessig-chaos-warp.test.ts` — mig 242 — Kessig Wolf Run + Chaos Warp. (~1297 tok)
 - `landfall.test.ts` — mig 238 — Nesting Dragon (landfall) + Sarkhan cost reduction. (~843 tok)
 - `monstrosity.test.ts` — Monstrosity (mig 232) — Stormbreath Dragon: "{5}{R}{R}: Monstrosity 3. When (~781 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
@@ -227,11 +231,11 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~27731 tok)
+- `test-cards.json` (~28049 tok)
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9943 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9960 tok)
 
 ## tests/regression/
 
@@ -239,7 +243,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1585 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1624 tok)
 
 ## vercel/
 
