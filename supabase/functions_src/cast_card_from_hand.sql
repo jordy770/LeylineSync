@@ -349,7 +349,12 @@ begin
       end if;
     end if;
   else
-    perform public.pay_mana_cost(p_session_id, auth.uid(), v_card_mana_cost, p_generic_payment);
+    -- Cost reduction (mig 231): reduce the generic portion before paying (e.g.
+    -- "Dragon spells you cast cost {1} less" — Dragonlord's Servant).
+    perform public.pay_mana_cost(
+      p_session_id, auth.uid(),
+      public.reduced_mana_cost(p_session_id, auth.uid(), p_game_card_id, v_card_mana_cost),
+      p_generic_payment);
   end if;
 
   -- Kicker (mig 211, Josu Vess): an OPTIONAL additional cost from the script's

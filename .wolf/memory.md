@@ -3222,3 +3222,15 @@
 | 11:50 | Edited docs/commander-decks/card-scripts.json | expanded (+6 lines) | ~331 |
 | 11:50 | Created tests/feature/ramp.test.ts | — | ~925 |
 | 12:00 | Ramp package (no engine): Fellwar Stone + Exotic Orchard = tap-for-any-colour sources (reuse mig 226 'any' path, like Dragon's Hoard); Kodama's Reach = two sequential search_library (basic -> battlefield tapped + basic -> hand). Fixtures + card-scripts + ramp.test. | test-cards.json, card-scripts.json, ramp.test | 814/814 green, tsc clean | ~5k |
+| 11:52 | Session end: 32 writes across 17 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 15 reads | ~50588 tok |
+| 12:56 | Created supabase/functions_src/reduced_mana_cost.sql | — | ~889 |
+| 12:56 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified permission() | ~151 |
+| 12:56 | Edited supabase/functions_src/cast_card_from_hand.sql | modified reduction() | ~94 |
+| 12:56 | Edited supabase/functions_src/cast_spell_effect.sql | expanded (+6 lines) | ~156 |
+| 12:56 | Edited lib/game/card-behavior-schema.ts | expanded (+10 lines) | ~193 |
+| 12:57 | Edited supabase/migrations/202605010231_cost_reduction.sql | modified reduced_mana_cost() | ~436 |
+| 12:58 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~241 |
+| 12:58 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~180 |
+| 12:59 | Created tests/feature/cost-reduction.test.ts | — | ~942 |
+| 12:59 | Edited tests/feature/cost-reduction.test.ts | inline fix | ~25 |
+| 12:40 | Cost reduction (mig 231): reduced_mana_cost helper reduces generic mana by self cost_reduction script prop (Draconic Lore) + static cost_reduction continuous effects matching the cast card's type (Dragonlord's Servant/Sarkhan). register whitelist += cost_reduction; effect_type CHECK += cost_reduction; wired into cast_card_from_hand + cast_spell_effect. Fixtures + card-scripts + cost-reduction.test. | mig 231, reduced_mana_cost, register_card_continuous_effects, cast_card_from_hand, cast_spell_effect, schema, cost-reduction.test | 816/816 green, tsc+lint clean | ~12k |

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T09:50:40.211Z
-> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T10:59:42.986Z
+> Files: 65 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -101,7 +101,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~4166 tok)
+- `card-scripts.json` (~4271 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -111,7 +111,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~11460 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~11601 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -141,7 +141,8 @@
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~6784 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~6116 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
-- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4488 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4553 tok)
+- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2359 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~1698 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1017 tok)
@@ -152,6 +153,8 @@
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
 - `mulligan_hand.sql` — supabase/functions_src/mulligan_hand.sql (~681 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1112 tok)
+- `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2062 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1399 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
 - `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~6786 tok)
@@ -162,6 +165,7 @@
 - `202605010223_ureni_look_top.sql` — Ureni of the Unwritten (the Dragons commander) — "Whenever Ureni enters or (~13399 tok)
 - `202605010229_gadrak.sql` — 202605010229_gadrak — Gadrak, the Crown-Scourge. (~9649 tok)
 - `202605010230_atsushi.sql` — 202605010230_atsushi — Atsushi, the Blazing Sky. (~26980 tok)
+- `202605010231_cost_reduction.sql` — 202605010231_cost_reduction — generic-mana cost reduction. (~9725 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -173,6 +177,7 @@
 
 - `atsushi.test.ts` — Atsushi, the Blazing Sky (mig 230) — a MODAL dies trigger ("choose one"): (~1292 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
+- `cost-reduction.test.ts` — Cost reduction (mig 231) — reduced_mana_cost shaves generic mana at cast: (~942 tok)
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
 - `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
@@ -190,7 +195,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~22999 tok)
+- `test-cards.json` (~23223 tok)
 
 ## tests/harness/
 
@@ -231,4 +236,6 @@
 ## vercel/styles/
 
 
-- `tests/feature/ramp.test.ts` — Temur ramp: Fellwar Stone / Exotic Orchard (tap-for-any) + Kodama's Reach (split basic search). ~600 tok
+- `supabase/functions_src/reduced_mana_cost.sql` — generic-mana cost reduction helper (self prop + static continuous effects). ~600 tok
+- `tests/feature/cost-reduction.test.ts` — Dragonlord's Servant (static) + Draconic Lore (self) generic reduction. ~600 tok
+- `supabase/migrations/202605010231_cost_reduction.sql` — cost_reduction continuous type + reduced_mana_cost + cast-path wiring. ~2k tok

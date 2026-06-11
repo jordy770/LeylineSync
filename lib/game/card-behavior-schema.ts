@@ -727,6 +727,16 @@ export const CardBehaviorScriptV2Schema = z.object({
     count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control']),
     at_least: z.number().int().positive(),
   }).strict().optional(),
+  // "This spell costs {N} less to cast" (Draconic Lore), optionally only when a
+  // count condition holds. Reduces generic mana at cast (reduced_mana_cost).
+  cost_reduction: z.object({
+    amount: z.number().int().positive(),
+    if: z.object({
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control']),
+      type_line: z.string().optional(),
+      at_least: z.number().int().positive(),
+    }).strict().optional(),
+  }).strict().optional(),
   // "If an effect would put counters on a permanent you control, it puts twice that
   // many instead" (Doubling Season). A static replacement read at counter-placement.
   doubles_counters: z.boolean().optional(),

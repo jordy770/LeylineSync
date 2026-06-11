@@ -87,5 +87,9 @@
 
   "Exotic Orchard": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
 
-  "Kodama's Reach": {"schema_version":2,"spell_effect":{"actions":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}},{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"Basic Land"}}]}}
+  "Kodama's Reach": {"schema_version":2,"spell_effect":{"actions":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}},{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"Basic Land"}}]}},
+
+  "Dragonlord's Servant": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"type_line":"Dragon","amount":1}}]},
+
+  "Draconic Lore": {"schema_version":2,"cost_reduction":{"amount":2,"if":{"count":"creatures_you_control","type_line":"Dragon","at_least":1}},"spell_effect":{"actions":[{"type":"draw","amount":3}]}}
 }

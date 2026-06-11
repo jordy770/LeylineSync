@@ -88,7 +88,12 @@ begin
       -- STATIC cast-from-graveyard permission (mig 207, Gisa and Geralf): a
       -- script-registered row, swept by rebuild when the source leaves — unlike
       -- the until-EOT grant_cast_from_graveyard effect rows (mig 173).
-      'cast_from_graveyard'
+      'cast_from_graveyard',
+      -- STATIC cost reduction (mig 231, Dragonlord's Servant / Sarkhan): payload
+      -- {type_line, amount}; reduced_mana_cost sums these for the caster. Defaults
+      -- to affected:'controller' (not a source-keyword), so affected_player_id is
+      -- the controller.
+      'cost_reduction'
     ) then
       raise exception 'Unsupported continuous effect type: %', v_effect_type;
     end if;

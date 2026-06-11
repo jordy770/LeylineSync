@@ -135,7 +135,13 @@ begin
   -- sourceless or free (the free-cast test fixtures).
   if p_source_card_id is not null and v_source_zone = 'hand' then
     if v_source_mana_cost is not null and btrim(v_source_mana_cost) <> '' then
-      perform public.pay_mana_cost(p_session_id, auth.uid(), v_source_mana_cost, null, coalesce(p_x_value, 0));
+      -- Cost reduction (mig 231, Draconic Lore: "costs {2} less if you control a
+      -- Dragon"). Generic mana is auto-paid here (null generic payment), so the
+      -- reduced cost is consumed with no client change.
+      perform public.pay_mana_cost(
+        p_session_id, auth.uid(),
+        public.reduced_mana_cost(p_session_id, auth.uid(), p_source_card_id, v_source_mana_cost),
+        null, coalesce(p_x_value, 0));
     end if;
   elsif p_source_card_id is not null and v_source_zone = 'graveyard' then
     v_flashback_cost := v_source_script ->> 'flashback';
