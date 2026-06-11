@@ -35,9 +35,13 @@ begin
     if v_eff_type = 'fight' then
       perform public.apply_fight(p_session_id, p_source_card_id, p_target_card_id);
     else
+      -- acting_source (mig 246): the trigger's SOURCE permanent, for effects
+      -- whose lifetime is tied to it (gain_control duration 'while_source').
       perform public.apply_creature_effect(
         p_session_id, v_eff_type, p_target_card_id,
-        v_effect || jsonb_build_object('acting_controller', p_controller_id)
+        v_effect || jsonb_build_object(
+          'acting_controller', p_controller_id,
+          'acting_source', p_source_card_id)
       );
     end if;
   end loop;

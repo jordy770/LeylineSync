@@ -51,6 +51,28 @@ begin
     and OLD.zone = 'battlefield'
     and NEW.zone is distinct from 'battlefield'
   then
+    -- "For as long as ~ remains on the battlefield" steals (mig 246,
+    -- Opportunistic Dragon): the thief leaving reverts control of everything
+    -- it stole (and restores a blanked script).
+    update public.game_cards gc
+    set controller_player_id = nullif(ce.payload ->> 'original_controller', '')::uuid,
+        copied_script = case when coalesce((ce.payload ->> 'lose_abilities')::boolean, false)
+                             then null else gc.copied_script end
+    from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'control'
+      and coalesce((ce.payload ->> 'while_source')::boolean, false)
+      and ce.source_card_id = NEW.id
+      and ce.affected_card_id = gc.id
+      and gc.session_id = NEW.session_id
+      and gc.zone = 'battlefield'
+      and nullif(ce.payload ->> 'original_controller', '') is not null;
+    delete from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'control'
+      and coalesce((ce.payload ->> 'while_source')::boolean, false)
+      and ce.source_card_id = NEW.id;
+
     perform public.fire_card_triggers(
       NEW.session_id, NEW.id,
       array['leaves_the_battlefield', 'ltb', 'leaves']

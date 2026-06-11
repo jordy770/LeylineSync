@@ -15,7 +15,7 @@ returns jsonb language sql immutable as $$
          and public.behavior_target_type_is_creature_only(p_effect -> 'target_type')
       then '"creature"'::jsonb
     when lower(coalesce(p_effect ->> 'type', '')) in
-         ('destroy', 'exile', 'bounce', 'tap', 'untap', 'shuffle_into_library')
+         ('destroy', 'exile', 'bounce', 'tap', 'untap', 'shuffle_into_library', 'gain_control')
          and public.behavior_target_type_is_permanent_only(p_effect -> 'target_type')
       then p_effect -> 'target_type'
     else null

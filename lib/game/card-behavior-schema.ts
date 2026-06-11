@@ -754,7 +754,12 @@ const CardBehaviorActionSchema = z.union([
   // "you don't control"). Trigger-only today.
   z.object({
     type: z.literal('gain_control'),
-    duration: z.enum(['permanent', 'end_of_turn']).optional(),
+    // 'while_source' (mig 246, Opportunistic Dragon): control lasts as long
+    // as the SOURCE permanent stays on the battlefield; lose_abilities blanks
+    // the stolen permanent's script and blocks attacking (block restriction
+    // not modelled).
+    duration: z.enum(['permanent', 'end_of_turn', 'while_source']).optional(),
+    lose_abilities: z.boolean().optional(),
     // Threaten extras: untap the creature and give it haste (so it can attack the
     // turn you take it). JSON/AI-authored; the guided form models duration only.
     untap: z.boolean().optional(),

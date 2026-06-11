@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T21:32:01.696Z
-> Files: 111 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T21:37:59.246Z
+> Files: 114 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -103,7 +103,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~7296 tok)
+- `card-scripts.json` (~7395 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -113,7 +113,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~13912 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~14004 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -140,9 +140,10 @@
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6636 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~2773 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~3226 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~3591 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
+- `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~10974 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7421 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
@@ -160,7 +161,7 @@
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~558 tok)
 - `fire_turn_step_triggers.sql` — supabase/functions_src/fire_turn_step_triggers.sql (~673 tok)
 - `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~1499 tok)
-- `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~639 tok)
+- `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~938 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
@@ -175,7 +176,7 @@
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
 - `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~9481 tok)
-- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~351 tok)
+- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~355 tok)
 
 ## supabase/migrations/
 
@@ -198,6 +199,7 @@
 - `202605010243_become_the_avalanche.sql` — 202605010243_become_the_avalanche — Become the Avalanche. (~11319 tok)
 - `202605010244_tyrants_thundermane.sql` — 202605010244_tyrants_thundermane — Leyline Tyrant + Hammerhead Tyrant + (~28222 tok)
 - `202605010245_siege_dragonstorm.sql` — 202605010245_siege_dragonstorm — Frontier Siege + Breaching Dragonstorm. (~30467 tok)
+- `202605010246_opportunistic_dragon.sql` — 202605010246_opportunistic_dragon — "choose target Human or artifact an (~5359 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -229,6 +231,7 @@
 - `kessig-chaos-warp.test.ts` — mig 242 — Kessig Wolf Run + Chaos Warp. (~1297 tok)
 - `landfall.test.ts` — mig 238 — Nesting Dragon (landfall) + Sarkhan cost reduction. (~843 tok)
 - `monstrosity.test.ts` — Monstrosity (mig 232) — Stormbreath Dragon: "{5}{R}{R}: Monstrosity 3. When (~781 tok)
+- `opportunistic-dragon.test.ts` — mig 246 — Opportunistic Dragon: "When this creature enters, choose target (~810 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
 - `reflexive-watcher.test.ts` — Reflexive watchers (mig 227) — the entering/attacking creature ITSELF gains (~953 tok)
 - `siege-dragonstorm.test.ts` — mig 245 — Frontier Siege + Breaching Dragonstorm. (~1740 tok)
@@ -241,7 +244,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~29313 tok)
+- `test-cards.json` (~29524 tok)
 
 ## tests/harness/
 

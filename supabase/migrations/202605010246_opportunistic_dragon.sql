@@ -1,7 +1,83 @@
--- supabase/functions_src/apply_creature_effect.sql
--- CANONICAL current definition (seeded from 202605010172_dynamic_pump_loyalty_target.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010246_opportunistic_dragon — "choose target Human or artifact an
+-- opponent controls. For as long as this creature remains on the battlefield,
+-- gain control of that permanent, it loses all abilities, and it can't attack
+-- or block."
+--   • gain_control duration 'while_source': an UNexpiring control row sourced
+--     by the STEALING permanent (acting_source now rides into
+--     apply_creature_effect); fire_zone_change_triggers reverts control and
+--     restores the blanked script when the thief leaves the battlefield.
+--   • lose_abilities: the stolen permanent's copied_script becomes a stub
+--     that blanks its script AND blocks attacking via the cant_attack_unless
+--     gate.
+--   • trigger_effect_target_type: gain_control joins the permanent-targeted
+--     family (the trigger can target artifacts).
+-- Approximations: blocking is not restricted; the Human-or-artifact type
+-- check is not enforced server-side (any opponent permanent is accepted).
+-- Generated from supabase/functions_src (trigger_effect_target_type, apply_targeted_triggered_ability_effects, apply_creature_effect, fire_zone_change_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+create or replace function public.trigger_effect_target_type(p_effect jsonb)
+returns jsonb language sql immutable as $$
+  select case
+    when lower(coalesce(p_effect ->> 'type', '')) in
+         ('deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap',
+          'add_counters', 'grant_keyword', 'fight', 'gain_control', 'set_pt', 'pump')
+         and public.behavior_target_type_is_creature_only(p_effect -> 'target_type')
+      then '"creature"'::jsonb
+    when lower(coalesce(p_effect ->> 'type', '')) in
+         ('destroy', 'exile', 'bounce', 'tap', 'untap', 'shuffle_into_library', 'gain_control')
+         and public.behavior_target_type_is_permanent_only(p_effect -> 'target_type')
+      then p_effect -> 'target_type'
+    else null
+  end;
+$$;
+grant all on function public.trigger_effect_target_type(jsonb) to anon, authenticated, service_role;
+
+create or replace function public.apply_targeted_triggered_ability_effects(
+  p_session_id uuid,
+  p_controller_id uuid,
+  p_source_card_id uuid,
+  p_effects jsonb,
+  p_target_card_id uuid
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_effect jsonb;
+  v_eff_type text;
+begin
+  for v_effect in
+    select * from jsonb_array_elements(coalesce(p_effects, '[]'::jsonb))
+  loop
+    if public.trigger_effect_target_type(v_effect) is null then
+      perform public.apply_triggered_ability_effects(
+        p_session_id, p_controller_id, p_source_card_id, jsonb_build_array(v_effect)
+      );
+      continue;
+    end if;
+
+    -- Targeted trigger effects fizzle harmlessly if the target is gone; the
+    -- primitive re-checks the target is on the battlefield per mutation.
+    v_eff_type := lower(coalesce(v_effect ->> 'type', ''));
+
+    if v_eff_type = 'fight' then
+      perform public.apply_fight(p_session_id, p_source_card_id, p_target_card_id);
+    else
+      -- acting_source (mig 246): the trigger's SOURCE permanent, for effects
+      -- whose lifetime is tied to it (gain_control duration 'while_source').
+      perform public.apply_creature_effect(
+        p_session_id, v_eff_type, p_target_card_id,
+        v_effect || jsonb_build_object(
+          'acting_controller', p_controller_id,
+          'acting_source', p_source_card_id)
+      );
+    end if;
+  end loop;
+end;
+$$;
+grant execute on function public.apply_targeted_triggered_ability_effects(uuid, uuid, uuid, jsonb, uuid) to authenticated;
 
 create or replace function public.apply_creature_effect(
   p_session_id uuid,
@@ -290,3 +366,90 @@ begin
 end;
 $$;
 grant execute on function public.apply_creature_effect(uuid, text, uuid, jsonb) to authenticated;
+
+create or replace function public.fire_zone_change_triggers() returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- Enters the battlefield.
+  if NEW.zone = 'battlefield'
+    and (TG_OP = 'INSERT' or OLD.zone is distinct from 'battlefield')
+  then
+    perform public.fire_card_triggers(
+      NEW.session_id, NEW.id,
+      array['enters_the_battlefield', 'etb', 'enters']
+    );
+    perform public.fire_watcher_triggers(
+      NEW.session_id, NEW.id,
+      coalesce(NEW.controller_player_id, NEW.owner_id), 'creature_entered'
+    );
+    -- Landfall (mig 238, Nesting Dragon): "whenever a land you control enters."
+    -- Fired for every entry; the watcher's type filter defaults to 'land' for
+    -- this event, so only land entries actually match.
+    perform public.fire_watcher_triggers(
+      NEW.session_id, NEW.id,
+      coalesce(NEW.controller_player_id, NEW.owner_id), 'land_entered'
+    );
+  end if;
+
+  -- Dies (moves from the battlefield to the graveyard).
+  if TG_OP = 'UPDATE'
+    and OLD.zone = 'battlefield'
+    and NEW.zone = 'graveyard'
+  then
+    perform public.fire_card_triggers(
+      NEW.session_id, NEW.id,
+      array['dies', 'death']
+    );
+    -- OLD.controller = the creature's controller while it was alive.
+    perform public.fire_watcher_triggers(
+      NEW.session_id, NEW.id,
+      coalesce(OLD.controller_player_id, OLD.owner_id), 'creature_died'
+    );
+  end if;
+
+  -- Leaves the battlefield (to any other zone, including graveyard/hand/exile).
+  if TG_OP = 'UPDATE'
+    and OLD.zone = 'battlefield'
+    and NEW.zone is distinct from 'battlefield'
+  then
+    -- "For as long as ~ remains on the battlefield" steals (mig 246,
+    -- Opportunistic Dragon): the thief leaving reverts control of everything
+    -- it stole (and restores a blanked script).
+    update public.game_cards gc
+    set controller_player_id = nullif(ce.payload ->> 'original_controller', '')::uuid,
+        copied_script = case when coalesce((ce.payload ->> 'lose_abilities')::boolean, false)
+                             then null else gc.copied_script end
+    from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'control'
+      and coalesce((ce.payload ->> 'while_source')::boolean, false)
+      and ce.source_card_id = NEW.id
+      and ce.affected_card_id = gc.id
+      and gc.session_id = NEW.session_id
+      and gc.zone = 'battlefield'
+      and nullif(ce.payload ->> 'original_controller', '') is not null;
+    delete from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'control'
+      and coalesce((ce.payload ->> 'while_source')::boolean, false)
+      and ce.source_card_id = NEW.id;
+
+    perform public.fire_card_triggers(
+      NEW.session_id, NEW.id,
+      array['leaves_the_battlefield', 'ltb', 'leaves']
+    );
+    -- Watcher broadcast (mig 201): "whenever a creature you control leaves the
+    -- battlefield" (Vela the Night-Clad). OLD.controller = controller while it
+    -- was on the battlefield.
+    perform public.fire_watcher_triggers(
+      NEW.session_id, NEW.id,
+      coalesce(OLD.controller_player_id, OLD.owner_id), 'creature_left'
+    );
+  end if;
+
+  return null;
+end;
+$$;

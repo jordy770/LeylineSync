@@ -3468,3 +3468,14 @@
 | 23:31 | Edited tests/feature/siege-dragonstorm.test.ts | 5→8 lines | ~124 |
 | 23:32 | Edited supabase/migrations/202605010245_siege_dragonstorm.sql | modified exile_until_nonland() | ~299 |
 | 23:45 | Batch mig 245 (2 cards): Frontier Siege (mode gate {mode,chosen:'$chosen'} on triggered abilities, gated in fire_card_triggers [NEW canonical file] + fire_watcher_triggers; choose_creature_type custom options; beginning_of_main turn-step event; add_mana from triggers; fight fighter:'triggering_creature') + Breaching Dragonstorm (exile_until_nonland + cast_exiled_free pick: permanent->battlefield free, decline->hand; lands stay exiled). | mig 245, fire_card_triggers, fire_watcher_triggers, fire_turn_step_triggers, apply_trigger_effects, apply_triggered_ability_effects, submit_decision, schema, siege-dragonstorm.test | 862/862 green, tsc+lint clean, triage 75/6/11 | ~12k |
+| 23:35 | Edited supabase/functions_src/trigger_effect_target_type.sql | 4→4 lines | ~73 |
+| 23:35 | Edited supabase/functions_src/apply_targeted_triggered_ability_effects.sql | modified acting_source() | ~111 |
+| 23:35 | Edited supabase/functions_src/apply_creature_effect.sql | 4→4 lines | ~63 |
+| 23:36 | Edited supabase/functions_src/apply_creature_effect.sql | added 1 condition(s) | ~491 |
+| 23:36 | Edited lib/game/card-behavior-schema.ts | 3→8 lines | ~122 |
+| 23:36 | Edited supabase/functions_src/fire_zone_change_triggers.sql | added 2 condition(s) | ~385 |
+| 23:37 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~430 |
+| 23:37 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~186 |
+| 23:37 | Created tests/feature/opportunistic-dragon.test.ts | — | ~810 |
+| 23:37 | Edited supabase/migrations/202605010246_opportunistic_dragon.sql | expanded (+13 lines) | ~262 |
+| 00:20 | Opportunistic Dragon (mig 246): gain_control duration 'while_source' (unexpiring control row sourced by the thief; acting_source rides into apply_creature_effect; fire_zone_change_triggers reverts on thief leave); lose_abilities = copied_script stub blanking script + cant_attack_unless 99 gate. gain_control joined permanent-targeted family. Approx: block restriction + Human-or-artifact type check not enforced. | mig 246, trigger_effect_target_type, ATAE, apply_creature_effect, fire_zone_change_triggers, schema, opportunistic-dragon.test | 863/863 green, tsc+lint clean, triage 76/6/10 | ~8k |

@@ -10543,6 +10543,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T21:31:27.048Z"
+    },
+    {
+      "id": "bug-649",
+      "timestamp": "2026-06-11T21:36:24.941Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T21:36:24.941Z"
+    },
+    {
+      "id": "bug-650",
+      "timestamp": "2026-06-11T21:37:09.879Z",
+      "error_message": "Wrong return value",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Was returning: this enchantment to its owner's hand.\", \"power_tou",
+      "fix": "Now returns: this enchantment to its owner's hand.\", \"power_tou",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T21:37:09.879Z"
     }
   ]
 }
