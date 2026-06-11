@@ -3289,3 +3289,19 @@
 | 16:40 | Created tests/feature/becomes-target-and-power.test.ts | — | ~1367 |
 | 16:41 | Edited tests/feature/becomes-target-and-power.test.ts | 3→6 lines | ~75 |
 | 15:45 | Batch (mig 235): Eshki (3 spell_cast watchers w/ existing min_power filter for the power-4/6 tiers + new {power_of:'source'} dynamic amount) + Thunderbreak Regent (becomes_target event: fire_becomes_target_triggers from put_action_on_stack, targeting player injected as recipient_player_id into the damage effect) + Spit Flame (4 dmg to creature; graveyard recursion deferred - watchers don't fire from graveyard). | mig 235, resolve_dynamic_amount, fire_becomes_target_triggers, put_action_on_stack, apply_triggered_ability_effects, schema, becomes-target-and-power.test | 828/828 green, tsc+lint clean | ~16k |
+| 16:43 | Session end: 89 writes across 37 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 27 reads | ~82509 tok |
+| 17:20 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+6 lines) | ~169 |
+| 17:21 | Edited supabase/functions_src/advance_step.sql | modified Exert() | ~210 |
+| 17:21 | Edited supabase/functions_src/declare_attacker.sql | modified public() | ~67 |
+| 17:21 | Edited supabase/functions_src/declare_attacker.sql | modified Exert() | ~243 |
+| 17:21 | Edited lib/game/card-behavior-schema.ts | 8→11 lines | ~150 |
+| 17:22 | Edited tests/harness/scenario.ts | modified declareAttacker() | ~100 |
+| 17:22 | Edited supabase/migrations/202605010236_exert_and_transform.sql | modified if() | ~219 |
+| 17:23 | Edited tests/fixtures/test-cards.json | 1→4 lines | ~571 |
+| 17:24 | Edited docs/commander-decks/card-scripts.json | expanded (+6 lines) | ~328 |
+| 17:24 | Created tests/feature/exert-and-transform.test.ts | — | ~1266 |
+| 17:26 | Created tests/feature/exert-and-transform.test.ts | — | ~1170 |
+| 17:26 | Edited supabase/functions_src/declare_attacker.sql | modified public() | ~54 |
+| 17:26 | Edited supabase/migrations/202605010236_exert_and_transform.sql | modified if() | ~219 |
+| 17:29 | Edited tests/feature/exert-and-transform.test.ts | modified hasFlying() | ~129 |
+| 16:40 | Batch (mig 236): Glorybringer (exert: declare_attacker p_exert -> 'exerted' marker skips next untap + enqueues top-level `exert` targeted effects) + Nogi (cost_reduction + attacks-trigger conditional -> untargeted set_pt 5/5 + grant_keyword flying to source; Dragon type-add cosmetic/TBD) + Steel Hellkite (firebreathing {2}:+1/+0 self-target; X-destroy deferred). | mig 236, declare_attacker, advance_step, apply_triggered_ability_effects, schema, scenario.ts harness, exert-and-transform.test | 832/832 green, tsc+lint clean | ~16k |

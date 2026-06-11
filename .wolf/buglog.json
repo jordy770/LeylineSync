@@ -7,7 +7,7 @@
       "error_message": "Wrong reference: errors should be issues",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "Used \"errors\" instead of \"issues\"",
-      "fix": "Changed errors â†’ issues",
+      "fix": "Changed errors \u00e2\u2020\u2019 issues",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -22,7 +22,7 @@
       "timestamp": "2026-05-28T22:43:02.388Z",
       "error_message": "Missing await",
       "file": "lib/game/actions.ts",
-      "root_cause": "Async call without await â€” returned Promise instead of value",
+      "root_cause": "Async call without await \u00e2\u20ac\u201d returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -55,7 +55,7 @@
       "error_message": "Wrong operator: === should be &&",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Used \"===\" instead of \"&&\"",
-      "fix": "Changed operator === â†’ &&",
+      "fix": "Changed operator === \u00e2\u2020\u2019 &&",
       "tags": [
         "auto-detected",
         "operator-fix",
@@ -70,8 +70,8 @@
       "timestamp": "2026-05-29T08:18:25.434Z",
       "error_message": "CSS fix: Center",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "Center: grouped step labels */ â†’ grouped step labels â€” sliding gold pill + opacity fade */",
-      "fix": "Changed Center: grouped step labels */ â†’ grouped step labels â€” sliding gold pill + opacity fade */",
+      "root_cause": "Center: grouped step labels */ \u00e2\u2020\u2019 grouped step labels \u00e2\u20ac\u201d sliding gold pill + opacity fade */",
+      "fix": "Changed Center: grouped step labels */ \u00e2\u2020\u2019 grouped step labels \u00e2\u20ac\u201d sliding gold pill + opacity fade */",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -103,7 +103,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "24 lines replaced/restructured",
-      "fix": "Rewrote 28â†’3 lines (24 removed) | Also: turnState,; pendingStackItems, | Also: turnState={turnState}; pendingStackItems={pendingStackItems}",
+      "fix": "Rewrote 28\u00e2\u2020\u20193 lines (24 removed) | Also: turnState,; pendingStackItems, | Also: turnState={turnState}; pendingStackItems={pendingStackItems}",
       "tags": [
         "auto-detected",
         "refactor",
@@ -135,7 +135,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "45 lines replaced/restructured",
-      "fix": "Rewrote 97â†’57 lines (45 removed)",
+      "fix": "Rewrote 97\u00e2\u2020\u201957 lines (45 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -198,7 +198,7 @@
       "timestamp": "2026-05-29T09:37:28.114Z",
       "error_message": "Missing error handling in OpponentBoardOverlay",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "Code path had no error handling â€” exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u00e2\u20ac\u201d exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -231,7 +231,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 13â†’26 lines (3 removed)",
+      "fix": "Rewrote 13\u00e2\u2020\u201926 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -246,8 +246,8 @@
       "timestamp": "2026-05-29T10:08:55.985Z",
       "error_message": "CSS fix: label, opacity, type",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "label: 'Exile', value: zoneData?.exile.length ?? 'â€”', color: 'text-amber-400' â†’ 'Library', value: zoneData?.libraryCount ?? 'â€”', color: 'text-blue-300'; opacity: 0 â†’ 0, x: 8; type: 'spring', damping: 32, stiffness: 320 â†’ 'spring', stiffness: 400, damping: 35",
-      "fix": "Changed label: 'Exile', value: zoneData?.exile.length ?? 'â€”', color: 'text-amber-400' â†’ 'Library', value: zoneData?.libraryCount ?? 'â€”', color: 'text-blue-300'; opacity: 0 â†’ 0, x: 8; type: 'spring', damping: 32, stiffness: 320 â†’ 'spring', stiffness: 400, damping: 35",
+      "root_cause": "label: 'Exile', value: zoneData?.exile.length ?? '\u00e2\u20ac\u201d', color: 'text-amber-400' \u00e2\u2020\u2019 'Library', value: zoneData?.libraryCount ?? '\u00e2\u20ac\u201d', color: 'text-blue-300'; opacity: 0 \u00e2\u2020\u2019 0, x: 8; type: 'spring', damping: 32, stiffness: 320 \u00e2\u2020\u2019 'spring', stiffness: 400, damping: 35",
+      "fix": "Changed label: 'Exile', value: zoneData?.exile.length ?? '\u00e2\u20ac\u201d', color: 'text-amber-400' \u00e2\u2020\u2019 'Library', value: zoneData?.libraryCount ?? '\u00e2\u20ac\u201d', color: 'text-blue-300'; opacity: 0 \u00e2\u2020\u2019 0, x: 8; type: 'spring', damping: 32, stiffness: 320 \u00e2\u2020\u2019 'spring', stiffness: 400, damping: 35",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -294,8 +294,8 @@
       "timestamp": "2026-05-29T10:16:06.681Z",
       "error_message": "CSS fix: tab",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "tab: 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     color: 'text-amber-500' â†’ 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     countCls: 'text-amber-500'",
-      "fix": "Changed tab: 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     color: 'text-amber-500' â†’ 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     countCls: 'text-amber-500'",
+      "root_cause": "tab: 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     color: 'text-amber-500' \u00e2\u2020\u2019 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     countCls: 'text-amber-500'",
+      "fix": "Changed tab: 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     color: 'text-amber-500' \u00e2\u2020\u2019 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     countCls: 'text-amber-500'",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -358,8 +358,8 @@
       "timestamp": "2026-05-29T10:39:09.371Z",
       "error_message": "CSS fix: Left",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "Left: username + turn */ â†’ active-player dot + username + turn */",
-      "fix": "Changed Left: username + turn */ â†’ active-player dot + username + turn */",
+      "root_cause": "Left: username + turn */ \u00e2\u2020\u2019 active-player dot + username + turn */",
+      "fix": "Changed Left: username + turn */ \u00e2\u2020\u2019 active-player dot + username + turn */",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -391,7 +391,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "13 lines replaced/restructured",
-      "fix": "Rewrote 67â†’47 lines (13 removed) | Also: turnState={turnState}; playerId={playerId}",
+      "fix": "Rewrote 67\u00e2\u2020\u201947 lines (13 removed) | Also: turnState={turnState}; playerId={playerId}",
       "tags": [
         "auto-detected",
         "refactor",
@@ -407,7 +407,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "10 lines replaced/restructured",
-      "fix": "Rewrote 33â†’42 lines (10 removed) | Also: <div className=\"flex h-12 shrink-0 items-center ju; className=\"flex items-center gap-1.5 rounded-lg bo | Also: <div className=\"flex h-9 shrink-0 items-center jus; <button",
+      "fix": "Rewrote 33\u00e2\u2020\u201942 lines (10 removed) | Also: <div className=\"flex h-12 shrink-0 items-center ju; className=\"flex items-center gap-1.5 rounded-lg bo | Also: <div className=\"flex h-9 shrink-0 items-center jus; <button",
       "tags": [
         "auto-detected",
         "refactor",
@@ -436,7 +436,7 @@
     {
       "id": "bug-028",
       "timestamp": "2026-05-29T12:45:53.487Z",
-      "error_message": "declare_attacker 400 â€” Creature has summoning sickness",
+      "error_message": "declare_attacker 400 \u00e2\u20ac\u201d Creature has summoning sickness",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "DeclareAttackersLayout showed all untapped creatures without checking summoning sickness. Server rejects creatures that entered_battlefield_turn_number >= turn_number without haste.",
       "fix": "Added isAttackable() check mirroring server validation. Sick creatures show at 45% opacity with Sick badge and are un-selectable. Error display moved above action bar to be always visible.",
@@ -489,7 +489,7 @@
       "error_message": "Null/undefined access in ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check) | Also: const maxHandSize = 7; const mustDiscard = isActivePlayer && turnState?.step === 'c | Also: {/* â”€â”€ Combat damage strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€; {(turnState?.step === 'combat_damage' || turnState?.step === | Also: // â”€â”€â”€ Combat Damage Strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€; function CombatDamageStrip({",
+      "fix": "Added null safety (optional chaining or null check) | Also: const maxHandSize = 7; const mustDiscard = isActivePlayer && turnState?.step === 'c | Also: {/* \u00e2\u201d\u20ac\u00e2\u201d\u20ac Combat damage strip \u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac; {(turnState?.step === 'combat_damage' || turnState?.step === | Also: // \u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac Combat Damage Strip \u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac\u00e2\u201d\u20ac; function CombatDamageStrip({",
       "tags": [
         "auto-detected",
         "null-safety",
@@ -521,7 +521,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 33â†’48 lines (2 removed)",
+      "fix": "Rewrote 33\u00e2\u2020\u201948 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -536,8 +536,8 @@
       "timestamp": "2026-05-29T13:12:11.654Z",
       "error_message": "CSS fix: id",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "id: a.attacker_card_id, name: a.attacker_name ?? 'Attacker', image_url: attackerCard?.image_url, is_tapped: true, damage_marked: 0, zone: 'battlefield' â†’ b.blocker_card_id, name: b.blocker_name ?? 'Blocker', image_url: blockerCard?.image_url, is_tapped: false, damage_marked: 0, zone: 'battlefield'",
-      "fix": "Changed id: a.attacker_card_id, name: a.attacker_name ?? 'Attacker', image_url: attackerCard?.image_url, is_tapped: true, damage_marked: 0, zone: 'battlefield' â†’ b.blocker_card_id, name: b.blocker_name ?? 'Blocker', image_url: blockerCard?.image_url, is_tapped: false, damage_marked: 0, zone: 'battlefield'",
+      "root_cause": "id: a.attacker_card_id, name: a.attacker_name ?? 'Attacker', image_url: attackerCard?.image_url, is_tapped: true, damage_marked: 0, zone: 'battlefield' \u00e2\u2020\u2019 b.blocker_card_id, name: b.blocker_name ?? 'Blocker', image_url: blockerCard?.image_url, is_tapped: false, damage_marked: 0, zone: 'battlefield'",
+      "fix": "Changed id: a.attacker_card_id, name: a.attacker_name ?? 'Attacker', image_url: attackerCard?.image_url, is_tapped: true, damage_marked: 0, zone: 'battlefield' \u00e2\u2020\u2019 b.blocker_card_id, name: b.blocker_name ?? 'Blocker', image_url: blockerCard?.image_url, is_tapped: false, damage_marked: 0, zone: 'battlefield'",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -552,7 +552,7 @@
       "timestamp": "2026-05-29T13:12:51.500Z",
       "error_message": "Missing error handling in unknown",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "Code path had no error handling â€” exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u00e2\u20ac\u201d exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -585,7 +585,7 @@
       "error_message": "Null/undefined access in ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check) | Also: type SpellPlan =; | { kind: 'player_damage'; amount: number; timing: 'instant' | Also: // Plain cast â€” permanents and untargeted spells; // Targeted player-damage spell (Lightning Bolt etc.) | Also: {canCast && !picking && (; onClick={handleCast}",
+      "fix": "Added null safety (optional chaining or null check) | Also: type SpellPlan =; | { kind: 'player_damage'; amount: number; timing: 'instant' | Also: // Plain cast \u00e2\u20ac\u201d permanents and untargeted spells; // Targeted player-damage spell (Lightning Bolt etc.) | Also: {canCast && !picking && (; onClick={handleCast}",
       "tags": [
         "auto-detected",
         "null-safety",
@@ -598,7 +598,7 @@
     {
       "id": "bug-038",
       "timestamp": "2026-05-29T13:23:12.650Z",
-      "error_message": "V4 controller: combat damage never resolved â€” attacking dealt no damage",
+      "error_message": "V4 controller: combat damage never resolved \u00e2\u20ac\u201d attacking dealt no damage",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "V4 removed all manual step controls and left only PASS. advance_step from combat_damage to end_of_combat does not call resolve_combat_damage, and V4 never invoked the RPC, so passing priority through combat_damage skipped damage entirely.",
       "fix": "Added combat damage resolution to PriorityPanel: during combat_damage step the active player sees a Resolve button that calls resolve_combat_damage. Tracks returned damage_stage (first_strike vs regular) to handle the two-pass first/double strike flow; switches back to PASS once the regular pass resolves. Resets stage on leaving the step.",
@@ -634,8 +634,8 @@
       "timestamp": "2026-05-29T13:29:50.758Z",
       "error_message": "CSS fix: Right",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "Right: library count + priority indicator + life */ â†’ mana pool + library count + priority indicator + life */",
-      "fix": "Changed Right: library count + priority indicator + life */ â†’ mana pool + library count + priority indicator + life */",
+      "root_cause": "Right: library count + priority indicator + life */ \u00e2\u2020\u2019 mana pool + library count + priority indicator + life */",
+      "fix": "Changed Right: library count + priority indicator + life */ \u00e2\u2020\u2019 mana pool + library count + priority indicator + life */",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -666,7 +666,7 @@
       "timestamp": "2026-05-29T14:05:32.871Z",
       "error_message": "Missing await",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "Async call without await â€” returned Promise instead of value",
+      "root_cause": "Async call without await \u00e2\u20ac\u201d returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -712,9 +712,9 @@
     {
       "id": "bug-045",
       "timestamp": "2026-05-29T14:27:26.399Z",
-      "error_message": "V4: after declaring blockers the game is stuck â€” DeclareBlockersLayout stays shown and step never advances",
+      "error_message": "V4: after declaring blockers the game is stuck \u00e2\u20ac\u201d DeclareBlockersLayout stays shown and step never advances",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "layoutState returned declare_blockers whenever step===declare_blockers AND incomingAttackers>0, without checking priority. After the defender confirmed and passed priority, step was still declare_blockers with attackers present, so the layout kept showing and trapped them â€” neither player could complete the priority pass to advance. The declare_attackers layout already gated on hasPriority; declare_blockers did not.",
+      "root_cause": "layoutState returned declare_blockers whenever step===declare_blockers AND incomingAttackers>0, without checking priority. After the defender confirmed and passed priority, step was still declare_blockers with attackers present, so the layout kept showing and trapped them \u00e2\u20ac\u201d neither player could complete the priority pass to advance. The declare_attackers layout already gated on hasPriority; declare_blockers did not.",
       "fix": "Added && hasPriority to the declare_blockers layoutState condition. After the defender passes, priority leaves them, the layout exits to the board (Wait), and the active player can pass to advance to combat_damage.",
       "tags": [
         "v4",
@@ -733,8 +733,8 @@
       "timestamp": "2026-05-29T14:34:28.022Z",
       "error_message": "CSS fix: scale",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "scale: 0.85, opacity: 0 â†’ 0.9, opacity: 0",
-      "fix": "Changed scale: 0.85, opacity: 0 â†’ 0.9, opacity: 0",
+      "root_cause": "scale: 0.85, opacity: 0 \u00e2\u2020\u2019 0.9, opacity: 0",
+      "fix": "Changed scale: 0.85, opacity: 0 \u00e2\u2020\u2019 0.9, opacity: 0",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -784,7 +784,7 @@
       "timestamp": "2026-05-29T16:10:38.037Z",
       "error_message": "Missing await",
       "file": "lib/game/actions.ts",
-      "root_cause": "Async call without await â€” returned Promise instead of value",
+      "root_cause": "Async call without await \u00e2\u20ac\u201d returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -832,7 +832,7 @@
       "timestamp": "2026-05-29T19:47:17.314Z",
       "error_message": "Missing await",
       "file": "lib/game/actions.ts",
-      "root_cause": "Async call without await â€” returned Promise instead of value",
+      "root_cause": "Async call without await \u00e2\u20ac\u201d returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -896,7 +896,7 @@
       "timestamp": "2026-05-29T22:47:09.771Z",
       "error_message": "Missing await",
       "file": "lib/game/actions.ts",
-      "root_cause": "Async call without await â€” returned Promise instead of value",
+      "root_cause": "Async call without await \u00e2\u20ac\u201d returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -912,7 +912,7 @@
       "timestamp": "2026-05-29T22:47:37.270Z",
       "error_message": "Missing error handling in unknown",
       "file": "lib/game/use-judge-card-tools.ts",
-      "root_cause": "Code path had no error handling â€” exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u00e2\u20ac\u201d exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -1009,7 +1009,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 28â†’67 lines (2 removed)",
+      "fix": "Rewrote 28\u00e2\u2020\u201967 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -1038,7 +1038,7 @@
     {
       "id": "bug-065",
       "timestamp": "2026-05-30T12:51:16.768Z",
-      "error_message": "V4: cannot cast creature/player-targeting spells (Lightning Strike, Giant Growth) â€” no Cast button; plus Zod warning on array target_type",
+      "error_message": "V4: cannot cast creature/player-targeting spells (Lightning Strike, Giant Growth) \u00e2\u20ac\u201d no Cast button; plus Zod warning on array target_type",
       "file": "components/ControllerListV4.tsx, lib/game/card-behavior-schema.ts",
       "root_cause": "getCanQuickCast gates any instant/sorcery whose oracle text contains the word target on pendingStackCount>0 (via doesCardRequireStackTarget hasTargetText), which is only correct for counterspells. Damage/pump spells target a creature/player, not a stack item, so canCast was false and no Cast button rendered. Separately, the V1 Zod schema allowed only string target_type, but the seeded Lightning Strike uses an array [creature,player], producing a dev-mode validation warning.",
       "fix": "In CardActionSheet, compute canCast from spellPlan: damage/pump spells are castable at their natural speed (instant=hasPriority, sorcery=main phase) regardless of stack; only counterspell/normal use getCanQuickCast. Schema: target_type now accepts string or string[] and unknown V1 actions allow power/toughness fields (pump).",
@@ -1059,8 +1059,8 @@
       "timestamp": "2026-05-30T12:54:13.054Z",
       "error_message": "CSS fix: canPlayLand",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "canPlayLand: getCanQuickCast(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford â†’ canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford",
-      "fix": "Changed canPlayLand: getCanQuickCast(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford â†’ canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford",
+      "root_cause": "canPlayLand: getCanQuickCast(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford \u00e2\u2020\u2019 canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford",
+      "fix": "Changed canPlayLand: getCanQuickCast(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford \u00e2\u2020\u2019 canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -1076,7 +1076,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "9 lines replaced/restructured",
-      "fix": "Rewrote 12â†’3 lines (9 removed)",
+      "fix": "Rewrote 12\u00e2\u2020\u20193 lines (9 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -1108,7 +1108,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/use-controller-game-state.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 25â†’34 lines (2 removed)",
+      "fix": "Rewrote 25\u00e2\u2020\u201934 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -1124,7 +1124,7 @@
       "error_message": "Wrong operator: ?? should be !==",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Used \"??\" instead of \"!==\"",
-      "fix": "Changed operator ?? â†’ !==",
+      "fix": "Changed operator ?? \u00e2\u2020\u2019 !==",
       "tags": [
         "auto-detected",
         "operator-fix",
@@ -1156,7 +1156,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 13â†’17 lines (2 removed)",
+      "fix": "Rewrote 13\u00e2\u2020\u201917 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -1251,7 +1251,7 @@
       "timestamp": "2026-05-31T21:16:32.493Z",
       "error_message": "Missing await",
       "file": "lib/game/data.ts",
-      "root_cause": "Async call without await â€” returned Promise instead of value",
+      "root_cause": "Async call without await \u00e2\u20ac\u201d returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -1367,7 +1367,7 @@
       "timestamp": "2026-06-01T08:32:59.814Z",
       "error_message": "Missing error handling in unknown",
       "file": "components/CardBehaviorEditor.tsx",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -1454,8 +1454,8 @@
       "timestamp": "2026-06-01T09:50:56.060Z",
       "error_message": "CSS fix: kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing → 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
-      "fix": "Changed kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing → 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
+      "root_cause": "kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing \u2192 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
+      "fix": "Changed kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing \u2192 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -1518,8 +1518,8 @@
       "timestamp": "2026-06-01T13:53:08.854Z",
       "error_message": "CSS fix: kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing → 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect)",
-      "fix": "Changed kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing → 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect)",
+      "root_cause": "kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing \u2192 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect)",
+      "fix": "Changed kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing \u2192 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect)",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -1601,7 +1601,7 @@
       "error_message": "Significant refactor of ",
       "file": "README.md",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 5→6 lines (3 removed)",
+      "fix": "Rewrote 5\u21926 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -1649,7 +1649,7 @@
       "error_message": "Significant refactor of ",
       "file": "README.md",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 5→5 lines (2 removed)",
+      "fix": "Rewrote 5\u21925 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -1701,7 +1701,7 @@
       "timestamp": "2026-06-02T08:30:45.548Z",
       "error_message": "Missing await",
       "file": "tests/regression/group1.test.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -1733,7 +1733,7 @@
       "timestamp": "2026-06-02T08:40:07.635Z",
       "error_message": "Missing error handling in unknown",
       "file": "tests/harness/db.ts",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -1782,7 +1782,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/harness/scenario.ts",
       "root_cause": "8 lines replaced/restructured",
-      "fix": "Rewrote 12→6 lines (8 removed)",
+      "fix": "Rewrote 12\u21926 lines (8 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -1829,7 +1829,7 @@
       "timestamp": "2026-06-02T08:58:24.635Z",
       "error_message": "Missing await",
       "file": "tests/regression/group1.test.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -1910,7 +1910,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/README.md",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 5→12 lines (3 removed)",
+      "fix": "Rewrote 5\u219212 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -1958,7 +1958,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/feature/modal-decisions.test.ts",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 21→31 lines (4 removed)",
+      "fix": "Rewrote 21\u219231 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2021,8 +2021,8 @@
       "timestamp": "2026-06-02T12:40:16.253Z",
       "error_message": "CSS fix: kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "kind: 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing → 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing",
-      "fix": "Changed kind: 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing → 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing",
+      "root_cause": "kind: 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing \u2192 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing",
+      "fix": "Changed kind: 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing \u2192 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -2038,7 +2038,7 @@
       "error_message": "Wrong reference: chooseTriggeredAbilityCreatureTarget should be castScrySpell",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Used \"chooseTriggeredAbilityCreatureTarget\" instead of \"castScrySpell\"",
-      "fix": "Changed chooseTriggeredAbilityCreatureTarget → castScrySpell",
+      "fix": "Changed chooseTriggeredAbilityCreatureTarget \u2192 castScrySpell",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -2101,8 +2101,8 @@
       "timestamp": "2026-06-02T12:48:11.784Z",
       "error_message": "CSS fix: kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "kind: 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing → 'surveil', amount: typeof surveil.amount === 'number' ? surveil.amount : 1, timing",
-      "fix": "Changed kind: 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing → 'surveil', amount: typeof surveil.amount === 'number' ? surveil.amount : 1, timing",
+      "root_cause": "kind: 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing \u2192 'surveil', amount: typeof surveil.amount === 'number' ? surveil.amount : 1, timing",
+      "fix": "Changed kind: 'scry', amount: typeof scry.amount === 'number' ? scry.amount : 1, timing \u2192 'surveil', amount: typeof surveil.amount === 'number' ? surveil.amount : 1, timing",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -2166,7 +2166,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/README.md",
       "root_cause": "11 lines replaced/restructured",
-      "fix": "Rewrote 34→52 lines (11 removed)",
+      "fix": "Rewrote 34\u219252 lines (11 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2197,7 +2197,7 @@
       "timestamp": "2026-06-02T19:25:15.070Z",
       "error_message": "Missing await",
       "file": "lib/game/actions.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -2342,7 +2342,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "8 lines replaced/restructured",
-      "fix": "Rewrote 16→9 lines (8 removed) | Also: } else if (spellPlan.kind === 'scry') {; void onScry(card.id)",
+      "fix": "Rewrote 16\u21929 lines (8 removed) | Also: } else if (spellPlan.kind === 'scry') {; void onScry(card.id)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2358,7 +2358,7 @@
       "error_message": "Wrong reference: onScry should be onSpellEffect",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Used \"onScry\" instead of \"onSpellEffect\"",
-      "fix": "Changed onScry → onSpellEffect",
+      "fix": "Changed onScry \u2192 onSpellEffect",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -2390,7 +2390,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 8→12 lines (2 removed)",
+      "fix": "Rewrote 8\u219212 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2406,7 +2406,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 13→15 lines (2 removed) | Also: // A spell_effect key the form can't represent (an; // scry/surveil action) bails to JSON mode.",
+      "fix": "Rewrote 13\u219215 lines (2 removed) | Also: // A spell_effect key the form can't represent (an; // scry/surveil action) bails to JSON mode.",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2422,7 +2422,7 @@
       "error_message": "Wrong reference: BuilderSpellEffectType should be BuilderSpellEffect",
       "file": "components/CardBehaviorForm.tsx",
       "root_cause": "Used \"BuilderSpellEffectType\" instead of \"BuilderSpellEffect\"",
-      "fix": "Changed BuilderSpellEffectType → BuilderSpellEffect",
+      "fix": "Changed BuilderSpellEffectType \u2192 BuilderSpellEffect",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -2437,8 +2437,8 @@
       "timestamp": "2026-06-03T14:36:06.137Z",
       "error_message": "CSS fix: spellEffect",
       "file": "components/CardBehaviorForm.tsx",
-      "root_cause": "spellEffect: { type: value.spellEffect!.type, amount: Math.max(1, Number(event.target.value)) → [...value.spellEffect, defaultSpellEffect('scry')]",
-      "fix": "Changed spellEffect: { type: value.spellEffect!.type, amount: Math.max(1, Number(event.target.value)) → [...value.spellEffect, defaultSpellEffect('scry')]",
+      "root_cause": "spellEffect: { type: value.spellEffect!.type, amount: Math.max(1, Number(event.target.value)) \u2192 [...value.spellEffect, defaultSpellEffect('scry')]",
+      "fix": "Changed spellEffect: { type: value.spellEffect!.type, amount: Math.max(1, Number(event.target.value)) \u2192 [...value.spellEffect, defaultSpellEffect('scry')]",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -2453,8 +2453,8 @@
       "timestamp": "2026-06-03T14:36:12.530Z",
       "error_message": "CSS fix: spellEffect",
       "file": "components/CardBehaviorEditor.tsx",
-      "root_cause": "spellEffect: EMPTY_BUILDER_FORM.spellEffect, → [...EMPTY_BUILDER_FORM.spellEffect],",
-      "fix": "Changed spellEffect: EMPTY_BUILDER_FORM.spellEffect, → [...EMPTY_BUILDER_FORM.spellEffect],",
+      "root_cause": "spellEffect: EMPTY_BUILDER_FORM.spellEffect, \u2192 [...EMPTY_BUILDER_FORM.spellEffect],",
+      "fix": "Changed spellEffect: EMPTY_BUILDER_FORM.spellEffect, \u2192 [...EMPTY_BUILDER_FORM.spellEffect],",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -2485,8 +2485,8 @@
       "timestamp": "2026-06-04T08:45:02.518Z",
       "error_message": "CSS fix: kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "kind: 'spell_effect', actions, timing → 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
-      "fix": "Changed kind: 'spell_effect', actions, timing → 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
+      "root_cause": "kind: 'spell_effect', actions, timing \u2192 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
+      "fix": "Changed kind: 'spell_effect', actions, timing \u2192 'draw', amount: typeof draw.amount === 'number' ? draw.amount : 1, timing",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -2523,7 +2523,7 @@
       "error_message": "Wrong reference: mustChooseTriggerTarget should be passBlockReason",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Used \"mustChooseTriggerTarget\" instead of \"passBlockReason\"",
-      "fix": "Changed mustChooseTriggerTarget → passBlockReason",
+      "fix": "Changed mustChooseTriggerTarget \u2192 passBlockReason",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -2568,7 +2568,7 @@
     {
       "id": "bug-156",
       "timestamp": "2026-06-04T09:47:46.156Z",
-      "error_message": "After a scry/surveil parked for a decision, passing priority advanced the step/round and players kept passing — the game moved on with an unresolved decision.",
+      "error_message": "After a scry/surveil parked for a decision, passing priority advanced the step/round and players kept passing \u2014 the game moved on with an unresolved decision.",
       "file": "supabase/migrations/202605010095_block_priority_during_decision.sql, components/ControllerListV4.tsx",
       "root_cause": "A parked stack item is status=awaiting_decision (not pending). pass_priority counts only pending items, so it saw an empty stack and called advance_step, and the client pass button was not blocked for pending decisions.",
       "fix": "pass_priority now raises if any game_pending_decisions row is pending for the session (guard added at top). Client computes passBlockReason (Resolve your decision / Waiting for a decision / Choose trigger target) and disables Pass. submit_decision finalizes and resets priority cleanly.",
@@ -2594,7 +2594,7 @@
       "error_message": "Type error",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Missing or incorrect type annotation",
-      "fix": "Added type assertion/annotation | Also: const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'd; // Effects that open a resolution-time choice — a spell cont",
+      "fix": "Added type assertion/annotation | Also: const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'd; // Effects that open a resolution-time choice \u2014 a spell cont",
       "tags": [
         "auto-detected",
         "type-fix",
@@ -2674,7 +2674,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "11 lines replaced/restructured",
-      "fix": "Rewrote 11→3 lines (11 removed) | Also: switch (effect.type) {; case 'gain_life': | Also: if (typeof entry !== 'object' || entry === null) {; const a = entry as Record<string, unknown> | Also: if (typeof entry !== 'object' || entry === null) {; const e = entry as Record<string, unknown>",
+      "fix": "Rewrote 11\u21923 lines (11 removed) | Also: switch (effect.type) {; case 'gain_life': | Also: if (typeof entry !== 'object' || entry === null) {; const a = entry as Record<string, unknown> | Also: if (typeof entry !== 'object' || entry === null) {; const e = entry as Record<string, unknown>",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2690,7 +2690,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/CardBehaviorForm.tsx",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 28→30 lines (3 removed)",
+      "fix": "Rewrote 28\u219230 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2722,7 +2722,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-registry.ts",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 12→21 lines (4 removed)",
+      "fix": "Rewrote 12\u219221 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2769,8 +2769,8 @@
       "timestamp": "2026-06-04T13:13:51.885Z",
       "error_message": "CSS fix: effect, onChange",
       "file": "components/CardBehaviorForm.tsx",
-      "root_cause": "effect: BuilderEffect → FlatEffect; onChange: (next: BuilderEffect) => void → (next: FlatEffect) => void",
-      "fix": "Changed effect: BuilderEffect → FlatEffect; onChange: (next: BuilderEffect) => void → (next: FlatEffect) => void",
+      "root_cause": "effect: BuilderEffect \u2192 FlatEffect; onChange: (next: BuilderEffect) => void \u2192 (next: FlatEffect) => void",
+      "fix": "Changed effect: BuilderEffect \u2192 FlatEffect; onChange: (next: BuilderEffect) => void \u2192 (next: FlatEffect) => void",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -2786,7 +2786,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/unit/card-behavior-builder.test.ts",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 7→16 lines (4 removed)",
+      "fix": "Rewrote 7\u219216 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2815,7 +2815,7 @@
     {
       "id": "bug-174",
       "timestamp": "2026-06-04T13:37:30.592Z",
-      "error_message": "search_library / multi-field spell effects saved as {type,amount} — count/to/filter silently dropped",
+      "error_message": "search_library / multi-field spell effects saved as {type,amount} \u2014 count/to/filter silently dropped",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "buildScriptFromForm hardcoded spell action serialization as {type:a.type,amount:a.amount}, a leftover from when spell effects were only amount-only (scry/surveil/draw); it did not use the registry serializer like trigger effects do.",
       "fix": "Serialize spell actions via registryEffectToJson(a) so all declared fields emit; also enabled search_library spell context for Demonic Tutor.",
@@ -2916,7 +2916,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/unit/card-behavior-builder.test.ts",
       "root_cause": "5 lines replaced/restructured",
-      "fix": "Rewrote 7→12 lines (5 removed)",
+      "fix": "Rewrote 7\u219212 lines (5 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -2964,7 +2964,7 @@
       "error_message": "Significant refactor of ",
       "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 5→5 lines (4 removed)",
+      "fix": "Rewrote 5\u21925 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -3092,7 +3092,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010101_fight.sql",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 3→6 lines (2 removed)",
+      "fix": "Rewrote 3\u21926 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -3139,8 +3139,8 @@
       "timestamp": "2026-06-04T20:23:28.607Z",
       "error_message": "CSS fix: kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "kind: 'creature_effect' → 'fight'",
-      "fix": "Changed kind: 'creature_effect' → 'fight'",
+      "root_cause": "kind: 'creature_effect' \u2192 'fight'",
+      "fix": "Changed kind: 'creature_effect' \u2192 'fight'",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -3313,7 +3313,7 @@
     {
       "id": "bug-205",
       "timestamp": "2026-06-04T22:05:00.000Z",
-      "error_message": "fight tests F1/F5/F6 asserted the 4/4 fighter SURVIVES after fighting a Deathtouch Viper (1/1) — wrong once deathtouch was implemented (the viper's 1 damage is lethal via CR 702.2).",
+      "error_message": "fight tests F1/F5/F6 asserted the 4/4 fighter SURVIVES after fighting a Deathtouch Viper (1/1) \u2014 wrong once deathtouch was implemented (the viper's 1 damage is lethal via CR 702.2).",
       "file": "tests/feature/fight.test.ts",
       "root_cause": "apply_fight delegated damage to apply_creature_effect('deal_damage'), which only marked damage_marked and never set dealt_deathtouch_damage. So fight ignored the dealer's deathtouch and a 4/4 survived a deathtouch 1/1. The tests were written against that incorrect behavior (used the Deathtouch Viper as a plain 1/1).",
       "fix": "mig 103: apply_creature_effect deal_damage honours an optional 'deathtouch' param (OR-ing dealt_deathtouch_damage, mirroring combat); apply_fight captures both creatures' card_has_deathtouch up front (like powers, since fight is simultaneous) and passes it per hit. Updated F1/F5/F6 to use Silhana Ledgewalker (non-deathtouch 1/1) for the survivor scenarios; added F9 (deathtouch 1/1 kills a 0/4 wall, survives) and F10 (deathtouch defender kills the 4/4 too).",
@@ -3446,7 +3446,7 @@
       "error_message": "Significant refactor of ",
       "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 4→4 lines (3 removed)",
+      "fix": "Rewrote 4\u21924 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -3493,7 +3493,7 @@
       "timestamp": "2026-06-05T00:11:39.269Z",
       "error_message": "Missing await",
       "file": "tests/harness/scenario.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -3638,7 +3638,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/harness/scenario.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 16→26 lines (3 removed)",
+      "fix": "Rewrote 16\u219226 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -3702,7 +3702,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-registry.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 14→14 lines (3 removed)",
+      "fix": "Rewrote 14\u219214 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -3717,8 +3717,8 @@
       "timestamp": "2026-06-05T00:00:00.000Z",
       "error_message": "5 builder characterization tests failed: parseScriptToForm returned null for search_library with filter:{type_line} (expected Form mode); exact-build crashed reading 'keywords' of null",
       "file": "lib/game/card-behavior-registry.ts",
-      "root_cause": "Added a 'name' sub-field to the search_library filter object in the registry. parseFields requires every non-optional sub-field to be present, so a filter carrying only type_line (no name) was rejected → JSON mode. The object serializer (fieldToJson) also emits EVERY sub-field with no empty-drop, so name:'' would leak into serialized tutors.",
-      "fix": "Kept filter.name OUT of the guided-form registry — it's JSON/AI-authorable only (engine + Zod + LLM support it), matching the gain_control untap/haste and search_library tapped/reveal precedent. Reverted the registry filter to type_line-only and the defaultEffect test expectation back to {type_line:''}. The graveyard destination (a clean enum extension) stayed in the form.",
+      "root_cause": "Added a 'name' sub-field to the search_library filter object in the registry. parseFields requires every non-optional sub-field to be present, so a filter carrying only type_line (no name) was rejected \u2192 JSON mode. The object serializer (fieldToJson) also emits EVERY sub-field with no empty-drop, so name:'' would leak into serialized tutors.",
+      "fix": "Kept filter.name OUT of the guided-form registry \u2014 it's JSON/AI-authorable only (engine + Zod + LLM support it), matching the gain_control untap/haste and search_library tapped/reveal precedent. Reverted the registry filter to type_line-only and the defaultEffect test expectation back to {type_line:''}. The graveyard destination (a clean enum extension) stayed in the form.",
       "tags": [
         "builder",
         "registry",
@@ -3800,7 +3800,7 @@
       "timestamp": "2026-06-05T00:00:00.000Z",
       "error_message": "new row for relation \"game_stack_items\" violates check constraint \"game_stack_items_action_type_check\" (23514) when casting the new multi_creature_effect action type",
       "file": "supabase/migrations/202605010112_multi_creature_effect.sql",
-      "root_cause": "game_stack_items.action_type has a CHECK constraint whitelisting allowed action types (last redefined in mig 107). Registering a handler/builder in stack_action_handlers is NOT enough — a new castable action_type must ALSO be added to this CHECK or the INSERT in put_action_on_stack fails.",
+      "root_cause": "game_stack_items.action_type has a CHECK constraint whitelisting allowed action types (last redefined in mig 107). Registering a handler/builder in stack_action_handlers is NOT enough \u2014 a new castable action_type must ALSO be added to this CHECK or the INSERT in put_action_on_stack fails.",
       "fix": "Added a drop+recreate of game_stack_items_action_type_check to mig 112, reproducing the mig 107 allow-list plus 'multi_creature_effect'.",
       "tags": [
         "migration",
@@ -3818,7 +3818,7 @@
       "timestamp": "2026-06-05T00:00:00.000Z",
       "error_message": "current transaction is aborted, commands ignored until end of transaction block (25P02) in a feature test, after asserting an expected rejection",
       "file": "tests/feature/multi-target.test.ts",
-      "root_cause": "The harness runs each test in ONE Postgres transaction (withRolledBackTx). When an RPC raises (the expected rejection), the whole tx is poisoned — any subsequent query (e.g. a post-assertion zoneOf) fails with 25P02. Asserting state AFTER an expected-throw in the same tx is impossible.",
+      "root_cause": "The harness runs each test in ONE Postgres transaction (withRolledBackTx). When an RPC raises (the expected rejection), the whole tx is poisoned \u2014 any subsequent query (e.g. a post-assertion zoneOf) fails with 25P02. Asserting state AFTER an expected-throw in the same tx is impossible.",
       "fix": "Dropped the post-rejection state queries (MT5); the assert.rejects IS the assertion. Pattern: a test asserting a raise must not run further queries in the same tx (MT6 already followed this).",
       "tags": [
         "test",
@@ -3837,7 +3837,7 @@
       "error_message": "Significant refactor of ",
       "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 5→5 lines (2 removed)",
+      "fix": "Rewrote 5\u21925 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -3884,8 +3884,8 @@
       "timestamp": "2026-06-05T11:09:06.712Z",
       "error_message": "CSS fix: removal, kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "removal: pick up to `count` creatures, apply `effectKind` to each. → destroy/exile/… a target of `targetType`.; kind: 'multi_creature' → 'permanent_effect'",
-      "fix": "Changed removal: pick up to `count` creatures, apply `effectKind` to each. → destroy/exile/… a target of `targetType`.; kind: 'multi_creature' → 'permanent_effect'",
+      "root_cause": "removal: pick up to `count` creatures, apply `effectKind` to each. \u2192 destroy/exile/\u2026 a target of `targetType`.; kind: 'multi_creature' \u2192 'permanent_effect'",
+      "fix": "Changed removal: pick up to `count` creatures, apply `effectKind` to each. \u2192 destroy/exile/\u2026 a target of `targetType`.; kind: 'multi_creature' \u2192 'permanent_effect'",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -3901,7 +3901,7 @@
       "error_message": "Null/undefined access in ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check) | Also: | (CardBehaviorAction & { target_controller?: unknown; targe; // A non-creature permanent target (artifact/enchantment/…)  | Also: // Non-creature permanent removal — destroy/exile/… a target; permanentEffect: async (cardId: string, targetCardId: string",
+      "fix": "Added null safety (optional chaining or null check) | Also: | (CardBehaviorAction & { target_controller?: unknown; targe; // A non-creature permanent target (artifact/enchantment/\u2026)  | Also: // Non-creature permanent removal \u2014 destroy/exile/\u2026 a target; permanentEffect: async (cardId: string, targetCardId: string",
       "tags": [
         "auto-detected",
         "null-safety",
@@ -3953,7 +3953,7 @@
       "error_message": "Wrong reference: creature should be legal",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Used \"creature\" instead of \"legal\"",
-      "fix": "Changed creature → legal",
+      "fix": "Changed creature \u2192 legal",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -4016,8 +4016,8 @@
       "timestamp": "2026-06-05T11:46:01.127Z",
       "error_message": "CSS fix: kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "kind: 'damage' → 'divided_damage'",
-      "fix": "Changed kind: 'damage' → 'divided_damage'",
+      "root_cause": "kind: 'damage' \u2192 'divided_damage'",
+      "fix": "Changed kind: 'damage' \u2192 'divided_damage'",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -4064,7 +4064,7 @@
       "timestamp": "2026-06-05T11:52:42.986Z",
       "error_message": "Missing await",
       "file": "lib/game/actions.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -4144,8 +4144,8 @@
       "timestamp": "2026-06-05T12:10:57.921Z",
       "error_message": "Incorrect value in code",
       "file": "tests/unit/card-behavior-builder.test.ts",
-      "root_cause": "Had 'trigger may with targeted-add_counters inner → js",
-      "fix": "Changed to 'trigger may with targeted-add_counters inner → fo",
+      "root_cause": "Had 'trigger may with targeted-add_counters inner \u2192 js",
+      "fix": "Changed to 'trigger may with targeted-add_counters inner \u2192 fo",
       "tags": [
         "auto-detected",
         "wrong-value",
@@ -4238,7 +4238,7 @@
     {
       "id": "bug-262",
       "timestamp": "2026-06-05T00:00:00.000Z",
-      "error_message": "cast_modal_spell never handled the SOURCE card — a modal spell cast from hand paid NO mana and stayed in hand (free + never to graveyard).",
+      "error_message": "cast_modal_spell never handled the SOURCE card \u2014 a modal spell cast from hand paid NO mana and stayed in hand (free + never to graveyard).",
       "file": "supabase/migrations/202605010117_modal_spell_source_cost.sql",
       "root_cause": "cast_modal_spell (mig 088) only inserted the modal_spell stack item + choose_mode decision; unlike put_action_on_stack / cast_spell_effect it never fetched the source card to pay_mana_cost or move it to the graveyard. Fine for the original ad-hoc/sourceless test usage, but wrong once a real hand card casts it.",
       "fix": "mig 117 reproduces cast_modal_spell with cast_spell_effect's source handling: fetch type_line/mana_cost/zone, timing + sorcery guards, pay_mana_cost when cast from hand, and the cast-time move to graveyard for an instant/sorcery. modes/choose/decision logic verbatim. Test MD-SRC.",
@@ -4275,7 +4275,7 @@
       "error_message": "Significant refactor of ",
       "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 3→5 lines (3 removed)",
+      "fix": "Rewrote 3\u21925 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -4291,7 +4291,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 16→19 lines (3 removed) | Also: const targetType =; ability.target === 'any' ? ['creature', 'player'] ",
+      "fix": "Rewrote 16\u219219 lines (3 removed) | Also: const targetType =; ability.target === 'any' ? ['creature', 'player'] ",
       "tags": [
         "auto-detected",
         "refactor",
@@ -4307,7 +4307,7 @@
       "error_message": "Wrong reference: BUILDER_DAMAGE_TARGETS should be BUILDER_KEYWORDS",
       "file": "components/CardBehaviorForm.tsx",
       "root_cause": "Used \"BUILDER_DAMAGE_TARGETS\" instead of \"BUILDER_KEYWORDS\"",
-      "fix": "Changed BUILDER_DAMAGE_TARGETS → BUILDER_KEYWORDS",
+      "fix": "Changed BUILDER_DAMAGE_TARGETS \u2192 BUILDER_KEYWORDS",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -4434,7 +4434,7 @@
       "timestamp": "2026-06-05T14:15:43.708Z",
       "error_message": "Missing error handling in unknown",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -4466,8 +4466,8 @@
       "timestamp": "2026-06-05T14:17:46.070Z",
       "error_message": "CSS fix: onConfirm",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "onConfirm: (orderedBlockerIds: string[]) => Promise<void> → (",
-      "fix": "Changed onConfirm: (orderedBlockerIds: string[]) => Promise<void> → (",
+      "root_cause": "onConfirm: (orderedBlockerIds: string[]) => Promise<void> \u2192 (",
+      "fix": "Changed onConfirm: (orderedBlockerIds: string[]) => Promise<void> \u2192 (",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -4499,7 +4499,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/feature/hybrid-phyrexian-mana.test.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 5→6 lines (3 removed)",
+      "fix": "Rewrote 5\u21926 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -4515,7 +4515,7 @@
       "error_message": "CO1/CO2 combat over-assignment tests flaky: \"Must assign lethal damage to earlier blockers before later ones\" intermittently / reject test intermittently passes",
       "file": "tests/feature/combat-over-assignment.test.ts",
       "root_cause": "Two blockers declared in the same tx get equal damage_assignment_order AND equal created_at, so resolve_combat_damage orders them by the id tiebreak (random uuid). The test assumed declaration order == resolution order, so over-assigning 4/0 to b1/b2 landed on the wrong blocker ~half the time and tripped (or skipped) the CR 510.1c lethal-before-later validation.",
-      "fix": "Added blockerOrder(s,attacker) helper that queries game_combat_blockers ordered by (damage_assignment_order, created_at, id) — the exact order the engine uses — and assign by [first,second] from that, not declaration order.",
+      "fix": "Added blockerOrder(s,attacker) helper that queries game_combat_blockers ordered by (damage_assignment_order, created_at, id) \u2014 the exact order the engine uses \u2014 and assign by [first,second] from that, not declaration order.",
       "tags": [
         "combat",
         "over-assignment",
@@ -4567,7 +4567,7 @@
       "timestamp": "2026-06-05T00:00:00.000Z",
       "error_message": "Unsupported stack action type: spell_effect (resolve_top_of_stack); many tests failed after mig 123",
       "file": "supabase/migrations/202605010123_apnap_trigger_ordering.sql",
-      "root_cause": "mig 123 reproduced resolve_top_of_stack AND enqueue_triggered_ability from supabase/local-bootstrap/00_baseline.sql, but the LIVE versions come from later migrations: resolve_top_of_stack was refactored to the registry dispatcher in mig 104, and enqueue_triggered_ability gained multi-target reach in mig 114/116. Copying the baseline reverted both — dropping spell_effect (and every registry action_type) resolution and multi-target triggers.",
+      "root_cause": "mig 123 reproduced resolve_top_of_stack AND enqueue_triggered_ability from supabase/local-bootstrap/00_baseline.sql, but the LIVE versions come from later migrations: resolve_top_of_stack was refactored to the registry dispatcher in mig 104, and enqueue_triggered_ability gained multi-target reach in mig 114/116. Copying the baseline reverted both \u2014 dropping spell_effect (and every registry action_type) resolution and multi-target triggers.",
       "fix": "Rebuilt mig 123 on the CURRENT definitions: enqueue from mig 116 + apnap_rank; resolve_top_of_stack from mig 104 (dispatcher) + the order_pending_triggers settle call. 316/316.",
       "tags": [
         "migration",
@@ -4651,7 +4651,7 @@
       "timestamp": "2026-06-05T19:08:44.087Z",
       "error_message": "Missing await",
       "file": "tests/feature/damage-prevention.test.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -4665,7 +4665,7 @@
     {
       "id": "bug-282",
       "timestamp": "2026-06-05T00:00:00.000Z",
-      "error_message": "npm run validate:scripts crashes: Transform failed — Top-level await is currently not supported with the cjs output format (scripts/validate-card-scripts.ts:31)",
+      "error_message": "npm run validate:scripts crashes: Transform failed \u2014 Top-level await is currently not supported with the cjs output format (scripts/validate-card-scripts.ts:31)",
       "file": "scripts/validate-card-scripts.ts",
       "root_cause": "PRE-EXISTING tooling breakage (not card-related): the script uses top-level await, but tsx/esbuild transforms it as CJS where top-level await is unsupported. Discovered while adding the prevent_damage fixture; unrelated to any card script.",
       "fix": "Not fixed (out of scope). To repair: run the script as ESM (add a local package.json {\"type\":\"module\"} for scripts, or rename to .mts, or wrap the body in an async main() instead of top-level await). Zod validity of fixtures is currently covered indirectly by the engine tests that cast them.",
@@ -4687,7 +4687,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010127_combat_damage_through_resolver.sql",
       "root_cause": "21 lines replaced/restructured",
-      "fix": "Rewrote 26→13 lines (21 removed)",
+      "fix": "Rewrote 26\u219213 lines (21 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -4734,7 +4734,7 @@
       "timestamp": "2026-06-05T00:00:00.000Z",
       "error_message": "GC1/GC4 gain_control tests failed after mig 128 (control continuous-effect insert violated game_continuous_effects_effect_type_check)",
       "file": "supabase/migrations/202605010128_set_pt_layer.sql",
-      "root_cause": "mig 128 rebuilt the effect_type CHECK from the STALE baseline list (which lacks control), dropping control which mig 106 had added — so gain_control end_of_turn could no longer insert its control effect. Same stale-baseline class as bug-281, but for a CHECK constraint: the baseline constraint is a snapshot, later migrations extend it.",
+      "root_cause": "mig 128 rebuilt the effect_type CHECK from the STALE baseline list (which lacks control), dropping control which mig 106 had added \u2014 so gain_control end_of_turn could no longer insert its control effect. Same stale-baseline class as bug-281, but for a CHECK constraint: the baseline constraint is a snapshot, later migrations extend it.",
       "fix": "Added both control AND set_pt to the CHECK array (the current list = baseline + control from mig 106). 331/331.",
       "tags": [
         "migration",
@@ -4853,7 +4853,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/feature/protection.test.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 22→37 lines (2 removed)",
+      "fix": "Rewrote 22\u219237 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -4940,7 +4940,7 @@
       "error_message": "Wrong reference: authenticated should be anon",
       "file": "supabase/migrations/202605010133_protection_cant_be_blocked.sql",
       "root_cause": "Used \"authenticated\" instead of \"anon\"",
-      "fix": "Changed authenticated → anon",
+      "fix": "Changed authenticated \u2192 anon",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -5004,7 +5004,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010134_auras_and_attachment.sql",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 9→13 lines (2 removed)",
+      "fix": "Rewrote 9\u219213 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -5115,8 +5115,8 @@
       "timestamp": "2026-06-05T21:56:54.089Z",
       "error_message": "CSS fix: active",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "active: scale-95 ${ → scale-95\"",
-      "fix": "Changed active: scale-95 ${ → scale-95\"",
+      "root_cause": "active: scale-95 ${ \u2192 scale-95\"",
+      "fix": "Changed active: scale-95 ${ \u2192 scale-95\"",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -5132,7 +5132,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 20→26 lines (2 removed)",
+      "fix": "Rewrote 20\u219226 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -5147,7 +5147,7 @@
       "timestamp": "2026-06-05T23:32:45.450Z",
       "error_message": "Missing await",
       "file": "tests/harness/scenario.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -5180,7 +5180,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/actions.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 9→12 lines (2 removed)",
+      "fix": "Rewrote 9\u219212 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -5228,7 +5228,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/actions.ts",
       "root_cause": "9 lines replaced/restructured",
-      "fix": "Rewrote 23→34 lines (9 removed) | Also: async function getFunctionErrorMessage(response: R; if (!response) {",
+      "fix": "Rewrote 23\u219234 lines (9 removed) | Also: async function getFunctionErrorMessage(response: R; if (!response) {",
       "tags": [
         "auto-detected",
         "refactor",
@@ -5275,7 +5275,7 @@
       "timestamp": "2026-06-06T00:01:35.218Z",
       "error_message": "Missing error handling in unknown",
       "file": "components/DeckManager.tsx",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -5356,7 +5356,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010138_commander_deck_seeding.sql",
       "root_cause": "6 lines replaced/restructured",
-      "fix": "Rewrote 14→15 lines (6 removed)",
+      "fix": "Rewrote 14\u219215 lines (6 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -5372,7 +5372,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/feature/commander-deck.test.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 11→13 lines (3 removed)",
+      "fix": "Rewrote 11\u219213 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -5435,8 +5435,8 @@
       "timestamp": "2026-06-06T16:44:44.295Z",
       "error_message": "Incorrect value in code",
       "file": "docs/commander-decks/atraxa-counters.txt",
-      "root_cause": "Had ' Voice — WUBG +1/+1 counters / proliferate (100 c",
-      "fix": "Changed to ' Voice — WUBG +1/+1 counters / proliferate (100 c",
+      "root_cause": "Had ' Voice \u2014 WUBG +1/+1 counters / proliferate (100 c",
+      "fix": "Changed to ' Voice \u2014 WUBG +1/+1 counters / proliferate (100 c",
       "tags": [
         "auto-detected",
         "wrong-value",
@@ -5500,7 +5500,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/DeckManager.tsx",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 30→40 lines (3 removed)",
+      "fix": "Rewrote 30\u219240 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -5532,7 +5532,7 @@
       "error_message": "Significant refactor of ",
       "file": "app/cards/behavior/page.tsx",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 28→39 lines (4 removed)",
+      "fix": "Rewrote 28\u219239 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -5675,7 +5675,7 @@
       "timestamp": "2026-06-06T18:09:03.008Z",
       "error_message": "Missing error handling in unknown",
       "file": "components/DeckManager.tsx",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -5708,7 +5708,7 @@
       "error_message": "Wrong reference: in_progress should be open",
       "file": "tests/feature/multiplayer.test.ts",
       "root_cause": "Used \"in_progress\" instead of \"open\"",
-      "fix": "Changed in_progress → open",
+      "fix": "Changed in_progress \u2192 open",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -5723,7 +5723,7 @@
       "timestamp": "2026-06-06T19:11:51.889Z",
       "error_message": "Missing await",
       "file": "tests/feature/multiplayer.test.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -5737,7 +5737,7 @@
     {
       "id": "bug-354",
       "timestamp": "2026-06-06T21:00:00.000Z",
-      "error_message": "Multiplayer (3-4p Commander): an eliminated player (life 0) was still handed priority and made active player — turn/priority rotations did not skip dead seats.",
+      "error_message": "Multiplayer (3-4p Commander): an eliminated player (life 0) was still handed priority and made active player \u2014 turn/priority rotations did not skip dead seats.",
       "file": "supabase/migrations/202605010140_skip_eliminated_players.sql",
       "root_cause": "advance_step and pass_priority rotate by seat_number but never filtered on life_total > 0. In 2p the game ends instantly at one death so it was invisible; in 3-4p the game continues and the dead seat stalled the round / untapped+drew on its turn. maybe_finish_game_session already did last-player-standing correctly.",
       "fix": "Added life_total > 0 filter to the player COUNT (pass-count threshold) in pass_priority and to all four next-seat lookups (next-higher + wrap-to-lowest) across both functions. Reproduced pass_priority from mig 095, advance_step from baseline.",
@@ -5777,8 +5777,8 @@
       "timestamp": "2026-06-06T19:21:02.524Z",
       "error_message": "CSS fix: sm",
       "file": "components/DeckInsights.tsx",
-      "root_cause": "sm: grid-cols-2\"> → col-span-2 ${",
-      "fix": "Changed sm: grid-cols-2\"> → col-span-2 ${",
+      "root_cause": "sm: grid-cols-2\"> \u2192 col-span-2 ${",
+      "fix": "Changed sm: grid-cols-2\"> \u2192 col-span-2 ${",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -5810,7 +5810,7 @@
       "error_message": "Type error",
       "file": "tests/feature/commander-deck.test.ts",
       "root_cause": "Missing or incorrect type annotation",
-      "fix": "Added type assertion/annotation | Also: // LEG4 — enforcement: a Commander game seeds a legal deck u; test('LEG4 spawn accepts a legal deck under enforcement', as",
+      "fix": "Added type assertion/annotation | Also: // LEG4 \u2014 enforcement: a Commander game seeds a legal deck u; test('LEG4 spawn accepts a legal deck under enforcement', as",
       "tags": [
         "auto-detected",
         "type-fix",
@@ -5873,8 +5873,8 @@
       "timestamp": "2026-06-06T20:00:30.940Z",
       "error_message": "CSS fix: kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "kind: 'pump' → 'set_pt'",
-      "fix": "Changed kind: 'pump' → 'set_pt'",
+      "root_cause": "kind: 'pump' \u2192 'set_pt'",
+      "fix": "Changed kind: 'pump' \u2192 'set_pt'",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -5905,7 +5905,7 @@
       "timestamp": "2026-06-06T20:13:54.865Z",
       "error_message": "Missing await",
       "file": "tests/harness/scenario.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -6036,8 +6036,8 @@
       "timestamp": "2026-06-07T09:30:24.330Z",
       "error_message": "CSS fix: lg",
       "file": "components/DeckManager.tsx",
-      "root_cause": "lg: grid-cols-[minmax(0,1fr)_minmax(360px,420px)]\"> → grid-cols-[minmax(0,1fr)_minmax(320px,400px)]\">",
-      "fix": "Changed lg: grid-cols-[minmax(0,1fr)_minmax(360px,420px)]\"> → grid-cols-[minmax(0,1fr)_minmax(320px,400px)]\">",
+      "root_cause": "lg: grid-cols-[minmax(0,1fr)_minmax(360px,420px)]\"> \u2192 grid-cols-[minmax(0,1fr)_minmax(320px,400px)]\">",
+      "fix": "Changed lg: grid-cols-[minmax(0,1fr)_minmax(360px,420px)]\"> \u2192 grid-cols-[minmax(0,1fr)_minmax(320px,400px)]\">",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -6068,7 +6068,7 @@
       "timestamp": "2026-06-07T11:31:05.439Z",
       "error_message": "Missing error handling in unknown",
       "file": "components/CardCatalogPicker.tsx",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -6133,7 +6133,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-registry.ts",
       "root_cause": "6 lines replaced/restructured",
-      "fix": "Rewrote 6→8 lines (6 removed)",
+      "fix": "Rewrote 6\u21928 lines (6 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -6181,7 +6181,7 @@
       "error_message": "Wrong reference: ManaColor should be ManaProductionColor",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "Used \"ManaColor\" instead of \"ManaProductionColor\"",
-      "fix": "Changed ManaColor → ManaProductionColor",
+      "fix": "Changed ManaColor \u2192 ManaProductionColor",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -6229,7 +6229,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 23→44 lines (2 removed)",
+      "fix": "Rewrote 23\u219244 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -6309,7 +6309,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-registry.ts",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 4→6 lines (4 removed)",
+      "fix": "Rewrote 4\u21926 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -6357,7 +6357,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-registry.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 14→21 lines (3 removed)",
+      "fix": "Rewrote 14\u219221 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -6404,8 +6404,8 @@
       "timestamp": "2026-06-07T15:53:38.200Z",
       "error_message": "CSS fix: kind",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "kind: 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired → 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired, counterType: addCounters.counter_type, all: addCounters.all",
-      "fix": "Changed kind: 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired → 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired, counterType: addCounters.counter_type, all: addCounters.all",
+      "root_cause": "kind: 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired \u2192 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired, counterType: addCounters.counter_type, all: addCounters.all",
+      "fix": "Changed kind: 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired \u2192 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired, counterType: addCounters.counter_type, all: addCounters.all",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -6420,7 +6420,7 @@
       "timestamp": "2026-06-07T15:55:24.601Z",
       "error_message": "Missing await",
       "file": "lib/game/actions.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -6437,7 +6437,7 @@
       "error_message": "Null/undefined access in ",
       "file": "components/judge/JudgePlayerCardTools.tsx",
       "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check) | Also: {/* Other counter kinds (charge/quest/…) already on the card; {cardBagKinds.map((kind) => ( | Also: <h4 className=\"mb-2 text-xs font-semibold uppercase tracking; <div className=\"grid gap-2\">",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Other counter kinds (charge/quest/\u2026) already on the card; {cardBagKinds.map((kind) => ( | Also: <h4 className=\"mb-2 text-xs font-semibold uppercase tracking; <div className=\"grid gap-2\">",
       "tags": [
         "auto-detected",
         "null-safety",
@@ -6676,8 +6676,8 @@
       "timestamp": "2026-06-07T20:05:00.000Z",
       "error_message": "new row for relation \"game_continuous_effects\" violates check constraint \"game_continuous_effects_effect_type_check\" (code 23514)",
       "file": "supabase/migrations/202605010159_infect_toxic_wither.sql",
-      "root_cause": "Adding a new continuous-effect type (infect/wither/toxic) requires updating BOTH the register_card_continuous_effects whitelist AND the separate table-level CHECK constraint game_continuous_effects_effect_type_check. The table CHECK is easy to miss — the register function's own whitelist passes, then the INSERT is rejected by the column constraint.",
-      "fix": "Reproduced the CHECK constraint from its CURRENT definition (mig 146 — NOT the stale baseline, bug-283) and appended infect/wither/toxic, dropping+re-adding the constraint at the top of the migration before any inserts.",
+      "root_cause": "Adding a new continuous-effect type (infect/wither/toxic) requires updating BOTH the register_card_continuous_effects whitelist AND the separate table-level CHECK constraint game_continuous_effects_effect_type_check. The table CHECK is easy to miss \u2014 the register function's own whitelist passes, then the INSERT is rejected by the column constraint.",
+      "fix": "Reproduced the CHECK constraint from its CURRENT definition (mig 146 \u2014 NOT the stale baseline, bug-283) and appended infect/wither/toxic, dropping+re-adding the constraint at the top of the migration before any inserts.",
       "tags": [
         "postgres",
         "check-constraint",
@@ -6715,7 +6715,7 @@
       "error_message": "Wrong reference: UnknownCostSchema should be z",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "Used \"UnknownCostSchema\" instead of \"z\"",
-      "fix": "Changed UnknownCostSchema → z",
+      "fix": "Changed UnknownCostSchema \u2192 z",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -6747,7 +6747,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 3→12 lines (3 removed)",
+      "fix": "Rewrote 3\u219212 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -6776,7 +6776,7 @@
     {
       "id": "bug-418",
       "timestamp": "2026-06-07T20:55:00.000Z",
-      "error_message": "DS4/RM1/RM3/RM4 failed in full suite — negative add_counters amounts (counter removal) stopped removing after the dynamic-amount resolver was threaded in",
+      "error_message": "DS4/RM1/RM3/RM4 failed in full suite \u2014 negative add_counters amounts (counter removal) stopped removing after the dynamic-amount resolver was threaded in",
       "file": "supabase/migrations/202605010161_dynamic_counter_amounts.sql",
       "root_cause": "resolve_dynamic_amount clamped the literal-number branch with greatest(0, ...), but counter removal (mig 155) relies on NEGATIVE literal amounts in apply_triggered_ability_effects. The original coalesce((v_effect->>'amount')::integer,0) never clamped, so clamping turned every -1 removal into 0. The new dynamic test passed alone; only the FULL suite (removal/Doubling tests) exposed it.",
       "fix": "Removed greatest(0, ...) from the number/string branch so negatives flow through for removal; only the counter-OBJECT branch clamps (a counter count is naturally >= 0).",
@@ -6828,9 +6828,9 @@
     {
       "id": "bug-421",
       "timestamp": "2026-06-07T21:20:00.000Z",
-      "error_message": "function public.resolve_dynamic_amount(uuid, uuid, uuid, jsonb) is not unique (code 42725) — DA1-4 (trigger path) failed after adding a 5th defaulted param",
+      "error_message": "function public.resolve_dynamic_amount(uuid, uuid, uuid, jsonb) is not unique (code 42725) \u2014 DA1-4 (trigger path) failed after adding a 5th defaulted param",
       "file": "supabase/migrations/202605010162_dynamic_amounts_spells_abilities.sql",
-      "root_cause": "CREATE OR REPLACE with a DIFFERENT arg count does not replace the old function — it adds an overload. The mig-161 4-arg resolve_dynamic_amount and the new 5-arg-with-default both matched a 4-arg call, so PostgreSQL refused it as ambiguous. The new test (DA5-8, 5-arg calls) passed; the EXISTING 4-arg callers (apply_triggered_ability_effects) broke — caught only by the full/file suite.",
+      "root_cause": "CREATE OR REPLACE with a DIFFERENT arg count does not replace the old function \u2014 it adds an overload. The mig-161 4-arg resolve_dynamic_amount and the new 5-arg-with-default both matched a 4-arg call, so PostgreSQL refused it as ambiguous. The new test (DA5-8, 5-arg calls) passed; the EXISTING 4-arg callers (apply_triggered_ability_effects) broke \u2014 caught only by the full/file suite.",
       "fix": "DROP FUNCTION the old 4-arg signature at the top of the migration before CREATE OR REPLACE of the 5-arg; the 4-arg callers then bind to the 5-arg via the default.",
       "tags": [
         "postgres",
@@ -6851,8 +6851,8 @@
       "timestamp": "2026-06-07T21:40:22.289Z",
       "error_message": "Incorrect value in code",
       "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
-      "root_cause": "Had `) — IN PROGRESS (mig 164, first slice). A `",
-      "fix": "Changed to `)~~ — ✅ **shipped (mig 164)**. A `",
+      "root_cause": "Had `) \u2014 IN PROGRESS (mig 164, first slice). A `",
+      "fix": "Changed to `)~~ \u2014 \u2705 **shipped (mig 164)**. A `",
       "tags": [
         "auto-detected",
         "wrong-value",
@@ -6899,8 +6899,8 @@
       "timestamp": "2026-06-07T21:59:02.579Z",
       "error_message": "Incorrect value in code",
       "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
-      "root_cause": "Had `) — the trigger engine fires only the source'",
-      "fix": "Changed to `)~~ — ✅ **shipped (mig 165)**. New triggered-abil",
+      "root_cause": "Had `) \u2014 the trigger engine fires only the source'",
+      "fix": "Changed to `)~~ \u2014 \u2705 **shipped (mig 165)**. New triggered-abil",
       "tags": [
         "auto-detected",
         "wrong-value",
@@ -6916,7 +6916,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 9→17 lines (2 removed)",
+      "fix": "Rewrote 9\u219217 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -6964,7 +6964,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 4→6 lines (4 removed)",
+      "fix": "Rewrote 4\u21926 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -6996,7 +6996,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 3→4 lines (2 removed)",
+      "fix": "Rewrote 3\u21924 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -7027,8 +7027,8 @@
       "timestamp": "2026-06-07T22:25:38.138Z",
       "error_message": "CSS fix: amount, commanderIdentity",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "amount: commanderEffect.amount, → anyColorEffect.amount,; commanderIdentity: true, → false,",
-      "fix": "Changed amount: commanderEffect.amount, → anyColorEffect.amount,; commanderIdentity: true, → false,",
+      "root_cause": "amount: commanderEffect.amount, \u2192 anyColorEffect.amount,; commanderIdentity: true, \u2192 false,",
+      "fix": "Changed amount: commanderEffect.amount, \u2192 anyColorEffect.amount,; commanderIdentity: true, \u2192 false,",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -7043,7 +7043,7 @@
       "timestamp": "2026-06-07T22:28:54.271Z",
       "error_message": "Missing error handling in unknown",
       "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -7059,8 +7059,8 @@
       "timestamp": "2026-06-07T22:29:07.565Z",
       "error_message": "Incorrect value in code",
       "file": ".claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md",
-      "root_cause": "Had `) — small, isolated: add an `",
-      "fix": "Changed to `)~~ — ✅ **shipped (mig — none; client + schema on",
+      "root_cause": "Had `) \u2014 small, isolated: add an `",
+      "fix": "Changed to `)~~ \u2014 \u2705 **shipped (mig \u2014 none; client + schema on",
       "tags": [
         "auto-detected",
         "wrong-value",
@@ -7107,7 +7107,7 @@
       "timestamp": "2026-06-08T07:50:32.056Z",
       "error_message": "Missing await",
       "file": "lib/game/actions.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -7140,7 +7140,7 @@
       "error_message": "Null/undefined access in ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check) | Also: // Opponents' planeswalkers — attackable targets in the decl; const opponentPlaneswalkers = boardCards | Also: {/* Planeswalker loyalty abilities (sorcery speed, once per ; {(script.loyalty_abilities?.length ?? 0) > 0 && !picking &&  | Also: const hasActions = canCast || isEquipment || manaAbilities.l",
+      "fix": "Added null safety (optional chaining or null check) | Also: // Opponents' planeswalkers \u2014 attackable targets in the decl; const opponentPlaneswalkers = boardCards | Also: {/* Planeswalker loyalty abilities (sorcery speed, once per ; {(script.loyalty_abilities?.length ?? 0) > 0 && !picking &&  | Also: const hasActions = canCast || isEquipment || manaAbilities.l",
       "tags": [
         "auto-detected",
         "null-safety",
@@ -7155,8 +7155,8 @@
       "timestamp": "2026-06-08T07:55:11.552Z",
       "error_message": "CSS fix: id",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "id: c.id, name: c.name, loyalty: Number((c.counters as Record<string, number> | undefined)?.loyalty ?? 0) → c.id, name: c.name, loyalty: Number(c.counters?.loyalty ?? 0)",
-      "fix": "Changed id: c.id, name: c.name, loyalty: Number((c.counters as Record<string, number> | undefined)?.loyalty ?? 0) → c.id, name: c.name, loyalty: Number(c.counters?.loyalty ?? 0)",
+      "root_cause": "id: c.id, name: c.name, loyalty: Number((c.counters as Record<string, number> | undefined)?.loyalty ?? 0) \u2192 c.id, name: c.name, loyalty: Number(c.counters?.loyalty ?? 0)",
+      "fix": "Changed id: c.id, name: c.name, loyalty: Number((c.counters as Record<string, number> | undefined)?.loyalty ?? 0) \u2192 c.id, name: c.name, loyalty: Number(c.counters?.loyalty ?? 0)",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -7188,7 +7188,7 @@
       "error_message": "Wrong operator: ?? should be ===",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Used \"??\" instead of \"===\"",
-      "fix": "Changed operator ?? → ===",
+      "fix": "Changed operator ?? \u2192 ===",
       "tags": [
         "auto-detected",
         "operator-fix",
@@ -7204,7 +7204,7 @@
       "error_message": "Wrong reference: onCastAura should be onActivateLoyalty",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Used \"onCastAura\" instead of \"onActivateLoyalty\"",
-      "fix": "Changed onCastAura → onActivateLoyalty",
+      "fix": "Changed onCastAura \u2192 onActivateLoyalty",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -7220,7 +7220,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 12→18 lines (4 removed)",
+      "fix": "Rewrote 12\u219218 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -7235,8 +7235,8 @@
       "timestamp": "2026-06-08T11:00:00.000Z",
       "error_message": "User: 'Liliana, Untouched by Death is not implemented in the card database' / 'doesn't exist in the card selector in the deckbuilder'",
       "file": "scripts/import-scryfall-cards.mjs",
-      "root_cause": "TWO independent gaps. (1) CATALOG: she has no row in public.cards — the Scryfall import (npm run import:cards) was never run on the full oracle file (lib/oracle-cards-*.json, where she exists) or ran partially. The deck text-importer (import_deck_from_text, mig 139) matches lower(cards.name) exactly, so an unimported card shows as 'missing'. (2) BEHAVIOR: the importer maps DATA only (name/cost/type_line/oracle_text/power_toughness/keywords/image_url) and NEVER sets the `script` column — behavior scripts are authored separately (AI route /api/cards/generate-behavior or the editor). So even after import she'd have a null script and the engine couldn't run her abilities.",
-      "fix": "Catalog: run `npm run import:cards` (operational; writes to the real Supabase — left to the user). Behavior: authored her script (loyalty 4) with +1 (conditional mill, mig 171) working; -2 (needs loyalty targeting + dynamic pump) and -3 (cast-from-graveyard) left as labelled no-op stubs.",
+      "root_cause": "TWO independent gaps. (1) CATALOG: she has no row in public.cards \u2014 the Scryfall import (npm run import:cards) was never run on the full oracle file (lib/oracle-cards-*.json, where she exists) or ran partially. The deck text-importer (import_deck_from_text, mig 139) matches lower(cards.name) exactly, so an unimported card shows as 'missing'. (2) BEHAVIOR: the importer maps DATA only (name/cost/type_line/oracle_text/power_toughness/keywords/image_url) and NEVER sets the `script` column \u2014 behavior scripts are authored separately (AI route /api/cards/generate-behavior or the editor). So even after import she'd have a null script and the engine couldn't run her abilities.",
+      "fix": "Catalog: run `npm run import:cards` (operational; writes to the real Supabase \u2014 left to the user). Behavior: authored her script (loyalty 4) with +1 (conditional mill, mig 171) working; -2 (needs loyalty targeting + dynamic pump) and -3 (cast-from-graveyard) left as labelled no-op stubs.",
       "tags": [
         "card-database",
         "import",
@@ -7254,10 +7254,10 @@
     {
       "id": "bug-447",
       "timestamp": "2026-06-08T11:40:00.000Z",
-      "error_message": "EVERY planeswalker is missing from the cards catalog (e.g. Liliana, Untouched by Death) — the Scryfall import silently skips them. (Corrects bug-446's wrong 'import never ran' hypothesis: the import RAN but dropped all planeswalkers.)",
+      "error_message": "EVERY planeswalker is missing from the cards catalog (e.g. Liliana, Untouched by Death) \u2014 the Scryfall import silently skips them. (Corrects bug-446's wrong 'import never ran' hypothesis: the import RAN but dropped all planeswalkers.)",
       "file": "scripts/import-scryfall-cards.mjs",
-      "root_cause": "isExtraCardObject (the playableOnly filter that drops tokens/emblems/Planechase planes/etc.) used `typeLine.includes('plane')` to catch Planechase 'Plane —' cards — but the substring 'plane' ALSO matches 'planeS WALKER', so every planeswalker's type_line ('Legendary Planeswalker — …') returned true and was skipped as an 'extra'.",
-      "fix": "Replaced `typeLine.includes('plane')` with a word-boundary test `/\\bplane\\b/.test(typeLine)` — 'planeswalker' has no boundary after 'plane' (next char 's'), so it is kept; 'Plane — Dominaria' still matches and is skipped. Re-run `npm run import:cards` to load the planeswalkers.",
+      "root_cause": "isExtraCardObject (the playableOnly filter that drops tokens/emblems/Planechase planes/etc.) used `typeLine.includes('plane')` to catch Planechase 'Plane \u2014' cards \u2014 but the substring 'plane' ALSO matches 'planeS WALKER', so every planeswalker's type_line ('Legendary Planeswalker \u2014 \u2026') returned true and was skipped as an 'extra'.",
+      "fix": "Replaced `typeLine.includes('plane')` with a word-boundary test `/\\bplane\\b/.test(typeLine)` \u2014 'planeswalker' has no boundary after 'plane' (next char 's'), so it is kept; 'Plane \u2014 Dominaria' still matches and is skipped. Re-run `npm run import:cards` to load the planeswalkers.",
       "tags": [
         "import",
         "substring-false-positive",
@@ -7278,7 +7278,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010172_dynamic_pump_loyalty_target.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 8→25 lines (4 removed)",
+      "fix": "Rewrote 8\u219225 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -7294,7 +7294,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 8→9 lines (2 removed)",
+      "fix": "Rewrote 8\u21929 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -7325,7 +7325,7 @@
       "timestamp": "2026-06-08T09:54:09.263Z",
       "error_message": "Missing await",
       "file": "tests/feature/liliana-untouched.test.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -7357,7 +7357,7 @@
       "timestamp": "2026-06-08T11:10:15.677Z",
       "error_message": "Missing await",
       "file": "tests/feature/liliana-untouched.test.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -7390,7 +7390,7 @@
       "error_message": "Null/undefined access in ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check) | Also: {graveyard.map((card) => {; // A card with a flashback cost is castable from here — make",
+      "fix": "Added null safety (optional chaining or null check) | Also: {graveyard.map((card) => {; // A card with a flashback cost is castable from here \u2014 make",
       "tags": [
         "auto-detected",
         "null-safety",
@@ -7470,7 +7470,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "6 lines replaced/restructured",
-      "fix": "Rewrote 29→95 lines (6 removed)",
+      "fix": "Rewrote 29\u219295 lines (6 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -7533,9 +7533,9 @@
       "timestamp": "2026-06-08T00:00:00.000Z",
       "error_message": "Unsupported ability cost: sacrifice_self (Commander's Sphere 'Sacrifice: Draw' never worked)",
       "file": "supabase/migrations/202605010175_sacrifice_self_ability_cost.sql",
-      "root_cause": "The Zod schema (card-behavior-schema.ts CardBehaviorCostSchema) listed 'sacrifice_self' as a known activated-ability cost, but activate_ability (mig 162) only paid tap_self/mana/energy and raised on any other cost type. A schema-only capability with no engine support — passed validation, failed at runtime.",
+      "root_cause": "The Zod schema (card-behavior-schema.ts CardBehaviorCostSchema) listed 'sacrifice_self' as a known activated-ability cost, but activate_ability (mig 162) only paid tap_self/mana/energy and raised on any other cost type. A schema-only capability with no engine support \u2014 passed validation, failed at runtime.",
       "fix": "Reproduced activate_ability in mig 175 with a 'sacrifice_self' cost branch (v_has_sac) that calls put_in_graveyard on the source after other costs are paid and before the ability goes on the stack. put_action_on_stack tolerates a non-battlefield source, so the draw still resolves.",
-      "fix_lesson": "When triaging 'is X supported', a type in the Zod schema does NOT prove engine support — grep the migrations for the actual handler. The schema is permissive (validates author intent); the engine is the source of truth for what runs.",
+      "fix_lesson": "When triaging 'is X supported', a type in the Zod schema does NOT prove engine support \u2014 grep the migrations for the actual handler. The schema is permissive (validates author intent); the engine is the source of truth for what runs.",
       "tags": [
         "engine-schema-mismatch",
         "activated-ability",
@@ -7553,7 +7553,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-registry.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 9→11 lines (2 removed)",
+      "fix": "Rewrote 9\u219211 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -7568,7 +7568,7 @@
       "timestamp": "2026-06-08T00:00:00.000Z",
       "error_message": "User: 'it is not explained correctly because it says you draw .. cards after choose player'",
       "file": "lib/game/card-behavior-registry.ts",
-      "root_cause": "The guided form rendered choose_player's inner effects with caster-centric labels — draw showed 'You draw cards'. But the engine forces every inner effect's recipient to 'controller' and applies them to the CHOSEN player (submit_decision, mig 170), so inside choose_player the subject is the chosen player, not 'you'. The label contradicted the behavior.",
+      "root_cause": "The guided form rendered choose_player's inner effects with caster-centric labels \u2014 draw showed 'You draw cards'. But the engine forces every inner effect's recipient to 'controller' and applies them to the CHOSEN player (submit_decision, mig 170), so inside choose_player the subject is the chosen player, not 'you'. The label contradicted the behavior.",
       "fix": "Neutralized the draw label to 'Draw cards' (the drawer is the effect's controller in every context), and bound the subject at the wrapper: choose_player label 'Choose a player, then that player...' and its effects-list label 'That player:'. Could not add a dedicated chosen-context draw variant because resolveEffectDef disambiguates variants by field-shape and a chosen-draw has the same [amount] shape as base draw.",
       "fix_lesson": "When an effect is reused in a context that rebinds its subject (choose_player rebinds recipient to the chosen player), prefer a subject-neutral label + a wrapper that names the subject, over a same-shape variant the registry can't disambiguate.",
       "tags": [
@@ -7585,11 +7585,11 @@
     {
       "id": "bug-467",
       "timestamp": "2026-06-08T00:00:00.000Z",
-      "error_message": "User: 'the draw 2 states you draw' — choose_player's 'That player:' subject label was invisible in the form",
+      "error_message": "User: 'the draw 2 states you draw' \u2014 choose_player's 'That player:' subject label was invisible in the form",
       "file": "components/CardBehaviorForm.tsx",
-      "root_cause": "EffectListControl never rendered its field.label, so the effect-list header (choose_player effects = \"That player:\", may = \"Then\", rider = \"Then you…\") was dropped. The nested draw row showed only \"Draw cards\" with no subject binding, reading as subjectless/you.",
+      "root_cause": "EffectListControl never rendered its field.label, so the effect-list header (choose_player effects = \"That player:\", may = \"Then\", rider = \"Then you\u2026\") was dropped. The nested draw row showed only \"Draw cards\" with no subject binding, reading as subjectless/you.",
       "fix": "Render field.label as a small header above the nested effect rows in EffectListControl. Now choose_player shows \"That player:\" above the inner Draw cards row.",
-      "fix_lesson": "A registry/wrapper label only helps if the component actually renders it — verify the render path, not just the data.",
+      "fix_lesson": "A registry/wrapper label only helps if the component actually renders it \u2014 verify the render path, not just the data.",
       "tags": [
         "guided-form",
         "rendering",
@@ -7654,11 +7654,11 @@
     {
       "id": "bug-468",
       "timestamp": "2026-06-08T00:00:00.000Z",
-      "error_message": "User: 'Deep Analysis has flashback cost of mana with -3 life' — flashback modelled mana only",
+      "error_message": "User: 'Deep Analysis has flashback cost of mana with -3 life' \u2014 flashback modelled mana only",
       "file": "supabase/migrations/202605010176_flashback_life_cost.sql",
       "root_cause": "The flashback model was a bare mana-cost string; an additional \"Pay N life\" flashback cost (Deep Analysis: Flashback {1}{U}, Pay 3 life) had nowhere to live, so the life payment was silently missing.",
       "fix": "Added an optional flashback_life integer (separate from the flashback mana string). mig 176 reproduces cast_spell_effect and, in the graveyard/flashback branch, deducts flashback_life from the caster life (raises if life < cost). Wired through schema, card-behavior type/normalize, builder build/parse, the form (a +pay-N-life input), and the LLM doc.",
-      "fix_lesson": "Additional/alternative costs (pay life, sacrifice, discard) are distinct from the mana cost — model them as separate fields, not by overloading the mana string.",
+      "fix_lesson": "Additional/alternative costs (pay life, sacrifice, discard) are distinct from the mana cost \u2014 model them as separate fields, not by overloading the mana string.",
       "tags": [
         "flashback",
         "alternative-cost",
@@ -7677,7 +7677,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 5→6 lines (4 removed)",
+      "fix": "Rewrote 5\u21926 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -7725,7 +7725,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/CardBehaviorForm.tsx",
       "root_cause": "31 lines replaced/restructured",
-      "fix": "Rewrote 36→7 lines (31 removed)",
+      "fix": "Rewrote 36\u21927 lines (31 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -7786,11 +7786,11 @@
     {
       "id": "bug-469",
       "timestamp": "2026-06-08T00:00:00.000Z",
-      "error_message": "User: 'some flashback abilities do more/other stuff than the standard effects' — flashback re-ran the identical spell program both ways",
+      "error_message": "User: 'some flashback abilities do more/other stuff than the standard effects' \u2014 flashback re-ran the identical spell program both ways",
       "file": "supabase/migrations/202605010177_flashback_alternate_effect.sql",
       "root_cause": "cast_spell_effect ran the same actions whether cast from hand or graveyard, so cards whose flashback does more/different (the Increasing cycle: ten tokens instead of five, mill twice X) could not be modelled.",
-      "fix": "Added an optional flashback_effect program (same shape as spell_effect) that REPLACES spell_effect on a graveyard cast. mig 177 selects the program by cast zone BEFORE X-resolution — engine-enforced, so the client cannot substitute it and no client change was needed for untargeted cards. Wired through schema, card-behavior, builder (factored a shared SpellActionList for the second action list), form, and the LLM doc.",
-      "fix_lesson": "When an alternate behavior depends on game state the server knows (cast zone), enforce it in the engine rather than trusting the client to send the right actions — more correct and testable.",
+      "fix": "Added an optional flashback_effect program (same shape as spell_effect) that REPLACES spell_effect on a graveyard cast. mig 177 selects the program by cast zone BEFORE X-resolution \u2014 engine-enforced, so the client cannot substitute it and no client change was needed for untargeted cards. Wired through schema, card-behavior, builder (factored a shared SpellActionList for the second action list), form, and the LLM doc.",
+      "fix_lesson": "When an alternate behavior depends on game state the server knows (cast zone), enforce it in the engine rather than trusting the client to send the right actions \u2014 more correct and testable.",
       "tags": [
         "flashback",
         "alternate-effect",
@@ -7841,7 +7841,7 @@
       "timestamp": "2026-06-08T14:52:19.557Z",
       "error_message": "Incorrect value in code",
       "file": "lib/game/card-behavior-llm.ts",
-      "root_cause": "Had \"{T}, Pay two energy: …\"",
+      "root_cause": "Had \"{T}, Pay two energy: \u2026\"",
       "fix": "Changed to \"type\"",
       "tags": [
         "auto-detected",
@@ -7891,7 +7891,7 @@
       "file": "supabase/migrations/202605010178_exile_from_graveyard_cost.sql",
       "root_cause": "Two activated-ability gaps: no exile_from_graveyard cost (graveyard-card targeting), and activate_ability had no create_token effect (and put_action_on_stack has no token handler). Cemetery Reaper needs both.",
       "fix": "mig 178 adds the exile_from_graveyard cost (validates+exiles the chosen graveyard card passed as p_target_card_id) and routes create_token through a direct spell_effect stack insert (reusing the spell-effect resolver). Wired schema + builder + form (an Exile-a-creature-from-a-graveyard checkbox). Added a Zombie Token fixture so the form-canonical token name is also engine-seeded.",
-      "fix_lesson": "EFFECT_TOKEN_NAMES (form) and the seeded test tokens are separate lists — a token must be in BOTH to round-trip through the form AND resolve in the engine.",
+      "fix_lesson": "EFFECT_TOKEN_NAMES (form) and the seeded test tokens are separate lists \u2014 a token must be in BOTH to round-trip through the form AND resolve in the engine.",
       "tags": [
         "activated-ability",
         "exile-from-graveyard",
@@ -7911,8 +7911,8 @@
       "timestamp": "2026-06-08T14:59:43.917Z",
       "error_message": "CSS fix: type",
       "file": "components/ControllerListV4.tsx",
-      "root_cause": "type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false → 'create_token', amount: 0, canTargetPlayer: false, canTargetCreature: false, needsTarget: false",
-      "fix": "Changed type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false → 'create_token', amount: 0, canTargetPlayer: false, canTargetCreature: false, needsTarget: false",
+      "root_cause": "type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false \u2192 'create_token', amount: 0, canTargetPlayer: false, canTargetCreature: false, needsTarget: false",
+      "fix": "Changed type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false \u2192 'create_token', amount: 0, canTargetPlayer: false, canTargetCreature: false, needsTarget: false",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -7928,7 +7928,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 21→27 lines (2 removed)",
+      "fix": "Rewrote 21\u219227 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -7976,7 +7976,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 4→19 lines (2 removed)",
+      "fix": "Rewrote 4\u219219 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -8039,7 +8039,7 @@
       "timestamp": "2026-06-08T00:00:00.000Z",
       "error_message": "User: Champion of the Perished ('Whenever another Zombie you control enters, +1/+1 counter') couldn't be set in the guided form",
       "file": "lib/game/card-behavior-builder.ts",
-      "root_cause": "The form's triggered abilities were event+effects only — no trigger FILTER. The watcher events (creature_entered/died/got_counter) need a filter (type_line/controller/exclude_self) to mean 'another Zombie you control', and it wasn't exposed (engine mig 165 + schema already supported it). A filtered trigger dropped to JSON mode.",
+      "root_cause": "The form's triggered abilities were event+effects only \u2014 no trigger FILTER. The watcher events (creature_entered/died/got_counter) need a filter (type_line/controller/exclude_self) to mean 'another Zombie you control', and it wasn't exposed (engine mig 165 + schema already supported it). A filtered trigger dropped to JSON mode.",
       "fix": "Added BuilderTrigger.filter {typeLine, controller, excludeSelf} + parseTriggerFilter + a filter UI in TriggerEditor shown only for watcher events. Build omits controller when you (the engine default) and emits opponent/any explicitly.",
       "fix_lesson": "The engine defaults an absent watcher controller to you (not any); any must be explicit. Match the form default to the engine default so a bare/omitted field round-trips to the same behavior.",
       "tags": [
@@ -8108,7 +8108,7 @@
       "file": "supabase/migrations/202605010179_mass_typed_debuff.sql",
       "root_cause": "No mass P/T debuff effect with a type EXCLUSION and an until-EOT duration; choose_creature_type only injected the chosen type into count-amounts, not into a mass-pump filter.",
       "fix": "Added pump_all (temporary mass pump via apply_mass_pump_until_eot), extended the P/T fold with payload.exclude_type (invert the type filter), and made choose_creature_type inject the chosen type into pump_all.creature_type + apply it via the helper. The -X/-X kills via the lethal SBA (effective toughness).",
-      "fix_lesson": "When the injection must live in a huge function (submit_decision), do the whole sub-feature there rather than ALSO reproducing a second giant (apply_triggered_ability_effects) — fewer hand-copied lines, lower regression risk.",
+      "fix_lesson": "When the injection must live in a huge function (submit_decision), do the whole sub-feature there rather than ALSO reproducing a second giant (apply_triggered_ability_effects) \u2014 fewer hand-copied lines, lower regression risk.",
       "tags": [
         "crippling-fear",
         "mass-debuff",
@@ -8191,7 +8191,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/ControllerListV4.tsx",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 4→4 lines (4 removed)",
+      "fix": "Rewrote 4\u21924 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -8223,7 +8223,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 10→14 lines (2 removed) | Also: costs: ability.tapSelf ? [{ type: 'tap_self' }] : ; effects: [{ type: 'add_mana', color: ability.color",
+      "fix": "Rewrote 10\u219214 lines (2 removed) | Also: costs: ability.tapSelf ? [{ type: 'tap_self' }] : ; effects: [{ type: 'add_mana', color: ability.color",
       "tags": [
         "auto-detected",
         "refactor",
@@ -8239,7 +8239,7 @@
       "error_message": "Significant refactor of ",
       "file": "components/CardBehaviorForm.tsx",
       "root_cause": "5 lines replaced/restructured",
-      "fix": "Rewrote 26→52 lines (5 removed)",
+      "fix": "Rewrote 26\u219252 lines (5 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -8254,8 +8254,8 @@
       "timestamp": "2026-06-08T18:04:41.187Z",
       "error_message": "CSS fix: filter",
       "file": "components/CardBehaviorForm.tsx",
-      "root_cause": "filter: { ...trigger.filter, excludeSelf: event.target.checked → { ...trigger.filter, nontoken: event.target.checked",
-      "fix": "Changed filter: { ...trigger.filter, excludeSelf: event.target.checked → { ...trigger.filter, nontoken: event.target.checked",
+      "root_cause": "filter: { ...trigger.filter, excludeSelf: event.target.checked \u2192 { ...trigger.filter, nontoken: event.target.checked",
+      "fix": "Changed filter: { ...trigger.filter, excludeSelf: event.target.checked \u2192 { ...trigger.filter, nontoken: event.target.checked",
       "tags": [
         "auto-detected",
         "style-fix",
@@ -8543,7 +8543,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010186_exile_from_graveyard_effect.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 16→24 lines (4 removed)",
+      "fix": "Rewrote 16\u219224 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -8625,7 +8625,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 7→8 lines (3 removed)",
+      "fix": "Rewrote 7\u21928 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -8689,7 +8689,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-registry.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 15→18 lines (2 removed)",
+      "fix": "Rewrote 15\u219218 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -8702,9 +8702,9 @@
     {
       "id": "bug-527",
       "timestamp": "2026-06-08T20:30:00.000Z",
-      "error_message": "Wayfarer's Bauble not settable in the guided form (parseScriptToForm → null / JSON mode)",
+      "error_message": "Wayfarer's Bauble not settable in the guided form (parseScriptToForm \u2192 null / JSON mode)",
       "file": "lib/game/card-behavior-registry.ts",
-      "root_cause": "The search_library registry entry did not expose the  field, though schema + engine support it. effectFromJson strict-parses, so  was an unknown key → the whole script dropped to JSON-only mode. Engine/schema support does NOT imply the form can author it — the registry must list the field.",
+      "root_cause": "The search_library registry entry did not expose the  field, though schema + engine support it. effectFromJson strict-parses, so  was an unknown key \u2192 the whole script dropped to JSON-only mode. Engine/schema support does NOT imply the form can author it \u2014 the registry must list the field.",
       "fix": "Added an optional  boolean field to the search_library registry entry (omitted unless true). Wayfarer's Bauble now round-trips through the form.",
       "tags": [
         "registry",
@@ -8770,7 +8770,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 34→44 lines (3 removed)",
+      "fix": "Rewrote 34\u219244 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -8978,7 +8978,7 @@
       "error_message": "Wrong reference: optional should be each_player",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "Used \"optional\" instead of \"each_player\"",
-      "fix": "Changed optional → each_player",
+      "fix": "Changed optional \u2192 each_player",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -9041,7 +9041,7 @@
       "timestamp": "2026-06-09T22:24:37.308Z",
       "error_message": "Missing await",
       "file": "tests/feature/curse-of-disturbance.test.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
+      "root_cause": "Async call without await \u2014 returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -9074,7 +9074,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-builder.ts",
       "root_cause": "5 lines replaced/restructured",
-      "fix": "Rewrote 29→44 lines (5 removed)",
+      "fix": "Rewrote 29\u219244 lines (5 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9138,7 +9138,7 @@
       "error_message": "Wrong reference: sacrifice should be grant_keyword_all",
       "file": "lib/game/card-behavior-llm.ts",
       "root_cause": "Used \"sacrifice\" instead of \"grant_keyword_all\"",
-      "fix": "Changed sacrifice → grant_keyword_all",
+      "fix": "Changed sacrifice \u2192 grant_keyword_all",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -9170,7 +9170,7 @@
       "error_message": "Wrong reference: sacrifice should be conditional",
       "file": "lib/game/card-behavior-llm.ts",
       "root_cause": "Used \"sacrifice\" instead of \"conditional\"",
-      "fix": "Changed sacrifice → conditional",
+      "fix": "Changed sacrifice \u2192 conditional",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -9186,7 +9186,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/functions_src/cast_card_from_hand.sql",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 17→42 lines (3 removed)",
+      "fix": "Rewrote 17\u219242 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9234,7 +9234,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/feature/necromantic-selection.test.ts",
       "root_cause": "17 lines replaced/restructured",
-      "fix": "Rewrote 30→19 lines (17 removed)",
+      "fix": "Rewrote 30\u219219 lines (17 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9250,7 +9250,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 7→17 lines (2 removed)",
+      "fix": "Rewrote 7\u219217 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9266,7 +9266,7 @@
       "error_message": "Wrong reference: then should be return_all_from_graveyard",
       "file": "supabase/functions_src/activate_ability.sql",
       "root_cause": "Used \"then\" instead of \"return_all_from_graveyard\"",
-      "fix": "Changed then → return_all_from_graveyard",
+      "fix": "Changed then \u2192 return_all_from_graveyard",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -9282,7 +9282,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/feature/havengul-lich.test.ts",
       "root_cause": "5 lines replaced/restructured",
-      "fix": "Rewrote 26→37 lines (5 removed)",
+      "fix": "Rewrote 26\u219237 lines (5 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9313,7 +9313,7 @@
       "timestamp": "2026-06-10T13:30:00Z",
       "error_message": "extract-functions seeder over-captured pay_mana_cost (2 create stmts) and missed mig 121's redefinition",
       "file": "scripts/extract-functions.mjs",
-      "root_cause": "Function bodies can close with a TAGGED dollar quote ($_$;) — searching for a bare '$$;' line runs past the real end into the next function; and the naive line scan returned null on those files so a LATER definition was skipped.",
+      "root_cause": "Function bodies can close with a TAGGED dollar quote ($_$;) \u2014 searching for a bare '$$;' line runs past the real end into the next function; and the naive line scan returned null on those files so a LATER definition was skipped.",
       "fix": "Dollar-quote-aware extractor: capture the `as $TAG$` opening tag and close at `\n$TAG$;`; per-fn create-stmt count check caught it.",
       "tags": [
         "extractor",
@@ -9364,7 +9364,7 @@
       "timestamp": "2026-06-10T13:33:00Z",
       "error_message": "Lieutenant conditional round-trip: parseScriptToForm returned null when condition omitted type_line",
       "file": "tests/fixtures/test-cards.json",
-      "root_cause": "The registry's strict object-field parse requires every non-optional sub-field present; the form's canonical conditional JSON carries type_line:'' (bug-230 family — the serializer can't drop an empty nested sub-field).",
+      "root_cause": "The registry's strict object-field parse requires every non-optional sub-field present; the form's canonical conditional JSON carries type_line:'' (bug-230 family \u2014 the serializer can't drop an empty nested sub-field).",
       "fix": "Author conditional conditions with type_line:'' (canonical form shape) when form-settability matters; engine accepts both.",
       "tags": [
         "builder",
@@ -9383,7 +9383,7 @@
       "timestamp": "2026-06-10T10:49:16.332Z",
       "error_message": "Missing error handling in unknown",
       "file": "scripts/setup-local-test-db.mjs",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -9399,8 +9399,8 @@
       "timestamp": "2026-06-10T17:00:00Z",
       "error_message": "supabase db push: invalid byte sequence for encoding UTF8: 0x97 (SQLSTATE 22021) applying 202605010202_grant_keyword_all.sql",
       "file": "supabase/migrations/202605010202_grant_keyword_all.sql",
-      "root_cause": "The migration was composed by a Python heredoc using open(path,'w') WITHOUT encoding= — on Windows that defaults to cp1252, so em-dashes in the header comment were written as byte 0x97 (invalid UTF-8). The local setup script read with Node's 'utf8' (which silently substitutes U+FFFD), so local applies passed; supabase db push sends raw bytes and hosted Postgres rejected them.",
-      "fix": "Re-encoded the file cp1252->UTF-8 (em-dashes restored, 0 stray bytes). PREVENTION: scripts/setup-local-test-db.mjs now strict-decodes every SQL file (TextDecoder fatal:true) and fails loudly with the filename before applying; scanned all migrations/functions_src/lib/tests — only this one file was affected. Rule: Python writes on Windows must always pass encoding='utf-8'.",
+      "root_cause": "The migration was composed by a Python heredoc using open(path,'w') WITHOUT encoding= \u2014 on Windows that defaults to cp1252, so em-dashes in the header comment were written as byte 0x97 (invalid UTF-8). The local setup script read with Node's 'utf8' (which silently substitutes U+FFFD), so local applies passed; supabase db push sends raw bytes and hosted Postgres rejected them.",
+      "fix": "Re-encoded the file cp1252->UTF-8 (em-dashes restored, 0 stray bytes). PREVENTION: scripts/setup-local-test-db.mjs now strict-decodes every SQL file (TextDecoder fatal:true) and fails loudly with the filename before applying; scanned all migrations/functions_src/lib/tests \u2014 only this one file was affected. Rule: Python writes on Windows must always pass encoding='utf-8'.",
       "tags": [
         "encoding",
         "utf8",
@@ -9419,7 +9419,7 @@
       "error_message": "Significant refactor of ",
       "file": "scripts/triage-decklist.mjs",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 4→4 lines (2 removed)",
+      "fix": "Rewrote 4\u21924 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9435,7 +9435,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/functions_src/put_in_graveyard.sql",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 18→30 lines (2 removed)",
+      "fix": "Rewrote 18\u219230 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9451,7 +9451,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/feature/fleshbag-overseer.test.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 15→21 lines (3 removed)",
+      "fix": "Rewrote 15\u219221 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9533,7 +9533,7 @@
       "error_message": "Significant refactor of ",
       "file": "scripts/triage-decklist.mjs",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 7→11 lines (2 removed)",
+      "fix": "Rewrote 7\u219211 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9565,7 +9565,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010223_ureni_look_top.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 6→41 lines (4 removed)",
+      "fix": "Rewrote 6\u219241 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9581,7 +9581,7 @@
       "error_message": "Wrong reference: then should be deal_damage_all",
       "file": "supabase/functions_src/activate_ability.sql",
       "root_cause": "Used \"then\" instead of \"deal_damage_all\"",
-      "fix": "Changed then → deal_damage_all",
+      "fix": "Changed then \u2192 deal_damage_all",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -9645,7 +9645,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/functions_src/fire_watcher_triggers.sql",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 6→28 lines (2 removed)",
+      "fix": "Rewrote 6\u219228 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9693,7 +9693,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010229_gadrak.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 5→16 lines (4 removed)",
+      "fix": "Rewrote 5\u219216 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9709,7 +9709,7 @@
       "error_message": "Significant refactor of ",
       "file": "lib/game/card-behavior-schema.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 3→5 lines (3 removed)",
+      "fix": "Rewrote 3\u21925 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9741,7 +9741,7 @@
       "error_message": "Significant refactor of ",
       "file": "tests/feature/gadrak.test.ts",
       "root_cause": "6 lines replaced/restructured",
-      "fix": "Rewrote 17→26 lines (6 removed)",
+      "fix": "Rewrote 17\u219226 lines (6 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9757,7 +9757,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010230_atsushi.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 5→28 lines (4 removed)",
+      "fix": "Rewrote 5\u219228 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9788,7 +9788,7 @@
       "timestamp": "2026-06-11T11:00:00.000Z",
       "error_message": "RETURNING gc.id INTO v_exiled (uuid[]) from a multi-row UPDATE in the impulse branch",
       "file": "supabase/functions_src/apply_triggered_ability_effects.sql",
-      "root_cause": "A multi-row UPDATE cannot RETURNING ... INTO a scalar/array variable in plpgsql — it errors or captures only one row.",
+      "root_cause": "A multi-row UPDATE cannot RETURNING ... INTO a scalar/array variable in plpgsql \u2014 it errors or captures only one row.",
       "fix": "Dropped the RETURNING clause; collect the exiled ids with a follow-up SELECT array_agg(id) WHERE zone='exile' AND zone_position > the pre-move max position.",
       "tags": [
         "sql",
@@ -9823,7 +9823,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010231_cost_reduction.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 5→26 lines (4 removed)",
+      "fix": "Rewrote 5\u219226 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9855,7 +9855,7 @@
       "error_message": "Wrong reference: then should be monstrosity",
       "file": "supabase/functions_src/activate_ability.sql",
       "root_cause": "Used \"then\" instead of \"monstrosity\"",
-      "fix": "Changed then → monstrosity",
+      "fix": "Changed then \u2192 monstrosity",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -9871,7 +9871,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010232_monstrosity.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 4→10 lines (4 removed)",
+      "fix": "Rewrote 4\u219210 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9903,7 +9903,7 @@
       "error_message": "Wrong reference: then should be divide_damage",
       "file": "supabase/functions_src/activate_ability.sql",
       "root_cause": "Used \"then\" instead of \"divide_damage\"",
-      "fix": "Changed then → divide_damage",
+      "fix": "Changed then \u2192 divide_damage",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -9935,7 +9935,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010233_divide_damage.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 4→16 lines (4 removed)",
+      "fix": "Rewrote 4\u219216 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9967,7 +9967,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/functions_src/fire_watcher_triggers.sql",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 4→6 lines (2 removed)",
+      "fix": "Rewrote 4\u21926 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -9983,7 +9983,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010234_spell_cast_watcher.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 4→15 lines (4 removed)",
+      "fix": "Rewrote 4\u219215 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -10047,7 +10047,7 @@
       "error_message": "Significant refactor of ",
       "file": "supabase/migrations/202605010235_becomes_target_and_power.sql",
       "root_cause": "4 lines replaced/restructured",
-      "fix": "Rewrote 4→12 lines (4 removed)",
+      "fix": "Rewrote 4\u219212 lines (4 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -10056,6 +10056,72 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T14:39:43.694Z"
+    },
+    {
+      "id": "bug-619",
+      "timestamp": "2026-06-11T15:21:46.078Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T15:21:46.078Z"
+    },
+    {
+      "id": "bug-620",
+      "timestamp": "2026-06-11T15:22:23.818Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010236_exert_and_transform.sql",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 4\u219212 lines (4 removed) | Also: -- 202605010236_exert_and_transform; -- TODO: describe the change.",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-11T15:26:55.510Z"
+    },
+    {
+      "id": "bug-236a",
+      "timestamp": "2026-06-11T16:35:00.000Z",
+      "error_message": "Setup failed: function public.declare_attacker(uuid, uuid, uuid, uuid) does not exist",
+      "file": "supabase/functions_src/declare_attacker.sql",
+      "root_cause": "Added a parameter (p_exert) but the functions_src grant lines still named the old 4-arg signature; after drop-old + create-5-arg the stale grant referenced a non-existent function and the migration failed.",
+      "fix": "Bump the grant execute lines in the functions_src file to the new arg list before regenerating the migration.",
+      "tags": [
+        "sql",
+        "signature-change",
+        "grant",
+        "mig-236"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T16:35:00.000Z"
+    },
+    {
+      "id": "bug-236b",
+      "timestamp": "2026-06-11T16:38:00.000Z",
+      "error_message": "card_has_flying returned false in a test even though the grant applied",
+      "file": "tests/feature/exert-and-transform.test.ts",
+      "root_cause": "card_has_* accessors are gated on is_session_player(auth.uid()); a harness client.query runs as postgres with no auth.uid(), so they always return false.",
+      "fix": "Assert keyword grants by querying game_continuous_effects directly (affected_card_id + effect_type), not the auth-gated accessor.",
+      "tags": [
+        "test",
+        "auth",
+        "card_has_flying",
+        "mig-236"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T16:38:00.000Z"
     }
   ]
 }

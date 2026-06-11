@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T14:41:02.776Z
-> Files: 78 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T15:29:03.918Z
+> Files: 80 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -101,7 +101,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~5171 tok)
+- `card-scripts.json` (~5462 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -111,7 +111,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12127 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~12185 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -137,15 +137,15 @@
 
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6246 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
-- `advance_step.sql` — supabase/functions_src/advance_step.sql (~2372 tok)
+- `advance_step.sql` — supabase/functions_src/advance_step.sql (~2507 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~7117 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7059 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7133 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~4623 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2441 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
-- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~1698 tok)
+- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~1925 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1017 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~306 tok)
@@ -175,6 +175,7 @@
 - `202605010233_divide_damage.sql` — 202605010233_divide_damage — divided damage from triggers/abilities. (~21620 tok)
 - `202605010234_spell_cast_watcher.sql` — 202605010234_spell_cast_watcher — "whenever you/an opponent cast a spell". (~15190 tok)
 - `202605010235_becomes_target_and_power.sql` — 202605010235_becomes_target_and_power — Eshki + Thunderbreak Regent. (~10543 tok)
+- `202605010236_exert_and_transform.sql` — 202605010236_exert_and_transform — Glorybringer (exert) + Nogi (transform). (~11437 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -194,6 +195,7 @@
 - `divide-damage.test.ts` — Divided damage from triggers/abilities (mig 233): (~1212 tok)
 - `dragons-deck.test.ts` — Dragons deck — proving tests for the Tier-0 compositions (cards authored (~2449 tok)
 - `enters-tapped-lands.test.ts` — Enters-tapped lands (mig 217) — top-level `enters_tapped` read in (~1071 tok)
+- `exert-and-transform.test.ts` — mig 236 — three cards: (~1238 tok)
 - `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
 - `gadrak.test.ts` — Gadrak, the Crown-Scourge (mig 229) — (~1191 tok)
 - `game-start.test.ts` — Game start sequence (mig 221) — random first player, 7-card opening hands, (~1843 tok)
@@ -208,11 +210,11 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~24882 tok)
+- `test-cards.json` (~25432 tok)
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9815 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9943 tok)
 
 ## tests/regression/
 
@@ -249,6 +251,5 @@
 ## vercel/styles/
 
 
-- `supabase/functions_src/fire_becomes_target_triggers.sql` — "becomes the target of an opponent's spell/ability" watcher (Thunderbreak Regent). ~500 tok
-- `tests/feature/becomes-target-and-power.test.ts` — Eshki power tiers + Thunderbreak punisher + Spit Flame removal. ~900 tok
-- `supabase/migrations/202605010235_becomes_target_and_power.sql` — power_of amount + becomes_target event + recipient_player_id. ~2.5k tok
+- `tests/feature/exert-and-transform.test.ts` — Glorybringer exert + Nogi transform + Steel Hellkite firebreathing. ~700 tok
+- `supabase/migrations/202605010236_exert_and_transform.sql` — exert (declare_attacker p_exert + untap skip) + untargeted set_pt. ~3k tok

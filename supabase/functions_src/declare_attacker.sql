@@ -7,7 +7,8 @@ create or replace function public.declare_attacker(
   p_session_id uuid,
   p_attacker_card_id uuid,
   p_defending_player_id uuid,
-  p_defending_planeswalker_id uuid default null
+  p_defending_planeswalker_id uuid default null,
+  p_exert boolean default false
 ) returns public.game_combat_assignments
 language plpgsql
 security definer
@@ -155,6 +156,23 @@ begin
   )
   returning * into v_assignment;
 
+  -- Exert (mig 236, Glorybringer): "You may exert this creature as it attacks.
+  -- When you do, <effects>." Exerting marks it (so it skips its next untap, see
+  -- advance_step) and enqueues the exert effects (a targeted attack trigger).
+  if p_exert then
+    declare
+      v_exert jsonb := public.effective_script(p_session_id, p_attacker_card_id) -> 'exert';
+    begin
+      if v_exert is not null and jsonb_typeof(v_exert) = 'array' then
+        update public.game_cards
+        set counters = public.adjust_counter_bag(coalesce(counters, '{}'::jsonb), 'exerted', 1)
+        where id = p_attacker_card_id and session_id = p_session_id;
+        perform public.enqueue_triggered_ability(
+          p_session_id, auth.uid(), p_attacker_card_id, 'Exert', v_exert);
+      end if;
+    end;
+  end if;
+
   -- Curse of Disturbance: when the defending player is attacked, each curse
   -- enchanting them makes its controller create a 2/2 black Zombie — and "each
   -- opponent attacking that player does the same" (the attacking player too).
@@ -180,5 +198,5 @@ begin
   return v_assignment;
 end;
 $$;
-grant execute on function public.declare_attacker(uuid, uuid, uuid, uuid) to authenticated;
-grant execute on function public.declare_attacker(uuid, uuid, uuid, uuid) to service_role;
+grant execute on function public.declare_attacker(uuid, uuid, uuid, uuid, boolean) to authenticated;
+grant execute on function public.declare_attacker(uuid, uuid, uuid, uuid, boolean) to service_role;

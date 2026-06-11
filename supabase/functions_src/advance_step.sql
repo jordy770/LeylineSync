@@ -96,12 +96,23 @@ begin
       delete from public.game_combat_assignments
       where session_id = p_session_id;
 
+      -- Exert (mig 236, Glorybringer): an exerted creature "won't untap during
+      -- your next untap step." Skip untapping it this once, then clear the marker
+      -- so it untaps normally next time.
       update public.game_cards
       set is_tapped = false
       where session_id = p_session_id
         and owner_id = v_current_state.active_player_id
         and zone = 'battlefield'
-        and is_tapped = true;
+        and is_tapped = true
+        and coalesce((counters ->> 'exerted')::integer, 0) = 0;
+
+      update public.game_cards
+      set counters = counters - 'exerted'
+      where session_id = p_session_id
+        and owner_id = v_current_state.active_player_id
+        and zone = 'battlefield'
+        and counters ? 'exerted';
 
       v_next_phase := 'beginning';
       v_next_step := 'upkeep';

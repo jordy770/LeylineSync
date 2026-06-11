@@ -107,5 +107,11 @@
 
   "Thunderbreak Regent": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"becomes_target","filter":{"type_line":"Dragon"},"effects":[{"type":"deal_damage","amount":3}]}]},
 
-  "Spit Flame": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage","amount":4,"target_type":"creature"}]}}
+  "Spit Flame": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage","amount":4,"target_type":"creature"}]}},
+
+  "Glorybringer": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"exert":[{"type":"deal_damage","amount":4,"target_type":"creature","target_controller":"opponent"}]},
+
+  "Nogi, Draco-Zealot": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"type_line":"Dragon","amount":1}}],"triggered_abilities":[{"event":"attacks","effects":[{"type":"conditional","condition":{"count":"creatures_you_control","type_line":"Dragon","at_least":3},"effects":[{"type":"set_pt","power":5,"toughness":5},{"type":"grant_keyword","keyword":"flying"}]}]}]},
+
+  "Steel Hellkite": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}"}],"effects":[{"type":"pump","power":1,"toughness":0,"target_type":"creature"}]}]}
 }

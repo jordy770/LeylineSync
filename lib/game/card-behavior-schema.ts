@@ -775,6 +775,9 @@ export const CardBehaviorScriptV2Schema = z.object({
       at_least: z.number().int().positive(),
     }).strict().optional(),
   }).strict().optional(),
+  // "You may exert this creature as it attacks. When you do, <effects>." Applied
+  // by declare_attacker when the player exerts (Glorybringer).
+  exert: z.array(CardBehaviorActionSchema).optional(),
   // "If an effect would put counters on a permanent you control, it puts twice that
   // many instead" (Doubling Season). A static replacement read at counter-placement.
   doubles_counters: z.boolean().optional(),

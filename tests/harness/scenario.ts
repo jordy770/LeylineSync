@@ -702,12 +702,13 @@ export class Scenario {
   }
 
   /** Declare the acting seat's creature as an attacker against `defender`. */
-  async declareAttacker(attackerCardId: string, defender: Seat): Promise<unknown> {
+  async declareAttacker(attackerCardId: string, defender: Seat, exert = false): Promise<unknown> {
     return this.run(() =>
       rpc(this.client, 'declare_attacker', {
         p_session_id: this.sessionId,
         p_attacker_card_id: attackerCardId,
         p_defending_player_id: this.players[defender],
+        p_exert: exert,
       }),
     )
   }
