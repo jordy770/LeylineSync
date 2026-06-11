@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T23:47:37.211Z
-> Files: 134 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T23:56:58.970Z
+> Files: 136 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -103,7 +103,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~8635 tok)
+- `card-scripts.json` (~10450 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -113,7 +113,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~15616 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~15631 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -173,7 +173,7 @@
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2201 tok)
 - `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~5628 tok)
-- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1832 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1943 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~778 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
@@ -211,6 +211,7 @@
 - `202605010252_selvalas_stampede.sql` — 202605010252_selvalas_stampede — Selvala's Stampede (council's dilemma (~26213 tok)
 - `202605010253_discover_pantlaza.sql` — 202605010253_discover_pantlaza — discover + Pantlaza, Sun-Favored (the (~17255 tok)
 - `202605010254_enrage.sql` — 202605010254_enrage — the enrage event ("whenever this creature is dealt (~1219 tok)
+- `202605010255_dino_manabase.sql` — 202605010255_dino_manabase — the Veloci-Ramp-Tor manabase + ramp batch (~2179 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -231,6 +232,7 @@
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
 - `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
+- `dino-manabase.test.ts` — mig 255 — the Veloci-Ramp-Tor manabase + ramp batch (~20 script-only (~1444 tok)
 - `discover.test.ts` — mig 253 — discover + Pantlaza, Sun-Favored (the Veloci-Ramp-Tor commander). (~978 tok)
 - `divide-damage.test.ts` — Divided damage from triggers/abilities (mig 233): (~1212 tok)
 - `dragon-lands.test.ts` — mig 237 — three Dragon-deck lands: (~1000 tok)
@@ -264,7 +266,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~32180 tok)
+- `test-cards.json` (~32947 tok)
 
 ## tests/harness/
 

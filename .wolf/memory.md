@@ -3602,3 +3602,14 @@
 | 01:47 | Created tests/feature/enrage.test.ts | — | ~1122 |
 | 01:47 | Edited supabase/migrations/202605010254_enrage.sql | modified event() | ~120 |
 | 05:10 | Enrage (mig 254): apply_damage_to_creature broadcasts dealt_damage/enrage with event_amount BEFORE the lethal sweep. Ripjaw Raptor (draw), Ranging Raptors (basic search), Marauding Raptor (script-only: creature cost_reduction + reflexive 2 dmg to entering creatures - chains into enrage, EN2 proves the whole loop). | mig 254, apply_damage_to_creature, fixtures, enrage.test | 885/885 green, tsc+lint clean, Veloci triage 15/8/67 | ~6k |
+| 01:49 | Session end: 157 writes across 49 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 26 reads | ~94776 tok |
+| 01:54 | Edited supabase/functions_src/resolve_count_amount.sql | modified count() | ~123 |
+| 01:54 | Edited lib/game/card-behavior-schema.ts | inline fix | ~100 |
+| 01:54 | Edited lib/game/card-behavior-schema.ts | 6→6 lines | ~88 |
+| 01:55 | Edited docs/commander-decks/card-scripts.json | expanded (+44 lines) | ~1914 |
+| 01:55 | Edited tests/fixtures/test-cards.json | 2→6 lines | ~912 |
+| 01:55 | Created tests/feature/dino-manabase.test.ts | — | ~1587 |
+| 01:56 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~208 |
+| 01:56 | Edited tests/feature/dino-manabase.test.ts | reduced (-9 lines) | ~144 |
+| 01:56 | Edited supabase/migrations/202605010255_dino_manabase.sql | expanded (+12 lines) | ~266 |
+| 05:45 | Dino manabase batch (mig 255, ~24 cards script-only): battle/check/reveal lands, Jungle Shrine, Terramorphic, Myriad Landscape, Temple False God (no 5-land gate - mana abilities lack conditions), Thriving cycle, Unclaimed Territory/Secluded Courtyard/Ixalli/Drover (any-color approx), Rogue's Passage (mana half), Arch of Orazca (city's blessing = live permanents_you_control>=10 count - NEW count), Cultivate/Rampant Growth/Thunderherd, Otepec Huntmaster. | mig 255, resolve_count_amount, schema, card-scripts.json, 6 fixtures, dino-manabase.test | 889/889 green, tsc+lint clean, Veloci triage 39/6/45 | ~9k |

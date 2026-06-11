@@ -10799,6 +10799,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T22:35:40.619Z"
+    },
+    {
+      "id": "bug-665",
+      "timestamp": "2026-06-11T23:54:34.088Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Had 'devotion'",
+      "fix": "Changed to 'permanents_you_control'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T23:54:34.088Z"
+    },
+    {
+      "id": "bug-666",
+      "timestamp": "2026-06-11T23:56:25.001Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/dino-manabase.test.ts",
+      "root_cause": "9 lines replaced/restructured",
+      "fix": "Rewrote 18→9 lines (9 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T23:56:25.001Z"
     }
   ]
 }

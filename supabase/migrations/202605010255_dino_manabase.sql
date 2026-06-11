@@ -1,7 +1,19 @@
--- supabase/functions_src/resolve_count_amount.sql
--- CANONICAL current definition (seeded from 202605010193_creatures_died_this_turn.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010255_dino_manabase — the Veloci-Ramp-Tor manabase + ramp batch
+-- (~20 script-only cards; see card-scripts.json). The one engine addition is
+-- the permanents_you_control count — Arch of Orazca's "city's blessing"
+-- approximated as a LIVE >= 10 permanents condition (the real blessing is
+-- permanent once earned).
+-- Documented approximations: Temple of the False God taps for {C}{C} with no
+-- five-lands gate (mana abilities have no condition path); Unclaimed
+-- Territory / Secluded Courtyard / Ixalli's Lorekeeper add ANY colour with
+-- the spend-restriction unenforced (Path of Ancestry precedent); Drover of
+-- the Mighty is its mana half only (the conditional +2/+2 is not modelled);
+-- Myriad Landscape's two basics need not share a type; Thunderherd
+-- Migration's additional reveal-or-pay cost is not modelled; Rogue's Passage
+-- is its mana half only (unblockable grants are not modelled yet); the
+-- Thriving lands add a fixed colour + any instead of the chosen colour.
+-- Generated from supabase/functions_src (resolve_count_amount) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.resolve_count_amount(
   p_session_id uuid,
