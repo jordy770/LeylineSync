@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T07:51:24.619Z
-> Files: 59 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T09:50:40.211Z
+> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -101,7 +101,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~3990 tok)
+- `card-scripts.json` (~4166 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -181,6 +181,7 @@
 - `fleshbag-overseer.test.ts` — Free compositions for the Gisa deck's last two creatures — no engine change, (~1286 tok)
 - `gadrak.test.ts` — Gadrak, the Crown-Scourge (mig 229) — (~1191 tok)
 - `game-start.test.ts` — Game start sequence (mig 221) — random first player, 7-card opening hands, (~1843 tok)
+- `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
 - `reflexive-watcher.test.ts` — Reflexive watchers (mig 227) — the entering/attacking creature ITSELF gains (~953 tok)
 - `treasure.test.ts` — Treasure tokens (mig 226) — "{T}, Sacrifice this artifact: Add one mana of (~660 tok)
 - `undying.test.ts` — Undying (mig 219) — "When this creature dies, if it had no +1/+1 counters on (~820 tok)
@@ -189,7 +190,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~22775 tok)
+- `test-cards.json` (~22999 tok)
 
 ## tests/harness/
 
@@ -230,5 +231,4 @@
 ## vercel/styles/
 
 
-- `tests/feature/atsushi.test.ts` — Atsushi: modal dies trigger (Treasures vs impulse), play-from-exile cast, and impulse-window expiry. ~900 tok
-- `supabase/migrations/202605010230_atsushi.sql` — modal-trigger framework (choose_one/choose_mode trigger_modal) + impulse-exile (play_from_exile permission + advance_step expiry). ~3k tok
+- `tests/feature/ramp.test.ts` — Temur ramp: Fellwar Stone / Exotic Orchard (tap-for-any) + Kodama's Reach (split basic search). ~600 tok

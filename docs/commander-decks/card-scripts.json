@@ -81,5 +81,11 @@
 
   "Gadrak, the Crown-Scourge": {"schema_version":2,"keywords":["flying"],"cant_attack_unless":{"count":"artifacts_you_control","at_least":4},"triggered_abilities":[{"event":"beginning_of_end_step","effects":[{"type":"create_token","token":"Treasure Token","count":{"count":"nontoken_creatures_died_this_turn"}}]}]},
 
-  "Atsushi, the Blazing Sky": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dies","effects":[{"type":"choose_one","prompt":"Choose one","modes":[{"label":"Exile top two; play until end of your next turn","actions":[{"type":"impulse","count":2}]},{"label":"Create three Treasures","actions":[{"type":"create_token","token":"Treasure Token","count":3}]}]}]}]}
+  "Atsushi, the Blazing Sky": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dies","effects":[{"type":"choose_one","prompt":"Choose one","modes":[{"label":"Exile top two; play until end of your next turn","actions":[{"type":"impulse","count":2}]},{"label":"Create three Treasures","actions":[{"type":"create_token","token":"Treasure Token","count":3}]}]}]}]},
+
+  "Fellwar Stone": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Exotic Orchard": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Kodama's Reach": {"schema_version":2,"spell_effect":{"actions":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}},{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"Basic Land"}}]}}
 }

@@ -9790,10 +9790,32 @@
       "file": "supabase/functions_src/apply_triggered_ability_effects.sql",
       "root_cause": "A multi-row UPDATE cannot RETURNING ... INTO a scalar/array variable in plpgsql — it errors or captures only one row.",
       "fix": "Dropped the RETURNING clause; collect the exiled ids with a follow-up SELECT array_agg(id) WHERE zone='exile' AND zone_position > the pre-move max position.",
-      "tags": ["sql", "plpgsql", "returning", "impulse", "mig-230"],
+      "tags": [
+        "sql",
+        "plpgsql",
+        "returning",
+        "impulse",
+        "mig-230"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T11:00:00.000Z"
+    },
+    {
+      "id": "bug-603",
+      "timestamp": "2026-06-11T09:50:10.703Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"Atsushi Test\"",
+      "fix": "Changed to \"Fellwar Stone Test\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T09:50:10.703Z"
     }
   ]
 }
