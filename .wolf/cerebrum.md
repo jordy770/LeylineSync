@@ -13,6 +13,8 @@
 
 ## Key Learnings
 
+- **Never script-flag a row you insert OUTSIDE register_card_continuous_effects** (bug-635): something re-registers after stack resolution, and register deletes every `registered_from_card_script=true` row for the source that isn't derived from the script — a hand-inserted flagged row vanishes. Insert plain rows and clean them up in your own revert/leave path instead.
+- **become_copy (mig 240)**: card_id flip + copy_original_card_id; reverts BOTH on leaving the battlefield (revert_copy_before_leave BEFORE-UPDATE trigger — AFTER triggers see the reverted original, so dies-triggers are the printed card's) and at end step for until-EOT copies (advance_step). Both paths delete every effect row the card sources before re-registering.
 - **game_cards.copied_script already existed pre-copy-primitive** (baseline mig 044): `effective_script = coalesce(copied_script, cards.script)`, plus a `set_card_copied_script` RPC. Mig 239 builds on it: token copies carry the source's copied_script; choose_creature_type bakes a chosen type into copied_script wherever the script holds the `"$chosen"` placeholder (Reflections of Littjara).
 - **Token copies are game-level tokens** (mig 239): `game_cards.is_token` marks a copy whose catalog row is NOT a token; cease_token_if_off_battlefield / put_in_graveyard nontoken tally / fire_watcher nontoken filter all check BOTH flags. `create_copy_token(session, recipient, copied_game_card, except)` is the one creation path.
 - **choose_mode (trigger_modal) SPLICES since mig 239**: the chosen modes' actions are spliced into the parked program at resume_index and resumed — so modes may contain parking actions (copy_permanent, choose_player). Untargeted actions reach the same applier as before via the fallthrough.

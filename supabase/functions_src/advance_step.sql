@@ -21,6 +21,7 @@ declare
   v_next_lands_played_this_turn integer;
   v_drawn_card_id uuid;
   v_next_hand_position integer;
+  v_revert uuid;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required';
@@ -82,6 +83,27 @@ begin
       and ce.effect_type = 'play_from_exile'
       and ce.affected_player_id = v_current_state.active_player_id
       and coalesce((ce.payload ->> 'created_turn')::integer, 0) < v_current_state.turn_number;
+
+    -- Become-copy "until end of turn" (mig 240, Sarkhan, Soul Aflame): revert
+    -- when the end step is left. Every effect row the copy sources is dropped
+    -- (incl. the except-keyword grants), card_id flips back to the original,
+    -- and the re-register restores the original's script effects.
+    for v_revert in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and gc.copy_revert_at_turn is not null
+        and gc.copy_revert_at_turn <= v_current_state.turn_number
+    loop
+      delete from public.game_continuous_effects
+      where session_id = p_session_id and source_card_id = v_revert;
+      update public.game_cards
+      set card_id = copy_original_card_id,
+          copied_script = null,
+          copy_original_card_id = null,
+          copy_revert_at_turn = null
+      where id = v_revert;
+      perform public.register_card_continuous_effects(p_session_id, v_revert);
+    end loop;
   end if;
 
   v_next_active_player_id := v_current_state.active_player_id;

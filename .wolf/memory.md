@@ -3357,3 +3357,24 @@
 | 18:35 | Edited tests/feature/copy-permanent.test.ts | 3→4 lines | ~69 |
 | 18:35 | Edited tests/feature/copy-permanent.test.ts | 4→6 lines | ~93 |
 | 19:35 | Copy primitive (mig 239): game_cards.is_token + create_copy_token (copy = same card_id + copied_script carryover; except -> set_pt + keyword rows); copy_permanent program action (parked pick / triggering_creature); choose_mode trigger_modal now SPLICES chosen actions into the program (modes can park); may_choose_both_if_commander; choose_creature_type bakes '$chosen' into copied_script; greatest_mana_value_you_control count. Will of the Temur (draw mode = caster, not target player) + Reflections of Littjara FULL. | mig 239, create_copy_token, cease_token, apply_trigger_effects, submit_decision, put_in_graveyard, fire_watcher, resolve_count_amount, schema, copy-permanent.test | 842/842 green, tsc+lint clean, triage 64/6/22 | ~14k |
+| 18:42 | Created supabase/functions_src/become_copy.sql | — | ~1067 |
+| 18:42 | Created supabase/functions_src/revert_copy_before_leave.sql | — | ~354 |
+| 18:43 | Edited supabase/functions_src/apply_trigger_effects.sql | added 2 condition(s) | ~868 |
+| 18:43 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~53 |
+| 18:43 | Edited supabase/functions_src/submit_decision.sql | modified pick() | ~269 |
+| 18:43 | Edited supabase/functions_src/advance_step.sql | 3→4 lines | ~21 |
+| 18:43 | Edited supabase/functions_src/advance_step.sql | modified coalesce() | ~319 |
+| 18:44 | Edited supabase/migrations/202605010240_become_copy.sql | modified public() | ~499 |
+| 18:44 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~20 |
+| 18:44 | Edited lib/game/card-behavior-schema.ts | expanded (+24 lines) | ~460 |
+| 18:44 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~87 |
+| 18:44 | Edited tests/fixtures/test-cards.json | inline fix | ~224 |
+| 18:45 | Edited tests/fixtures/test-cards.json | 2→3 lines | ~365 |
+| 18:45 | Edited docs/commander-decks/card-scripts.json | 1→3 lines | ~224 |
+| 18:46 | Created tests/feature/become-copy.test.ts | — | ~1756 |
+| 18:47 | Edited supabase/functions_src/become_copy.sql | 4→3 lines | ~59 |
+| 18:47 | Edited supabase/functions_src/become_copy.sql | modified jsonb_build_object() | ~49 |
+| 18:47 | Edited supabase/functions_src/become_copy.sql | 4→3 lines | ~63 |
+| 18:47 | Edited supabase/functions_src/advance_step.sql | 18→20 lines | ~262 |
+| 18:48 | Edited supabase/migrations/202605010240_become_copy.sql | modified public() | ~496 |
+| 20:15 | Become-copy (mig 240): game_cards.copy_original_card_id/copy_revert_at_turn + become_copy() (card_id flip, copied_script carry, except-grants as plain rows, optional fire_etb); become_copy parked pick (the pick IS the 'may'); revert_copy_before_leave BEFORE-UPDATE trigger (graveyard card = printed original); advance_step end-step revert for until-EOT. Deceptive Frostkite FULL + Sarkhan Soul Aflame copy half (now fully faithful as Dragon-enters watcher). | mig 240, become_copy, revert_copy_before_leave, apply_trigger_effects, submit_decision, advance_step, schema, become-copy.test | 846/846 green, tsc+lint clean, triage 65/6/21 | ~12k |

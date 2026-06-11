@@ -477,6 +477,52 @@ begin
         return v_decision_id;
       end if;
 
+    elsif v_type = 'become_copy' then
+      -- An existing card becomes a copy (mig 240). Options are either the
+      -- triggering creature (Sarkhan, Soul Aflame: "whenever a Dragon you
+      -- control enters, you may have Sarkhan become a copy of it until end of
+      -- turn") or battlefield creatures matching target_filter (Deceptive
+      -- Frostkite: "you may have this enter as a copy of a creature you
+      -- control with power 4 or greater"). The pick IS the "may": optional
+      -- parks with min 0 and an empty submit declines. `except`/
+      -- until_end_of_turn/fire_etb ride in params for submit_decision.
+      if (v_effect ->> 'target') = 'triggering_creature' then
+        select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name)), '[]'::jsonb)
+          into v_options
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.id = nullif(v_item.payload ->> 'triggering_card_id', '')::uuid
+          and gc.session_id = p_session_id and gc.zone = 'battlefield'
+          and gc.id is distinct from v_item.source_card_id;
+      else
+        select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
+          into v_options
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id and gc.zone = 'battlefield'
+          and gc.id is distinct from v_item.source_card_id
+          and c.type_line ilike '%creature%'
+          and (coalesce(v_effect -> 'target_filter' ->> 'type_line', '') = ''
+               or c.type_line ilike '%' || (v_effect -> 'target_filter' ->> 'type_line') || '%')
+          and (case lower(coalesce(v_effect -> 'target_filter' ->> 'controller', 'you'))
+                 when 'you' then coalesce(gc.controller_player_id, gc.owner_id) = v_controller
+                 when 'opponent' then coalesce(gc.controller_player_id, gc.owner_id) is distinct from v_controller
+                 else true end)
+          and ((v_effect -> 'target_filter' ->> 'min_power') is null
+               or coalesce(public.card_effective_power(p_session_id, gc.id), -1)
+                  >= (v_effect -> 'target_filter' ->> 'min_power')::integer);
+      end if;
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'become_copy',
+        'Become a copy of a creature?', v_options,
+        case when coalesce((v_effect ->> 'optional')::boolean, false) then 0 else 1 end, 1,
+        jsonb_build_object(
+          'except', v_effect -> 'except',
+          'until_end_of_turn', coalesce((v_effect ->> 'until_end_of_turn')::boolean, false),
+          'fire_etb', coalesce((v_effect ->> 'fire_etb')::boolean, false)))
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
     elsif v_type = 'prevent_damage' then
       perform public.add_damage_prevention(
         p_session_id,

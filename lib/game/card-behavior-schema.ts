@@ -182,7 +182,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
   'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
   'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand', 'divide_damage',
-  'return_self_to_hand', 'copy_permanent',
+  'return_self_to_hand', 'copy_permanent', 'become_copy',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -464,6 +464,30 @@ const CardBehaviorActionSchema = z.union([
     target_filter: z.object({
       controller: z.enum(['any', 'opponent', 'you']).optional(),
       type_line: z.string().optional(),
+    }).strict().optional(),
+    except: z.object({
+      power: z.number().int().optional(),
+      toughness: z.number().int().optional(),
+      keywords: z.array(z.string()).optional(),
+    }).strict().optional(),
+  }),
+  // An EXISTING card becomes a copy (mig 240). target:'triggering_creature'
+  // offers the event subject (Sarkhan: "you may have Sarkhan become a copy of
+  // it until end of turn"); otherwise battlefield creatures matching
+  // target_filter (Deceptive Frostkite enter-as-copy, min_power 4). The parked
+  // pick IS the "may" (optional → declining is legal). fire_etb runs the new
+  // script's ETB triggers (enter-as-copy). Reverts on leaving the battlefield,
+  // and at end of turn when until_end_of_turn.
+  z.object({
+    type: z.literal('become_copy'),
+    target: z.literal('triggering_creature').optional(),
+    optional: z.boolean().optional(),
+    until_end_of_turn: z.boolean().optional(),
+    fire_etb: z.boolean().optional(),
+    target_filter: z.object({
+      controller: z.enum(['any', 'opponent', 'you']).optional(),
+      type_line: z.string().optional(),
+      min_power: z.number().int().optional(),
     }).strict().optional(),
     except: z.object({
       power: z.number().int().optional(),

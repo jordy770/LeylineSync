@@ -123,7 +123,9 @@
 
   "Nesting Dragon": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Dragon Egg Token"}]}]},
 
-  "Sarkhan, Soul Aflame": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"type_line":"Dragon","amount":1}}]},
+  "Sarkhan, Soul Aflame": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"type_line":"Dragon","amount":1}}],"triggered_abilities":[{"event":"creature_entered","filter":{"type_line":"Dragon","controller":"you","exclude_self":true},"effects":[{"type":"become_copy","target":"triggering_creature","optional":true,"until_end_of_turn":true,"except":{"keywords":["haste"]}}]}]},
+
+  "Deceptive Frostkite": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"become_copy","optional":true,"fire_etb":true,"target_filter":{"controller":"you","min_power":4},"except":{"keywords":["flying"]}}]}]},
 
   "Will of the Temur": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Choose one","may_choose_both_if_commander":true,"modes":[{"label":"Create a token copy of target permanent (a 4/4 with flying)","actions":[{"type":"copy_permanent","target_filter":{"controller":"any"},"except":{"power":4,"toughness":4,"keywords":["flying"]}}]},{"label":"Draw cards equal to the greatest mana value among permanents you control","actions":[{"type":"draw","amount":{"count":"greatest_mana_value_you_control"}}]}]}]}},
 

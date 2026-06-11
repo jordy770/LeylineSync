@@ -41,6 +41,7 @@ const JSON_ONLY: Record<string, string> = {
   divide_damage: 'divided damage among targets via a parked decision (Dragonlord Atarka / Skarrgan, mig 233); JSON/AI-authored',
   return_self_to_hand: 'return this permanent to its owner\'s hand (Encroaching Dragonstorm, mig 234); JSON/AI-authored',
   copy_permanent: 'token copy via parked pick or of the triggering card (Will of the Temur / Reflections of Littjara, mig 239); JSON/AI-authored',
+  become_copy: 'an existing card becomes a copy, with on-leave/end-of-turn reverts (Deceptive Frostkite / Sarkhan Soul Aflame, mig 240); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

@@ -110,7 +110,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -417,6 +417,19 @@ begin
         v_decision.session_id, v_decision.deciding_player_id, v_card,
         v_decision.params -> 'except');
     end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'become_copy' then
+    -- Become-copy pick (mig 240): an empty submit declines the "may"; a pick
+    -- turns the SOURCE card into a copy of it (until end of turn for Sarkhan).
+    if cardinality(v_chosen_ids) > 0 then
+      select source_card_id into v_src_card from public.game_stack_items where id = v_decision.source_stack_item_id;
+      perform public.become_copy(
+        v_decision.session_id, v_src_card, v_chosen_ids[1],
+        v_decision.params -> 'except',
+        coalesce((v_decision.params ->> 'until_end_of_turn')::boolean, false),
+        coalesce((v_decision.params ->> 'fire_etb')::boolean, false));
+    end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
   elsif v_decision.decision_type = 'choose_player' then
