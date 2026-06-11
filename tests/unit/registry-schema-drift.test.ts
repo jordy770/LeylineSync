@@ -48,6 +48,8 @@ const JSON_ONLY: Record<string, string> = {
   exile_until_nonland: 'exile-top-until-nonland with a free-cast window (Breaching Dragonstorm, mig 245); JSON/AI-authored',
   put_from_hand: 'put a hand permanent onto the battlefield, capped at the combat-damage event amount (Broodcaller Scourge, mig 247); JSON/AI-authored',
   destroy_up_to: 'parked destroy pick that may be declined (Parapet Thrasher, mig 247); JSON/AI-authored',
+  put_from_command_zone: 'borrow a commander from the command zone until the next end step (Hellkite Courser, mig 248); JSON/AI-authored',
+  play_hideaway: 'play the source\'s hideaway card free behind a condition gate (Mosswort Bridge, mig 248); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

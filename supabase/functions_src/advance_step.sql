@@ -84,6 +84,24 @@ begin
       and ce.affected_player_id = v_current_state.active_player_id
       and coalesce((ce.payload ->> 'created_turn')::integer, 0) < v_current_state.turn_number;
 
+    -- Hellkite Courser (mig 248): "return it to the command zone at the
+    -- beginning of the next end step" — processed when the end step is left.
+    for v_revert in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and gc.counters ? 'return_to_command'
+    loop
+      update public.game_cards gc
+      set zone = 'command', is_tapped = false, damage_marked = 0,
+          controller_player_id = gc.owner_id,
+          counters = gc.counters - 'return_to_command',
+          zone_position = (select coalesce(max(zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = p_session_id and x.owner_id = gc.owner_id
+                             and x.zone = 'command')
+      where gc.id = v_revert;
+    end loop;
+
     -- Become-copy "until end of turn" (mig 240, Sarkhan, Soul Aflame): revert
     -- when the end step is left. Every effect row the copy sources is dropped
     -- (incl. the except-keyword grants), card_id flips back to the original,

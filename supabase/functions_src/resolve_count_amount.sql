@@ -54,6 +54,18 @@ begin
       and c.type_line ilike '%basic%'
       and c.type_line ilike '%land%';
 
+  elsif v_count = 'total_power_you_control' then
+    -- "if creatures you control have total power 10 or greater" (hideaway,
+    -- mig 248 — Mosswort Bridge's activation gate).
+    select coalesce(sum(greatest(0, coalesce(public.card_effective_power(p_session_id, g.id), 0))), 0)::integer
+    into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and c.type_line ilike '%creature%';
+
   elsif v_count = 'cards_in_hand' then
     -- "where X is the number of cards in your hand" (Become the Avalanche).
     select count(*)::integer into v_n

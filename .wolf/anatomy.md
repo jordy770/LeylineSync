@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T22:01:11.745Z
-> Files: 118 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T22:13:02.805Z
+> Files: 120 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -103,7 +103,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~7701 tok)
+- `card-scripts.json` (~7911 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -113,7 +113,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~14308 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~14654 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -137,14 +137,14 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6636 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6640 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1501 tok)
-- `advance_step.sql` — supabase/functions_src/advance_step.sql (~2773 tok)
+- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3000 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~3591 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~11974 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~12890 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~7421 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
@@ -172,11 +172,11 @@
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2124 tok)
 - `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~5628 tok)
-- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1682 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~1832 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~778 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~9870 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~10561 tok)
 - `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~355 tok)
 
 ## supabase/migrations/
@@ -202,6 +202,7 @@
 - `202605010245_siege_dragonstorm.sql` — 202605010245_siege_dragonstorm — Frontier Siege + Breaching Dragonstorm. (~30467 tok)
 - `202605010246_opportunistic_dragon.sql` — 202605010246_opportunistic_dragon — "choose target Human or artifact an (~5359 tok)
 - `202605010247_dragons_combat_damage.sql` — 202605010247_dragons_combat_damage — Broodcaller Scourge + Parapet Thrasher. (~29175 tok)
+- `202605010248_courser_mosswort.sql` — 202605010248_courser_mosswort — Hellkite Courser + Mosswort Bridge. (~34720 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -218,6 +219,7 @@
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
 - `copy-permanent.test.ts` — mig 239 — token-copy primitive (Will of the Temur + Reflections of Littjara). (~2624 tok)
 - `cost-reduction.test.ts` — Cost reduction (mig 231) — reduced_mana_cost shaves generic mana at cast: (~942 tok)
+- `courser-mosswort.test.ts` — mig 248 — Hellkite Courser + Mosswort Bridge. (~1485 tok)
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
 - `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
@@ -248,7 +250,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~30138 tok)
+- `test-cards.json` (~30548 tok)
 
 ## tests/harness/
 
@@ -260,7 +262,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1810 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~1887 tok)
 
 ## vercel/
 

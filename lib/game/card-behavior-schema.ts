@@ -184,7 +184,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'impulse', 'choose_one', 'monstrosity', 'damage_each_opponent_by_hand', 'divide_damage',
   'return_self_to_hand', 'copy_permanent', 'become_copy', 'shuffle_into_library',
   'pay_x_mana_damage', 'bounce_up_to', 'exile_until_nonland',
-  'put_from_hand', 'destroy_up_to',
+  'put_from_hand', 'destroy_up_to', 'put_from_command_zone', 'play_hideaway',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -212,7 +212,7 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'devotion']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'devotion']),
   type_line: z.string().optional(),
   // creatures_you_control only: count creatures with effective power >= N
   // (Become the Avalanche: "for each creature you control with power 4 or
@@ -483,6 +483,18 @@ const CardBehaviorActionSchema = z.union([
       max_mana_value: z.union([z.number().int(), z.literal('event_amount')]).optional(),
     }).strict().optional(),
   }),
+  // "You may put a commander you own from the command zone onto the
+  // battlefield. It gains haste. Return it to the command zone at the
+  // beginning of the next end step." (Hellkite Courser, mig 248.)
+  z.object({
+    type: z.literal('put_from_command_zone'),
+  }),
+  // Play the card this source hid with hideaway (Mosswort Bridge, mig 248):
+  // a permanent card enters the battlefield free; the activation gate is the
+  // ability's `condition` (total power 10+).
+  z.object({
+    type: z.literal('play_hideaway'),
+  }),
   // "Destroy target <filter>" via a parked pick that may be declined
   // (Parapet Thrasher mode, mig 247).
   z.object({
@@ -652,7 +664,10 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('look_top'),
     count: z.number().int().positive(),
-    to: z.enum(['battlefield', 'hand']).optional(),
+    // to:'exile' (mig 248, hideaway): the pick is exiled and remembered on
+    // the source for a later play_hideaway; min_picks 1 makes it mandatory.
+    to: z.enum(['battlefield', 'hand', 'exile']).optional(),
+    min_picks: z.number().int().nonnegative().optional(),
     filter: z.object({
       type_line: z.string().optional(),
       creature: z.boolean().optional(),
@@ -857,12 +872,20 @@ const CardBehaviorActivatedAbilitySchema = z.object({
   is_mana_ability: z.boolean().optional(),
   timing: z.string().optional(),
   source_zone_required: BehaviorZoneSchema.optional(),
-  // "Activate only if …" gate (Skarrgan Hellkite: a +1/+1 counter on this).
-  condition: z.object({
-    counters: z.string(),
-    of: z.enum(['self', 'source', 'this', 'you', 'your', 'controller']).optional(),
-    at_least: z.number().int().positive(),
-  }).strict().optional(),
+  // "Activate only if …" gate (Skarrgan Hellkite: a +1/+1 counter on this;
+  // Mosswort Bridge: total power 10 or greater — the count form, mig 248).
+  condition: z.union([
+    z.object({
+      counters: z.string(),
+      of: z.enum(['self', 'source', 'this', 'you', 'your', 'controller']).optional(),
+      at_least: z.number().int().positive(),
+    }).strict(),
+    z.object({
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'commanders_you_control', 'total_power_you_control']),
+      type_line: z.string().optional(),
+      at_least: z.number().int().positive(),
+    }).strict(),
+  ]).optional(),
 })
 
 const CardBehaviorTriggeredAbilitySchema = z.object({

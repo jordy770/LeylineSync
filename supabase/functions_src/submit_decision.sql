@@ -110,7 +110,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -343,18 +343,35 @@ begin
   elsif v_decision.decision_type = 'look_top' then
     -- Ureni (mig 223): the chosen card (0 or 1) goes to the battlefield under
     -- the deciding player's control (fires ETB); every OTHER looked-at card goes
-    -- to the bottom of the library in a random order.
+    -- to the bottom of the library in a random order. to:'exile' (mig 248,
+    -- hideaway): the pick is exiled and remembered on the SOURCE permanent's
+    -- counter bag (hideaway_card) for a later play_hideaway.
     v_dest := coalesce(v_decision.params ->> 'to', 'battlefield');
     for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
     loop
-      select coalesce(max(zone_position), -1) + 1 into v_pos
-      from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = 'battlefield';
-      select turn_number into v_turn from public.game_turn_state where session_id = v_decision.session_id;
-      update public.game_cards
-      set zone = 'battlefield', zone_position = v_pos, controller_player_id = owner_id,
-          is_tapped = false, damage_marked = 0, plus_one_counters = 0,
-          entered_battlefield_turn_number = coalesce(v_turn, 0)
-      where id = v_card;
+      if v_dest = 'exile' then
+        select coalesce(max(zone_position), -1) + 1 into v_pos
+        from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = 'exile';
+        update public.game_cards
+        set zone = 'exile', zone_position = v_pos, controller_player_id = owner_id,
+            is_tapped = false, damage_marked = 0
+        where id = v_card;
+        select source_card_id into v_src_card from public.game_stack_items where id = v_decision.source_stack_item_id;
+        if v_src_card is not null then
+          update public.game_cards
+          set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object('hideaway_card', v_card::text)
+          where id = v_src_card and session_id = v_decision.session_id;
+        end if;
+      else
+        select coalesce(max(zone_position), -1) + 1 into v_pos
+        from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = 'battlefield';
+        select turn_number into v_turn from public.game_turn_state where session_id = v_decision.session_id;
+        update public.game_cards
+        set zone = 'battlefield', zone_position = v_pos, controller_player_id = owner_id,
+            is_tapped = false, damage_marked = 0, plus_one_counters = 0,
+            entered_battlefield_turn_number = coalesce(v_turn, 0)
+        where id = v_card;
+      end if;
     end loop;
     perform public.bottom_cards_random(
       v_decision.session_id, v_decision.deciding_player_id,
@@ -453,6 +470,32 @@ begin
                              and x.owner_id = gc.owner_id and x.zone = 'hand')
       where gc.id = v_card;
     end if;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'command_zone_pick' then
+    -- Hellkite Courser (mig 248): the picked commander enters the battlefield
+    -- with haste (until end of turn) and a return_to_command marker the end
+    -- step processes. Empty = declined.
+    select turn_number into v_turn
+    from public.game_turn_state where session_id = v_decision.session_id;
+    foreach v_card in array v_chosen_ids
+    loop
+      update public.game_cards gc
+      set zone = 'battlefield', controller_player_id = gc.owner_id,
+          is_tapped = false, entered_battlefield_turn_number = coalesce(v_turn, 0),
+          counters = coalesce(gc.counters, '{}'::jsonb) || jsonb_build_object('return_to_command', 1),
+          zone_position = (select coalesce(max(zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = v_decision.session_id
+                             and x.owner_id = gc.owner_id and x.zone = 'battlefield')
+      where gc.id = v_card;
+      perform public.register_card_continuous_effects(v_decision.session_id, v_card);
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload,
+        source_zone_required, expires_at_phase, expires_at_step)
+      values (v_decision.session_id, v_card, v_card, 'haste',
+        jsonb_build_object('until_end_of_turn', true), 'battlefield', 'ending', 'cleanup');
+    end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
   elsif v_decision.decision_type = 'put_from_hand_pick' then

@@ -347,8 +347,12 @@ begin
 
       insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
       values (p_session_id, v_controller, p_stack_item_id, 'look_top',
-        'You may put a card onto the battlefield; the rest go to the bottom',
-        v_options, 0, 1,
+        case when coalesce(v_effect ->> 'to', 'battlefield') = 'exile'
+             then 'Exile a card face down; the rest go to the bottom'
+             else 'You may put a card onto the battlefield; the rest go to the bottom' end,
+        v_options,
+        -- min_picks (mig 248, hideaway): "exile ONE face down" is mandatory.
+        least(coalesce((v_effect ->> 'min_picks')::integer, 0), jsonb_array_length(v_options)), 1,
         jsonb_build_object('to', coalesce(v_effect ->> 'to', 'battlefield'),
                            'looked_at', to_jsonb(v_looked)))
       returning id into v_decision_id;
@@ -585,6 +589,53 @@ begin
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
+
+    elsif v_type = 'put_from_command_zone' then
+      -- "You may put a commander you own from the command zone onto the
+      -- battlefield. It gains haste. Return it to the command zone at the
+      -- beginning of the next end step." (Hellkite Courser, mig 248.)
+      select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
+        into v_options
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'command'
+        and gc.owner_id = v_controller and gc.is_commander = true;
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'command_zone_pick',
+        'You may put a commander onto the battlefield until the next end step',
+        v_options, 0, 1, '{}'::jsonb)
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
+    elsif v_type = 'play_hideaway' then
+      -- Mosswort Bridge (mig 248): play the card this source hid with
+      -- hideaway. A PERMANENT card enters the battlefield free under the
+      -- activator (instants/sorceries are not supported — the card stays
+      -- exiled). The power-10 gate is the ability's `condition`.
+      v_tid := nullif((select gc.counters ->> 'hideaway_card'
+                       from public.game_cards gc where gc.id = v_item.source_card_id), '')::uuid;
+      if v_tid is not null and exists (
+        select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.id = v_tid and gc.session_id = p_session_id and gc.zone = 'exile'
+          and (c.type_line ilike '%creature%' or c.type_line ilike '%artifact%'
+               or c.type_line ilike '%enchantment%' or c.type_line ilike '%land%'
+               or c.type_line ilike '%planeswalker%' or c.type_line ilike '%battle%')
+      ) then
+        select turn_number into v_amount from public.game_turn_state where session_id = p_session_id;
+        update public.game_cards gc
+        set zone = 'battlefield', controller_player_id = v_controller, is_tapped = false,
+            entered_battlefield_turn_number = coalesce(v_amount, 0),
+            zone_position = (select coalesce(max(zone_position), -1) + 1
+                             from public.game_cards x
+                             where x.session_id = p_session_id and x.owner_id = gc.owner_id
+                               and x.zone = 'battlefield')
+        where gc.id = v_tid;
+        perform public.register_card_continuous_effects(p_session_id, v_tid);
+        update public.game_cards
+        set counters = counters - 'hideaway_card'
+        where id = v_item.source_card_id and session_id = p_session_id;
+      end if;
 
     elsif v_type = 'put_from_hand' then
       -- "You may put a permanent card with mana value less than or equal to

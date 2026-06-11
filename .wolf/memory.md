@@ -3507,3 +3507,24 @@
 | 00:00 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~220 |
 | 00:01 | Created tests/feature/zenith-festival.test.ts | — | ~503 |
 | 01:30 | Zenith Festival: NO engine change (cast_spell_effect already substitutes top-level count 'X'; impulse does the rest). Schema: impulse count may be 'X'. Harmonize not modelled (documented). | schema, fixtures, card-scripts, zenith-festival.test | 867/867 green, tsc+lint clean, triage 79/6/7 | ~3k |
+| 00:04 | Session end: 73 writes across 29 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 15 reads | ~60882 tok |
+| 00:09 | Edited supabase/functions_src/resolve_count_amount.sql | expanded (+12 lines) | ~161 |
+| 00:09 | Edited supabase/functions_src/apply_trigger_effects.sql | modified min_picks() | ~226 |
+| 00:09 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~840 |
+| 00:10 | Edited supabase/functions_src/submit_decision.sql | modified Ureni() | ~544 |
+| 00:10 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~78 |
+| 00:10 | Edited supabase/functions_src/submit_decision.sql | modified Courser() | ~431 |
+| 00:10 | Edited supabase/functions_src/advance_step.sql | modified Courser() | ~249 |
+| 00:10 | Edited lib/game/card-behavior-schema.ts | 9→12 lines | ~139 |
+| 00:10 | Edited lib/game/card-behavior-schema.ts | expanded (+8 lines) | ~185 |
+| 00:10 | Edited lib/game/card-behavior-schema.ts | inline fix | ~92 |
+| 00:10 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~26 |
+| 00:10 | Edited lib/game/card-behavior-schema.ts | modified hideaway() | ~183 |
+| 00:10 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~107 |
+| 00:11 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~513 |
+| 00:11 | Edited docs/commander-decks/card-scripts.json | 2→6 lines | ~240 |
+| 00:11 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~55 |
+| 00:11 | Created tests/feature/courser-mosswort.test.ts | — | ~1451 |
+| 00:12 | Edited supabase/migrations/202605010248_courser_mosswort.sql | modified command_zone_pick() | ~221 |
+| 00:13 | Edited tests/feature/courser-mosswort.test.ts | 2→5 lines | ~82 |
+| 02:10 | Batch mig 248 (2 cards): Hellkite Courser (put_from_command_zone/command_zone_pick: borrow commander w/ haste + return_to_command counter marker; advance_step end-step return) + Mosswort Bridge hideaway (look_top to:'exile' + min_picks + hideaway_card marker on source; play_hideaway free-play behind condition gate; condition count form + total_power_you_control count). Gotcha: dev_spawn_card rejects zone 'command' (move row via SQL in tests). | mig 248, resolve_count_amount, apply_trigger_effects, submit_decision, advance_step, activate_ability, schema, courser-mosswort.test | 870/870 green, tsc+lint clean, triage 81/6/5 | ~11k |
