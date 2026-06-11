@@ -181,6 +181,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
   'curse_attack_zombie', 'grant_keyword_all', 'mass_destroy_reanimate_one', 'choose_color', 'reanimate_from_graveyard', 'look_top', 'deal_damage_all',
+  'impulse', 'choose_one',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -208,7 +209,7 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion']),
   type_line: z.string().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
 }).strict()
@@ -388,14 +389,33 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('create_token'),
     token: z.string(),
-    // A fixed count, or {count:'sacrificed_this_way'} — the number of creatures
-    // sacrificed by a preceding edict in the same program (Syphon Flesh).
-    count: z.union([z.number(), z.object({ count: z.literal('sacrificed_this_way') })]).optional(),
+    // A fixed count, {count:'sacrificed_this_way'} (creatures sacrificed by a
+    // preceding edict — Syphon Flesh), or a count-based amount object resolved
+    // via the amount engine (Gadrak: one Treasure per nontoken creature that
+    // died this turn — zero deaths makes zero tokens, no floor-at-1).
+    count: z.union([z.number(), z.object({ count: z.literal('sacrificed_this_way') }), CountAmountSchema]).optional(),
     // The tokens enter tapped (Army of the Damned: "thirteen … tokens that are tapped").
     tapped: z.boolean().optional(),
     // "Its controller creates a token" (Beast Within): the token is created under the
     // control of the spell's TARGET's controller, not the caster.
     recipient: z.literal('target_controller').optional(),
+  }),
+  // Impulse draw (Atsushi): exile the top `count` cards of your library and gain
+  // permission to play them until the end of your next turn.
+  z.object({
+    type: z.literal('impulse'),
+    count: z.number().int().positive(),
+  }),
+  // A modal trigger ("choose one —"): pick `choose` (default 1) of the modes;
+  // each mode's untargeted `actions` resolve. Inner actions kept loose (see may).
+  z.object({
+    type: z.literal('choose_one'),
+    prompt: z.string().optional(),
+    choose: z.number().int().positive().optional(),
+    modes: z.array(z.object({
+      label: z.string().optional(),
+      actions: z.array(z.record(z.string(), z.unknown())),
+    })),
   }),
   z.object({
     // A negative amount (or all=true) REMOVES counters; counter_type defaults +1/+1.
@@ -701,6 +721,12 @@ export const CardBehaviorScriptV2Schema = z.object({
   // "This spell can't be countered." A static property read at counter-resolution
   // time: an uncounterable spell's counter resolves but fails to cancel it.
   cant_be_countered: z.boolean().optional(),
+  // "<This> can't attack unless <count> is at least N" (Gadrak: four or more
+  // artifacts). Enforced in declare_attacker against the attacking player.
+  cant_attack_unless: z.object({
+    count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control']),
+    at_least: z.number().int().positive(),
+  }).strict().optional(),
   // "If an effect would put counters on a permanent you control, it puts twice that
   // many instead" (Doubling Season). A static replacement read at counter-placement.
   doubles_counters: z.boolean().optional(),

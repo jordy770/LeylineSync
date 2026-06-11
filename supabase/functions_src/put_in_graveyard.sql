@@ -13,6 +13,7 @@ declare
   v_owner_id uuid;
   v_controller_id uuid;
   v_is_creature boolean;
+  v_is_token boolean;
   v_turn integer;
   v_next_graveyard_position integer;
   v_had_counters integer;
@@ -20,8 +21,8 @@ declare
   v_next_bf_position integer;
 begin
   select g.owner_id, coalesce(g.controller_player_id, g.owner_id), (c.type_line ilike '%creature%'),
-         coalesce(g.plus_one_counters, 0)
-  into v_owner_id, v_controller_id, v_is_creature, v_had_counters
+         coalesce(c.is_token, false), coalesce(g.plus_one_counters, 0)
+  into v_owner_id, v_controller_id, v_is_creature, v_is_token, v_had_counters
   from public.game_cards g
   join public.cards c on c.id = g.card_id
   where g.id = p_game_card_id
@@ -65,7 +66,17 @@ begin
     update public.game_session_players
     set turn_creatures_died = case when turn_creatures_died_turn = coalesce(v_turn, 0)
                                    then turn_creatures_died + 1 else 1 end,
-        turn_creatures_died_turn = coalesce(v_turn, 0)
+        turn_creatures_died_turn = coalesce(v_turn, 0),
+        -- Nontoken-only tally (Gadrak): summed game-wide by resolve_count_amount.
+        turn_nontoken_creatures_died = case
+          when not v_is_token then
+            case when turn_nontoken_creatures_died_turn = coalesce(v_turn, 0)
+                 then turn_nontoken_creatures_died + 1 else 1 end
+          when turn_nontoken_creatures_died_turn = coalesce(v_turn, 0)
+            then turn_nontoken_creatures_died else 0 end,
+        turn_nontoken_creatures_died_turn = case
+          when not v_is_token then coalesce(v_turn, 0)
+          else turn_nontoken_creatures_died_turn end
     where session_id = p_session_id and player_id = v_controller_id;
   end if;
 

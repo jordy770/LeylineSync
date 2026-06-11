@@ -78,7 +78,25 @@ begin
       v_i := v_i + 1; continue;
     end if;
 
-    if v_type in ('scry', 'surveil') then
+    if v_type = 'choose_one' then
+      -- A modal trigger ("When X dies, choose one — …"). Park a choose_mode
+      -- decision carrying the modes; submit_decision (trigger_modal branch)
+      -- applies the chosen mode's untargeted actions, then resumes. Each mode is
+      -- {label, actions:[…]} — same shape modal spells use.
+      v_options := coalesce(v_effect -> 'modes', '[]'::jsonb);
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'choose_mode',
+        coalesce(v_effect ->> 'prompt', 'Choose one'),
+        v_options,
+        coalesce((v_effect ->> 'choose')::integer, 1),
+        coalesce((v_effect ->> 'choose')::integer, 1),
+        jsonb_build_object('trigger_modal', true))
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
+    elsif v_type in ('scry', 'surveil') then
       v_amount := coalesce((v_effect ->> 'amount')::integer, 1);
       select coalesce(
                jsonb_agg(jsonb_build_object('game_card_id', top.id, 'name', c.name, 'library_position', top.zone_position)

@@ -83,7 +83,7 @@ begin
   where game_cards.id = p_game_card_id
     and game_cards.session_id = p_session_id
     and game_cards.owner_id = auth.uid()
-    and game_cards.zone in ('hand', 'graveyard')
+    and game_cards.zone in ('hand', 'graveyard', 'exile')
   for update of game_cards;
 
   if not found then
@@ -157,6 +157,22 @@ begin
   -- permission casts AND alternative-cost self casts.
   if v_card.zone = 'graveyard' then
     perform public.note_graveyard_cast(p_session_id, auth.uid());
+  end if;
+
+  -- An EXILE source requires a play_from_exile permission (mig 230, Atsushi
+  -- impulse) whose payload.card_ids includes this card. The permission is left
+  -- in place (advance_step expires it at the end of the player's next turn); the
+  -- card simply leaves exile when it resolves onto the battlefield.
+  if v_card.zone = 'exile' then
+    if not exists (
+      select 1 from public.game_continuous_effects ce
+      where ce.session_id = p_session_id
+        and ce.effect_type = 'play_from_exile'
+        and ce.affected_player_id = auth.uid()
+        and (ce.payload -> 'card_ids') ? p_game_card_id::text
+    ) then
+      raise exception 'You do not have permission to play that card from exile';
+    end if;
   end if;
 
   if coalesce(v_card_type_line, '') ilike '%instant%'

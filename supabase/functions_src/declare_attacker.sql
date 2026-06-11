@@ -118,6 +118,20 @@ begin
     raise exception 'Creature has summoning sickness';
   end if;
 
+  -- Attack restriction (Gadrak: "can't attack unless you control four or more
+  -- artifacts"). A top-level script prop {count, at_least}; the count is read
+  -- for the attacking player (auth.uid()).
+  declare
+    v_restrict jsonb := public.effective_script(p_session_id, p_attacker_card_id) -> 'cant_attack_unless';
+  begin
+    if v_restrict is not null
+       and public.resolve_count_amount(p_session_id, auth.uid(), v_restrict)
+           < coalesce((v_restrict ->> 'at_least')::integer, 1)
+    then
+      raise exception 'This creature cannot attack: an attack condition is not met';
+    end if;
+  end;
+
   update public.game_cards
   set is_tapped = true
   where id = p_attacker_card_id

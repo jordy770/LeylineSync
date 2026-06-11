@@ -3180,3 +3180,41 @@
 | 17:23 | Created tests/feature/cycling.test.ts | — | ~601 |
 | 17:24 | Edited tests/feature/cycling.test.ts | 6→4 lines | ~57 |
 | 01:40 | Cycling (mig 228): top-level cycling cost + cycle_card RPC (pay, discard, draw) + badge prop + client Cycle button + cycling.test. Sheltered Thicket, Bountiful Landscape, Migration Path. FIXTURE CORRUPTION caught: a bash-heredoc \n wrote a literal newline into test-cards.json (bad control char) — repaired via raw text replace. | mig 228, cycle_card, schema, card-behavior.ts, CardActionSheet, ControllerListV4, actions | 804/804 green, tsc+lint clean; pushed | ~16k |
+| 17:36 | Session end: 211 writes across 87 files (_gen_mig200.mjs, death-baron.test.ts, card-behavior-builder.ts, CardBehaviorForm.tsx, card-behavior-llm.ts) | 65 reads | ~190526 tok |
+
+## Session: 2026-06-11 09:12
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:27 | Edited supabase/functions_src/resolve_count_amount.sql | modified count() | ~277 |
+| 09:27 | Edited supabase/functions_src/put_in_graveyard.sql | modified tally() | ~288 |
+| 09:27 | Edited supabase/functions_src/put_in_graveyard.sql | 2→3 lines | ~18 |
+| 09:28 | Edited supabase/functions_src/put_in_graveyard.sql | 3→3 lines | ~67 |
+| 09:28 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified greatest() | ~157 |
+| 09:28 | Edited supabase/functions_src/declare_attacker.sql | modified coalesce() | ~194 |
+| 09:29 | Edited supabase/migrations/202605010229_gadrak.sql | expanded (+11 lines) | ~281 |
+| 09:29 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~110 |
+| 09:30 | Edited lib/game/card-behavior-schema.ts | program() → engine() | ~122 |
+| 09:30 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~158 |
+| 09:31 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~209 |
+| 09:32 | Created tests/feature/gadrak.test.ts | — | ~1052 |
+| 09:33 | Edited tests/feature/gadrak.test.ts | expanded (+9 lines) | ~386 |
+| 09:36 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~103 |
+| 10:30 | Gadrak (mig 229): nontoken_creatures_died_this_turn (game-wide turn-stamped tally summed across players in put_in_graveyard) + artifacts_you_control count sources; create_token DYNAMIC count object (resolve_dynamic_amount, NO floor-at-1 so 0 deaths -> 0 tokens); cant_attack_unless top-level prop gate in declare_attacker. Schema + Gadrak Test fixture + card-scripts.json real entry. | mig 229, resolve_count_amount, put_in_graveyard, apply_triggered_ability_effects, declare_attacker, schema, gadrak.test | 808/808 green, tsc+lint clean | ~14k |
+| 09:43 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 3→4 lines | ~19 |
+| 09:43 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified greatest() | ~574 |
+| 09:44 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 6→5 lines | ~72 |
+| 09:44 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~328 |
+| 09:44 | Edited supabase/functions_src/submit_decision.sql | modified modal() | ~280 |
+| 09:45 | Edited supabase/functions_src/cast_card_from_hand.sql | 6→6 lines | ~51 |
+| 09:45 | Edited supabase/functions_src/cast_card_from_hand.sql | expanded (+16 lines) | ~259 |
+| 09:45 | Edited supabase/functions_src/advance_step.sql | modified coalesce() | ~199 |
+| 09:46 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~54 |
+| 09:46 | Edited lib/game/card-behavior-schema.ts | modified draw() | ~254 |
+| 09:46 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~103 |
+| 09:47 | Edited supabase/migrations/202605010230_atsushi.sql | expanded (+23 lines) | ~470 |
+| 09:48 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~285 |
+| 09:49 | Created tests/feature/atsushi.test.ts | — | ~1292 |
+| 09:51 | Edited docs/commander-decks/card-scripts.json | 2→4 lines | ~245 |
+| 11:30 | Atsushi (mig 230): MODAL TRIGGER (choose_one effect parks choose_mode in apply_trigger_effects; submit_decision trigger_modal branch applies chosen mode actions + resumes; modal SPELLS untouched) + IMPULSE (exile top N to exile, write card-specific play_from_exile permission; cast_card_from_hand accepts exile source w/ permission; advance_step expires it at end step of controller's NEXT turn via created_turn<current). effect_type CHECK += play_from_exile. Schema impulse+choose_one (JSON_ONLY allowlist). Atsushi Test fixture + card-scripts.json. NOTE: instant/sorcery from exile needs same gate in cast_spell_effect (deferred). | mig 230, apply_triggered_ability_effects, apply_trigger_effects, submit_decision, cast_card_from_hand, advance_step, schema, registry-drift test, atsushi.test | 811/811 green, tsc+lint clean | ~20k |
+| 09:52 | Session end: 29 writes across 16 files (resolve_count_amount.sql, put_in_graveyard.sql, apply_triggered_ability_effects.sql, declare_attacker.sql, 202605010229_gadrak.sql) | 15 reads | ~49086 tok |

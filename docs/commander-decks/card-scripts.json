@@ -77,5 +77,9 @@
 
   "Sheltered Thicket": {"schema_version":2,"enters_tapped":true,"cycling":"{2}","activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]},
 
-  "Bountiful Landscape": {"schema_version":2,"cycling":"{G}{U}{R}","activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]}]}
+  "Bountiful Landscape": {"schema_version":2,"cycling":"{G}{U}{R}","activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]}]},
+
+  "Gadrak, the Crown-Scourge": {"schema_version":2,"keywords":["flying"],"cant_attack_unless":{"count":"artifacts_you_control","at_least":4},"triggered_abilities":[{"event":"beginning_of_end_step","effects":[{"type":"create_token","token":"Treasure Token","count":{"count":"nontoken_creatures_died_this_turn"}}]}]},
+
+  "Atsushi, the Blazing Sky": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dies","effects":[{"type":"choose_one","prompt":"Choose one","modes":[{"label":"Exile top two; play until end of your next turn","actions":[{"type":"impulse","count":2}]},{"label":"Create three Treasures","actions":[{"type":"create_token","token":"Treasure Token","count":3}]}]}]}]}
 }

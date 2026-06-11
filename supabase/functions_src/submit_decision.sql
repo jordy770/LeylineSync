@@ -143,7 +143,23 @@ begin
   returning * into v_decision;
 
   -- ── Apply + resume ──────────────────────────────────────────────────────
-  if v_decision.decision_type = 'scry' then
+  if v_decision.decision_type = 'choose_mode' then
+    -- A trigger-sourced modal (mig 230, Atsushi): apply the chosen mode's
+    -- untargeted actions here and resume the trigger. Modal SPELLS are NOT
+    -- trigger_modal — they resolve via resolve_top_of_stack, so this is a no-op
+    -- for them.
+    if coalesce((v_decision.params ->> 'trigger_modal')::boolean, false) then
+      select source_card_id into v_src_card from public.game_stack_items where id = v_decision.source_stack_item_id;
+      for v_idx in select (value)::integer from jsonb_array_elements_text(v_chosen)
+      loop
+        perform public.apply_triggered_ability_effects(
+          v_decision.session_id, v_decision.deciding_player_id, v_src_card,
+          coalesce(v_decision.options -> v_idx -> 'actions', '[]'::jsonb));
+      end loop;
+      perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+    end if;
+
+  elsif v_decision.decision_type = 'scry' then
     with ordered as (
       select (t.value)::uuid as id, 0 as section, t.ord as ordnum from jsonb_array_elements_text(v_top) with ordinality as t(value, ord)
       union all

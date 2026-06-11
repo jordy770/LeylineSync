@@ -76,6 +76,26 @@ begin
     join public.game_turn_state ts on ts.session_id = sp.session_id
     where sp.session_id = p_session_id and sp.player_id = p_controller_id;
 
+  elsif v_count = 'nontoken_creatures_died_this_turn' then
+    -- Game-wide: every NONTOKEN creature that died this turn under ANY player's
+    -- control (Gadrak, the Crown-Scourge). Sums the per-controller turn-stamped
+    -- tally across all players (each contributes 0 once its stamp goes stale).
+    select coalesce(sum(case when sp.turn_nontoken_creatures_died_turn = ts.turn_number
+                             then sp.turn_nontoken_creatures_died else 0 end), 0)::integer
+    into v_n
+    from public.game_session_players sp
+    join public.game_turn_state ts on ts.session_id = sp.session_id
+    where sp.session_id = p_session_id;
+
+  elsif v_count = 'artifacts_you_control' then
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and c.type_line ilike '%artifact%';
+
   elsif v_count = 'graveyard_casts_this_turn' then
     -- Spells you cast from a graveyard this turn (flashback or a cast-from-
     -- graveyard permission). Turn-stamped like creatures_died (mig 206).

@@ -73,6 +73,17 @@ begin
     v_current_state.step
   );
 
+  -- Impulse play windows (mig 230, Atsushi: "until the end of your next turn").
+  -- A play_from_exile permission survives the turn it was created in and expires
+  -- when its owner leaves the end step of a LATER turn (their next turn).
+  if v_current_state.step = 'end' then
+    delete from public.game_continuous_effects ce
+    where ce.session_id = p_session_id
+      and ce.effect_type = 'play_from_exile'
+      and ce.affected_player_id = v_current_state.active_player_id
+      and coalesce((ce.payload ->> 'created_turn')::integer, 0) < v_current_state.turn_number;
+  end if;
+
   v_next_active_player_id := v_current_state.active_player_id;
   v_next_priority_player_id := v_current_state.active_player_id;
   v_next_turn_number := v_current_state.turn_number;
