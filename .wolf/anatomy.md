@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T14:42:18.367Z
-> Files: 173 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T14:47:53.727Z
+> Files: 174 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
@@ -15,6 +15,7 @@
 - `tmp-anim.cjs` — Declares fs (~915 tok)
 - `tmp-court.cjs` — Declares fs (~721 tok)
 - `tmp-finale.cjs` — Declares fs (~1293 tok)
+- `tmp-haunt.cjs` — Declares fs (~1755 tok)
 - `tmp-obuun-batch.cjs` — Declares fs (~2351 tok)
 - `tmp-spirits.cjs` — Declares fs (~1536 tok)
 
@@ -174,7 +175,7 @@
 - `fire_becomes_target_triggers.sql` — supabase/functions_src/fire_becomes_target_triggers.sql (~801 tok)
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~612 tok)
 - `fire_turn_step_triggers.sql` — supabase/functions_src/fire_turn_step_triggers.sql (~673 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~2191 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~2317 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1540 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)

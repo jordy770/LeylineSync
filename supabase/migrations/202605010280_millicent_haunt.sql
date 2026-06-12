@@ -1,7 +1,15 @@
--- supabase/functions_src/fire_watcher_triggers.sql
--- CANONICAL current definition (seeded from 202605010181_watcher_nontoken_filter.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010280_millicent_haunt
+-- Millicent batch 3 (22 cards, mig 280). Engine: watcher filters token:true
+-- (Twilight Drover) and max_power (Mentor of the Meek).
+-- Script-only approximations: pay-gates dropped (Haunted Library, Mentor);
+-- Kami of the Crescent Moon = your-upkeep draw only; Karmic Guide drops
+-- echo; Kirtar's Wrath + Knight of the White Orchid drop their thresholds;
+-- Prairie Stream always tapped; Priest of the Blessed Graf makes one Spirit;
+-- Storm of Souls returns without the 1/1 override; Rattlechains/Sailor
+-- flash timing unenforced. Mirror Entity, Occult Epiphany, Disorder in the
+-- Court and Fell the Mighty remain for the finale.
+-- Generated from supabase/functions_src (fire_watcher_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.fire_watcher_triggers(
   p_session_id uuid,

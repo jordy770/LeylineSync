@@ -773,5 +773,51 @@
 
   "Flood of Tears": {"schema_version":2,"spell_effect":{"actions":[{"type":"bounce_all","nonland":true},{"type":"put_from_hand","count":1,"filter":{"permanent":true}}]}},
 
-  "Ghostly Pilferer": {"schema_version":2}
+  "Ghostly Pilferer": {"schema_version":2},
+
+  "Haunted Library": {"schema_version":2,"triggered_abilities":[{"event":"creature_died","filter":{"controller":"opponent"},"effects":[{"type":"create_token","token":"Spirit Token","count":1}]}]},
+
+  "Kami of the Crescent Moon": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"upkeep","effects":[{"type":"draw","amount":1}]}]},
+
+  "Karmic Guide": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"protection","affected":"source","source_zone_required":"battlefield","from":"black"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"creature"}}]}]},
+
+  "Kirtar's Wrath": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy_all"}]}},
+
+  "Knight of the White Orchid": {"schema_version":2,"continuous_effects":[{"type":"first_strike","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"battlefield","filter":{"type_line":"Plains"}}]}]},
+
+  "Marble Diamond": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Sky Diamond": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Mentor of the Meek": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","exclude_self":true,"max_power":2},"effects":[{"type":"draw","amount":1}]}]},
+
+  "Moorland Haunt": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{W}{U}"},{"type":"tap_self"},{"type":"exile_from_graveyard","type_line":"creature"}],"effects":[{"type":"create_token","token":"Spirit Token","count":1}]}]},
+
+  "Nebelgast Herald": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","type_line":"Spirit"},"effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}]},
+
+  "Oyobi, Who Split the Heavens": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","type_line":"Spirit"},"effects":[{"type":"create_token","token":"Greater Spirit Token","count":1}]}]},
+
+  "Port Town": {"schema_version":2,"enters_tapped":{"unless":{"hand_has_type":["Plains","Island"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Prairie Stream": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Priest of the Blessed Graf": {"schema_version":2,"triggered_abilities":[{"event":"end_step","effects":[{"type":"create_token","token":"Spirit Token","count":1}]}]},
+
+  "Rattlechains": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"grant_keyword","keyword":"hexproof","target_type":"creature","target_controller":"you"}]}]},
+
+  "Remorseful Cleric": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"sacrifice_self"}],"effects":[{"type":"exile_graveyard"}]}]},
+
+  "Sire of the Storm": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","type_line":"Spirit"},"effects":[{"type":"draw","amount":1}]}]},
+
+  "Skycloud Expanse": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1},{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Spectral Sailor": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}{U}"}],"effects":[{"type":"draw","amount":1}]}]},
+
+  "Spectral Shepherd": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}{U}"}],"effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"Spirit"}}]}]},
+
+  "Storm of Souls": {"schema_version":2,"spell_effect":{"actions":[{"type":"return_all_from_graveyard","to":"battlefield"}]}},
+
+  "Supreme Phantom": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"pump","affected":"controller","payload":{"power":1,"toughness":1,"creature_type":"Spirit","exclude_source":true}}]},
+
+  "Twilight Drover": {"schema_version":2,"triggered_abilities":[{"event":"creature_left","filter":{"controller":"any","token":true},"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one"}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{W}"},{"type":"remove_counters","counter_type":"plus_one_one","amount":1}],"effects":[{"type":"create_token","token":"Spirit Token","count":2}]}]}
 }
