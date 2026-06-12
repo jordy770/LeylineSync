@@ -176,6 +176,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     boardCards,
     players,
     turnState,
+    attackTaxes,
     combatAssignments,
     stackItems,
     pendingDecisions,
@@ -697,6 +698,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 mustDiscard={mustDiscard}
                 discardCount={discardCount}
                 combatAssignments={combatAssignments}
+                attackTaxes={attackTaxes}
                 turnState={turnState}
                 canOrderBlockers={canOrderBlockers}
                 onCardTap={setSelectedCard}
@@ -899,6 +901,7 @@ function MainArea({
   discardCount,
   combatAssignments,
   turnState,
+  attackTaxes,
   canOrderBlockers,
   onCardTap,
   onTapForMana,
@@ -928,6 +931,7 @@ function MainArea({
   discardCount: number
   combatAssignments: CombatAssignment[]
   turnState: GameTurnState | null
+  attackTaxes: { playerId: string; mana: number; life: number }[]
   canOrderBlockers: boolean
   onCardTap: (card: ControllerCard) => void
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
@@ -1011,8 +1015,21 @@ function MainArea({
                 {p.username ?? `P${p.seat_number}`}
               </span>
               <span className="text-[9px] font-black text-white">♥{p.life_total}</span>
+              {turnState?.monarch_player_id === p.player_id && (
+                <span className="text-[9px]" title="The monarch (draws at their end step; combat damage steals the crown)">👑</span>
+              )}
               {(p.counters?.poison ?? 0) > 0 && (
-                <span className="text-[9px] font-black text-lime-400" title={`${p.counters!.poison} poison`}>☠{p.counters!.poison}</span>
+                <span
+                  className={`text-[9px] font-black ${(p.counters!.poison ?? 0) >= 3 ? 'rounded bg-lime-400/20 px-1 text-lime-300' : 'text-lime-400'}`}
+                  title={`${p.counters!.poison} poison${(p.counters!.poison ?? 0) >= 3 ? ' — CORRUPTED' : ''}`}
+                >☠{p.counters!.poison}</span>
+              )}
+              {attackTaxes.some((t) => t.playerId === p.player_id) && (
+                <span
+                  className="text-[9px] font-black text-amber-400"
+                  title={attackTaxes.filter((t) => t.playerId === p.player_id)
+                    .map((t) => (t.mana > 0 ? `pay {${t.mana}} per attacker` : `pay ${t.life} life per attacker`)).join(', ')}
+                >⛔</span>
               )}
               <span className="flex items-center gap-1 border-l border-white/10 pl-1.5 text-[8px] text-slate-500">
                 <span title="Cards in hand">✋{counts?.handCount ?? '·'}</span>
@@ -2872,6 +2889,9 @@ function DeclareAttackersLayout({
                     className="w-full"
                   />
                 </div>
+                {card.animated && (
+                  <span className="text-[9px] font-black text-amber-300" title="Animated: this land is a creature until end of turn">⚡</span>
+                )}
                 {getEffectivePT(card) && (
                   <span
                     className={`text-[9px] font-black ${
@@ -3112,6 +3132,9 @@ function DeclareBlockersLayout({
                   useLayoutId={false}
                   className="w-full"
                 />
+                {card.animated && (
+                  <span className="text-[9px] font-black text-amber-300" title="Animated: this land is a creature until end of turn">⚡</span>
+                )}
                 {getEffectivePT(card) && (
                   <span
                     className={`text-[9px] font-black ${

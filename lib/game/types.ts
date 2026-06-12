@@ -90,6 +90,8 @@ export type GameTurnState = {
   turn_number: number
   phase: TurnPhase
   step: TurnStep
+  // The crown (mig 262/287): null when nobody is the monarch.
+  monarch_player_id?: string | null
   created_at?: string
   updated_at?: string
 }
@@ -293,6 +295,8 @@ export type BoardCard = {
   plus_one_counters?: number
   // Non-+1/+1 counter bag (charge/quest/…). Empty when none.
   counters?: Record<string, number> | null
+  // Land animation (mig 277): an active 'animated' row makes this attackable.
+  animated?: boolean
   pump_power?: number
   pump_toughness?: number
   // Colours this card has protection from (white|blue|black|red|green).
@@ -300,6 +304,8 @@ export type BoardCard = {
 }
 
 export type ControllerCard = {
+  // Land animation (mig 277): set when an active animated row exists.
+  animated?: boolean
   id: string
   card_id: string
   name: string
