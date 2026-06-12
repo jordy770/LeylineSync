@@ -14,91 +14,88 @@
 
 
 Commander
-1 Breya, Etherium Shaper
+1 Ixhel, Scion of Atraxa
 
 Deck
-1 Akiri, Line-Slinger
-1 Ancient Excavation
-1 Arcane Sanctum
-1 Armory Automaton
-1 Ash Barrens
-1 Azorius Chancery
-1 Baleful Strix
-1 Beacon of Unrest
-1 Blinkmoth Urn
-1 Bonehoard
-1 Boros Garrison
-1 Bruse Tarl, Boorish Herder
-1 Buried Ruin
-1 Chief Engineer
-1 Coastal Breach
+1 Arcane Signet
+1 Beast Within
+1 Bilious Skulldweller
+1 Blight Mamba
+1 Blightbelly Rat
+1 Bojuka Bog
+1 Cankerbloom
+1 Canopy Vista
+1 Caress of Phyrexia
+1 Carrion Call
+1 Chromatic Lantern
 1 Command Tower
 1 Commander's Sphere
-1 Cranial Plating
-1 Crumbling Necropolis
-1 Curse of Vengeance
-1 Daretti, Scrap Savant
-1 Darksteel Citadel
-1 Dimir Aqueduct
-1 Dispeller's Capsule
-1 Etched Oracle
-1 Etherium Sculptor
-1 Ethersworn Adjudicator
-1 Everflowing Chalice
-1 Evolving Wilds
-1 Executioner's Capsule
+1 Contagion Clasp
+1 Contaminant Grafter
+1 Culling Ritual
+1 Cultivate
+1 Evolution Sage
 1 Exotic Orchard
-1 Faerie Artisans
+1 Expand the Sphere
+1 Feed the Infection
 1 Fellwar Stone
-1 Filigree Angel
-1 Godo, Bandit Warlord
-1 Grave Upheaval
-1 Grip of Phyresis
-1 Hanna, Ship's Navigator
-1 Hellkite Igniter
-1 Hellkite Tyrant
-1 Ichor Wellspring
-5 Island
-1 Jor Kadeen, the Prevailer
-1 Loxodon Warhammer
-1 Magus of the Will
-1 Master of Etherium
-1 Migratory Route
-4 Mountain
-1 Mycosynth Wellspring
-1 Myr Battlesphere
-1 Myr Retriever
-1 Mystic Monastery
-1 Nevinyrral's Disk
-1 Nomad Outpost
-1 Open the Vaults
-1 Parting Thoughts
+8 Forest
+1 Fortified Village
+1 Fumigate
+1 Geth's Summons
+1 Ghostly Prison
+1 Glissa's Retriever
+1 Glistening Sphere
+1 Golgari Signet
+1 Grafted Exoskeleton
+1 Grateful Apparition
+1 Ichor Rats
+1 Ichorclaw Myr
+1 Infectious Inquiry
+1 Karn's Bastion
+1 Krosan Verge
+1 Merciless Eviction
+1 Moldervine Reclamation
+1 Mortify
+1 Mycosynth Fiend
+1 Myr Convert
+1 Myriad Landscape
+1 Necroblossom Snarl
+1 Night's Whisper
+1 Norn's Annex
+1 Norn's Choirmaster
+1 Norn's Decree
+1 Noxious Assault
+1 Noxious Revival
+1 Painful Truths
+1 Path of Ancestry
+1 Pestilent Syphoner
+1 Phyresis Outbreak
+1 Phyrexian Atlas
 1 Phyrexian Rebirth
-5 Plains
-1 Rakdos Carnarium
-1 Read the Runes
-1 Rupture Spire
-1 Sanctum Gargoyle
-1 Seat of the Synod
-1 Sharuum the Hegemon
-1 Shimmer Myr
-1 Silas Renn, Seeker Adept
-1 Skullclamp
-1 Slobad, Goblin Tinkerer
+1 Phyrexian Swarmlord
+1 Plague Myr
+1 Plague Stinger
+6 Plains
+1 Putrefy
+1 Sandsteppe Citadel
+1 Scavenging Ooze
+1 Shineshadow Snarl
 1 Sol Ring
-1 Solemn Simulacrum
-1 Soul of New Phyrexia
-1 Sphinx Summoner
-4 Swamp
-1 Swiftfoot Boots
-1 Sydri, Galvanic Genius
-1 Temple of the False God
-1 Terramorphic Expanse
-1 Thopter Foundry
-1 Trading Post
-1 Transguild Promenade
-1 Trash for Treasure
-1 Trial // Error
-1 Trinket Mage
-1 Vedalken Engineer
-1 Whipflare
+1 Sungrass Prairie
+6 Swamp
+1 Swords to Plowshares
+1 Tainted Field
+1 Tainted Wood
+1 Temple of Malady
+1 Temple of Plenty
+1 Temple of Silence
+1 Trailblazer's Boots
+1 Unnatural Restoration
+1 Vat Emergence
+1 Venomous Brutalizer
+1 Viridian Corrupter
+1 Vishgraz, the Doomhive
+1 Vraska's Fall
+1 Windborn Muse
+1 Wurmquake
