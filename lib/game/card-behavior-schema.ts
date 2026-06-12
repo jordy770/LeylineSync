@@ -187,6 +187,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'put_from_hand', 'destroy_up_to', 'put_from_command_zone', 'play_hideaway',
   'goad', 'territorial_attack', 'if_attacking_most_life', 'untap_all_attackers', 'extra_combat',
   'exile_and_manifest', 'vote_wild_free', 'discover', 'ignition',
+  'reveal_top_cast_shared', 'exile_from_any_graveyard',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -568,6 +569,22 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('extra_combat'),
   }),
+  // "Reveal the top card of your library. If it's a creature card that shares
+  // a creature type with a creature you control, you may cast it without
+  // paying its mana cost; otherwise bottom it." (Descendants' Path, mig 259.
+  // Approximations: the free cast is a direct battlefield entry and is not
+  // optional.)
+  z.object({
+    type: z.literal('reveal_top_cast_shared'),
+  }),
+  // "You may exile target card from a graveyard. If a creature card is exiled
+  // this way you gain N life; a noncreature card gives this creature +M/+M
+  // until end of turn." (Deathgorge Scavenger, mig 259.)
+  z.object({
+    type: z.literal('exile_from_any_graveyard'),
+    gain_if_creature: z.number().optional(),
+    pump_if_noncreature: z.number().optional(),
+  }),
   // Play the card this source hid with hideaway (Mosswort Bridge, mig 248):
   // a permanent card enters the battlefield free; the activation gate is the
   // ability's `condition` (total power 10+).
@@ -703,10 +720,11 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('pump'),
     // A fixed delta, a dynamic { count, …, negate? } value (Liliana −2: -X/-X),
-    // or the literal 'X' for an {X}-cost activated ability (Kessig Wolf Run —
-    // substituted server-side at activation).
-    power: z.union([z.number(), z.literal('X'), PumpValueSchema]).optional(),
-    toughness: z.union([z.number(), z.literal('X'), PumpValueSchema]).optional(),
+    // the literal 'X' for an {X}-cost activated ability (Kessig Wolf Run —
+    // substituted server-side at activation), or { power_of: 'target' }
+    // (Xenagos, mig 259: "+X/+X where X is that creature's power").
+    power: z.union([z.number(), z.literal('X'), PumpValueSchema, PowerOfSchema]).optional(),
+    toughness: z.union([z.number(), z.literal('X'), PumpValueSchema, PowerOfSchema]).optional(),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,

@@ -281,5 +281,15 @@
 
   "Rampaging Brontodon": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"attacks","effects":[{"type":"pump","power":{"count":"lands_you_control"},"toughness":{"count":"lands_you_control"}}]}]},
 
-  "Atzocan Seer": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"costs":[{"type":"sacrifice_self"}],"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"Dinosaur"}}]}]}
+  "Atzocan Seer": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"costs":[{"type":"sacrifice_self"}],"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"Dinosaur"}}]}]},
+
+  "Temple Altisaur": {"schema_version":2,"continuous_effects":[{"type":"damage_cap","affected":"controller","payload":{"type_line":"Dinosaur","cap":1}}]},
+
+  "Xenagos, God of Revels": {"schema_version":2,"continuous_effects":[{"type":"indestructible","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"beginning_of_combat","effects":[{"type":"pump","power":{"power_of":"target"},"toughness":{"power_of":"target"},"target_type":"creature","target_controller":"you"},{"type":"grant_keyword","keyword":"haste","target_type":"creature","target_controller":"you"}]}]},
+
+  "Descendants' Path": {"schema_version":2,"triggered_abilities":[{"event":"upkeep","effects":[{"type":"reveal_top_cast_shared"}]}]},
+
+  "Deathgorge Scavenger": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"exile_from_any_graveyard"}]},{"event":"attacks","effects":[{"type":"exile_from_any_graveyard"}]}]},
+
+  "Akroma's Will": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Akroma's Will","may_choose_both_if_commander":true,"modes":[{"label":"Flying, vigilance, double strike","actions":[{"type":"grant_keyword_all","keyword":"flying","scope":"controller"},{"type":"grant_keyword_all","keyword":"vigilance","scope":"controller"},{"type":"grant_keyword_all","keyword":"double_strike","scope":"controller"}]},{"label":"Lifelink, indestructible, protection","actions":[{"type":"grant_keyword_all","keyword":"indestructible","scope":"controller"},{"type":"grant_keyword_all","keyword":"hexproof","scope":"controller"}]}]}]}}
 }

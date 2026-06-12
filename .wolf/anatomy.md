@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T08:41:27.709Z
-> Files: 144 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T09:01:19.421Z
+> Files: 147 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -114,7 +114,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~16012 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~16286 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -143,10 +143,10 @@
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~3187 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~4973 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
-- `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1127 tok)
+- `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1435 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~15434 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~16522 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~8078 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
@@ -172,13 +172,13 @@
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2165 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
-- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2271 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2329 tok)
 - `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~6189 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~2258 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~800 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~11715 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~12260 tok)
 - `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~369 tok)
 - `turn_manifest_up.sql` — supabase/functions_src/turn_manifest_up.sql (~655 tok)
 
@@ -216,6 +216,7 @@
 - `202605010256_dino_creatures.sql` — 202605010256_dino_creatures — the Veloci-Ramp-Tor creature batch (~14 (~30048 tok)
 - `202605010257_dino_tail.sql` — 202605010257_dino_tail — the Veloci-Ramp-Tor tail batch (~10 cards; (~14931 tok)
 - `202605010258_dino_statics.sql` — 202605010258_dino_statics (~20673 tok)
+- `202605010259_dino_triggers.sql` — 202605010259_dino_triggers (~32896 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -239,7 +240,10 @@
 - `dino-creatures.test.ts` — mig 256 — the Veloci-Ramp-Tor creature batch (~14 cards, mostly scripts). (~1428 tok)
 - `dino-manabase.test.ts` — mig 255 — the Veloci-Ramp-Tor manabase + ramp batch (~20 script-only (~1444 tok)
 - `dino-statics.test.ts` — mig 258 — Veloci-Ramp-Tor statics batch. Engine touches: (~2042 tok)
+- `dino-triggers.test.ts` — mig 259 — Temple Altisaur damage_cap, Xenagos power_of pump, Descendants Path reveal-cast, Deathgorge graveyard exile pick, Akromas Will modal grants. (~1700 tok)
+- `dino-statics.test.ts` — mig 258 — dino statics batch: Zacama land-untap, Kinjalli enter-tapped, Runic Armasaur ability_activated watcher, Brontodon per-land pump, Atzocan Seer sac-return. (~1500 tok)
 - `dino-tail.test.ts` — mig 257 — the Veloci-Ramp-Tor "tail" batch (~10 cards). Engine touches: (~1639 tok)
+- `dino-triggers.test.ts` — mig 259 — Veloci-Ramp-Tor triggers batch. Engine touches: (~2494 tok)
 - `discover.test.ts` — mig 253 — discover + Pantlaza, Sun-Favored (the Veloci-Ramp-Tor commander). (~978 tok)
 - `divide-damage.test.ts` — Divided damage from triggers/abilities (mig 233): (~1212 tok)
 - `dragon-lands.test.ts` — mig 237 — three Dragon-deck lands: (~1000 tok)
@@ -286,7 +290,7 @@
 ## tests/unit/
 
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~2191 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~2285 tok)
 
 ## vercel/
 

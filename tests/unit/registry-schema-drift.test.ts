@@ -59,6 +59,8 @@ const JSON_ONLY: Record<string, string> = {
   vote_wild_free: 'council\'s dilemma vote chain (Selvala\'s Stampede, mig 252); JSON/AI-authored',
   discover: 'exile-top until a nonland with MV <= X, free-cast or hand, rest bottomed (Pantlaza, mig 253); JSON/AI-authored',
   ignition: 'target creature deals its power to each other creature and each opponent (Chandra\'s Ignition, mig 257); JSON/AI-authored',
+  reveal_top_cast_shared: 'reveal top of library, free-cast it if it shares a creature type with yours, else bottom (Descendants\' Path, mig 259); JSON/AI-authored',
+  exile_from_any_graveyard: 'optional exile of one card from any graveyard with creature/noncreature riders (Deathgorge Scavenger, mig 259); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

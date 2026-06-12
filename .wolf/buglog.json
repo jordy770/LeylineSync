@@ -10963,6 +10963,38 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-06-12T00:00:00Z"
+    },
+    {
+      "id": "bug-675",
+      "timestamp": "2026-06-12T08:57:58.059Z",
+      "error_message": "Wrong reference: then should be graveyard_exile_pick",
+      "file": "supabase/functions_src/submit_decision.sql",
+      "root_cause": "Used \"then\" instead of \"graveyard_exile_pick\"",
+      "fix": "Changed then → graveyard_exile_pick",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T08:57:58.059Z"
+    },
+    {
+      "id": "bug-676",
+      "timestamp": "2026-06-12T08:58:53.586Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 6→7 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T08:58:53.586Z"
     }
   ]
 }

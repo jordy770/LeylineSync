@@ -3673,3 +3673,19 @@
 | 10:41 | Edited tests/feature/dino-statics.test.ts | 3→2 lines | ~53 |
 | 10:41 | Edited tests/feature/dino-statics.test.ts | 4→3 lines | ~43 |
 | 00:30 | mig 258 dino statics batch: Zacama, Kinjalli's Sunwing, Runic Armasaur, Rampaging Brontodon, Atzocan Seer (untap_all card_type, untargeted pump, ability_activated watcher event, creatures_enter_tapped continuous, gain_life activated routing) | functions_src x5, mig 258, schema, fixtures, card-scripts, dino-statics.test.ts | 903/903 green, tsc clean, triage 68/6/16 | ~55k |
+| 10:44 | Session end: 14 writes across 8 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 3 reads | ~20286 tok |
+| 10:56 | Edited supabase/functions_src/apply_damage_to_creature.sql | modified min() | ~323 |
+| 10:56 | Edited supabase/functions_src/apply_damage_to_creature.sql | 2→3 lines | ~15 |
+| 10:57 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified cap() | ~131 |
+| 10:57 | Edited supabase/functions_src/apply_trigger_effects.sql | 3→7 lines | ~36 |
+| 10:57 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Path() | ~1080 |
+| 10:57 | Edited supabase/functions_src/submit_decision.sql | 3→4 lines | ~18 |
+| 10:57 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~84 |
+| 10:58 | Edited supabase/functions_src/submit_decision.sql | modified Scavenger() | ~547 |
+| 10:58 | Edited lib/game/card-behavior-schema.ts | 1→2 lines | ~35 |
+| 10:58 | Edited lib/game/card-behavior-schema.ts | expanded (+16 lines) | ~255 |
+| 10:58 | Edited lib/game/card-behavior-schema.ts | 6→7 lines | ~148 |
+| 10:59 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~133 |
+| 10:59 | Edited supabase/migrations/202605010259_dino_triggers.sql | modified batch() | ~627 |
+| 11:01 | Created tests/feature/dino-triggers.test.ts | — | ~2494 |
+| 01:10 | mig 259 dino triggers batch: Temple Altisaur (damage_cap), Xenagos (power_of target pump), Descendants' Path (reveal_top_cast_shared), Deathgorge Scavenger (exile_from_any_graveyard + graveyard_exile_pick), Akroma's Will (script-only choose_one) | functions_src x4, mig 259, schema, drift test, fixtures, card-scripts, dino-triggers.test.ts | 910/910 green, tsc clean, triage 73/6/11 | ~45k |

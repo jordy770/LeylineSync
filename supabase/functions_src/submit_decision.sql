@@ -43,6 +43,7 @@ declare
   v_mode_actions jsonb;
   v_resume integer;
   v_eff_script jsonb;
+  v_type_line text;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required';
@@ -110,7 +111,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -338,6 +339,44 @@ begin
       end if;
     end loop;
     perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'graveyard_exile_pick' then
+    -- Deathgorge Scavenger (mig 259): exile the chosen graveyard card (0 or
+    -- 1); a creature card gains the decider life, a noncreature card gives
+    -- the SOURCE permanent +1/+1 until end of turn (if still fielded).
+    for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
+    loop
+      select c.type_line into v_type_line
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.id = v_card and gc.session_id = v_decision.session_id;
+      select coalesce(max(zone_position), -1) + 1 into v_pos
+      from public.game_cards
+      where session_id = v_decision.session_id
+        and owner_id = (select owner_id from public.game_cards where id = v_card)
+        and zone = 'exile';
+      update public.game_cards
+      set zone = 'exile', zone_position = v_pos, is_tapped = false, damage_marked = 0
+      where id = v_card and session_id = v_decision.session_id and zone = 'graveyard';
+
+      if v_type_line ilike '%creature%' then
+        update public.game_session_players
+        set life_total = life_total + coalesce((v_decision.params ->> 'gain_if_creature')::integer, 2)
+        where session_id = v_decision.session_id and player_id = v_decision.deciding_player_id;
+      else
+        select source_card_id into v_src_card
+        from public.game_stack_items where id = v_decision.source_stack_item_id;
+        if exists (
+          select 1 from public.game_cards
+          where id = v_src_card and session_id = v_decision.session_id and zone = 'battlefield'
+        ) then
+          perform public.create_pt_pump(
+            v_decision.session_id, v_src_card,
+            coalesce((v_decision.params ->> 'pump_if_noncreature')::integer, 1),
+            coalesce((v_decision.params ->> 'pump_if_noncreature')::integer, 1));
+        end if;
+      end if;
+    end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
   elsif v_decision.decision_type = 'look_top' then

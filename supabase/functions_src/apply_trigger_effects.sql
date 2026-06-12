@@ -36,6 +36,10 @@ declare
   v_queue jsonb;
   v_target_controller_player uuid;
   v_died_set uuid[];
+  v_top_id uuid;
+  v_top_type text;
+  v_pos integer;
+  v_turn integer;
 begin
   select * into v_item from public.game_stack_items where id = p_stack_item_id;
   if not found then
@@ -903,6 +907,73 @@ begin
       -- the helper now resolves count-based power/toughness itself.
       perform public.apply_mass_pump_until_eot(
         p_session_id, v_item.source_card_id, v_controller, v_effect);
+
+    elsif v_type = 'reveal_top_cast_shared' then
+      -- Descendants' Path (mig 259): "reveal the top card of your library. If
+      -- it's a creature card that shares a creature type with a creature you
+      -- control, you may cast it without paying its mana cost. If you don't
+      -- cast it, put it on the bottom of your library." Approximations: the
+      -- free cast is a direct battlefield entry, and it is NOT optional —
+      -- a sharing card is always cast. Subtype words are the type-line tokens
+      -- after the dash; both '-' and the em-dash are handled.
+      select gc.id, c.type_line into v_top_id, v_top_type
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.owner_id = v_controller and gc.zone = 'library'
+      order by gc.zone_position asc, gc.id asc
+      limit 1;
+      if v_top_id is not null then
+        if v_top_type ilike '%creature%' and exists (
+          select 1
+          from public.game_cards bc
+          join public.cards bcc on bcc.id = bc.card_id
+          where bc.session_id = p_session_id and bc.zone = 'battlefield'
+            and coalesce(bc.controller_player_id, bc.owner_id) = v_controller
+            and bcc.type_line ilike '%creature%'
+            and exists (
+              select 1
+              from unnest(string_to_array(trim(split_part(translate(v_top_type, '—–-', '|||'), '|', 2)), ' ')) tw
+              join unnest(string_to_array(trim(split_part(translate(bcc.type_line, '—–-', '|||'), '|', 2)), ' ')) bw
+                on lower(tw) = lower(bw) and trim(tw) <> ''
+            )
+        ) then
+          select coalesce(max(zone_position), -1) + 1 into v_pos
+          from public.game_cards
+          where session_id = p_session_id and owner_id = v_controller and zone = 'battlefield';
+          select turn_number into v_turn from public.game_turn_state where session_id = p_session_id;
+          update public.game_cards
+          set zone = 'battlefield', zone_position = v_pos, controller_player_id = owner_id,
+              is_tapped = false, damage_marked = 0, plus_one_counters = 0,
+              entered_battlefield_turn_number = coalesce(v_turn, 0)
+          where id = v_top_id;
+          perform public.rebuild_scripted_continuous_effects(p_session_id);
+        else
+          perform public.bottom_cards_random(p_session_id, v_controller, array[v_top_id]);
+        end if;
+      end if;
+
+    elsif v_type = 'exile_from_any_graveyard' then
+      -- Deathgorge Scavenger (mig 259): "you may exile target card from a
+      -- graveyard. If a creature card is exiled this way, you gain 2 life. If
+      -- a noncreature card is exiled this way, this creature gets +1/+1 until
+      -- end of turn." Parks an optional (min 0) pick over EVERY graveyard;
+      -- submit_decision exiles and applies the conditional rider.
+      select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gy.id, 'name', c.name) order by c.name, gy.id), '[]'::jsonb)
+        into v_options
+      from public.game_cards gy join public.cards c on c.id = gy.card_id
+      where gy.session_id = p_session_id and gy.zone = 'graveyard';
+
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'graveyard_exile_pick',
+        'Exile up to 1 card from a graveyard',
+        v_options, 0, 1,
+        jsonb_build_object(
+          'gain_if_creature', coalesce((v_effect ->> 'gain_if_creature')::integer, 2),
+          'pump_if_noncreature', coalesce((v_effect ->> 'pump_if_noncreature')::integer, 1)))
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
 
     elsif v_type = 'prevent_damage' then
       perform public.add_damage_prevention(

@@ -20,6 +20,7 @@ declare
   v_turn integer;
   v_shield record;
   v_prevent integer;
+  v_cap integer;
 begin
   if v_remaining <= 0 then
     return 0;
@@ -73,6 +74,29 @@ begin
       end if;
     end if;
   end loop;
+
+  -- Static damage cap (mig 259, Temple Altisaur: "if a source would deal
+  -- damage to ANOTHER Dinosaur you control, prevent all but 1"). A fielded
+  -- 'damage_cap' row caps damage to matching creatures sharing its source's
+  -- controller; the protector never caps damage to itself.
+  if v_remaining > 0 then
+    select min(greatest(1, coalesce((ce.payload ->> 'cap')::integer, 1))) into v_cap
+    from public.game_continuous_effects ce
+    join public.game_cards src
+      on src.id = ce.source_card_id and src.session_id = ce.session_id
+    join public.game_cards tgt on tgt.id = p_card_id and tgt.session_id = p_session_id
+    join public.cards tc on tc.id = tgt.card_id
+    where ce.session_id = p_session_id
+      and ce.effect_type = 'damage_cap'
+      and src.zone = 'battlefield'
+      and ce.source_card_id <> p_card_id
+      and coalesce(src.controller_player_id, src.owner_id)
+          = coalesce(tgt.controller_player_id, tgt.owner_id)
+      and tc.type_line ilike '%' || coalesce(ce.payload ->> 'type_line', '') || '%';
+    if v_cap is not null then
+      v_remaining := least(v_remaining, v_cap);
+    end if;
+  end if;
 
   if v_remaining > 0 then
     if p_as_minus_counters then

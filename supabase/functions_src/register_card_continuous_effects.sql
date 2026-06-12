@@ -108,7 +108,11 @@ begin
       -- STATIC "creatures your opponents control enter tapped" (mig 258,
       -- Kinjalli's Sunwing): fire_zone_change_triggers taps creatures entering
       -- under any OTHER player's control while this row's source is fielded.
-      'creatures_enter_tapped'
+      'creatures_enter_tapped',
+      -- STATIC damage cap (mig 259, Temple Altisaur): payload {type_line, cap};
+      -- apply_damage_to_creature caps damage to OTHER matching creatures the
+      -- source's controller controls.
+      'damage_cap'
     ) then
       raise exception 'Unsupported continuous effect type: %', v_effect_type;
     end if;
