@@ -36,7 +36,8 @@ begin
   where gc.id = p_changed_card_id and gc.session_id = p_session_id;
 
   for v_watcher in
-    select gc.id, coalesce(gc.controller_player_id, gc.owner_id) as controller, c.name as card_name
+    select gc.id, coalesce(gc.controller_player_id, gc.owner_id) as controller, c.name as card_name,
+           gc.attached_to
     from public.game_cards gc
     join public.cards c on c.id = gc.card_id
     where gc.session_id = p_session_id
@@ -82,6 +83,13 @@ begin
 
       -- "another …": skip when the changed card IS the watcher.
       if v_exclude_self and v_watcher.id = p_changed_card_id then
+        continue;
+      end if;
+
+      -- "whenever EQUIPPED creature dies" (mig 267, Skullclamp): only fire
+      -- when the event subject is the permanent this watcher is attached to.
+      if coalesce((v_filter ->> 'attached_host')::boolean, false)
+         and v_watcher.attached_to is distinct from p_changed_card_id then
         continue;
       end if;
 

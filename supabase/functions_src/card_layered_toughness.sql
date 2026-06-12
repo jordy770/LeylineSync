@@ -1,7 +1,7 @@
 -- supabase/functions_src/card_layered_toughness.sql
--- CANONICAL current definition (seeded from 202605010179_mass_typed_debuff.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- CANONICAL current definition (seeded from 202605010209_choose_color_anthem.sql,
+-- the newest definition in supabase/migrations — verified per bug-682).
+-- Edit THIS file, then generate a migration with scripts/new-migration.mjs.
 
 create or replace function public.card_layered_toughness(p_session_id uuid, p_game_card_id uuid)
 returns integer
@@ -63,8 +63,29 @@ as $$
           and (effects.payload ->> 'color' is null
                or public.card_color_set(cards.mana_cost) @> array[lower(effects.payload ->> 'color')])
       ), 0)
+
+    + coalesce((
+        -- Dynamic pump (mig 267, Cranial Plating / Bonehoard): payload
+        -- toughness_count names a count resolved against the SOURCE's controller
+        -- at read time (artifacts_you_control, creature_cards_all_graveyards).
+        select sum(public.resolve_count_amount(
+                 p_session_id,
+                 coalesce(source_card.controller_player_id, source_card.owner_id),
+                 jsonb_build_object('count', effects.payload ->> 'toughness_count'),
+                 effects.source_card_id))
+        from public.game_continuous_effects effects
+        left join public.game_cards source_card
+          on source_card.id = effects.source_card_id
+        where effects.session_id = p_session_id
+          and effects.effect_type = 'pump'
+          and effects.affected_card_id = p_game_card_id
+          and effects.payload ? 'toughness_count'
+          and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
+      ), 0)
   from public.game_cards
   join public.cards on cards.id = game_cards.card_id
   where game_cards.id = p_game_card_id
     and game_cards.session_id = p_session_id;
 $$;
+grant execute on function public.card_layered_toughness(uuid, uuid) to authenticated;
+grant execute on function public.card_layered_toughness(uuid, uuid) to service_role;

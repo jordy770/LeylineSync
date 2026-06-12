@@ -383,5 +383,15 @@
 
   "Swiftfoot Boots": {"schema_version":2,"continuous_effects":[{"type":"hexproof","affected":"equipped"},{"type":"haste","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
 
-  "Loxodon Warhammer": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":3,"toughness":0}},{"type":"trample","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]}
+  "Loxodon Warhammer": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":3,"toughness":0}},{"type":"trample","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+
+  "Skullclamp": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":1,"toughness":-1}}],"triggered_abilities":[{"event":"creature_died","filter":{"controller":"any","attached_host":true},"effects":[{"type":"draw","amount":2}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+
+  "Cranial Plating": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power_count":"artifacts_you_control"}}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+
+  "Bonehoard": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power_count":"creature_cards_all_graveyards","toughness_count":"creature_cards_all_graveyards"}}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"living_weapon"}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+
+  "Grip of Phyresis": {"schema_version":2,"spell_effect":{"actions":[{"type":"gain_control","target_type":"artifact","target_controller":"opponent"},{"type":"living_weapon"}]}},
+
+  "Armory Automaton": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"attach_all_equipment"}]},{"event":"attacks","effects":[{"type":"attach_all_equipment"}]}]}
 }

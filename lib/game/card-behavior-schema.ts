@@ -193,6 +193,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'exile_and_manifest', 'vote_wild_free', 'discover', 'ignition',
   'reveal_top_cast_shared', 'exile_from_any_graveyard', 'fight_pick',
   'exile_tops_cast', 'exile_until_leaves', 'become_monarch', 'equip',
+  'living_weapon', 'attach_all_equipment',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -639,6 +640,17 @@ const CardBehaviorActionSchema = z.union([
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+  }),
+  // Living weapon (mig 267, Bonehoard / Grip of Phyresis): Germ token +
+  // attach the target Equipment (or the source itself) to it.
+  z.object({
+    type: z.literal('living_weapon'),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Armory Automaton (mig 267): attach every Equipment you control to the source.
+  z.object({
+    type: z.literal('attach_all_equipment'),
   }),
   // Equip {N} (mig 266): attach to target creature you control.
   z.object({

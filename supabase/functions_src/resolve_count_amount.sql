@@ -105,6 +105,16 @@ begin
       and g.owner_id = p_controller_id
       and g.zone = 'hand';
 
+  elsif v_count = 'creature_cards_all_graveyards' then
+    -- Bonehoard (mig 267): 'equal to the number of creature cards in ALL
+    -- graveyards' — every player's, not just yours.
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and g.zone = 'graveyard'
+      and c.type_line ilike '%creature%';
+
   elsif v_count = 'cards_in_graveyard' then
     select count(*)::integer into v_n
     from public.game_cards g

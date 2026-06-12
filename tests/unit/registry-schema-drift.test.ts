@@ -66,6 +66,8 @@ const JSON_ONLY: Record<string, string> = {
   exile_until_leaves: 'exile the target until the trigger source leaves the battlefield (Bronzebeak Foragers, mig 262); JSON/AI-authored',
   become_monarch: 'you become the monarch (Regal Behemoth, mig 262); JSON/AI-authored',
   equip: 'attach this Equipment to target creature you control (Breya Equipment cluster, mig 266); JSON/AI-authored',
+  living_weapon: 'Germ token + attach the Equipment to it (Bonehoard / Grip of Phyresis, mig 267); JSON/AI-authored',
+  attach_all_equipment: 'attach every Equipment you control to the source (Armory Automaton, mig 267); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))
