@@ -104,7 +104,11 @@ begin
       -- STATIC cast-from-the-top-of-your-library permission (mig 244,
       -- Thundermane Dragon): payload {creature, min_power, grant_haste};
       -- cast_card_from_hand's library gate consumes it.
-      'cast_from_library_top'
+      'cast_from_library_top',
+      -- STATIC "creatures your opponents control enter tapped" (mig 258,
+      -- Kinjalli's Sunwing): fire_zone_change_triggers taps creatures entering
+      -- under any OTHER player's control while this row's source is fielded.
+      'creatures_enter_tapped'
     ) then
       raise exception 'Unsupported continuous effect type: %', v_effect_type;
     end if;

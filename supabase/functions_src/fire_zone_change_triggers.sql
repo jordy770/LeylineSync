@@ -13,6 +13,29 @@ begin
   if NEW.zone = 'battlefield'
     and (TG_OP = 'INSERT' or OLD.zone is distinct from 'battlefield')
   then
+    -- "Creatures your opponents control enter tapped" (mig 258, Kinjalli's
+    -- Sunwing): a battlefield source with a creatures_enter_tapped row taps
+    -- every creature entering under another player's control. The is_tapped
+    -- update re-fires this trigger with zone unchanged, so it skips this block.
+    if exists (
+      select 1
+      from public.game_continuous_effects ce
+      join public.game_cards src
+        on src.id = ce.source_card_id and src.session_id = ce.session_id
+      where ce.session_id = NEW.session_id
+        and ce.effect_type = 'creatures_enter_tapped'
+        and src.zone = 'battlefield'
+        and coalesce(src.controller_player_id, src.owner_id)
+            is distinct from coalesce(NEW.controller_player_id, NEW.owner_id)
+    ) and exists (
+      select 1 from public.cards c
+      where c.id = NEW.card_id and c.type_line ilike '%creature%'
+    ) then
+      update public.game_cards
+      set is_tapped = true
+      where id = NEW.id and session_id = NEW.session_id and is_tapped = false;
+    end if;
+
     perform public.fire_card_triggers(
       NEW.session_id, NEW.id,
       array['enters_the_battlefield', 'etb', 'enters']

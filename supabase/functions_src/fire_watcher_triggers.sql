@@ -101,9 +101,12 @@ begin
 
       -- Type filter: default "creature" for permanent watchers; spell_cast
       -- (Taurean Mauler) matches a SPELL of any type; land_entered (Nesting
-      -- Dragon landfall) defaults to 'land' so only land entries match.
+      -- Dragon landfall) defaults to 'land' so only land entries match;
+      -- ability_activated (mig 258, Runic Armasaur) defaults to '' — any
+      -- permanent whose non-mana ability was activated.
       if v_changed_type not ilike '%' || coalesce(v_f_type,
-           case p_event when 'spell_cast' then '' when 'land_entered' then 'land' else 'creature' end) || '%' then
+           case p_event when 'spell_cast' then '' when 'land_entered' then 'land'
+                        when 'ability_activated' then '' else 'creature' end) || '%' then
         continue;
       end if;
 

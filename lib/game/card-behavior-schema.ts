@@ -696,6 +696,9 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.enum(['tap_all', 'untap_all']),
     target_controller: TargetControllerSchema,
+    // Widens the default creature scope by type line (Zacama, mig 258:
+    // "untap all LANDS you control").
+    card_type: z.string().optional(),
   }),
   z.object({
     type: z.literal('pump'),

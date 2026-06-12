@@ -271,5 +271,15 @@
 
   "Shifting Ceratops": {"schema_version":2,"cant_be_countered":true,"continuous_effects":[{"type":"protection","affected":"source","source_zone_required":"battlefield","from":"blue"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{G}"}],"effects":[{"type":"choose_one","prompt":"Reach, trample, or haste","modes":[{"label":"Reach","actions":[{"type":"grant_keyword","keyword":"reach"}]},{"label":"Trample","actions":[{"type":"grant_keyword","keyword":"trample"}]},{"label":"Haste","actions":[{"type":"grant_keyword","keyword":"haste"}]}]}]}]},
 
-  "Sunfrill Imitator": {"schema_version":2,"triggered_abilities":[{"event":"attacks","effects":[{"type":"become_copy","optional":true,"target_filter":{"controller":"you","type_line":"Dinosaur"}}]}]}
+  "Sunfrill Imitator": {"schema_version":2,"triggered_abilities":[{"event":"attacks","effects":[{"type":"become_copy","optional":true,"target_filter":{"controller":"you","type_line":"Dinosaur"}}]}]},
+
+  "Zacama, Primal Calamity": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"},{"type":"reach","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"untap_all","card_type":"land","target_controller":"you"}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{R}"}],"effects":[{"type":"deal_damage","amount":3,"target_type":"creature"}]},{"costs":[{"type":"mana","amount":"{2}{G}"}],"effects":[{"type":"destroy","target_type":["artifact","enchantment"]}]},{"costs":[{"type":"mana","amount":"{2}{W}"}],"effects":[{"type":"gain_life","amount":3}]}]},
+
+  "Kinjalli's Sunwing": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"creatures_enter_tapped","affected":"controller"}]},
+
+  "Runic Armasaur": {"schema_version":2,"triggered_abilities":[{"event":"ability_activated","filter":{"controller":"opponent","type_line":""},"effects":[{"type":"draw","amount":1}]}]},
+
+  "Rampaging Brontodon": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"attacks","effects":[{"type":"pump","power":{"count":"lands_you_control"},"toughness":{"count":"lands_you_control"}}]}]},
+
+  "Atzocan Seer": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"costs":[{"type":"sacrifice_self"}],"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"Dinosaur"}}]}]}
 }

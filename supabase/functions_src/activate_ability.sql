@@ -305,6 +305,15 @@ begin
     raise exception 'Activated ability has no effect';
   end if;
 
+  -- Non-mana activation broadcast (mig 258, Runic Armasaur: "whenever an
+  -- opponent activates an ability of a creature or land that isn't a mana
+  -- ability, you may draw a card"). Mana abilities route through
+  -- activate_mana_ability and never reach here, so every fire is non-mana.
+  -- Approximation: the watcher's type filter defaults to '' for this event
+  -- (any permanent type, not just creature-or-land).
+  perform public.fire_watcher_triggers(
+    p_session_id, p_source_card_id, auth.uid(), 'ability_activated');
+
   -- A MULTI-effect ability (Vampiric Rites: draw + lose life; Kessig Wolf
   -- Run: targeted pump + trample) resolves its whole program via a
   -- spell_effect stack item. A provided target rides the payload — the
@@ -338,7 +347,7 @@ begin
       p_source_card_id
     );
 
-  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity', 'divide_damage', 'return_from_graveyard', 'play_hideaway', 'choose_one') then
+  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity', 'divide_damage', 'return_from_graveyard', 'play_hideaway', 'choose_one', 'gain_life') then
     -- A single create_token / search_library / grant_keyword_all effect
     -- routes through a spell_effect stack item so it reuses the spell-effect
     -- resolver (incl. the `tapped` flag and tutor `filter`). Wayfarer's Bauble.

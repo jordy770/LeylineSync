@@ -3652,3 +3652,24 @@
 | 02:15 | Created tests/feature/zz-debug.test.ts | — | ~385 |
 | 02:15 | Edited tests/feature/dino-tail.test.ts | 2→3 lines | ~57 |
 | 07:05 | Dino tail batch (mig 257, ~10 cards): resolve_count_amount + SOURCE param (OLD 3-ARG DROPPED; exclude_self counts, greatest_power_you_control w/ type inversion); ignition targeted kind (Chandra's Ignition); choose_one in activated routing (Shifting Ceratops). Script-only: Dreadmaw, Rishkar's (free cast = put_from_hand MV5 approx), Return of the Wildspeaker, Lifecrafter's Bestiary, Rhythm of the Wild (riot via modal watcher + reflexive modes), Wayward Swordtooth, Fiery Confluence (choose 3 w/ repeats), Sunfrill Imitator (become_copy on attack). | mig 257, 5 sql files, schema, card-scripts, fixtures, dino-tail.test | 897/897 green, tsc+lint clean, Veloci triage 63/6/21 | ~11k |
+| 02:17 | Session end: 201 writes across 58 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 29 reads | ~112339 tok |
+
+## Session: 2026-06-12 10:06
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:36 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 10→12 lines | ~193 |
+| 10:36 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+10 lines) | ~207 |
+| 10:36 | Edited supabase/functions_src/activate_ability.sql | expanded (+9 lines) | ~178 |
+| 10:36 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~62 |
+| 10:37 | Edited supabase/functions_src/fire_watcher_triggers.sql | 5→8 lines | ~157 |
+| 10:37 | Edited supabase/functions_src/fire_zone_change_triggers.sql | expanded (+23 lines) | ~326 |
+| 10:37 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified permission() | ~135 |
+| 10:37 | Edited lib/game/card-behavior-schema.ts | 4→7 lines | ~74 |
+| 10:37 | Edited supabase/migrations/202605010258_dino_statics.sql | modified batch() | ~588 |
+| 10:40 | Created tests/feature/dino-statics.test.ts | — | ~2038 |
+| 10:41 | Edited tests/feature/dino-statics.test.ts | 6→4 lines | ~61 |
+| 10:41 | Edited tests/feature/dino-statics.test.ts | 3→4 lines | ~72 |
+| 10:41 | Edited tests/feature/dino-statics.test.ts | 3→2 lines | ~53 |
+| 10:41 | Edited tests/feature/dino-statics.test.ts | 4→3 lines | ~43 |
+| 00:30 | mig 258 dino statics batch: Zacama, Kinjalli's Sunwing, Runic Armasaur, Rampaging Brontodon, Atzocan Seer (untap_all card_type, untargeted pump, ability_activated watcher event, creatures_enter_tapped continuous, gain_life activated routing) | functions_src x5, mig 258, schema, fixtures, card-scripts, dino-statics.test.ts | 903/903 green, tsc clean, triage 68/6/16 | ~55k |

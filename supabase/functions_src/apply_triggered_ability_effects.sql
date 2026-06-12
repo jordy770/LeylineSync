@@ -394,11 +394,13 @@ begin
         v_target_controller := public.behavior_target_controller(v_effect || jsonb_build_object(
           'target_controller', coalesce(v_effect ->> 'target_controller', 'you')
         ));
+        -- card_type (mig 258, Zacama: "untap all lands you control") widens the
+        -- default creature scope to any type-line match.
         update public.game_cards gc
         set is_tapped = (v_eff_type = 'tap_all')
         from public.cards c
         where c.id = gc.card_id and gc.session_id = p_session_id and gc.zone = 'battlefield'
-          and c.type_line ilike '%creature%'
+          and c.type_line ilike '%' || coalesce(v_effect ->> 'card_type', 'creature') || '%'
           and (
             v_target_controller = 'any'
             or (v_target_controller = 'you' and gc.controller_player_id = p_controller_id)
@@ -550,6 +552,16 @@ begin
       -- Untargeted set base P/T → the source (Nogi: "becomes 5/5 until EOT").
       if p_source_card_id is not null then
         perform public.apply_creature_effect(p_session_id, 'set_pt', p_source_card_id, v_effect);
+      end if;
+
+    elsif v_eff_type = 'pump' then
+      -- Untargeted self-pump (mig 258, Rampaging Brontodon: "whenever this
+      -- attacks, it gets +1/+1 for each land you control"). Dynamic counts
+      -- ({count:'lands_you_control'}) resolve against the ability's controller.
+      if p_source_card_id is not null then
+        perform public.apply_creature_effect(
+          p_session_id, 'pump', p_source_card_id,
+          v_effect || jsonb_build_object('acting_controller', p_controller_id));
       end if;
 
     elsif v_eff_type = 'conditional' then
