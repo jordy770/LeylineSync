@@ -341,5 +341,15 @@
 
   "Rupture Spire": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
 
-  "Transguild Promenade": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]}
+  "Transguild Promenade": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Breya, Etherium Shaper": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Thopter Token","count":2}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}"},{"type":"sacrifice_artifacts","count":2}],"effects":[{"type":"choose_one","prompt":"Breya","modes":[{"label":"Breya deals 3 damage to target player","actions":[{"type":"deal_damage","amount":3,"recipient":"each_opponent"}]},{"label":"Target creature gets -4/-4 until end of turn","actions":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"any","type_line":"creature"}}]},{"label":"You gain 5 life","actions":[{"type":"gain_life","amount":5}]}]}]}]},
+
+  "Thopter Foundry": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"sacrifice_artifacts","count":1,"nontoken":true}],"effects":[{"type":"create_token","token":"Thopter Token","count":1},{"type":"gain_life","amount":1}]}]},
+
+  "Etherium Sculptor": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"type_line":"artifact","amount":1}}]},
+
+  "Ichor Wellspring": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"draw","amount":1}]},{"event":"dies","effects":[{"type":"draw","amount":1}]}]},
+
+  "Mycosynth Wellspring": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"basic land"}}]},{"event":"dies","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"basic land"}}]}]}
 }

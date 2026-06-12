@@ -3752,3 +3752,13 @@
 | 12:29 | Edited lib/game/card-behavior-schema.ts | modified lands() | ~126 |
 | 12:30 | Created tests/feature/breya-manabase.test.ts | — | ~516 |
 | 03:40 | mig 263 Breya deck started: Tier-0 mana base (14 lands; bounce_up_to type_line filter for karoos; tri-lands, artifact lands, Buried Ruin, tapped any-color). Fixed Trial/Error -> Trial // Error in next-deck.txt | apply_trigger_effects, mig 263, schema, fixtures, card-scripts x14, breya-manabase.test.ts | 923/923 green, Breya triage 23/3/60 | ~25k |
+| 12:32 | Session end: 81 writes across 27 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 10 reads | ~105605 tok |
+| 12:34 | Edited supabase/functions_src/activate_ability.sql | modified greatest() | ~175 |
+| 12:35 | Edited supabase/functions_src/activate_ability.sql | 1→4 lines | ~37 |
+| 12:35 | Edited supabase/functions_src/activate_ability.sql | modified cost() | ~315 |
+| 12:35 | Edited supabase/functions_src/activate_ability.sql | 1→2 lines | ~10 |
+| 12:35 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~36 |
+| 12:35 | Edited lib/game/card-behavior-schema.ts | 1→4 lines | ~118 |
+| 12:36 | Created tests/feature/breya-core.test.ts | — | ~1288 |
+| 12:36 | Edited tests/feature/breya-core.test.ts | 3→4 lines | ~86 |
+| 04:10 | mig 264 Breya core: Breya commander (ETB Thopters + sac-two modal), Thopter Foundry, Etherium Sculptor, Ichor/Mycosynth Wellsprings. New sacrifice_artifacts activation cost (auto-pick cheapest MV, nontoken flag) | activate_ability, mig 264, schema, fixtures, card-scripts x5, breya-core.test.ts | 926/926 green, Breya triage 28/3/55 | ~20k |

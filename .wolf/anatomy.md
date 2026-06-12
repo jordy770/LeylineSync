@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T10:30:32.430Z
-> Files: 160 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T10:36:44.277Z
+> Files: 162 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -114,7 +114,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~16868 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~16960 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -138,7 +138,7 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~6867 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~7331 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1813 tok)
 - `add_mana_from_card.sql` — basic-land/manual mana rpc (7-arg, commander identity + monarch land bonus); canonical since mig 262. (~900 tok)
 - `add_mana_from_card.sql` — supabase/functions_src/add_mana_from_card.sql (~1460 tok)
@@ -235,7 +235,10 @@
 - `become-copy.test.ts` — mig 240 — become_copy: an EXISTING card becomes a copy of another. (~1756 tok)
 - `become-the-avalanche.test.ts` — mig 243 — Become the Avalanche: "Draw a card for each creature you control (~662 tok)
 - `becomes-target-and-power.test.ts` — mig 235 — three cards: (~1397 tok)
+- `breya-core.test.ts` — mig 264 — Breya core. Engine touch: 'sacrifice_artifacts' activation cost (~1294 tok)
 - `breya-manabase.test.ts` — mig 263 — Breya mana base. Engine touch: bounce_up_to type_line filter (~516 tok)
+- `breya-core.test.ts` — mig 264 — Breya ETB Thopters + sacrifice_artifacts cost, Thopter Foundry nontoken sac, Ichor Wellspring enters/dies draws. (~900 tok)
+- `breya-manabase.test.ts` — mig 263 — Breya karoo land bounce (bounce_up_to type_line) + double-mana tap. (~500 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
 - `copy-permanent.test.ts` — mig 239 — token-copy primitive (Will of the Temur + Reflections of Littjara). (~2624 tok)
 - `cost-reduction.test.ts` — Cost reduction (mig 231) — reduced_mana_cost shaves generic mana at cast: (~942 tok)
@@ -249,7 +252,6 @@
 - `dino-fights.test.ts` — mig 261 — Savage Stomp/Wayta fight_pick, Scion per-attacker combat-damage destroy. (~1100 tok)
 - `dino-fights.test.ts` — mig 261 — Veloci-Ramp-Tor fights batch. Engine touches: (~1262 tok)
 - `dino-finale.test.ts` — mig 262 — Etali free-cast tops, monarch subsystem (crown/steal/draw/land bonus), Bronzebeak exile-until-leaves. (~1500 tok)
-- `breya-manabase.test.ts` — mig 263 — Breya karoo land bounce (bounce_up_to type_line) + double-mana tap. (~500 tok)
 - `dino-finale.test.ts` — mig 262 — Veloci-Ramp-Tor finale (deck complete). Engine touches: (~1770 tok)
 - `dino-manabase.test.ts` — mig 255 — the Veloci-Ramp-Tor manabase + ramp batch (~20 script-only (~1444 tok)
 - `dino-statics.test.ts` — mig 258 — Veloci-Ramp-Tor statics batch. Engine touches: (~2042 tok)

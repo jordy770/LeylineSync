@@ -1,7 +1,17 @@
--- supabase/functions_src/activate_ability.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010264_breya_core
+-- Breya core batch (5 cards, mig 264): Breya Etherium Shaper (commander),
+-- Thopter Foundry, Etherium Sculptor, Ichor Wellspring, Mycosynth Wellspring.
+-- Engine: new activation cost 'sacrifice_artifacts' {count, nontoken} — the
+-- engine auto-picks the cheapest-MV artifacts you control (source excluded;
+-- tokens are MV 0 so they go first, matching real play). A client-chosen set
+-- is a future refinement.
+-- Approximations: Breya mode 1 hits 'each opponent' (identical in 1v1, no
+-- planeswalker targets); mode 2 (-4/-4) is modelled as destroy-up-to-one
+-- creature; Thopter Foundry needs a nontoken artifact. Etherium Sculptor =
+-- cost_reduction type_line artifact; Wellsprings = enters/dies draw or
+-- basic-land tutor to hand (existing primitives).
+-- Generated from supabase/functions_src (activate_ability) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.activate_ability(
   p_session_id uuid,

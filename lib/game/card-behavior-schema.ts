@@ -139,6 +139,7 @@ const ThenRiderSchema = z
 const KNOWN_V2_COST_TYPES = [
   'tap_self', 'untap_self', 'mana', 'pay_life',
   'sacrifice_self', 'discard', 'exile_self', 'energy', 'tap_creatures', 'remove_counters',
+  'sacrifice_artifacts',
 ] as const
 
 const UnknownCostSchema = z.object({
@@ -166,6 +167,9 @@ const CardBehaviorCostSchema = z.union([
   // "Tap N untapped <type> creatures you control" as a cost (Gravespawn
   // Sovereign, mig 212). The engine auto-picks which to tap.
   z.object({ type: z.literal('tap_creatures'), count: z.number().int().positive(), type_line: z.string().optional() }),
+  // "Sacrifice N artifacts" as a cost (Breya / Thopter Foundry, mig 264). The
+  // engine auto-picks the cheapest-MV matching artifacts (source excluded).
+  z.object({ type: z.literal('sacrifice_artifacts'), count: z.number().int().positive().optional(), nontoken: z.boolean().optional() }),
   // "Remove N <kind> counters from this permanent" as a cost (Grimoire of the
   // Dead, mig 214). Bag counters on the SOURCE.
   z.object({ type: z.literal('remove_counters'), counter_type: z.string(), amount: z.number().int().positive() }),
