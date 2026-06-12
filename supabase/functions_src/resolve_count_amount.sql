@@ -105,6 +105,32 @@ begin
       and g.owner_id = p_controller_id
       and g.zone = 'hand';
 
+  elsif v_count = 'countered_creatures_you_control' then
+    -- Inspiring Call (mig 276): creatures you control with a +1/+1 counter.
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and c.type_line ilike '%creature%'
+      and coalesce(g.plus_one_counters, 0) > 0;
+
+  elsif v_count = 'opponent_hand_excess' then
+    -- Sandstone Oracle (mig 276): the opponent's hand size minus yours
+    -- (floored at zero; 1v1 reading of 'choose an opponent').
+    select greatest(0,
+      coalesce((select count(*) from public.game_cards
+                where session_id = p_session_id and zone = 'hand'
+                  and owner_id = (select sp.player_id from public.game_session_players sp
+                                  where sp.session_id = p_session_id
+                                    and sp.player_id is distinct from p_controller_id
+                                  order by sp.seat_number limit 1)), 0)
+      - coalesce((select count(*) from public.game_cards
+                  where session_id = p_session_id and zone = 'hand'
+                    and owner_id = p_controller_id), 0))::integer
+    into v_n;
+
   elsif v_count = 'opponent_poison_counters' then
     -- Corrupted gates (mig 272, Ixhel deck): the HIGHEST poison total among
     -- opponents (corrupted = at_least 3).

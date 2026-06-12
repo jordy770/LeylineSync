@@ -627,5 +627,55 @@
 
   "Gruul Turf": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"land"}}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1},{"type":"add_mana","color":"G","amount":1}]}]},
 
-  "Ground Assault": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage","amount":{"count":"lands_you_control"},"target_type":"creature"}]}}
+  "Ground Assault": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage","amount":{"count":"lands_you_control"},"target_type":"creature"}]}},
+
+  "Abzan Falconer": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{W}"},{"type":"tap_self"}],"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"}]}]},
+
+  "Tuskguard Captain": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{G}"},{"type":"tap_self"}],"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"}]}]},
+
+  "Harmonize": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":3}]}},
+
+  "Harrow": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":"land"},{"type":"search_library","count":2,"to":"battlefield","tapped":false,"filter":{"type_line":"basic land"}}]}},
+
+  "Hour of Revelation": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy_all","types":["creature","artifact","enchantment","planeswalker"]}]}},
+
+  "Inspiring Call": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":{"count":"countered_creatures_you_control"}},{"type":"grant_keyword_all","keyword":"indestructible","scope":"controller"}]}},
+
+  "Khalni Heart Expedition": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"add_counters","amount":1,"counter_type":"quest"}]}],"activated_abilities":[{"costs":[{"type":"remove_counters","counter_type":"quest","amount":3},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}]},
+
+  "Kor Cartographer": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Plains"}}]}]},
+
+  "Naya Panorama": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}]},
+
+  "Needle Spires": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Omnath, Locus of Rage": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Elemental Token","count":1}]},{"event":"creature_died","filter":{"controller":"you","type_line":"Elemental"},"effects":[{"type":"deal_damage","amount":3,"target_type":["creature","player"],"target_controller":"any"}]}]},
+
+  "Rampaging Baloths": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Beast Token","count":1}]}]},
+
+  "Retreat to Emeria": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"choose_one","prompt":"Retreat to Emeria","modes":[{"label":"Create a 1/1 Kor Ally","actions":[{"type":"create_token","token":"Kor Ally Token","count":1}]},{"label":"Creatures you control get +1/+1","actions":[{"type":"pump_all","power":1,"toughness":1,"scope":"controller"}]}]}]}]},
+
+  "Retreat to Kazandu": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"choose_one","prompt":"Retreat to Kazandu","modes":[{"label":"Plus one counter on target creature","actions":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"}]},{"label":"Gain 2 life","actions":[{"type":"gain_life","amount":2}]}]}]}]},
+
+  "Roiling Regrowth": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":"land"},{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}},
+
+  "Sandstone Oracle": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"draw","amount":{"count":"opponent_hand_excess"}}]}]},
+
+  "Selesnya Guildgate": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Selesnya Sanctuary": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"land"}}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1},{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Springbloom Druid": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"sacrifice","count":1,"filter":"land"},{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}]},
+
+  "Sporemound": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Saproling Token","count":1}]}]},
+
+  "Zendikar's Roil": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Lesser Elemental Token","count":1}]}]},
+
+  "Sun Titan": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"types":["creature","artifact","enchantment","land","planeswalker"],"max_mana_value":3}}]},{"event":"attacks","effects":[{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"types":["creature","artifact","enchantment","land","planeswalker"],"max_mana_value":3}}]}]},
+
+  "Sylvan Advocate": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"},{"type":"pump","affected":"source","source_zone_required":"battlefield","payload":{"power":2,"toughness":2,"condition_count":"lands_you_control","condition_at_least":6}}]},
+
+  "Yavimaya Elder": {"schema_version":2,"triggered_abilities":[{"event":"dies","effects":[{"type":"search_library","count":2,"to":"hand","filter":{"type_line":"basic land"}}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}"},{"type":"sacrifice_self"}],"effects":[{"type":"draw","amount":1}]}]},
+
+  "Emeria Shepherd": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"types":["creature","artifact","enchantment","planeswalker"]}}]}]}
 }

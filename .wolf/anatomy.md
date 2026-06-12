@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T13:53:54.809Z
-> Files: 168 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T14:10:30.669Z
+> Files: 169 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
@@ -12,6 +12,7 @@
 - `scratch-check-hosted.mjs` — Declares loadEnvFile (~567 tok)
 - `scratch-ign.mjs` — Declares c (~161 tok)
 - `scratch-mv.mjs` — Declares c (~215 tok)
+- `tmp-obuun-batch.cjs` — Declares fs (~2351 tok)
 
 ## .claude/
 
@@ -152,7 +153,7 @@
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1561 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~19275 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~19350 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~11234 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
