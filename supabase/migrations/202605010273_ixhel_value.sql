@@ -1,7 +1,16 @@
--- supabase/functions_src/declare_blocker.sql
--- CANONICAL current definition (seeded from 202605010195_intimidate_hexproof.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010273_ixhel_value
+-- Ixhel value batch (12 cards, mig 273): Golgari Signet, Grateful
+-- Apparition, Ichor Rats, Ichorclaw Myr, Infectious Inquiry, Karn's
+-- Bastion, Night's Whisper, Mortify, Pestilent Syphoner, Painful Truths,
+-- Necroblossom Snarl, plus the becomes_blocked event.
+-- Engine: declare_blocker fires 'becomes_blocked' card triggers on the
+-- attacker (Ichorclaw Myr +2/+2; multi-blocker combats fire once per
+-- blocker — approximation). Everything else is script-only:
+-- Ichor Rats = add_poison each_opponent + controller (each player);
+-- Painful Truths = flat draw 3 / lose 3 (converge not counted);
+-- Necroblossom Snarl rides the enters_tapped unless hand_has_type gate.
+-- Generated from supabase/functions_src (declare_blocker) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.declare_blocker(
   p_session_id uuid, p_blocker_card_id uuid, p_attacker_card_id uuid

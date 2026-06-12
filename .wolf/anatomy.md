@@ -1,7 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T13:16:52.825Z
-> Files: 166 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T13:32:18.385Z
+> Files: 168 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
+
+- `leylinesync-product-vision.md` (~247 tok)
 
 ## ./
 
@@ -158,6 +162,7 @@
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~2461 tok)
+- `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1470 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1069 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~354 tok)

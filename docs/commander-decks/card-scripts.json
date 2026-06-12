@@ -491,5 +491,27 @@
 
   "Contaminant Grafter": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"},{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":1}],"triggered_abilities":[{"event":"dealt_combat_damage_to_player","effects":[{"type":"proliferate"}]},{"event":"end_step","effects":[{"type":"conditional","condition":{"count":"opponent_poison_counters","at_least":3},"effects":[{"type":"draw","amount":1}]}]}]},
 
-  "Glistening Sphere": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"proliferate"}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":3}]}]}
+  "Glistening Sphere": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"proliferate"}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":3}]}]},
+
+  "Golgari Signet": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1},{"type":"add_mana","color":"G","amount":1}]}]},
+
+  "Grateful Apparition": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dealt_combat_damage_to_player","effects":[{"type":"proliferate"}]}]},
+
+  "Ichor Rats": {"schema_version":2,"continuous_effects":[{"type":"infect","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"add_poison","amount":1,"recipient":"each_opponent"},{"type":"add_poison","amount":1,"recipient":"controller"}]}]},
+
+  "Ichorclaw Myr": {"schema_version":2,"continuous_effects":[{"type":"infect","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"becomes_blocked","effects":[{"type":"pump","power":2,"toughness":2}]}]},
+
+  "Infectious Inquiry": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":2},{"type":"lose_life","amount":2,"recipient":"controller"},{"type":"add_poison","amount":1,"recipient":"each_opponent"}]}},
+
+  "Karn's Bastion": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{4}"},{"type":"tap_self"}],"effects":[{"type":"proliferate"}]}]},
+
+  "Night's Whisper": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":2},{"type":"lose_life","amount":2,"recipient":"controller"}]}},
+
+  "Mortify": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy","target_type":["creature","enchantment"]}]}},
+
+  "Pestilent Syphoner": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":1}]},
+
+  "Painful Truths": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":3},{"type":"lose_life","amount":3,"recipient":"controller"}]}},
+
+  "Necroblossom Snarl": {"schema_version":2,"enters_tapped":{"unless":{"hand_has_type":["Swamp","Forest"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]}
 }
