@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T15:46:33.969Z
-> Files: 181 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T16:25:46.083Z
+> Files: 182 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
@@ -156,7 +156,7 @@
 - `add_mana_from_card.sql` — basic-land/manual mana rpc (7-arg, commander identity + monarch land bonus); canonical since mig 262. (~900 tok)
 - `add_mana_from_card.sql` — supabase/functions_src/add_mana_from_card.sql (~1460 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~3455 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~5921 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~5988 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1707 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1003 tok)
@@ -265,6 +265,7 @@
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~964 tok)
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
 - `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
+- `deck-smoke.test.ts` — Deck smoke test: every curated script in docs/commander-decks/card-scripts.json (~2578 tok)
 - `dino-combat.test.ts` — mig 260 — Veloci-Ramp-Tor combat batch. Engine touches: (~1512 tok)
 - `dino-combat.test.ts` — mig 260 — Quartzwood X/X trample token, Wrathful Raptors damage redirect, From the Rubble end-step reanimation, Itzquinth ETB burn. (~1400 tok)
 - `dino-creatures.test.ts` — mig 256 — the Veloci-Ramp-Tor creature batch (~14 cards, mostly scripts). (~1428 tok)
@@ -316,7 +317,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9960 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9995 tok)
 
 ## tests/regression/
 

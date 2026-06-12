@@ -527,10 +527,11 @@ export class Scenario {
     options: unknown
     min_choices: number
     max_choices: number
+    params: Record<string, unknown>
   } | null> {
     const res = await this.client.query(
       `select id, deciding_player_id, source_stack_item_id, decision_type,
-              options, min_choices, max_choices
+              options, min_choices, max_choices, params
        from public.game_pending_decisions
        where session_id = $1 and status = 'pending'
        order by created_at limit 1`,

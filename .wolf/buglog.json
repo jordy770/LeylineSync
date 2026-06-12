@@ -11197,6 +11197,89 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-06-12T00:00:00Z"
+    },
+    {
+      "id": "bug-689",
+      "timestamp": "2026-06-12T16:07:30.964Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/deck-smoke.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T16:07:30.964Z"
+    },
+    {
+      "id": "bug-690",
+      "timestamp": "2026-06-12T16:10:32.172Z",
+      "error_message": "Wrong condition in logic",
+      "file": "tests/feature/deck-smoke.test.ts",
+      "root_cause": "Condition was: if (!top || top.status !== 'pending')",
+      "fix": "Changed to: if (!top)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T16:10:32.172Z"
+    },
+    {
+      "id": "bug-691",
+      "timestamp": "2026-06-12T16:18:57.601Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/deck-smoke.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T16:18:57.601Z"
+    },
+    {
+      "id": "bug-692",
+      "timestamp": "2026-06-12T16:19:04.601Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/deck-smoke.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T16:19:04.601Z"
+    },
+    {
+      "id": "bug-693",
+      "timestamp": "2026-06-12T00:00:00Z",
+      "error_message": "deck smoke test: Unsupported keyword grant: lifelink/hexproof (Bruse Tarl, Rattlechains) + 24 answerer/harness gaps",
+      "file": "supabase/functions_src/apply_creature_effect.sql",
+      "root_cause": "grant_keyword keyword whitelist exists in THREE places (schema enum, grant_keyword_all SQL list, apply_creature_effect grant_keyword list) and the third copy was missed in migs 280/283 — schema-valid scripts errored at runtime. Also: harness pendingDecision omitted params (divide_damage allocations got amount=1 vs 5), decisions were submitted as seat A instead of the deciding player, and catch-and-retry targeting aborts the single rolled-back tx",
+      "fix": "whitelist completed (mig 285); pendingDecision selects params; smoke answerer submits as the deciding seat and detects targets proactively by mirroring trigger_effect_target_type. The smoke test now runtime-exercises all 424 curated scripts",
+      "tags": [
+        "smoke-test",
+        "grant_keyword",
+        "triple-whitelist",
+        "harness"
+      ],
+      "related_bugs": [
+        "bug-688"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T00:00:00Z"
     }
   ]
 }

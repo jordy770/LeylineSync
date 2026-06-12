@@ -1,7 +1,12 @@
--- supabase/functions_src/apply_creature_effect.sql
--- CANONICAL current definition (seeded from 202605010172_dynamic_pump_loyalty_target.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010285_grant_keywords_fix
+-- Found by the new deck smoke test (mig 285): apply_creature_effect's
+-- grant_keyword whitelist lacked hexproof, menace and lifelink even though
+-- the schema, the CHECK constraint and the grant_keyword_all path accepted
+-- them — Rattlechains' hexproof grant (mig 280) and Bruse Tarl / Sydri's
+-- lifelink grants (mig 283) errored at runtime. Third copy of this list;
+-- the smoke test now exercises every grant at ETB time.
+-- Generated from supabase/functions_src (apply_creature_effect) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_creature_effect(
   p_session_id uuid,

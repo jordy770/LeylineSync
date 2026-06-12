@@ -3885,3 +3885,15 @@
 | 17:49 | Session end: 142 writes across 45 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~135038 tok |
 | 17:50 | Session end: 142 writes across 45 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~135038 tok |
 | 20:50 | mig 284 APPROXIMATION PAYBACK part 2: chosen cost payments — activate_ability p_cost_card_ids uuid[] (old 7-arg overload dropped); sacrifice_artifacts / return_land / tap_creatures validate each chosen card (zone/control/type/nontoken/untapped), illegal pick fails whole activation, null = legacy auto-pick. Harness activate() costCardIds. Verified: Breya keeps her Thopters, opponent's artifact rejected. Option-1 payback COMPLETE (lifelink, becomes_tapped, cost picks). Migs 283-284 unpushed | activate_ability, mig 284, harness, cost-picks.test.ts | 962/962 green | ~25k |
+| 17:54 | Session end: 142 writes across 45 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~135038 tok |
+| 18:05 | Created tests/feature/deck-smoke.test.ts | — | ~2092 |
+| 18:07 | Edited tests/feature/deck-smoke.test.ts | added optional chaining | ~135 |
+| 18:10 | Edited tests/feature/deck-smoke.test.ts | 2→2 lines | ~24 |
+| 18:18 | Edited tests/feature/deck-smoke.test.ts | modified switch() | ~90 |
+| 18:19 | Edited tests/feature/deck-smoke.test.ts | added nullish coalescing | ~341 |
+| 18:24 | Edited supabase/functions_src/apply_creature_effect.sql | modified in() | ~159 |
+| 18:25 | Edited tests/harness/scenario.ts | 3→3 lines | ~50 |
+| 18:25 | Edited tests/harness/scenario.ts | modified pendingDecision() | ~75 |
+| 18:25 | Edited tests/feature/deck-smoke.test.ts | modified answer() | ~591 |
+| 18:25 | Edited tests/feature/deck-smoke.test.ts | 4→8 lines | ~189 |
+| 21:50 | DECK SMOKE TEST landed (deck-smoke.test.ts): all 424 curated scripts runtime-exercised at ETB/dies/cast with generic decision answering (scry/surveil/votes/divide/edicts as the DECIDING seat) + proactive trigger targeting (mirrors trigger_effect_target_type; catch-and-retry impossible in one tx). FOUND+FIXED real engine bug: apply_creature_effect grant whitelist lacked hexproof/menace/lifelink (mig 285) — Rattlechains and Bruse Tarl/Sydri grants errored at runtime despite schema validity. Harness: pendingDecision now returns params. Suite 1387. Mig 285 unpushed | deck-smoke.test.ts, harness, apply_creature_effect, mig 285 | 1387/1387 green | ~45k |
