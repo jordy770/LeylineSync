@@ -393,5 +393,21 @@
 
   "Grip of Phyresis": {"schema_version":2,"spell_effect":{"actions":[{"type":"gain_control","target_type":"artifact","target_controller":"opponent"},{"type":"living_weapon"}]}},
 
-  "Armory Automaton": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"attach_all_equipment"}]},{"event":"attacks","effects":[{"type":"attach_all_equipment"}]}]}
+  "Armory Automaton": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"attach_all_equipment"}]},{"event":"attacks","effects":[{"type":"attach_all_equipment"}]}]},
+
+  "Baleful Strix": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"deathtouch","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"draw","amount":1}]}]},
+
+  "Master of Etherium": {"schema_version":2,"cda":{"power":{"count":"artifacts_you_control"},"toughness":{"count":"artifacts_you_control"}},"continuous_effects":[{"type":"pump","affected":"controller","payload":{"power":1,"toughness":1,"creature_type":"artifact","exclude_source":true}}]},
+
+  "Filigree Angel": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"gain_life","amount":{"count":"artifacts_you_control","times":3}}]}]},
+
+  "Myr Battlesphere": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Myr Token","count":4}]}]},
+
+  "Vedalken Engineer": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":2}]}]},
+
+  "Whipflare": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage_all","amount":2,"filter":{"exclude_type":"artifact"}}]}},
+
+  "Nevinyrral's Disk": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"}],"effects":[{"type":"destroy_all","types":["artifact","creature","enchantment"]}]}]},
+
+  "Blinkmoth Urn": {"schema_version":2,"triggered_abilities":[{"event":"beginning_of_main","effects":[{"type":"add_mana","color":"C","amount":{"count":"artifacts_you_control"}}]}]}
 }

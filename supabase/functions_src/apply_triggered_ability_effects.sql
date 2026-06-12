@@ -278,6 +278,9 @@ begin
                  or not public.card_has_flying(p_session_id, gc.id))
             and ((v_effect -> 'filter' ->> 'with_keyword') is distinct from 'flying'
                  or public.card_has_flying(p_session_id, gc.id))
+            -- exclude_type (mig 268, Whipflare: "each NONARTIFACT creature").
+            and (nullif(v_effect -> 'filter' ->> 'exclude_type', '') is null
+                 or c.type_line not ilike '%' || (v_effect -> 'filter' ->> 'exclude_type') || '%')
         loop
           perform public.apply_damage_to_creature(
             p_session_id, v_dmg_target, v_eff_amount, p_source_card_id, false, false, false);
@@ -305,7 +308,19 @@ begin
 
     elsif v_eff_type = 'destroy_all' then
       if p_controller_id is not null then
-        if nullif(v_effect ->> 'exclude_type', '') is not null then
+        if jsonb_typeof(v_effect -> 'types') = 'array' then
+          -- "Destroy all artifacts, creatures, and enchantments" (mig 268,
+          -- Nevinyrral's Disk). Any-type match; indestructible survives.
+          for v_dmg_target in
+            select gc.id from public.game_cards gc join public.cards c on c.id = gc.card_id
+            where gc.session_id = p_session_id and gc.zone = 'battlefield'
+              and exists (select 1 from jsonb_array_elements_text(v_effect -> 'types') t
+                          where c.type_line ilike '%' || t.value || '%')
+              and not public.card_has_indestructible(p_session_id, gc.id)
+          loop
+            perform public.put_in_graveyard(p_session_id, v_dmg_target);
+          end loop;
+        elsif nullif(v_effect ->> 'exclude_type', '') is not null then
           -- "Destroy all non-<type> creatures" (mig 256, Wakening Sun's
           -- Avatar). Indestructible survives, mirroring destroy_all_creatures.
           for v_dmg_target in

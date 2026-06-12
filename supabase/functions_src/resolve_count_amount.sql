@@ -193,7 +193,9 @@ begin
       and c.mana_cost is not null;
   end if;
 
-  return greatest(0, coalesce(v_n, 0));
+  -- times (mig 268, Filigree Angel: 'gain 3 life for each artifact you
+  -- control' = count * 3).
+  return greatest(0, coalesce(v_n, 0) * greatest(1, coalesce((p_spec ->> 'times')::integer, 1)));
 end;
 $$;
 grant execute on function public.resolve_count_amount(uuid, uuid, jsonb, uuid) to authenticated;
