@@ -178,6 +178,9 @@ export type PendingDecision = {
   options: unknown
   min_choices: number
   max_choices: number
+  // Decision-specific context (mig 286): divide_damage carries
+  // {amount, max_targets}; pay_x_mana_damage carries {color}.
+  params: Record<string, unknown> | null
 }
 
 // One revealed card in a scry / surveil decision's options array.

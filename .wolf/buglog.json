@@ -11296,6 +11296,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-12T18:52:41.598Z"
+    },
+    {
+      "id": "bug-695",
+      "timestamp": "2026-06-12T19:04:00.043Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T19:04:00.043Z"
     }
   ]
 }

@@ -1402,6 +1402,16 @@ function PendingDecisionPrompt({
         <ConfirmBody isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'choose_player' ? (
         <ChoosePlayerBody decision={decision} isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'choose_creature_type' ? (
+        <ChooseWordBody decision={decision} field="type" optionKey="type" isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'vote' ? (
+        <ChooseWordBody decision={decision} field="value" optionKey="value" isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'choose_color' ? (
+        <ChooseColorBody isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'divide_damage' ? (
+        <DivideDamageBody decision={decision} isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'pay_x_mana_damage' ? (
+        <PayXDamageBody decision={decision} isPending={isPending} onSubmit={submit} />
       ) : (
         <p className="text-[10px] text-slate-500">Unsupported decision: {decision.decision_type}</p>
       )}
@@ -1705,6 +1715,190 @@ function ChoosePlayerBody({
           {p.username ?? 'Player'}
         </button>
       ))}
+    </div>
+  )
+}
+
+// One-word picks sharing a shape: choose_creature_type (options [{type}],
+// submit {type}) and vote (options [{value}], submit {value}).
+function ChooseWordBody({
+  decision,
+  field,
+  optionKey,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  field: string
+  optionKey: string
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const words = (Array.isArray(decision.options) ? decision.options : []) as Record<string, string>[]
+  return (
+    <div className="flex flex-wrap gap-2">
+      {words.map((w) => (
+        <button
+          key={w[optionKey]}
+          type="button"
+          disabled={isPending}
+          onClick={() => void onSubmit({ [field]: w[optionKey] })}
+          className="rounded-xl border border-indigo-400/30 bg-indigo-400/10 px-4 py-2 text-xs font-bold text-white transition active:scale-95 disabled:opacity-50"
+        >
+          {w[optionKey]}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+// Heraldic Banner: pick one of the five colors.
+function ChooseColorBody({
+  isPending,
+  onSubmit,
+}: {
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const COLORS: { value: string; label: string; cls: string }[] = [
+    { value: 'white', label: 'White', cls: 'bg-amber-100 text-amber-900' },
+    { value: 'blue', label: 'Blue', cls: 'bg-sky-400 text-sky-950' },
+    { value: 'black', label: 'Black', cls: 'bg-slate-700 text-slate-100' },
+    { value: 'red', label: 'Red', cls: 'bg-red-400 text-red-950' },
+    { value: 'green', label: 'Green', cls: 'bg-emerald-400 text-emerald-950' },
+  ]
+  return (
+    <div className="flex flex-wrap gap-2">
+      {COLORS.map((c) => (
+        <button
+          key={c.value}
+          type="button"
+          disabled={isPending}
+          onClick={() => void onSubmit({ color: c.value })}
+          className={`rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wide transition active:scale-95 disabled:opacity-50 ${c.cls}`}
+        >
+          {c.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+// Dragonlord Atarka / Naya Charm: allocate params.amount damage across up to
+// params.max_targets of the offered creatures/players. Submit shape:
+// {allocations: [{game_card_id|player_id, amount}]} summing exactly to amount.
+function DivideDamageBody({
+  decision,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const opts = (Array.isArray(decision.options) ? decision.options : []) as {
+    game_card_id?: string; player_id?: string; name?: string; username?: string | null
+  }[]
+  const total = Number(decision.params?.amount ?? 0)
+  const maxTargets = Number(decision.params?.max_targets ?? opts.length)
+  const [alloc, setAlloc] = useState<Record<number, number>>({})
+
+  const spent = Object.values(alloc).reduce((a, b) => a + b, 0)
+  const targets = Object.values(alloc).filter((n) => n > 0).length
+  const canConfirm = !isPending && spent === total && targets >= 1 && targets <= maxTargets
+
+  const bump = (i: number, delta: number) =>
+    setAlloc((prev) => {
+      const next = Math.max(0, (prev[i] ?? 0) + delta)
+      if (delta > 0 && spent >= total) return prev
+      return { ...prev, [i]: next }
+    })
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-[10px] text-slate-400">
+        Divide {total} damage among up to {maxTargets} target{maxTargets === 1 ? '' : 's'} ({total - spent} left).
+      </p>
+      <div className="flex flex-col gap-1">
+        {opts.map((o, i) => (
+          <div key={o.game_card_id ?? o.player_id ?? i} className="flex items-center gap-2">
+            <span className="min-w-0 flex-1 truncate text-[11px] text-white">{o.name ?? o.username ?? 'Player'}</span>
+            <button type="button" disabled={isPending} onClick={() => bump(i, -1)}
+              className="rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-300 active:scale-95">−</button>
+            <span className="w-5 text-center text-xs font-bold text-indigo-300">{alloc[i] ?? 0}</span>
+            <button type="button" disabled={isPending} onClick={() => bump(i, 1)}
+              className="rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-300 active:scale-95">+</button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        disabled={!canConfirm}
+        onClick={() => void onSubmit({
+          allocations: opts
+            .map((o, i) => ({ o, n: alloc[i] ?? 0 }))
+            .filter(({ n }) => n > 0)
+            .map(({ o, n }) => (o.game_card_id ? { game_card_id: o.game_card_id, amount: n } : { player_id: o.player_id, amount: n })),
+        })}
+        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+      >
+        Deal damage
+      </button>
+    </div>
+  )
+}
+
+// Leyline Tyrant: pay any amount of the parked color, deal that much damage
+// to one offered target. Amount 0 declines.
+function PayXDamageBody({
+  decision,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const opts = (Array.isArray(decision.options) ? decision.options : []) as {
+    game_card_id?: string; player_id?: string; name?: string; username?: string | null
+  }[]
+  const color = String(decision.params?.color ?? 'R')
+  const [amount, setAmount] = useState(0)
+  const [picked, setPicked] = useState(0)
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-[10px] text-slate-400">Pay any amount of {'{'}{color}{'}'} — that much damage. 0 declines.</p>
+      <div className="flex items-center gap-2">
+        <button type="button" disabled={isPending} onClick={() => setAmount((n) => Math.max(0, n - 1))}
+          className="rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-300 active:scale-95">−</button>
+        <span className="w-5 text-center text-xs font-bold text-indigo-300">{amount}</span>
+        <button type="button" disabled={isPending} onClick={() => setAmount((n) => n + 1)}
+          className="rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-300 active:scale-95">+</button>
+      </div>
+      {amount > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {opts.map((o, i) => (
+            <button key={o.game_card_id ?? o.player_id ?? i} type="button" disabled={isPending}
+              onClick={() => setPicked(i)}
+              className={`rounded-xl border px-3 py-1.5 text-[11px] font-bold transition active:scale-95 ${i === picked ? 'border-indigo-300 bg-indigo-400/30 text-white' : 'border-slate-600 text-slate-300'}`}>
+              {o.name ?? o.username ?? 'Player'}
+            </button>
+          ))}
+        </div>
+      )}
+      <button
+        type="button"
+        disabled={isPending || (amount > 0 && !opts[picked])}
+        onClick={() => void onSubmit(
+          amount === 0
+            ? { amount: 0 }
+            : { amount, ...(opts[picked]?.game_card_id ? { game_card_id: opts[picked]!.game_card_id } : { player_id: opts[picked]?.player_id }) },
+        )}
+        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+      >
+        {amount === 0 ? 'Decline' : `Pay ${amount} and deal ${amount}`}
+      </button>
     </div>
   )
 }

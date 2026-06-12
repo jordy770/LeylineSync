@@ -3905,3 +3905,8 @@
 | 20:52 | Edited components/ControllerListV4.tsx | 2→2 lines | ~42 |
 | 20:52 | Edited components/ControllerListV4.tsx | CSS: contract, chosen | ~222 |
 | 23:00 | CLIENT STEP 1: CARD_PICK_DECISIONS set in ControllerListV4 routes all 18 choose-cards-family decision types to CardPickBody (was 5; 13 previously dead-ended as Unsupported) — ~30 cards now playable through the UI. Lint cleanup of deck-smoke anys + ixhel unused var. NEXT client steps per audit: 5 new bodies (vote, divide_damage, choose_creature_type, choose_color, pay_x_mana_damage), cost-pick UI, state badges | ControllerListV4.tsx, tests lint | 1387/1387 green, lint 2 pre-existing warnings | ~12k |
+| 20:57 | Session end: 155 writes across 49 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~140239 tok |
+| 21:03 | Edited lib/game/types.ts | modified context() | ~86 |
+| 21:03 | Edited components/ControllerListV4.tsx | expanded (+10 lines) | ~296 |
+| 21:04 | Edited components/ControllerListV4.tsx | added optional chaining | ~2158 |
+| 23:40 | CLIENT STEP 2 + mig 286: get_pending_decisions returns params (drop+recreate, return-type change); PendingDecision type += params; FIVE new decision bodies in ControllerListV4 — ChooseWordBody (choose_creature_type + vote), ChooseColorBody, DivideDamageBody (allocation steppers vs params.amount/max_targets), PayXDamageBody (amount stepper + target pick, 0 declines). ALL 28 engine decision types now render. Remaining: cost-pick UI, state badges. Mig 286 unpushed | get_pending_decisions canonical, mig 286, types.ts, ControllerListV4 | 1387/1387 green, tsc clean, lint 2 pre-existing | ~30k |
