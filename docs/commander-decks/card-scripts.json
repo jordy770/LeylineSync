@@ -409,5 +409,25 @@
 
   "Nevinyrral's Disk": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"}],"effects":[{"type":"destroy_all","types":["artifact","creature","enchantment"]}]}]},
 
-  "Blinkmoth Urn": {"schema_version":2,"triggered_abilities":[{"event":"beginning_of_main","effects":[{"type":"add_mana","color":"C","amount":{"count":"artifacts_you_control"}}]}]}
+  "Blinkmoth Urn": {"schema_version":2,"triggered_abilities":[{"event":"beginning_of_main","effects":[{"type":"add_mana","color":"C","amount":{"count":"artifacts_you_control"}}]}]},
+
+  "Akiri, Line-Slinger": {"schema_version":2,"continuous_effects":[{"type":"first_strike","affected":"source","source_zone_required":"battlefield"},{"type":"vigilance","affected":"source","source_zone_required":"battlefield"},{"type":"pump","affected":"source","source_zone_required":"battlefield","payload":{"power_count":"artifacts_you_control"}}]},
+
+  "Jor Kadeen, the Prevailer": {"schema_version":2,"continuous_effects":[{"type":"first_strike","affected":"source","source_zone_required":"battlefield"},{"type":"pump","affected":"controller","payload":{"power":3,"toughness":0,"condition_count":"artifacts_you_control","condition_at_least":3}}]},
+
+  "Bruse Tarl, Boorish Herder": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"grant_keyword","keyword":"double_strike","target_type":"creature","target_controller":"you"}]},{"event":"attacks","effects":[{"type":"grant_keyword","keyword":"double_strike","target_type":"creature","target_controller":"you"}]}]},
+
+  "Godo, Bandit Warlord": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"battlefield","filter":{"type_line":"Equipment"}}]},{"event":"attacks","once_per_turn":true,"effects":[{"type":"untap_all_attackers"},{"type":"extra_combat"}]}]},
+
+  "Hellkite Tyrant": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dealt_combat_damage_to_player","effects":[{"type":"gain_control_all","type_line":"artifact"}]}]},
+
+  "Open the Vaults": {"schema_version":2,"spell_effect":{"actions":[{"type":"return_all_from_graveyard","to":"battlefield","from":"all_graveyards","under":"owner","types":["artifact","enchantment"]}]}},
+
+  "Phyrexian Rebirth": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy_all_creatures_token","token":"Horror Token"}]}},
+
+  "Coastal Breach": {"schema_version":2,"spell_effect":{"actions":[{"type":"bounce_all","nonland":true}]}},
+
+  "Trading Post": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"discard","amount":1}],"effects":[{"type":"gain_life","amount":4}]},{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"pay_life","amount":1}],"effects":[{"type":"create_token","token":"Goat Token","count":1}]},{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"sacrifice_creature"}],"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"artifact"}}]},{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"sacrifice_artifacts","count":1}],"effects":[{"type":"draw","amount":1}]}]},
+
+  "Slobad, Goblin Tinkerer": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"sacrifice_artifacts","count":1}],"effects":[{"type":"grant_keyword","keyword":"indestructible","target_type":"creature","target_controller":"you"}]}]}
 }

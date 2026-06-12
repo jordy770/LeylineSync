@@ -1,7 +1,278 @@
--- supabase/functions_src/apply_triggered_ability_effects.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010269_breya_legends
+-- Breya legends + big spells batch (10 cards, mig 269): Akiri, Jor Kadeen,
+-- Bruse Tarl, Godo, Hellkite Tyrant, Open the Vaults, Phyrexian Rebirth,
+-- Coastal Breach, Trading Post, Slobad.
+--   • return_all_from_graveyard (newly canonical from mig 214) gains a types
+--     array + under:'owner' (Open the Vaults). Old 5-arg overload dropped.
+--   • Conditional anthems: pump payload condition_count/condition_at_least
+--     (Jor Kadeen metalcraft).
+--   • gain_control_all (Hellkite Tyrant; the 20-artifact win NOT modelled).
+--   • bounce_all nonland (Coastal Breach; undaunted not modelled).
+--   • destroy_all_creatures_token (Phyrexian Rebirth X/X Horror).
+-- Script-only: Akiri, Bruse Tarl (lifelink not modelled), Godo (extra combat
+-- approximated once_per_turn), Trading Post (+Goat Token), Slobad.
+
+drop function if exists public.return_all_from_graveyard(uuid, uuid, text, text, boolean);
+-- Generated from supabase/functions_src (return_all_from_graveyard, card_layered_power, card_layered_toughness, apply_triggered_ability_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+create or replace function public.return_all_from_graveyard(
+  p_session_id uuid,
+  p_controller_id uuid,
+  p_creature_type text,
+  p_to text,
+  -- mig 214 (Grimoire of the Dead): true = sweep ALL graveyards (any owner) and
+  -- put the cards onto the battlefield under p_controller_id's control.
+  p_all_graveyards boolean default false,
+  -- mig 269 (Open the Vaults): a types array replaces the creature filter
+  -- ('artifact','enchantment'), and under_owner returns each card to ITS
+  -- owner's battlefield control instead of the caster's.
+  p_types jsonb default null,
+  p_under_owner boolean default false
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_card uuid;
+  v_pos integer;
+  v_turn integer;
+  v_zone text;
+begin
+  v_zone := case when p_to = 'hand' then 'hand' else 'battlefield' end;
+  select turn_number into v_turn from public.game_turn_state where session_id = p_session_id;
+  for v_card in
+    select gc.id
+    from public.game_cards gc
+    join public.cards c on c.id = gc.card_id
+    where gc.session_id = p_session_id
+      and gc.zone = 'graveyard'
+      and (p_all_graveyards or gc.owner_id = p_controller_id)
+      -- types array (mig 269, Open the Vaults: artifacts AND enchantments)
+      -- replaces the default creature filter when present.
+      and (case when jsonb_typeof(p_types) = 'array' then
+                  exists (select 1 from jsonb_array_elements_text(p_types) t
+                          where c.type_line ilike '%' || t.value || '%')
+                else c.type_line ilike '%creature%'
+                  and (p_creature_type is null or c.type_line ilike '%' || p_creature_type || '%')
+           end)
+    order by gc.zone_position, gc.id
+  loop
+    select coalesce(max(zone_position), -1) + 1 into v_pos
+    from public.game_cards
+    where session_id = p_session_id
+      and owner_id = (select owner_id from public.game_cards where id = v_card)
+      and zone = v_zone;
+    if v_zone = 'battlefield' then
+      update public.game_cards
+      set zone = 'battlefield', zone_position = v_pos,
+          controller_player_id = case when p_all_graveyards and not p_under_owner then p_controller_id else owner_id end,
+          is_tapped = false, damage_marked = 0, plus_one_counters = 0,
+          entered_battlefield_turn_number = coalesce(v_turn, 0)
+      where id = v_card;
+    else
+      update public.game_cards
+      set zone = 'hand', zone_position = v_pos, is_tapped = false
+      where id = v_card;
+    end if;
+  end loop;
+end;
+$$;
+grant execute on function public.return_all_from_graveyard(uuid, uuid, text, text, boolean, jsonb, boolean) to authenticated;
+grant execute on function public.return_all_from_graveyard(uuid, uuid, text, text, boolean, jsonb, boolean) to service_role;
+
+create or replace function public.card_layered_power(p_session_id uuid, p_game_card_id uuid)
+returns integer
+language sql security definer set search_path = public
+as $$
+  select
+    coalesce(
+      (select (e.payload ->> 'power')::integer
+       from public.game_continuous_effects e
+       left join public.game_cards sc on sc.id = e.source_card_id
+       where e.session_id = p_session_id
+         and e.effect_type = 'set_pt'
+         and e.affected_card_id = p_game_card_id
+         and (e.source_zone_required is null or sc.zone = e.source_zone_required)
+       order by e.created_at desc, e.id desc
+       limit 1),
+      public.card_cda_value(p_session_id, p_game_card_id, 'power'),
+      cards.power,
+      case
+        when cards.power_toughness ~ '^[0-9]+/[0-9]+$'
+          then split_part(cards.power_toughness, '/', 1)::integer
+        else 0
+      end,
+      0
+    )
+    + coalesce(game_cards.plus_one_counters, 0)
+    - coalesce((game_cards.counters ->> 'minus_one_one')::integer, 0)
+    + coalesce((
+        select sum(coalesce((effects.payload ->> 'power')::integer, 0))
+        from public.game_continuous_effects effects
+        left join public.game_cards source_card
+          on source_card.id = effects.source_card_id
+        where effects.session_id = p_session_id
+          and effects.effect_type = 'pump'
+          and effects.affected_card_id = p_game_card_id
+          and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
+      ), 0)
+    + coalesce((
+        select sum(coalesce((effects.payload ->> 'power')::integer, 0))
+        from public.game_continuous_effects effects
+        left join public.game_cards source_card
+          on source_card.id = effects.source_card_id
+        where effects.session_id = p_session_id
+          and effects.effect_type = 'pump'
+          and effects.affected_card_id is null
+          and (effects.affected_player_id is null
+               or effects.affected_player_id = coalesce(game_cards.controller_player_id, game_cards.owner_id))
+          and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
+          and cards.type_line ilike '%creature%'
+          and (effects.payload ->> 'creature_type' is null
+               or case when coalesce((effects.payload ->> 'exclude_type')::boolean, false)
+                    then cards.type_line not ilike '%' || (effects.payload ->> 'creature_type') || '%'
+                    else cards.type_line ilike '%' || (effects.payload ->> 'creature_type') || '%'
+                  end)
+          and (coalesce((effects.payload ->> 'exclude_source')::boolean, false) = false
+               or game_cards.id <> effects.source_card_id)
+          -- Colour-filtered anthem (mig 209, Heraldic Banner): only creatures
+          -- of the payload colour get the pump.
+          -- Conditional anthem (mig 269, Jor Kadeen metalcraft: '+3/+0 as long
+          -- as you control three or more artifacts'). Read-time gate against
+          -- the SOURCE's controller.
+          and (effects.payload ->> 'condition_count' is null
+               or public.resolve_count_amount(p_session_id,
+                    coalesce(source_card.controller_player_id, source_card.owner_id),
+                    jsonb_build_object('count', effects.payload ->> 'condition_count'),
+                    effects.source_card_id)
+                  >= coalesce((effects.payload ->> 'condition_at_least')::integer, 1))
+          and (effects.payload ->> 'color' is null
+               or public.card_color_set(cards.mana_cost) @> array[lower(effects.payload ->> 'color')])
+      ), 0)
+
+    + coalesce((
+        -- Dynamic pump (mig 267, Cranial Plating / Bonehoard): payload
+        -- power_count names a count resolved against the SOURCE's controller
+        -- at read time (artifacts_you_control, creature_cards_all_graveyards).
+        select sum(public.resolve_count_amount(
+                 p_session_id,
+                 coalesce(source_card.controller_player_id, source_card.owner_id),
+                 jsonb_build_object('count', effects.payload ->> 'power_count'),
+                 effects.source_card_id))
+        from public.game_continuous_effects effects
+        left join public.game_cards source_card
+          on source_card.id = effects.source_card_id
+        where effects.session_id = p_session_id
+          and effects.effect_type = 'pump'
+          and effects.affected_card_id = p_game_card_id
+          and effects.payload ? 'power_count'
+          and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
+      ), 0)
+  from public.game_cards
+  join public.cards on cards.id = game_cards.card_id
+  where game_cards.id = p_game_card_id
+    and game_cards.session_id = p_session_id;
+$$;
+grant execute on function public.card_layered_power(uuid, uuid) to authenticated;
+grant execute on function public.card_layered_power(uuid, uuid) to service_role;
+
+create or replace function public.card_layered_toughness(p_session_id uuid, p_game_card_id uuid)
+returns integer
+language sql security definer set search_path = public
+as $$
+  select
+    coalesce(
+      (select (e.payload ->> 'toughness')::integer
+       from public.game_continuous_effects e
+       left join public.game_cards sc on sc.id = e.source_card_id
+       where e.session_id = p_session_id
+         and e.effect_type = 'set_pt'
+         and e.affected_card_id = p_game_card_id
+         and (e.source_zone_required is null or sc.zone = e.source_zone_required)
+       order by e.created_at desc, e.id desc
+       limit 1),
+      public.card_cda_value(p_session_id, p_game_card_id, 'toughness'),
+      cards.toughness,
+      case
+        when cards.power_toughness ~ '^[0-9]+/[0-9]+$'
+          then split_part(cards.power_toughness, '/', 2)::integer
+        else 0
+      end,
+      0
+    )
+    + coalesce(game_cards.plus_one_counters, 0)
+    - coalesce((game_cards.counters ->> 'minus_one_one')::integer, 0)
+    + coalesce((
+        select sum(coalesce((effects.payload ->> 'toughness')::integer, 0))
+        from public.game_continuous_effects effects
+        left join public.game_cards source_card
+          on source_card.id = effects.source_card_id
+        where effects.session_id = p_session_id
+          and effects.effect_type = 'pump'
+          and effects.affected_card_id = p_game_card_id
+          and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
+      ), 0)
+    + coalesce((
+        select sum(coalesce((effects.payload ->> 'toughness')::integer, 0))
+        from public.game_continuous_effects effects
+        left join public.game_cards source_card
+          on source_card.id = effects.source_card_id
+        where effects.session_id = p_session_id
+          and effects.effect_type = 'pump'
+          and effects.affected_card_id is null
+          and (effects.affected_player_id is null
+               or effects.affected_player_id = coalesce(game_cards.controller_player_id, game_cards.owner_id))
+          and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
+          and cards.type_line ilike '%creature%'
+          and (effects.payload ->> 'creature_type' is null
+               or case when coalesce((effects.payload ->> 'exclude_type')::boolean, false)
+                    then cards.type_line not ilike '%' || (effects.payload ->> 'creature_type') || '%'
+                    else cards.type_line ilike '%' || (effects.payload ->> 'creature_type') || '%'
+                  end)
+          and (coalesce((effects.payload ->> 'exclude_source')::boolean, false) = false
+               or game_cards.id <> effects.source_card_id)
+          -- Colour-filtered anthem (mig 209, Heraldic Banner): only creatures
+          -- of the payload colour get the pump.
+          -- Conditional anthem (mig 269, Jor Kadeen metalcraft: '+3/+0 as long
+          -- as you control three or more artifacts'). Read-time gate against
+          -- the SOURCE's controller.
+          and (effects.payload ->> 'condition_count' is null
+               or public.resolve_count_amount(p_session_id,
+                    coalesce(source_card.controller_player_id, source_card.owner_id),
+                    jsonb_build_object('count', effects.payload ->> 'condition_count'),
+                    effects.source_card_id)
+                  >= coalesce((effects.payload ->> 'condition_at_least')::integer, 1))
+          and (effects.payload ->> 'color' is null
+               or public.card_color_set(cards.mana_cost) @> array[lower(effects.payload ->> 'color')])
+      ), 0)
+
+    + coalesce((
+        -- Dynamic pump (mig 267, Cranial Plating / Bonehoard): payload
+        -- toughness_count names a count resolved against the SOURCE's controller
+        -- at read time (artifacts_you_control, creature_cards_all_graveyards).
+        select sum(public.resolve_count_amount(
+                 p_session_id,
+                 coalesce(source_card.controller_player_id, source_card.owner_id),
+                 jsonb_build_object('count', effects.payload ->> 'toughness_count'),
+                 effects.source_card_id))
+        from public.game_continuous_effects effects
+        left join public.game_cards source_card
+          on source_card.id = effects.source_card_id
+        where effects.session_id = p_session_id
+          and effects.effect_type = 'pump'
+          and effects.affected_card_id = p_game_card_id
+          and effects.payload ? 'toughness_count'
+          and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
+      ), 0)
+  from public.game_cards
+  join public.cards on cards.id = game_cards.card_id
+  where game_cards.id = p_game_card_id
+    and game_cards.session_id = p_session_id;
+$$;
+grant execute on function public.card_layered_toughness(uuid, uuid) to authenticated;
+grant execute on function public.card_layered_toughness(uuid, uuid) to service_role;
 
 create or replace function public.apply_triggered_ability_effects(
   p_session_id uuid,

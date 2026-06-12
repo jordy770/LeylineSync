@@ -60,6 +60,15 @@ as $$
                or game_cards.id <> effects.source_card_id)
           -- Colour-filtered anthem (mig 209, Heraldic Banner): only creatures
           -- of the payload colour get the pump.
+          -- Conditional anthem (mig 269, Jor Kadeen metalcraft: '+3/+0 as long
+          -- as you control three or more artifacts'). Read-time gate against
+          -- the SOURCE's controller.
+          and (effects.payload ->> 'condition_count' is null
+               or public.resolve_count_amount(p_session_id,
+                    coalesce(source_card.controller_player_id, source_card.owner_id),
+                    jsonb_build_object('count', effects.payload ->> 'condition_count'),
+                    effects.source_card_id)
+                  >= coalesce((effects.payload ->> 'condition_at_least')::integer, 1))
           and (effects.payload ->> 'color' is null
                or public.card_color_set(cards.mana_cost) @> array[lower(effects.payload ->> 'color')])
       ), 0)

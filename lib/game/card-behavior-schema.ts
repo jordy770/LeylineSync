@@ -193,7 +193,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'exile_and_manifest', 'vote_wild_free', 'discover', 'ignition',
   'reveal_top_cast_shared', 'exile_from_any_graveyard', 'fight_pick',
   'exile_tops_cast', 'exile_until_leaves', 'become_monarch', 'equip',
-  'living_weapon', 'attach_all_equipment',
+  'living_weapon', 'attach_all_equipment', 'gain_control_all', 'bounce_all', 'destroy_all_creatures_token',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -647,6 +647,22 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('living_weapon'),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+  }),
+  // Hellkite Tyrant (mig 269): permanently steal every matching opposing permanent.
+  z.object({
+    type: z.literal('gain_control_all'),
+    type_line: z.string().optional(),
+  }),
+  // Coastal Breach (mig 269): return each (nonland) permanent to its owner's hand.
+  z.object({
+    type: z.literal('bounce_all'),
+    nonland: z.boolean().optional(),
+  }),
+  // Phyrexian Rebirth (mig 269): wipe all creatures, then an X/X token where
+  // X is the number destroyed.
+  z.object({
+    type: z.literal('destroy_all_creatures_token'),
+    token: z.string().optional(),
   }),
   // Armory Automaton (mig 267): attach every Equipment you control to the source.
   z.object({

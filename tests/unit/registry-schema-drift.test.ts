@@ -68,6 +68,9 @@ const JSON_ONLY: Record<string, string> = {
   equip: 'attach this Equipment to target creature you control (Breya Equipment cluster, mig 266); JSON/AI-authored',
   living_weapon: 'Germ token + attach the Equipment to it (Bonehoard / Grip of Phyresis, mig 267); JSON/AI-authored',
   attach_all_equipment: 'attach every Equipment you control to the source (Armory Automaton, mig 267); JSON/AI-authored',
+  gain_control_all: 'permanently steal every matching opposing permanent (Hellkite Tyrant, mig 269); JSON/AI-authored',
+  bounce_all: 'return each nonland permanent to its owners hand (Coastal Breach, mig 269); JSON/AI-authored',
+  destroy_all_creatures_token: 'wipe all creatures then an X/X token for the count (Phyrexian Rebirth, mig 269); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))
