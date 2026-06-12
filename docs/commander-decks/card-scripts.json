@@ -469,5 +469,9 @@
 
   "Blightbelly Rat": {"schema_version":2,"continuous_effects":[{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":1}],"triggered_abilities":[{"event":"dies","effects":[{"type":"proliferate"}]}]},
 
-  "Chromatic Lantern": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]}
+  "Chromatic Lantern": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Contagion Clasp": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"add_counters","amount":1,"counter_type":"minus_one_one","target_type":"creature","target_controller":"any"}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{4}"},{"type":"tap_self"}],"effects":[{"type":"proliferate"}]}]},
+
+  "Evolution Sage": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"proliferate"}]}]}
 }

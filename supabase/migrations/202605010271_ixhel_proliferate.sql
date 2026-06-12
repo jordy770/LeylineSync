@@ -1,7 +1,10 @@
--- supabase/functions_src/activate_ability.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010271_ixhel_proliferate
+-- Ixhel batch 2 (mig 271): proliferate joins the activated->spell_effect
+-- routing list (Contagion Clasp {4},{T}). Script-only: Contagion Clasp (ETB
+-- -1/-1 counter + activated proliferate), Evolution Sage (landfall
+-- proliferate via the land_entered watcher).
+-- Generated from supabase/functions_src (activate_ability) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.activate_ability(
   p_session_id uuid,
