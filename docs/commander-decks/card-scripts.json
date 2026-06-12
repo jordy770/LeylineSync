@@ -859,5 +859,7 @@
 
   "Stormshriek Feral // Flush Out": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}{R}"}],"effects":[{"type":"pump","power":1,"toughness":0,"target_type":"creature","target_controller":"you"}]}]},
 
-  "Whirlwing Stormbrood // Dynamic Soar": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}]}
+  "Whirlwing Stormbrood // Dynamic Soar": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}]},
+
+  "Wayfarer's Bauble": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]}]}
 }

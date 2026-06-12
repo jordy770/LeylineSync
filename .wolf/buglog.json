@@ -11376,6 +11376,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-12T20:07:15.021Z"
+    },
+    {
+      "id": "bug-700",
+      "timestamp": "2026-06-12T22:30:19.988Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/shared.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 16→30 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T22:30:19.988Z"
     }
   ]
 }

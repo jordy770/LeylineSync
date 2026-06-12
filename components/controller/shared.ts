@@ -228,10 +228,21 @@ export function cardMatchesTargetType(typeLine: string | null | undefined, tt: s
 }
 
 // Activated-ability effects the client can invoke (the engine's activate_ability
-// vocabulary). draw is untargeted; the rest target a creature (deal_damage also a
+// vocabulary). Untargeted kinds resolve server-side (parks land in the now-
+// complete decision renderer); the rest target a creature (deal_damage also a
 // player). Returns null for anything else → the ability renders "Soon".
+// Keep in sync with activate_ability.sql's dispatch — Wayfarer's Bauble sat
+// disabled for months because search_library was missing here (third copy of
+// an engine vocabulary drifting, after bug-688/693).
+const UNTARGETED_ABILITY_TYPES = [
+  'draw', 'create_token', 'search_library', 'return_from_graveyard',
+  'return_all_from_graveyard', 'deal_damage_all', 'grant_keyword_all',
+  'monstrosity', 'gain_life', 'proliferate', 'destroy_all', 'choose_one',
+  'play_hideaway', 'exile_graveyard', 'sacrifice',
+]
 export const ABILITY_EFFECT_TYPES = [
-  'deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap', 'add_counters', 'pump', 'grant_keyword', 'gain_control', 'draw', 'create_token',
+  'deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap', 'add_counters', 'pump', 'grant_keyword', 'gain_control',
+  ...UNTARGETED_ABILITY_TYPES,
 ]
 export function getAbilityEffect(
   effects: CardBehaviorAction[],
@@ -242,6 +253,9 @@ export function getAbilityEffect(
   if (!e || !e.type) return null
   if (e.type === 'draw') {
     return { type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false }
+  }
+  if (UNTARGETED_ABILITY_TYPES.includes(e.type)) {
+    return { type: e.type, amount: typeof e.amount === 'number' ? e.amount : 0, canTargetPlayer: false, canTargetCreature: false, needsTarget: false }
   }
   if (e.type === 'create_token') {
     // Untargeted effect; any target the ability needs comes from its COST (e.g.
