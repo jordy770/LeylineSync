@@ -223,5 +223,33 @@
 
   "Ixalli's Lorekeeper": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
 
-  "Drover of the Mighty": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]}
+  "Drover of the Mighty": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Regisaur Alpha": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"controller","payload":{"creature_type":"Dinosaur","exclude_source":true}}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Dinosaur Token","count":1}]}]},
+
+  "Thundering Spineback": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"controller","payload":{"power":1,"toughness":1,"creature_type":"Dinosaur","exclude_source":true}}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{5}{G}"}],"effects":[{"type":"create_token","token":"Dinosaur Token","count":1}]}]},
+
+  "Verdant Sun's Avatar": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you"},"effects":[{"type":"gain_life","amount":{"toughness_of":"triggering_creature"}}]}]},
+
+  "Wakening Sun's Avatar": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"destroy_all","exclude_type":"Dinosaur"}]}]},
+
+  "Raging Swordtooth": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"deal_damage_all","amount":1,"filter":{"exclude_source":true}}]}]},
+
+  "Generous Gift": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy","target_type":"permanent"},{"type":"create_token","token":"Elephant Token","count":1,"recipient":"target_controller"}]}},
+
+  "Path to Exile": {"schema_version":2,"spell_effect":{"actions":[{"type":"exile","target_type":"creature"}]}},
+
+  "Bellowing Aegisaur": {"schema_version":2,"triggered_abilities":[{"event":"enrage","effects":[{"type":"add_counters_all","amount":1,"counter_type":"plus_one_one","target_controller":"you","exclude_source":true}]}]},
+
+  "Apex Altisaur": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"fight","target_type":"creature","target_controller":"opponent"}]},{"event":"enrage","effects":[{"type":"fight","target_type":"creature","target_controller":"opponent"}]}]},
+
+  "Thrashing Brontodon": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"sacrifice_self"}],"effects":[{"type":"destroy","target_type":["artifact","enchantment"]}]}]},
+
+  "Majestic Heliopterus": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"attacks","effects":[{"type":"grant_keyword","keyword":"flying","target_type":"creature","target_controller":"you"}]}]},
+
+  "Raging Regisaur": {"schema_version":2,"triggered_abilities":[{"event":"attacks","effects":[{"type":"divide_damage","amount":1,"max_targets":1,"target_filter":{"controller":"any","types":["creature","player"]}}]}]},
+
+  "Topiary Stomper": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}],"cant_attack_unless":{"count":"lands_you_control","at_least":7},"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]}]},
+
+  "Curious Altisaur": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"},{"type":"reach","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dinos_combat_damage","effects":[{"type":"draw","amount":1}]}]}
 }

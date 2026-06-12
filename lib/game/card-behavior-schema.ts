@@ -240,7 +240,11 @@ const PumpValueSchema = z.object({
 // "Damage equal to <permanent>'s power" (Eshki — its own power).
 const PowerOfSchema = z.object({ power_of: z.enum(['source', 'target']) }).strict()
 
-const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema, CountAmountSchema, PowerOfSchema])
+// "gain life equal to that creature's TOUGHNESS" (Verdant Sun's Avatar,
+// mig 256) — resolved against the trigger's event subject.
+const ToughnessOfSchema = z.object({ toughness_of: z.literal('triggering_creature') }).strict()
+
+const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema, CountAmountSchema, PowerOfSchema, ToughnessOfSchema])
 
 // Which kind of counter an add_counters effect places. "plus_one_one" is the
 // engine's fast +1/+1 column; everything else lives in the jsonb counter bag.
@@ -665,6 +669,8 @@ const CardBehaviorActionSchema = z.union([
     target_controller: TargetControllerSchema,
     counter_type: PermanentCounterTypeSchema,
     all: z.boolean().optional(),
+    // "each OTHER creature you control" (Bellowing Aegisaur, mig 256).
+    exclude_source: z.boolean().optional(),
   }),
   z.object({
     // Put player counters (poison/energy/experience) on players. Default recipient
@@ -778,6 +784,8 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('destroy_all'),
     scope: z.enum(['all', 'you', 'opponent']).optional(),
     creature_type: z.string().optional(),
+    // "Destroy all NON-<type> creatures" (Wakening Sun's Avatar, mig 256).
+    exclude_type: z.string().optional(),
   }),
   // Mass reanimate — return ALL matching creature cards from your graveyard.
   z.object({

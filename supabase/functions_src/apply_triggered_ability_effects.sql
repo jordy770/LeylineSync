@@ -291,10 +291,24 @@ begin
 
     elsif v_eff_type = 'destroy_all' then
       if p_controller_id is not null then
-        perform public.destroy_all_creatures(
-          p_session_id, p_controller_id,
-          nullif(v_effect ->> 'creature_type', ''),
-          lower(coalesce(v_effect ->> 'scope', 'all')));
+        if nullif(v_effect ->> 'exclude_type', '') is not null then
+          -- "Destroy all non-<type> creatures" (mig 256, Wakening Sun's
+          -- Avatar). Indestructible survives, mirroring destroy_all_creatures.
+          for v_dmg_target in
+            select gc.id from public.game_cards gc join public.cards c on c.id = gc.card_id
+            where gc.session_id = p_session_id and gc.zone = 'battlefield'
+              and c.type_line ilike '%creature%'
+              and c.type_line not ilike '%' || (v_effect ->> 'exclude_type') || '%'
+              and not public.card_has_indestructible(p_session_id, gc.id)
+          loop
+            perform public.put_in_graveyard(p_session_id, v_dmg_target);
+          end loop;
+        else
+          perform public.destroy_all_creatures(
+            p_session_id, p_controller_id,
+            nullif(v_effect ->> 'creature_type', ''),
+            lower(coalesce(v_effect ->> 'scope', 'all')));
+        end if;
       end if;
 
     elsif v_eff_type = 'return_all_from_graveyard' then
@@ -348,6 +362,9 @@ begin
           from public.cards c
           where c.id = gc.card_id and gc.session_id = p_session_id and gc.zone = 'battlefield'
             and c.type_line ilike '%creature%'
+            -- "each OTHER creature you control" (mig 256, Bellowing Aegisaur).
+            and (not coalesce((v_effect ->> 'exclude_source')::boolean, false)
+                 or gc.id is distinct from p_source_card_id)
             and (
               v_target_controller = 'any'
               or (v_target_controller = 'you' and gc.controller_player_id = p_controller_id)

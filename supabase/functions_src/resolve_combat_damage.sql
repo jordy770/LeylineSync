@@ -46,6 +46,8 @@ declare
   v_dragon_player_damage jsonb := '{}'::jsonb;
   v_dragon_key text;
   v_dragon_watcher uuid;
+  -- Same tally for Dinosaurs (mig 256, Curious Altisaur).
+  v_dino_player_damage jsonb := '{}'::jsonb;
   v_destroyed_count integer := 0;
   v_resolved_count integer := 0;
   v_minus_dealt boolean := false;
@@ -289,6 +291,14 @@ begin
                 to_jsonb(coalesce((v_dragon_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
                          + v_attacker_damage));
             end if;
+            -- Dinosaur tally (mig 256).
+            if exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+                       where gc.id = v_assignment.attacker_card_id and c.type_line ilike '%dinosaur%') then
+              v_dino_player_damage := jsonb_set(v_dino_player_damage,
+                array[v_assignment.defending_player_id::text],
+                to_jsonb(coalesce((v_dino_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                         + v_attacker_damage));
+            end if;
           end if;
           -- Toxic N: poison in addition to dealing combat damage to the player.
           if v_attacker_toxic > 0 then
@@ -417,6 +427,14 @@ begin
                   to_jsonb(coalesce((v_dragon_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
                            + v_trample_amount));
               end if;
+              -- Dinosaur tally (mig 256).
+              if exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+                         where gc.id = v_assignment.attacker_card_id and c.type_line ilike '%dinosaur%') then
+                v_dino_player_damage := jsonb_set(v_dino_player_damage,
+                  array[v_assignment.defending_player_id::text],
+                  to_jsonb(coalesce((v_dino_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                           + v_trample_amount));
+              end if;
             end if;
             if v_attacker_toxic > 0 then
               perform public.add_player_poison(p_session_id, v_assignment.defending_player_id, v_attacker_toxic);
@@ -484,6 +502,25 @@ begin
         p_session_id, v_dragon_watcher, array['dragons_combat_damage'],
         jsonb_build_object(
           'event_amount', (v_dragon_player_damage ->> v_dragon_key)::integer,
+          'event_player_id', v_dragon_key));
+    end loop;
+  end loop;
+
+  -- Same broadcast for Dinosaurs (mig 256, Curious Altisaur). Batched per
+  -- damaged player — "whenever a Dinosaur deals combat damage" fires once per
+  -- player however many Dinosaurs connected (approximation).
+  for v_dragon_key in select jsonb_object_keys(v_dino_player_damage)
+  loop
+    for v_dragon_watcher in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = v_turn_state.active_player_id
+      order by gc.zone_position, gc.id
+    loop
+      perform public.fire_card_triggers(
+        p_session_id, v_dragon_watcher, array['dinos_combat_damage'],
+        jsonb_build_object(
+          'event_amount', (v_dino_player_damage ->> v_dragon_key)::integer,
           'event_player_id', v_dragon_key));
     end loop;
   end loop;

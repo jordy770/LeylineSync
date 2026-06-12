@@ -3613,3 +3613,19 @@
 | 01:56 | Edited tests/feature/dino-manabase.test.ts | reduced (-9 lines) | ~144 |
 | 01:56 | Edited supabase/migrations/202605010255_dino_manabase.sql | expanded (+12 lines) | ~266 |
 | 05:45 | Dino manabase batch (mig 255, ~24 cards script-only): battle/check/reveal lands, Jungle Shrine, Terramorphic, Myriad Landscape, Temple False God (no 5-land gate - mana abilities lack conditions), Thriving cycle, Unclaimed Territory/Secluded Courtyard/Ixalli/Drover (any-color approx), Rogue's Passage (mana half), Arch of Orazca (city's blessing = live permanents_you_control>=10 count - NEW count), Cultivate/Rampant Growth/Thunderherd, Otepec Huntmaster. | mig 255, resolve_count_amount, schema, card-scripts.json, 6 fixtures, dino-manabase.test | 889/889 green, tsc+lint clean, Veloci triage 39/6/45 | ~9k |
+| 01:59 | Session end: 166 writes across 51 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 27 reads | ~100145 tok |
+| 02:02 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | added 1 condition(s) | ~284 |
+| 02:02 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified and() | ~183 |
+| 02:02 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~206 |
+| 02:02 | Edited supabase/functions_src/resolve_combat_damage.sql | 3→5 lines | ~53 |
+| 02:02 | Edited supabase/functions_src/resolve_combat_damage.sql | modified jsonb_set() | ~305 |
+| 02:02 | Edited supabase/functions_src/resolve_combat_damage.sql | modified jsonb_set() | ~314 |
+| 02:03 | Edited supabase/functions_src/resolve_combat_damage.sql | modified fire_card_triggers() | ~403 |
+| 02:03 | Edited lib/game/card-behavior-schema.ts | 4→6 lines | ~74 |
+| 02:03 | Edited lib/game/card-behavior-schema.ts | 7→9 lines | ~93 |
+| 02:03 | Edited lib/game/card-behavior-schema.ts | 3→7 lines | ~128 |
+| 02:03 | Edited docs/commander-decks/card-scripts.json | expanded (+28 lines) | ~1072 |
+| 02:04 | Edited tests/fixtures/test-cards.json | expanded (+6 lines) | ~654 |
+| 02:04 | Created tests/feature/dino-creatures.test.ts | — | ~1428 |
+| 02:05 | Edited supabase/migrations/202605010256_dino_creatures.sql | expanded (+15 lines) | ~283 |
+| 06:25 | Dino creature batch (mig 256, ~14 cards): toughness_of triggering amount (Verdant Sun), destroy_all exclude_type (Wakening Sun), add_counters_all exclude_source (Bellowing enrage), dinos_combat_damage tally mirror (Curious Altisaur). Script-only: Regisaur Alpha (typed haste grant), Thundering Spineback (typed lord), Raging Swordtooth, Generous Gift+Elephant Token, Path to Exile (no land consolation), Apex Altisaur (fight x2), Thrashing Brontodon, Majestic Heliopterus, Raging Regisaur (divide 1), Topiary Stomper. | mig 256, ATAE, apply_trigger_effects, resolve_combat_damage, schema, card-scripts, fixtures, dino-creatures.test | 893/893 green, tsc+lint clean, Veloci triage 53/6/31 | ~12k |

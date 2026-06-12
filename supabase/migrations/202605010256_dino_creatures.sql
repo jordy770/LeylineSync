@@ -1,7 +1,602 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010256_dino_creatures — the Veloci-Ramp-Tor creature batch (~14
+-- cards; scripts in card-scripts.json).
+--   • gain_life amount {toughness_of:'triggering_creature'} (Verdant Sun's
+--     Avatar).
+--   • destroy_all exclude_type — "destroy all NON-Dinosaur creatures"
+--     (Wakening Sun's Avatar; the cast-from-hand condition is not modelled).
+--   • add_counters_all exclude_source — "each OTHER creature you control"
+--     (Bellowing Aegisaur's enrage).
+--   • dinos_combat_damage: the mig 247 Dragon combat tally mirrored for
+--     Dinosaurs (Curious Altisaur; batched per damaged player, so several
+--     connecting Dinosaurs draw once — approximation).
+-- Other approximations: Path to Exile omits the basic-land consolation
+-- (search-for-the-target's-controller is not modelled); Regisaur Alpha /
+-- Thundering Spineback rely on the typed keyword/lord folds; Raging Regisaur
+-- uses a 1-damage divide for "any target"; Majestic Heliopterus' grant
+-- doesn't enforce the Dinosaur type; Topiary Stomper's can't-BLOCK half is
+-- not enforced.
+-- Generated from supabase/functions_src (apply_triggered_ability_effects, apply_trigger_effects, resolve_combat_damage) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+create or replace function public.apply_triggered_ability_effects(
+  p_session_id uuid,
+  p_controller_id uuid,
+  p_source_card_id uuid,
+  p_effects jsonb
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_effect jsonb;
+  v_eff_type text;
+  v_eff_amount integer;
+  v_recipient text;
+  v_recipients uuid[];
+  v_rid uuid;
+  v_draw_i integer;
+  v_lib_card uuid;
+  v_next_hand_position integer;
+  v_next_graveyard_position integer;
+  v_token_card_id uuid;
+  v_token_count integer;
+  v_turn_number integer;
+  v_next_pos integer;
+  v_new_token_id uuid;
+  v_i integer;
+  v_target_controller text;
+  v_counter_type text;
+  v_all boolean;
+  v_milled_type text;
+  v_milled_type_hit boolean;
+  v_token_recipient uuid;
+  v_dmg_target uuid;
+  v_exiled uuid[];
+  v_mon integer;
+  v_hand integer;
+begin
+  for v_effect in
+    select * from jsonb_array_elements(coalesce(p_effects, '[]'::jsonb))
+  loop
+    v_eff_type := lower(coalesce(v_effect ->> 'type', ''));
+    v_eff_amount := public.resolve_dynamic_amount(
+      p_session_id, p_source_card_id, p_controller_id, v_effect -> 'amount');
+    v_recipient := lower(coalesce(v_effect ->> 'recipient', ''));
+
+    if v_eff_type = 'untap_all_attackers' then
+      -- "Untap all attacking creatures" (mig 250, Scourge of the Throne).
+      update public.game_cards gc
+      set is_tapped = false
+      from public.game_combat_assignments ca
+      where ca.session_id = p_session_id and ca.attacker_card_id = gc.id
+        and gc.session_id = p_session_id and gc.zone = 'battlefield';
+
+    elsif v_eff_type = 'extra_combat' then
+      -- "After this phase, there is an additional combat phase" (mig 250):
+      -- advance_step loops end_of_combat back to beginning_of_combat once per
+      -- pending extra combat.
+      update public.game_turn_state
+      set extra_combats = coalesce(extra_combats, 0) + 1
+      where session_id = p_session_id;
+
+    elsif v_eff_type = 'add_mana' then
+      -- Mana from a resolved trigger (mig 245, Frontier Siege Khans mode:
+      -- "At the beginning of each of your main phases, add {G}{G}"). Fixed
+      -- colours only; goes to the trigger's controller.
+      if p_controller_id is not null and v_eff_amount > 0
+         and upper(coalesce(v_effect ->> 'color', '')) in ('W', 'U', 'B', 'R', 'G', 'C') then
+        insert into public.game_players (session_id, player_id, mana_pool)
+        values (p_session_id, p_controller_id, jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0))
+        on conflict (session_id, player_id) do nothing;
+        update public.game_players
+        set mana_pool = jsonb_set(
+              coalesce(mana_pool, jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0)),
+              array[upper(v_effect ->> 'color')],
+              to_jsonb(coalesce((mana_pool ->> upper(v_effect ->> 'color'))::integer, 0) + v_eff_amount))
+        where session_id = p_session_id and player_id = p_controller_id;
+      end if;
+
+    elsif v_eff_type = 'gain_life' then
+      if v_eff_amount > 0 then
+        if v_recipient in ('each_player', 'all_players') then
+          select array_agg(player_id) into v_recipients
+          from public.game_session_players where session_id = p_session_id;
+        elsif v_recipient = 'each_opponent' then
+          select array_agg(player_id) into v_recipients
+          from public.game_session_players
+          where session_id = p_session_id and player_id is distinct from p_controller_id;
+        else
+          v_recipients := array[p_controller_id];
+        end if;
+        foreach v_rid in array coalesce(v_recipients, array[]::uuid[]) loop
+          if v_rid is not null then
+            update public.game_session_players
+            set life_total = life_total + v_eff_amount
+            where session_id = p_session_id and player_id = v_rid;
+          end if;
+        end loop;
+      end if;
+
+    elsif v_eff_type in ('lose_life', 'deal_damage') then
+      if v_eff_amount > 0 then
+        if nullif(v_effect ->> 'recipient_player_id', '') is not null then
+          -- A specific player, injected at enqueue time (Thunderbreak Regent:
+          -- "deals 3 damage to THAT player" — the one who targeted your Dragon).
+          v_recipients := array[(v_effect ->> 'recipient_player_id')::uuid];
+        elsif v_recipient = 'controller' then
+          v_recipients := array[p_controller_id];
+        elsif v_recipient in ('each_player', 'all_players') then
+          select array_agg(player_id) into v_recipients
+          from public.game_session_players where session_id = p_session_id;
+        else
+          select array_agg(player_id) into v_recipients
+          from public.game_session_players
+          where session_id = p_session_id and player_id is distinct from p_controller_id;
+        end if;
+        foreach v_rid in array coalesce(v_recipients, array[]::uuid[]) loop
+          update public.game_session_players
+          set life_total = greatest(0, life_total - v_eff_amount)
+          where session_id = p_session_id and player_id = v_rid;
+        end loop;
+      end if;
+
+    elsif v_eff_type = 'add_player_counters' then
+      v_counter_type := lower(coalesce(v_effect ->> 'counter_type', 'poison'));
+      v_all := coalesce((v_effect ->> 'all')::boolean, false);
+      if v_eff_amount <> 0 or v_all then
+        if v_recipient = 'controller' then
+          v_recipients := array[p_controller_id];
+        elsif v_recipient in ('each_player', 'all_players') then
+          select array_agg(player_id) into v_recipients
+          from public.game_session_players where session_id = p_session_id;
+        else
+          select array_agg(player_id) into v_recipients
+          from public.game_session_players
+          where session_id = p_session_id and player_id is distinct from p_controller_id;
+        end if;
+        foreach v_rid in array coalesce(v_recipients, array[]::uuid[]) loop
+          if v_rid is not null then
+            update public.game_session_players
+            set counters = case when v_all then counters - v_counter_type
+                                else public.adjust_counter_bag(counters, v_counter_type, v_eff_amount) end
+            where session_id = p_session_id and player_id = v_rid;
+          end if;
+        end loop;
+        perform public.maybe_finish_game_session(p_session_id);
+      end if;
+
+    elsif v_eff_type = 'draw' then
+      if p_controller_id is not null then
+        for v_draw_i in 1..greatest(1, v_eff_amount) loop
+          select coalesce(max(zone_position), -1) + 1 into v_next_hand_position
+          from public.game_cards
+          where session_id = p_session_id and owner_id = p_controller_id and zone = 'hand';
+          select id into v_lib_card
+          from public.game_cards
+          where session_id = p_session_id and owner_id = p_controller_id and zone = 'library'
+          order by zone_position asc, id asc limit 1 for update skip locked;
+          exit when v_lib_card is null;
+          update public.game_cards
+          set zone = 'hand', zone_position = v_next_hand_position, is_tapped = false
+          where id = v_lib_card;
+        end loop;
+      end if;
+
+    elsif v_eff_type = 'mill' then
+      if v_eff_amount > 0 then
+        v_milled_type := v_effect ->> 'if_milled_type';
+        v_milled_type_hit := false;
+        if v_recipient = 'controller' or v_recipient = '' then
+          v_recipients := array[p_controller_id];
+        elsif v_recipient in ('each_player', 'all_players') then
+          select array_agg(player_id) into v_recipients
+          from public.game_session_players where session_id = p_session_id;
+        else
+          select array_agg(player_id) into v_recipients
+          from public.game_session_players
+          where session_id = p_session_id and player_id is distinct from p_controller_id;
+        end if;
+        foreach v_rid in array coalesce(v_recipients, array[]::uuid[]) loop
+          if v_rid is not null then
+            for v_draw_i in 1..v_eff_amount loop
+              select coalesce(max(zone_position), -1) + 1 into v_next_graveyard_position
+              from public.game_cards
+              where session_id = p_session_id and owner_id = v_rid and zone = 'graveyard';
+              select id into v_lib_card
+              from public.game_cards
+              where session_id = p_session_id and owner_id = v_rid and zone = 'library'
+              order by zone_position asc, id asc limit 1 for update skip locked;
+              exit when v_lib_card is null;
+              if v_milled_type is not null and exists (
+                select 1 from public.game_cards g join public.cards c on c.id = g.card_id
+                where g.id = v_lib_card and c.type_line ilike '%' || v_milled_type || '%'
+              ) then
+                v_milled_type_hit := true;
+              end if;
+              update public.game_cards
+              set zone = 'graveyard', zone_position = v_next_graveyard_position, is_tapped = false
+              where id = v_lib_card;
+            end loop;
+          end if;
+        end loop;
+        if v_milled_type is not null and v_milled_type_hit then
+          perform public.apply_triggered_ability_effects(
+            p_session_id, p_controller_id, p_source_card_id, coalesce(v_effect -> 'then', '[]'::jsonb));
+        end if;
+      end if;
+
+    elsif v_eff_type = 'create_token' then
+      -- A dynamic count object ({count:{count:'...'}}) resolves via the amount
+      -- engine and is NOT floored at 1 — zero matches makes zero tokens (Gadrak
+      -- with no nontoken deaths). A literal/absent count keeps the floor-at-1.
+      if jsonb_typeof(v_effect -> 'count') = 'object' then
+        v_token_count := public.resolve_dynamic_amount(
+          p_session_id, p_source_card_id, p_controller_id, v_effect -> 'count');
+      else
+        v_token_count := greatest(1, coalesce((v_effect ->> 'count')::integer, 1));
+      end if;
+      v_token_recipient := coalesce(nullif(v_effect ->> 'recipient_player_id', '')::uuid, p_controller_id);
+      select id into v_token_card_id
+      from public.cards
+      where lower(name) = lower(coalesce(v_effect ->> 'token', '')) and is_token = true
+      limit 1;
+      if found and v_token_recipient is not null then
+        select turn_number into v_turn_number
+        from public.game_turn_state where session_id = p_session_id;
+        for v_i in 1..least(v_token_count, 20) loop
+          select coalesce(max(zone_position), -1) + 1 into v_next_pos
+          from public.game_cards
+          where session_id = p_session_id and owner_id = v_token_recipient and zone = 'battlefield';
+          insert into public.game_cards (
+            session_id, card_id, owner_id, controller_player_id,
+            zone, zone_position, is_tapped, damage_marked,
+            position_x, position_y, entered_battlefield_turn_number
+          )
+          values (
+            p_session_id, v_token_card_id, v_token_recipient, v_token_recipient,
+            'battlefield', v_next_pos, coalesce((v_effect ->> 'tapped')::boolean, false), 0, 0, 0, coalesce(v_turn_number, 0)
+          )
+          returning id into v_new_token_id;
+          perform public.register_card_continuous_effects(p_session_id, v_new_token_id);
+        end loop;
+      end if;
+
+    elsif v_eff_type = 'deal_damage_all' then
+      -- Mass damage (mig 224): N damage to every creature matching the filter,
+      -- optionally to planeswalkers too. filter.with_keyword/without_keyword
+      -- gate on flying (Harbinger); filter.exclude_source skips this card
+      -- ("each OTHER creature"). One lethal sweep at the end (per-hit sweep off).
+      if v_eff_amount > 0 then
+        for v_dmg_target in
+          select gc.id
+          from public.game_cards gc join public.cards c on c.id = gc.card_id
+          where gc.session_id = p_session_id and gc.zone = 'battlefield'
+            and c.type_line ilike '%creature%'
+            and (not coalesce((v_effect -> 'filter' ->> 'exclude_source')::boolean, false)
+                 or gc.id is distinct from p_source_card_id)
+            and ((v_effect -> 'filter' ->> 'without_keyword') is distinct from 'flying'
+                 or not public.card_has_flying(p_session_id, gc.id))
+            and ((v_effect -> 'filter' ->> 'with_keyword') is distinct from 'flying'
+                 or public.card_has_flying(p_session_id, gc.id))
+        loop
+          perform public.apply_damage_to_creature(
+            p_session_id, v_dmg_target, v_eff_amount, p_source_card_id, false, false, false);
+        end loop;
+
+        if lower(coalesce(v_effect ->> 'targets', 'creatures')) = 'creatures_planeswalkers' then
+          for v_dmg_target in
+            select gc.id
+            from public.game_cards gc join public.cards c on c.id = gc.card_id
+            where gc.session_id = p_session_id and gc.zone = 'battlefield'
+              and c.type_line ilike '%planeswalker%'
+          loop
+            perform public.apply_damage_to_planeswalker(p_session_id, v_dmg_target, v_eff_amount);
+          end loop;
+        end if;
+
+        perform public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
+        perform public.move_zero_loyalty_planeswalkers_to_graveyard(p_session_id);
+      end if;
+
+    elsif v_eff_type = 'amass' then
+      if p_controller_id is not null and v_eff_amount > 0 then
+        perform public.amass(p_session_id, p_controller_id, v_eff_amount);
+      end if;
+
+    elsif v_eff_type = 'destroy_all' then
+      if p_controller_id is not null then
+        if nullif(v_effect ->> 'exclude_type', '') is not null then
+          -- "Destroy all non-<type> creatures" (mig 256, Wakening Sun's
+          -- Avatar). Indestructible survives, mirroring destroy_all_creatures.
+          for v_dmg_target in
+            select gc.id from public.game_cards gc join public.cards c on c.id = gc.card_id
+            where gc.session_id = p_session_id and gc.zone = 'battlefield'
+              and c.type_line ilike '%creature%'
+              and c.type_line not ilike '%' || (v_effect ->> 'exclude_type') || '%'
+              and not public.card_has_indestructible(p_session_id, gc.id)
+          loop
+            perform public.put_in_graveyard(p_session_id, v_dmg_target);
+          end loop;
+        else
+          perform public.destroy_all_creatures(
+            p_session_id, p_controller_id,
+            nullif(v_effect ->> 'creature_type', ''),
+            lower(coalesce(v_effect ->> 'scope', 'all')));
+        end if;
+      end if;
+
+    elsif v_eff_type = 'return_all_from_graveyard' then
+      if p_controller_id is not null then
+        -- from:'all_graveyards' (mig 214, Grimoire of the Dead) sweeps EVERY
+        -- graveyard and puts the cards under the controller's control.
+        perform public.return_all_from_graveyard(
+          p_session_id, p_controller_id,
+          nullif(v_effect ->> 'creature_type', ''),
+          lower(coalesce(v_effect ->> 'to', 'battlefield')),
+          lower(coalesce(v_effect ->> 'from', '')) = 'all_graveyards');
+      end if;
+
+    elsif v_eff_type = 'add_counters' then
+      v_counter_type := v_effect ->> 'counter_type';
+      v_all := coalesce((v_effect ->> 'all')::boolean, false);
+      if p_source_card_id is not null and (v_eff_amount <> 0 or v_all) then
+        if v_eff_amount > 0 then
+          v_eff_amount := v_eff_amount * public.counter_factor(
+            p_session_id,
+            (select controller_player_id from public.game_cards
+             where id = p_source_card_id and session_id = p_session_id));
+        end if;
+        if public.is_plus_one_counter(v_counter_type) then
+          update public.game_cards
+          set plus_one_counters = case when v_all then 0 else greatest(0, plus_one_counters + v_eff_amount) end
+          where id = p_source_card_id and session_id = p_session_id and zone = 'battlefield';
+        else
+          update public.game_cards
+          set counters = case when v_all then counters - lower(v_counter_type)
+                              else public.adjust_counter_bag(counters, lower(v_counter_type), v_eff_amount) end
+          where id = p_source_card_id and session_id = p_session_id and zone = 'battlefield';
+        end if;
+        perform public.recheck_counter_state(p_session_id);
+      end if;
+
+    elsif v_eff_type = 'add_counters_all' then
+      v_counter_type := v_effect ->> 'counter_type';
+      v_all := coalesce((v_effect ->> 'all')::boolean, false);
+      if (v_eff_amount <> 0 or v_all) and p_controller_id is not null then
+        v_target_controller := public.behavior_target_controller(v_effect || jsonb_build_object(
+          'target_controller', coalesce(v_effect ->> 'target_controller', 'you')
+        ));
+        if public.is_plus_one_counter(v_counter_type) then
+          update public.game_cards gc
+          set plus_one_counters = case when v_all then 0
+            else greatest(0, gc.plus_one_counters
+              + case when v_eff_amount > 0
+                     then v_eff_amount * public.counter_factor(p_session_id, gc.controller_player_id)
+                     else v_eff_amount end) end
+          from public.cards c
+          where c.id = gc.card_id and gc.session_id = p_session_id and gc.zone = 'battlefield'
+            and c.type_line ilike '%creature%'
+            -- "each OTHER creature you control" (mig 256, Bellowing Aegisaur).
+            and (not coalesce((v_effect ->> 'exclude_source')::boolean, false)
+                 or gc.id is distinct from p_source_card_id)
+            and (
+              v_target_controller = 'any'
+              or (v_target_controller = 'you' and gc.controller_player_id = p_controller_id)
+              or (v_target_controller = 'opponent' and gc.controller_player_id is distinct from p_controller_id)
+            );
+        else
+          update public.game_cards gc
+          set counters = case when v_all then gc.counters - lower(v_counter_type)
+            else public.adjust_counter_bag(gc.counters, lower(v_counter_type),
+              case when v_eff_amount > 0
+                   then v_eff_amount * public.counter_factor(p_session_id, gc.controller_player_id)
+                   else v_eff_amount end) end
+          from public.cards c
+          where c.id = gc.card_id and gc.session_id = p_session_id and gc.zone = 'battlefield'
+            and c.type_line ilike '%creature%'
+            and (
+              v_target_controller = 'any'
+              or (v_target_controller = 'you' and gc.controller_player_id = p_controller_id)
+              or (v_target_controller = 'opponent' and gc.controller_player_id is distinct from p_controller_id)
+            );
+        end if;
+        perform public.recheck_counter_state(p_session_id);
+      end if;
+
+    elsif v_eff_type in ('tap_all', 'untap_all') then
+      if p_controller_id is not null then
+        v_target_controller := public.behavior_target_controller(v_effect || jsonb_build_object(
+          'target_controller', coalesce(v_effect ->> 'target_controller', 'you')
+        ));
+        update public.game_cards gc
+        set is_tapped = (v_eff_type = 'tap_all')
+        from public.cards c
+        where c.id = gc.card_id and gc.session_id = p_session_id and gc.zone = 'battlefield'
+          and c.type_line ilike '%creature%'
+          and (
+            v_target_controller = 'any'
+            or (v_target_controller = 'you' and gc.controller_player_id = p_controller_id)
+            or (v_target_controller = 'opponent' and gc.controller_player_id is distinct from p_controller_id)
+          );
+      end if;
+
+    elsif v_eff_type = 'grant_cast_from_graveyard' then
+      if p_controller_id is not null then
+        -- card_id (mig 215, Havengul Lich): the permission covers ONE specific
+        -- graveyard card instead of a type filter.
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_player_id, effect_type, payload,
+          expires_at_phase, expires_at_step
+        )
+        values (
+          p_session_id, p_source_card_id, p_controller_id, 'cast_from_graveyard',
+          jsonb_strip_nulls(jsonb_build_object(
+            'type_line', coalesce(v_effect ->> 'type_line', ''),
+            'card_id', v_effect ->> 'card_id')),
+          'ending', 'cleanup'
+        );
+      end if;
+
+    elsif v_eff_type = 'monstrosity' then
+      -- "Monstrosity N" (Stormbreath Dragon): if this permanent isn't monstrous,
+      -- put N +1/+1 counters on it and it becomes monstrous (a once-marker in the
+      -- counter bag), then apply its `on_monstrous` effects ("when this becomes
+      -- monstrous, …"). A no-op when already monstrous.
+      select coalesce((counters ->> 'monstrous')::integer, 0) into v_mon
+      from public.game_cards where id = p_source_card_id and session_id = p_session_id;
+      if coalesce(v_mon, 0) = 0 then
+        update public.game_cards
+        set plus_one_counters = coalesce(plus_one_counters, 0)
+              + greatest(1, coalesce((v_effect ->> 'amount')::integer, 1)),
+            counters = public.adjust_counter_bag(coalesce(counters, '{}'::jsonb), 'monstrous', 1)
+        where id = p_source_card_id and session_id = p_session_id;
+        if jsonb_typeof(v_effect -> 'on_monstrous') = 'array' then
+          perform public.apply_triggered_ability_effects(
+            p_session_id, p_controller_id, p_source_card_id, v_effect -> 'on_monstrous');
+        end if;
+      end if;
+
+    elsif v_eff_type = 'damage_each_opponent_by_hand' then
+      -- "deals damage to each opponent equal to the number of cards in that
+      -- player's hand" (Stormbreath). Per-opponent, so it can't reuse the single
+      -- v_eff_amount lose_life path.
+      for v_rid in
+        select player_id from public.game_session_players
+        where session_id = p_session_id and player_id is distinct from p_controller_id
+      loop
+        select count(*)::integer into v_hand
+        from public.game_cards
+        where session_id = p_session_id and owner_id = v_rid and zone = 'hand';
+        update public.game_session_players
+        set life_total = greatest(0, life_total - coalesce(v_hand, 0))
+        where session_id = p_session_id and player_id = v_rid;
+      end loop;
+      perform public.maybe_finish_game_session(p_session_id);
+
+    elsif v_eff_type = 'impulse' then
+      -- "Exile the top N cards of your library. Until the end of your next turn,
+      -- you may play those cards." (Atsushi.) Move the cards to exile and write a
+      -- card-specific play_from_exile permission for the controller; the cast path
+      -- (cast_card_from_hand) honours it, and advance_step expires it at the end
+      -- step of the controller's NEXT turn (created_turn < current turn).
+      if p_controller_id is not null then
+        select turn_number into v_turn_number
+        from public.game_turn_state where session_id = p_session_id;
+        select coalesce(max(zone_position), -1) into v_next_pos
+        from public.game_cards
+        where session_id = p_session_id and owner_id = p_controller_id and zone = 'exile';
+        with top as (
+          select id, row_number() over (order by zone_position asc, id asc) as rn
+          from public.game_cards
+          where session_id = p_session_id and owner_id = p_controller_id and zone = 'library'
+          order by zone_position asc, id asc
+          limit greatest(1, coalesce((v_effect ->> 'count')::integer, 1))
+        )
+        update public.game_cards gc
+        set zone = 'exile', zone_position = v_next_pos + top.rn,
+            controller_player_id = gc.owner_id, is_tapped = false, damage_marked = 0
+        from top where gc.id = top.id;
+        select array_agg(id) into v_exiled
+        from public.game_cards
+        where session_id = p_session_id and owner_id = p_controller_id and zone = 'exile'
+          and zone_position > v_next_pos;
+        if v_exiled is not null and array_length(v_exiled, 1) > 0 then
+          insert into public.game_continuous_effects (
+            session_id, source_card_id, affected_player_id, effect_type, payload
+          ) values (
+            p_session_id, p_source_card_id, p_controller_id, 'play_from_exile',
+            jsonb_build_object(
+              'card_ids', to_jsonb(v_exiled),
+              'created_turn', coalesce(v_turn_number, 0))
+          );
+        end if;
+      end if;
+
+    elsif v_eff_type = 'grant_keyword_all' then
+      -- Mass keyword until end of turn (mig 202). scope 'controller' => only
+      -- that player's permanents (affected_player_id set); 'all' (default) =>
+      -- everyone's. creature_type filters by subtype (omit for all). Only the
+      -- grantable combat keywords (the mig 200 accessor set) are accepted.
+      if lower(coalesce(v_effect ->> 'keyword', '')) in (
+        'flying', 'reach', 'deathtouch', 'trample', 'vigilance', 'haste',
+        'indestructible', 'first_strike', 'double_strike', 'menace',
+        'intimidate', 'hexproof'
+      ) then
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_player_id, effect_type, payload,
+          expires_at_phase, expires_at_step
+        ) values (
+          p_session_id, p_source_card_id,
+          case when lower(coalesce(v_effect ->> 'scope', 'all')) = 'controller'
+               then p_controller_id else null end,
+          lower(v_effect ->> 'keyword'),
+          jsonb_strip_nulls(jsonb_build_object(
+            'creature_type', v_effect ->> 'creature_type',
+            'includes_player',
+            case when coalesce((v_effect ->> 'includes_player')::boolean, false)
+                 then true else null end
+          )),
+          'ending', 'cleanup'
+        );
+      end if;
+
+    elsif v_eff_type = 'return_self_to_hand' then
+      -- "Return this permanent to its owner's hand" (Encroaching/Breaching
+      -- Dragonstorm, when a Dragon you control enters).
+      if p_source_card_id is not null then
+        update public.game_cards gc
+        set zone = 'hand',
+            zone_position = (select coalesce(max(zone_position), -1) + 1 from public.game_cards
+                             where session_id = p_session_id and owner_id = gc.owner_id and zone = 'hand'),
+            controller_player_id = gc.owner_id, is_tapped = false, damage_marked = 0, plus_one_counters = 0
+        where gc.id = p_source_card_id and gc.session_id = p_session_id and gc.zone = 'battlefield';
+        perform public.rebuild_scripted_continuous_effects(p_session_id);
+      end if;
+
+    elsif v_eff_type = 'grant_keyword' then
+      -- Untargeted single grant → the source permanent (Skarrgan's Riot haste
+      -- mode). apply_creature_effect writes the keyword continuous effect.
+      if p_source_card_id is not null then
+        perform public.apply_creature_effect(p_session_id, 'grant_keyword', p_source_card_id, v_effect);
+      end if;
+
+    elsif v_eff_type = 'set_pt' then
+      -- Untargeted set base P/T → the source (Nogi: "becomes 5/5 until EOT").
+      if p_source_card_id is not null then
+        perform public.apply_creature_effect(p_session_id, 'set_pt', p_source_card_id, v_effect);
+      end if;
+
+    elsif v_eff_type = 'conditional' then
+      -- "If <condition>, <effects>." A count-based gate: resolve the condition's
+      -- count ({count, type_line?}) and, when it meets `at_least`, recursively
+      -- apply the inner effects through this same resolver. Inner effects are the
+      -- non-decision vocabulary (lose_life/gain_life/draw/create_token/…).
+      if public.resolve_dynamic_amount(
+           p_session_id, p_source_card_id, p_controller_id, v_effect -> 'condition')
+         >= coalesce((v_effect -> 'condition' ->> 'at_least')::integer, 1)
+      then
+        perform public.apply_triggered_ability_effects(
+          p_session_id, p_controller_id, p_source_card_id,
+          coalesce(v_effect -> 'effects', '[]'::jsonb));
+      end if;
+
+    elsif v_eff_type = 'curse_attack_zombie' then
+      -- "Enchant player." Register the curse on the recipient player (the chosen
+      -- enchanted player after choose_player), sourced from the curse card;
+      -- declare_attacker reads it when that player is attacked. Only while the
+      -- curse stays on the battlefield (source_zone_required).
+      if p_controller_id is not null and p_source_card_id is not null then
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_player_id, effect_type, payload, source_zone_required)
+        values (p_session_id, p_source_card_id, p_controller_id, 'curse_attacked', '{}'::jsonb, 'battlefield');
+      end if;
+    end if;
+    -- Unknown effect types are ignored (forward-compatible).
+  end loop;
+end;
+$$;
+grant execute on function public.apply_triggered_ability_effects(uuid, uuid, uuid, jsonb) to authenticated;
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,
@@ -954,3 +1549,551 @@ begin
 end;
 $$;
 grant execute on function public.apply_trigger_effects(uuid, uuid, integer) to authenticated;
+
+create or replace function public.resolve_combat_damage(
+  p_session_id uuid,
+  p_assignments jsonb default null
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_session_status text;
+  v_turn_state public.game_turn_state;
+  v_required_player_id uuid;
+  v_assignment record;
+  v_blocker record;
+  v_attacker_damage integer;
+  v_remaining_attacker_damage integer;
+  v_blocker_damage integer;
+  v_assigned_damage integer;
+  v_has_blockers boolean;
+  v_is_first_strike_stage boolean := false;
+  v_attacker_has_first_strike boolean;
+  v_attacker_has_double_strike boolean;
+  v_attacker_has_deathtouch boolean;
+  v_attacker_deals_damage boolean;
+  v_attacker_has_infect boolean;
+  v_attacker_has_wither boolean;
+  v_attacker_toxic integer;
+  v_blocker_has_first_strike boolean;
+  v_blocker_has_double_strike boolean;
+  v_blocker_has_deathtouch boolean;
+  v_blocker_deals_damage boolean;
+  v_blocker_has_infect boolean;
+  v_blocker_has_wither boolean;
+  v_lethal_per_blocker integer;
+  v_total_player_damage integer := 0;
+  v_total_creature_damage integer := 0;
+  -- Dragon combat damage per damaged PLAYER (mig 247, Broodcaller Scourge /
+  -- Parapet Thrasher): {player_id: total}. Attackers all belong to the
+  -- active player, so the watcher controller is implicit.
+  v_dragon_player_damage jsonb := '{}'::jsonb;
+  v_dragon_key text;
+  v_dragon_watcher uuid;
+  -- Same tally for Dinosaurs (mig 256, Curious Altisaur).
+  v_dino_player_damage jsonb := '{}'::jsonb;
+  v_destroyed_count integer := 0;
+  v_resolved_count integer := 0;
+  v_minus_dealt boolean := false;
+  v_finish_state jsonb;
+  v_chosen jsonb;
+  v_trample_amount integer;
+  v_va_key text;
+  v_va_chosen jsonb;
+  v_va_assignment_id uuid;
+  v_va_power integer;
+  v_va_deathtouch boolean;
+  v_va_trample boolean;
+  v_va_blocker record;
+  v_va_lethal integer;
+  v_va_amt integer;
+  v_va_sum integer;
+  v_va_trample_amt integer;
+  v_va_satisfied boolean;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select status
+  into v_session_status
+  from public.game_sessions
+  where id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Game session not found';
+  end if;
+
+  if v_session_status = 'finished' then
+    raise exception 'Cannot resolve combat damage in a finished game session';
+  end if;
+
+  select *
+  into v_turn_state
+  from public.game_turn_state
+  where session_id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Turn state not found';
+  end if;
+
+  if v_turn_state.step <> 'combat_damage' then
+    raise exception 'Combat damage can only be resolved during Combat Damage Step';
+  end if;
+
+  v_required_player_id := coalesce(v_turn_state.priority_player_id, v_turn_state.active_player_id);
+
+  if v_required_player_id <> auth.uid() then
+    raise exception 'Only the priority player can resolve combat damage';
+  end if;
+
+  -- ── Validation pre-pass (unchanged from mig 122/132).
+  if p_assignments is not null and p_assignments <> 'null'::jsonb then
+    for v_va_key in select jsonb_object_keys(p_assignments)
+    loop
+      select combat.id,
+             public.card_effective_power(p_session_id, combat.attacker_card_id),
+             public.card_has_deathtouch(p_session_id, combat.attacker_card_id),
+             public.card_has_trample(p_session_id, combat.attacker_card_id)
+      into v_va_assignment_id, v_va_power, v_va_deathtouch, v_va_trample
+      from public.game_combat_assignments combat
+      where combat.session_id = p_session_id
+        and combat.turn_number = v_turn_state.turn_number
+        and combat.attacker_card_id = v_va_key::uuid
+        and combat.damage_resolved = false;
+
+      if not found then
+        continue;
+      end if;
+
+      v_va_chosen := p_assignments -> v_va_key;
+      v_va_trample_amt := coalesce((v_va_chosen ->> 'trample')::integer, 0);
+      if v_va_trample_amt < 0 then
+        raise exception 'Combat damage assignment cannot be negative';
+      end if;
+      if v_va_trample_amt > 0 and not coalesce(v_va_trample, false) then
+        raise exception 'Cannot assign trample damage: attacker has no trample';
+      end if;
+
+      v_va_sum := v_va_trample_amt;
+      v_va_satisfied := true;
+
+      for v_va_blocker in
+        select blockers.blocker_card_id,
+               public.card_effective_toughness(p_session_id, blockers.blocker_card_id) as toughness
+        from public.game_combat_blockers blockers
+        join public.game_cards blocker_instance
+          on blocker_instance.id = blockers.blocker_card_id
+         and blocker_instance.zone = 'battlefield'
+        where blockers.assignment_id = v_va_assignment_id
+        order by blockers.damage_assignment_order, blockers.created_at, blockers.id
+      loop
+        v_va_amt := coalesce((
+          select (b ->> 'amount')::integer
+          from jsonb_array_elements(coalesce(v_va_chosen -> 'blockers', '[]'::jsonb)) b
+          where b ->> 'blocker_card_id' = v_va_blocker.blocker_card_id::text
+          limit 1
+        ), 0);
+
+        if v_va_amt < 0 then
+          raise exception 'Combat damage assignment cannot be negative';
+        end if;
+
+        if not v_va_satisfied and v_va_amt > 0 then
+          raise exception 'Must assign lethal damage to earlier blockers before later ones';
+        end if;
+
+        v_va_lethal := case when coalesce(v_va_deathtouch, false) then 1
+                            else greatest(1, v_va_blocker.toughness) end;
+        if v_va_amt < v_va_lethal then
+          v_va_satisfied := false;
+        end if;
+
+        v_va_sum := v_va_sum + v_va_amt;
+      end loop;
+
+      if v_va_trample_amt > 0 and not v_va_satisfied then
+        raise exception 'Cannot assign trample damage before all blockers have lethal damage';
+      end if;
+
+      if v_va_sum > greatest(0, coalesce(v_va_power, 0)) then
+        raise exception 'Assigned combat damage % exceeds attacker power %', v_va_sum, v_va_power;
+      end if;
+    end loop;
+  end if;
+
+  select exists (
+    select 1
+    from public.game_combat_assignments combat
+    left join public.game_cards attacker_instance
+      on attacker_instance.id = combat.attacker_card_id
+     and attacker_instance.zone = 'battlefield'
+    left join public.game_combat_blockers blockers
+      on blockers.assignment_id = combat.id
+    left join public.game_cards blocker_instance
+      on blocker_instance.id = blockers.blocker_card_id
+     and blocker_instance.zone = 'battlefield'
+    where combat.session_id = p_session_id
+      and combat.turn_number = v_turn_state.turn_number
+      and combat.damage_resolved = false
+      and combat.first_strike_damage_resolved = false
+      and (
+        public.card_has_first_strike(p_session_id, attacker_instance.id)
+        or public.card_has_double_strike(p_session_id, attacker_instance.id)
+        or public.card_has_first_strike(p_session_id, blocker_instance.id)
+        or public.card_has_double_strike(p_session_id, blocker_instance.id)
+      )
+  )
+  into v_is_first_strike_stage;
+
+  for v_assignment in
+    select
+      combat.id,
+      combat.attacker_card_id,
+      combat.defending_player_id,
+      combat.defending_planeswalker_id,
+      attacker_instance.id is not null as attacker_on_battlefield,
+      public.card_effective_power(p_session_id, combat.attacker_card_id) as attacker_power
+    from public.game_combat_assignments combat
+    left join public.game_cards attacker_instance
+      on attacker_instance.id = combat.attacker_card_id
+     and attacker_instance.zone = 'battlefield'
+    where combat.session_id = p_session_id
+      and combat.turn_number = v_turn_state.turn_number
+      and combat.damage_resolved = false
+      and (
+        v_is_first_strike_stage = false
+        or combat.first_strike_damage_resolved = false
+      )
+    order by combat.created_at
+    for update of combat
+  loop
+    if not v_assignment.attacker_on_battlefield then
+      if not v_is_first_strike_stage then
+        update public.game_combat_assignments
+        set damage_resolved = true
+        where id = v_assignment.id;
+      end if;
+
+      continue;
+    end if;
+
+    v_attacker_damage := greatest(0, v_assignment.attacker_power);
+    v_remaining_attacker_damage := v_attacker_damage;
+    v_attacker_has_first_strike := public.card_has_first_strike(p_session_id, v_assignment.attacker_card_id);
+    v_attacker_has_double_strike := public.card_has_double_strike(p_session_id, v_assignment.attacker_card_id);
+    v_attacker_has_deathtouch := public.card_has_deathtouch(p_session_id, v_assignment.attacker_card_id);
+    v_attacker_has_infect := public.card_has_infect(p_session_id, v_assignment.attacker_card_id);
+    v_attacker_has_wither := public.card_has_wither(p_session_id, v_assignment.attacker_card_id);
+    v_attacker_toxic := public.card_toxic_amount(p_session_id, v_assignment.attacker_card_id);
+
+    v_chosen := case
+      when p_assignments is not null and p_assignments <> 'null'::jsonb
+        then p_assignments -> v_assignment.attacker_card_id::text
+      else null
+    end;
+
+    if v_is_first_strike_stage then
+      v_attacker_deals_damage := v_attacker_has_first_strike or v_attacker_has_double_strike;
+    else
+      v_attacker_deals_damage := (not v_attacker_has_first_strike) or v_attacker_has_double_strike;
+    end if;
+
+    select exists (
+      select 1
+      from public.game_combat_blockers blockers
+      where blockers.assignment_id = v_assignment.id
+    )
+    into v_has_blockers;
+
+    if not v_has_blockers then
+      if v_attacker_deals_damage and v_attacker_damage > 0 then
+        if v_assignment.defending_planeswalker_id is not null then
+          -- Attacking a planeswalker: combat damage removes loyalty (no poison/toxic).
+          perform public.apply_damage_to_planeswalker(
+            p_session_id, v_assignment.defending_planeswalker_id, v_attacker_damage);
+        else
+          -- Unblocked: infect deals power as poison (no life); else normal damage.
+          if v_attacker_has_infect then
+            perform public.add_player_poison(p_session_id, v_assignment.defending_player_id, v_attacker_damage);
+          else
+            v_total_player_damage := v_total_player_damage + public.apply_damage_to_player(
+              p_session_id, v_assignment.defending_player_id, v_attacker_damage,
+              v_assignment.attacker_card_id, true
+            );
+            -- Dragon tally (mig 247).
+            if exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+                       where gc.id = v_assignment.attacker_card_id and c.type_line ilike '%dragon%') then
+              v_dragon_player_damage := jsonb_set(v_dragon_player_damage,
+                array[v_assignment.defending_player_id::text],
+                to_jsonb(coalesce((v_dragon_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                         + v_attacker_damage));
+            end if;
+            -- Dinosaur tally (mig 256).
+            if exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+                       where gc.id = v_assignment.attacker_card_id and c.type_line ilike '%dinosaur%') then
+              v_dino_player_damage := jsonb_set(v_dino_player_damage,
+                array[v_assignment.defending_player_id::text],
+                to_jsonb(coalesce((v_dino_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                         + v_attacker_damage));
+            end if;
+          end if;
+          -- Toxic N: poison in addition to dealing combat damage to the player.
+          if v_attacker_toxic > 0 then
+            perform public.add_player_poison(p_session_id, v_assignment.defending_player_id, v_attacker_toxic);
+          end if;
+        end if;
+      end if;
+    else
+      for v_blocker in
+        select
+          blockers.blocker_card_id,
+          public.card_effective_power(p_session_id, blockers.blocker_card_id) as blocker_power,
+          public.card_effective_toughness(p_session_id, blockers.blocker_card_id) as blocker_toughness
+        from public.game_combat_blockers blockers
+        join public.game_cards blocker_instance
+          on blocker_instance.id = blockers.blocker_card_id
+         and blocker_instance.zone = 'battlefield'
+        where blockers.assignment_id = v_assignment.id
+        order by blockers.damage_assignment_order, blockers.created_at, blockers.id
+      loop
+        v_blocker_damage := greatest(0, v_blocker.blocker_power);
+        v_blocker_has_first_strike := public.card_has_first_strike(p_session_id, v_blocker.blocker_card_id);
+        v_blocker_has_double_strike := public.card_has_double_strike(p_session_id, v_blocker.blocker_card_id);
+        v_blocker_has_deathtouch := public.card_has_deathtouch(p_session_id, v_blocker.blocker_card_id);
+        v_blocker_has_infect := public.card_has_infect(p_session_id, v_blocker.blocker_card_id);
+        v_blocker_has_wither := public.card_has_wither(p_session_id, v_blocker.blocker_card_id);
+
+        if v_is_first_strike_stage then
+          v_blocker_deals_damage := v_blocker_has_first_strike or v_blocker_has_double_strike;
+        else
+          v_blocker_deals_damage := (not v_blocker_has_first_strike) or v_blocker_has_double_strike;
+        end if;
+
+        if v_attacker_deals_damage and v_remaining_attacker_damage > 0 then
+          if v_chosen is not null then
+            v_assigned_damage := least(
+              v_remaining_attacker_damage,
+              greatest(0, coalesce((
+                select (b ->> 'amount')::integer
+                from jsonb_array_elements(coalesce(v_chosen -> 'blockers', '[]'::jsonb)) b
+                where b ->> 'blocker_card_id' = v_blocker.blocker_card_id::text
+                limit 1
+              ), 0))
+            );
+          else
+            if v_attacker_has_deathtouch then
+              v_lethal_per_blocker := 1;
+            else
+              v_lethal_per_blocker := greatest(1, v_blocker.blocker_toughness);
+            end if;
+
+            v_assigned_damage := least(v_remaining_attacker_damage, v_lethal_per_blocker);
+          end if;
+
+          if v_assigned_damage > 0 then
+            -- Protection gate (colour): damage still ASSIGNED, only DEALT if no
+            -- protection. The dealt portion routes through the shield resolver,
+            -- as −1/−1 counters when the attacker has wither/infect.
+            if not public.card_has_protection_from_any(
+                 p_session_id, v_blocker.blocker_card_id,
+                 public.game_card_color_set(p_session_id, v_assignment.attacker_card_id)
+               ) then
+              v_total_creature_damage := v_total_creature_damage + public.apply_damage_to_creature(
+                p_session_id, v_blocker.blocker_card_id, v_assigned_damage,
+                v_assignment.attacker_card_id, true, v_attacker_has_deathtouch, false,
+                v_attacker_has_infect or v_attacker_has_wither
+              );
+              if v_attacker_has_infect or v_attacker_has_wither then
+                v_minus_dealt := true;
+              end if;
+            end if;
+
+            v_remaining_attacker_damage := v_remaining_attacker_damage - v_assigned_damage;
+          end if;
+        end if;
+
+        if v_blocker_deals_damage and v_blocker_damage > 0 then
+          if not public.card_has_protection_from_any(
+               p_session_id, v_assignment.attacker_card_id,
+               public.game_card_color_set(p_session_id, v_blocker.blocker_card_id)
+             ) then
+            v_total_creature_damage := v_total_creature_damage + public.apply_damage_to_creature(
+              p_session_id, v_assignment.attacker_card_id, v_blocker_damage,
+              v_blocker.blocker_card_id, true, v_blocker_has_deathtouch, false,
+              v_blocker_has_infect or v_blocker_has_wither
+            );
+            if v_blocker_has_infect or v_blocker_has_wither then
+              v_minus_dealt := true;
+            end if;
+          end if;
+        end if;
+      end loop;
+
+      if v_attacker_deals_damage
+        and v_remaining_attacker_damage > 0
+        and public.card_has_trample(p_session_id, v_assignment.attacker_card_id)
+      then
+        if v_chosen is not null then
+          v_trample_amount := least(
+            v_remaining_attacker_damage,
+            greatest(0, coalesce((v_chosen ->> 'trample')::integer, 0))
+          );
+        else
+          v_trample_amount := v_remaining_attacker_damage;
+        end if;
+
+        if v_trample_amount > 0 then
+          if v_assignment.defending_planeswalker_id is not null then
+            -- Trample over from attacking a planeswalker → excess loyalty damage.
+            perform public.apply_damage_to_planeswalker(
+              p_session_id, v_assignment.defending_planeswalker_id, v_trample_amount);
+          else
+            -- Trample over to the player: infect → poison, else normal; toxic adds N.
+            if v_attacker_has_infect then
+              perform public.add_player_poison(p_session_id, v_assignment.defending_player_id, v_trample_amount);
+            else
+              v_total_player_damage := v_total_player_damage + public.apply_damage_to_player(
+                p_session_id, v_assignment.defending_player_id, v_trample_amount,
+                v_assignment.attacker_card_id, true
+              );
+              -- Dragon tally (mig 247).
+              if exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+                         where gc.id = v_assignment.attacker_card_id and c.type_line ilike '%dragon%') then
+                v_dragon_player_damage := jsonb_set(v_dragon_player_damage,
+                  array[v_assignment.defending_player_id::text],
+                  to_jsonb(coalesce((v_dragon_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                           + v_trample_amount));
+              end if;
+              -- Dinosaur tally (mig 256).
+              if exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+                         where gc.id = v_assignment.attacker_card_id and c.type_line ilike '%dinosaur%') then
+                v_dino_player_damage := jsonb_set(v_dino_player_damage,
+                  array[v_assignment.defending_player_id::text],
+                  to_jsonb(coalesce((v_dino_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                           + v_trample_amount));
+              end if;
+            end if;
+            if v_attacker_toxic > 0 then
+              perform public.add_player_poison(p_session_id, v_assignment.defending_player_id, v_attacker_toxic);
+            end if;
+          end if;
+        end if;
+      end if;
+    end if;
+
+    if v_is_first_strike_stage then
+      update public.game_combat_assignments
+      set first_strike_damage_resolved = true
+      where id = v_assignment.id;
+    else
+      update public.game_combat_assignments
+      set damage_resolved = true
+      where id = v_assignment.id;
+    end if;
+
+    v_resolved_count := v_resolved_count + 1;
+  end loop;
+
+  if v_is_first_strike_stage then
+    update public.game_combat_assignments
+    set first_strike_damage_resolved = true
+    where session_id = p_session_id
+      and turn_number = v_turn_state.turn_number
+      and damage_resolved = false
+      and first_strike_damage_resolved = false;
+  else
+    update public.game_combat_assignments
+    set damage_resolved = true
+    where session_id = p_session_id
+      and turn_number = v_turn_state.turn_number
+      and damage_resolved = false;
+  end if;
+
+  v_destroyed_count := public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
+  -- A planeswalker reduced to 0 loyalty by combat damage dies.
+  perform public.move_zero_loyalty_planeswalkers_to_graveyard(p_session_id);
+
+  -- −1/−1 combat damage (wither/infect): run annihilation (CR 122.3) once at end.
+  if v_minus_dealt then
+    perform public.recheck_counter_state(p_session_id);
+  end if;
+
+  update public.game_cards
+  set dealt_deathtouch_damage = false
+  where session_id = p_session_id
+    and dealt_deathtouch_damage = true;
+
+  -- "Whenever one or more Dragons you control deal combat damage to a player"
+  -- (mig 247, Broodcaller Scourge / Parapet Thrasher): one trigger per damaged
+  -- player for each of the ACTIVE player's battlefield permanents whose script
+  -- listens, carrying the total Dragon damage + the damaged player.
+  for v_dragon_key in select jsonb_object_keys(v_dragon_player_damage)
+  loop
+    for v_dragon_watcher in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = v_turn_state.active_player_id
+      order by gc.zone_position, gc.id
+    loop
+      perform public.fire_card_triggers(
+        p_session_id, v_dragon_watcher, array['dragons_combat_damage'],
+        jsonb_build_object(
+          'event_amount', (v_dragon_player_damage ->> v_dragon_key)::integer,
+          'event_player_id', v_dragon_key));
+    end loop;
+  end loop;
+
+  -- Same broadcast for Dinosaurs (mig 256, Curious Altisaur). Batched per
+  -- damaged player — "whenever a Dinosaur deals combat damage" fires once per
+  -- player however many Dinosaurs connected (approximation).
+  for v_dragon_key in select jsonb_object_keys(v_dino_player_damage)
+  loop
+    for v_dragon_watcher in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = v_turn_state.active_player_id
+      order by gc.zone_position, gc.id
+    loop
+      perform public.fire_card_triggers(
+        p_session_id, v_dragon_watcher, array['dinos_combat_damage'],
+        jsonb_build_object(
+          'event_amount', (v_dino_player_damage ->> v_dragon_key)::integer,
+          'event_player_id', v_dragon_key));
+    end loop;
+  end loop;
+
+  v_finish_state := public.maybe_finish_game_session(p_session_id);
+
+  return jsonb_build_object(
+    'assignments_resolved',
+    v_resolved_count,
+    'damage_stage',
+    case when v_is_first_strike_stage then 'first_strike' else 'regular' end,
+    'total_damage',
+    v_total_player_damage,
+    'total_player_damage',
+    v_total_player_damage,
+    'total_creature_damage',
+    v_total_creature_damage,
+    'creatures_destroyed',
+    v_destroyed_count,
+    'finished',
+    coalesce((v_finish_state ->> 'finished')::boolean, false),
+    'winner_player_id',
+    v_finish_state ->> 'winner_player_id'
+  );
+end;
+$$;
+grant execute on function public.resolve_combat_damage(uuid, jsonb) to anon;
+grant execute on function public.resolve_combat_damage(uuid, jsonb) to authenticated;
+grant execute on function public.resolve_combat_damage(uuid, jsonb) to service_role;
