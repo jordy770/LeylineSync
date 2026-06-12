@@ -11344,6 +11344,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-12T19:12:11.039Z"
+    },
+    {
+      "id": "bug-698",
+      "timestamp": "2026-06-12T20:05:10.253Z",
+      "error_message": "Type error",
+      "file": "app/auth/login/page.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T20:05:10.253Z"
+    },
+    {
+      "id": "bug-699",
+      "timestamp": "2026-06-12T20:07:15.021Z",
+      "error_message": "Incorrect value in code",
+      "file": "app/auth/login/page.tsx",
+      "root_cause": "Had \"dark flex min-h-svh w-full flex-col items-center ",
+      "fix": "Changed to \"dark flex min-h-svh w-full flex-col items-center ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T20:07:15.021Z"
     }
   ]
 }

@@ -71,7 +71,10 @@ export default function GameSessionLobby() {
       } catch (error) {
         const message = getErrorMessage(error)
         console.error('Failed to load player sessions:', message, error)
-        if (isMounted) {
+        // A signed-out visitor simply has no sessions yet — that's the normal
+        // anonymous state, not an error worth a red banner on first paint.
+        // Real auth errors still surface when they ACT (join/create).
+        if (isMounted && !/auth session missing/i.test(message)) {
           setErrorMessage(message)
         }
       }

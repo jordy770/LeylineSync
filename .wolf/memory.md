@@ -3928,3 +3928,13 @@
 | 21:37 | designqc: captured 6 screenshots (124KB, ~15000 tok) | /, /page, /decks, /protected, /auth/confirm/route, /auth/error, /auth/forgot-password, /auth/login, /auth/sign-up, /auth/sign-up-success | ready for eval | ~0 |
 | 21:42 | Session end: 166 writes across 52 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 15 reads | ~202859 tok |
 | 02:30 | designqc pass: captured 6 shots — LIMITATION: only unauthenticated routes reachable (landing, login, decks->login redirect); the in-game controller (all the new badges/decision bodies/cost picker) needs an authed live session the crawler cannot create. Landing findings: 'Auth session missing!' error shown to anonymous visitors by default (should be suppressed until an action), light/dark theme split between marketing chrome and session card, login page is unthemed default Shadcn (no brand), mobile create-flow solid. Controller QC needs a manual session + screenshots or an authed designqc mode | .wolf/designqc-captures | audit only | ~10k |
+| 21:49 | Session end: 166 writes across 52 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 15 reads | ~202859 tok |
+| 22:04 | Edited components/GameSessionLobby.tsx | modified catch() | ~149 |
+| 22:05 | Edited app/auth/login/page.tsx | modified LoginShell() | ~157 |
+| 22:05 | designqc: captured 0 screenshots (0KB, ~0 tok) | C:/Program Files/Git/auth/login | ready for eval | ~0 |
+| 22:06 | designqc: captured 0 screenshots (0KB, ~0 tok) | C:/Program Files/Git/auth/login | ready for eval | ~0 |
+| 22:06 | designqc: captured 2 screenshots (35KB, ~5000 tok) | /auth/login | ready for eval | ~0 |
+| 22:07 | Edited app/auth/login/page.tsx | "dark flex min-h-svh w-ful" → "dark flex min-h-svh w-ful" | ~34 |
+| 22:07 | designqc: captured 2 screenshots (35KB, ~5000 tok) | /auth/login | ready for eval | ~0 |
+| 22:08 | designqc: captured 2 screenshots (49KB, ~5000 tok) | / | ready for eval | ~0 |
+| 03:10 | designqc quick wins SHIPPED+VERIFIED by recapture: (1) landing no longer shows 'Auth session missing!' to anonymous visitors (suppressed on initial load only; action errors still surface); (2) login page themed — dark shell via Shadcn dark tokens, slate-950 bg (arbitrary hex bg-[#0B0D13] silently didn't apply — token classes safer), Leyline Sync wordmark with green accent. designqc note: Git Bash mangles --routes /path (MSYS path conversion) — use PowerShell for openwolf. Controller visual QC still needs a live authed session | GameSessionLobby, app/auth/login/page.tsx | tsc clean, lint 2 pre-existing | ~15k |
