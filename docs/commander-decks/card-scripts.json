@@ -535,5 +535,47 @@
 
   "Noxious Assault": {"schema_version":2,"spell_effect":{"actions":[{"type":"pump_all","power":2,"toughness":2,"scope":"controller"}]}},
 
-  "Phyresis Outbreak": {"schema_version":2,"spell_effect":{"actions":[{"type":"add_poison","amount":1,"recipient":"each_opponent"},{"type":"pump_all","power":-1,"toughness":-1,"scope":"all"}]}}
+  "Phyresis Outbreak": {"schema_version":2,"spell_effect":{"actions":[{"type":"add_poison","amount":1,"recipient":"each_opponent"},{"type":"pump_all","power":-1,"toughness":-1,"scope":"all"}]}},
+
+  "Plague Myr": {"schema_version":2,"continuous_effects":[{"type":"infect","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]}]},
+
+  "Putrefy": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy","target_type":["artifact","creature"]}]}},
+
+  "Sandsteppe Citadel": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]},
+
+  "Scavenging Ooze": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{G}"}],"effects":[{"type":"exile_from_graveyard"}]}]},
+
+  "Shineshadow Snarl": {"schema_version":2,"enters_tapped":{"unless":{"hand_has_type":["Plains","Swamp"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Sungrass Prairie": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1},{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Swords to Plowshares": {"schema_version":2,"spell_effect":{"actions":[{"type":"exile","target_type":"creature"}]}},
+
+  "Tainted Field": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Tainted Wood": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]},
+
+  "Temple of Malady": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"scry","amount":1}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]},
+
+  "Temple of Plenty": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"scry","amount":1}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Temple of Silence": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"scry","amount":1}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Trailblazer's Boots": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+
+  "Vraska's Fall": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","who":"opponent","count":1},{"type":"add_poison","amount":1,"recipient":"each_opponent"}]}},
+
+  "Viridian Corrupter": {"schema_version":2,"continuous_effects":[{"type":"infect","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"destroy","target_type":"artifact"}]}]},
+
+  "Venomous Brutalizer": {"schema_version":2,"continuous_effects":[{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":3}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"proliferate"}]}]},
+
+  "Vishgraz, the Doomhive": {"schema_version":2,"continuous_effects":[{"type":"menace","affected":"source","source_zone_required":"battlefield"},{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":1},{"type":"pump","affected":"source","source_zone_required":"battlefield","payload":{"power_count":"opponent_poison_counters","toughness_count":"opponent_poison_counters"}}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Phyrexian Mite Token","count":3}]}]},
+
+  "Unnatural Restoration": {"schema_version":2,"spell_effect":{"actions":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"types":["creature","artifact","enchantment","land","planeswalker"]}},{"type":"proliferate"}]}},
+
+  "Vat Emergence": {"schema_version":2,"spell_effect":{"actions":[{"type":"return_from_graveyard","count":1,"to":"battlefield","from":"all_graveyards","control":"decider","filter":{"type_line":"creature"}},{"type":"proliferate"}]}},
+
+  "Geth's Summons": {"schema_version":2,"spell_effect":{"actions":[{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"creature"}}]}},
+
+  "Glissa's Retriever": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"source","source_zone_required":"battlefield"},{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":3}]}
 }
