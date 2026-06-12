@@ -1,7 +1,15 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010282_put_from_hand_typeline
+-- card-scripts validation cleanup (mig 282). The new local validation test
+-- (tests/unit/card-scripts-validation.test.ts) surfaced 14 latent failures;
+-- besides schema-only fixes, two were REAL engine gaps:
+--   • put_from_hand now honours filter.type_line (Murasa Rootgrazer:
+--     'a basic land card from your hand' — previously offered any permanent).
+--   • Five sacrifice actions used the string filter form the park never read
+--     (Harrow/Roiling Regrowth/Springbloom would have edicted CREATURES
+--     instead of lands; Trash for Treasure/Daretti instead of artifacts) —
+--     scripts corrected to the object form.
+-- Generated from supabase/functions_src (apply_trigger_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,

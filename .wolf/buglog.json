@@ -11178,6 +11178,25 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-06-12T00:00:00Z"
+    },
+    {
+      "id": "bug-688",
+      "timestamp": "2026-06-12T00:00:00Z",
+      "error_message": "card-scripts validation test surfaced 14 latent failures; 2 were REAL engine bugs (sacrifice string filters silently defaulting to creatures; put_from_hand ignoring type_line)",
+      "file": "docs/commander-decks/card-scripts.json",
+      "root_cause": "(1) sacrifice scripts used filter as a string while the park reads filter->type_line (object) — Harrow/Roiling/Springbloom would edict CREATURES not lands; (2) put_from_hand had no type_line read; (3) several schema enums lagged the engine. Also: blind string .replace() hit FIRST occurrences of repeated schema fragments, silently patching the wrong z.object twice",
+      "fix": "object-form filters in 5 scripts, type_line read in put_from_hand (mig 282), 6 schema extensions; lesson: anchor replaces on unique context or verify the right line, and the new validation test now gates all of card-scripts.json in npm test",
+      "tags": [
+        "validation",
+        "schema-drift",
+        "sacrifice-filter",
+        "first-occurrence-replace"
+      ],
+      "related_bugs": [
+        "bug-687"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T00:00:00Z"
     }
   ]
 }

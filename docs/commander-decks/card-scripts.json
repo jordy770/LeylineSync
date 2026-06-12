@@ -361,7 +361,7 @@
 
   "Myr Retriever": {"schema_version":2,"triggered_abilities":[{"event":"dies","effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"artifact","exclude_self":true}}]}]},
 
-  "Trash for Treasure": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":"artifact"},{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}},
+  "Trash for Treasure": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":{"type_line":"artifact"}},{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}},
 
   "Solemn Simulacrum": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]},{"event":"dies","effects":[{"type":"draw","amount":1}]}]},
 
@@ -459,7 +459,7 @@
 
   "Curse of Vengeance": {"schema_version":2},
 
-  "Daretti, Scrap Savant": {"schema_version":2,"loyalty":3,"loyalty_abilities":[{"cost":2,"label":"Discard up to two cards, then draw that many","effects":[{"type":"discard","count":2},{"type":"draw","amount":2}]},{"cost":-2,"label":"Sacrifice an artifact, return one from your graveyard","effects":[{"type":"sacrifice","count":1,"filter":"artifact"},{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}]},
+  "Daretti, Scrap Savant": {"schema_version":2,"loyalty":3,"loyalty_abilities":[{"cost":2,"label":"Discard up to two cards, then draw that many","effects":[{"type":"discard","count":2},{"type":"draw","amount":2}]},{"cost":-2,"label":"Sacrifice an artifact, return one from your graveyard","effects":[{"type":"sacrifice","count":1,"filter":{"type_line":"artifact"}},{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}]},
 
   "Read the Runes": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":"X"}]}},
 
@@ -635,7 +635,7 @@
 
   "Harmonize": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":3}]}},
 
-  "Harrow": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":"land"},{"type":"search_library","count":2,"to":"battlefield","tapped":false,"filter":{"type_line":"basic land"}}]}},
+  "Harrow": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":{"type_line":"land"}},{"type":"search_library","count":2,"to":"battlefield","tapped":false,"filter":{"type_line":"basic land"}}]}},
 
   "Hour of Revelation": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy_all","types":["creature","artifact","enchantment","planeswalker"]}]}},
 
@@ -657,7 +657,7 @@
 
   "Retreat to Kazandu": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"choose_one","prompt":"Retreat to Kazandu","modes":[{"label":"Plus one counter on target creature","actions":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"}]},{"label":"Gain 2 life","actions":[{"type":"gain_life","amount":2}]}]}]}]},
 
-  "Roiling Regrowth": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":"land"},{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}},
+  "Roiling Regrowth": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":{"type_line":"land"}},{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}},
 
   "Sandstone Oracle": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"draw","amount":{"count":"opponent_hand_excess"}}]}]},
 
@@ -665,7 +665,7 @@
 
   "Selesnya Sanctuary": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"land"}}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1},{"type":"add_mana","color":"W","amount":1}]}]},
 
-  "Springbloom Druid": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"sacrifice","count":1,"filter":"land"},{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}]},
+  "Springbloom Druid": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"sacrifice","count":1,"filter":{"type_line":"land"}},{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}]},
 
   "Sporemound": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Saproling Token","count":1}]}]},
 

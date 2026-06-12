@@ -3865,3 +3865,9 @@
 | 17:14 | Edited lib/game/card-behavior-schema.ts | inline fix | ~5 |
 | 17:14 | Edited lib/game/card-behavior-schema.ts | 4→7 lines | ~94 |
 | 18:40 | HOSTED SYNC COMPLETE through mig 281: upsert validator caught 2 latent schema gaps (times never landed = CRLF no-op bug-685 class; grant_keyword lacked hexproof) — fixed, then --apply: 62 cards / 108 printings + 4 tokens (Angel, Clue, Greater Spirit, Thopter), 0 differs. ALL SIX DECKS live hosted. TODO noted: local validation test for card-scripts.json | schema, buglog, upsert | 956/956 green | ~15k |
+| 17:17 | Session end: 130 writes across 40 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~130895 tok |
+| 17:23 | Created tests/unit/card-scripts-validation.test.ts | — | ~458 |
+| 17:25 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~189 |
+| 17:26 | Created tmp-schemafix.cjs | — | ~944 |
+| 17:27 | Edited lib/game/card-behavior-schema.ts | modified union() | ~175 |
+| 19:20 | LOCAL VALIDATION TEST added (card-scripts-validation.test.ts): instantly caught 14 latent failures — 2 REAL engine bugs (sacrifice string filters = creature-default edicts on Harrow/Roiling/Springbloom/Trash/Daretti, fixed to object form; put_from_hand type_line read added, mig 282) + 6 schema extensions (conditional counts, shuffle_into_library creature, put_from_hand type_line, add_mana dynamic, PumpValue artifacts, choose_creature_type effects optional). Suite now 957. NOTE: the 5 fixed scripts sync on next deck import + upsert (not yet in hosted catalog). Mig 282 unpushed | test, schema, card-scripts x5, apply_trigger_effects, mig 282 | 957/957 green, upsert dry-run clean | ~20k |

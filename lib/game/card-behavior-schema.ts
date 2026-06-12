@@ -248,7 +248,7 @@ const CountAmountSchema = z.object({
 // A pump power/toughness driven by a count, optionally negated (Liliana −2: -X/-X
 // where X = Zombies you control → { count, type_line, negate: true }).
 const PumpValueSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion', 'artifacts_you_control', 'opponent_poison_counters']),
   type_line: z.string().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
   negate: z.boolean().optional(),
@@ -278,7 +278,7 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('add_mana'),
     color: ManaProductionColorSchema,
-    amount: z.number(),
+    amount: z.union([z.number(), CountAmountSchema]),
   }),
   z.object({
     type: z.literal('deal_damage'),
@@ -364,7 +364,7 @@ const CardBehaviorActionSchema = z.union([
     // Optional gate: the may is only offered when this count condition holds
     // (Liliana's Devotee: "if a creature died this turn, you may …").
     condition: z.object({
-      count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn']),
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'artifacts_you_control', 'opponent_poison_counters', 'total_power_you_control', 'permanents_you_control']),
       type_line: z.string().optional(),
       at_least: z.number().int().positive(),
     }).optional(),
@@ -372,7 +372,7 @@ const CardBehaviorActionSchema = z.union([
     cost: z.string().optional(),
     // Inner effects kept loose to avoid a self-referential schema; the engine
     // applies them (untargeted / creature-target) at confirm time.
-    effects: z.array(z.record(z.string(), z.unknown())),
+    effects: z.array(z.record(z.string(), z.unknown())).optional(),
   }),
   // Choose a player at resolution, then apply the inner (player-directed) effects
   // to them. filter: "opponent" or "any". Inner effects kept loose (see may).
@@ -388,7 +388,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('conditional'),
     condition: z.union([
       z.object({
-        count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn']),
+        // Extended for the corrupted gates (mig 282 cleanup): the engine has
+        // resolved these via resolve_count_amount since their adding migs.
+        count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'artifacts_you_control', 'opponent_poison_counters', 'total_power_you_control', 'permanents_you_control']),
         type_line: z.string().optional(),
         at_least: z.number().int().positive(),
       }),
@@ -411,7 +413,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('choose_creature_type'),
     prompt: z.string().optional(),
     options: z.array(z.string()).optional(),
-    effects: z.array(z.record(z.string(), z.unknown())),
+    // Optional since mig 282: From the Rubble has no inline effects — the
+    // pick only bakes the  placeholder into copied_script.
+    effects: z.array(z.record(z.string(), z.unknown())).optional(),
   }),
   // Sacrifice `count` creatures: the sacrificing player (you, or the opponent for
   // an edict) chooses among permanents they control. Default filter is creatures.
@@ -488,7 +492,7 @@ const CardBehaviorActionSchema = z.union([
   // owner's top card; a permanent card goes onto the battlefield.
   z.object({
     type: z.literal('shuffle_into_library'),
-    target_type: z.literal('permanent').optional(),
+    target_type: z.enum(['permanent', 'creature', 'artifact', 'enchantment']).optional(),
     then_reveal_top_to_battlefield: z.boolean().optional(),
   }),
   // "You may pay any amount of {R}. When you do, it deals that much damage to
@@ -531,6 +535,7 @@ const CardBehaviorActionSchema = z.union([
     count: z.union([z.number().int().positive(), z.string()]).optional(),
     filter: z.object({
       permanent: z.boolean().optional(),
+      type_line: z.string().optional(),
       max_mana_value: z.union([z.number().int(), z.literal('event_amount')]).optional(),
     }).strict().optional(),
   }),
