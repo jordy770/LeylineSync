@@ -243,6 +243,20 @@ begin
             'battlefield', v_next_pos, coalesce((v_effect ->> 'tapped')::boolean, false), 0, 0, 0, coalesce(v_turn_number, 0)
           )
           returning id into v_new_token_id;
+          -- set_pt (mig 260, Quartzwood Crasher: "an X/X token where X is the
+          -- damage dealt"): an unexpiring set_pt row pins the token's base P/T
+          -- (the manifest 2/2 pattern). 'event_amount' was already rewritten to
+          -- a number by apply_trigger_effects; ignore anything non-numeric.
+          if jsonb_typeof(v_effect -> 'set_pt') = 'number' then
+            insert into public.game_continuous_effects (
+              session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+            ) values (
+              p_session_id, v_new_token_id, v_new_token_id, 'set_pt',
+              jsonb_build_object('power', (v_effect ->> 'set_pt')::integer,
+                                 'toughness', (v_effect ->> 'set_pt')::integer),
+              'battlefield'
+            );
+          end if;
           perform public.register_card_continuous_effects(p_session_id, v_new_token_id);
         end loop;
       end if;

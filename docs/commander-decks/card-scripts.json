@@ -291,5 +291,13 @@
 
   "Deathgorge Scavenger": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"exile_from_any_graveyard"}]},{"event":"attacks","effects":[{"type":"exile_from_any_graveyard"}]}]},
 
-  "Akroma's Will": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Akroma's Will","may_choose_both_if_commander":true,"modes":[{"label":"Flying, vigilance, double strike","actions":[{"type":"grant_keyword_all","keyword":"flying","scope":"controller"},{"type":"grant_keyword_all","keyword":"vigilance","scope":"controller"},{"type":"grant_keyword_all","keyword":"double_strike","scope":"controller"}]},{"label":"Lifelink, indestructible, protection","actions":[{"type":"grant_keyword_all","keyword":"indestructible","scope":"controller"},{"type":"grant_keyword_all","keyword":"hexproof","scope":"controller"}]}]}]}}
+  "Akroma's Will": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Akroma's Will","may_choose_both_if_commander":true,"modes":[{"label":"Flying, vigilance, double strike","actions":[{"type":"grant_keyword_all","keyword":"flying","scope":"controller"},{"type":"grant_keyword_all","keyword":"vigilance","scope":"controller"},{"type":"grant_keyword_all","keyword":"double_strike","scope":"controller"}]},{"label":"Lifelink, indestructible, protection","actions":[{"type":"grant_keyword_all","keyword":"indestructible","scope":"controller"},{"type":"grant_keyword_all","keyword":"hexproof","scope":"controller"}]}]}]}},
+
+  "Quartzwood Crasher": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"trample_combat_damage","effects":[{"type":"create_token","token":"Dinosaur Beast Token","count":1,"set_pt":"event_amount"}]}]},
+
+  "Wrathful Raptors": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"creature_damaged","filter":{"controller":"you","type_line":"Dinosaur"},"effects":[{"type":"deal_damage","amount":"event_amount","target_type":"creature","target_controller":"any"}]}]},
+
+  "From the Rubble": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"choose_creature_type","prompt":"Choose a creature type","options":["Dinosaur","Human","Beast","Elemental","Dragon","Angel"]}]},{"event":"end_step","effects":[{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"$chosen"}}]}]},
+
+  "Itzquinth, Firstborn of Gishath": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"deal_damage","amount":{"count":"greatest_power_you_control","type_line":"Dinosaur"},"target_type":"creature","target_controller":"any"}]}]}
 }

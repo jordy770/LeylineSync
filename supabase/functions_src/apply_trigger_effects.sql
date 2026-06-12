@@ -82,6 +82,22 @@ begin
       v_i := v_i + 1; continue;
     end if;
 
+    -- event_amount substitutions (mig 260, Wrathful Raptors / Quartzwood
+    -- Crasher): the damage event's magnitude rides the trigger payload.
+    -- amount:'event_amount' becomes the concrete number; create_token
+    -- set_pt:'event_amount' likewise (zero damage → no token at all).
+    if (v_effect ->> 'amount') = 'event_amount' then
+      v_effect := v_effect || jsonb_build_object('amount',
+        coalesce(nullif(v_item.payload ->> 'event_amount', '')::integer, 0));
+    end if;
+    if v_type = 'create_token' and (v_effect ->> 'set_pt') = 'event_amount' then
+      if coalesce(nullif(v_item.payload ->> 'event_amount', '')::integer, 0) <= 0 then
+        v_i := v_i + 1; continue;
+      end if;
+      v_effect := v_effect || jsonb_build_object('set_pt',
+        (v_item.payload ->> 'event_amount')::integer);
+    end if;
+
     -- amount {toughness_of:'triggering_creature'} (mig 256, Verdant Sun's
     -- Avatar: "you gain life equal to that creature's toughness").
     if jsonb_typeof(v_effect -> 'amount') = 'object'

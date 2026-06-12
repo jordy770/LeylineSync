@@ -48,6 +48,8 @@ declare
   v_dragon_watcher uuid;
   -- Same tally for Dinosaurs (mig 256, Curious Altisaur).
   v_dino_player_damage jsonb := '{}'::jsonb;
+  -- Same tally for TRAMPLE creatures (mig 260, Quartzwood Crasher).
+  v_trample_player_damage jsonb := '{}'::jsonb;
   v_destroyed_count integer := 0;
   v_resolved_count integer := 0;
   v_minus_dealt boolean := false;
@@ -299,6 +301,14 @@ begin
                 to_jsonb(coalesce((v_dino_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
                          + v_attacker_damage));
             end if;
+            -- Trample tally (mig 260, Quartzwood Crasher): damage dealt to a
+            -- player by a creature WITH trample (unblocked included).
+            if public.card_has_trample(p_session_id, v_assignment.attacker_card_id) then
+              v_trample_player_damage := jsonb_set(v_trample_player_damage,
+                array[v_assignment.defending_player_id::text],
+                to_jsonb(coalesce((v_trample_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                         + v_attacker_damage));
+            end if;
           end if;
           -- Toxic N: poison in addition to dealing combat damage to the player.
           if v_attacker_toxic > 0 then
@@ -435,6 +445,11 @@ begin
                   to_jsonb(coalesce((v_dino_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
                            + v_trample_amount));
               end if;
+              -- Trample tally (mig 260): spillover is by definition trample damage.
+              v_trample_player_damage := jsonb_set(v_trample_player_damage,
+                array[v_assignment.defending_player_id::text],
+                to_jsonb(coalesce((v_trample_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
+                         + v_trample_amount));
             end if;
             if v_attacker_toxic > 0 then
               perform public.add_player_poison(p_session_id, v_assignment.defending_player_id, v_attacker_toxic);
@@ -521,6 +536,25 @@ begin
         p_session_id, v_dragon_watcher, array['dinos_combat_damage'],
         jsonb_build_object(
           'event_amount', (v_dino_player_damage ->> v_dragon_key)::integer,
+          'event_player_id', v_dragon_key));
+    end loop;
+  end loop;
+
+  -- Same broadcast for trample damage (mig 260, Quartzwood Crasher:
+  -- "whenever one or more creatures you control with trample deal combat
+  -- damage to a player"). Batched per damaged player.
+  for v_dragon_key in select jsonb_object_keys(v_trample_player_damage)
+  loop
+    for v_dragon_watcher in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = v_turn_state.active_player_id
+      order by gc.zone_position, gc.id
+    loop
+      perform public.fire_card_triggers(
+        p_session_id, v_dragon_watcher, array['trample_combat_damage'],
+        jsonb_build_object(
+          'event_amount', (v_trample_player_damage ->> v_dragon_key)::integer,
           'event_player_id', v_dragon_key));
     end loop;
   end loop;

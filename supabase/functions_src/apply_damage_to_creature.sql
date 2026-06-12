@@ -124,6 +124,16 @@ begin
       p_session_id, p_card_id, array['dealt_damage', 'enrage'],
       jsonb_build_object('event_amount', v_remaining));
 
+    -- Watcher broadcast (mig 260, Wrathful Raptors: "whenever a Dinosaur you
+    -- control is dealt damage"). The amount rides the payload as event_amount.
+    perform public.fire_watcher_triggers(
+      p_session_id, p_card_id,
+      (select coalesce(gc.controller_player_id, gc.owner_id)
+       from public.game_cards gc
+       where gc.id = p_card_id and gc.session_id = p_session_id),
+      'creature_damaged',
+      jsonb_build_object('event_amount', v_remaining));
+
     -- Combat defers the lethal sweep to its single end-of-step pass (simultaneity).
     if p_run_sweep then
       if p_as_minus_counters then

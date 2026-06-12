@@ -3689,3 +3689,21 @@
 | 10:59 | Edited supabase/migrations/202605010259_dino_triggers.sql | modified batch() | ~627 |
 | 11:01 | Created tests/feature/dino-triggers.test.ts | — | ~2494 |
 | 01:10 | mig 259 dino triggers batch: Temple Altisaur (damage_cap), Xenagos (power_of target pump), Descendants' Path (reveal_top_cast_shared), Deathgorge Scavenger (exile_from_any_graveyard + graveyard_exile_pick), Akroma's Will (script-only choose_one) | functions_src x4, mig 259, schema, drift test, fixtures, card-scripts, dino-triggers.test.ts | 910/910 green, tsc clean, triage 73/6/11 | ~45k |
+| 11:03 | Session end: 28 writes across 14 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 5 reads | ~28607 tok |
+| 09:00 | Analyzed card-implementation scaling question (30k cards): 147 scripted, 54 SQL effect fns | docs/commander-decks/card-scripts.json | assessment only, no code changes | ~1k |
+| 11:14 | Session end: 28 writes across 14 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 5 reads | ~28607 tok |
+| 11:16 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified set_pt() | ~271 |
+| 11:16 | Edited supabase/functions_src/apply_trigger_effects.sql | added 3 condition(s) | ~261 |
+| 11:17 | Edited supabase/functions_src/resolve_combat_damage.sql | 2→4 lines | ~59 |
+| 11:17 | Edited supabase/functions_src/resolve_combat_damage.sql | modified jsonb_set() | ~260 |
+| 11:17 | Edited supabase/functions_src/resolve_combat_damage.sql | modified jsonb_set() | ~195 |
+| 11:17 | Edited supabase/functions_src/resolve_combat_damage.sql | modified fire_card_triggers() | ~245 |
+| 11:17 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified public() | ~88 |
+| 11:17 | Edited supabase/functions_src/fire_watcher_triggers.sql | 5→6 lines | ~76 |
+| 11:17 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified public() | ~55 |
+| 11:17 | Edited supabase/functions_src/apply_damage_to_creature.sql | expanded (+10 lines) | ~169 |
+| 11:18 | Edited lib/game/card-behavior-schema.ts | 1→3 lines | ~89 |
+| 11:18 | Edited lib/game/card-behavior-schema.ts | modified tokens() | ~128 |
+| 11:18 | Edited supabase/migrations/202605010260_dino_combat.sql | modified if() | ~467 |
+| 11:19 | Created tests/feature/dino-combat.test.ts | — | ~1512 |
+| 01:45 | mig 260 dino combat batch: Quartzwood Crasher (trample tally + X/X set_pt token), Wrathful Raptors (creature_damaged watcher + event_amount), From the Rubble ($chosen end-step reanimation), Itzquinth (greatest-Dino-power burn) | functions_src x5, mig 260, schema, fixtures, card-scripts, dino-combat.test.ts | 914/914 green, triage 77/6/7 | ~40k |

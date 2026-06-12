@@ -7,7 +7,10 @@ create or replace function public.fire_watcher_triggers(
   p_session_id uuid,
   p_changed_card_id uuid,
   p_changed_controller uuid,
-  p_event text
+  p_event text,
+  -- Event context merged onto the enqueued trigger's payload (mig 260,
+  -- Wrathful Raptors: creature_damaged carries event_amount).
+  p_extra jsonb default null
 ) returns void
 language plpgsql
 security definer
@@ -161,11 +164,12 @@ begin
       perform public.enqueue_triggered_ability(
         p_session_id, v_watcher.controller, v_watcher.id,
         coalesce(v_watcher.card_name, p_event), v_ability -> 'effects',
-        p_changed_card_id  -- the triggering creature, for reflexive "it gains …"
+        p_changed_card_id,  -- the triggering creature, for reflexive "it gains …"
+        p_extra
       );
     end loop;
   end loop;
 end;
 $$;
-grant execute on function public.fire_watcher_triggers(uuid, uuid, uuid, text) to authenticated;
-grant execute on function public.fire_watcher_triggers(uuid, uuid, uuid, text) to service_role;
+grant execute on function public.fire_watcher_triggers(uuid, uuid, uuid, text, jsonb) to authenticated;
+grant execute on function public.fire_watcher_triggers(uuid, uuid, uuid, text, jsonb) to service_role;

@@ -10995,6 +10995,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-12T08:58:53.586Z"
+    },
+    {
+      "id": "bug-677",
+      "timestamp": "2026-06-12T09:18:07.828Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T09:18:07.828Z"
     }
   ]
 }

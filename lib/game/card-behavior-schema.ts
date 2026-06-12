@@ -249,7 +249,9 @@ const PowerOfSchema = z.object({ power_of: z.enum(['source', 'target']) }).stric
 // mig 256) — resolved against the trigger's event subject.
 const ToughnessOfSchema = z.object({ toughness_of: z.literal('triggering_creature') }).strict()
 
-const AmountSchema = z.union([z.number(), z.literal('X'), DynamicAmountSchema, CountAmountSchema, PowerOfSchema, ToughnessOfSchema])
+// 'event_amount' (mig 260, Wrathful Raptors): the magnitude of the trigger's
+// damage event, substituted from the stack-item payload at resolve time.
+const AmountSchema = z.union([z.number(), z.literal('X'), z.literal('event_amount'), DynamicAmountSchema, CountAmountSchema, PowerOfSchema, ToughnessOfSchema])
 
 // Which kind of counter an add_counters effect places. "plus_one_one" is the
 // engine's fast +1/+1 column; everything else lives in the jsonb counter bag.
@@ -433,6 +435,9 @@ const CardBehaviorActionSchema = z.union([
     // "Its controller creates a token" (Beast Within): the token is created under the
     // control of the spell's TARGET's controller, not the caster.
     recipient: z.literal('target_controller').optional(),
+    // X/X tokens (Quartzwood Crasher, mig 260): pin the token's base P/T via
+    // an unexpiring set_pt row. 'event_amount' = the trigger's damage total.
+    set_pt: z.union([z.number(), z.literal('event_amount')]).optional(),
   }),
   // Impulse draw (Atsushi): exile the top `count` cards of your library and gain
   // permission to play them until the end of your next turn. count 'X' is the
