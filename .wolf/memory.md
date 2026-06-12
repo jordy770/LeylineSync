@@ -3871,3 +3871,14 @@
 | 17:26 | Created tmp-schemafix.cjs | — | ~944 |
 | 17:27 | Edited lib/game/card-behavior-schema.ts | modified union() | ~175 |
 | 19:20 | LOCAL VALIDATION TEST added (card-scripts-validation.test.ts): instantly caught 14 latent failures — 2 REAL engine bugs (sacrifice string filters = creature-default edicts on Harrow/Roiling/Springbloom/Trash/Daretti, fixed to object form; put_from_hand type_line read added, mig 282) + 6 schema extensions (conditional counts, shuffle_into_library creature, put_from_hand type_line, add_mana dynamic, PumpValue artifacts, choose_creature_type effects optional). Suite now 957. NOTE: the 5 fixed scripts sync on next deck import + upsert (not yet in hosted catalog). Mig 282 unpushed | test, schema, card-scripts x5, apply_trigger_effects, mig 282 | 957/957 green, upsert dry-run clean | ~20k |
+| 17:30 | Session end: 134 writes across 42 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~132791 tok |
+| 17:38 | Session end: 134 writes across 42 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~132791 tok |
+| 17:44 | Edited supabase/functions_src/apply_damage_to_player.sql | modified Lifelink() | ~155 |
+| 17:44 | Edited supabase/functions_src/apply_damage_to_creature.sql | modified Lifelink() | ~188 |
+| 17:44 | Edited supabase/functions_src/declare_attacker.sql | modified tap() | ~200 |
+| 17:44 | Created supabase/functions_src/fire_tap_triggers.sql | — | ~297 |
+| 17:45 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified coalesce() | ~210 |
+| 17:45 | Edited lib/game/card-behavior-schema.ts | 4→5 lines | ~68 |
+| 17:45 | Edited lib/game/card-behavior-schema.ts | 6→6 lines | ~73 |
+| 17:46 | Created tmp-payback.cjs | — | ~772 |
+| 20:10 | mig 283 APPROXIMATION PAYBACK part 1: LIFELINK first-class (CHECK/register/grants/card_has_lifelink; both damage sinks pay controller; apply_damage_to_player newly canonical from mig 137) + BECOMES_TAPPED event (trg_fire_tap_triggers AFTER-UPDATE on is_tapped; declare_attacker assignment-before-tap; watcher filter not_attacking). 8 cards upgraded across 4 decks: Warhammer, Bruse Tarl, Sydri, Akroma's Will mode2 (hexproof->lifelink), Phyrexian Atlas (corrupted drain LIVE), Verity Circle (draw half LIVE, attack-tap exclusion verified), Rhoda (un-inert), Scaretiller (un-inert). Remaining payback: parked cost picks. Mig 283 unpushed | functions_src x8 (+2 canonical, +1 new trigger), mig 283, schema, scripts x8, fixtures, lifelink-taps.test.ts | 960/960 green | ~35k |

@@ -90,6 +90,7 @@ begin
       'wither',
       'toxic',
       'menace',
+      'lifelink',
       'intimidate',
       'hexproof',
       -- STATIC cast-from-graveyard permission (mig 207, Gisa and Geralf): a
@@ -143,6 +144,7 @@ begin
           'wither',
           'toxic',
           'menace',
+          'lifelink',
           'intimidate',
           'hexproof'
         ) then 'source'

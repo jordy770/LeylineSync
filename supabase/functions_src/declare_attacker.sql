@@ -215,11 +215,9 @@ begin
     raise exception 'This creature must attack the randomly chosen player this combat';
   end if;
 
-  update public.game_cards
-  set is_tapped = true
-  where id = p_attacker_card_id
-    and not public.card_has_vigilance(p_session_id, p_attacker_card_id);
-
+  -- Assignment BEFORE the tap (mig 283): becomes_tapped watchers with the
+  -- not_attacking filter ("if it isn't being declared as an attacker",
+  -- Rhoda / Verity Circle) check for this row at tap-trigger time.
   insert into public.game_combat_assignments (
     session_id,
     turn_number,
@@ -237,6 +235,11 @@ begin
     p_defending_planeswalker_id
   )
   returning * into v_assignment;
+
+  update public.game_cards
+  set is_tapped = true
+  where id = p_attacker_card_id
+    and not public.card_has_vigilance(p_session_id, p_attacker_card_id);
 
   -- Remember the defender + consume the pin (mig 249, Territorial Hellkite's
   -- "an opponent that this creature didn't attack during your last combat").

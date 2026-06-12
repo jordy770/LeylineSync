@@ -124,6 +124,17 @@ begin
       p_session_id, p_card_id, array['dealt_damage', 'enrage'],
       jsonb_build_object('event_amount', v_remaining));
 
+    -- Lifelink (mig 283): the source's controller gains the damage dealt.
+    if p_source_card_id is not null
+       and public.card_has_lifelink(p_session_id, p_source_card_id) then
+      update public.game_session_players
+      set life_total = life_total + v_remaining
+      where session_id = p_session_id
+        and player_id = (select coalesce(gc.controller_player_id, gc.owner_id)
+                         from public.game_cards gc
+                         where gc.id = p_source_card_id and gc.session_id = p_session_id);
+    end if;
+
     -- Watcher broadcast (mig 260, Wrathful Raptors: "whenever a Dinosaur you
     -- control is dealt damage"). The amount rides the payload as event_amount.
     perform public.fire_watcher_triggers(

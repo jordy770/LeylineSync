@@ -121,6 +121,18 @@ begin
         continue;
       end if;
 
+      -- "if it isn't being declared as an attacker" (mig 283, Rhoda / Verity
+      -- Circle): skip taps that come from an attack declaration —
+      -- declare_attacker inserts the combat assignment BEFORE tapping.
+      if coalesce((v_filter ->> 'not_attacking')::boolean, false)
+         and exists (
+           select 1 from public.game_combat_assignments ca
+           where ca.session_id = p_session_id
+             and ca.attacker_card_id = p_changed_card_id
+         ) then
+        continue;
+      end if;
+
       -- "whenever a GOADED creature attacks" (mig 249, Vengeful Ancestor):
       -- only fire when the event subject carries an active goaded row.
       if coalesce((v_filter ->> 'goaded')::boolean, false)

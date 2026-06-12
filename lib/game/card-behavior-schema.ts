@@ -942,7 +942,7 @@ const CardBehaviorActionSchema = z.union([
     keyword: z.enum([
       'flying', 'reach', 'deathtouch', 'trample', 'vigilance', 'haste',
       'indestructible', 'first_strike', 'double_strike', 'menace',
-      'intimidate', 'hexproof',
+      'intimidate', 'hexproof', 'lifelink',
     ]),
     scope: z.enum(['all', 'controller']).optional(),
     creature_type: z.string().optional(),
@@ -1008,7 +1008,8 @@ const CardBehaviorActionSchema = z.union([
       'first_strike', 'double_strike', 'deathtouch', 'indestructible',
       // hexproof (Rattlechains) + menace: the engine's grant path and CHECK
       // list supported both; the enum lagged (mig 281 cleanup).
-      'hexproof', 'menace',
+      // lifelink: first-class since mig 283.
+      'hexproof', 'menace', 'lifelink',
     ]),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),

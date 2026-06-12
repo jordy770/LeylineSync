@@ -729,7 +729,7 @@ begin
       -- grantable combat keywords (the mig 200 accessor set) are accepted.
       if lower(coalesce(v_effect ->> 'keyword', '')) in (
         'flying', 'reach', 'deathtouch', 'trample', 'vigilance', 'haste',
-        'indestructible', 'first_strike', 'double_strike', 'menace',
+        'indestructible', 'first_strike', 'double_strike', 'menace', 'lifelink',
         'intimidate', 'hexproof'
       ) then
         insert into public.game_continuous_effects (

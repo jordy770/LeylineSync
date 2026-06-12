@@ -291,7 +291,7 @@
 
   "Deathgorge Scavenger": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"exile_from_any_graveyard"}]},{"event":"attacks","effects":[{"type":"exile_from_any_graveyard"}]}]},
 
-  "Akroma's Will": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Akroma's Will","may_choose_both_if_commander":true,"modes":[{"label":"Flying, vigilance, double strike","actions":[{"type":"grant_keyword_all","keyword":"flying","scope":"controller"},{"type":"grant_keyword_all","keyword":"vigilance","scope":"controller"},{"type":"grant_keyword_all","keyword":"double_strike","scope":"controller"}]},{"label":"Lifelink, indestructible, protection","actions":[{"type":"grant_keyword_all","keyword":"indestructible","scope":"controller"},{"type":"grant_keyword_all","keyword":"hexproof","scope":"controller"}]}]}]}},
+  "Akroma's Will": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Akroma's Will","may_choose_both_if_commander":true,"modes":[{"label":"Flying, vigilance, double strike","actions":[{"type":"grant_keyword_all","keyword":"flying","scope":"controller"},{"type":"grant_keyword_all","keyword":"vigilance","scope":"controller"},{"type":"grant_keyword_all","keyword":"double_strike","scope":"controller"}]},{"label":"Lifelink, indestructible, protection","actions":[{"type":"grant_keyword_all","keyword":"indestructible","scope":"controller"},{"type":"grant_keyword_all","keyword":"lifelink","scope":"controller"}]}]}]}},
 
   "Quartzwood Crasher": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"trample_combat_damage","effects":[{"type":"create_token","token":"Dinosaur Beast Token","count":1,"set_pt":"event_amount"}]}]},
 
@@ -383,7 +383,7 @@
 
   "Swiftfoot Boots": {"schema_version":2,"continuous_effects":[{"type":"hexproof","affected":"equipped"},{"type":"haste","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
 
-  "Loxodon Warhammer": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":3,"toughness":0}},{"type":"trample","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+  "Loxodon Warhammer": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":3,"toughness":0}},{"type":"trample","affected":"equipped"},{"type":"lifelink","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
 
   "Skullclamp": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":1,"toughness":-1}}],"triggered_abilities":[{"event":"creature_died","filter":{"controller":"any","attached_host":true},"effects":[{"type":"draw","amount":2}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
 
@@ -415,7 +415,7 @@
 
   "Jor Kadeen, the Prevailer": {"schema_version":2,"continuous_effects":[{"type":"first_strike","affected":"source","source_zone_required":"battlefield"},{"type":"pump","affected":"controller","payload":{"power":3,"toughness":0,"condition_count":"artifacts_you_control","condition_at_least":3}}]},
 
-  "Bruse Tarl, Boorish Herder": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"grant_keyword","keyword":"double_strike","target_type":"creature","target_controller":"you"}]},{"event":"attacks","effects":[{"type":"grant_keyword","keyword":"double_strike","target_type":"creature","target_controller":"you"}]}]},
+  "Bruse Tarl, Boorish Herder": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"grant_keyword","keyword":"double_strike","target_type":"creature","target_controller":"you"},{"type":"grant_keyword","keyword":"lifelink","target_type":"creature","target_controller":"you"}]},{"event":"attacks","effects":[{"type":"grant_keyword","keyword":"double_strike","target_type":"creature","target_controller":"you"},{"type":"grant_keyword","keyword":"lifelink","target_type":"creature","target_controller":"you"}]}]},
 
   "Godo, Bandit Warlord": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"battlefield","filter":{"type_line":"Equipment"}}]},{"event":"attacks","once_per_turn":true,"effects":[{"type":"untap_all_attackers"},{"type":"extra_combat"}]}]},
 
@@ -445,7 +445,7 @@
 
   "Magus of the Will": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{B}{B}"},{"type":"tap_self"},{"type":"exile_self"}],"effects":[{"type":"grant_cast_from_graveyard","type_line":""}]}]},
 
-  "Sydri, Galvanic Genius": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{W}{B}"}],"effects":[{"type":"grant_keyword","keyword":"deathtouch","target_type":"creature","target_controller":"you"}]}]},
+  "Sydri, Galvanic Genius": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{W}{B}"}],"effects":[{"type":"grant_keyword","keyword":"deathtouch","target_type":"creature","target_controller":"you"},{"type":"grant_keyword","keyword":"lifelink","target_type":"creature","target_controller":"you"}]}]},
 
   "Everflowing Chalice": {"schema_version":2,"enters_with_counters":{"amount":1,"counter_type":"charge"},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]}]},
 
@@ -527,7 +527,7 @@
 
   "Norn's Choirmaster": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"first_strike","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","commander":true},"effects":[{"type":"proliferate"}]},{"event":"creature_attacks","filter":{"controller":"you","commander":true},"effects":[{"type":"proliferate"}]}]},
 
-  "Phyrexian Atlas": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+  "Phyrexian Atlas": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}],"triggered_abilities":[{"event":"becomes_tapped","effects":[{"type":"conditional","condition":{"count":"opponent_poison_counters","at_least":3},"effects":[{"type":"lose_life","amount":1,"recipient":"each_opponent"}]}]}]},
 
   "Phyrexian Swarmlord": {"schema_version":2,"continuous_effects":[{"type":"infect","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"upkeep","effects":[{"type":"create_token","token":"Phyrexian Insect Token","count":{"count":"opponent_poison_counters"}}]}]},
 
@@ -711,7 +711,7 @@
 
   "Rites of Flourishing": {"schema_version":2,"continuous_effects":[{"type":"additional_land_plays","affected":"all","amount":1}]},
 
-  "Scaretiller": {"schema_version":2},
+  "Scaretiller": {"schema_version":2,"triggered_abilities":[{"event":"becomes_tapped","effects":[{"type":"choose_one","prompt":"Scaretiller","modes":[{"label":"Put a land from your hand onto the battlefield tapped","actions":[{"type":"put_from_hand","count":1,"filter":{"type_line":"land"}}]},{"label":"Return a land from your graveyard tapped","actions":[{"type":"return_from_graveyard","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"land"}}]}]}]}]},
 
   "Seer's Sundial": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"draw","amount":1}]}]},
 
@@ -839,7 +839,7 @@
 
   "Reconnaissance Mission": {"schema_version":2,"cycling":"{2}","triggered_abilities":[{"event":"creature_damaged_player","filter":{"controller":"you"},"effects":[{"type":"draw","amount":1}]}]},
 
-  "Rhoda, Geist Avenger": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}]},
+  "Rhoda, Geist Avenger": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"creature_became_tapped","filter":{"controller":"opponent","not_attacking":true},"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one"}]}]},
 
   "Shacklegeist": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"tap_creatures","count":2,"type_line":"Spirit"}],"effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}]},
 
@@ -851,5 +851,5 @@
 
   "Timin, Youthful Geist": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"beginning_of_combat","effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}]},
 
-  "Verity Circle": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{4}{U}"}],"effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}]}
+  "Verity Circle": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{4}{U}"}],"effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}],"triggered_abilities":[{"event":"creature_became_tapped","filter":{"controller":"opponent","not_attacking":true},"effects":[{"type":"draw","amount":1}]}]}
 }
