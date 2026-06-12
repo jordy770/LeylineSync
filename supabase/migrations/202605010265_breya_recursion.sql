@@ -1,7 +1,13 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010265_breya_recursion
+-- Breya recursion batch (5 cards, mig 265): Sharuum the Hegemon, Sanctum
+-- Gargoyle, Hanna Ship's Navigator, Myr Retriever, Trash for Treasure.
+-- Engine: return_from_graveyard filter gains a types array ('artifact or
+-- enchantment', Hanna) and exclude_self ('another target artifact' on the
+-- Myr Retriever dies-trigger — its own corpse is never offered).
+-- Trash for Treasure models its additional cast cost as a resolution-time
+-- sacrifice park (approximation); Sharuum/Gargoyle are plain ETB returns.
+-- Generated from supabase/functions_src (apply_trigger_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,

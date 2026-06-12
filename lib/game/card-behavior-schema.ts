@@ -417,7 +417,13 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('return_from_graveyard'),
     to: z.enum(['hand', 'battlefield']).optional(),
     count: z.number().optional(),
-    filter: z.object({ type_line: z.string().optional() }).optional(),
+    // types: "artifact or enchantment" (Hanna, mig 265); exclude_self:
+    // "another target artifact" on a dies-trigger (Myr Retriever, mig 265).
+    filter: z.object({
+      type_line: z.string().optional(),
+      types: z.array(z.string()).optional(),
+      exclude_self: z.boolean().optional(),
+    }).optional(),
     // Battlefield returns enter tapped (mig 218, Victimize).
     tapped: z.boolean().optional(),
   }),

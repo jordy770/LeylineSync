@@ -351,5 +351,15 @@
 
   "Ichor Wellspring": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"draw","amount":1}]},{"event":"dies","effects":[{"type":"draw","amount":1}]}]},
 
-  "Mycosynth Wellspring": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"basic land"}}]},{"event":"dies","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"basic land"}}]}]}
+  "Mycosynth Wellspring": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"basic land"}}]},{"event":"dies","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"basic land"}}]}]},
+
+  "Sharuum the Hegemon": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}]},
+
+  "Sanctum Gargoyle": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"artifact"}}]}]},
+
+  "Hanna, Ship's Navigator": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}{W}{U}"},{"type":"tap_self"}],"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"types":["artifact","enchantment"]}}]}]},
+
+  "Myr Retriever": {"schema_version":2,"triggered_abilities":[{"event":"dies","effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"artifact","exclude_self":true}}]}]},
+
+  "Trash for Treasure": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":"artifact"},{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}}
 }

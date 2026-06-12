@@ -3762,3 +3762,10 @@
 | 12:36 | Created tests/feature/breya-core.test.ts | — | ~1288 |
 | 12:36 | Edited tests/feature/breya-core.test.ts | 3→4 lines | ~86 |
 | 04:10 | mig 264 Breya core: Breya commander (ETB Thopters + sac-two modal), Thopter Foundry, Etherium Sculptor, Ichor/Mycosynth Wellsprings. New sacrifice_artifacts activation cost (auto-pick cheapest MV, nontoken flag) | activate_ability, mig 264, schema, fixtures, card-scripts x5, breya-core.test.ts | 926/926 green, Breya triage 28/3/55 | ~20k |
+| 12:38 | Session end: 89 writes across 28 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 10 reads | ~107707 tok |
+| 09:05 | Recommended next mechanic after Breya artifacts: poison/toxic/proliferate via Corrupting Influence precon (alts: landfall Land's Wrath, disturb Spirit Squadron) | .wolf/memory.md | recommendation only | ~1k |
+| 12:40 | Session end: 89 writes across 28 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 10 reads | ~107707 tok |
+| 12:44 | Edited supabase/functions_src/apply_trigger_effects.sql | modified and() | ~317 |
+| 12:44 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~129 |
+| 12:44 | Created tests/feature/breya-recursion.test.ts | — | ~782 |
+| 04:40 | mig 265 Breya recursion: Sharuum, Sanctum Gargoyle, Hanna (types array filter), Myr Retriever (exclude_self filter), Trash for Treasure (sac park as additional cost) | apply_trigger_effects, mig 265, schema, fixtures, card-scripts x5, breya-recursion.test.ts | 928/928 green, Breya triage 33/3/50 | ~15k |
