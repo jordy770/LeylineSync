@@ -1396,7 +1396,7 @@ function PendingDecisionPrompt({
         <ChooseModeBody decision={decision} boardCards={boardCards} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'scry' || decision.decision_type === 'surveil' ? (
         <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} isPending={isPending} onSubmit={submit} />
-      ) : decision.decision_type === 'search_library' || decision.decision_type === 'choose_cards' || decision.decision_type === 'sacrifice' || decision.decision_type === 'return_from_graveyard' || decision.decision_type === 'proliferate' ? (
+      ) : CARD_PICK_DECISIONS.has(decision.decision_type) ? (
         <CardPickBody decision={decision} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'confirm' ? (
         <ConfirmBody isPending={isPending} onSubmit={submit} />
@@ -1580,6 +1580,18 @@ function ScrySurveilBody({
 }
 
 // Pick N cards from an offered list (tutor search_library / discard choose_cards).
+// Every server decision in the "choose cards" family shares one contract:
+// options = [{game_card_id, name}], result = {chosen: [ids]}, bounded by
+// min/max_choices (see submit_decision's shared validation branch). Any new
+// pick-style decision type the engine grows lands here automatically once
+// added — keep this in sync with submit_decision.sql's family list.
+const CARD_PICK_DECISIONS = new Set([
+  'search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'proliferate',
+  'reanimate_destroyed', 'look_top', 'copy_permanent', 'become_copy', 'bounce_pick',
+  'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick',
+  'graveyard_exile_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick',
+])
+
 function CardPickBody({
   decision,
   isPending,

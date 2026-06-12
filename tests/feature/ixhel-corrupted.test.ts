@@ -75,7 +75,7 @@ test('IX3 Culling Ritual wipes cheap nonlands for mana', async () => {
     const s = await Scenario.create(client)
     await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
     const cheap = await s.spawn('B', 'Ichor Wellspring Test', 'battlefield') // MV 2
-    const fat = await s.spawnCreature('B', 'Air Elemental Test') // MV 0? fixture has no cost — check survives via MV... spawn a costed one
+    await s.spawnCreature('B', 'Air Elemental Test') // MV 0? fixture has no cost — check survives via MV... spawn a costed one
     const land = await s.spawn('B', 'Forest Test', 'battlefield')
     await s.as('B').resolveStack() // flush Wellspring ETB draw
 

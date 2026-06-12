@@ -99,8 +99,8 @@ async function drive(s: Scenario, victims: { theirs: string; mine: string }, lab
     // PROACTIVE target supply: a failed resolve aborts the whole rolled-back
     // transaction (no savepoints), so targeted triggers must be detected from
     // the payload before resolving — never by catch-and-retry.
-    const payload = top.payload as Record<string, any>
-    const fx = (payload.effects ?? []) as Array<Record<string, any>>
+    const payload = top.payload as Record<string, unknown>
+    const fx = (payload.effects ?? []) as Array<Record<string, unknown>>
     const TARGETED = new Set(['deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap', 'add_counters',
       'grant_keyword', 'fight', 'gain_control', 'set_pt', 'pump', 'goad', 'exile_and_manifest',
       'ignition', 'exile_until_leaves', 'animate', 'shuffle_into_library'])
@@ -156,7 +156,7 @@ test(`smoke: all ${entries.length} curated scripts run at ETB/dies/cast time`, a
 
         const isSpell = /Instant|Sorcery/.test(typeLine) && !/Land|Creature|Artifact|Enchantment|Planeswalker/.test(typeLine)
         if (isSpell) {
-          const actions = ((script as Record<string, any>).spell_effect?.actions ?? []) as Array<Record<string, unknown>>
+          const actions = (((script as Record<string, unknown>).spell_effect as Record<string, unknown> | undefined)?.actions ?? []) as Array<Record<string, unknown>>
           if (actions.length === 0) return // cycling-only or inert spells
           const targeted = actions.find((a) => a.target_type)
           const usesX = JSON.stringify(actions).includes('"X"')

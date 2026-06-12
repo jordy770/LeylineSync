@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T18:49:30.470Z
-> Files: 183 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T18:52:41.581Z
+> Files: 184 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
@@ -87,7 +87,7 @@
 
 ## components/
 
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~35544 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~36584 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~4560 tok)
 
 ## components/board/
@@ -267,7 +267,6 @@
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
 - `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
 - `deck-smoke.test.ts` — Deck smoke test: every curated script in docs/commander-decks/card-scripts.json (~2578 tok)
-- `docs/client-coverage-audit.md` — engine-vs-UI gap inventory (decision types, cost picks, invisible state) with a prioritized fix order. (~700 tok)
 - `dino-combat.test.ts` — mig 260 — Veloci-Ramp-Tor combat batch. Engine touches: (~1512 tok)
 - `dino-combat.test.ts` — mig 260 — Quartzwood X/X trample token, Wrathful Raptors damage redirect, From the Rubble end-step reanimation, Itzquinth ETB burn. (~1400 tok)
 - `dino-creatures.test.ts` — mig 256 — the Veloci-Ramp-Tor creature batch (~14 cards, mostly scripts). (~1428 tok)
@@ -283,6 +282,7 @@
 - `dino-triggers.test.ts` — mig 259 — Veloci-Ramp-Tor triggers batch. Engine touches: (~2494 tok)
 - `discover.test.ts` — mig 253 — discover + Pantlaza, Sun-Favored (the Veloci-Ramp-Tor commander). (~978 tok)
 - `divide-damage.test.ts` — Divided damage from triggers/abilities (mig 233): (~1212 tok)
+- `docs/client-coverage-audit.md` — engine-vs-UI gap inventory (decision types, cost picks, invisible state) with a prioritized fix order. (~700 tok)
 - `dragon-lands.test.ts` — mig 237 — three Dragon-deck lands: (~1000 tok)
 - `dragons-combat-damage.test.ts` — mig 247 — Broodcaller Scourge + Parapet Thrasher: "Whenever one or more (~1436 tok)
 - `dragons-deck.test.ts` — Dragons deck — proving tests for the Tier-0 compositions (cards authored (~2449 tok)
