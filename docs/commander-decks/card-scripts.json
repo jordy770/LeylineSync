@@ -373,5 +373,11 @@
 
   "Dispeller's Capsule": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{W}"},{"type":"sacrifice_self"}],"effects":[{"type":"destroy","target_type":["artifact","enchantment"]}]}]},
 
-  "Migratory Route": {"schema_version":2,"cycling":"{2}","spell_effect":{"actions":[{"type":"create_token","token":"Bird Token","count":4}]}}
+  "Migratory Route": {"schema_version":2,"cycling":"{2}","spell_effect":{"actions":[{"type":"create_token","token":"Bird Token","count":4}]}},
+
+  "Hellkite Igniter": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"attacks","effects":[{"type":"pump","power":{"count":"artifacts_you_control"},"toughness":0}]}]},
+
+  "Etched Oracle": {"schema_version":2,"enters_with_counters":{"amount":4},"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"remove_counters","counter_type":"plus_one_one","amount":4}],"effects":[{"type":"draw","amount":3}]}]},
+
+  "Shimmer Myr": {"schema_version":2}
 }
