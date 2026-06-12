@@ -332,7 +332,19 @@ begin
         select coalesce(max(zone_position), -1) + 1 into v_pos from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = 'battlefield';
         select turn_number into v_turn from public.game_turn_state where session_id = v_decision.session_id;
         -- params.tapped (mig 218, Victimize): "return the chosen cards to the battlefield tapped".
-        update public.game_cards set zone = 'battlefield', zone_position = v_pos, controller_player_id = owner_id, is_tapped = coalesce((v_decision.params ->> 'tapped')::boolean, false), damage_marked = 0, plus_one_counters = 0, entered_battlefield_turn_number = coalesce(v_turn, 0) where id = v_card;
+        -- params.control 'decider' (mig 270, Beacon of Unrest): the card enters
+        -- under the DECIDER's control regardless of owner.
+        update public.game_cards set zone = 'battlefield', zone_position = v_pos,
+          controller_player_id = case when (v_decision.params ->> 'control') = 'decider'
+                                      then v_decision.deciding_player_id else owner_id end,
+          is_tapped = coalesce((v_decision.params ->> 'tapped')::boolean, false), damage_marked = 0, plus_one_counters = 0, entered_battlefield_turn_number = coalesce(v_turn, 0) where id = v_card;
+        -- params.haste (mig 270, Grave Upheaval: "it gains haste") — a plain
+        -- unexpiring row (NOT script-flagged, so re-registers keep it).
+        if coalesce((v_decision.params ->> 'haste')::boolean, false) then
+          insert into public.game_continuous_effects (
+            session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+          ) values (v_decision.session_id, v_card, v_card, 'haste', '{}'::jsonb, 'battlefield');
+        end if;
       else
         select coalesce(max(zone_position), -1) + 1 into v_pos from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = 'hand';
         update public.game_cards set zone = 'hand', zone_position = v_pos, is_tapped = false where id = v_card;

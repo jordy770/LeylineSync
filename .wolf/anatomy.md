@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T11:46:04.975Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T12:36:23.875Z
 > Files: 166 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -148,7 +148,7 @@
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1561 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~18821 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~18964 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~9514 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
@@ -181,7 +181,7 @@
 - `return_all_from_graveyard.sql` — supabase/functions_src/return_all_from_graveyard.sql (~838 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~12741 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~12953 tok)
 - `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~384 tok)
 - `turn_manifest_up.sql` — supabase/functions_src/turn_manifest_up.sql (~655 tok)
 

@@ -429,5 +429,27 @@
 
   "Trading Post": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"discard","amount":1}],"effects":[{"type":"gain_life","amount":4}]},{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"pay_life","amount":1}],"effects":[{"type":"create_token","token":"Goat Token","count":1}]},{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"sacrifice_creature"}],"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"artifact"}}]},{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"sacrifice_artifacts","count":1}],"effects":[{"type":"draw","amount":1}]}]},
 
-  "Slobad, Goblin Tinkerer": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"sacrifice_artifacts","count":1}],"effects":[{"type":"grant_keyword","keyword":"indestructible","target_type":"creature","target_controller":"you"}]}]}
+  "Slobad, Goblin Tinkerer": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"sacrifice_artifacts","count":1}],"effects":[{"type":"grant_keyword","keyword":"indestructible","target_type":"creature","target_controller":"you"}]}]},
+
+  "Beacon of Unrest": {"schema_version":2,"spell_effect":{"actions":[{"type":"return_from_graveyard","count":1,"to":"battlefield","from":"all_graveyards","control":"decider","filter":{"types":["artifact","creature"]}}]}},
+
+  "Grave Upheaval": {"schema_version":2,"spell_effect":{"actions":[{"type":"return_from_graveyard","count":1,"to":"battlefield","from":"all_graveyards","control":"decider","haste":true,"filter":{"type_line":"creature"}}]}},
+
+  "Silas Renn, Seeker Adept": {"schema_version":2,"continuous_effects":[{"type":"deathtouch","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dealt_combat_damage_to_player","effects":[{"type":"grant_cast_from_graveyard","type_line":"artifact"}]}]},
+
+  "Ethersworn Adjudicator": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{W}{B}"},{"type":"tap_self"}],"effects":[{"type":"destroy","target_type":["creature","enchantment"]}]},{"costs":[{"type":"mana","amount":"{2}{U}"}],"effects":[{"type":"untap","target_type":"permanent"}]}]},
+
+  "Faerie Artisans": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"opponent","nontoken":true},"effects":[{"type":"copy_permanent","of":"triggering_creature"}]}]},
+
+  "Soul of New Phyrexia": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{5}"}],"effects":[{"type":"grant_keyword_all","keyword":"indestructible","scope":"controller"}]}]},
+
+  "Magus of the Will": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{B}{B}"},{"type":"tap_self"},{"type":"exile_self"}],"effects":[{"type":"grant_cast_from_graveyard","type_line":""}]}]},
+
+  "Sydri, Galvanic Genius": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{W}{B}"}],"effects":[{"type":"grant_keyword","keyword":"deathtouch","target_type":"creature","target_controller":"you"}]}]},
+
+  "Everflowing Chalice": {"schema_version":2,"enters_with_counters":{"amount":1,"counter_type":"charge"},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]}]},
+
+  "Parting Thoughts": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy","target_type":"creature"}]}},
+
+  "Trial // Error": {"schema_version":2,"spell_effect":{"actions":[{"type":"counter_spell","target_type":"spell"}]}}
 }
