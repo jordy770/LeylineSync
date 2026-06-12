@@ -228,6 +228,11 @@ const DynamicAmountSchema = z.object({
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
   count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters', 'countered_creatures_you_control', 'opponent_hand_excess', 'lands_and_graveyard_lands', 'opponent_lands']),
+  // times (mig 268, Filigree Angel / Benevolent Offering): the resolved count
+  // is multiplied by this. Re-added in the mig 281 cleanup — the original
+  // edit silently no-opped on a CRLF regex; the hosted upsert validator
+  // caught it.
+  times: z.number().int().positive().optional(),
   type_line: z.string().optional(),
   // creatures_you_control only: count creatures with effective power >= N
   // (Become the Avalanche: "for each creature you control with power 4 or
@@ -996,6 +1001,9 @@ const CardBehaviorActionSchema = z.union([
     keyword: z.enum([
       'flying', 'reach', 'trample', 'vigilance', 'haste',
       'first_strike', 'double_strike', 'deathtouch', 'indestructible',
+      // hexproof (Rattlechains) + menace: the engine's grant path and CHECK
+      // list supported both; the enum lagged (mig 281 cleanup).
+      'hexproof', 'menace',
     ]),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),

@@ -3860,3 +3860,8 @@
 | 16:49 | Session end: 126 writes across 39 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~127180 tok |
 | 16:54 | Created tmp-mfinale.cjs | — | ~1179 |
 | 18:00 | mig 281 Millicent FINALE — DECK COMPLETE 79/79 (78 impl + 1 as-is): destroy_all min_power (Fell the Mighty, fixed-4 approx) + sacrifice_source (Promise of Bunrei one-shot, verified). INERT: Haunting Imitation, Mirror Entity, Rhoda. SIX DECKS COMPLETE: Dragons 92, Dinos 90, Breya 86, Ixhel 83, Obuun 82, Millicent 79 = ~512 cards. Migs 279-281 unpushed | apply_triggered_ability_effects, mig 281, card-scripts x16, fixture, millicent-finale.test.ts | 956/956 green | ~25k |
+| 16:56 | Session end: 127 writes across 40 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~128443 tok |
+| 17:14 | Edited lib/game/card-behavior-schema.ts | modified times() | ~108 |
+| 17:14 | Edited lib/game/card-behavior-schema.ts | inline fix | ~5 |
+| 17:14 | Edited lib/game/card-behavior-schema.ts | 4→7 lines | ~94 |
+| 18:40 | HOSTED SYNC COMPLETE through mig 281: upsert validator caught 2 latent schema gaps (times never landed = CRLF no-op bug-685 class; grant_keyword lacked hexproof) — fixed, then --apply: 62 cards / 108 printings + 4 tokens (Angel, Clue, Greater Spirit, Thopter), 0 differs. ALL SIX DECKS live hosted. TODO noted: local validation test for card-scripts.json | schema, buglog, upsert | 956/956 green | ~15k |
