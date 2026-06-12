@@ -97,7 +97,14 @@ begin
     raise exception 'Blocker card not found, not on battlefield, not controlled by defending player, or already tapped';
   end if;
 
-  if coalesce(v_blocker_type_line, '') not ilike '%creature%' then
+  if coalesce(v_blocker_type_line, '') not ilike '%creature%'
+     -- Animated lands (mig 277) can block too.
+     and not exists (
+       select 1 from public.game_continuous_effects ce
+       where ce.session_id = p_session_id and ce.effect_type = 'animated'
+         and ce.affected_card_id = p_blocker_card_id
+     )
+  then
     raise exception 'Only creatures can be declared as blockers';
   end if;
 

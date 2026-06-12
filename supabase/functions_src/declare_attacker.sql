@@ -105,7 +105,15 @@ begin
     raise exception 'Attacker card not found, not on battlefield, or not controlled by active player';
   end if;
 
-  if coalesce(v_attacker.type_line, '') not ilike '%creature%' then
+  if coalesce(v_attacker.type_line, '') not ilike '%creature%'
+     -- Animated lands (mig 277, Obuun): an active 'animated' row makes a
+     -- noncreature permanent attack-capable.
+     and not exists (
+       select 1 from public.game_continuous_effects ce
+       where ce.session_id = p_session_id and ce.effect_type = 'animated'
+         and ce.affected_card_id = p_attacker_card_id
+     )
+  then
     raise exception 'Only creatures can be declared as attackers';
   end if;
 

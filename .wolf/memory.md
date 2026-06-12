@@ -3837,3 +3837,10 @@
 | 16:08 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~145 |
 | 16:10 | Created tmp-obuun-batch.cjs | — | ~2351 |
 | 14:00 | mig 276 Obuun mega batch (25 cards): counts countered_creatures_you_control + opponent_hand_excess, return_from_graveyard max_mana_value (Sun Titan). Landfall tokens (Omnath +Elemental, Baloths, Sporemound +Saproling, Zendikar's Roil +Lesser Elemental, Khalni Heart), landfall modals (Retreats), fetch package, outlast bodies (counter-anthem dropped), Sylvan Advocate, Emeria Shepherd (Plains rider dropped). Obuun 55/2/25. Migs 271-276 unpushed | resolve_count_amount, apply_trigger_effects, mig 276, schema, card-scripts x25, fixtures x5+1, obuun-landfall.test.ts | 950/950 green | ~30k |
+| 16:13 | Session end: 116 writes across 34 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 11 reads | ~119321 tok |
+| 16:20 | Edited supabase/functions_src/apply_creature_effect.sql | added 4 condition(s) | ~613 |
+| 16:20 | Edited supabase/functions_src/declare_attacker.sql | modified lands() | ~128 |
+| 16:20 | Edited supabase/functions_src/declare_blocker.sql | expanded (+7 lines) | ~108 |
+| 16:20 | Edited supabase/functions_src/trigger_effect_target_type.sql | 5→5 lines | ~88 |
+| 16:22 | Created tmp-anim.cjs | — | ~915 |
+| 14:45 | mig 277 LAND ANIMATION system (5 cards): animate kind (set_pt resolved power incl power_of source + animated marker + keyword rides, permanent:true for Waker), declare_attacker/blocker accept animated noncreatures (lethal sweep does NOT kill animated lands — approximation), animate+add_counters in permanent target family, lands_and_graveyard_lands count (Multani), return_land activation cost (Mina and Denn; Living Twister deferred — discard-land cost conflicts with target slot). Obuun commander now FULL. Test lesson re-hit: assert.rejects must be LAST (bug-634). Migs 271-277 unpushed | functions_src x6, mig 277, schema, drift, card-scripts x5 (+Obuun update), fixture, land-animation.test.ts | 952/952 green, Obuun triage 59/2/21 | ~30k |

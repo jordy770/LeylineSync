@@ -36,6 +36,7 @@ declare
   v_sac_artifacts_count integer := 0;
   v_sac_artifacts_nontoken boolean := false;
   v_sac_artifact uuid;
+  v_return_land_count integer := 0;
   v_i integer;
   v_remove_counter_type text;
   v_remove_counter_amount integer := 0;
@@ -136,6 +137,10 @@ begin
       when 'sacrifice_artifacts' then
         v_sac_artifacts_count := greatest(1, coalesce((v_cost ->> 'count')::integer, 1));
         v_sac_artifacts_nontoken := coalesce((v_cost ->> 'nontoken')::boolean, false);
+      -- 'Return a land you control to its owner's hand' as a cost (mig 277,
+      -- Mina and Denn). Auto-picks: tapped lands first.
+      when 'return_land' then
+        v_return_land_count := greatest(1, coalesce((v_cost ->> 'count')::integer, 1));
       -- "Remove three study counters from ~" as a cost (mig 214).
       when 'remove_counters' then
         v_remove_counter_type := lower(coalesce(v_cost ->> 'counter_type', 'study'));
@@ -331,6 +336,30 @@ begin
         raise exception 'You must sacrifice % artifact(s) you control', v_sac_artifacts_count;
       end if;
       perform public.put_in_graveyard(p_session_id, v_sac_artifact);
+    end loop;
+  end if;
+
+  -- Pay the return-a-land cost (mig 277, Mina and Denn): tapped lands first.
+  if v_return_land_count > 0 then
+    for v_i in 1..v_return_land_count loop
+      select gc.id into v_sac_artifact
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+        and c.type_line ilike '%land%'
+      order by gc.is_tapped desc, gc.zone_position asc, gc.id asc
+      limit 1;
+      if v_sac_artifact is null then
+        raise exception 'You must return % land(s) you control to pay this cost', v_return_land_count;
+      end if;
+      update public.game_cards gc
+      set zone = 'hand', is_tapped = false, attached_to = null,
+          controller_player_id = gc.owner_id,
+          zone_position = (select coalesce(max(x.zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = p_session_id
+                             and x.owner_id = gc.owner_id and x.zone = 'hand')
+      where gc.id = v_sac_artifact;
     end loop;
   end if;
 

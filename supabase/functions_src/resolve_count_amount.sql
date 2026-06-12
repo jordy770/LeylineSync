@@ -105,6 +105,17 @@ begin
       and g.owner_id = p_controller_id
       and g.zone = 'hand';
 
+  elsif v_count = 'lands_and_graveyard_lands' then
+    -- Multani (mig 277): lands you control PLUS land cards in your graveyard.
+    select (select count(*) from public.game_cards g join public.cards c on c.id = g.card_id
+            where g.session_id = p_session_id and g.zone = 'battlefield'
+              and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+              and c.type_line ilike '%land%')
+         + (select count(*) from public.game_cards g join public.cards c on c.id = g.card_id
+            where g.session_id = p_session_id and g.zone = 'graveyard'
+              and g.owner_id = p_controller_id and c.type_line ilike '%land%')
+    into v_n;
+
   elsif v_count = 'countered_creatures_you_control' then
     -- Inspiring Call (mig 276): creatures you control with a +1/+1 counter.
     select count(*)::integer into v_n

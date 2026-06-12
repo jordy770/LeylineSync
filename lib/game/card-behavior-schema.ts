@@ -170,6 +170,8 @@ const CardBehaviorCostSchema = z.union([
   // "Sacrifice N artifacts" as a cost (Breya / Thopter Foundry, mig 264). The
   // engine auto-picks the cheapest-MV matching artifacts (source excluded).
   z.object({ type: z.literal('sacrifice_artifacts'), count: z.number().int().positive().optional(), nontoken: z.boolean().optional() }),
+  // 'Return a land you control to its owner's hand' as a cost (Mina and Denn, mig 277).
+  z.object({ type: z.literal('return_land'), count: z.number().int().positive().optional() }),
   // "Remove N <kind> counters from this permanent" as a cost (Grimoire of the
   // Dead, mig 214). Bag counters on the SOURCE.
   z.object({ type: z.literal('remove_counters'), counter_type: z.string(), amount: z.number().int().positive() }),
@@ -195,7 +197,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'exile_tops_cast', 'exile_until_leaves', 'become_monarch', 'equip',
   'living_weapon', 'attach_all_equipment', 'gain_control_all', 'bounce_all', 'destroy_all_creatures_token',
   'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
-  'exile_all', 'graveyard_to_library_top',
+  'exile_all', 'graveyard_to_library_top', 'animate',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -225,7 +227,7 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters', 'countered_creatures_you_control', 'opponent_hand_excess']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters', 'countered_creatures_you_control', 'opponent_hand_excess', 'lands_and_graveyard_lands']),
   type_line: z.string().optional(),
   // creatures_you_control only: count creatures with effective power >= N
   // (Become the Avalanche: "for each creature you control with power 4 or
@@ -692,6 +694,17 @@ const CardBehaviorActionSchema = z.union([
   // Noxious Revival (mig 275): a graveyard card goes to its owner's library top.
   z.object({
     type: z.literal('graveyard_to_library_top'),
+  }),
+  // Land animation (mig 277, Obuun / Embodiment / Waker): target land becomes
+  // an X/X creature (still a land). permanent:true skips the EOT expiry.
+  z.object({
+    type: z.literal('animate'),
+    power: z.union([z.number(), z.literal('X'), PowerOfSchema]).optional(),
+    toughness: z.union([z.number(), z.literal('X'), PowerOfSchema]).optional(),
+    keywords: z.array(z.string()).optional(),
+    permanent: z.boolean().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
   }),
   // Ixhel (mig 272): poisoned opponents exile their library top; you may
   // play those cards (impulse-window approximation).

@@ -595,7 +595,7 @@
 
   "Wurmquake": {"schema_version":2,"spell_effect":{"actions":[{"type":"create_token","token":"Phyrexian Wurm Token","count":1},{"type":"conditional","condition":{"count":"opponent_poison_counters","at_least":3},"effects":[{"type":"create_token","token":"Phyrexian Wurm Token","count":1}]}]}},
 
-  "Obuun, Mul Daya Ancestor": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"}]}]},
+  "Obuun, Mul Daya Ancestor": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"}]},{"event":"beginning_of_combat","effects":[{"type":"animate","power":{"power_of":"source"},"toughness":{"power_of":"source"},"keywords":["trample","haste"],"target_type":"permanent","target_controller":"you"}]}]},
 
   "Acidic Slime": {"schema_version":2,"continuous_effects":[{"type":"deathtouch","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"destroy","target_type":["artifact","enchantment"]}]}]},
 
@@ -677,5 +677,13 @@
 
   "Yavimaya Elder": {"schema_version":2,"triggered_abilities":[{"event":"dies","effects":[{"type":"search_library","count":2,"to":"hand","filter":{"type_line":"basic land"}}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}"},{"type":"sacrifice_self"}],"effects":[{"type":"draw","amount":1}]}]},
 
-  "Emeria Shepherd": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"types":["creature","artifact","enchantment","planeswalker"]}}]}]}
+  "Emeria Shepherd": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"types":["creature","artifact","enchantment","planeswalker"]}}]}]},
+
+  "Embodiment of Insight": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"animate","power":3,"toughness":3,"keywords":["haste"],"target_type":"permanent","target_controller":"you"}]}]},
+
+  "Waker of the Wilds": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{X}{G}{G}"}],"effects":[{"type":"add_counters","amount":"X","counter_type":"plus_one_one","target_type":"permanent","target_controller":"you"},{"type":"animate","power":0,"toughness":0,"keywords":["haste"],"permanent":true,"target_type":"permanent","target_controller":"you"}]}]},
+
+  "Multani, Yavimaya's Avatar": {"schema_version":2,"continuous_effects":[{"type":"reach","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"},{"type":"pump","affected":"source","source_zone_required":"battlefield","payload":{"power_count":"lands_and_graveyard_lands","toughness_count":"lands_and_graveyard_lands"}}]},
+
+  "Mina and Denn, Wildborn": {"schema_version":2,"continuous_effects":[{"type":"additional_land_plays","affected":"controller","amount":1}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{R}{G}"},{"type":"return_land"}],"effects":[{"type":"grant_keyword","keyword":"trample","target_type":"creature","target_controller":"you"}]}]}
 }

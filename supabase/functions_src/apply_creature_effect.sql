@@ -67,6 +67,44 @@ begin
       where id = p_target_card_id;
     end if;
 
+  elsif p_kind = 'animate' then
+    -- Land animation (mig 277, Obuun / Embodiment of Insight / Waker of the
+    -- Wilds): "target land becomes an X/X Elemental creature … It's still a
+    -- land." An 'animated' row marks creature-ness for the combat gates
+    -- (declare_attacker / declare_blocker); set_pt pins the P/T; keywords
+    -- ride along. permanent:true (Waker) skips the end-of-turn expiry.
+    if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
+      v_pump_power := public.resolve_dynamic_amount(
+        p_session_id, nullif(p_params ->> 'acting_source', '')::uuid,
+        nullif(p_params ->> 'acting_controller', '')::uuid,
+        p_params -> 'power', p_target_card_id);
+      v_pump_tough := public.resolve_dynamic_amount(
+        p_session_id, nullif(p_params ->> 'acting_source', '')::uuid,
+        nullif(p_params ->> 'acting_controller', '')::uuid,
+        p_params -> 'toughness', p_target_card_id);
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload,
+        source_zone_required, expires_at_phase, expires_at_step
+      )
+      select p_session_id, p_target_card_id, p_target_card_id, e.kind, e.payload,
+             'battlefield',
+             case when coalesce((p_params ->> 'permanent')::boolean, false) then null else 'ending' end,
+             case when coalesce((p_params ->> 'permanent')::boolean, false) then null else 'cleanup' end
+      from (
+        select 'set_pt'::text as kind,
+               jsonb_build_object('power', v_pump_power, 'toughness', v_pump_tough,
+                                  'until_end_of_turn', not coalesce((p_params ->> 'permanent')::boolean, false)) as payload
+        union all
+        select 'animated', '{}'::jsonb
+        union all
+        select lower(k.value), '{}'::jsonb
+        from jsonb_array_elements_text(coalesce(p_params -> 'keywords', '[]'::jsonb)) k
+        where lower(k.value) in ('trample', 'haste', 'flying', 'vigilance', 'first_strike',
+                                 'double_strike', 'reach', 'deathtouch', 'menace',
+                                 'indestructible', 'hexproof')
+      ) e;
+    end if;
+
   elsif p_kind = 'exile_until_leaves' then
     -- Bronzebeak Foragers (mig 262): exile the target until the ACTING SOURCE
     -- leaves the battlefield (fire_zone_change_triggers returns it). Without

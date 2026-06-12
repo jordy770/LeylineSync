@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T14:10:30.669Z
-> Files: 169 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T14:22:54.870Z
+> Files: 170 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
@@ -12,6 +12,7 @@
 - `scratch-check-hosted.mjs` — Declares loadEnvFile (~567 tok)
 - `scratch-ign.mjs` — Declares c (~161 tok)
 - `scratch-mv.mjs` — Declares c (~215 tok)
+- `tmp-anim.cjs` — Declares fs (~915 tok)
 - `tmp-obuun-batch.cjs` — Declares fs (~2351 tok)
 
 ## .claude/
@@ -148,7 +149,7 @@
 - `add_mana_from_card.sql` — basic-land/manual mana rpc (7-arg, commander identity + monarch land bonus); canonical since mig 262. (~900 tok)
 - `add_mana_from_card.sql` — supabase/functions_src/add_mana_from_card.sql (~1460 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~3455 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~5319 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~5921 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1561 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
@@ -162,8 +163,8 @@
 - `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
-- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3020 tok)
-- `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1470 tok)
+- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3109 tok)
+- `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1539 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1069 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~354 tok)
@@ -188,7 +189,7 @@
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
 - `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~13186 tok)
-- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~384 tok)
+- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~391 tok)
 - `turn_manifest_up.sql` — supabase/functions_src/turn_manifest_up.sql (~655 tok)
 
 ## supabase/migrations/
