@@ -12,11 +12,12 @@ returns jsonb language sql immutable as $$
     when lower(coalesce(p_effect ->> 'type', '')) in
          ('deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap',
           'add_counters', 'grant_keyword', 'fight', 'gain_control', 'set_pt', 'pump', 'goad',
-          'exile_and_manifest', 'ignition')
+          'exile_and_manifest', 'ignition', 'exile_until_leaves')
          and public.behavior_target_type_is_creature_only(p_effect -> 'target_type')
       then '"creature"'::jsonb
     when lower(coalesce(p_effect ->> 'type', '')) in
-         ('destroy', 'exile', 'bounce', 'tap', 'untap', 'shuffle_into_library', 'gain_control')
+         ('destroy', 'exile', 'bounce', 'tap', 'untap', 'shuffle_into_library', 'gain_control',
+          'exile_until_leaves')
          and public.behavior_target_type_is_permanent_only(p_effect -> 'target_type')
       then p_effect -> 'target_type'
     else null

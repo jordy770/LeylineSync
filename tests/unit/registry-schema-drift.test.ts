@@ -62,6 +62,9 @@ const JSON_ONLY: Record<string, string> = {
   reveal_top_cast_shared: 'reveal top of library, free-cast it if it shares a creature type with yours, else bottom (Descendants\' Path, mig 259); JSON/AI-authored',
   exile_from_any_graveyard: 'optional exile of one card from any graveyard with creature/noncreature riders (Deathgorge Scavenger, mig 259); JSON/AI-authored',
   fight_pick: 'the program target fights a second parked creature pick (Savage Stomp / Wayta, mig 261); JSON/AI-authored',
+  exile_tops_cast: 'exile each player\'s library top, free-cast pick over the permanents (Etali, mig 262); JSON/AI-authored',
+  exile_until_leaves: 'exile the target until the trigger source leaves the battlefield (Bronzebeak Foragers, mig 262); JSON/AI-authored',
+  become_monarch: 'you become the monarch (Regal Behemoth, mig 262); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

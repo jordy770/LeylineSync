@@ -267,6 +267,26 @@ begin
     when 'postcombat_main' then
       v_next_phase := 'ending';
       v_next_step := 'end';
+      -- Monarch draw (mig 262, Regal Behemoth): "at the beginning of the
+      -- monarch's end step, that player draws a card." Best-effort: an empty
+      -- library skips the draw instead of erroring.
+      if v_current_state.monarch_player_id = v_current_state.active_player_id then
+        select id into v_drawn_card_id
+        from public.game_cards
+        where session_id = p_session_id
+          and owner_id = v_current_state.active_player_id and zone = 'library'
+        order by zone_position asc, id asc
+        limit 1;
+        if v_drawn_card_id is not null then
+          select coalesce(max(zone_position), -1) + 1 into v_next_hand_position
+          from public.game_cards
+          where session_id = p_session_id
+            and owner_id = v_current_state.active_player_id and zone = 'hand';
+          update public.game_cards
+          set zone = 'hand', zone_position = v_next_hand_position, is_tapped = false
+          where id = v_drawn_card_id;
+        end if;
+      end if;
     when 'end' then
       v_next_phase := 'ending';
       v_next_step := 'cleanup';

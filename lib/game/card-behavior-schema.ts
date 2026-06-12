@@ -188,6 +188,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'goad', 'territorial_attack', 'if_attacking_most_life', 'untap_all_attackers', 'extra_combat',
   'exile_and_manifest', 'vote_wild_free', 'discover', 'ignition',
   'reveal_top_cast_shared', 'exile_from_any_graveyard', 'fight_pick',
+  'exile_tops_cast', 'exile_until_leaves', 'become_monarch',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -615,6 +616,23 @@ const CardBehaviorActionSchema = z.union([
     target_filter: z.object({
       controller: z.enum(['any', 'opponent', 'you']).optional(),
     }).strict().optional(),
+  }),
+  // Etali (mig 262): exile the top card of EACH player's library, then a
+  // free-cast pick over the exiled permanents (non-chosen stay exiled).
+  z.object({
+    type: z.literal('exile_tops_cast'),
+  }),
+  // Bronzebeak Foragers (mig 262): exile the target until the trigger's
+  // source leaves the battlefield (then it returns under its owner).
+  z.object({
+    type: z.literal('exile_until_leaves'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // "You become the monarch" (Regal Behemoth, mig 262).
+  z.object({
+    type: z.literal('become_monarch'),
   }),
   // "Return up to N target … to its owner's hand" via a parked pick
   // (Hammerhead Tyrant, mig 244). max_mana_value:'triggering_spell' caps the
@@ -1088,6 +1106,10 @@ export const CardBehaviorScriptV2Schema = z.object({
   // +1/+1 counter from it" (Unbreathing Horde, mig 210). The whole damage event
   // is prevented; ONE counter is removed per event.
   damage_removes_counters: z.boolean().optional(),
+  // "Whenever you tap a land for mana while you're the monarch, add an
+  // additional one mana of any color" (Regal Behemoth, mig 262). The bonus is
+  // one mana of the colour just produced (approximation).
+  monarch_land_bonus: z.boolean().optional(),
   // Alternative graveyard cast cost (mig 213, Scourge of Nel Toth): "You may
   // cast this from your graveyard by paying <mana> and sacrificing N creatures
   // rather than paying its mana cost." Self-granted — no permission needed.

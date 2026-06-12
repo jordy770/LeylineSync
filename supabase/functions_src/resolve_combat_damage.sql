@@ -316,6 +316,12 @@ begin
               array['dealt_combat_damage_to_player'],
               jsonb_build_object('event_amount', v_attacker_damage,
                                  'event_player_id', v_assignment.defending_player_id));
+            -- Monarch steal (mig 262): combat damage to the monarch crowns
+            -- the attacking player.
+            update public.game_turn_state
+            set monarch_player_id = v_turn_state.active_player_id
+            where session_id = p_session_id
+              and monarch_player_id = v_assignment.defending_player_id;
           end if;
           -- Toxic N: poison in addition to dealing combat damage to the player.
           if v_attacker_toxic > 0 then
@@ -463,6 +469,11 @@ begin
                 array['dealt_combat_damage_to_player'],
                 jsonb_build_object('event_amount', v_trample_amount,
                                    'event_player_id', v_assignment.defending_player_id));
+              -- Monarch steal (mig 262).
+              update public.game_turn_state
+              set monarch_player_id = v_turn_state.active_player_id
+              where session_id = p_session_id
+                and monarch_player_id = v_assignment.defending_player_id;
             end if;
             if v_attacker_toxic > 0 then
               perform public.add_player_poison(p_session_id, v_assignment.defending_player_id, v_attacker_toxic);

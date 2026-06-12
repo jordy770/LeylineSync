@@ -307,5 +307,11 @@
 
   "Scion of Calamity": {"schema_version":2,"triggered_abilities":[{"event":"dealt_combat_damage_to_player","effects":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"opponent","types":["artifact","enchantment"]}}]}]},
 
-  "Progenitor's Icon": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]}
+  "Progenitor's Icon": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Etali, Primal Storm": {"schema_version":2,"triggered_abilities":[{"event":"attacks","effects":[{"type":"exile_tops_cast"}]}]},
+
+  "Regal Behemoth": {"schema_version":2,"monarch_land_bonus":true,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"become_monarch"}]}]},
+
+  "Bronzebeak Foragers": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"exile_until_leaves","target_type":"creature","target_controller":"opponent"}]}]}
 }

@@ -67,6 +67,31 @@ begin
       where id = p_target_card_id;
     end if;
 
+  elsif p_kind = 'exile_until_leaves' then
+    -- Bronzebeak Foragers (mig 262): exile the target until the ACTING SOURCE
+    -- leaves the battlefield (fire_zone_change_triggers returns it). Without
+    -- a known source this falls back to a plain exile.
+    select owner_id into v_target_owner_id
+    from public.game_cards
+    where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
+    if found then
+      select coalesce(max(zone_position), -1) + 1 into v_next_position
+      from public.game_cards
+      where session_id = p_session_id and owner_id = v_target_owner_id and zone = 'exile';
+      update public.game_cards
+      set zone = 'exile', zone_position = v_next_position, controller_player_id = owner_id,
+          is_tapped = false, damage_marked = 0, dealt_deathtouch_damage = false, plus_one_counters = 0
+      where id = p_target_card_id;
+      if nullif(p_params ->> 'acting_source', '') is not null then
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+        ) values (
+          p_session_id, (p_params ->> 'acting_source')::uuid, p_target_card_id,
+          'exiled_until_leaves', '{}'::jsonb, 'battlefield'
+        );
+      end if;
+    end if;
+
   elsif p_kind = 'bounce' then
     select owner_id into v_target_owner_id
     from public.game_cards

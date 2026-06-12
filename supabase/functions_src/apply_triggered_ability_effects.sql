@@ -568,6 +568,16 @@ begin
         perform public.apply_creature_effect(p_session_id, 'set_pt', p_source_card_id, v_effect);
       end if;
 
+    elsif v_eff_type = 'become_monarch' then
+      -- "You become the monarch" (mig 262, Regal Behemoth). The crown lives
+      -- on game_turn_state; combat damage steals it (resolve_combat_damage)
+      -- and the monarch draws at their end step (advance_step).
+      if p_controller_id is not null then
+        update public.game_turn_state
+        set monarch_player_id = p_controller_id
+        where session_id = p_session_id;
+      end if;
+
     elsif v_eff_type = 'pump' then
       -- Untargeted self-pump (mig 258, Rampaging Brontodon: "whenever this
       -- attacks, it gets +1/+1 for each land you control"). Dynamic counts

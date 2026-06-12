@@ -3722,3 +3722,28 @@
 | 11:31 | Created tests/feature/dino-fights.test.ts | — | ~1268 |
 | 11:31 | Edited tests/feature/dino-fights.test.ts | inline fix | ~27 |
 | 02:15 | mig 261 dino fights batch: Savage Stomp + Wayta (fight_pick park), Scion of Calamity (dealt_combat_damage_to_player event + destroy_up_to types array), Progenitor's Icon (script-only mana) | functions_src x4, mig 261, schema, drift test, fixtures, card-scripts, dino-fights.test.ts | 917/917 green, triage 81/6/3 | ~35k |
+| 11:32 | Session end: 55 writes across 19 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 7 reads | ~36492 tok |
+| 11:46 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+10 lines) | ~129 |
+| 11:46 | Edited supabase/functions_src/activate_mana_ability.sql | modified jsonb_build_object() | ~343 |
+| 11:46 | Edited supabase/functions_src/advance_step.sql | modified draw() | ~298 |
+| 11:46 | Edited supabase/functions_src/resolve_combat_damage.sql | modified steal() | ~216 |
+| 11:46 | Edited supabase/functions_src/resolve_combat_damage.sql | 7→12 lines | ~183 |
+| 11:47 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Storm() | ~663 |
+| 11:47 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~32 |
+| 11:47 | Edited supabase/functions_src/submit_decision.sql | modified Etali() | ~345 |
+| 11:47 | Edited supabase/functions_src/apply_creature_effect.sql | added 1 condition(s) | ~402 |
+| 11:48 | Edited supabase/functions_src/fire_zone_change_triggers.sql | modified coalesce() | ~420 |
+| 11:48 | Edited supabase/functions_src/trigger_effect_target_type.sql | 10→11 lines | ~188 |
+| 11:48 | Edited lib/game/card-behavior-schema.ts | 4→8 lines | ~149 |
+| 11:48 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~41 |
+| 11:48 | Edited lib/game/card-behavior-schema.ts | modified Etali() | ~290 |
+| 11:48 | Edited tests/unit/registry-schema-drift.test.ts | 2→5 lines | ~137 |
+| 11:49 | Edited supabase/migrations/202605010262_dino_finale.sql | modified finale() | ~598 |
+| 11:50 | Created tests/feature/dino-finale.test.ts | — | ~1594 |
+| 11:52 | Edited supabase/functions_src/add_mana_from_card.sql | modified coalesce() | ~352 |
+| 11:53 | Edited tests/feature/dino-finale.test.ts | inline fix | ~18 |
+| 11:53 | Edited tests/feature/dino-finale.test.ts | expanded (+9 lines) | ~398 |
+| 11:54 | Edited supabase/migrations/202605010262_dino_finale.sql | modified finale() | ~618 |
+| 11:54 | Edited tests/feature/dino-finale.test.ts | 4→5 lines | ~86 |
+| 11:56 | Edited supabase/functions_src/add_mana_from_card.sql | modified coalesce() | ~352 |
+| 03:00 | mig 262 dino FINALE: Etali (exile_tops_cast), Regal Behemoth (MONARCH subsystem: become_monarch + steal + end-step draw + land bonus both mana paths), Bronzebeak Foragers (exile_until_leaves). VELOCI-RAMP-TOR DECK COMPLETE 90/90 (84 impl + 6 as-is) | functions_src x10 (add_mana_from_card newly canonical), mig 262, schema, drift test, fixtures, card-scripts, dino-finale.test.ts | 922/922 green, triage 84/6/0 | ~55k |

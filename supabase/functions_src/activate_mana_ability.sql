@@ -135,6 +135,25 @@ begin
     end if;
   end loop;
 
+  -- Monarch land bonus (mig 262, Regal Behemoth: "whenever you tap a land for
+  -- mana while you're the monarch, add an additional one mana of any color").
+  -- Approximations: the bonus is one mana of the colour this ability just
+  -- produced (no separate colour pick), once per activation.
+  if v_color is not null
+     and v_has_tap
+     and exists (select 1 from public.game_turn_state ts
+                 where ts.session_id = p_session_id and ts.monarch_player_id = auth.uid())
+     and exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+                 where gc.id = p_source_card_id and gc.session_id = p_session_id
+                   and c.type_line ilike '%land%')
+     and exists (select 1 from public.game_cards gc
+                 where gc.session_id = p_session_id and gc.zone = 'battlefield'
+                   and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+                   and coalesce((public.effective_script(p_session_id, gc.id) ->> 'monarch_land_bonus')::boolean, false))
+  then
+    v_pool := v_pool || jsonb_build_object(v_color, coalesce((v_pool ->> v_color)::integer, 0) + 1);
+  end if;
+
   update public.game_players
   set mana_pool = v_pool
   where session_id = p_session_id and player_id = auth.uid();
