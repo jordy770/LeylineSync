@@ -473,5 +473,23 @@
 
   "Contagion Clasp": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"add_counters","amount":1,"counter_type":"minus_one_one","target_type":"creature","target_controller":"any"}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{4}"},{"type":"tap_self"}],"effects":[{"type":"proliferate"}]}]},
 
-  "Evolution Sage": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"proliferate"}]}]}
+  "Evolution Sage": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"proliferate"}]}]},
+
+  "Ixhel, Scion of Atraxa": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"vigilance","affected":"source","source_zone_required":"battlefield"},{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":2}],"triggered_abilities":[{"event":"end_step","effects":[{"type":"ixhel_corrupted_exile"}]}]},
+
+  "Bojuka Bog": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"exile_graveyard"}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Fumigate": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy_all_creatures_token","gain_per_destroyed":1}]}},
+
+  "Culling Ritual": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy_all_mv","max_mana_value":2,"mana_per_destroyed":"B"}]}},
+
+  "Caress of Phyrexia": {"schema_version":2,"spell_effect":{"actions":[{"type":"lose_life","amount":3,"recipient":"each_opponent"},{"type":"add_poison","amount":3,"recipient":"each_opponent"}]}},
+
+  "Carrion Call": {"schema_version":2,"spell_effect":{"actions":[{"type":"create_token","token":"Phyrexian Insect Token","count":2}]}},
+
+  "Cankerbloom": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"sacrifice_self"}],"effects":[{"type":"choose_one","prompt":"Cankerbloom","modes":[{"label":"Destroy target artifact","actions":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"any","type_line":"artifact"}}]},{"label":"Destroy target enchantment","actions":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"any","type_line":"enchantment"}}]},{"label":"Proliferate","actions":[{"type":"proliferate"}]}]}]}]},
+
+  "Contaminant Grafter": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"},{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":1}],"triggered_abilities":[{"event":"dealt_combat_damage_to_player","effects":[{"type":"proliferate"}]},{"event":"end_step","effects":[{"type":"conditional","condition":{"count":"opponent_poison_counters","at_least":3},"effects":[{"type":"draw","amount":1}]}]}]},
+
+  "Glistening Sphere": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"proliferate"}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":3}]}]}
 }

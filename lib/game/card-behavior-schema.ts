@@ -194,6 +194,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'reveal_top_cast_shared', 'exile_from_any_graveyard', 'fight_pick',
   'exile_tops_cast', 'exile_until_leaves', 'become_monarch', 'equip',
   'living_weapon', 'attach_all_equipment', 'gain_control_all', 'bounce_all', 'destroy_all_creatures_token',
+  'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -223,7 +224,7 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters']),
   type_line: z.string().optional(),
   // creatures_you_control only: count creatures with effective power >= N
   // (Become the Avalanche: "for each creature you control with power 4 or
@@ -663,6 +664,29 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('destroy_all_creatures_token'),
     token: z.string().optional(),
+    // Fumigate (mig 272): gain N life per destroyed creature instead of a token.
+    gain_per_destroyed: z.number().int().positive().optional(),
+  }),
+  // Culling Ritual (mig 272): wipe nonland MV<=N, add fixed-colour mana per kill.
+  z.object({
+    type: z.literal('destroy_all_mv'),
+    max_mana_value: z.number().int().nonnegative().optional(),
+    mana_per_destroyed: ManaColorSchema.optional(),
+  }),
+  // 'gets N poison counters' (Caress of Phyrexia, mig 272).
+  z.object({
+    type: z.literal('add_poison'),
+    amount: z.number().int().positive(),
+    recipient: z.enum(['each_opponent', 'controller']).optional(),
+  }),
+  // Bojuka Bog (mig 272): exile the opponent's graveyard.
+  z.object({
+    type: z.literal('exile_graveyard'),
+  }),
+  // Ixhel (mig 272): poisoned opponents exile their library top; you may
+  // play those cards (impulse-window approximation).
+  z.object({
+    type: z.literal('ixhel_corrupted_exile'),
   }),
   // Armory Automaton (mig 267): attach every Equipment you control to the source.
   z.object({

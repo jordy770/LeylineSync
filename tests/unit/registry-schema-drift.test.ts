@@ -71,6 +71,10 @@ const JSON_ONLY: Record<string, string> = {
   gain_control_all: 'permanently steal every matching opposing permanent (Hellkite Tyrant, mig 269); JSON/AI-authored',
   bounce_all: 'return each nonland permanent to its owners hand (Coastal Breach, mig 269); JSON/AI-authored',
   destroy_all_creatures_token: 'wipe all creatures then an X/X token for the count (Phyrexian Rebirth, mig 269); JSON/AI-authored',
+  destroy_all_mv: 'wipe nonland permanents with MV<=N, ritual mana per kill (Culling Ritual, mig 272); JSON/AI-authored',
+  add_poison: 'give poison counters (Caress of Phyrexia, mig 272); JSON/AI-authored',
+  exile_graveyard: 'exile the opponents graveyard (Bojuka Bog, mig 272); JSON/AI-authored',
+  ixhel_corrupted_exile: 'poisoned opponents exile their library top, playable via play_from_exile (Ixhel, mig 272); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

@@ -105,6 +105,14 @@ begin
       and g.owner_id = p_controller_id
       and g.zone = 'hand';
 
+  elsif v_count = 'opponent_poison_counters' then
+    -- Corrupted gates (mig 272, Ixhel deck): the HIGHEST poison total among
+    -- opponents (corrupted = at_least 3).
+    select coalesce(max(coalesce((sp.counters ->> 'poison')::integer, 0)), 0) into v_n
+    from public.game_session_players sp
+    where sp.session_id = p_session_id
+      and sp.player_id is distinct from p_controller_id;
+
   elsif v_count = 'creature_cards_all_graveyards' then
     -- Bonehoard (mig 267): 'equal to the number of creature cards in ALL
     -- graveyards' — every player's, not just yours.
