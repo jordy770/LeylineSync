@@ -451,5 +451,15 @@
 
   "Parting Thoughts": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy","target_type":"creature"}]}},
 
-  "Trial // Error": {"schema_version":2,"spell_effect":{"actions":[{"type":"counter_spell","target_type":"spell"}]}}
+  "Trial // Error": {"schema_version":2,"spell_effect":{"actions":[{"type":"counter_spell","target_type":"spell"}]}},
+
+  "Ancient Excavation": {"schema_version":2,"cycling":"{2}","spell_effect":{"actions":[{"type":"draw","amount":{"count":"cards_in_hand"}},{"type":"discard","count":2}]}},
+
+  "Chief Engineer": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"type_line":"artifact","amount":1}}]},
+
+  "Curse of Vengeance": {"schema_version":2},
+
+  "Daretti, Scrap Savant": {"schema_version":2,"loyalty":3,"loyalty_abilities":[{"cost":2,"label":"Discard up to two cards, then draw that many","effects":[{"type":"discard","count":2},{"type":"draw","amount":2}]},{"cost":-2,"label":"Sacrifice an artifact, return one from your graveyard","effects":[{"type":"sacrifice","count":1,"filter":"artifact"},{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}]},
+
+  "Read the Runes": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":"X"}]}}
 }
