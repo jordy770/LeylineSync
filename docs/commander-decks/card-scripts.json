@@ -379,5 +379,9 @@
 
   "Etched Oracle": {"schema_version":2,"enters_with_counters":{"amount":4},"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"remove_counters","counter_type":"plus_one_one","amount":4}],"effects":[{"type":"draw","amount":3}]}]},
 
-  "Shimmer Myr": {"schema_version":2}
+  "Shimmer Myr": {"schema_version":2},
+
+  "Swiftfoot Boots": {"schema_version":2,"continuous_effects":[{"type":"hexproof","affected":"equipped"},{"type":"haste","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+
+  "Loxodon Warhammer": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":3,"toughness":0}},{"type":"trample","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]}
 }

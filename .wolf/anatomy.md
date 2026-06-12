@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T10:44:58.882Z
-> Files: 164 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T10:56:52.818Z
+> Files: 165 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -138,7 +138,7 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~7331 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~7651 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1813 tok)
 - `add_mana_from_card.sql` — basic-land/manual mana rpc (7-arg, commander identity + monarch land bonus); canonical since mig 262. (~900 tok)
 - `add_mana_from_card.sql` — supabase/functions_src/add_mana_from_card.sql (~1460 tok)
@@ -236,10 +236,10 @@
 - `become-the-avalanche.test.ts` — mig 243 — Become the Avalanche: "Draw a card for each creature you control (~662 tok)
 - `becomes-target-and-power.test.ts` — mig 235 — three cards: (~1397 tok)
 - `breya-core.test.ts` — mig 264 — Breya core. Engine touch: 'sacrifice_artifacts' activation cost (~1294 tok)
-- `breya-recursion.test.ts` — mig 265 — Hanna artifact-or-enchantment return, Myr Retriever exclude-self dies return. (~700 tok)
 - `breya-core.test.ts` — mig 264 — Breya ETB Thopters + sacrifice_artifacts cost, Thopter Foundry nontoken sac, Ichor Wellspring enters/dies draws. (~900 tok)
 - `breya-manabase.test.ts` — mig 263 — Breya mana base. Engine touch: bounce_up_to type_line filter (~516 tok)
 - `breya-manabase.test.ts` — mig 263 — Breya karoo land bounce (bounce_up_to type_line) + double-mana tap. (~500 tok)
+- `breya-recursion.test.ts` — mig 265 — Hanna artifact-or-enchantment return, Myr Retriever exclude-self dies return. (~700 tok)
 - `breya-recursion.test.ts` — mig 265 — Breya recursion. Engine touch: return_from_graveyard filter (~782 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
 - `copy-permanent.test.ts` — mig 239 — token-copy primitive (Will of the Temur + Reflections of Littjara). (~2624 tok)

@@ -192,7 +192,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'goad', 'territorial_attack', 'if_attacking_most_life', 'untap_all_attackers', 'extra_combat',
   'exile_and_manifest', 'vote_wild_free', 'discover', 'ignition',
   'reveal_top_cast_shared', 'exile_from_any_graveyard', 'fight_pick',
-  'exile_tops_cast', 'exile_until_leaves', 'become_monarch',
+  'exile_tops_cast', 'exile_until_leaves', 'become_monarch', 'equip',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -637,6 +637,12 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('exile_until_leaves'),
     target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Equip {N} (mig 266): attach to target creature you control.
+  z.object({
+    type: z.literal('equip'),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
   }),
