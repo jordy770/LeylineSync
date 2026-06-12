@@ -299,5 +299,13 @@
 
   "From the Rubble": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"choose_creature_type","prompt":"Choose a creature type","options":["Dinosaur","Human","Beast","Elemental","Dragon","Angel"]}]},{"event":"end_step","effects":[{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"$chosen"}}]}]},
 
-  "Itzquinth, Firstborn of Gishath": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"deal_damage","amount":{"count":"greatest_power_you_control","type_line":"Dinosaur"},"target_type":"creature","target_controller":"any"}]}]}
+  "Itzquinth, Firstborn of Gishath": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"deal_damage","amount":{"count":"greatest_power_you_control","type_line":"Dinosaur"},"target_type":"creature","target_controller":"any"}]}]},
+
+  "Savage Stomp": {"schema_version":2,"spell_effect":{"actions":[{"type":"add_counters","amount":1,"target_type":"creature","target_controller":"you"},{"type":"fight_pick","target_filter":{"controller":"opponent"}}]}},
+
+  "Wayta, Trainer Prodigy": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{G}"},{"type":"tap_self"}],"effects":[{"type":"fight_pick","target_filter":{"controller":"any"}}]}]},
+
+  "Scion of Calamity": {"schema_version":2,"triggered_abilities":[{"event":"dealt_combat_damage_to_player","effects":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"opponent","types":["artifact","enchantment"]}}]}]},
+
+  "Progenitor's Icon": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]}
 }

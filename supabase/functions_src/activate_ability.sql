@@ -347,17 +347,21 @@ begin
       p_source_card_id
     );
 
-  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity', 'divide_damage', 'return_from_graveyard', 'play_hideaway', 'choose_one', 'gain_life') then
+  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity', 'divide_damage', 'return_from_graveyard', 'play_hideaway', 'choose_one', 'gain_life', 'fight_pick') then
     -- A single create_token / search_library / grant_keyword_all effect
     -- routes through a spell_effect stack item so it reuses the spell-effect
     -- resolver (incl. the `tapped` flag and tutor `filter`). Wayfarer's Bauble.
+    -- A provided target rides the payload (mig 261, Wayta's fight_pick: the
+    -- activation target is the fighter).
     select coalesce(max(position), 0) + 1 into v_next_position
     from public.game_stack_items where session_id = p_session_id;
     insert into public.game_stack_items (
       session_id, controller_player_id, source_card_id, action_type, payload, position, status
     ) values (
       p_session_id, auth.uid(), p_source_card_id, 'spell_effect',
-      jsonb_build_object('effects', jsonb_build_array(v_effect), 'controller_player_id', auth.uid(), 'timing', 'instant'),
+      jsonb_build_object('effects', jsonb_build_array(v_effect), 'controller_player_id', auth.uid(), 'timing', 'instant')
+        || case when p_target_card_id is not null
+                then jsonb_build_object('target_card_id', p_target_card_id) else '{}'::jsonb end,
       v_next_position, 'pending'
     )
     returning * into v_stack;

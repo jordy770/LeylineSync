@@ -830,13 +830,47 @@ begin
                when 'opponent' then coalesce(gc.controller_player_id, gc.owner_id) is distinct from v_controller
                when 'you' then coalesce(gc.controller_player_id, gc.owner_id) = v_controller
                else true end)
-        and (coalesce(v_effect -> 'target_filter' ->> 'type_line', '') = ''
-             or c.type_line ilike '%' || (v_effect -> 'target_filter' ->> 'type_line') || '%');
+        -- types array (mig 261, Scion of Calamity: "artifact or enchantment")
+        -- OR the single type_line; both empty = any type.
+        and (case
+               when jsonb_typeof(v_effect -> 'target_filter' -> 'types') = 'array' then
+                 exists (select 1 from jsonb_array_elements_text(v_effect -> 'target_filter' -> 'types') t
+                         where c.type_line ilike '%' || t.value || '%')
+               when coalesce(v_effect -> 'target_filter' ->> 'type_line', '') <> '' then
+                 c.type_line ilike '%' || (v_effect -> 'target_filter' ->> 'type_line') || '%'
+               else true
+             end);
       if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
       insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
       values (p_session_id, v_controller, p_stack_item_id, 'destroy_pick',
         'Destroy up to ' || coalesce(v_effect ->> 'count', '1'),
         v_options, 0, greatest(1, coalesce((v_effect ->> 'count')::integer, 1)), '{}'::jsonb)
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
+    elsif v_type = 'fight_pick' then
+      -- Two-creature fight where the FIRST creature is the program's target
+      -- (mig 261, Savage Stomp: "+1/+1 counter on target creature you control,
+      -- then it fights target creature you don't control"; Wayta's activated
+      -- fight). Parks the SECOND pick; submit_decision runs apply_fight.
+      if v_target is null then v_i := v_i + 1; continue; end if;
+      select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
+        into v_options
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and gc.id <> v_target
+        and c.type_line ilike '%creature%'
+        and (case lower(coalesce(v_effect -> 'target_filter' ->> 'controller', 'opponent'))
+               when 'opponent' then coalesce(gc.controller_player_id, gc.owner_id) is distinct from v_controller
+               when 'you' then coalesce(gc.controller_player_id, gc.owner_id) = v_controller
+               else true end);
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'fight_pick',
+        'Choose the creature to fight',
+        v_options, 1, 1, jsonb_build_object('fighter_id', v_target::text))
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;

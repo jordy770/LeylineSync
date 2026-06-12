@@ -61,6 +61,7 @@ const JSON_ONLY: Record<string, string> = {
   ignition: 'target creature deals its power to each other creature and each opponent (Chandra\'s Ignition, mig 257); JSON/AI-authored',
   reveal_top_cast_shared: 'reveal top of library, free-cast it if it shares a creature type with yours, else bottom (Descendants\' Path, mig 259); JSON/AI-authored',
   exile_from_any_graveyard: 'optional exile of one card from any graveyard with creature/noncreature riders (Deathgorge Scavenger, mig 259); JSON/AI-authored',
+  fight_pick: 'the program target fights a second parked creature pick (Savage Stomp / Wayta, mig 261); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

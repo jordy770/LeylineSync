@@ -187,7 +187,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'put_from_hand', 'destroy_up_to', 'put_from_command_zone', 'play_hideaway',
   'goad', 'territorial_attack', 'if_attacking_most_life', 'untap_all_attackers', 'extra_combat',
   'exile_and_manifest', 'vote_wild_free', 'discover', 'ignition',
-  'reveal_top_cast_shared', 'exile_from_any_graveyard',
+  'reveal_top_cast_shared', 'exile_from_any_graveyard', 'fight_pick',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -604,6 +604,16 @@ const CardBehaviorActionSchema = z.union([
     target_filter: z.object({
       controller: z.enum(['any', 'opponent', 'you']).optional(),
       type_line: z.string().optional(),
+      // "artifact or enchantment" (Scion of Calamity, mig 261): any match wins.
+      types: z.array(z.string()).optional(),
+    }).strict().optional(),
+  }),
+  // The program's target ("target creature you control") fights a SECOND
+  // parked pick (Savage Stomp / Wayta, mig 261).
+  z.object({
+    type: z.literal('fight_pick'),
+    target_filter: z.object({
+      controller: z.enum(['any', 'opponent', 'you']).optional(),
     }).strict().optional(),
   }),
   // "Return up to N target … to its owner's hand" via a parked pick

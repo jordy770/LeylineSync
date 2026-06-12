@@ -11011,6 +11011,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-12T09:18:07.828Z"
+    },
+    {
+      "id": "bug-678",
+      "timestamp": "2026-06-12T09:28:42.205Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/apply_trigger_effects.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→16 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T09:28:42.205Z"
+    },
+    {
+      "id": "bug-679",
+      "timestamp": "2026-06-12T09:28:57.296Z",
+      "error_message": "Wrong reference: then should be fight_pick",
+      "file": "supabase/functions_src/submit_decision.sql",
+      "root_cause": "Used \"then\" instead of \"fight_pick\"",
+      "fix": "Changed then → fight_pick",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T09:28:57.296Z"
     }
   ]
 }

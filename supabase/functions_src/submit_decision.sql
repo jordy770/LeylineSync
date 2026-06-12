@@ -111,7 +111,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick', 'fight_pick') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -339,6 +339,18 @@ begin
       end if;
     end loop;
     perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'fight_pick' then
+    -- Savage Stomp / Wayta (mig 261): the parked fighter fights the chosen
+    -- creature (both deal power damage; apply_fight handles the sweep).
+    for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
+    loop
+      perform public.apply_fight(
+        v_decision.session_id,
+        (v_decision.params ->> 'fighter_id')::uuid,
+        v_card);
+    end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
   elsif v_decision.decision_type = 'graveyard_exile_pick' then

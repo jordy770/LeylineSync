@@ -3707,3 +3707,18 @@
 | 11:18 | Edited supabase/migrations/202605010260_dino_combat.sql | modified if() | ~467 |
 | 11:19 | Created tests/feature/dino-combat.test.ts | — | ~1512 |
 | 01:45 | mig 260 dino combat batch: Quartzwood Crasher (trample tally + X/X set_pt token), Wrathful Raptors (creature_damaged watcher + event_amount), From the Rubble ($chosen end-step reanimation), Itzquinth (greatest-Dino-power burn) | functions_src x5, mig 260, schema, fixtures, card-scripts, dino-combat.test.ts | 914/914 green, triage 77/6/7 | ~40k |
+| 11:21 | Session end: 42 writes across 17 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 6 reads | ~32635 tok |
+| 11:28 | Edited supabase/functions_src/apply_trigger_effects.sql | expanded (+8 lines) | ~302 |
+| 11:28 | Edited supabase/functions_src/apply_trigger_effects.sql | expanded (+26 lines) | ~485 |
+| 11:28 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~27 |
+| 11:29 | Edited supabase/functions_src/submit_decision.sql | modified Wayta() | ~159 |
+| 11:29 | Edited supabase/functions_src/activate_ability.sql | 14→18 lines | ~342 |
+| 11:29 | Edited supabase/functions_src/resolve_combat_damage.sql | modified tally() | ~275 |
+| 11:29 | Edited supabase/functions_src/resolve_combat_damage.sql | modified tally() | ~213 |
+| 11:29 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~23 |
+| 11:29 | Edited lib/game/card-behavior-schema.ts | expanded (+10 lines) | ~200 |
+| 11:29 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~82 |
+| 11:30 | Edited supabase/migrations/202605010261_dino_fights.sql | modified batch() | ~303 |
+| 11:31 | Created tests/feature/dino-fights.test.ts | — | ~1268 |
+| 11:31 | Edited tests/feature/dino-fights.test.ts | inline fix | ~27 |
+| 02:15 | mig 261 dino fights batch: Savage Stomp + Wayta (fight_pick park), Scion of Calamity (dealt_combat_damage_to_player event + destroy_up_to types array), Progenitor's Icon (script-only mana) | functions_src x4, mig 261, schema, drift test, fixtures, card-scripts, dino-fights.test.ts | 917/917 green, triage 81/6/3 | ~35k |

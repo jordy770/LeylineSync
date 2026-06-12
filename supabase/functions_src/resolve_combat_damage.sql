@@ -309,6 +309,13 @@ begin
                 to_jsonb(coalesce((v_trample_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
                          + v_attacker_damage));
             end if;
+            -- Per-attacker event (mig 261, Scion of Calamity: "whenever THIS
+            -- creature deals combat damage to a player").
+            perform public.fire_card_triggers(
+              p_session_id, v_assignment.attacker_card_id,
+              array['dealt_combat_damage_to_player'],
+              jsonb_build_object('event_amount', v_attacker_damage,
+                                 'event_player_id', v_assignment.defending_player_id));
           end if;
           -- Toxic N: poison in addition to dealing combat damage to the player.
           if v_attacker_toxic > 0 then
@@ -450,6 +457,12 @@ begin
                 array[v_assignment.defending_player_id::text],
                 to_jsonb(coalesce((v_trample_player_damage ->> v_assignment.defending_player_id::text)::integer, 0)
                          + v_trample_amount));
+              -- Per-attacker event (mig 261, Scion of Calamity).
+              perform public.fire_card_triggers(
+                p_session_id, v_assignment.attacker_card_id,
+                array['dealt_combat_damage_to_player'],
+                jsonb_build_object('event_amount', v_trample_amount,
+                                   'event_player_id', v_assignment.defending_player_id));
             end if;
             if v_attacker_toxic > 0 then
               perform public.add_player_poison(p_session_id, v_assignment.defending_player_id, v_attacker_toxic);
