@@ -3769,3 +3769,5 @@
 | 12:44 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~129 |
 | 12:44 | Created tests/feature/breya-recursion.test.ts | — | ~782 |
 | 04:40 | mig 265 Breya recursion: Sharuum, Sanctum Gargoyle, Hanna (types array filter), Myr Retriever (exclude_self filter), Trash for Treasure (sac park as additional cost) | apply_trigger_effects, mig 265, schema, fixtures, card-scripts x5, breya-recursion.test.ts | 928/928 green, Breya triage 33/3/50 | ~15k |
+| 12:46 | Session end: 92 writes across 29 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 10 reads | ~108957 tok |
+| 05:00 | Script-only Breya batch (no migration): Solemn Simulacrum, Trinket Mage (MV<=1 cap unenforced), Sphinx Summoner, Executioner's Capsule (nonblack unenforced), Dispeller's Capsule, Migratory Route (cycling + Bird Token) | card-scripts x6, Bird Token fixture | 928/928 green, Breya triage 39/3/44 | ~8k |

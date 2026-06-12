@@ -361,5 +361,17 @@
 
   "Myr Retriever": {"schema_version":2,"triggered_abilities":[{"event":"dies","effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"artifact","exclude_self":true}}]}]},
 
-  "Trash for Treasure": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":"artifact"},{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}}
+  "Trash for Treasure": {"schema_version":2,"spell_effect":{"actions":[{"type":"sacrifice","count":1,"filter":"artifact"},{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}},
+
+  "Solemn Simulacrum": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]},{"event":"dies","effects":[{"type":"draw","amount":1}]}]},
+
+  "Trinket Mage": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"artifact"}}]}]},
+
+  "Sphinx Summoner": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"type_line":"artifact creature"}}]}]},
+
+  "Executioner's Capsule": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}{B}"},{"type":"sacrifice_self"}],"effects":[{"type":"destroy","target_type":"creature"}]}]},
+
+  "Dispeller's Capsule": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{W}"},{"type":"sacrifice_self"}],"effects":[{"type":"destroy","target_type":["artifact","enchantment"]}]}]},
+
+  "Migratory Route": {"schema_version":2,"cycling":"{2}","spell_effect":{"actions":[{"type":"create_token","token":"Bird Token","count":4}]}}
 }
