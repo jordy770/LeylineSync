@@ -1,7 +1,17 @@
--- supabase/functions_src/activate_ability.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010284_cost_picks
+-- Approximation payback, part 2 (mig 284): CHOSEN COST PAYMENTS.
+-- activate_ability gains p_cost_card_ids uuid[]: for pick-able costs
+-- (sacrifice_artifacts, return_land, tap_creatures) the client passes the
+-- exact cards to pay with, in cost order; each is validated (zone, control,
+-- type, nontoken/untapped as required) and an illegal pick fails the whole
+-- activation. Null keeps the legacy auto-pick (cheapest-MV / tapped-first /
+-- first-N). Old 7-arg overload dropped below. Upgrades player agency on
+-- Breya, Thopter Foundry, Trading Post, Slobad, Mina and Denn, Shacklegeist,
+-- Gravespawn Sovereign.
+
+drop function if exists public.activate_ability(uuid, uuid, integer, uuid, uuid, jsonb, integer);
+-- Generated from supabase/functions_src (activate_ability) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.activate_ability(
   p_session_id uuid,

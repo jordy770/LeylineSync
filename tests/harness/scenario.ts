@@ -553,7 +553,7 @@ export class Scenario {
   async activate(
     sourceCardId: string,
     index = 0,
-    target: { targetCardId?: string; targetPlayerId?: string; xValue?: number } = {},
+    target: { targetCardId?: string; targetPlayerId?: string; xValue?: number; costCardIds?: string[] } = {},
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'activate_ability', {
@@ -564,6 +564,7 @@ export class Scenario {
         p_target_card_id: target.targetCardId ?? null,
         p_generic_payment: null,
         p_x_value: target.xValue ?? null,
+        p_cost_card_ids: target.costCardIds ?? null,
       }),
     )
   }
