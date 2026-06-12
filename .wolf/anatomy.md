@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T13:38:26.376Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T13:53:54.809Z
 > Files: 168 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
@@ -152,8 +152,8 @@
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1561 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~18964 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~10992 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~19275 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~11234 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5263 tok)
@@ -161,7 +161,7 @@
 - `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
-- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~2461 tok)
+- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3020 tok)
 - `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1470 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1069 tok)
@@ -179,14 +179,14 @@
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2165 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
-- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2329 tok)
-- `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~7088 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2392 tok)
+- `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~7219 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~2258 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~800 tok)
 - `return_all_from_graveyard.sql` — supabase/functions_src/return_all_from_graveyard.sql (~838 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~12953 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~13186 tok)
 - `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~384 tok)
 - `turn_manifest_up.sql` — supabase/functions_src/turn_manifest_up.sql (~655 tok)
 

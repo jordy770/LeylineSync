@@ -195,6 +195,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'exile_tops_cast', 'exile_until_leaves', 'become_monarch', 'equip',
   'living_weapon', 'attach_all_equipment', 'gain_control_all', 'bounce_all', 'destroy_all_creatures_token',
   'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
+  'exile_all', 'graveyard_to_library_top',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -682,6 +683,15 @@ const CardBehaviorActionSchema = z.union([
   // Bojuka Bog (mig 272): exile the opponent's graveyard.
   z.object({
     type: z.literal('exile_graveyard'),
+  }),
+  // Merciless Eviction (mig 275): exile all permanents of the given types.
+  z.object({
+    type: z.literal('exile_all'),
+    types: z.array(z.string()),
+  }),
+  // Noxious Revival (mig 275): a graveyard card goes to its owner's library top.
+  z.object({
+    type: z.literal('graveyard_to_library_top'),
   }),
   // Ixhel (mig 272): poisoned opponents exile their library top; you may
   // play those cards (impulse-window approximation).

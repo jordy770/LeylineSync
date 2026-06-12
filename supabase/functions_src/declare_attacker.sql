@@ -119,6 +119,55 @@ begin
     raise exception 'Creature has summoning sickness';
   end if;
 
+  -- Attack taxes (mig 275, Ghostly Prison / Windborn Muse / Norn's Annex):
+  -- 'attack_tax' rows protecting the DEFENDER are auto-paid per attacker —
+  -- payload {mana:N} deducts N generic from the attacker's pool (greedy,
+  -- colourless first; raises when short), payload {life:N} pays life.
+  declare
+    v_tax record;
+    v_tax_pool jsonb;
+    v_tax_due integer;
+    v_tax_col text;
+    v_tax_have integer;
+  begin
+    for v_tax in
+      select ce.payload
+      from public.game_continuous_effects ce
+      join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+      where ce.session_id = p_session_id
+        and ce.effect_type = 'attack_tax'
+        and ce.affected_player_id = v_defending_player
+        and src.zone = 'battlefield'
+    loop
+      if coalesce((v_tax.payload ->> 'life')::integer, 0) > 0 then
+        update public.game_session_players
+        set life_total = life_total - (v_tax.payload ->> 'life')::integer
+        where session_id = p_session_id and player_id = auth.uid();
+      end if;
+      v_tax_due := coalesce((v_tax.payload ->> 'mana')::integer, 0);
+      if v_tax_due > 0 then
+        select coalesce(mana_pool, '{}'::jsonb) into v_tax_pool
+        from public.game_players
+        where session_id = p_session_id and player_id = auth.uid()
+        for update;
+        foreach v_tax_col in array array['C','W','U','B','R','G'] loop
+          exit when v_tax_due <= 0;
+          v_tax_have := coalesce((v_tax_pool ->> v_tax_col)::integer, 0);
+          if v_tax_have > 0 then
+            v_tax_pool := v_tax_pool || jsonb_build_object(v_tax_col, v_tax_have - least(v_tax_have, v_tax_due));
+            v_tax_due := v_tax_due - least(v_tax_have, v_tax_due);
+          end if;
+        end loop;
+        if v_tax_due > 0 then
+          raise exception 'Cannot pay the attack tax (% generic per attacker)', (v_tax.payload ->> 'mana');
+        end if;
+        update public.game_players
+        set mana_pool = v_tax_pool
+        where session_id = p_session_id and player_id = auth.uid();
+      end if;
+    end loop;
+  end;
+
   -- Attack restriction (Gadrak: "can't attack unless you control four or more
   -- artifacts"). A top-level script prop {count, at_least}; the count is read
   -- for the attacking player (auth.uid()).

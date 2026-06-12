@@ -442,6 +442,23 @@ begin
         end if;
       end if;
 
+    elsif v_eff_type = 'exile_all' then
+      -- Merciless Eviction (mig 275): "exile all <type>" — exile skips
+      -- destruction triggers and ignores indestructible.
+      if jsonb_typeof(v_effect -> 'types') = 'array' then
+        update public.game_cards gc
+        set zone = 'exile',
+            attached_to = null,
+            zone_position = (select coalesce(max(x.zone_position), -1) + 1
+                             from public.game_cards x
+                             where x.session_id = p_session_id
+                               and x.owner_id = gc.owner_id and x.zone = 'exile')
+        from public.cards c
+        where c.id = gc.card_id and gc.session_id = p_session_id and gc.zone = 'battlefield'
+          and exists (select 1 from jsonb_array_elements_text(v_effect -> 'types') t
+                      where c.type_line ilike '%' || t.value || '%');
+      end if;
+
     elsif v_eff_type = 'add_poison' then
       -- "…gets N poison counters" (mig 272, Caress of Phyrexia). Recipient
       -- 'each_opponent' (default) or 'controller'.

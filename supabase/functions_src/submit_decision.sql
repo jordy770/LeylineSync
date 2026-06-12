@@ -111,7 +111,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick', 'fight_pick', 'etali_cast_pick') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -382,6 +382,22 @@ begin
         v_decision.session_id,
         (v_decision.params ->> 'fighter_id')::uuid,
         v_card);
+    end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'graveyard_to_top_pick' then
+    -- Noxious Revival (mig 275): the chosen graveyard card goes to the TOP of
+    -- its owner's library (top = lowest zone_position).
+    for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
+    loop
+      select coalesce(min(zone_position), 0) - 1 into v_pos
+      from public.game_cards
+      where session_id = v_decision.session_id
+        and owner_id = (select owner_id from public.game_cards where id = v_card)
+        and zone = 'library';
+      update public.game_cards
+      set zone = 'library', zone_position = v_pos, is_tapped = false, damage_marked = 0
+      where id = v_card and session_id = v_decision.session_id and zone = 'graveyard';
     end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 

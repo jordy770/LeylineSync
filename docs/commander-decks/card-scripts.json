@@ -577,5 +577,21 @@
 
   "Geth's Summons": {"schema_version":2,"spell_effect":{"actions":[{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"creature"}}]}},
 
-  "Glissa's Retriever": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"source","source_zone_required":"battlefield"},{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":3}]}
+  "Glissa's Retriever": {"schema_version":2,"continuous_effects":[{"type":"haste","affected":"source","source_zone_required":"battlefield"},{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":3}]},
+
+  "Ghostly Prison": {"schema_version":2,"continuous_effects":[{"type":"attack_tax","affected":"controller","payload":{"mana":2}}]},
+
+  "Windborn Muse": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"attack_tax","affected":"controller","payload":{"mana":2}}]},
+
+  "Norn's Annex": {"schema_version":2,"continuous_effects":[{"type":"attack_tax","affected":"controller","payload":{"life":2}}]},
+
+  "Norn's Decree": {"schema_version":2,"triggered_abilities":[{"event":"creature_damaged_player","filter":{"controller":"opponent","type_line":""},"effects":[{"type":"add_poison","amount":1,"recipient":"each_opponent"}]}]},
+
+  "Merciless Eviction": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Merciless Eviction","modes":[{"label":"Exile all artifacts","actions":[{"type":"exile_all","types":["artifact"]}]},{"label":"Exile all creatures","actions":[{"type":"exile_all","types":["creature"]}]},{"label":"Exile all enchantments","actions":[{"type":"exile_all","types":["enchantment"]}]},{"label":"Exile all planeswalkers","actions":[{"type":"exile_all","types":["planeswalker"]}]}]}]}},
+
+  "Noxious Revival": {"schema_version":2,"spell_effect":{"actions":[{"type":"graveyard_to_library_top"}]}},
+
+  "Expand the Sphere": {"schema_version":2,"spell_effect":{"actions":[{"type":"look_top","count":6,"to":"battlefield","filter":{"type_line":"land"}},{"type":"proliferate"}]}},
+
+  "Wurmquake": {"schema_version":2,"spell_effect":{"actions":[{"type":"create_token","token":"Phyrexian Wurm Token","count":1},{"type":"conditional","condition":{"count":"opponent_poison_counters","at_least":3},"effects":[{"type":"create_token","token":"Phyrexian Wurm Token","count":1}]}]}}
 }

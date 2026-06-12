@@ -11143,6 +11143,22 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-06-12T00:00:00Z"
+    },
+    {
+      "id": "bug-686",
+      "timestamp": "2026-06-12T13:53:40.271Z",
+      "error_message": "Wrong reference: then should be graveyard_to_top_pick",
+      "file": "supabase/functions_src/submit_decision.sql",
+      "root_cause": "Used \"then\" instead of \"graveyard_to_top_pick\"",
+      "fix": "Changed then → graveyard_to_top_pick",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T13:53:40.271Z"
     }
   ]
 }

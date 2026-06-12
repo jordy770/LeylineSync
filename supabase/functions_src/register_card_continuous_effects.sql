@@ -112,7 +112,11 @@ begin
       -- STATIC damage cap (mig 259, Temple Altisaur): payload {type_line, cap};
       -- apply_damage_to_creature caps damage to OTHER matching creatures the
       -- source's controller controls.
-      'damage_cap'
+      'damage_cap',
+      -- STATIC attack tax (mig 275, Ghostly Prison / Norn's Annex / Windborn
+      -- Muse): payload {mana:N} or {life:N}; declare_attacker auto-pays per
+      -- attacker against the protected (controller) player.
+      'attack_tax'
     ) then
       raise exception 'Unsupported continuous effect type: %', v_effect_type;
     end if;

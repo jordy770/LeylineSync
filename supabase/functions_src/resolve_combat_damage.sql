@@ -322,6 +322,13 @@ begin
             set monarch_player_id = v_turn_state.active_player_id
             where session_id = p_session_id
               and monarch_player_id = v_assignment.defending_player_id;
+            -- Watcher broadcast of the per-attacker connect (mig 275, Norn's
+            -- Decree: "an opponent's creatures deal combat damage to you").
+            perform public.fire_watcher_triggers(
+              p_session_id, v_assignment.attacker_card_id,
+              v_turn_state.active_player_id, 'creature_damaged_player',
+              jsonb_build_object('event_amount', v_attacker_damage,
+                                 'event_player_id', v_assignment.defending_player_id));
           end if;
           -- Toxic N: poison in addition to dealing combat damage to the player.
           if v_attacker_toxic > 0 then

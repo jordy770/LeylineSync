@@ -1105,6 +1105,22 @@ begin
         end if;
       end if;
 
+    elsif v_type = 'graveyard_to_library_top' then
+      -- Noxious Revival (mig 275): "put target card from a graveyard on top
+      -- of its owner's library." Parks a pick over every graveyard.
+      select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gy.id, 'name', c.name) order by c.name, gy.id), '[]'::jsonb)
+        into v_options
+      from public.game_cards gy join public.cards c on c.id = gy.card_id
+      where gy.session_id = p_session_id and gy.zone = 'graveyard';
+      if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'graveyard_to_top_pick',
+        'Put a card from a graveyard on top of its owner''s library',
+        v_options, 0, 1, '{}'::jsonb)
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
     elsif v_type = 'exile_from_any_graveyard' then
       -- Deathgorge Scavenger (mig 259): "you may exile target card from a
       -- graveyard. If a creature card is exiled this way, you gain 2 life. If

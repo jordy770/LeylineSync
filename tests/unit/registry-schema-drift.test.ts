@@ -75,6 +75,8 @@ const JSON_ONLY: Record<string, string> = {
   add_poison: 'give poison counters (Caress of Phyrexia, mig 272); JSON/AI-authored',
   exile_graveyard: 'exile the opponents graveyard (Bojuka Bog, mig 272); JSON/AI-authored',
   ixhel_corrupted_exile: 'poisoned opponents exile their library top, playable via play_from_exile (Ixhel, mig 272); JSON/AI-authored',
+  exile_all: 'exile all permanents of the given types (Merciless Eviction, mig 275); JSON/AI-authored',
+  graveyard_to_library_top: 'put a graveyard card on top of its owners library (Noxious Revival, mig 275); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))
