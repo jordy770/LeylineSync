@@ -593,5 +593,39 @@
 
   "Expand the Sphere": {"schema_version":2,"spell_effect":{"actions":[{"type":"look_top","count":6,"to":"battlefield","filter":{"type_line":"land"}},{"type":"proliferate"}]}},
 
-  "Wurmquake": {"schema_version":2,"spell_effect":{"actions":[{"type":"create_token","token":"Phyrexian Wurm Token","count":1},{"type":"conditional","condition":{"count":"opponent_poison_counters","at_least":3},"effects":[{"type":"create_token","token":"Phyrexian Wurm Token","count":1}]}]}}
+  "Wurmquake": {"schema_version":2,"spell_effect":{"actions":[{"type":"create_token","token":"Phyrexian Wurm Token","count":1},{"type":"conditional","condition":{"count":"opponent_poison_counters","at_least":3},"effects":[{"type":"create_token","token":"Phyrexian Wurm Token","count":1}]}]}},
+
+  "Obuun, Mul Daya Ancestor": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"}]}]},
+
+  "Acidic Slime": {"schema_version":2,"continuous_effects":[{"type":"deathtouch","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"destroy","target_type":["artifact","enchantment"]}]}]},
+
+  "Banishing Light": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"exile_until_leaves","target_type":"creature","target_controller":"opponent"}]}]},
+
+  "Beanstalk Giant": {"schema_version":2,"cda":{"power":{"count":"lands_you_control"},"toughness":{"count":"lands_you_control"}}},
+
+  "Blighted Woodland": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{3}{G}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}]},
+
+  "Boros Guildgate": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Gruul Guildgate": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]},
+
+  "Circuitous Route": {"schema_version":2,"spell_effect":{"actions":[{"type":"search_library","count":2,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}},
+
+  "Condemn": {"schema_version":2,"spell_effect":{"actions":[{"type":"shuffle_into_library","target_type":"creature"}]}},
+
+  "Crush Contraband": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Crush Contraband","modes":[{"label":"Exile target artifact","actions":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"any","type_line":"artifact"}}]},{"label":"Exile target enchantment","actions":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"any","type_line":"enchantment"}}]}]}]}},
+
+  "Cryptic Caves": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"condition":{"count":"lands_you_control","at_least":5},"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"draw","amount":1}]}]},
+
+  "Elvish Rejuvenator": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"look_top","count":5,"to":"battlefield","filter":{"type_line":"land"}}]}]},
+
+  "Emeria Angel": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Bird Token","count":1}]}]},
+
+  "Far Wanderings": {"schema_version":2,"spell_effect":{"actions":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}},
+
+  "Fertilid": {"schema_version":2,"enters_with_counters":{"amount":2},"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}{G}"},{"type":"remove_counters","counter_type":"plus_one_one","amount":1}],"effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}}]}]},
+
+  "Gruul Turf": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"land"}}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1},{"type":"add_mana","color":"G","amount":1}]}]},
+
+  "Ground Assault": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage","amount":{"count":"lands_you_control"},"target_type":"creature"}]}}
 }
