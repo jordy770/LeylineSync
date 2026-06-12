@@ -1,7 +1,19 @@
--- supabase/functions_src/apply_triggered_ability_effects.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010281_millicent_finale
+-- Millicent finale (16 cards — deck COMPLETE, mig 281). Engine: destroy_all
+-- min_power (Fell the Mighty — the target-relative bound approximated as a
+-- fixed power-4 threshold) and sacrifice_source (Promise of Bunrei: payout
+-- once, then the enchantment sacrifices itself).
+-- Script-only approximations: Disorder in the Court = two Clues only;
+-- Haunting Imitation, Mirror Entity and Rhoda are INERT bodies (top-reveal
+-- copies / X base-setting / becomes-tapped watcher unmodelled); Imprisoned
+-- in the Moon = a 0/1 set_pt aura (type stripping unmodelled); Midnight
+-- Clock drops the twelfth-hour reset; Occult Epiphany = draw 2, discard 2,
+-- one Spirit; Spectral Arcanist = a graveyard cast permission without the
+-- MV cap or free cast; Sudden Salvation drops the died-this-turn filter;
+-- Timin taps on YOUR combats only; Verity Circle keeps the activated tap;
+-- partner (Rhoda/Timin) is not modelled.
+-- Generated from supabase/functions_src (apply_triggered_ability_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_triggered_ability_effects(
   p_session_id uuid,

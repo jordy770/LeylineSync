@@ -819,5 +819,37 @@
 
   "Supreme Phantom": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"pump","affected":"controller","payload":{"power":1,"toughness":1,"creature_type":"Spirit","exclude_source":true}}]},
 
-  "Twilight Drover": {"schema_version":2,"triggered_abilities":[{"event":"creature_left","filter":{"controller":"any","token":true},"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one"}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{W}"},{"type":"remove_counters","counter_type":"plus_one_one","amount":1}],"effects":[{"type":"create_token","token":"Spirit Token","count":2}]}]}
+  "Twilight Drover": {"schema_version":2,"triggered_abilities":[{"event":"creature_left","filter":{"controller":"any","token":true},"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one"}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{W}"},{"type":"remove_counters","counter_type":"plus_one_one","amount":1}],"effects":[{"type":"create_token","token":"Spirit Token","count":2}]}]},
+
+  "Disorder in the Court": {"schema_version":2,"spell_effect":{"actions":[{"type":"create_token","token":"Clue Token","count":2}]}},
+
+  "Fell the Mighty": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy_all","min_power":4}]}},
+
+  "Haunting Imitation": {"schema_version":2},
+
+  "Imprisoned in the Moon": {"schema_version":2,"continuous_effects":[{"type":"set_pt","affected":"enchanted","payload":{"power":0,"toughness":1}}]},
+
+  "Midnight Clock": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]},{"costs":[{"type":"mana","amount":"{2}{U}"}],"effects":[{"type":"add_counters","amount":1,"counter_type":"charge"}]}],"triggered_abilities":[{"event":"upkeep","effects":[{"type":"add_counters","amount":1,"counter_type":"charge"}]}]},
+
+  "Mirror Entity": {"schema_version":2},
+
+  "Occult Epiphany": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":2},{"type":"discard","count":2},{"type":"create_token","token":"Spirit Token","count":1}]}},
+
+  "Promise of Bunrei": {"schema_version":2,"triggered_abilities":[{"event":"creature_died","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Spirit Token","count":4},{"type":"sacrifice_source"}]}]},
+
+  "Reconnaissance Mission": {"schema_version":2,"cycling":"{2}","triggered_abilities":[{"event":"creature_damaged_player","filter":{"controller":"you"},"effects":[{"type":"draw","amount":1}]}]},
+
+  "Rhoda, Geist Avenger": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}]},
+
+  "Shacklegeist": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"tap_creatures","count":2,"type_line":"Spirit"}],"effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}]},
+
+  "Spectral Arcanist": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"grant_cast_from_graveyard","type_line":"instant"}]}]},
+
+  "Sudden Salvation": {"schema_version":2,"spell_effect":{"actions":[{"type":"return_from_graveyard","count":3,"to":"battlefield","tapped":true,"filter":{"types":["creature","artifact","enchantment","land","planeswalker"]}}]}},
+
+  "Temple of Enlightenment": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"scry","amount":1}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Timin, Youthful Geist": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"beginning_of_combat","effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}]},
+
+  "Verity Circle": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{4}{U}"}],"effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}]}
 }
