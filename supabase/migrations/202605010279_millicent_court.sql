@@ -1,7 +1,17 @@
--- supabase/functions_src/register_card_continuous_effects.sql
--- CANONICAL current definition (seeded from 202605010195_intimidate_hexproof.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010279_millicent_court
+-- Millicent batch 2 (10 cards, mig 279). Engine: 'set_pt' joins the
+-- register whitelist so auras can pin base P/T (Darksteel Mutation 0/1
+-- indestructible; ability/type loss NOT modelled).
+-- Script-only approximations: Benevolent Offering keeps only YOUR halves;
+-- Breath of the Sleepless + Ghostly Pilferer are INERT (flash timing /
+-- becomes-untapped + cast-from-elsewhere events unmodelled); Custodi
+-- Soulbinders enters with a fixed 2 counters; Custodi Squire returns
+-- without the vote; Donal copies the FULL creature (not a 1/1) once per
+-- turn, legendary unfiltered; Dovin +1 adds bare loyalty and -7 is draw 3;
+-- Ethereal Investigator makes one Clue and drops the second-draw watcher;
+-- Flood of Tears bounces all then puts any hand permanent.
+-- Generated from supabase/functions_src (register_card_continuous_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.register_card_continuous_effects(
   p_session_id uuid, p_source_card_id uuid

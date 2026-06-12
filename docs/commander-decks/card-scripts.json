@@ -753,5 +753,25 @@
 
   "Hallowed Spiritkeeper": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dies","effects":[{"type":"create_token","token":"Spirit Token","count":{"count":"cards_in_graveyard","type_line":"creature"}}]}]},
 
-  "Hanged Executioner": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Spirit Token","count":1}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}{W}"},{"type":"exile_self"}],"effects":[{"type":"exile","target_type":"creature"}]}]}
+  "Hanged Executioner": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Spirit Token","count":1}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}{W}"},{"type":"exile_self"}],"effects":[{"type":"exile","target_type":"creature"}]}]},
+
+  "Benevolent Offering": {"schema_version":2,"spell_effect":{"actions":[{"type":"create_token","token":"Spirit Token","count":3},{"type":"gain_life","amount":{"count":"creatures_you_control","times":2}}]}},
+
+  "Breath of the Sleepless": {"schema_version":2},
+
+  "Custodi Soulbinders": {"schema_version":2,"enters_with_counters":{"amount":2},"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}{W}"},{"type":"remove_counters","counter_type":"plus_one_one","amount":1}],"effects":[{"type":"create_token","token":"Spirit Token","count":1}]}]},
+
+  "Custodi Squire": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"types":["artifact","creature","enchantment"]}}]}]},
+
+  "Darksteel Mutation": {"schema_version":2,"continuous_effects":[{"type":"set_pt","affected":"enchanted","payload":{"power":0,"toughness":1}},{"type":"indestructible","affected":"enchanted"}]},
+
+  "Donal, Herald of Wings": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","type_line":"creature","has_keyword":"flying"},"once_per_turn":true,"effects":[{"type":"copy_permanent","of":"triggering_creature"}]}]},
+
+  "Dovin, Grand Arbiter": {"schema_version":2,"loyalty":3,"loyalty_abilities":[{"cost":1,"label":"Plus one loyalty","effects":[]},{"cost":-1,"label":"Thopter and a life","effects":[{"type":"create_token","token":"Thopter Token","count":1},{"type":"gain_life","amount":1}]},{"cost":-7,"label":"Dig ten, take three","effects":[{"type":"draw","amount":3}]}]},
+
+  "Ethereal Investigator": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Clue Token","count":1}]}]},
+
+  "Flood of Tears": {"schema_version":2,"spell_effect":{"actions":[{"type":"bounce_all","nonland":true},{"type":"put_from_hand","count":1,"filter":{"permanent":true}}]}},
+
+  "Ghostly Pilferer": {"schema_version":2}
 }

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T14:38:02.488Z
-> Files: 172 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T14:42:18.367Z
+> Files: 173 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
@@ -13,6 +13,7 @@
 - `scratch-ign.mjs` — Declares c (~161 tok)
 - `scratch-mv.mjs` — Declares c (~215 tok)
 - `tmp-anim.cjs` — Declares fs (~915 tok)
+- `tmp-court.cjs` — Declares fs (~721 tok)
 - `tmp-finale.cjs` — Declares fs (~1293 tok)
 - `tmp-obuun-batch.cjs` — Declares fs (~2351 tok)
 - `tmp-spirits.cjs` — Declares fs (~1536 tok)
