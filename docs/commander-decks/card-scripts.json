@@ -727,5 +727,31 @@
 
   "Trove Warden": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}]},
 
-  "Satyr Wayfinder": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"mill","amount":4},{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"land"}}]}]}
+  "Satyr Wayfinder": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"mill","amount":4},{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"land"}}]}]},
+
+  "Millicent, Restless Revenant": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"cost_reduction","affected":"controller","payload":{"type_line":"Spirit","amount":1}}],"triggered_abilities":[{"event":"creature_died","filter":{"controller":"you","type_line":"Spirit","nontoken":true},"effects":[{"type":"create_token","token":"Spirit Token","count":1}]},{"event":"creature_damaged_player","filter":{"controller":"you","type_line":"Spirit","nontoken":true},"effects":[{"type":"create_token","token":"Spirit Token","count":1}]}]},
+
+  "Angel of Flight Alabaster": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"upkeep","effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"Spirit"}}]}]},
+
+  "Arcane Denial": {"schema_version":2,"spell_effect":{"actions":[{"type":"counter_spell","target_type":"spell"},{"type":"draw","amount":1}]}},
+
+  "Azorius Locket": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]},{"costs":[{"type":"mana","amount":"{4}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"draw","amount":2}]}]},
+
+  "Azorius Signet": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1},{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Boreas Charger": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"leaves_the_battlefield","effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Plains"}}]}]},
+
+  "Bygone Bishop": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","type_line":"creature"},"effects":[{"type":"create_token","token":"Clue Token","count":1}]}]},
+
+  "Drogskol Captain": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"pump","affected":"controller","payload":{"power":1,"toughness":1,"creature_type":"Spirit","exclude_source":true}}]},
+
+  "Drogskol Reinforcements": {"schema_version":2,"triggered_abilities":[{"event":"attacks","effects":[{"type":"pump","power":1,"toughness":1}]}]},
+
+  "Field of Souls": {"schema_version":2,"triggered_abilities":[{"event":"creature_died","filter":{"controller":"you","nontoken":true},"effects":[{"type":"create_token","token":"Spirit Token","count":1}]}]},
+
+  "Geist of Saint Traft": {"schema_version":2,"continuous_effects":[{"type":"hexproof","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"attacks","effects":[{"type":"create_token","token":"Angel Token","count":1,"tapped":true}]}]},
+
+  "Hallowed Spiritkeeper": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dies","effects":[{"type":"create_token","token":"Spirit Token","count":{"count":"cards_in_graveyard","type_line":"creature"}}]}]},
+
+  "Hanged Executioner": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Spirit Token","count":1}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}{W}"},{"type":"exile_self"}],"effects":[{"type":"exile","target_type":"creature"}]}]}
 }
