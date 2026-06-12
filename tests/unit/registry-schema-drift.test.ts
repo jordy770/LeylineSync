@@ -65,6 +65,7 @@ const JSON_ONLY: Record<string, string> = {
   exile_tops_cast: 'exile each player\'s library top, free-cast pick over the permanents (Etali, mig 262); JSON/AI-authored',
   exile_until_leaves: 'exile the target until the trigger source leaves the battlefield (Bronzebeak Foragers, mig 262); JSON/AI-authored',
   become_monarch: 'you become the monarch (Regal Behemoth, mig 262); JSON/AI-authored',
+  equip: 'attach this Equipment to target creature you control (Breya Equipment cluster, mig 266); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))
