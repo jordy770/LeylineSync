@@ -1,7 +1,12 @@
--- supabase/functions_src/submit_decision.sql
--- CANONICAL current definition (seeded from 202605010197_may_cost_condition.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010288_search_shuffle_order
+-- search_library shuffle ordering (mig 288): the post-search shuffle now
+-- runs BEFORE the picks are placed. The old order was harmless for
+-- hand/battlefield/graveyard destinations but would have buried a to:'top'
+-- tutor (Vampiric Tutor pattern) back into the library. Latent — no script
+-- used to:'top' yet — found while answering 'does the library get shuffled
+-- after every search?' (it does: every resolution, found or declined).
+-- Generated from supabase/functions_src (submit_decision) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.submit_decision(
   p_decision_id uuid,
