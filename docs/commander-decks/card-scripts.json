@@ -685,5 +685,47 @@
 
   "Multani, Yavimaya's Avatar": {"schema_version":2,"continuous_effects":[{"type":"reach","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"},{"type":"pump","affected":"source","source_zone_required":"battlefield","payload":{"power_count":"lands_and_graveyard_lands","toughness_count":"lands_and_graveyard_lands"}}]},
 
-  "Mina and Denn, Wildborn": {"schema_version":2,"continuous_effects":[{"type":"additional_land_plays","affected":"controller","amount":1}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{R}{G}"},{"type":"return_land"}],"effects":[{"type":"grant_keyword","keyword":"trample","target_type":"creature","target_controller":"you"}]}]}
+  "Mina and Denn, Wildborn": {"schema_version":2,"continuous_effects":[{"type":"additional_land_plays","affected":"controller","amount":1}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{R}{G}"},{"type":"return_land"}],"effects":[{"type":"grant_keyword","keyword":"trample","target_type":"creature","target_controller":"you"}]}]},
+
+  "Abundance": {"schema_version":2},
+
+  "Admonition Angel": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"exile_until_leaves","target_type":"creature","target_controller":"opponent"}]}]},
+
+  "Armorcraft Judge": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"draw","amount":{"count":"countered_creatures_you_control"}}]}]},
+
+  "Elite Scaleguard": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"add_counters","amount":2,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"}]}]},
+
+  "Geode Rager": {"schema_version":2,"continuous_effects":[{"type":"first_strike","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"goad","target_type":"creature","target_controller":"opponent"}]}]},
+
+  "Keeper of Fables": {"schema_version":2,"triggered_abilities":[{"event":"creature_damaged_player","filter":{"controller":"you"},"effects":[{"type":"draw","amount":1}]}]},
+
+  "Living Twister": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{G}"}],"effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"land"}}]}]},
+
+  "Murasa Rootgrazer": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"tap_self"}],"effects":[{"type":"put_from_hand","count":1,"filter":{"type_line":"basic land"}}]},{"costs":[{"type":"tap_self"}],"effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"basic land"}}]}]},
+
+  "Naya Charm": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Naya Charm","modes":[{"label":"Deal 3 damage to target creature","actions":[{"type":"divide_damage","amount":3,"max_targets":1,"target_filter":{"controller":"any","types":["creature"]}}]},{"label":"Return a card from a graveyard to hand","actions":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"types":["creature","artifact","enchantment","land","planeswalker","instant","sorcery"]}}]},{"label":"Tap all creatures target player controls","actions":[{"type":"tap_all","target_controller":"opponent"}]}]}]}},
+
+  "Nissa's Renewal": {"schema_version":2,"spell_effect":{"actions":[{"type":"search_library","count":3,"to":"battlefield","tapped":true,"filter":{"type_line":"basic land"}},{"type":"gain_life","amount":7}]}},
+
+  "Planar Outburst": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy_all"}]}},
+
+  "Rites of Flourishing": {"schema_version":2,"continuous_effects":[{"type":"additional_land_plays","affected":"all","amount":1}]},
+
+  "Scaretiller": {"schema_version":2},
+
+  "Seer's Sundial": {"schema_version":2,"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"draw","amount":1}]}]},
+
+  "Struggle // Survive": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage","amount":{"count":"lands_you_control"},"target_type":"creature"}]}},
+
+  "Sylvan Reclamation": {"schema_version":2,"cycling":"{2}","spell_effect":{"actions":[{"type":"destroy_up_to","count":2,"target_filter":{"controller":"any","types":["artifact","enchantment"]}}]}},
+
+  "The Mending of Dominaria": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"mill","amount":2},{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"creature"}}]}]},
+
+  "Together Forever": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"add_counters","amount":2,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"}]}]},
+
+  "Treacherous Terrain": {"schema_version":2,"cycling":"{2}","spell_effect":{"actions":[{"type":"deal_damage","amount":{"count":"opponent_lands"},"recipient":"each_opponent"}]}},
+
+  "Trove Warden": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}]},
+
+  "Satyr Wayfinder": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"mill","amount":4},{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"land"}}]}]}
 }

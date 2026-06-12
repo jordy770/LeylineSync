@@ -1,7 +1,18 @@
--- supabase/functions_src/resolve_count_amount.sql
--- CANONICAL current definition (seeded from 202605010193_creatures_died_this_turn.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010278_obuun_finale
+-- Obuun finale (20 cards — deck COMPLETE, mig 278). Engine: count
+-- opponent_lands (Treacherous Terrain). Everything else script-only with
+-- documented approximations: Abundance + Scaretiller are INERT (draw
+-- replacement / becomes-tapped events unmodelled); Admonition Angel rides
+-- exile_until_leaves; Armorcraft Judge counts countered creatures; bolster/
+-- support approximated as targeted counters; Geode Rager goads ONE target;
+-- Keeper of Fables fires per connect incl. Humans; Living Twister keeps only
+-- the land bounce; Naya Charm mode 1 is divide_damage; Planar Outburst drops
+-- awaken; Rites of Flourishing drops the symmetric draw; Seer's Sundial
+-- drops the pay gate; Struggle // Survive is the Struggle half; Sylvan
+-- Reclamation destroys instead of exiling; The Mending of Dominaria is
+-- chapter I once; Trove Warden is vigilance-only.
+-- Generated from supabase/functions_src (resolve_count_amount) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.resolve_count_amount(
   p_session_id uuid,
