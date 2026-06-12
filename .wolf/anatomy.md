@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T09:56:04.748Z
-> Files: 157 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T10:30:32.430Z
+> Files: 160 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -114,7 +114,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~16833 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~16868 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 
 ## lib/supabase/
@@ -148,7 +148,7 @@
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1561 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~18000 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~18065 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~8431 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
@@ -235,6 +235,7 @@
 - `become-copy.test.ts` — mig 240 — become_copy: an EXISTING card becomes a copy of another. (~1756 tok)
 - `become-the-avalanche.test.ts` — mig 243 — Become the Avalanche: "Draw a card for each creature you control (~662 tok)
 - `becomes-target-and-power.test.ts` — mig 235 — three cards: (~1397 tok)
+- `breya-manabase.test.ts` — mig 263 — Breya mana base. Engine touch: bounce_up_to type_line filter (~516 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
 - `copy-permanent.test.ts` — mig 239 — token-copy primitive (Will of the Temur + Reflections of Littjara). (~2624 tok)
 - `cost-reduction.test.ts` — Cost reduction (mig 231) — reduced_mana_cost shaves generic mana at cast: (~942 tok)
@@ -246,8 +247,9 @@
 - `dino-combat.test.ts` — mig 260 — Quartzwood X/X trample token, Wrathful Raptors damage redirect, From the Rubble end-step reanimation, Itzquinth ETB burn. (~1400 tok)
 - `dino-creatures.test.ts` — mig 256 — the Veloci-Ramp-Tor creature batch (~14 cards, mostly scripts). (~1428 tok)
 - `dino-fights.test.ts` — mig 261 — Savage Stomp/Wayta fight_pick, Scion per-attacker combat-damage destroy. (~1100 tok)
-- `dino-finale.test.ts` — mig 262 — Etali free-cast tops, monarch subsystem (crown/steal/draw/land bonus), Bronzebeak exile-until-leaves. (~1500 tok)
 - `dino-fights.test.ts` — mig 261 — Veloci-Ramp-Tor fights batch. Engine touches: (~1262 tok)
+- `dino-finale.test.ts` — mig 262 — Etali free-cast tops, monarch subsystem (crown/steal/draw/land bonus), Bronzebeak exile-until-leaves. (~1500 tok)
+- `breya-manabase.test.ts` — mig 263 — Breya karoo land bounce (bounce_up_to type_line) + double-mana tap. (~500 tok)
 - `dino-finale.test.ts` — mig 262 — Veloci-Ramp-Tor finale (deck complete). Engine touches: (~1770 tok)
 - `dino-manabase.test.ts` — mig 255 — the Veloci-Ramp-Tor manabase + ramp batch (~20 script-only (~1444 tok)
 - `dino-statics.test.ts` — mig 258 — Veloci-Ramp-Tor statics batch. Engine touches: (~2042 tok)

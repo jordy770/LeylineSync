@@ -3747,3 +3747,8 @@
 | 11:54 | Edited tests/feature/dino-finale.test.ts | 4→5 lines | ~86 |
 | 11:56 | Edited supabase/functions_src/add_mana_from_card.sql | modified coalesce() | ~352 |
 | 03:00 | mig 262 dino FINALE: Etali (exile_tops_cast), Regal Behemoth (MONARCH subsystem: become_monarch + steal + end-step draw + land bonus both mana paths), Bronzebeak Foragers (exile_until_leaves). VELOCI-RAMP-TOR DECK COMPLETE 90/90 (84 impl + 6 as-is) | functions_src x10 (add_mana_from_card newly canonical), mig 262, schema, drift test, fixtures, card-scripts, dino-finale.test.ts | 922/922 green, triage 84/6/0 | ~55k |
+| 11:58 | Session end: 78 writes across 26 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 10 reads | ~104832 tok |
+| 12:29 | Edited supabase/functions_src/apply_trigger_effects.sql | modified and() | ~122 |
+| 12:29 | Edited lib/game/card-behavior-schema.ts | modified lands() | ~126 |
+| 12:30 | Created tests/feature/breya-manabase.test.ts | — | ~516 |
+| 03:40 | mig 263 Breya deck started: Tier-0 mana base (14 lands; bounce_up_to type_line filter for karoos; tri-lands, artifact lands, Buried Ruin, tapped any-color). Fixed Trial/Error -> Trial // Error in next-deck.txt | apply_trigger_effects, mig 263, schema, fixtures, card-scripts x14, breya-manabase.test.ts | 923/923 green, Breya triage 23/3/60 | ~25k |

@@ -313,5 +313,33 @@
 
   "Regal Behemoth": {"schema_version":2,"monarch_land_bonus":true,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"become_monarch"}]}]},
 
-  "Bronzebeak Foragers": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"exile_until_leaves","target_type":"creature","target_controller":"opponent"}]}]}
+  "Bronzebeak Foragers": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"exile_until_leaves","target_type":"creature","target_controller":"opponent"}]}]},
+
+  "Arcane Sanctum": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Crumbling Necropolis": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]}]},
+
+  "Mystic Monastery": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Nomad Outpost": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Azorius Chancery": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"land"}}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1},{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Boros Garrison": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"land"}}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"R","amount":1},{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Dimir Aqueduct": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"land"}}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1},{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Rakdos Carnarium": {"schema_version":2,"enters_tapped":true,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"bounce_up_to","count":1,"target_filter":{"controller":"you","type_line":"land"}}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1},{"type":"add_mana","color":"R","amount":1}]}]},
+
+  "Ash Barrens": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]}]},
+
+  "Buried Ruin": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{2}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"return_from_graveyard","count":1,"to":"hand","filter":{"type_line":"artifact"}}]}]},
+
+  "Darksteel Citadel": {"schema_version":2,"continuous_effects":[{"type":"indestructible","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]}]},
+
+  "Seat of the Synod": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Rupture Spire": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Transguild Promenade": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]}
 }

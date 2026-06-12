@@ -1,7 +1,17 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010263_breya_manabase
+-- Breya (Etherium Shaper) deck — Tier-0 mana base (14 lands, mig 263).
+-- Engine: bounce_up_to gains a type_line target filter (karoo lands:
+-- 'return a LAND you control to its owner's hand'; the return is technically
+-- mandatory but the park keeps min 0 — declining is an approximation).
+-- Script-only: tri-lands (Arcane Sanctum, Crumbling Necropolis, Mystic
+-- Monastery, Nomad Outpost), karoos (Azorius Chancery, Boros Garrison, Dimir
+-- Aqueduct, Rakdos Carnarium — two-mana abilities), Buried Ruin (sac →
+-- artifact from graveyard to hand), artifact lands (Darksteel Citadel
+-- indestructible, Seat of the Synod), Ash Barrens (basic landcycling NOT
+-- modelled — plain {T}: add {C}), Rupture Spire / Transguild Promenade
+-- ('sacrifice unless you pay {1}' NOT modelled — tapped any-colour).
+-- Generated from supabase/functions_src (apply_trigger_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,

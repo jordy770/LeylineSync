@@ -643,6 +643,8 @@ const CardBehaviorActionSchema = z.union([
     target_filter: z.object({
       controller: z.enum(['any', 'opponent', 'you']).optional(),
       nonland: z.boolean().optional(),
+      // Karoo lands (mig 263): "return a LAND you control to its owner's hand".
+      type_line: z.string().optional(),
       max_mana_value: z.literal('triggering_spell').optional(),
     }).strict().optional(),
   }),
