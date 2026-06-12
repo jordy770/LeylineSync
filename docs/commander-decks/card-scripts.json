@@ -461,5 +461,13 @@
 
   "Daretti, Scrap Savant": {"schema_version":2,"loyalty":3,"loyalty_abilities":[{"cost":2,"label":"Discard up to two cards, then draw that many","effects":[{"type":"discard","count":2},{"type":"draw","amount":2}]},{"cost":-2,"label":"Sacrifice an artifact, return one from your graveyard","effects":[{"type":"sacrifice","count":1,"filter":"artifact"},{"type":"return_from_graveyard","count":1,"to":"battlefield","filter":{"type_line":"artifact"}}]}]},
 
-  "Read the Runes": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":"X"}]}}
+  "Read the Runes": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":"X"}]}},
+
+  "Bilious Skulldweller": {"schema_version":2,"continuous_effects":[{"type":"deathtouch","affected":"source","source_zone_required":"battlefield"},{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":1}]},
+
+  "Blight Mamba": {"schema_version":2,"continuous_effects":[{"type":"infect","affected":"source","source_zone_required":"battlefield"}]},
+
+  "Blightbelly Rat": {"schema_version":2,"continuous_effects":[{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":1}],"triggered_abilities":[{"event":"dies","effects":[{"type":"proliferate"}]}]},
+
+  "Chromatic Lantern": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]}
 }
