@@ -75,7 +75,7 @@ Deck
 1 Steel Hellkite
 1 Storm's Wrath
 1 Stormbreath Dragon
-1 Stormshriek Feral
+1 Stormshriek Feral // Flush Out
 1 Sulfur Falls
 1 Talisman of Creativity
 1 Talisman of Impulse
@@ -89,7 +89,7 @@ Deck
 1 Thundermane Dragon
 1 Vengeful Ancestor
 1 Verix Bladewing
-1 Whirlwing Stormbrood
+1 Whirlwing Stormbrood // Dynamic Soar
 1 Will of the Temur
 1 Yavimaya Coast
 1 Zenith Festival

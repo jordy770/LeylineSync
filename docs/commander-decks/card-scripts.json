@@ -851,5 +851,13 @@
 
   "Timin, Youthful Geist": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"beginning_of_combat","effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}]},
 
-  "Verity Circle": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{4}{U}"}],"effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}],"triggered_abilities":[{"event":"creature_became_tapped","filter":{"controller":"opponent","not_attacking":true},"effects":[{"type":"draw","amount":1}]}]}
+  "Verity Circle": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{4}{U}"}],"effects":[{"type":"tap","target_type":"creature","target_controller":"opponent"}]}],"triggered_abilities":[{"event":"creature_became_tapped","filter":{"controller":"opponent","not_attacking":true},"effects":[{"type":"draw","amount":1}]}]},
+
+  "Stormshriek Feral": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}{R}"}],"effects":[{"type":"pump","power":1,"toughness":0,"target_type":"creature","target_controller":"you"}]}]},
+
+  "Whirlwing Stormbrood": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}]},
+
+  "Stormshriek Feral // Flush Out": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"haste","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}{R}"}],"effects":[{"type":"pump","power":1,"toughness":0,"target_type":"creature","target_controller":"you"}]}]},
+
+  "Whirlwing Stormbrood // Dynamic Soar": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}]}
 }
