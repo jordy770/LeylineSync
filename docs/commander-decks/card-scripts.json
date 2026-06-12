@@ -251,5 +251,25 @@
 
   "Topiary Stomper": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"}],"cant_attack_unless":{"count":"lands_you_control","at_least":7},"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]}]},
 
-  "Curious Altisaur": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"},{"type":"reach","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dinos_combat_damage","effects":[{"type":"draw","amount":1}]}]}
+  "Curious Altisaur": {"schema_version":2,"continuous_effects":[{"type":"vigilance","affected":"source","source_zone_required":"battlefield"},{"type":"reach","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dinos_combat_damage","effects":[{"type":"draw","amount":1}]}]},
+
+  "Earthshaker Dreadmaw": {"schema_version":2,"continuous_effects":[{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"draw","amount":{"count":"creatures_you_control","type_line":"Dinosaur","exclude_self":true}}]}]},
+
+  "Rishkar's Expertise": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":{"count":"greatest_power_you_control"}},{"type":"put_from_hand","count":1,"filter":{"permanent":true,"max_mana_value":5}}]}},
+
+  "Return of the Wildspeaker": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Choose one","modes":[{"label":"Draw cards equal to the greatest power among non-Human creatures you control","actions":[{"type":"draw","amount":{"count":"greatest_power_you_control","type_line":"Human","exclude_type":true}}]},{"label":"Non-Human creatures you control get +3/+3 until end of turn","actions":[{"type":"pump_all","scope":"controller","power":3,"toughness":3,"creature_type":"Human","exclude_type":true}]}]}]}},
+
+  "Chandra's Ignition": {"schema_version":2,"spell_effect":{"actions":[{"type":"ignition","target_type":"creature","target_controller":"you"}]}},
+
+  "Lifecrafter's Bestiary": {"schema_version":2,"triggered_abilities":[{"event":"beginning_of_upkeep","effects":[{"type":"scry","amount":1}]},{"event":"spell_cast","filter":{"controller":"you","type_line":"creature"},"effects":[{"type":"may","prompt":"Pay {G} to draw a card?","cost":"{G}","effects":[{"type":"draw","amount":1}]}]}]},
+
+  "Rhythm of the Wild": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","nontoken":true,"exclude_self":true},"effects":[{"type":"choose_one","prompt":"Riot","modes":[{"label":"+1/+1 counter","actions":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one","target":"triggering_creature"}]},{"label":"Haste","actions":[{"type":"grant_keyword","keyword":"haste","target":"triggering_creature"}]}]}]}]},
+
+  "Wayward Swordtooth": {"schema_version":2,"continuous_effects":[{"type":"additional_land_plays","affected":"controller","amount":1}],"cant_attack_unless":{"count":"permanents_you_control","at_least":10}},
+
+  "Fiery Confluence": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Choose three (repeats allowed)","choose":3,"modes":[{"label":"1 damage to each creature","actions":[{"type":"deal_damage_all","amount":1}]},{"label":"2 damage to each opponent","actions":[{"type":"deal_damage","amount":2,"recipient":"each_opponent"}]},{"label":"Destroy target artifact","actions":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"any","type_line":"artifact"}}]}]}]}},
+
+  "Shifting Ceratops": {"schema_version":2,"cant_be_countered":true,"continuous_effects":[{"type":"protection","affected":"source","source_zone_required":"battlefield","from":"blue"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{G}"}],"effects":[{"type":"choose_one","prompt":"Reach, trample, or haste","modes":[{"label":"Reach","actions":[{"type":"grant_keyword","keyword":"reach"}]},{"label":"Trample","actions":[{"type":"grant_keyword","keyword":"trample"}]},{"label":"Haste","actions":[{"type":"grant_keyword","keyword":"haste"}]}]}]}]},
+
+  "Sunfrill Imitator": {"schema_version":2,"triggered_abilities":[{"event":"attacks","effects":[{"type":"become_copy","optional":true,"target_filter":{"controller":"you","type_line":"Dinosaur"}}]}]}
 }

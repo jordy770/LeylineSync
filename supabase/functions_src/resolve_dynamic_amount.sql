@@ -37,8 +37,9 @@ begin
 
   if jsonb_typeof(p_amount) = 'object' then
     -- Count-based amount ("number of creatures you control", devotion, …).
+    -- The source rides along for exclude_self counts (mig 257).
     if p_amount ? 'count' then
-      return public.resolve_count_amount(p_session_id, p_controller_id, p_amount);
+      return public.resolve_count_amount(p_session_id, p_controller_id, p_amount, p_source_card_id);
     end if;
 
     -- Power of a permanent ("damage equal to Eshki's power"). of: source | target.

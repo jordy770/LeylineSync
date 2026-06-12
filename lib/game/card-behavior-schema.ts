@@ -186,7 +186,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'pay_x_mana_damage', 'bounce_up_to', 'exile_until_nonland',
   'put_from_hand', 'destroy_up_to', 'put_from_command_zone', 'play_hideaway',
   'goad', 'territorial_attack', 'if_attacking_most_life', 'untap_all_attackers', 'extra_combat',
-  'exile_and_manifest', 'vote_wild_free', 'discover',
+  'exile_and_manifest', 'vote_wild_free', 'discover', 'ignition',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -216,12 +216,16 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'devotion']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion']),
   type_line: z.string().optional(),
   // creatures_you_control only: count creatures with effective power >= N
   // (Become the Avalanche: "for each creature you control with power 4 or
   // greater").
   min_power: z.number().int().optional(),
+  // "each OTHER <type> you control" (Earthshaker Dreadmaw, mig 257).
+  exclude_self: z.boolean().optional(),
+  // Invert the type filter (Return of the Wildspeaker: NON-Human, mig 257).
+  exclude_type: z.boolean().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
 }).strict()
 
@@ -548,6 +552,14 @@ const CardBehaviorActionSchema = z.union([
   // turn_manifest_up flips a creature card face up for its mana cost.
   z.object({
     type: z.literal('exile_and_manifest'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // "Target creature you control deals damage equal to its power to each
+  // other creature and each opponent." (Chandra's Ignition, mig 257.)
+  z.object({
+    type: z.literal('ignition'),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
@@ -1004,7 +1016,7 @@ export const CardBehaviorScriptV2Schema = z.object({
   // "<This> can't attack unless <count> is at least N" (Gadrak: four or more
   // artifacts). Enforced in declare_attacker against the attacking player.
   cant_attack_unless: z.object({
-    count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control']),
+    count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'permanents_you_control']),
     at_least: z.number().int().positive(),
   }).strict().optional(),
   // "This spell costs {N} less to cast" (Draconic Lore), optionally only when a

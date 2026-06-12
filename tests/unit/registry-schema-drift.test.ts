@@ -58,6 +58,7 @@ const JSON_ONLY: Record<string, string> = {
   exile_and_manifest: 'exile target creature + its controller manifests the top card (Reality Shift, mig 251); JSON/AI-authored',
   vote_wild_free: 'council\'s dilemma vote chain (Selvala\'s Stampede, mig 252); JSON/AI-authored',
   discover: 'exile-top until a nonland with MV <= X, free-cast or hand, rest bottomed (Pantlaza, mig 253); JSON/AI-authored',
+  ignition: 'target creature deals its power to each other creature and each opponent (Chandra\'s Ignition, mig 257); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

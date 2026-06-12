@@ -3629,3 +3629,26 @@
 | 02:04 | Created tests/feature/dino-creatures.test.ts | — | ~1428 |
 | 02:05 | Edited supabase/migrations/202605010256_dino_creatures.sql | expanded (+15 lines) | ~283 |
 | 06:25 | Dino creature batch (mig 256, ~14 cards): toughness_of triggering amount (Verdant Sun), destroy_all exclude_type (Wakening Sun), add_counters_all exclude_source (Bellowing enrage), dinos_combat_damage tally mirror (Curious Altisaur). Script-only: Regisaur Alpha (typed haste grant), Thundering Spineback (typed lord), Raging Swordtooth, Generous Gift+Elephant Token, Path to Exile (no land consolation), Apex Altisaur (fight x2), Thrashing Brontodon, Majestic Heliopterus, Raging Regisaur (divide 1), Topiary Stomper. | mig 256, ATAE, apply_trigger_effects, resolve_combat_damage, schema, card-scripts, fixtures, dino-creatures.test | 893/893 green, tsc+lint clean, Veloci triage 53/6/31 | ~12k |
+| 02:07 | Session end: 180 writes across 53 files (mana_value.sql, resolve_count_amount.sql, register_card_continuous_effects.sql, apply_trigger_effects.sql, submit_decision.sql) | 28 reads | ~106237 tok |
+| 02:09 | Edited supabase/functions_src/resolve_count_amount.sql | modified public() | ~80 |
+| 02:09 | Edited supabase/functions_src/resolve_count_amount.sql | modified and() | ~128 |
+| 02:09 | Edited supabase/functions_src/resolve_count_amount.sql | modified and() | ~228 |
+| 02:09 | Edited supabase/functions_src/resolve_count_amount.sql | modified public() | ~52 |
+| 02:09 | Edited supabase/functions_src/resolve_dynamic_amount.sql | 4→5 lines | ~76 |
+| 02:10 | Edited supabase/functions_src/apply_creature_effect.sql | added 1 condition(s) | ~358 |
+| 02:10 | Edited supabase/functions_src/trigger_effect_target_type.sql | 3→3 lines | ~56 |
+| 02:10 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~59 |
+| 02:10 | Edited lib/game/card-behavior-schema.ts | 8→12 lines | ~262 |
+| 02:10 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~22 |
+| 02:10 | Edited lib/game/card-behavior-schema.ts | expanded (+8 lines) | ~244 |
+| 02:10 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~76 |
+| 02:10 | Edited docs/commander-decks/card-scripts.json | expanded (+20 lines) | ~1092 |
+| 02:11 | Edited lib/game/card-behavior-schema.ts | 4→4 lines | ~63 |
+| 02:11 | Edited docs/commander-decks/card-scripts.json | 2→2 lines | ~58 |
+| 02:11 | Edited tests/fixtures/test-cards.json | 2→4 lines | ~461 |
+| 02:12 | Created tests/feature/dino-tail.test.ts | — | ~1632 |
+| 02:12 | Edited supabase/migrations/202605010257_dino_tail.sql | modified if() | ~436 |
+| 02:13 | Created scratch-ign.mjs | — | ~161 |
+| 02:15 | Created tests/feature/zz-debug.test.ts | — | ~385 |
+| 02:15 | Edited tests/feature/dino-tail.test.ts | 2→3 lines | ~57 |
+| 07:05 | Dino tail batch (mig 257, ~10 cards): resolve_count_amount + SOURCE param (OLD 3-ARG DROPPED; exclude_self counts, greatest_power_you_control w/ type inversion); ignition targeted kind (Chandra's Ignition); choose_one in activated routing (Shifting Ceratops). Script-only: Dreadmaw, Rishkar's (free cast = put_from_hand MV5 approx), Return of the Wildspeaker, Lifecrafter's Bestiary, Rhythm of the Wild (riot via modal watcher + reflexive modes), Wayward Swordtooth, Fiery Confluence (choose 3 w/ repeats), Sunfrill Imitator (become_copy on attack). | mig 257, 5 sql files, schema, card-scripts, fixtures, dino-tail.test | 897/897 green, tsc+lint clean, Veloci triage 63/6/21 | ~11k |

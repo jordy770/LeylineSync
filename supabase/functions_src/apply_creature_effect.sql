@@ -221,6 +221,30 @@ begin
       );
     end if;
 
+  elsif p_kind = 'ignition' then
+    -- Chandra's Ignition (mig 257): target creature deals damage equal to its
+    -- power to each other creature and each opponent of the caster.
+    v_amount := greatest(0, coalesce(public.card_effective_power(p_session_id, p_target_card_id), 0));
+    if v_amount > 0 and exists (
+      select 1 from public.game_cards
+      where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield'
+    ) then
+      for v_top_card in
+        select gc.id from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id and gc.zone = 'battlefield'
+          and c.type_line ilike '%creature%' and gc.id <> p_target_card_id
+      loop
+        perform public.apply_damage_to_creature(
+          p_session_id, v_top_card, v_amount, p_target_card_id, false, false, false);
+      end loop;
+      v_acting_controller := nullif(p_params ->> 'acting_controller', '')::uuid;
+      update public.game_session_players
+      set life_total = greatest(0, life_total - v_amount)
+      where session_id = p_session_id and player_id is distinct from v_acting_controller;
+      perform public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
+      perform public.maybe_finish_game_session(p_session_id);
+    end if;
+
   elsif p_kind = 'exile_and_manifest' then
     -- Reality Shift (mig 251): exile target creature; its CONTROLLER
     -- manifests the top card of their library — it enters as a face-down

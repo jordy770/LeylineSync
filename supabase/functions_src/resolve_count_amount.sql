@@ -6,7 +6,10 @@
 create or replace function public.resolve_count_amount(
   p_session_id uuid,
   p_controller_id uuid,
-  p_spec jsonb
+  p_spec jsonb,
+  -- The effect's source permanent (mig 257): lets a count exclude it
+  -- ("draw a card for each OTHER Dinosaur you control").
+  p_source_card_id uuid default null
 ) returns integer
 language plpgsql
 stable
@@ -30,6 +33,9 @@ begin
       and g.zone = 'battlefield'
       and c.type_line ilike '%creature%'
       and (v_type is null or c.type_line ilike '%' || v_type || '%')
+      -- "each OTHER <type> you control" (mig 257, Earthshaker Dreadmaw).
+      and (not coalesce((p_spec ->> 'exclude_self')::boolean, false)
+           or g.id is distinct from p_source_card_id)
       and ((p_spec ->> 'min_power') is null
            or coalesce(public.card_effective_power(p_session_id, g.id), -1)
               >= (p_spec ->> 'min_power')::integer);
@@ -53,6 +59,22 @@ begin
       and g.zone = 'battlefield'
       and c.type_line ilike '%basic%'
       and c.type_line ilike '%land%';
+
+  elsif v_count = 'greatest_power_you_control' then
+    -- "the greatest power among (non-<type>) creatures you control"
+    -- (mig 257, Rishkar's Expertise / Return of the Wildspeaker).
+    select coalesce(max(greatest(0, coalesce(public.card_effective_power(p_session_id, g.id), 0))), 0)::integer
+    into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
+      and g.zone = 'battlefield'
+      and c.type_line ilike '%creature%'
+      and (v_type is null or
+           case when coalesce((p_spec ->> 'exclude_type')::boolean, false)
+                then c.type_line not ilike '%' || v_type || '%'
+                else c.type_line ilike '%' || v_type || '%' end);
 
   elsif v_count = 'permanents_you_control' then
     -- Ascend / the city's blessing, approximated as a live count (mig 255,
@@ -164,5 +186,5 @@ begin
   return greatest(0, coalesce(v_n, 0));
 end;
 $$;
-grant execute on function public.resolve_count_amount(uuid, uuid, jsonb) to authenticated;
-grant execute on function public.resolve_count_amount(uuid, uuid, jsonb) to service_role;
+grant execute on function public.resolve_count_amount(uuid, uuid, jsonb, uuid) to authenticated;
+grant execute on function public.resolve_count_amount(uuid, uuid, jsonb, uuid) to service_role;

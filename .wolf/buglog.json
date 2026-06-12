@@ -10831,6 +10831,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-11T23:56:25.001Z"
+    },
+    {
+      "id": "bug-667",
+      "timestamp": "2026-06-12T00:09:48.953Z",
+      "error_message": "Wrong return value",
+      "file": "supabase/functions_src/resolve_dynamic_amount.sql",
+      "root_cause": "Was returning: public.resolve_count_amount(p_session_id, p_contro",
+      "fix": "Now returns: public.resolve_count_amount(p_session_id, p_contro",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T00:09:48.953Z"
+    },
+    {
+      "id": "bug-668",
+      "timestamp": "2026-06-12T00:10:10.202Z",
+      "error_message": "Wrong reference: then should be choose_one",
+      "file": "supabase/functions_src/activate_ability.sql",
+      "root_cause": "Used \"then\" instead of \"choose_one\"",
+      "fix": "Changed then → choose_one",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T00:10:10.202Z"
+    },
+    {
+      "id": "bug-669",
+      "timestamp": "2026-06-12T00:12:55.195Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010257_dino_tail.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→24 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T00:12:55.195Z"
+    },
+    {
+      "id": "bug-670",
+      "timestamp": "2026-06-12T00:15:28.740Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/feature/dino-tail.test.ts",
+      "root_cause": "Had 'select 1 from public.game_cards where id = $1'",
+      "fix": "Changed to 'select zone from public.game_cards where id = $1'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T00:15:28.740Z"
     }
   ]
 }
