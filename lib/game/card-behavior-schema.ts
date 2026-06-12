@@ -197,7 +197,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'exile_tops_cast', 'exile_until_leaves', 'become_monarch', 'equip',
   'living_weapon', 'attach_all_equipment', 'gain_control_all', 'bounce_all', 'destroy_all_creatures_token',
   'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
-  'exile_all', 'graveyard_to_library_top', 'animate',
+  'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -700,6 +700,10 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('exile_all'),
     types: z.array(z.string()),
+  }),
+  // Omen back-faces (mig 289): the source shuffles itself into its owner's library.
+  z.object({
+    type: z.literal('shuffle_self_into_library'),
   }),
   // Noxious Revival (mig 275): a graveyard card goes to its owner's library top.
   z.object({

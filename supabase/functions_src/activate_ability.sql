@@ -86,12 +86,16 @@ begin
     raise exception 'Source card not found or not owned by current user';
   end if;
 
-  if v_zone <> 'battlefield' then
-    raise exception 'Ability source must be on the battlefield';
-  end if;
-
   v_script := public.effective_script(p_session_id, p_source_card_id);
   v_ability := v_script -> 'activated_abilities' -> p_ability_index;
+
+  -- Zone gate (mig 289): battlefield by default, but an ability may declare
+  -- its own source zone (omen back-faces cast from HAND: Flush Out /
+  -- Dynamic Soar; the adventure pattern generally).
+  if v_zone <> coalesce(v_ability ->> 'source_zone_required', 'battlefield') then
+    raise exception 'Ability source must be in its required zone (%)',
+      coalesce(v_ability ->> 'source_zone_required', 'battlefield');
+  end if;
 
   if v_ability is null then
     raise exception 'Activated ability not found at index %', p_ability_index;

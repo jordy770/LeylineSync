@@ -44,6 +44,6 @@ test('SAC2 a sacrificed source cannot be activated again', async () => {
     await s.as('A').resolveStack()
 
     // Second activation: source is no longer on the battlefield.
-    await assert.rejects(() => s.as('A').activate(sphere, 0), /must be on the battlefield/i)
+    await assert.rejects(() => s.as('A').activate(sphere, 0), /must be in its required zone/i)
   })
 })

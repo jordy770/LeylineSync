@@ -77,6 +77,7 @@ const JSON_ONLY: Record<string, string> = {
   ixhel_corrupted_exile: 'poisoned opponents exile their library top, playable via play_from_exile (Ixhel, mig 272); JSON/AI-authored',
   exile_all: 'exile all permanents of the given types (Merciless Eviction, mig 275); JSON/AI-authored',
   graveyard_to_library_top: 'put a graveyard card on top of its owners library (Noxious Revival, mig 275); JSON/AI-authored',
+  shuffle_self_into_library: 'omen back-face rider — the source shuffles itself away (Flush Out / Dynamic Soar, mig 289); JSON/AI-authored',
   animate: 'target land becomes an X/X creature, still a land (Obuun / Embodiment / Waker, mig 277); JSON/AI-authored',
 }
 
