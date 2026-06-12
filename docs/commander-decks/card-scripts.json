@@ -513,5 +513,27 @@
 
   "Painful Truths": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":3},{"type":"lose_life","amount":3,"recipient":"controller"}]}},
 
-  "Necroblossom Snarl": {"schema_version":2,"enters_tapped":{"unless":{"hand_has_type":["Swamp","Forest"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]}
+  "Necroblossom Snarl": {"schema_version":2,"enters_tapped":{"unless":{"hand_has_type":["Swamp","Forest"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"G","amount":1}]}]},
+
+  "Grafted Exoskeleton": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":2,"toughness":2}},{"type":"infect","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{2}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+
+  "Krosan Verge": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{2}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Forest"}},{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Plains"}}]}]},
+
+  "Moldervine Reclamation": {"schema_version":2,"triggered_abilities":[{"event":"creature_died","filter":{"controller":"you"},"effects":[{"type":"gain_life","amount":1},{"type":"draw","amount":1}]}]},
+
+  "Mycosynth Fiend": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"source","source_zone_required":"battlefield","payload":{"power_count":"opponent_poison_counters","toughness_count":"opponent_poison_counters"}}]},
+
+  "Myr Convert": {"schema_version":2,"continuous_effects":[{"type":"toxic","affected":"source","source_zone_required":"battlefield","amount":1}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"},{"type":"pay_life","amount":2}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Norn's Choirmaster": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"first_strike","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","commander":true},"effects":[{"type":"proliferate"}]},{"event":"creature_attacks","filter":{"controller":"you","commander":true},"effects":[{"type":"proliferate"}]}]},
+
+  "Phyrexian Atlas": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Phyrexian Swarmlord": {"schema_version":2,"continuous_effects":[{"type":"infect","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"upkeep","effects":[{"type":"create_token","token":"Phyrexian Insect Token","count":{"count":"opponent_poison_counters"}}]}]},
+
+  "Feed the Infection": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":3},{"type":"lose_life","amount":3,"recipient":"controller"},{"type":"conditional","condition":{"count":"opponent_poison_counters","at_least":3},"effects":[{"type":"lose_life","amount":3,"recipient":"each_opponent"}]}]}},
+
+  "Noxious Assault": {"schema_version":2,"spell_effect":{"actions":[{"type":"pump_all","power":2,"toughness":2,"scope":"controller"}]}},
+
+  "Phyresis Outbreak": {"schema_version":2,"spell_effect":{"actions":[{"type":"add_poison","amount":1,"recipient":"each_opponent"},{"type":"pump_all","power":-1,"toughness":-1,"scope":"all"}]}}
 }

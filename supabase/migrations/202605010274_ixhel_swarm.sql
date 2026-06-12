@@ -1,7 +1,18 @@
--- supabase/functions_src/fire_watcher_triggers.sql
--- CANONICAL current definition (seeded from 202605010181_watcher_nontoken_filter.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010274_ixhel_swarm
+-- Ixhel swarm batch (10 cards, mig 274): Grafted Exoskeleton, Krosan Verge,
+-- Moldervine Reclamation, Mycosynth Fiend, Myr Convert, Norn's Choirmaster,
+-- Phyrexian Atlas, Phyrexian Swarmlord, Feed the Infection, Noxious Assault,
+-- Phyresis Outbreak.
+-- Engine: watcher filter commander:true (Choirmaster: 'whenever a commander
+-- you control enters or attacks, proliferate').
+-- Script-only approximations: Grafted Exoskeleton's unattach-sacrifice rider
+-- not modelled; Phyrexian Atlas drops the corrupted on-tap drain (no
+-- becomes-tapped event); Phyresis Outbreak's debuff is a flat -1/-1
+-- (per-controller poison scaling not modelled); Noxious Assault drops the
+-- block-poison rider; Feed the Infection's corrupted drain hits each
+-- opponent when ANY is corrupted (identical in 1v1).
+-- Generated from supabase/functions_src (fire_watcher_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.fire_watcher_triggers(
   p_session_id uuid,
