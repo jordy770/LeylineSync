@@ -916,7 +916,7 @@ export async function activateAbility(
   sessionId: string,
   sourceCardId: string,
   abilityIndex: number,
-  target?: { targetCardId?: string | null; targetPlayerId?: string | null },
+  target?: { targetCardId?: string | null; targetPlayerId?: string | null; costCardIds?: string[] | null },
   genericPayment?: Record<string, number>,
 ) {
   const { data, error } = await supabase.rpc('activate_ability', {
@@ -926,6 +926,9 @@ export async function activateAbility(
     p_target_player_id: target?.targetPlayerId ?? null,
     p_target_card_id: target?.targetCardId ?? null,
     p_generic_payment: genericPayment ?? null,
+    // Chosen cost payments (mig 284): which cards pay sacrifice_artifacts /
+    // return_land / tap_creatures costs. Null = engine auto-pick.
+    p_cost_card_ids: target?.costCardIds ?? null,
   })
 
   if (error) {

@@ -538,7 +538,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     activateAbility: async (
       sourceCardId: string,
       abilityIndex: number,
-      target?: { targetCardId?: string | null; targetPlayerId?: string | null },
+      target?: { targetCardId?: string | null; targetPlayerId?: string | null; costCardIds?: string[] | null },
     ) => {
       await activateAbility(supabase, sessionId, sourceCardId, abilityIndex, target)
       await refresh()

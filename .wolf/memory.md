@@ -3910,3 +3910,10 @@
 | 21:03 | Edited components/ControllerListV4.tsx | expanded (+10 lines) | ~296 |
 | 21:04 | Edited components/ControllerListV4.tsx | added optional chaining | ~2158 |
 | 23:40 | CLIENT STEP 2 + mig 286: get_pending_decisions returns params (drop+recreate, return-type change); PendingDecision type += params; FIVE new decision bodies in ControllerListV4 — ChooseWordBody (choose_creature_type + vote), ChooseColorBody, DivideDamageBody (allocation steppers vs params.amount/max_targets), PayXDamageBody (amount stepper + target pick, 0 declines). ALL 28 engine decision types now render. Remaining: cost-pick UI, state badges. Mig 286 unpushed | get_pending_decisions canonical, mig 286, types.ts, ControllerListV4 | 1387/1387 green, tsc clean, lint 2 pre-existing | ~30k |
+| 21:06 | Session end: 158 writes across 50 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 12 reads | ~142779 tok |
+| 21:09 | Edited components/ControllerListV4.tsx | 5→5 lines | ~60 |
+| 21:09 | Edited components/controller/CardActionSheet.tsx | 5→5 lines | ~58 |
+| 21:09 | Edited components/controller/CardActionSheet.tsx | modified payments() | ~245 |
+| 21:10 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~936 |
+| 21:12 | Edited components/controller/CardActionSheet.tsx | CSS: active | ~79 |
+| 00:20 | CLIENT STEP 3: cost-pick UI — CardActionSheet detects pickable costs (sacrifice_artifacts/return_land/tap_creatures), shows an eligibility-filtered battlefield picker (nontoken via the '... Token' naming convention, untapped + type filter for tap_creatures), gates the ability button on enough eligible cards, chains into the target pick when the effect is targeted (costCardIds rides abilityPick), and passes p_cost_card_ids end to end (actions.ts + ControllerListV4 plumbing). Remaining audit item: state badges. Migs 285-286 unpushed | CardActionSheet, ControllerListV4, actions.ts | 1387/1387 green, tsc clean | ~30k |

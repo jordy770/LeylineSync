@@ -97,7 +97,7 @@ export function CardActionSheet({
   onActivateAbility: (
     sourceId: string,
     abilityIndex: number,
-    target?: { targetCardId?: string | null; targetPlayerId?: string | null },
+    target?: { targetCardId?: string | null; targetPlayerId?: string | null; costCardIds?: string[] | null },
   ) => Promise<void>
   onActivateManaAbility: (sourceId: string, abilityIndex: number) => Promise<void>
   onActivateLoyalty: (sourceId: string, abilityIndex: number) => Promise<void>
@@ -137,11 +137,24 @@ export function CardActionSheet({
   const [dmgAlloc, setDmgAlloc] = useState<Record<string, number>>({})
   // When set, showing the target picker for an activated ability.
   const [abilityPick, setAbilityPick] = useState<
-    { index: number; type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean; canTargetGraveyard?: boolean } | null
+    { index: number; type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean; canTargetGraveyard?: boolean; costCardIds?: string[] } | null
   >(null)
   // Attachment picker: 'aura' = choose the creature an Aura enters enchanting;
   // 'equip' = choose the creature to equip this Equipment onto.
   const [attachPick, setAttachPick] = useState<null | 'aura' | 'equip'>(null)
+  // Chosen cost payments (mig 284): when an ability's costs include
+  // sacrifice_artifacts / return_land / tap_creatures, the player picks the
+  // exact cards before activating; the ids ride p_cost_card_ids. If the
+  // effect ALSO needs a target, the pick chains into abilityPick.
+  const [costPick, setCostPick] = useState<null | {
+    index: number
+    label: string
+    count: number
+    eligible: BoardCard[]
+    selected: string[]
+    // The follow-up target pick (Shacklegeist: tap two Spirits → tap target).
+    then: { type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null
+  }>(null)
 
   const spellPlan = getSpellPlan(card)
   // Controller restriction for the chosen creature target ("an opponent controls"
@@ -921,7 +934,7 @@ export function CardActionSheet({
         )}
 
         {/* Non-mana activated abilities */}
-        {otherAbilities.length > 0 && !picking && !abilityPick && (
+        {otherAbilities.length > 0 && !picking && !abilityPick && !costPick && (
           <div className="space-y-1.5">
             <p className="mb-1 text-[9px] uppercase tracking-widest text-slate-700">Abilities</p>
             {otherAbilities.map(({ ability, index }) => {
@@ -935,7 +948,29 @@ export function CardActionSheet({
                 eff && (!eff.needsTarget || eff.canTargetPlayer || (eff.canTargetCreature && targetableCreatures.length > 0)),
               )
               const graveyardAvailable = !needsGraveyardCard || graveyardCreatures.length > 0
-              const available = supported && canCastInstants && (!hasTap || !card.is_tapped) && targetAvailable && graveyardAvailable
+              // Pick-able costs (mig 284): the player chooses which cards pay.
+              const pickableCostRaw = ability.costs.find((c) =>
+                c.type === 'sacrifice_artifacts' || c.type === 'return_land' || c.type === 'tap_creatures')
+              const pickableCost = pickableCostRaw
+                ? { type: pickableCostRaw.type, count: Number((pickableCostRaw as Record<string, unknown>).count ?? 1) || 1, nontoken: Boolean((pickableCostRaw as Record<string, unknown>).nontoken), type_line: ((pickableCostRaw as Record<string, unknown>).type_line as string | undefined) ?? null }
+                : null
+              const costEligible = !pickableCost ? [] : boardCards.filter((b) => {
+                if (b.zone !== 'battlefield' || b.controller_player_id !== playerId) return false
+                const tl = b.type_line ?? ''
+                if (pickableCost.type === 'sacrifice_artifacts') {
+                  if (!/artifact/i.test(tl) || b.id === card.id) return false
+                  // nontoken: token rows are named '… Token' by convention.
+                  if (pickableCost.nontoken && /\bToken\b/.test(b.name)) return false
+                  return true
+                }
+                if (pickableCost.type === 'return_land') return /land/i.test(tl)
+                // tap_creatures: untapped creatures matching the cost's type filter.
+                return !b.is_tapped && /creature/i.test(tl)
+                  && (!pickableCost.type_line || new RegExp(pickableCost.type_line, 'i').test(tl))
+              })
+              const costCount = pickableCost ? Math.max(1, pickableCost.count) : 0
+              const costAvailable = !pickableCost || costEligible.length >= costCount
+              const available = supported && canCastInstants && (!hasTap || !card.is_tapped) && targetAvailable && graveyardAvailable && costAvailable
               return (
                 <button
                   key={index}
@@ -943,7 +978,20 @@ export function CardActionSheet({
                   disabled={!available}
                   onClick={() => {
                     if (!eff) return
-                    if (needsGraveyardCard) {
+                    if (pickableCost) {
+                      setCostPick({
+                        index,
+                        label: pickableCost.type === 'sacrifice_artifacts' ? `Sacrifice ${costCount} artifact${costCount > 1 ? 's' : ''}`
+                          : pickableCost.type === 'return_land' ? `Return ${costCount} land${costCount > 1 ? 's' : ''} to hand`
+                          : `Tap ${costCount} ${pickableCost.type_line ?? 'creature'}${costCount > 1 ? 's' : ''}`,
+                        count: costCount,
+                        eligible: costEligible,
+                        selected: [],
+                        then: eff.needsTarget
+                          ? { type: eff.type, amount: eff.amount, canTargetPlayer: eff.canTargetPlayer, canTargetCreature: eff.canTargetCreature }
+                          : null,
+                      })
+                    } else if (needsGraveyardCard) {
                       setAbilityPick({ index, type: eff.type, amount: eff.amount, canTargetPlayer: false, canTargetCreature: false, canTargetGraveyard: true })
                     } else if (eff.needsTarget) {
                       setAbilityPick({ index, type: eff.type, amount: eff.amount, canTargetPlayer: eff.canTargetPlayer, canTargetCreature: eff.canTargetCreature })
@@ -969,7 +1017,7 @@ export function CardActionSheet({
         )}
 
         {/* Planeswalker loyalty abilities (sorcery speed, once per turn) */}
-        {(script.loyalty_abilities?.length ?? 0) > 0 && !picking && !abilityPick && (
+        {(script.loyalty_abilities?.length ?? 0) > 0 && !picking && !abilityPick && !costPick && (
           <div className="space-y-1.5">
             <p className="mb-1 flex items-center gap-1.5 text-[9px] uppercase tracking-widest text-slate-700">
               Loyalty <span className="text-[11px] font-black text-amber-400">◆ {Number(card.counters?.loyalty ?? 0)}</span>
@@ -1000,6 +1048,52 @@ export function CardActionSheet({
         )}
 
         {/* Activated ability target picker */}
+        {costPick && (
+          <div className="mb-3 space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              {costPick.label} ({costPick.selected.length}/{costPick.count})
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {costPick.eligible.map((c) => {
+                const on = costPick.selected.includes(c.id)
+                return (
+                  <button key={c.id} type="button"
+                    onClick={() => setCostPick((prev) => prev && ({
+                      ...prev,
+                      selected: on ? prev.selected.filter((x) => x !== c.id)
+                        : prev.selected.length >= prev.count ? (prev.count === 1 ? [c.id] : prev.selected)
+                        : [...prev.selected, c.id],
+                    }))}
+                    className={`rounded-xl border px-3 py-1.5 text-[11px] font-bold transition active:scale-95 ${on ? 'border-indigo-300 bg-indigo-400/30 text-white' : 'border-white/15 bg-[#0F1117] text-slate-300'}`}>
+                    {c.name}
+                  </button>
+                )
+              })}
+            </div>
+            <div className="flex gap-2">
+              <button type="button" disabled={costPick.selected.length !== costPick.count}
+                onClick={() => {
+                  if (!costPick) return
+                  if (costPick.then) {
+                    // Chain into the target pick; the cost ids ride along.
+                    setAbilityPick({ index: costPick.index, ...costPick.then, costCardIds: costPick.selected })
+                    setCostPick(null)
+                  } else {
+                    void onActivateAbility(card.id, costPick.index, { costCardIds: costPick.selected })
+                    setCostPick(null)
+                    onClose()
+                  }
+                }}
+                className="rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40">
+                {costPick.then ? 'Next: choose target' : 'Pay and activate'}
+              </button>
+              <button type="button" onClick={() => setCostPick(null)}
+                className="rounded-xl border border-slate-600 px-4 py-2 text-xs font-black uppercase tracking-wide text-slate-300 transition active:scale-95">
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
         {abilityPick && (
           <div className="mb-3 space-y-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
@@ -1013,7 +1107,7 @@ export function CardActionSheet({
               <button
                 key={c.id}
                 type="button"
-                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetCardId: c.id }); onClose() }}
+                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetCardId: c.id, costCardIds: abilityPick.costCardIds ?? null }); onClose() }}
                 className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
               >
                 <span className="truncate font-bold text-white">{c.name}</span>
@@ -1024,7 +1118,7 @@ export function CardActionSheet({
               <button
                 key={p.player_id}
                 type="button"
-                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetPlayerId: p.player_id }); onClose() }}
+                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetPlayerId: p.player_id, costCardIds: abilityPick.costCardIds ?? null }); onClose() }}
                 className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-3 transition active:scale-95"
               >
                 <span className="font-bold text-white">
@@ -1038,7 +1132,7 @@ export function CardActionSheet({
               <button
                 key={c.id}
                 type="button"
-                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetCardId: c.id }); onClose() }}
+                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetCardId: c.id, costCardIds: abilityPick.costCardIds ?? null }); onClose() }}
                 className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
               >
                 <span className="truncate font-bold text-white">{c.name}</span>
