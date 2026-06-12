@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T19:22:05.237Z
-> Files: 185 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T19:32:53.390Z
+> Files: 186 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
@@ -268,6 +268,7 @@
 - `cycling.test.ts` — Cycling (mig 228) — "Cycling {2}: Discard this card, draw a card." The (~600 tok)
 - `deal-damage-all.test.ts` — Mass damage `deal_damage_all` (mig 224) — Blasphemous Act / Storm's Wrath / (~1116 tok)
 - `deck-smoke.test.ts` — Deck smoke test: every curated script in docs/commander-decks/card-scripts.json (~2578 tok)
+- `multiplayer-pods.test.ts` — 4-player pod semantics: corrupted gates, edict chains, goad redirection, monarch theft, per-player taxes. (~1100 tok)
 - `dino-combat.test.ts` — mig 260 — Veloci-Ramp-Tor combat batch. Engine touches: (~1512 tok)
 - `dino-combat.test.ts` — mig 260 — Quartzwood X/X trample token, Wrathful Raptors damage redirect, From the Rubble end-step reanimation, Itzquinth ETB burn. (~1400 tok)
 - `dino-creatures.test.ts` — mig 256 — the Veloci-Ramp-Tor creature batch (~14 cards, mostly scripts). (~1428 tok)
@@ -298,6 +299,7 @@
 - `kessig-chaos-warp.test.ts` — mig 242 — Kessig Wolf Run + Chaos Warp. (~1297 tok)
 - `landfall.test.ts` — mig 238 — Nesting Dragon (landfall) + Sarkhan cost reduction. (~843 tok)
 - `monstrosity.test.ts` — Monstrosity (mig 232) — Stormbreath Dragon: "{5}{R}{R}: Monstrosity 3. When (~781 tok)
+- `multiplayer-pods.test.ts` — Four-player pod sweep: the engine grew through six decks of mostly-1v1 (~2740 tok)
 - `opportunistic-dragon.test.ts` — mig 246 — Opportunistic Dragon: "When this creature enters, choose target (~810 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
 - `reality-shift.test.ts` — mig 251 — Reality Shift (manifest): "Exile target creature. Its controller (~1052 tok)
