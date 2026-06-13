@@ -991,5 +991,7 @@
 
   "Syphon Mind": {"schema_version":2,"spell_effect":{"actions":[{"type":"discard","who":"each_opponent","count":1,"random":true},{"type":"draw","amount":{"count":"num_opponents"},"recipient":"controller"}]}},
 
-  "Ardbert, Warrior of Darkness": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","spell_color":"W"},"effects":[{"type":"add_counters_all","counter_type":"plus_one_one","amount":1,"target_controller":"you","type_line":"Legendary"},{"type":"grant_keyword_all","keyword":"vigilance","scope":"controller","creature_type":"Legendary"}]},{"event":"spell_cast","filter":{"controller":"you","spell_color":"B"},"effects":[{"type":"add_counters_all","counter_type":"plus_one_one","amount":1,"target_controller":"you","type_line":"Legendary"},{"type":"grant_keyword_all","keyword":"menace","scope":"controller","creature_type":"Legendary"}]}]}
+  "Ardbert, Warrior of Darkness": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","spell_color":"W"},"effects":[{"type":"add_counters_all","counter_type":"plus_one_one","amount":1,"target_controller":"you","type_line":"Legendary"},{"type":"grant_keyword_all","keyword":"vigilance","scope":"controller","creature_type":"Legendary"}]},{"event":"spell_cast","filter":{"controller":"you","spell_color":"B"},"effects":[{"type":"add_counters_all","counter_type":"plus_one_one","amount":1,"target_controller":"you","type_line":"Legendary"},{"type":"grant_keyword_all","keyword":"menace","scope":"controller","creature_type":"Legendary"}]}]},
+
+  "Champions from Beyond": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Hero Token","count":"X"}]}]}
 }

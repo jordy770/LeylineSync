@@ -457,7 +457,9 @@ const CardBehaviorActionSchema = z.union([
     // preceding edict — Syphon Flesh), or a count-based amount object resolved
     // via the amount engine (Gadrak: one Treasure per nontoken creature that
     // died this turn — zero deaths makes zero tokens, no floor-at-1).
-    count: z.union([z.number(), z.object({ count: z.literal('sacrificed_this_way') }), CountAmountSchema]).optional(),
+    // 'X' (mig 300, Champions from Beyond): the {X} paid at cast, stamped on the
+    // source permanent's counter bag and read by its ETB create_token.
+    count: z.union([z.number(), z.literal('X'), z.object({ count: z.literal('sacrificed_this_way') }), CountAmountSchema]).optional(),
     // The tokens enter tapped (Army of the Damned: "thirteen … tokens that are tapped").
     tapped: z.boolean().optional(),
     // "Its controller creates a token" (Beast Within): the token is created under the

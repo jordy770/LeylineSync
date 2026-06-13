@@ -4128,3 +4128,18 @@
 | 20:07 | Edited tests/feature/circle-of-power.test.ts | 3→8 lines | ~77 |
 | 20:09 | Session end: 57 writes across 25 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 23 reads | ~160974 tok |
 | 19:55 | CIRCLE OF POWER completed — NO migration. Added a "Wizard Token" catalog entry (0/1 black) whose OWN script carries the noncreature-spell trigger (spell_cast + exclude_type:'Creature' → deal 1 each_opponent, via mig 292). Circle's create_token 'Wizard Token' now spawns a token that pings opponents on your noncreature casts straight from the watcher — no "create_token-carrying-a-trigger" engine feature needed (the token's catalog script does it). Tests CIRC1 (token pings opponent), CIRC2 (Circle draws 2/loses 2/makes token). Wizard Token also covers Transpose's identical token. CHAMPIONS FROM BEYOND deferred: needs X-on-permanent-ETB (create X Hero tokens — core to the card, unsupported: cast_card_from_hand doesn't store x_value for a permanent's ETB), attacker-count-threshold triggers, AND the once_per_turn stamp is shared per-card so its two abilities (Light 4+/Full 8+) can't both fire — a hollow partial, not worth shipping yet. FULL SUITE 1486/1486, tsc clean | test-cards.json (Wizard Token, Circle Test), circle-of-power.test.ts | 1486/1486 green | ~10k |
+| 20:12 | Session end: 57 writes across 25 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 23 reads | ~160974 tok |
+| 20:13 | Session end: 57 writes across 25 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 24 reads | ~160974 tok |
+| 20:15 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→6 lines | ~76 |
+| 20:15 | Edited supabase/functions_src/cast_card_from_hand.sql | modified permanent() | ~183 |
+| 20:16 | Edited supabase/functions_src/cast_card_from_hand.sql | inline fix | ~21 |
+| 20:16 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | added 1 condition(s) | ~180 |
+| 20:16 | Edited lib/game/card-behavior-schema.ts | 1→3 lines | ~83 |
+| 20:17 | Edited supabase/migrations/202605010300_x_permanents.sql | modified if() | ~224 |
+| 20:17 | Edited lib/game/actions.ts | modified castCardFromHand() | ~131 |
+| 20:17 | Edited tests/harness/scenario.ts | modified castPermanent() | ~178 |
+| 20:18 | Created tests/feature/champions-from-beyond.test.ts | — | ~375 |
+| 20:19 | Edited tests/feature/champions-from-beyond.test.ts | 2→6 lines | ~126 |
+| 20:24 | Edited tests/feature/champions-from-beyond.test.ts | 6→3 lines | ~59 |
+| 20:26 | Edited next.config.ts | 3→8 lines | ~83 |
+| 20:40 | CHAMPIONS Stage A (mig 300) — {X} permanents. cast_card_from_hand gains p_x_value: the chosen X is stamped on the card's counter bag ('x', mirroring the kicker stamp) so it survives stack→battlefield and the ETB reads it. create_token gains count:'X' (reads source counters.x). Champions ETB = create X Hero tokens. Dropped the old 6-arg cast_card_from_hand overload (7-arg now; callers use the default). Client castCardFromHand + harness castPermanent gained an x param. GOTCHA: resolveStack = resolve_top_of_stack (ONE item) — a cast permanent needs a 2nd resolveStack to resolve its enqueued ETB (cost me a debugging cycle: counters.x was stamped fine, the ETB just hadn't resolved). Test CH1 (cast X=3 -> 3 Hero tokens). Stage B (Light/Full Party attack-count triggers) still TODO. FULL SUITE 1488/1488, tsc clean | cast_card_from_hand.sql, apply_triggered_ability_effects.sql, mig 300, card-behavior-schema.ts, actions.ts, scenario.ts, card-scripts.json, champions-from-beyond.test.ts, test-cards.json | 1488/1488 green | ~25k |

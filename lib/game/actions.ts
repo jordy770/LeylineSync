@@ -65,12 +65,14 @@ export async function castCardFromHand(
   cardId: string,
   genericPayment?: Record<string, number>,
   targetCardId?: string,
+  xValue?: number | null,
 ) {
   const { data, error } = await supabase.rpc('cast_card_from_hand', {
     p_session_id: sessionId,
     p_game_card_id: cardId,
     p_generic_payment: genericPayment ?? null,
     p_target_card_id: targetCardId ?? null,
+    p_x_value: xValue ?? null,
   })
 
   if (error) {

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T18:07:08.315Z
-> Files: 210 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T18:26:15.141Z
+> Files: 213 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -13,6 +13,7 @@
 
 ## ./
 
+- `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~345 tok)
 - `scratch-check-hosted.mjs` — Declares loadEnvFile (~567 tok)
 - `scratch-ign.mjs` — Declares c (~161 tok)
 - `scratch-mv.mjs` — Declares c (~215 tok)
@@ -135,9 +136,9 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12266 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12283 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~19092 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~19141 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4067 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
 
@@ -176,10 +177,10 @@
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~20187 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~11913 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~12013 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
-- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5263 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5432 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2775 tok)
 - `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
@@ -261,6 +262,7 @@
 - `202605010297_job_select.sql` — 202605010297_job_select (~19896 tok)
 - `202605010298_syphon_mind.sql` — 202605010298_syphon_mind (~23658 tok)
 - `202605010299_ardbert.sql` — 202605010299_ardbert (~14550 tok)
+- `202605010300_x_permanents.sql` — 202605010300_x_permanents (~17516 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -282,6 +284,7 @@
 - `breya-manabase.test.ts` — mig 263 — Breya karoo land bounce (bounce_up_to type_line) + double-mana tap. (~500 tok)
 - `breya-recursion.test.ts` — mig 265 — Hanna artifact-or-enchantment return, Myr Retriever exclude-self dies return. (~700 tok)
 - `breya-recursion.test.ts` — mig 265 — Breya recursion. Engine touch: return_from_graveyard filter (~782 tok)
+- `champions-from-beyond.test.ts` — Champions from Beyond (mig 300, Stage A): an {X} permanent whose ETB creates (~409 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
 - `circle-of-power.test.ts` — Circle of Power (no migration): the spell makes a 0/1 black Wizard token whose (~774 tok)
 - `copy-permanent.test.ts` — mig 239 — token-copy primitive (Will of the Temur + Reflections of Littjara). (~2624 tok)
@@ -351,7 +354,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10011 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10025 tok)
 
 ## tests/regression/
 

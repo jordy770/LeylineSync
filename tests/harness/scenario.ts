@@ -271,7 +271,7 @@ export class Scenario {
    */
   async castPermanent(
     gameCardId: string,
-    opts: { target?: string; generic?: Record<string, number>; kicked?: boolean; sacrificeIds?: string[] } = {},
+    opts: { target?: string; generic?: Record<string, number>; kicked?: boolean; sacrificeIds?: string[]; x?: number } = {},
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'cast_card_from_hand', {
@@ -281,6 +281,7 @@ export class Scenario {
         p_target_card_id: opts.target ?? null,
         p_kicked: opts.kicked ?? false,
         p_sacrifice_ids: opts.sacrificeIds ?? null,
+        p_x_value: opts.x ?? null,
       }),
     )
   }

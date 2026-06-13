@@ -9,7 +9,10 @@ create or replace function public.cast_card_from_hand(
   p_generic_payment jsonb default null,
   p_target_card_id uuid default null,
   p_kicked boolean default false,
-  p_sacrifice_ids uuid[] default null
+  p_sacrifice_ids uuid[] default null,
+  -- The chosen X for an {X} permanent (mig 300). Stamped on the card's counter
+  -- bag so its ETB can read it (create_token count:'X' → counters.x).
+  p_x_value integer default null
 ) returns public.game_cards
 language plpgsql
 security definer
@@ -419,6 +422,15 @@ begin
     where id = p_game_card_id and session_id = p_session_id;
   end if;
 
+  -- {X} permanent (mig 300, Champions from Beyond): stamp the chosen X in the
+  -- counter bag so it survives the stack→battlefield move and its ETB can read
+  -- it (create_token count:'X' → counters.x).
+  if p_x_value is not null then
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object('x', p_x_value)
+    where id = p_game_card_id and session_id = p_session_id;
+  end if;
+
   select coalesce(max(position), -1) + 1
   into v_next_stack_position
   from public.game_stack_items
@@ -470,4 +482,4 @@ begin
   return v_card;
 end;
 $$;
-grant execute on function public.cast_card_from_hand(uuid, uuid, jsonb, uuid, boolean, uuid[]) to authenticated;
+grant execute on function public.cast_card_from_hand(uuid, uuid, jsonb, uuid, boolean, uuid[], integer) to authenticated;
