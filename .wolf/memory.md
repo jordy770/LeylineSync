@@ -3391,7 +3391,7 @@
 | 22:42 | Created scratch-check-hosted.mjs | — | ~567 |
 | 20:55 | Hosted upsert: deck:upsert --apply --force (direct node call; npm eats flags after --). 30 cards / 51 printings updated, 67 already current; forced Migration Path (added cycling) + Sol Ring (legacy v1 script). Created Dragon Egg Token + Dragon Hatchling Token (dep scan misses tokens referenced from token scripts). Verify: 0 to update / 118 current. NOTE: hosted still needs db push of migs 229-241 for the new action types. | hosted cards table | all current | ~3k |
 | 22:43 | Session end: 54 writes across 22 files (create_copy_token.sql, cease_token_if_off_battlefield.sql, put_in_graveyard.sql, fire_watcher_triggers.sql, resolve_count_amount.sql) | 27 reads | ~128492 tok |
-| 21:05 | User pushed migs 229-241 to hosted themselves � hosted engine + catalog scripts now in sync through mig 241. Dragons deck (73/92 cards) fully playable online. | hosted DB | in sync | ~0k |
+| 21:05 | User pushed migs 229-241 to hosted themselves � hosted engine + catalog scripts now in sync through mig 241. Dragons deck (73/92 cards) fully playable online. | hosted DB | in sync | ~0k |
 | 22:52 | Session end: 54 writes across 22 files (create_copy_token.sql, cease_token_if_off_battlefield.sql, put_in_graveyard.sql, fire_watcher_triggers.sql, resolve_count_amount.sql) | 27 reads | ~128492 tok |
 | 22:53 | Session end: 54 writes across 22 files (create_copy_token.sql, cease_token_if_off_battlefield.sql, put_in_graveyard.sql, fire_watcher_triggers.sql, resolve_count_amount.sql) | 27 reads | ~128492 tok |
 | 22:59 | Edited supabase/functions_src/activate_ability.sql | modified public() | ~86 |
@@ -3959,3 +3959,60 @@
 | 07:20 | FALSE SUMMONING SICKNESS fixed (mig 290): move_card_to_zone re-stamped entered_battlefield_turn_number + force-untapped on same-zone battlefield calls (board repositioning) → veteran creatures went sick. Verified normal flow first (full advance_step turn-cycle repro), then guarded both effects to genuine entries. summoning-sickness.test.ts has both regressions. Migs 288-290 unpushed | move_card_to_zone canonical, mig 290, summoning-sickness.test.ts | 1403/1403 green | ~20k |
 | 03:33 | Session end: 174 writes across 55 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 17 reads | ~209045 tok |
 | 07:50 | COMMANDER COST REDUCTION fixed (mig 291): cast_commander paid printed cost directly — no static reduction ever reached command-zone casts (Nogi, Servant, Sculptor, Millicent affinity). Printed cost now runs through reduced_mana_cost; tax separate/unreduced (nuance documented). Regression test pays exactly {3}{R}{R}. Migs 288-291 unpushed | cast_commander canonical, mig 291, commander-cost-reduction.test.ts | 1404/1404 green | ~15k |
+| 03:48 | Session end: 174 writes across 55 files (apply_triggered_ability_effects.sql, activate_ability.sql, fire_watcher_triggers.sql, fire_zone_change_triggers.sql, register_card_continuous_effects.sql) | 17 reads | ~209045 tok |
+| 03:57 | Edited components/controller/shared.ts | modified found() | ~503 |
+| 03:57 | Edited components/controller/shared.ts | added optional chaining | ~215 |
+
+## Session: 2026-06-13 11:58
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-13 12:29
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:29 | Created ../../.claude/plans/glistening-fluttering-finch.md | — | ~2132 |
+
+## Session: 2026-06-13 12:30
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-13 12:34
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:37 | Edited components/controller/shared.ts | added 1 import(s) | ~70 |
+| 12:37 | Edited components/controller/shared.ts | added optional chaining | ~705 |
+| 12:37 | Edited components/ControllerListV4.tsx | 5→6 lines | ~37 |
+| 12:37 | Edited components/ControllerListV4.tsx | inline fix | ~18 |
+| 12:38 | Edited components/ControllerListV4.tsx | added error handling | ~457 |
+| 12:38 | Edited components/ControllerListV4.tsx | added 7 condition(s) | ~990 |
+| 12:38 | Edited components/ControllerListV4.tsx | inline fix | ~40 |
+| 12:38 | Edited components/ControllerListV4.tsx | 6→8 lines | ~103 |
+| 12:39 | Edited components/ControllerListV4.tsx | modified PriorityPanel() | ~370 |
+| 12:39 | Edited components/ControllerListV4.tsx | CSS: hover, hover | ~796 |
+| 12:40 | AUTO-PASS v2 (client): replaced the single boolean toggle with 4 independent per-session switches — op (opponents' turns, the v1 behaviour), own (auto-pass your empty phases: untap/upkeep/draw/begin+end combat/end; mains & declare_attackers stay manual), stk (stop when a NEW object hits an opponent's stack — closes v1's bug-714 stack-passthrough gap), rsp (stop when you hold a castable response). Plus a 'Yield rest of turn' one-shot. New shared helper playerHasInstantResponse (hand instants via canCastHandSpell+afford, battlefield instant-speed activated abilities via normalizeCardBehaviorToV2 + the mig-289 zone gate). Manual pass acknowledges the stack signature so stk doesn't re-stop forever. localStorage migrates old '1' → {op:true}. UI: Auto button now opens a popover with 4 toggle rows + yield. tsc clean, lint clean (2 pre-existing img warnings) | shared.ts, ControllerListV4.tsx, buglog.json | ✓ tsc+lint green; manual in-session behavioural check still pending | ~18k |
+| 12:41 | Session end: 10 writes across 2 files (shared.ts, ControllerListV4.tsx) | 4 reads | ~56288 tok |
+
+## Session: 2026-06-13 12:54
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:10 | Created .claude/workflows/scions-spellcraft-build.js | — | ~2782 |
+| 13:10 | Edited .claude/workflows/scions-spellcraft-build.js | added error handling | ~83 |
+| 13:11 | Session end: 2 writes across 1 files (scions-spellcraft-build.js) | 6 reads | ~23800 tok |
+| 13:15 | Triage: Sublime Epiphany classified needs_engine (modal counter-spell/counter-ability/bounce-permanent/copy-creature targeting unsupported) | card-scripts.json | needs_engine | ~8k |
+| 13:19 | Created scripts/merge-scions-scripts.mjs | — | ~481 |
+| 13:22 | Created scripts/fix-scions-scripts.mjs | — | ~751 |
+| 13:30 | SCIONS SPELLCRAFT deck (Y'shtola precon, 71 needs-building cards) scripted via a multi-agent WORKFLOW (.claude/workflows/scions-spellcraft-build.js — pipeline author→adversarial-verify, 142 agents, ~3.3M tok). Result: 21 scriptable + 31 partial = 52 entries merged into card-scripts.json; 19 needs_engine (no script). Post-merge, 6 entries failed validateCardScript + White Auracite failed deck-smoke (bug-715) — all patched; 484/484 tests green. ENGINE BACKLOG (dominant first): #1 spell_cast NONCREATURE/exclude-type filter (the deck's whole magecraft theme — unblocks ~15 cards incl. Y'shtola/Estinien/Hermes/Papalymo/G'raha/Krile/Lyse/Archmage Emeritus/the Wizard tokens); then Sagas, Adventures (Hildibrand/Hypnotic Sprite/Murderous Rider), Partner (Alisaie/Alphinaud), Job-select equip-tokens (5 equipment), Convoke, Delve, Rebound, Kicker-copy, second-spell cost reduction (Dualcast), graveyard-cast discounts. Verify stage correctly demoted noncreature-spell triggers to needs_engine (would've been silent no-ops). NOT YET hosted-upserted — run deck:upsert with the ScionsSpellcraft.txt path to push to the live catalog | card-scripts.json, scions-spellcraft-build.js workflow | 484/484 green | ~60k |
+| 13:29 | Session end: 4 writes across 3 files (scions-spellcraft-build.js, merge-scions-scripts.mjs, fix-scions-scripts.mjs) | 29 reads | ~156959 tok |
+| 13:34 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified filter() | ~223 |
+| 13:35 | Edited supabase/migrations/202605010292_noncreature_spell_filter.sql | modified triggers() | ~179 |
+| 13:35 | Edited lib/game/card-behavior-schema.ts | modified match() | ~125 |
+| 13:38 | Created tests/feature/noncreature-spell-trigger.test.ts | — | ~603 |
+| 13:55 | ENGINE FEATURE mig 292 — noncreature-spell trigger filter (the #1 Scions backlog unlock). Added filter.exclude_type to fire_watcher_triggers: a watcher skips the event when the changed card's type line matches exclude_type. "whenever you cast a NONCREATURE spell" = spell_cast + exclude_type:'Creature' (the positive type_line filter could only INCLUDE). Edited canonical fire_watcher_triggers.sql, generated mig 292 via new-migration.mjs, added exclude_type to the trigger filter Zod schema. New test tests/feature/noncreature-spell-trigger.test.ts (NC1 fires on noncreature cast, NC2 silent on creature cast) + fixtures Magecraft Tester Test / Spellcraft Spark Test. 10/10 watcher+validation tests green, tsc clean. NOTE exclude_type:'Creature'='noncreature' precisely — NOT for 'instant or sorcery' cards (Archmage Emeritus/Fandaniel keep two positive triggers). Task 9 (re-script ~13 magecraft cards) DEFERRED — needs runtime-aware pass: token catalog only has Beast/Goblin/Saproling/Soldier/Spirit/Zombie (no Bird/Wizard token), and deal_damage recipient resolution must be verified per card | fire_watcher_triggers.sql, mig 292, card-behavior-schema.ts, noncreature-spell-trigger.test.ts, test-cards.json | 10/10 green | ~18k |
+| 13:41 | Session end: 8 writes across 7 files (scions-spellcraft-build.js, merge-scions-scripts.mjs, fix-scions-scripts.mjs, fire_watcher_triggers.sql, 202605010292_noncreature_spell_filter.sql) | 33 reads | ~168834 tok |
+| 14:10 | Re-scripted 4 magecraft cards onto mig-292's exclude_type filter (all verified runtime-supported in apply_triggered_ability_effects: deal_damage/gain_life honor recipient; add_counters/grant_keyword/pump in a trigger hit the SOURCE permanent with no target pick): Papalymo (noncreature→1 dmg each_opponent + gain 1), Estinien (+1/+1 counter + flying self), Thancred (indestructible self EOT), Lyse (prowess: +1/+1 self). All partials (sac/2nd-main-draw/ETB-grant/cost-reduction+double-strike clauses still need other engine features). 489/489 green (validation+smoke+noncreature test). STILL needs_engine for documented reasons: Y'shtola (MV>=3 spell filter), G'raha/Krile (linked-X / MV-target / once-per-turn), Hermes (Bird Token absent from the 6-token catalog: Beast/Goblin/Saproling/Soldier/Spirit/Zombie), Ardbert (color filter), Circle/Transpose (token-granted trigger) | card-scripts.json | 489/489 green | ~10k |
+| 13:47 | Session end: 8 writes across 7 files (scions-spellcraft-build.js, merge-scions-scripts.mjs, fix-scions-scripts.mjs, fire_watcher_triggers.sql, 202605010292_noncreature_spell_filter.sql) | 33 reads | ~168834 tok |

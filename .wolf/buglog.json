@@ -11490,6 +11490,152 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T00:00:00Z"
+    },
+    {
+      "id": "bug-707",
+      "timestamp": "2026-06-13T01:57:03.989Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/shared.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→21 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T01:57:03.989Z"
+    },
+    {
+      "id": "bug-708",
+      "timestamp": "2026-06-13T01:57:28.574Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T01:57:28.574Z"
+    },
+    {
+      "id": "bug-709",
+      "timestamp": "2026-06-13T10:37:22.987Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Had '@/lib/game/types'",
+      "fix": "Changed to '@/lib/game/mana'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T10:37:22.987Z"
+    },
+    {
+      "id": "bug-710",
+      "timestamp": "2026-06-13T10:37:35.720Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T10:37:35.720Z"
+    },
+    {
+      "id": "bug-711",
+      "timestamp": "2026-06-13T10:38:11.820Z",
+      "error_message": "Missing error handling in loadAutoPassSettings",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T10:38:11.820Z"
+    },
+    {
+      "id": "bug-712",
+      "timestamp": "2026-06-13T10:38:35.692Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T10:38:35.692Z"
+    },
+    {
+      "id": "bug-713",
+      "timestamp": "2026-06-13T10:38:41.452Z",
+      "error_message": "CSS fix: passPriority",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "passPriority: async () => { await passPriorityAction(supabase, sessionId) → async () => { ackStackKeyRef.current = currentStackKey",
+      "fix": "Changed passPriority: async () => { await passPriorityAction(supabase, sessionId) → async () => { ackStackKeyRef.current = currentStackKey",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-06-13T10:39:29.532Z"
+    },
+    {
+      "id": "bug-714",
+      "timestamp": "2026-06-13T12:30:00.000Z",
+      "error_message": "Auto-pass v1 passed priority through opponents' stack objects — no chance to respond in the only window where you'd want to",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "v1 auto-pass (commit 7f24353) only checked whose turn it was; it ignored the stack and your available responses, so it blindly passed every opponent priority including spell/trigger response windows.",
+      "fix": "Reworked auto-pass into independent per-session toggles (op/own/stk/rsp) with stop-conditions: 'stk' stops when a new (unacknowledged) object hits an opponent's stack; 'rsp' stops when playerHasInstantResponse() finds a castable instant/flash or instant-speed activated ability. Manual pass acknowledges the current stack signature so the same stack doesn't re-stop. Added 'own' (auto-pass own empty phases) and a 'yield rest of turn' one-shot.",
+      "tags": [
+        "auto-pass",
+        "priority",
+        "controller",
+        "ux",
+        "card-behaviours"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T12:30:00.000Z"
+    },
+    {
+      "id": "bug-715",
+      "timestamp": "2026-06-13T11:10:56.361Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/workflows/scions-spellcraft-build.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T11:10:56.361Z"
     }
   ]
 }

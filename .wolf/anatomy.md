@@ -1,7 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T01:02:12.907Z
-> Files: 189 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T11:38:19.965Z
+> Files: 195 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../.claude/plans/
+
+- `glistening-fluttering-finch.md` — Auto-pass priority — expanded controls (~1999 tok)
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
@@ -30,6 +34,10 @@
 
 ## .claude/rules/
 
+
+## .claude/workflows/
+
+- `scions-spellcraft-build.js` — Exports meta (~2826 tok)
 
 ## .git/
 
@@ -88,7 +96,7 @@
 
 ## components/
 
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~40020 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~41975 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~4637 tok)
 
 ## components/board/
@@ -99,7 +107,7 @@
 - `CardActionSheet.tsx` — CardActionSheet (~17417 tok)
 - `CardDisplay.tsx` — Small display atoms: ManaSymbol, KeywordBadges, ManaCostDisplay, ManaPoolDisplay. (~660 tok)
 - `OpeningHandOverlay.tsx` — Full-screen opening-hand overlay (London mulligan): keep/mulligan buttons, bottom-card selection chips, waiting-for-others variant. Rendered by ControllerListV4 while any player has opening_hand_kept === false. (~1249 tok)
-- `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~7175 tok)
+- `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~8333 tok)
 
 ## components/judge/
 
@@ -129,7 +137,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18480 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18612 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
 
@@ -141,6 +149,8 @@
 
 ## scripts/
 
+- `fix-scions-scripts.mjs` — Declares SCRIPTS (~751 tok)
+- `merge-scions-scripts.mjs` — One-off: merge the scions-spellcraft-build workflow output into card-scripts.json. (~481 tok)
 - `setup-local-test-db.mjs` — Rebuilds the LOCAL test-harness database from scratch. (~912 tok)
 - `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3330 tok)
 - `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2117 tok)
@@ -183,7 +193,7 @@
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~612 tok)
 - `fire_tap_triggers.sql` — supabase/functions_src/fire_tap_triggers.sql (~297 tok)
 - `fire_turn_step_triggers.sql` — supabase/functions_src/fire_turn_step_triggers.sql (~673 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~2455 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~2598 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1540 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
@@ -242,6 +252,7 @@
 - `202605010260_dino_combat.sql` — 202605010260_dino_combat (~35248 tok)
 - `202605010261_dino_fights.sql` — 202605010261_dino_fights (~43483 tok)
 - `202605010262_dino_finale.sql` — 202605010262_dino_finale (~60868 tok)
+- `202605010292_noncreature_spell_filter.sql` — 202605010292_noncreature_spell_filter (~2707 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -301,6 +312,7 @@
 - `monstrosity.test.ts` — Monstrosity (mig 232) — Stormbreath Dragon: "{5}{R}{R}: Monstrosity 3. When (~781 tok)
 - `multiplayer-pods.test.ts` — 4-player pod semantics: corrupted gates, edict chains, goad redirection, monarch theft, per-player taxes. (~1100 tok)
 - `multiplayer-pods.test.ts` — Four-player pod sweep: the engine grew through six decks of mostly-1v1 (~2740 tok)
+- `noncreature-spell-trigger.test.ts` — Noncreature-spell watcher (mig 292): a spell_cast triggered ability with (~603 tok)
 - `omen-casts.test.ts` — mig 289 — Flush Out from hand: discard park, draw two, shuffle-self-away. (~500 tok)
 - `opportunistic-dragon.test.ts` — mig 246 — Opportunistic Dragon: "When this creature enters, choose target (~810 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
