@@ -67,7 +67,8 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       damage_marked,
       zone,
       controller_player_id,
-      plus_one_counters
+      plus_one_counters,
+      counters
     `)
     .eq('session_id', sessionId)
     .eq('zone', 'battlefield')
@@ -101,6 +102,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       power_toughness: linkedCard?.power_toughness ?? null,
       controller_player_id: item.controller_player_id ?? null,
       plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
+      counters: (item as { counters?: Record<string, number> | null }).counters ?? null,
     }
   })
 }
@@ -108,6 +110,29 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
 // Per-card protection colours (effect_type 'protection', payload.from), keyed by the
 // affected game_card id. Lets the controller pre-filter targets/blocks a creature's
 // protection forbids (the server is authoritative either way).
+// Board-status effects the UI badges (mig 287): which cards are ANIMATED
+// lands (mig 277) and which players are protected by ATTACK TAXES (mig 275).
+export async function getStatusEffects(supabase: SupabaseClient, sessionId: string) {
+  const animatedIds = new Set<string>()
+  const taxes: { playerId: string; mana: number; life: number }[] = []
+  const { data, error } = await supabase
+    .from('game_continuous_effects')
+    .select('effect_type, affected_card_id, affected_player_id, payload')
+    .eq('session_id', sessionId)
+    .in('effect_type', ['animated', 'attack_tax'])
+  if (error) {
+    console.error('Failed to load status effects:', error.message)
+    return { animatedIds, taxes }
+  }
+  for (const row of (data ?? []) as { effect_type: string; affected_card_id: string | null; affected_player_id: string | null; payload: Record<string, unknown> | null }[]) {
+    if (row.effect_type === 'animated' && row.affected_card_id) animatedIds.add(row.affected_card_id)
+    if (row.effect_type === 'attack_tax' && row.affected_player_id) {
+      taxes.push({ playerId: row.affected_player_id, mana: Number(row.payload?.mana ?? 0), life: Number(row.payload?.life ?? 0) })
+    }
+  }
+  return { animatedIds, taxes }
+}
+
 export async function getProtectionColors(supabase: SupabaseClient, sessionId: string) {
   const colorsByCard: Record<string, string[]> = {}
 
@@ -227,6 +252,7 @@ export async function getControllerCards(
       static_effects_suppressed,
       entered_battlefield_turn_number,
       plus_one_counters,
+      counters,
       is_commander,
       command_zone_casts
     `)
@@ -263,6 +289,7 @@ export async function getControllerCards(
       static_effects_suppressed: card.static_effects_suppressed ?? false,
       entered_battlefield_turn_number: card.entered_battlefield_turn_number ?? null,
       plus_one_counters: card.plus_one_counters ?? 0,
+      counters: (card as { counters?: Record<string, number> | null }).counters ?? null,
       is_commander: (card as { is_commander?: boolean }).is_commander ?? false,
       command_zone_casts: (card as { command_zone_casts?: number }).command_zone_casts ?? 0,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,

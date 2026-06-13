@@ -38,8 +38,13 @@ async function LoginContent({ searchParams }: LoginPageProps) {
 }
 
 function LoginShell({ children }: { children?: ReactNode }) {
+  // `dark` flips the Shadcn tokens so the card matches the game's dark
+  // chrome instead of rendering as an unthemed white island (designqc).
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+    <div className="dark flex min-h-svh w-full flex-col items-center justify-center gap-6 bg-slate-950 p-6 md:p-10">
+      <p className="text-xl font-black tracking-tight text-white">
+        Leyline <span className="text-emerald-400">Sync</span>
+      </p>
       <div className="w-full max-w-sm">{children}</div>
     </div>
   );

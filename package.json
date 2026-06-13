@@ -7,8 +7,11 @@
     "import:cards": "node scripts/import-scryfall-cards.mjs",
     "validate:scripts": "npx tsx scripts/validate-card-scripts.ts",
     "test:db:setup": "node scripts/setup-local-test-db.mjs",
-    "test": "node --import tsx --test tests/unit/card-behavior-builder.test.ts tests/unit/deck-insights.test.ts tests/regression/group1.test.ts tests/feature/targeted-triggers.test.ts tests/feature/trigger-events.test.ts tests/feature/exile-mill.test.ts tests/feature/modal-decisions.test.ts tests/feature/scry-decisions.test.ts tests/feature/surveil-decisions.test.ts tests/feature/trigger-scry-surveil.test.ts tests/feature/spell-effect-program.test.ts tests/feature/more-decisions.test.ts tests/feature/tier1-effect-vocabulary.test.ts tests/feature/grant-keyword.test.ts tests/feature/grant-keyword-spell.test.ts tests/feature/fight.test.ts tests/feature/gain-control.test.ts tests/feature/sacrifice-reanimate.test.ts tests/feature/x-spells.test.ts tests/feature/search-library-variants.test.ts tests/feature/multi-target.test.ts tests/feature/permanent-target.test.ts tests/feature/permanent-trigger-target.test.ts tests/feature/divided-damage.test.ts tests/feature/multi-target-trigger.test.ts tests/feature/player-discard.test.ts tests/feature/activated-abilities.test.ts tests/feature/cant-be-countered.test.ts tests/feature/hybrid-phyrexian-mana.test.ts tests/feature/combat-over-assignment.test.ts tests/feature/apnap-trigger-order.test.ts tests/feature/priority-round.test.ts tests/feature/damage-prevention.test.ts tests/feature/layer-pt.test.ts tests/feature/protection.test.ts tests/feature/auras.test.ts tests/feature/commander.test.ts tests/feature/commander-deck.test.ts tests/feature/commander-return.test.ts tests/feature/multiplayer.test.ts tests/feature/rls.test.ts tests/feature/cleanup.test.ts tests/feature/anthem.test.ts tests/feature/switch-pt.test.ts tests/feature/creature-shield.test.ts tests/feature/combat-shield.test.ts tests/feature/cda-pt.test.ts tests/feature/targeted-spell-riders.test.ts tests/feature/commander-identity-mana.test.ts tests/feature/assassins-trophy.test.ts",
-    "lint": "eslint ."
+    "test": "node scripts/run-tests.mjs",
+    "lint": "eslint .",
+    "validate:fixtures": "node --import tsx scripts/validate-fixtures-offline.mts",
+    "deck:triage": "node --import tsx scripts/triage-decklist.mjs",
+    "deck:upsert": "node --import tsx scripts/upsert-deck-scripts.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",

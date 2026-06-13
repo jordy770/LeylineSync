@@ -74,6 +74,7 @@ export const EFFECT_TOKEN_NAMES = [
   'Soldier Token',
   'Saproling Token',
   'Zombie Token',
+  'Zombie Knight Token',
   'Goblin Token',
   'Beast Token',
   'Spirit Token',
@@ -101,6 +102,71 @@ const controllerField: FieldDescriptor = {
     { value: 'any', label: 'all creatures' },
   ],
   optional: true,
+}
+
+// Which creatures a mass pump (pump_all) affects: 'all' (any controller) or
+// 'controller' (yours). Serialized as `scope`.
+const massPumpScopeField: FieldDescriptor = {
+  name: 'scope',
+  kind: 'enum',
+  label: 'Affects',
+  default: 'all',
+  options: [
+    { value: 'all', label: 'all creatures' },
+    { value: 'controller', label: 'creatures you control' },
+  ],
+  optional: true,
+}
+
+// Which counter kind an add_counters effect places. "plus_one_one" is the engine's
+// fast +1/+1 column (default, omitted when serialized); anything else lands in the
+// jsonb counter bag and has no P/T effect.
+const counterTypeField: FieldDescriptor = {
+  name: 'counter_type',
+  kind: 'enum',
+  label: 'Counter kind',
+  default: 'plus_one_one',
+  options: [
+    { value: 'plus_one_one', label: '+1/+1' },
+    { value: 'minus_one_one', label: '−1/−1' },
+    { value: 'charge', label: 'charge' },
+    { value: 'quest', label: 'quest' },
+    { value: 'study', label: 'study' },
+    { value: 'gold', label: 'gold' },
+    { value: 'generic', label: 'generic' },
+  ],
+  optional: true,
+  // Default +1/+1 is the engine's fast column — keep it out of the in-memory shape
+  // and the serialized JSON unless the author picks a bag counter.
+  materializeDefault: false,
+  omitDefault: true,
+}
+
+// Counter amount allows NEGATIVES (a negative amount removes that many counters —
+// "remove a +1/+1 counter" = amount -1). Removing +1/+1 re-runs the lethal SBA.
+const counterAmountField: FieldDescriptor = { name: 'amount', kind: 'number', label: 'Amount (negative removes)', default: 1, min: -99, max: 99 }
+
+// "Remove ALL counters of that kind" (Hex Parasite / Solemnity-style). When true the
+// amount is ignored. Optional + default false → omitted unless the author ticks it.
+const removeAllField: FieldDescriptor = {
+  name: 'all',
+  kind: 'boolean',
+  label: 'Remove all of that kind',
+  default: false,
+  optional: true,
+}
+
+// Player counters (poison/energy/experience) for add_player_counters.
+const playerCounterTypeField: FieldDescriptor = {
+  name: 'counter_type',
+  kind: 'enum',
+  label: 'Counter kind',
+  default: 'poison',
+  options: [
+    { value: 'poison', label: 'poison' },
+    { value: 'energy', label: 'energy' },
+    { value: 'experience', label: 'experience' },
+  ],
 }
 
 // Where a tutored card goes (search_library.to).
@@ -221,26 +287,144 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   { type: 'lose_life', variant: 'lose_life_rider', label: 'you lose life', contexts: ['rider'], fields: [amountField('Amount')] },
   { type: 'gain_life', variant: 'gain_life_rider', label: 'you gain life', contexts: ['rider'], fields: [amountField('Amount')] },
   { type: 'deal_damage', label: 'Deal damage to players', contexts: ['trigger'], fields: [amountField('Amount'), recipientField()] },
-  // Targeted deal_damage (Lightning Bolt) — spell only; the engine routes a trigger
-  // "deal damage to any target" against each opponent, so triggers use the shape above.
-  { type: 'deal_damage', variant: 'deal_damage_target', label: 'Deal damage to a target', contexts: ['spell'], fields: [amountField('Amount'), damageTargetField] },
-  { type: 'draw', label: 'You draw cards', contexts: ['trigger', 'spell', 'rider'], fields: [amountField('Amount')] },
+  // Targeted deal_damage (Lightning Bolt as a spell; "deal N damage to target
+  // creature" as an ETB trigger — Flame Mage). The engine resolves a targeted
+  // deal_damage trigger via the same path as destroy/pump (trigger_effect_target_type
+  // lists deal_damage). Disambiguated from the recipient shape above by `target_type`.
+  { type: 'deal_damage', variant: 'deal_damage_target', label: 'Deal damage to a target', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), damageTargetField] },
+  // Neutral subject ("Draw cards", not "You draw cards"): the drawer is the
+  // effect's controller — the source's controller in a trigger/spell, the caster
+  // in a `then` rider, and the CHOSEN player inside choose_player. A caster-centric
+  // "you" label misread inside choose_player (the chosen player draws, not you).
+  { type: 'draw', label: 'Draw cards', contexts: ['trigger', 'spell', 'rider'], fields: [amountField('Amount')] },
   { type: 'mill', label: 'Mill cards', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), recipientField()] },
   {
     type: 'create_token',
     label: 'Create token(s)',
-    contexts: ['trigger'],
+    contexts: ['trigger', 'spell'],
     fields: [
       { name: 'count', kind: 'number', label: 'Count', default: 1, min: 1, max: 20, optional: true },
       { name: 'token', kind: 'select', label: 'Token', default: EFFECT_TOKEN_NAMES[0], options: TOKEN_OPTIONS },
+      // Army of the Damned: "tokens that are tapped".
+      { name: 'tapped', kind: 'boolean', label: 'Enter tapped', default: false, optional: true },
     ],
   },
-  { type: 'add_counters', label: '+1/+1 counters on this', contexts: ['trigger'], fields: [amountField('Amount')] },
-  // Targeted +1/+1 counters — put N counters on a target creature (spell or trigger).
-  { type: 'add_counters', variant: 'add_counters_target', label: '+1/+1 counters on a target creature', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), creatureTargetField] },
-  { type: 'add_counters_all', label: '+1/+1 counters on creatures', contexts: ['trigger', 'spell'], fields: [amountField('Amount'), controllerField] },
+  // Add OR remove counters (negative amount / "remove all" removes — fading, Hex Parasite).
+  { type: 'add_counters', label: 'Counters on this', contexts: ['trigger'], fields: [counterAmountField, counterTypeField, removeAllField] },
+  // Targeted counters — add/remove counters on a target creature (spell or trigger).
+  { type: 'add_counters', variant: 'add_counters_target', label: 'Counters on a target creature', contexts: ['trigger', 'spell'], fields: [counterAmountField, creatureTargetField, counterTypeField, removeAllField] },
+  { type: 'add_counters_all', label: 'Counters on creatures', contexts: ['trigger', 'spell'], fields: [counterAmountField, controllerField, counterTypeField, removeAllField] },
+  // Player counters — poison/energy/experience on players (poison >= 10 loses).
+  { type: 'add_player_counters', label: 'Player counters (poison/energy/…)', contexts: ['trigger', 'spell'], fields: [counterAmountField, playerCounterTypeField, recipientField(), removeAllField] },
   { type: 'tap_all', label: 'Tap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
   { type: 'untap_all', label: 'Untap creatures', contexts: ['trigger', 'spell'], fields: [controllerField] },
+  // Mass P/T pump until end of turn (Crippling Fear = -3/-3 to non-chosen-type).
+  // Under "Choose a creature type" leave Creature type BLANK (it's injected); set
+  // it directly for a fixed-type mass pump.
+  {
+    type: 'pump_all',
+    label: 'All creatures get ±X/±X (until end of turn)',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      { name: 'power', kind: 'number', label: 'Power', default: -1, min: -99, max: 99 },
+      { name: 'toughness', kind: 'number', label: 'Toughness', default: -1, min: -99, max: 99 },
+      massPumpScopeField,
+      { name: 'creature_type', kind: 'text', label: 'Creature type', default: '', optional: true },
+      { name: 'exclude_type', kind: 'boolean', label: 'Creatures NOT of that type', default: false, optional: true },
+    ],
+  },
+  { type: 'amass', label: 'Amass N (grow a Zombie Army)', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
+  // Necromantic Selection (mig 208): board wipe + caster picks one destroyed
+  // creature to reanimate under their control.
+  {
+    type: 'mass_destroy_reanimate_one',
+    label: 'Destroy all creatures, then return one under your control',
+    contexts: ['spell'],
+    fields: [],
+  },
+  // Mass keyword grant until end of turn (mig 202): "All Zombies gain menace
+  // until end of turn" (Lord of the Accursed), "permanents you control gain
+  // hexproof" (Lazotep Plating — its "you" half is includes_player). Works as a
+  // trigger effect, a spell action, or an activated-ability effect.
+  {
+    type: 'grant_keyword_all',
+    label: 'All creatures gain a keyword (until end of turn)',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      {
+        name: 'keyword',
+        kind: 'enum',
+        label: 'Keyword',
+        default: 'menace',
+        options: [
+          { value: 'flying', label: 'flying' },
+          { value: 'reach', label: 'reach' },
+          { value: 'deathtouch', label: 'deathtouch' },
+          { value: 'trample', label: 'trample' },
+          { value: 'vigilance', label: 'vigilance' },
+          { value: 'haste', label: 'haste' },
+          { value: 'indestructible', label: 'indestructible' },
+          { value: 'first_strike', label: 'first strike' },
+          { value: 'double_strike', label: 'double strike' },
+          { value: 'menace', label: 'menace' },
+          { value: 'intimidate', label: 'intimidate' },
+          { value: 'hexproof', label: 'hexproof' },
+        ],
+      },
+      massPumpScopeField,
+      { name: 'creature_type', kind: 'text', label: 'Creature type', default: '', optional: true },
+      { name: 'includes_player', kind: 'boolean', label: 'You gain it too (player hexproof)', default: false, optional: true },
+    ],
+  },
+  {
+    type: 'destroy_all',
+    label: 'Destroy all creatures (board wipe)',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      { name: 'scope', kind: 'enum', label: 'Which', default: 'all', options: [{ value: 'all', label: 'all creatures' }, { value: 'you', label: 'creatures you control' }, { value: 'opponent', label: "opponents' creatures" }], optional: true },
+      { name: 'creature_type', kind: 'text', label: 'Creature type', default: '', optional: true },
+    ],
+  },
+  {
+    type: 'return_all_from_graveyard',
+    label: 'Return all from your graveyard (mass reanimate)',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      { name: 'to', kind: 'enum', label: 'To', default: 'battlefield', options: [{ value: 'battlefield', label: 'the battlefield' }, { value: 'hand', label: 'your hand' }], optional: true },
+      { name: 'creature_type', kind: 'text', label: 'Creature type', default: '', optional: true },
+    ],
+  },
+  // "Exile target card from a graveyard" (Withered Wretch). Wired in the engine
+  // only for ACTIVATED abilities (activate_ability carries the chosen graveyard
+  // card as the target). Spell context is required because the activated-ability
+  // effect picker draws from effectsForContext('spell'); as an actual instant/
+  // sorcery action it has no target path and is a silent no-op (don't author it
+  // as a spell). No fields — the graveyard card is chosen in-game, not authored.
+  { type: 'exile_from_graveyard', label: 'Exile target card from a graveyard (ability)', contexts: ['spell'], fields: [] },
+  // "Put target creature card from a graveyard onto the battlefield under your
+  // control" (Gravespawn Sovereign, mig 212). Same activated-ability-only caveat
+  // as exile_from_graveyard: the graveyard card is chosen in-game at activation.
+  { type: 'reanimate_from_graveyard', label: 'Reanimate target graveyard creature under your control (ability)', contexts: ['spell'], fields: [] },
+  // "As ~ enters, choose a color. Creatures you control of the chosen color get
+  // +X/+Y" (Heraldic Banner, mig 209). The colour is picked in-game; the anthem
+  // shape is authored here.
+  {
+    type: 'choose_color',
+    label: 'Choose a color, then anthem that color',
+    contexts: ['trigger'],
+    fields: [
+      {
+        name: 'anthem',
+        kind: 'object',
+        label: 'Chosen-color creatures get',
+        fields: [
+          { name: 'power', kind: 'number', label: 'Power', default: 1, min: -99, max: 99 },
+          { name: 'toughness', kind: 'number', label: 'Toughness', default: 0, min: -99, max: 99 },
+          massPumpScopeField,
+        ],
+      },
+    ],
+  },
   { type: 'scry', label: 'Scry N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   { type: 'surveil', label: 'Surveil N', contexts: ['trigger', 'spell'], fields: [amountField('Amount')] },
   {
@@ -250,14 +434,17 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
     fields: [
       { name: 'count', kind: 'number', label: 'Count', default: 1, min: 1, max: 10, optional: true },
       { name: 'to', kind: 'enum', label: 'Destination', default: 'hand', options: SEARCH_DESTINATIONS, optional: true },
+      // "...put it onto the battlefield TAPPED" (Wayfarer's Bauble, Rampant Growth).
+      // Optional boolean → omitted unless ticked, so plain tutors stay clean.
+      { name: 'tapped', kind: 'boolean', label: 'Enters tapped', default: false, optional: true },
       {
         name: 'filter',
         kind: 'object',
         label: 'Filter',
         optional: true,
         // Only type_line is form-exposed; filter.name is JSON/AI-authorable (like
-        // the tapped/reveal extras) — the object serializer can't drop an empty
-        // sub-field, so adding it here would leak name:'' into every tutor.
+        // the reveal extra) — the object serializer can't drop an empty sub-field,
+        // so adding it here would leak name:'' into every tutor.
         fields: [{ name: 'type_line', kind: 'text', label: 'Type line', default: '' }],
       },
     ],
@@ -279,11 +466,52 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   },
   {
     type: 'choose_player',
-    label: 'Choose a player, then…',
+    // The inner effects apply to the CHOSEN player (the engine forces each inner
+    // effect's recipient to that player), so the subject is bound here, not "you".
+    label: 'Choose a player, then that player…',
     contexts: ['trigger', 'spell'],
     fields: [
       { name: 'filter', kind: 'enum', label: 'Player', default: 'opponent', options: CHOOSE_PLAYER_FILTERS, optional: true },
-      { name: 'effects', kind: 'effect-list', label: 'Then', itemContext: 'trigger' },
+      { name: 'effects', kind: 'effect-list', label: 'That player:', itemContext: 'trigger' },
+    ],
+  },
+  {
+    // "If you control N+ <type> [creatures/lands] / cards in graveyard, …" — a
+    // state-gated composition wrapper. The condition is read by the engine; the
+    // inner effects run only when it holds.
+    type: 'conditional',
+    label: 'If (a count is at least N), then…',
+    contexts: ['trigger', 'spell'],
+    fields: [
+      {
+        name: 'condition',
+        kind: 'object',
+        label: 'Condition',
+        fields: [
+          { name: 'count', kind: 'enum', label: 'Count of', default: 'creatures_you_control', options: [
+            { value: 'creatures_you_control', label: 'creatures you control' },
+            { value: 'lands_you_control', label: 'lands you control' },
+            { value: 'cards_in_graveyard', label: 'cards in your graveyard' },
+            { value: 'creatures_died_this_turn', label: 'creatures died under your control this turn' },
+            { value: 'commanders_you_control', label: 'your commander on the battlefield (Lieutenant)' },
+            { value: 'graveyard_casts_this_turn', label: 'spells you cast from a graveyard this turn' },
+          ] },
+          { name: 'type_line', kind: 'text', label: 'Of type (blank = any)', default: '' },
+          { name: 'at_least', kind: 'number', label: 'Is at least', default: 1, min: 1, max: 99 },
+        ],
+      },
+      { name: 'effects', kind: 'effect-list', label: 'Then:', itemContext: 'trigger' },
+    ],
+  },
+  {
+    // "Choose a creature type, then …" (Crippling Fear, Distant Melody). The chosen
+    // type is injected into the inner effects (a pump_all's creature_type, or a
+    // count-amount's type_line) — leave those blank.
+    type: 'choose_creature_type',
+    label: 'Choose a creature type, then…',
+    contexts: ['spell'],
+    fields: [
+      { name: 'effects', kind: 'effect-list', label: 'Then (chosen type is injected):', itemContext: 'spell' },
     ],
   },
   // Single-target removal (Doom Blade, Disenchant, Anguished Unmaking, …). Targets
@@ -298,6 +526,9 @@ export const EFFECT_REGISTRY: readonly EffectDef[] = [
   // describes the FOUGHT creature (the fighter is implicit — the source creature
   // as a trigger, or a creature you control as a spell).
   { type: 'fight', label: 'Fight (your creature fights a target creature)', contexts: ['trigger', 'spell'], fields: [creatureTargetField] },
+  // Proliferate — at resolution the controller chooses any number of permanents
+  // with a +1/+1 counter; each gets another. No authoring fields.
+  { type: 'proliferate', label: 'Proliferate', contexts: ['trigger', 'spell'], fields: [] },
   {
     type: 'pump',
     label: 'Pump creature (+X/+X)',
@@ -349,15 +580,31 @@ function defFieldKeys(def: EffectDef): string[] {
   return def.fields.map((f) => (f.kind === 'target' ? 'target' : f.name))
 }
 
+// A field key can only discriminate between variants if it's NOT present on every
+// variant of the type. A key common to all variants (e.g. counter_type on both
+// add_counters shapes, which is omitted by default) must not gate matching, or the
+// more-specific variant silently fails to resolve when that optional field is absent.
+function nonDiscriminatingKeys(type: string): Set<string> {
+  const defs = defsForType(type)
+  if (defs.length <= 1) return new Set()
+  const keyLists = defs.map(defFieldKeys)
+  return new Set(keyLists[0]!.filter((k) => keyLists.every((keys) => keys.includes(k))))
+}
+
 // Resolve which variant def an in-memory effect uses, by the fields it carries.
-// Among defs whose field keys are all present, the most specific (most fields)
-// wins; a single-variant type falls straight through.
+// Among defs whose discriminating field keys are all present, the most specific
+// (most fields) wins; a single-variant type falls straight through.
 export function resolveEffectDef(effect: RegistryEffect): EffectDef | undefined {
   const defs = defsForType(effect.type)
   if (defs.length <= 1) {
     return defs[0]
   }
-  const candidates = defs.filter((def) => defFieldKeys(def).every((k) => k in effect))
+  const shared = nonDiscriminatingKeys(effect.type)
+  const candidates = defs.filter((def) =>
+    defFieldKeys(def)
+      .filter((k) => !shared.has(k))
+      .every((k) => k in effect),
+  )
   if (candidates.length === 0) {
     return defs[0]
   }

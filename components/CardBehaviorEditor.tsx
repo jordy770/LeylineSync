@@ -29,9 +29,14 @@ type EditorMode = 'form' | 'json'
 
 const emptyBuilderForm = (): BuilderForm => ({
   keywords: [...EMPTY_BUILDER_FORM.keywords],
+  staticBuffs: EMPTY_BUILDER_FORM.staticBuffs.map((b) => ({ ...b })),
+  keywordGrants: EMPTY_BUILDER_FORM.keywordGrants.map((g) => ({ ...g })),
   triggers: [...EMPTY_BUILDER_FORM.triggers],
   activatedAbilities: [...EMPTY_BUILDER_FORM.activatedAbilities],
   spellEffect: [...EMPTY_BUILDER_FORM.spellEffect],
+  flashback: EMPTY_BUILDER_FORM.flashback,
+  flashbackLife: EMPTY_BUILDER_FORM.flashbackLife,
+  flashbackEffect: [...EMPTY_BUILDER_FORM.flashbackEffect],
 })
 
 const scriptToText = (script: CardScript | null | undefined) =>

@@ -8,8 +8,8 @@ import {
   finishGameSession,
   getErrorMessage,
   joinGameSession,
-  lockGameSession,
   spawnDeckForSession,
+  startGameSession,
 } from '@/lib/game/actions'
 import {
   getCurrentPlayerSessions,
@@ -71,7 +71,10 @@ export default function GameSessionLobby() {
       } catch (error) {
         const message = getErrorMessage(error)
         console.error('Failed to load player sessions:', message, error)
-        if (isMounted) {
+        // A signed-out visitor simply has no sessions yet — that's the normal
+        // anonymous state, not an error worth a red banner on first paint.
+        // Real auth errors still surface when they ACT (join/create).
+        if (isMounted && !/auth session missing/i.test(message)) {
           setErrorMessage(message)
         }
       }
@@ -128,7 +131,7 @@ export default function GameSessionLobby() {
     }
   }
 
-  const handleLockSession = async () => {
+  const handleStartGame = async () => {
     if (!activeSession) {
       return
     }
@@ -138,11 +141,14 @@ export default function GameSessionLobby() {
     setIsWorking(true)
 
     try {
-      await lockGameSession(supabase, activeSession.id)
+      const result = await startGameSession(supabase, activeSession.id)
       await refreshSession(activeSession.id)
+      setStatusMessage(
+        `Game started — ${result.players} players, first player chosen at random`,
+      )
     } catch (error) {
       const message = getErrorMessage(error)
-      console.error('Failed to lock game session:', message, error)
+      console.error('Failed to start game session:', message, error)
       setErrorMessage(message)
     } finally {
       setIsWorking(false)
@@ -317,11 +323,11 @@ export default function GameSessionLobby() {
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={handleLockSession}
+                onClick={handleStartGame}
                 disabled={isWorking || activeSession.status !== 'open'}
                 className="rounded-md bg-slate-700 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Lock
+                Start game
               </button>
               <button
                 type="button"

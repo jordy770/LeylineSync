@@ -15,6 +15,15 @@ section headers (`Commander`, `Deck`) ignored.
    you start a **Commander** game.
 4. In the lobby, create a game with the **Commander** format, then spawn this deck.
 
+## Implementing a new deck's card behaviors
+
+1. Paste the decklist into `next-deck.txt` (keep the `Commander` header).
+2. `npm run deck:triage` — writes `next-deck.triage.md`: which cards already have
+   engine tests, which work without authoring, and which need building (with
+   their ground-truth oracle text, ready to plan from).
+3. Work through the "Needs building" section; when the deck is done, copy
+   `next-deck.txt` to `<deck-name>.txt` and paste the next list.
+
 ## Decks
 
 - `krenko-goblins.txt` — Krenko, Mob Boss (mono-red goblin aggro)

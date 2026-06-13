@@ -1,12 +1,15 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   activateAbility,
+  activateLoyaltyAbility,
+  activateManaAbility,
   addManaFromCard,
   advanceStep,
   castCardFromHand,
+  cycleCard,
   castSpellEffect,
   chooseTriggeredAbilityCreatureTarget,
   chooseTriggeredAbilityTargets,
@@ -16,7 +19,9 @@ import {
   declareBlocker as declareBlockerAction,
   equip as equipAction,
   getErrorMessage,
+  keepOpeningHand,
   moveCardToZone,
+  mulliganHand,
   passPriority as passPriorityAction,
   putAddCountersCreatureOnStack,
   putGrantKeywordCreatureOnStack,
@@ -36,14 +41,13 @@ import {
   setCombatBlockerOrder,
   submitDecision,
 } from '@/lib/game/actions'
-import type { TargetController, TargetedCreatureActionType, MultiCreatureKind, DamageAllocation, ModalMode, CombatDamageAssignments } from '@/lib/game/actions'
-import type { CardBehaviorAction, CardBehaviorCost } from '@/lib/game/card-behavior'
+import type { DamageAllocation, CombatDamageAssignments } from '@/lib/game/actions'
 import {
   isAddManaBehaviorAction,
   normalizeCardBehaviorToV2,
   selectFirstManaAbility,
 } from '@/lib/game/card-behavior'
-import { doesCardRequireStackTarget, getCanQuickCast, getPowerToughnessLabel } from '@/lib/game/controller-selectors'
+import { getPowerToughnessLabel } from '@/lib/game/controller-selectors'
 import { parseManaCost } from '@/lib/game/mana'
 import { getOpponentZoneData } from '@/lib/game/data'
 import type { OpponentZoneData } from '@/lib/game/data'
@@ -63,23 +67,30 @@ import type {
   StackItem,
 } from '@/lib/game/types'
 import MotionCard from './MotionCard'
+import { CardActionSheet } from './controller/CardActionSheet'
+import { OpeningHandOverlay } from './controller/OpeningHandOverlay'
+import { ManaCostDisplay, ManaPoolDisplay } from './controller/CardDisplay'
+import {
+  canCastHandSpell,
+  cardMatchesTargetType,
+  creatureMatchesController,
+  effectiveBoardPT,
+  formatCounterBag,
+  getEffectivePT,
+  getSpellPlan,
+  isCreatureOnlyTargetType,
+  manaColors,
+  manaColorStyles,
+  manaCostColors,
+  playerHasInstantResponse,
+  targetTypeMatches,
+} from './controller/shared'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 type LayoutState = 'main_phase' | 'declare_attackers' | 'declare_blockers' | 'stack_active' | 'default'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-const manaColors: ManaColor[] = ['W', 'U', 'B', 'R', 'G', 'C']
-
-const manaColorStyles: Record<ManaColor, { dot: string; text: string; bg: string }> = {
-  W: { dot: 'bg-[#F5EDD0]', text: 'text-[#F5EDD0]', bg: 'bg-[#F5EDD0]' },
-  U: { dot: 'bg-[#4A9FD8]', text: 'text-[#4A9FD8]', bg: 'bg-[#4A9FD8]' },
-  B: { dot: 'bg-[#9A7AC8]', text: 'text-[#9A7AC8]', bg: 'bg-[#9A7AC8]' },
-  R: { dot: 'bg-[#E85030]', text: 'text-[#E85030]', bg: 'bg-[#E85030]' },
-  G: { dot: 'bg-[#3AA850]', text: 'text-[#3AA850]', bg: 'bg-[#3AA850]' },
-  C: { dot: 'bg-[#8A8A8A]', text: 'text-[#8A8A8A]', bg: 'bg-[#8A8A8A]' },
-}
 
 // Grouped step display for the status bar (7 buckets, like MTG Arena)
 const stepGroups: { label: string; steps: GameTurnState['step'][] }[] = [
@@ -91,6 +102,33 @@ const stepGroups: { label: string; steps: GameTurnState['step'][] }[] = [
   { label: 'M2',  steps: ['postcombat_main'] },
   { label: 'END', steps: ['end', 'cleanup'] },
 ]
+
+// ─── Auto-pass ───────────────────────────────────────────────────────────────
+
+// Per-session auto-pass controls (persisted to localStorage). Each switch is
+// independent; see the auto-pass effect for how they combine.
+type AutoPassSettings = {
+  op: boolean   // auto-pass priority on opponents' turns
+  own: boolean  // auto-pass your own turn's empty phases (untap/upkeep/draw/begin+end combat/end)
+  stk: boolean  // on opponents' turns, STOP when a new object hits the stack
+  rsp: boolean  // on opponents' turns, STOP when you have a castable response
+}
+const AUTOPASS_OFF: AutoPassSettings = { op: false, own: false, stk: false, rsp: false }
+const autoPassStorageKey = (sessionId: string) => 'leyline-autopass-' + sessionId
+function loadAutoPassSettings(sessionId: string): AutoPassSettings {
+  if (typeof window === 'undefined') return AUTOPASS_OFF
+  const raw = localStorage.getItem(autoPassStorageKey(sessionId))
+  if (!raw) return AUTOPASS_OFF
+  if (raw === '1') return { ...AUTOPASS_OFF, op: true } // migrate the v1 boolean toggle
+  try {
+    return { ...AUTOPASS_OFF, ...(JSON.parse(raw) as Partial<AutoPassSettings>) }
+  } catch {
+    return AUTOPASS_OFF
+  }
+}
+// Your own steps with nothing to decide — auto-passed when `own` is on. Main
+// phases and combat decision steps (declare_attackers/combat_damage) stay manual.
+const OWN_SKIP_STEPS: GameTurnState['step'][] = ['untap', 'upkeep', 'draw', 'beginning_of_combat', 'end_of_combat', 'end']
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -107,61 +145,9 @@ function getAutoTapColor(card: ControllerCard): ManaColor | null {
   if (ability.costs.length !== 1 || ability.costs[0].type !== 'tap_self') return null
   const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
   if (addManaEffects.length !== 1) return null
-  // A 'commander' source needs a colour choice — don't auto-tap; open the picker.
+  // A 'commander'/'any' source needs a colour choice — don't auto-tap; open the picker.
   const color = addManaEffects[0].color
-  return color === 'commander' ? null : color
-}
-
-function renderAbilityCost(costs: CardBehaviorCost[]): string {
-  return costs.map((c) => {
-    const cost = c as { type: string; amount?: string | number }
-    switch (cost.type) {
-      case 'tap_self': return '{T}'
-      case 'untap_self': return '{Q}'
-      case 'mana': return `{${cost.amount ?? '?'}}`
-      case 'pay_life': return `Pay ${cost.amount ?? '?'} life`
-      case 'sacrifice_self': return 'Sacrifice'
-      case 'discard': return `Discard ${cost.amount ?? '?'}`
-      case 'exile_self': return 'Exile'
-      default: return cost.type
-    }
-  }).join(' ')
-}
-
-function renderAbilityEffect(effects: CardBehaviorAction[]): string {
-  return effects.map((e) => {
-    if (isAddManaBehaviorAction(e)) return e.color === 'commander' ? 'Add any commander colour' : `Add {${e.color}}`
-    const asAny = e as Record<string, unknown>
-    if (e.type === 'deal_damage') return `Deal ${String(asAny.amount ?? '?')} damage`
-    if (e.type === 'counter') return 'Counter target spell'
-    return String(e.type).replace(/_/g, ' ')
-  }).join(', ')
-}
-
-// Combat/ability keywords surfaced as badges on cards.
-const KEYWORD_LABELS: Record<string, string> = {
-  flying: 'Flying',
-  reach: 'Reach',
-  haste: 'Haste',
-  vigilance: 'Vigilance',
-  trample: 'Trample',
-  indestructible: 'Indestructible',
-  first_strike: 'First Strike',
-  double_strike: 'Double Strike',
-  deathtouch: 'Deathtouch',
-}
-
-// The colours a mana cost contains (mirrors the server's card_color_set): full
-// colour words so they line up with a protection effect's `from`.
-function manaCostColors(manaCost?: string | null): string[] {
-  const mc = (manaCost ?? '').toUpperCase()
-  const out: string[] = []
-  if (mc.includes('W')) out.push('white')
-  if (mc.includes('U')) out.push('blue')
-  if (mc.includes('B')) out.push('black')
-  if (mc.includes('R')) out.push('red')
-  if (mc.includes('G')) out.push('green')
-  return out
+  return color === 'commander' || color === 'any' ? null : color
 }
 
 // The player's commander colour identity (W/U/B/R/G letters) from the mana symbols in
@@ -183,180 +169,6 @@ function commanderIdentityColors(cards: ControllerCard[]): ManaColor[] {
   return [...identity]
 }
 
-const cardIsAura = (typeLine?: string | null) => (typeLine ?? '').toLowerCase().includes('aura')
-const cardIsEquipment = (typeLine?: string | null) => (typeLine ?? '').toLowerCase().includes('equipment')
-
-// Whether a board creature has protection from any of the given source colours
-// (matches the server's can't-be-targeted/damaged/blocked gate, so the picker can
-// drop creatures the server would reject).
-function creatureProtectedFrom(card: BoardCard, sourceColors: string[]): boolean {
-  const prot = card.protection_colors ?? []
-  return sourceColors.some((c) => prot.includes(c))
-}
-
-/** Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. */
-function getCardKeywords(card: ControllerCard): string[] {
-  const found = new Set<string>()
-
-  for (const kw of card.cards?.keywords ?? []) {
-    const norm = kw.toLowerCase().replace(/[\s-]+/g, '_')
-    if (KEYWORD_LABELS[norm]) found.add(norm)
-  }
-
-  const script = normalizeCardBehaviorToV2(
-    card.copied_script ?? card.cards?.script ?? null,
-    card.cards?.type_line,
-  )
-  for (const effect of script.continuous_effects ?? []) {
-    const type = (effect as { effect_type?: string; type?: string }).effect_type ?? (effect as { type?: string }).type
-    if (type && KEYWORD_LABELS[type]) found.add(type)
-  }
-
-  return [...found]
-}
-
-/** Effective P/T label for a board card (printed + counters + active pumps). Empty string if no P/T. */
-function effectiveBoardPT(card: BoardCard): string {
-  const base = card.power_toughness
-  if (!base) return ''
-  const bonusP = (card.plus_one_counters ?? 0) + (card.pump_power ?? 0)
-  const bonusT = (card.plus_one_counters ?? 0) + (card.pump_toughness ?? 0)
-  const match = base.match(/^(\d+)\s*\/\s*(\d+)$/)
-  if ((bonusP === 0 && bonusT === 0) || !match) return base
-  return `${Number(match[1]) + bonusP}/${Number(match[2]) + bonusT}`
-}
-
-/** Printed P/T with +1/+1 counters and active pumps folded in. */
-function getEffectivePT(card: ControllerCard): string | null {
-  const base = getPowerToughnessLabel(card)
-  if (!base) return null
-  const bonusP = (card.plus_one_counters ?? 0) + (card.pump_power ?? 0)
-  const bonusT = (card.plus_one_counters ?? 0) + (card.pump_toughness ?? 0)
-  const match = base.match(/^(\d+)\s*\/\s*(\d+)$/)
-  if ((bonusP === 0 && bonusT === 0) || !match) return base
-  return `${Number(match[1]) + bonusP}/${Number(match[2]) + bonusT}`
-}
-
-type SpellPlan =
-  // xRequired: the effect amount is "X" — prompt the caster for a number at cast,
-  // pay it as {X} mana, and pass it as x_value (the server resolves the amount).
-  | { kind: 'damage'; amount: number; timing: 'instant' | 'sorcery'; canTargetPlayer: boolean; canTargetCreature: boolean; targetController: TargetController; xRequired?: boolean }
-  // Divided damage: allocate `amount` across multiple creature/player targets.
-  | { kind: 'divided_damage'; amount: number; timing: 'instant' | 'sorcery'; canTargetPlayer: boolean; canTargetCreature: boolean; targetController: TargetController }
-  | { kind: 'pump'; power: number; toughness: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
-  | { kind: 'set_pt'; power: number; toughness: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
-  | { kind: 'add_counters'; amount: number; timing: 'instant' | 'sorcery'; targetController: TargetController; xRequired?: boolean }
-  | { kind: 'creature_effect'; effect: TargetedCreatureActionType; label: string; keyword?: string; duration?: string; untap?: boolean; haste?: boolean; timing: 'instant' | 'sorcery'; targetController: TargetController }
-  // Multi-target removal: pick up to `count` creatures, apply `effectKind` to each.
-  | { kind: 'multi_creature'; effectKind: MultiCreatureKind; label: string; count: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
-  // Non-creature permanent removal: destroy/exile/… a target of `targetType`.
-  | { kind: 'permanent_effect'; effectKind: MultiCreatureKind; label: string; targetType: string | string[]; timing: 'instant' | 'sorcery'; targetController: TargetController; then?: unknown[]; controllerSearchesBasicLand?: boolean }
-  | { kind: 'fight'; timing: 'instant' | 'sorcery'; foughtController: TargetController }
-  | { kind: 'draw'; amount: number; timing: 'instant' | 'sorcery'; xRequired?: boolean }
-  | { kind: 'spell_effect'; actions: unknown[]; timing: 'instant' | 'sorcery'; xRequired?: boolean }
-  // Modal "choose one —": cast the modes; the choose_mode decision UI picks them.
-  | { kind: 'modal'; modes: ModalMode[]; choose: number; timing: 'instant' | 'sorcery' }
-  | { kind: 'counterspell' }
-  | { kind: 'normal' }
-
-// Normalises an effect's target_controller to the engine's three values.
-function readTargetController(action: { target_controller?: unknown } | undefined): TargetController {
-  const raw = typeof action?.target_controller === 'string' ? action.target_controller.toLowerCase() : ''
-  if (raw === 'opponent') return 'opponent'
-  if (raw === 'you' || raw === 'self' || raw === 'controller') return 'you'
-  return 'any'
-}
-
-// Does a board creature satisfy the spell/trigger's controller restriction,
-// from the perspective of the player who controls the effect?
-function creatureMatchesController(
-  card: BoardCard,
-  controllerId: string | null,
-  targetController: TargetController | string | null | undefined,
-): boolean {
-  const tc = typeof targetController === 'string' ? targetController.toLowerCase() : 'any'
-  if (tc === 'opponent') return card.controller_player_id !== controllerId
-  if (tc === 'you' || tc === 'self' || tc === 'controller') return card.controller_player_id === controllerId
-  return true
-}
-
-// Untargeted spell actions that resolve as a server-side effect program (no
-// target picker). A spell mixing only these can run as one multi-action cast.
-const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'add_counters_all', 'tap_all', 'untap_all', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard']
-// Effects that open a resolution-time choice — a spell containing one must run as a
-// program (single dedicated cast kinds can't surface the prompt).
-const DECISION_SPELL_ACTION_TYPES = ['scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard']
-
-// Maps a spell_effect action type to a targeted-creature stack action + a picker label.
-const CREATURE_EFFECT_MAP: Record<string, { effect: TargetedCreatureActionType; label: string }> = {
-  destroy: { effect: 'destroy_creature', label: 'Destroy' },
-  exile: { effect: 'exile_creature', label: 'Exile' },
-  bounce: { effect: 'bounce_creature', label: 'Return to hand' },
-  tap: { effect: 'tap_creature', label: 'Tap' },
-  untap: { effect: 'untap_creature', label: 'Untap' },
-}
-
-function targetTypeMatches(tt: unknown, want: string): boolean {
-  if (!tt) return false
-  if (tt === want || tt === 'any') return true
-  return Array.isArray(tt) && (tt.includes(want) || tt.includes('any'))
-}
-
-// True when a removal effect's target_type is creature-only (the default). A
-// non-creature permanent type (artifact/enchantment/land/planeswalker/permanent)
-// routes to the permanent_effect cast path instead of the creature picker.
-function isCreatureOnlyTargetType(tt: unknown): boolean {
-  if (tt == null) return true
-  if (typeof tt === 'string') return tt.toLowerCase() === 'creature'
-  if (Array.isArray(tt)) return tt.length > 0 && tt.every((t) => String(t).toLowerCase() === 'creature')
-  return false
-}
-
-// Whether a board card's type line satisfies an effect's target_type filter
-// ('permanent'/'any' match anything on the battlefield). Mirrors the engine's
-// card_type_line_matches_target.
-function cardMatchesTargetType(typeLine: string | null | undefined, tt: string | string[]): boolean {
-  const tl = (typeLine ?? '').toLowerCase()
-  const types = Array.isArray(tt) ? tt : [tt]
-  return types.some((t) => {
-    const lt = String(t).toLowerCase()
-    if (lt === 'any' || lt === 'permanent') return true
-    if (lt === 'nonland_permanent' || lt === 'nonland') return !tl.includes('land')
-    return tl.includes(lt)
-  })
-}
-
-// Activated-ability effects the client can invoke (the engine's activate_ability
-// vocabulary). draw is untargeted; the rest target a creature (deal_damage also a
-// player). Returns null for anything else → the ability renders "Soon".
-const ABILITY_EFFECT_TYPES = [
-  'deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap', 'add_counters', 'pump', 'grant_keyword', 'gain_control', 'draw',
-]
-function getAbilityEffect(
-  effects: CardBehaviorAction[],
-): { type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean; needsTarget: boolean } | null {
-  const e = effects.find((x) => ABILITY_EFFECT_TYPES.includes(x.type ?? '')) as
-    | (CardBehaviorAction & { amount?: number; target_type?: unknown })
-    | undefined
-  if (!e || !e.type) return null
-  if (e.type === 'draw') {
-    return { type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false }
-  }
-  if (e.type === 'deal_damage') {
-    if (typeof e.amount !== 'number') return null
-    const tt = e.target_type
-    return { type: 'deal_damage', amount: e.amount, canTargetPlayer: !tt || targetTypeMatches(tt, 'player'), canTargetCreature: targetTypeMatches(tt, 'creature'), needsTarget: true }
-  }
-  // The creature-target effects: destroy/exile/bounce/tap/untap/add_counters/pump/grant_keyword/gain_control.
-  return { type: e.type, amount: typeof e.amount === 'number' ? e.amount : 0, canTargetPlayer: false, canTargetCreature: true, needsTarget: true }
-}
-
-// Verb shown in the activated-ability target picker prompt.
-const ABILITY_VERB: Record<string, string> = {
-  destroy: 'Destroy', exile: 'Exile', bounce: 'Return to hand', tap: 'Tap', untap: 'Untap',
-  add_counters: 'Add counters to', pump: 'Pump', grant_keyword: 'Grant keyword to', gain_control: 'Gain control of',
-}
-
 /**
  * Prompts the caster for the X value of an {X} spell. Returns a positive integer,
  * or null if cancelled / invalid (the caller aborts the cast). No mana-colour
@@ -372,208 +184,6 @@ function promptForXValue(): number | null {
     return null
   }
   return n
-}
-
-/** Classifies what a hand spell does so the cast flow can pick targets correctly. */
-function getSpellPlan(card: ControllerCard): SpellPlan {
-  const script = normalizeCardBehaviorToV2(
-    card.copied_script ?? card.cards?.script ?? null,
-    card.cards?.type_line,
-  )
-  const actions = script.spell_effect?.actions ?? []
-  const timing: 'instant' | 'sorcery' = card.cards?.type_line?.toLowerCase().includes('sorcery')
-    ? 'sorcery'
-    : 'instant'
-
-  // A modal spell ("choose one —") carries `modes` instead of `actions`. Casting
-  // it creates a choose_mode decision the existing ChooseModeBody resolves.
-  const modal = (script.spell_effect as { modes?: ModalMode[]; choose?: number } | undefined)?.modes
-  if (Array.isArray(modal) && modal.length > 0) {
-    const choose = Math.max(1, Number((script.spell_effect as { choose?: number }).choose ?? 1))
-    return { kind: 'modal', modes: modal, choose, timing }
-  }
-
-  const pump = actions.find((a) => a.type === 'pump') as
-    | (CardBehaviorAction & { power?: number; toughness?: number; target_controller?: unknown })
-    | undefined
-  if (pump && (typeof pump.power === 'number' || typeof pump.toughness === 'number')) {
-    return { kind: 'pump', power: pump.power ?? 0, toughness: pump.toughness ?? 0, timing, targetController: readTargetController(pump) }
-  }
-
-  // "Target creature becomes X/Y until end of turn" (Frogify) — sets P/T (layer 7b)
-  // rather than adding to it. Only a creature target is chosen; the values are fixed
-  // by the card and ride in the plan, like pump.
-  const setPt = actions.find((a) => a.type === 'set_pt') as
-    | (CardBehaviorAction & { power?: number; toughness?: number; target_controller?: unknown })
-    | undefined
-  if (setPt && (typeof setPt.power === 'number' || typeof setPt.toughness === 'number')) {
-    return { kind: 'set_pt', power: setPt.power ?? 0, toughness: setPt.toughness ?? 0, timing, targetController: readTargetController(setPt) }
-  }
-
-  const addCounters = actions.find((a) => a.type === 'add_counters') as
-    | (CardBehaviorAction & { amount?: number | 'X'; target_type?: unknown; target?: unknown; target_controller?: unknown })
-    | undefined
-  if (
-    addCounters &&
-    (typeof addCounters.amount === 'number' || addCounters.amount === 'X') &&
-    targetTypeMatches(addCounters.target_type ?? addCounters.target ?? 'creature', 'creature')
-  ) {
-    const xRequired = addCounters.amount === 'X'
-    return { kind: 'add_counters', amount: xRequired ? 0 : addCounters.amount as number, timing, targetController: readTargetController(addCounters), xRequired }
-  }
-
-  // Grant-keyword combat trick (e.g. "target creature gains flying until EOT").
-  // The keyword is fixed by the card; only a creature target is chosen, so it rides
-  // the same picker as the other creature effects — carrying `keyword` in the plan.
-  const grantKeyword = actions.find((a) => a.type === 'grant_keyword') as
-    | (CardBehaviorAction & { keyword?: string; target_controller?: unknown })
-    | undefined
-  if (grantKeyword && typeof grantKeyword.keyword === 'string') {
-    return {
-      kind: 'creature_effect',
-      effect: 'grant_keyword_creature',
-      label: `Grant ${grantKeyword.keyword.replace(/_/g, ' ')}`,
-      keyword: grantKeyword.keyword,
-      timing,
-      targetController: readTargetController(grantKeyword),
-    }
-  }
-
-  // Gain control (Threaten / Act of Treason / Mind Control). Only a creature
-  // target is chosen; duration + the threaten extras are fixed by the card and
-  // ride along in the plan, like grant_keyword's keyword.
-  const gainControl = actions.find((a) => a.type === 'gain_control') as
-    | (CardBehaviorAction & { duration?: string; untap?: boolean; haste?: boolean; target_controller?: unknown })
-    | undefined
-  if (gainControl) {
-    return {
-      kind: 'creature_effect',
-      effect: 'gain_control_creature',
-      label: 'Gain control',
-      duration: gainControl.duration ?? 'permanent',
-      untap: gainControl.untap ?? false,
-      haste: gainControl.haste ?? false,
-      timing,
-      targetController: readTargetController(gainControl),
-    }
-  }
-
-  // Fight: a creature you control fights a target creature. The action's
-  // target_type/target_controller describe the FOUGHT creature; the fighter is
-  // implicitly one you control (chosen first in the picker).
-  const fight = actions.find((a) => a.type === 'fight') as
-    | (CardBehaviorAction & { target_controller?: unknown })
-    | undefined
-  if (fight) {
-    return { kind: 'fight', timing, foughtController: readTargetController(fight) }
-  }
-
-  const creatureEffect = actions.find((a) => a.type in CREATURE_EFFECT_MAP) as
-    | (CardBehaviorAction & { target_controller?: unknown; targets?: number; target_type?: unknown; then?: unknown[]; controller_searches_basic_land?: boolean })
-    | undefined
-  if (creatureEffect) {
-    const mapped = CREATURE_EFFECT_MAP[creatureEffect.type]
-    // A non-creature permanent target (artifact/enchantment/nonland…) → the permanent
-    // picker + cast path. Checked first: it changes both the picker and the action.
-    if (!isCreatureOnlyTargetType(creatureEffect.target_type)) {
-      return {
-        kind: 'permanent_effect',
-        effectKind: creatureEffect.type as MultiCreatureKind,
-        label: mapped.label,
-        targetType: (creatureEffect.target_type as string | string[]) ?? 'permanent',
-        timing,
-        targetController: readTargetController(creatureEffect),
-        then: Array.isArray(creatureEffect.then) ? creatureEffect.then : undefined,
-        controllerSearchesBasicLand: creatureEffect.controller_searches_basic_land === true,
-      }
-    }
-    // `targets` > 1 → a multi-target removal ("destroy up to N target creatures").
-    if (typeof creatureEffect.targets === 'number' && creatureEffect.targets > 1) {
-      return {
-        kind: 'multi_creature',
-        effectKind: creatureEffect.type as MultiCreatureKind,
-        label: mapped.label,
-        count: creatureEffect.targets,
-        timing,
-        targetController: readTargetController(creatureEffect),
-      }
-    }
-    return { kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect) }
-  }
-
-  // A spell whose effects include a scry/surveil (a resolution-time decision) or
-  // is a multi-action untargeted combo runs as an effect program (e.g. Opt: scry,
-  // then draw). This MUST be checked before the single-action `draw` case below,
-  // otherwise Opt matches `draw` first and the scry is dropped.
-  const hasDecisionEffect = actions.some((a) => DECISION_SPELL_ACTION_TYPES.includes(a.type ?? ''))
-  const allUntargeted = actions.every((a) => UNTARGETED_SPELL_ACTION_TYPES.includes(a.type ?? ''))
-  if (actions.length > 0 && allUntargeted && (hasDecisionEffect || actions.length > 1)) {
-    const xRequired = actions.some(
-      (a) => (a as { amount?: unknown }).amount === 'X' || (a as { count?: unknown }).count === 'X',
-    )
-    return { kind: 'spell_effect', actions, timing, xRequired }
-  }
-
-  const draw = actions.find((a) => a.type === 'draw') as
-    | (CardBehaviorAction & { amount?: number | 'X' })
-    | undefined
-  if (draw) {
-    const xRequired = draw.amount === 'X'
-    return { kind: 'draw', amount: xRequired ? 0 : (typeof draw.amount === 'number' ? draw.amount : 1), timing, xRequired }
-  }
-
-  const damage = actions.find((a) => a.type === 'deal_damage' || a.type === 'deal_damage_player') as
-    | (CardBehaviorAction & { amount?: number | 'X'; target_type?: unknown; target?: unknown; target_controller?: unknown; divided?: boolean })
-    | undefined
-  if (damage && (typeof damage.amount === 'number' || damage.amount === 'X')) {
-    const xRequired = damage.amount === 'X'
-    const tt = damage.target_type ?? damage.target
-    // No target type defaults to player (legacy player-burn behavior).
-    const canTargetPlayer = !tt || targetTypeMatches(tt, 'player')
-    const canTargetCreature = targetTypeMatches(tt, 'creature')
-    // Divided damage (Forked Bolt) — a fixed amount allocated across targets.
-    if (damage.divided === true && typeof damage.amount === 'number') {
-      return { kind: 'divided_damage', amount: damage.amount, timing, canTargetPlayer, canTargetCreature, targetController: readTargetController(damage) }
-    }
-    if (canTargetPlayer || canTargetCreature) {
-      return { kind: 'damage', amount: xRequired ? 0 : damage.amount as number, timing, canTargetPlayer, canTargetCreature, targetController: readTargetController(damage), xRequired }
-    }
-  }
-
-  if (doesCardRequireStackTarget(card)) {
-    return { kind: 'counterspell' }
-  }
-
-  return { kind: 'normal' }
-}
-
-/**
- * Whether a hand card can be cast now. Damage/pump spells target a creature or
- * player (not a stack item), so they cast at their natural speed regardless of
- * the stack — unlike getCanQuickCast, which gates anything with "target" text on
- * a non-empty stack (correct only for counterspells).
- */
-function canCastHandSpell(
-  card: ControllerCard,
-  canCastSorceries: boolean,
-  canCastInstants: boolean,
-  pendingStackCount: number,
-): boolean {
-  const plan = getSpellPlan(card)
-  if (
-    plan.kind === 'damage' ||
-    plan.kind === 'pump' ||
-    plan.kind === 'set_pt' ||
-    plan.kind === 'add_counters' ||
-    plan.kind === 'creature_effect' ||
-    plan.kind === 'draw' ||
-    plan.kind === 'spell_effect' ||
-    plan.kind === 'modal'
-  ) {
-    const isSorcerySpeed = card.cards?.type_line?.toLowerCase().includes('sorcery') ?? false
-    return card.zone === 'hand' && (isSorcerySpeed ? canCastSorceries : canCastInstants)
-  }
-  return getCanQuickCast(card, canCastSorceries, canCastInstants, pendingStackCount)
 }
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
@@ -594,6 +204,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     boardCards,
     players,
     turnState,
+    attackTaxes,
     combatAssignments,
     stackItems,
     pendingDecisions,
@@ -611,6 +222,17 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
 
   const currentPlayer = players.find((p) => p.player_id === playerId) ?? null
   const opponentPlayers = players.filter((p) => p.player_id !== playerId)
+  // Opening-hand phase — players who still have to keep. Legacy sessions (and
+  // sessions not started via start_game_session) have opening_hand_kept
+  // true/undefined for everyone, so the overlay never shows there.
+  const playersNotKept = players.filter((p) => p.opening_hand_kept === false)
+  const openingHandWaitingFor = playersNotKept
+    .filter((p) => p.player_id !== playerId)
+    .map((p) => p.username || `Player ${p.seat_number}`)
+  // Opponents' planeswalkers — attackable targets in the declare-attackers UI.
+  const opponentPlaneswalkers = boardCards
+    .filter((c) => c.controller_player_id !== playerId && (c.type_line?.toLowerCase().includes('planeswalker') ?? false))
+    .map((c) => ({ id: c.id, name: c.name, loyalty: Number(c.counters?.loyalty ?? 0) }))
   const pendingStackItems = stackItems.filter((i) => i.status === 'pending')
 
   const hasPriority = Boolean(
@@ -705,6 +327,81 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     }
   }, [turnState?.step])
 
+  // Auto-pass controls, persisted per session.
+  const [autoPass, setAutoPass] = useState<AutoPassSettings>(AUTOPASS_OFF)
+  useEffect(() => {
+    setAutoPass(loadAutoPassSettings(sessionId))
+  }, [sessionId])
+  const updateAutoPass = (patch: Partial<AutoPassSettings>) => {
+    setAutoPass((prev) => {
+      const next = { ...prev, ...patch }
+      localStorage.setItem(autoPassStorageKey(sessionId), JSON.stringify(next))
+      return next
+    })
+  }
+
+  // "Yield rest of turn": one-shot — pass every priority until your next turn.
+  // Holds the turn_number it was armed on; cleared once it's your turn again or
+  // the turn number has advanced past it.
+  const yieldUntilTurnRef = useRef<number | null>(null)
+  const [isYielding, setIsYielding] = useState(false)
+  useEffect(() => {
+    if (yieldUntilTurnRef.current === null || !turnState) return
+    if (isActivePlayer || turnState.turn_number > yieldUntilTurnRef.current) {
+      yieldUntilTurnRef.current = null
+      setIsYielding(false)
+    }
+  }, [turnState, isActivePlayer])
+  const yieldRestOfTurn = () => {
+    if (!turnState) return
+    yieldUntilTurnRef.current = turnState.turn_number
+    setIsYielding(true)
+  }
+
+  // Stack signature the player has already acknowledged (looked at + passed).
+  // While `stk` is on, a new (unacknowledged) object on an opponent's stack
+  // stops auto-pass; once the player passes manually we record it so the same
+  // stack doesn't re-stop forever.
+  const currentStackKey = pendingStackItems.map((i) => i.id).sort().join(',')
+  const ackStackKeyRef = useRef<string>('')
+
+  // Whether you currently hold a castable response (instant/flash in hand or an
+  // instant-speed activated ability) — used by the `rsp` stop condition.
+  const iHaveResponse = useMemo(
+    () => playerHasInstantResponse(cards, canCastInstants, pendingStackItems.length, availableMana),
+    [cards, canCastInstants, pendingStackItems.length, availableMana],
+  )
+
+  // Single decision: when priority lands on you, should it auto-pass? Hard
+  // exemptions always win — your pending decision / trigger target
+  // (passBlockReason), the declare-blockers step (never skip your blocks), and a
+  // finished session. Your own turn only auto-passes its empty phases.
+  useEffect(() => {
+    if (!playerId || !turnState || isSessionFinished) return
+    if (turnState.priority_player_id !== playerId) return
+    if (passBlockReason) return
+    if (turnState.step === 'declare_blockers') return
+
+    let willPass: boolean
+    if (yieldUntilTurnRef.current !== null) {
+      willPass = true // yielding: pass through everything until your next turn
+    } else if (turnState.active_player_id === playerId) {
+      willPass = autoPass.own && OWN_SKIP_STEPS.includes(turnState.step)
+    } else {
+      willPass = autoPass.op
+      if (willPass && autoPass.stk && currentStackKey && currentStackKey !== ackStackKeyRef.current) willPass = false
+      if (willPass && autoPass.rsp && iHaveResponse) willPass = false
+    }
+    if (!willPass) return
+
+    const timer = setTimeout(() => {
+      passPriorityAction(supabase, sessionId)
+        .then(() => { ackStackKeyRef.current = currentStackKey; return refresh() })
+        .catch(() => { /* lost a race to a state change; the next tick re-evaluates */ })
+    }, 700)
+    return () => clearTimeout(timer)
+  }, [autoPass, isYielding, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState, currentStackKey, iHaveResponse])
+
   // Combat damage is fully resolved once the 'regular' pass has run
   const combatDamageResolved = combatDamageStage === 'regular'
   const canResolveCombatDamage =
@@ -730,6 +427,16 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       setErrorMessage('No mana ability found.')
       return
     }
+    // A mana ability with a SACRIFICE cost (Treasure) can't use the client-side
+    // tap-and-add path (it must sacrifice the source); route it through the
+    // engine's activate_mana_ability, passing the chosen colour for "any".
+    if (ability.costs.some((c) => c.type === 'sacrifice_self')) {
+      const normalized = normalizeCardBehaviorToV2(script, card?.cards?.type_line)
+      const index = (normalized.activated_abilities ?? []).findIndex((a) => a === ability)
+      await activateManaAbility(supabase, sessionId, cardId, Math.max(0, index), undefined, color)
+      await refresh()
+      return
+    }
     // A `color:'commander'` source produces a CHOSEN identity colour; the picker
     // passes the real colour (validated against the commander's identity server-side).
     const commanderEffect = ability.effects.find((e) => isAddManaBehaviorAction(e) && e.color === 'commander')
@@ -743,6 +450,22 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
         amount: commanderEffect.amount,
         shouldTapCard: ability.costs.some((c) => c.type === 'tap_self'),
         commanderIdentity: true,
+      })
+      await refresh()
+      return
+    }
+    // A `color:'any'` source produces a CHOSEN colour with no identity restriction.
+    const anyColorEffect = ability.effects.find((e) => isAddManaBehaviorAction(e) && e.color === 'any')
+    if (anyColorEffect && isAddManaBehaviorAction(anyColorEffect) && color) {
+      await addManaFromCard({
+        supabase,
+        cardId,
+        sessionId,
+        playerId,
+        color,
+        amount: anyColorEffect.amount,
+        shouldTapCard: ability.costs.some((c) => c.type === 'tap_self'),
+        commanderIdentity: false,
       })
       await refresh()
       return
@@ -767,11 +490,16 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
   }
 
   const actions = {
-    passPriority: async () => { await passPriorityAction(supabase, sessionId); await refresh() },
+    passPriority: async () => { ackStackKeyRef.current = currentStackKey; await passPriorityAction(supabase, sessionId); await refresh() },
     advanceStep: async () => { await advanceStep(supabase, sessionId); await refresh() },
     // Plain cast — permanents and untargeted spells
     castSpell: async (cardId: string) => {
       await castCardFromHand(supabase, sessionId, cardId)
+      await refresh()
+    },
+    // Cycling: discard a hand card with a cycling cost, draw one.
+    cycleCard: async (cardId: string) => {
+      await cycleCard(supabase, sessionId, cardId)
       await refresh()
     },
     // Aura cast — a permanent that enters attached to the chosen creature.
@@ -828,7 +556,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'add_counters') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
-      await putAddCountersCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController, x)
+      await putAddCountersCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController, x, plan.counterType, plan.all)
       await refresh()
     },
     // Targeted creature effect — destroy / bounce / tap / untap
@@ -911,17 +639,46 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       await putCounterSpellOnStack(supabase, sessionId, stackItemId, cardId)
       await refresh()
     },
+    // Adventure (mig 295/296): cast a card's adventure half. The card is exiled
+    // with a permanent play_from_exile permission so the creature face can be
+    // cast from exile later. A counter adventure routes through the counter path
+    // (stack target); everything else through cast_spell_effect (optional
+    // permanent target), both with the adventure flag set.
+    castAdventure: async (
+      cardId: string,
+      opts: { targetCardId?: string | null; stackItemId?: string | null } = {},
+    ) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const script = card ? normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line) : null
+      const actions = script?.adventure?.spell_effect?.actions
+      if (!actions || actions.length === 0) return
+      const isCounter = actions.some((a) => (a as { type?: string }).type === 'counter')
+      if (isCounter && opts.stackItemId) {
+        await putCounterSpellOnStack(supabase, sessionId, opts.stackItemId, cardId, undefined, true)
+      } else {
+        await castSpellEffect(supabase, sessionId, actions, cardId, null, opts.targetCardId ?? null, true)
+      }
+      await refresh()
+    },
     activateAbility: async (
       sourceCardId: string,
       abilityIndex: number,
-      target?: { targetCardId?: string | null; targetPlayerId?: string | null },
+      target?: { targetCardId?: string | null; targetPlayerId?: string | null; costCardIds?: string[] | null },
     ) => {
       await activateAbility(supabase, sessionId, sourceCardId, abilityIndex, target)
       await refresh()
     },
+    activateLoyalty: async (sourceCardId: string, abilityIndex: number) => {
+      await activateLoyaltyAbility(supabase, sessionId, sourceCardId, abilityIndex)
+      await refresh()
+    },
+    activateManaAbility: async (sourceCardId: string, abilityIndex: number) => {
+      await activateManaAbility(supabase, sessionId, sourceCardId, abilityIndex)
+      await refresh()
+    },
     tapForMana,
-    declareAttacker: async (cardId: string, targetPlayerId: string) => {
-      await declareAttackerAction(supabase, sessionId, cardId, targetPlayerId)
+    declareAttacker: async (cardId: string, target: { playerId?: string; planeswalkerId?: string }) => {
+      await declareAttackerAction(supabase, sessionId, cardId, target.playerId ?? null, target.planeswalkerId ?? null)
       await refresh()
     },
     declareBlocker: async (blockerCardId: string, attackingCardId: string) => {
@@ -984,6 +741,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             <DeclareAttackersLayout
               ownCreatures={ownCreatures}
               opponentPlayers={opponentPlayers}
+              opponentPlaneswalkers={opponentPlaneswalkers}
               turnState={turnState}
               errorMessage={errorMessage}
               onDeclareAttacker={actions.declareAttacker}
@@ -1064,6 +822,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 mustDiscard={mustDiscard}
                 discardCount={discardCount}
                 combatAssignments={combatAssignments}
+                attackTaxes={attackTaxes}
                 turnState={turnState}
                 canOrderBlockers={canOrderBlockers}
                 onCardTap={setSelectedCard}
@@ -1084,6 +843,10 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 canResolveCombatDamage={canResolveCombatDamage}
                 combatDamageStage={combatDamageStage}
                 blockPassReason={passBlockReason}
+                autoPass={autoPass}
+                onChangeAutoPass={updateAutoPass}
+                isYielding={isYielding}
+                onYieldTurn={yieldRestOfTurn}
                 onResolveCombatDamage={actions.resolveCombatDamage}
                 onPassPriority={actions.passPriority}
               />
@@ -1107,6 +870,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             commanderIdentity={commanderIdentityColors(cards)}
             onTapForMana={async (cardId, color) => { await actions.tapForMana(cardId, color) }}
             onCastCard={async (cardId) => { await actions.castSpell(cardId) }}
+            onCycleCard={async (cardId) => { await actions.cycleCard(cardId) }}
             onDealDamageToPlayer={async (cardId, targetPlayerId) => { await actions.dealDamageToPlayer(cardId, targetPlayerId) }}
             onDealDamageToCreature={async (cardId, targetCardId) => { await actions.dealDamageToCreature(cardId, targetCardId) }}
             onPumpCreature={async (cardId, targetCardId) => { await actions.pumpCreature(cardId, targetCardId) }}
@@ -1121,13 +885,34 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onSpellEffect={async (cardId) => { await actions.spellEffect(cardId) }}
             onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
+            onCastAdventure={async (cardId, opts) => { await actions.castAdventure(cardId, opts) }}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
+            onActivateManaAbility={async (sourceId, abilityIndex) => { await actions.activateManaAbility(sourceId, abilityIndex) }}
+            onActivateLoyalty={async (sourceId, abilityIndex) => { await actions.activateLoyalty(sourceId, abilityIndex) }}
             onCastAura={async (cardId, targetCardId) => { await actions.castAura(cardId, targetCardId) }}
             onEquip={async (cardId, targetCardId) => { await actions.equip(cardId, targetCardId) }}
             onClose={() => setSelectedCard(null)}
           />
         )}
       </AnimatePresence>
+
+      {/* Opening-hand overlay — keep/mulligan until every player has kept */}
+      {currentPlayer && playersNotKept.length > 0 && (
+        <OpeningHandOverlay
+          handCards={handCards.map((c) => ({ id: c.id, name: c.name }))}
+          mulligans={currentPlayer.mulligans ?? 0}
+          waitingFor={openingHandWaitingFor}
+          kept={currentPlayer.opening_hand_kept !== false}
+          onKeep={async (bottomIds) => {
+            await keepOpeningHand(supabase, sessionId, bottomIds)
+            await refresh()
+          }}
+          onMulligan={async () => {
+            await mulliganHand(supabase, sessionId)
+            await refresh()
+          }}
+        />
+      )}
 
       {errorMessage && (
         <div className="absolute inset-x-3 bottom-4 z-[60] rounded-lg border border-red-400/20 bg-red-950/90 p-3 text-xs text-red-100">
@@ -1208,6 +993,15 @@ function StatusBar({
           <span className="text-[7px] uppercase tracking-wider text-slate-700">lib</span>
         </div>
         <span className="text-xl font-black leading-none text-white">{currentPlayer?.life_total ?? '—'}</span>
+        {formatCounterBag(currentPlayer?.counters).map(({ kind, n }) => (
+          <span
+            key={kind}
+            className={`text-[9px] font-black leading-none ${kind === 'poison' ? 'text-lime-400' : 'text-amber-400'}`}
+            title={`${n} ${kind} counter${n > 1 ? 's' : ''}`}
+          >
+            {kind === 'poison' ? `☠${n}` : `${n} ${kind}`}
+          </span>
+        ))}
       </div>
     </header>
   )
@@ -1236,6 +1030,7 @@ function MainArea({
   discardCount,
   combatAssignments,
   turnState,
+  attackTaxes,
   canOrderBlockers,
   onCardTap,
   onTapForMana,
@@ -1265,6 +1060,7 @@ function MainArea({
   discardCount: number
   combatAssignments: CombatAssignment[]
   turnState: GameTurnState | null
+  attackTaxes: { playerId: string; mana: number; life: number }[]
   canOrderBlockers: boolean
   onCardTap: (card: ControllerCard) => void
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
@@ -1348,6 +1144,22 @@ function MainArea({
                 {p.username ?? `P${p.seat_number}`}
               </span>
               <span className="text-[9px] font-black text-white">♥{p.life_total}</span>
+              {turnState?.monarch_player_id === p.player_id && (
+                <span className="text-[9px]" title="The monarch (draws at their end step; combat damage steals the crown)">👑</span>
+              )}
+              {(p.counters?.poison ?? 0) > 0 && (
+                <span
+                  className={`text-[9px] font-black ${(p.counters!.poison ?? 0) >= 3 ? 'rounded bg-lime-400/20 px-1 text-lime-300' : 'text-lime-400'}`}
+                  title={`${p.counters!.poison} poison${(p.counters!.poison ?? 0) >= 3 ? ' — CORRUPTED' : ''}`}
+                >☠{p.counters!.poison}</span>
+              )}
+              {attackTaxes.some((t) => t.playerId === p.player_id) && (
+                <span
+                  className="text-[9px] font-black text-amber-400"
+                  title={attackTaxes.filter((t) => t.playerId === p.player_id)
+                    .map((t) => (t.mana > 0 ? `pay {${t.mana}} per attacker` : `pay ${t.life} life per attacker`)).join(', ')}
+                >⛔</span>
+              )}
               <span className="flex items-center gap-1 border-l border-white/10 pl-1.5 text-[8px] text-slate-500">
                 <span title="Cards in hand">✋{counts?.handCount ?? '·'}</span>
                 <span title="Permanents on battlefield">⬡{permanents}</span>
@@ -1533,6 +1345,7 @@ function MainArea({
             exile={ownExile}
             initialTab={myZoneTab}
             onClose={() => setMyZoneOpen(false)}
+            onCardTap={onCardTap}
           />
         )}
       </AnimatePresence>
@@ -1729,12 +1542,22 @@ function PendingDecisionPrompt({
         <ChooseModeBody decision={decision} boardCards={boardCards} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'scry' || decision.decision_type === 'surveil' ? (
         <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} isPending={isPending} onSubmit={submit} />
-      ) : decision.decision_type === 'search_library' || decision.decision_type === 'choose_cards' || decision.decision_type === 'sacrifice' || decision.decision_type === 'return_from_graveyard' ? (
+      ) : CARD_PICK_DECISIONS.has(decision.decision_type) ? (
         <CardPickBody decision={decision} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'confirm' ? (
         <ConfirmBody isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'choose_player' ? (
         <ChoosePlayerBody decision={decision} isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'choose_creature_type' ? (
+        <ChooseWordBody decision={decision} field="type" optionKey="type" isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'vote' ? (
+        <ChooseWordBody decision={decision} field="value" optionKey="value" isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'choose_color' ? (
+        <ChooseColorBody isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'divide_damage' ? (
+        <DivideDamageBody decision={decision} isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'pay_x_mana_damage' ? (
+        <PayXDamageBody decision={decision} isPending={isPending} onSubmit={submit} />
       ) : (
         <p className="text-[10px] text-slate-500">Unsupported decision: {decision.decision_type}</p>
       )}
@@ -1913,6 +1736,18 @@ function ScrySurveilBody({
 }
 
 // Pick N cards from an offered list (tutor search_library / discard choose_cards).
+// Every server decision in the "choose cards" family shares one contract:
+// options = [{game_card_id, name}], result = {chosen: [ids]}, bounded by
+// min/max_choices (see submit_decision's shared validation branch). Any new
+// pick-style decision type the engine grows lands here automatically once
+// added — keep this in sync with submit_decision.sql's family list.
+const CARD_PICK_DECISIONS = new Set([
+  'search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'proliferate',
+  'reanimate_destroyed', 'look_top', 'copy_permanent', 'become_copy', 'bounce_pick',
+  'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick',
+  'graveyard_exile_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick',
+])
+
 function CardPickBody({
   decision,
   isPending,
@@ -2030,12 +1865,207 @@ function ChoosePlayerBody({
   )
 }
 
+// One-word picks sharing a shape: choose_creature_type (options [{type}],
+// submit {type}) and vote (options [{value}], submit {value}).
+function ChooseWordBody({
+  decision,
+  field,
+  optionKey,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  field: string
+  optionKey: string
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const words = (Array.isArray(decision.options) ? decision.options : []) as Record<string, string>[]
+  return (
+    <div className="flex flex-wrap gap-2">
+      {words.map((w) => (
+        <button
+          key={w[optionKey]}
+          type="button"
+          disabled={isPending}
+          onClick={() => void onSubmit({ [field]: w[optionKey] })}
+          className="rounded-xl border border-indigo-400/30 bg-indigo-400/10 px-4 py-2 text-xs font-bold text-white transition active:scale-95 disabled:opacity-50"
+        >
+          {w[optionKey]}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+// Heraldic Banner: pick one of the five colors.
+function ChooseColorBody({
+  isPending,
+  onSubmit,
+}: {
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const COLORS: { value: string; label: string; cls: string }[] = [
+    { value: 'white', label: 'White', cls: 'bg-amber-100 text-amber-900' },
+    { value: 'blue', label: 'Blue', cls: 'bg-sky-400 text-sky-950' },
+    { value: 'black', label: 'Black', cls: 'bg-slate-700 text-slate-100' },
+    { value: 'red', label: 'Red', cls: 'bg-red-400 text-red-950' },
+    { value: 'green', label: 'Green', cls: 'bg-emerald-400 text-emerald-950' },
+  ]
+  return (
+    <div className="flex flex-wrap gap-2">
+      {COLORS.map((c) => (
+        <button
+          key={c.value}
+          type="button"
+          disabled={isPending}
+          onClick={() => void onSubmit({ color: c.value })}
+          className={`rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wide transition active:scale-95 disabled:opacity-50 ${c.cls}`}
+        >
+          {c.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+// Dragonlord Atarka / Naya Charm: allocate params.amount damage across up to
+// params.max_targets of the offered creatures/players. Submit shape:
+// {allocations: [{game_card_id|player_id, amount}]} summing exactly to amount.
+function DivideDamageBody({
+  decision,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const opts = (Array.isArray(decision.options) ? decision.options : []) as {
+    game_card_id?: string; player_id?: string; name?: string; username?: string | null
+  }[]
+  const total = Number(decision.params?.amount ?? 0)
+  const maxTargets = Number(decision.params?.max_targets ?? opts.length)
+  const [alloc, setAlloc] = useState<Record<number, number>>({})
+
+  const spent = Object.values(alloc).reduce((a, b) => a + b, 0)
+  const targets = Object.values(alloc).filter((n) => n > 0).length
+  const canConfirm = !isPending && spent === total && targets >= 1 && targets <= maxTargets
+
+  const bump = (i: number, delta: number) =>
+    setAlloc((prev) => {
+      const next = Math.max(0, (prev[i] ?? 0) + delta)
+      if (delta > 0 && spent >= total) return prev
+      return { ...prev, [i]: next }
+    })
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-[10px] text-slate-400">
+        Divide {total} damage among up to {maxTargets} target{maxTargets === 1 ? '' : 's'} ({total - spent} left).
+      </p>
+      <div className="flex flex-col gap-1">
+        {opts.map((o, i) => (
+          <div key={o.game_card_id ?? o.player_id ?? i} className="flex items-center gap-2">
+            <span className="min-w-0 flex-1 truncate text-[11px] text-white">{o.name ?? o.username ?? 'Player'}</span>
+            <button type="button" disabled={isPending} onClick={() => bump(i, -1)}
+              className="rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-300 active:scale-95">−</button>
+            <span className="w-5 text-center text-xs font-bold text-indigo-300">{alloc[i] ?? 0}</span>
+            <button type="button" disabled={isPending} onClick={() => bump(i, 1)}
+              className="rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-300 active:scale-95">+</button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        disabled={!canConfirm}
+        onClick={() => void onSubmit({
+          allocations: opts
+            .map((o, i) => ({ o, n: alloc[i] ?? 0 }))
+            .filter(({ n }) => n > 0)
+            .map(({ o, n }) => (o.game_card_id ? { game_card_id: o.game_card_id, amount: n } : { player_id: o.player_id, amount: n })),
+        })}
+        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+      >
+        Deal damage
+      </button>
+    </div>
+  )
+}
+
+// Leyline Tyrant: pay any amount of the parked color, deal that much damage
+// to one offered target. Amount 0 declines.
+function PayXDamageBody({
+  decision,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const opts = (Array.isArray(decision.options) ? decision.options : []) as {
+    game_card_id?: string; player_id?: string; name?: string; username?: string | null
+  }[]
+  const color = String(decision.params?.color ?? 'R')
+  const [amount, setAmount] = useState(0)
+  const [picked, setPicked] = useState(0)
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-[10px] text-slate-400">Pay any amount of {'{'}{color}{'}'} — that much damage. 0 declines.</p>
+      <div className="flex items-center gap-2">
+        <button type="button" disabled={isPending} onClick={() => setAmount((n) => Math.max(0, n - 1))}
+          className="rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-300 active:scale-95">−</button>
+        <span className="w-5 text-center text-xs font-bold text-indigo-300">{amount}</span>
+        <button type="button" disabled={isPending} onClick={() => setAmount((n) => n + 1)}
+          className="rounded-lg border border-slate-600 px-2 py-1 text-xs text-slate-300 active:scale-95">+</button>
+      </div>
+      {amount > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {opts.map((o, i) => (
+            <button key={o.game_card_id ?? o.player_id ?? i} type="button" disabled={isPending}
+              onClick={() => setPicked(i)}
+              className={`rounded-xl border px-3 py-1.5 text-[11px] font-bold transition active:scale-95 ${i === picked ? 'border-indigo-300 bg-indigo-400/30 text-white' : 'border-slate-600 text-slate-300'}`}>
+              {o.name ?? o.username ?? 'Player'}
+            </button>
+          ))}
+        </div>
+      )}
+      <button
+        type="button"
+        disabled={isPending || (amount > 0 && !opts[picked])}
+        onClick={() => void onSubmit(
+          amount === 0
+            ? { amount: 0 }
+            : { amount, ...(opts[picked]?.game_card_id ? { game_card_id: opts[picked]!.game_card_id } : { player_id: opts[picked]?.player_id }) },
+        )}
+        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+      >
+        {amount === 0 ? 'Decline' : `Pay ${amount} and deal ${amount}`}
+      </button>
+    </div>
+  )
+}
+
+const AUTOPASS_ROWS: { key: keyof AutoPassSettings; label: string; hint: string }[] = [
+  { key: 'op', label: "Opp. turns", hint: "Auto-pass priority during opponents' turns" },
+  { key: 'own', label: 'My empty phases', hint: 'Auto-pass your untap/upkeep/draw/combat-begin/end steps' },
+  { key: 'stk', label: 'Stop on stack', hint: "Stop when a new object hits an opponent's stack" },
+  { key: 'rsp', label: 'Stop if I can act', hint: 'Stop when you hold a castable instant or ability' },
+]
+
 function PriorityPanel({
   hasPriority,
   isSessionFinished,
   canResolveCombatDamage,
   combatDamageStage,
   blockPassReason,
+  autoPass,
+  onChangeAutoPass,
+  isYielding,
+  onYieldTurn,
   onResolveCombatDamage,
   onPassPriority,
 }: {
@@ -2044,10 +2074,16 @@ function PriorityPanel({
   canResolveCombatDamage: boolean
   combatDamageStage: string | null
   blockPassReason?: string | null
+  autoPass: AutoPassSettings
+  onChangeAutoPass: (patch: Partial<AutoPassSettings>) => void
+  isYielding: boolean
+  onYieldTurn: () => void
   onResolveCombatDamage: () => Promise<void>
   onPassPriority: () => Promise<void>
 }) {
   const [isPending, setIsPending] = useState(false)
+  const [autoOpen, setAutoOpen] = useState(false)
+  const anyAutoOn = autoPass.op || autoPass.own || autoPass.stk || autoPass.rsp
   const canPass = hasPriority && !isSessionFinished && !blockPassReason
 
   const run = async (fn: () => Promise<void>) => {
@@ -2089,6 +2125,62 @@ function PriorityPanel({
         </div>
       )}
 
+      <div className="relative w-full">
+        <button
+          type="button"
+          onClick={() => setAutoOpen((v) => !v)}
+          title="Auto-pass settings. Never skips your decisions, trigger targets or blocks."
+          className={`w-full rounded-xl border px-1 py-2 text-[8px] font-black uppercase tracking-widest transition active:scale-95 ${
+            isYielding
+              ? 'border-sky-300/60 bg-sky-400/20 text-sky-300'
+              : anyAutoOn
+                ? 'border-amber-300/60 bg-amber-400/20 text-amber-300'
+                : 'border-[#1E2230] text-slate-600'
+          }`}
+        >
+          Auto{isYielding ? ' »' : anyAutoOn ? ' ✓' : ''}
+        </button>
+
+        {autoOpen && (
+          <>
+            {/* click-away */}
+            <div className="fixed inset-0 z-40" onClick={() => setAutoOpen(false)} />
+            <div className="absolute right-full top-0 z-50 mr-2 w-44 rounded-2xl border border-[#1E2230] bg-[#0C0E14] p-2 shadow-xl">
+              <p className="px-1 pb-1 text-[8px] font-black uppercase tracking-widest text-slate-500">Auto-pass</p>
+              {AUTOPASS_ROWS.map((row) => {
+                const on = autoPass[row.key]
+                return (
+                  <button
+                    key={row.key}
+                    type="button"
+                    onClick={() => onChangeAutoPass({ [row.key]: !on })}
+                    title={row.hint}
+                    className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left transition active:scale-95 hover:bg-white/5"
+                  >
+                    <span className={`text-[10px] font-semibold ${on ? 'text-amber-300' : 'text-slate-400'}`}>{row.label}</span>
+                    <span
+                      className={`flex h-4 w-7 shrink-0 items-center rounded-full px-0.5 transition-colors ${on ? 'bg-amber-400/80' : 'bg-slate-700'}`}
+                    >
+                      <span className={`h-3 w-3 rounded-full bg-white transition-transform ${on ? 'translate-x-3' : ''}`} />
+                    </span>
+                  </button>
+                )
+              })}
+              <button
+                type="button"
+                onClick={() => { onYieldTurn(); setAutoOpen(false) }}
+                title="Pass every priority until your next turn"
+                className={`mt-1 w-full rounded-lg border px-2 py-1.5 text-[9px] font-black uppercase tracking-widest transition active:scale-95 ${
+                  isYielding ? 'border-sky-300/60 bg-sky-400/20 text-sky-300' : 'border-[#1E2230] text-slate-400 hover:bg-white/5'
+                }`}
+              >
+                {isYielding ? 'Yielding…' : 'Yield rest of turn'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
       <div className="mt-auto flex flex-col items-center gap-1">
         <div
           className={`h-2 w-2 rounded-full transition-colors ${
@@ -2098,1044 +2190,6 @@ function PriorityPanel({
         <span className="text-[7px] text-slate-700">{hasPriority ? '→ YOU' : '...'}</span>
       </div>
     </aside>
-  )
-}
-
-// ─── Card Action Sheet ────────────────────────────────────────────────────────
-
-function CardActionSheet({
-  card,
-  canCastSorceries,
-  canCastInstants,
-  pendingStackCount,
-  players,
-  playerId,
-  pendingStackItems,
-  boardCards,
-  commanderIdentity,
-  onTapForMana,
-  onCastCard,
-  onDealDamageToPlayer,
-  onDealDamageToCreature,
-  onPumpCreature,
-  onSetPtCreature,
-  onAddCountersCreature,
-  onCreatureEffect,
-  onMultiCreatureEffect,
-  onPermanentEffect,
-  onDividedDamage,
-  onFight,
-  onDrawCards,
-  onSpellEffect,
-  onModalSpell,
-  onCounterSpell,
-  onActivateAbility,
-  onCastAura,
-  onEquip,
-  onClose,
-}: {
-  card: ControllerCard
-  canCastSorceries: boolean
-  canCastInstants: boolean
-  pendingStackCount: number
-  players: GameSessionPlayer[]
-  playerId: string | null
-  pendingStackItems: StackItem[]
-  boardCards: BoardCard[]
-  commanderIdentity: ManaColor[]
-  onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
-  onCastCard: (cardId: string) => Promise<void>
-  onDealDamageToPlayer: (cardId: string, targetPlayerId: string) => Promise<void>
-  onDealDamageToCreature: (cardId: string, targetCardId: string) => Promise<void>
-  onPumpCreature: (cardId: string, targetCardId: string) => Promise<void>
-  onSetPtCreature: (cardId: string, targetCardId: string) => Promise<void>
-  onAddCountersCreature: (cardId: string, targetCardId: string) => Promise<void>
-  onCreatureEffect: (cardId: string, targetCardId: string) => Promise<void>
-  onMultiCreatureEffect: (cardId: string, targetCardIds: string[]) => Promise<void>
-  onPermanentEffect: (cardId: string, targetCardId: string) => Promise<void>
-  onDividedDamage: (cardId: string, allocations: DamageAllocation[]) => Promise<void>
-  onFight: (cardId: string, fighterCardId: string, foughtCardId: string) => Promise<void>
-  onDrawCards: (cardId: string) => Promise<void>
-  onSpellEffect: (cardId: string) => Promise<void>
-  onModalSpell: (cardId: string) => Promise<void>
-  onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
-  onActivateAbility: (
-    sourceId: string,
-    abilityIndex: number,
-    target?: { targetCardId?: string | null; targetPlayerId?: string | null },
-  ) => Promise<void>
-  onCastAura: (cardId: string, targetCardId: string) => Promise<void>
-  onEquip: (cardId: string, targetCardId: string) => Promise<void>
-  onClose: () => void
-}) {
-  const script = normalizeCardBehaviorToV2(
-    card.copied_script ?? card.cards?.script ?? null,
-    card.cards?.type_line,
-  )
-  const zone = card.zone
-  const abilityAvailableInZone = (req?: string | null) =>
-    !req || req === 'any' || req === zone
-
-  const manaAbilities =
-    script.activated_abilities?.filter(
-      (a) => a.is_mana_ability && abilityAvailableInZone(a.source_zone_required),
-    ) ?? []
-  // Keep the original index so activate_ability can address the ability server-side.
-  const otherAbilities = (script.activated_abilities ?? [])
-    .map((ability, index) => ({ ability, index }))
-    .filter(({ ability }) => !ability.is_mana_ability && abilityAvailableInZone(ability.source_zone_required))
-  const pt = getPowerToughnessLabel(card)
-  const imageUrl = card.cards?.image_url
-  const [zoomed, setZoomed] = useState(false)
-  // 'target' = showing the target picker for a targeted spell
-  const [picking, setPicking] = useState(false)
-  // Fight is a two-step pick: the chosen fighter (a creature you control), then
-  // the fought creature. null = still choosing the fighter.
-  const [fightFighterId, setFightFighterId] = useState<string | null>(null)
-  // Multi-target removal: the set of creatures chosen so far (toggle to add/remove,
-  // capped at the plan's count, then confirm).
-  const [multiTargets, setMultiTargets] = useState<string[]>([])
-  // Divided damage: how much is allocated to each target so far, keyed by 'card:<id>'
-  // / 'player:<id>'. Cast is enabled once the allocations sum to the spell's amount.
-  const [dmgAlloc, setDmgAlloc] = useState<Record<string, number>>({})
-  // When set, showing the target picker for an activated ability.
-  const [abilityPick, setAbilityPick] = useState<
-    { index: number; type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null
-  >(null)
-  // Attachment picker: 'aura' = choose the creature an Aura enters enchanting;
-  // 'equip' = choose the creature to equip this Equipment onto.
-  const [attachPick, setAttachPick] = useState<null | 'aura' | 'equip'>(null)
-
-  const spellPlan = getSpellPlan(card)
-  // Controller restriction for the chosen creature target ("an opponent controls"
-  // / "you control"), relative to the caster. Defaults to any for untargeted plans.
-  const spellTargetController: TargetController =
-    spellPlan.kind === 'damage' ||
-    spellPlan.kind === 'pump' ||
-    spellPlan.kind === 'set_pt' ||
-    spellPlan.kind === 'add_counters' ||
-    spellPlan.kind === 'creature_effect' ||
-    spellPlan.kind === 'multi_creature' ||
-    spellPlan.kind === 'divided_damage'
-      ? spellPlan.targetController
-      : 'any'
-  // A targeted spell can't choose a creature with protection from its colour (the
-  // server rejects it too); the colour comes from the spell card's mana cost.
-  const spellColors = manaCostColors(card.cards?.mana_cost)
-  const targetableCreatures = boardCards.filter(
-    (c) =>
-      c.type_line?.toLowerCase().includes('creature') &&
-      creatureMatchesController(c, playerId, spellTargetController) &&
-      !creatureProtectedFrom(c, spellColors),
-  )
-  // Permanent targets for a permanent_effect spell: any board card whose type line
-  // matches the effect's target_type, under the same controller restriction.
-  const targetablePermanents =
-    spellPlan.kind === 'permanent_effect'
-      ? boardCards.filter(
-          (c) =>
-            cardMatchesTargetType(c.type_line, spellPlan.targetType) &&
-            creatureMatchesController(c, playerId, spellPlan.targetController),
-        )
-      : []
-  const hasPermanentTargets = targetablePermanents.length > 0
-  // Fight target lists: the fighter is a creature you control; the fought creature
-  // matches the action's controller restriction and can't be the fighter itself.
-  const isCreature = (c: BoardCard) => c.type_line?.toLowerCase().includes('creature') ?? false
-  const fightFighters = boardCards.filter((c) => isCreature(c) && c.controller_player_id === playerId)
-  const fightFoughtFor = (fighterId: string | null) =>
-    boardCards.filter(
-      (c) =>
-        isCreature(c) &&
-        c.id !== fighterId &&
-        creatureMatchesController(c, playerId, spellPlan.kind === 'fight' ? spellPlan.foughtController : 'any'),
-    )
-  const hasFightTargets = fightFighters.some((f) => fightFoughtFor(f.id).length > 0)
-
-  // Auras (cast from hand targeting a creature) and Equipment (equip a creature you
-  // control). Colour comes from the card's mana cost; creatures with protection from
-  // that colour are dropped from the picker (the server enforces it regardless).
-  const isAura = cardIsAura(card.cards?.type_line) && zone === 'hand'
-  const isEquipment = cardIsEquipment(card.cards?.type_line) && zone === 'battlefield'
-  const enchantTargets = boardCards.filter((c) => isCreature(c) && !creatureProtectedFrom(c, spellColors))
-  const equipTargets = boardCards.filter(
-    (c) => isCreature(c) && c.controller_player_id === playerId && !creatureProtectedFrom(c, spellColors),
-  )
-
-  const canCast = canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackCount)
-  const hasCreatureTargets = targetableCreatures.length > 0
-  const requiresCreatureTarget =
-    spellPlan.kind === 'pump' ||
-    spellPlan.kind === 'set_pt' ||
-    spellPlan.kind === 'add_counters' ||
-    spellPlan.kind === 'creature_effect' ||
-    spellPlan.kind === 'multi_creature' ||
-    spellPlan.kind === 'fight' ||
-    (spellPlan.kind === 'damage' && spellPlan.canTargetCreature && !spellPlan.canTargetPlayer)
-  const requiresStackTarget = spellPlan.kind === 'counterspell'
-  const requiresPermanentTarget = spellPlan.kind === 'permanent_effect'
-  const hasRequiredTargets =
-    (!requiresCreatureTarget ||
-      (spellPlan.kind === 'fight' ? hasFightTargets : hasCreatureTargets)) &&
-    (!requiresPermanentTarget || hasPermanentTargets) &&
-    (!requiresStackTarget || pendingStackItems.length > 0)
-  const needsTarget =
-    hasRequiredTargets &&
-    canCast &&
-    ((spellPlan.kind === 'damage' && (spellPlan.canTargetPlayer || (spellPlan.canTargetCreature && hasCreatureTargets))) ||
-      (spellPlan.kind === 'pump' && hasCreatureTargets) ||
-      (spellPlan.kind === 'set_pt' && hasCreatureTargets) ||
-      (spellPlan.kind === 'add_counters' && hasCreatureTargets) ||
-      (spellPlan.kind === 'creature_effect' && hasCreatureTargets) ||
-      (spellPlan.kind === 'multi_creature' && hasCreatureTargets) ||
-      (spellPlan.kind === 'permanent_effect' && hasPermanentTargets) ||
-      (spellPlan.kind === 'divided_damage' && (spellPlan.canTargetPlayer || hasCreatureTargets)) ||
-      (spellPlan.kind === 'fight' && hasFightTargets) ||
-      (spellPlan.kind === 'counterspell' && pendingStackItems.length > 0))
-  const castLabel = !hasRequiredTargets
-    ? requiresCreatureTarget
-      ? 'No creature targets'
-      : requiresPermanentTarget
-        ? 'No permanent targets'
-        : 'No stack targets'
-    : needsTarget
-      ? 'Cast - choose target'
-      : 'Cast'
-
-  const handleCast = () => {
-    if (!hasRequiredTargets) return
-
-    if (isAura) {
-      setAttachPick('aura')
-    } else if (needsTarget) {
-      setPicking(true)
-    } else if (spellPlan.kind === 'draw') {
-      void onDrawCards(card.id)
-      onClose()
-    } else if (spellPlan.kind === 'spell_effect') {
-      void onSpellEffect(card.id)
-      onClose()
-    } else if (spellPlan.kind === 'modal') {
-      void onModalSpell(card.id)
-      onClose()
-    } else {
-      void onCastCard(card.id)
-      onClose()
-    }
-  }
-
-  const hasActions = canCast || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0
-
-  return (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="absolute inset-0 z-40 bg-black/60"
-        onClick={onClose}
-      />
-
-      {/* Sheet */}
-      <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="absolute inset-x-0 bottom-0 z-50 rounded-t-3xl border-t border-white/10 bg-[#181C28] px-4 pb-6 pt-4"
-      >
-        {/* Drag handle */}
-        <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/15" />
-
-        {/* Card header */}
-        <div className="mb-5 flex items-center gap-3">
-          {imageUrl && (
-            <button
-              type="button"
-              onClick={() => setZoomed(true)}
-              className="h-[68px] w-[49px] shrink-0 overflow-hidden rounded-lg shadow-lg active:scale-95 transition-transform"
-            >
-              <img src={imageUrl} alt={card.name} className="h-full w-full object-cover object-top" />
-            </button>
-          )}
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-base font-black text-white">{card.name}</p>
-            <p className="truncate text-[11px] text-slate-400">{card.cards?.type_line ?? card.zone}</p>
-            {card.cards?.mana_cost && (
-              <div className="mt-1">
-                <ManaCostDisplay manaCost={card.cards.mana_cost} />
-              </div>
-            )}
-            <div className="mt-1.5 flex flex-wrap items-center gap-1">
-              {card.cards?.is_token && (
-                <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-purple-300">
-                  Token
-                </span>
-              )}
-              <KeywordBadges keywords={getCardKeywords(card)} />
-            </div>
-          </div>
-          <div className="flex shrink-0 flex-col items-end gap-1.5">
-            {pt && (
-              <span
-                className={`rounded-lg px-2.5 py-1 text-sm font-black ${
-                  (card.plus_one_counters ?? 0) > 0 ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-white'
-                }`}
-              >
-                {getEffectivePT(card)}
-              </span>
-            )}
-            {(card.plus_one_counters ?? 0) > 0 && (
-              <span className="text-[9px] font-bold text-emerald-400">
-                +{card.plus_one_counters} counter{card.plus_one_counters! > 1 ? 's' : ''}
-              </span>
-            )}
-            {((card.pump_power ?? 0) !== 0 || (card.pump_toughness ?? 0) !== 0) && (
-              <span className="text-[9px] font-bold text-sky-400">
-                +{card.pump_power ?? 0}/+{card.pump_toughness ?? 0} until EOT
-              </span>
-            )}
-            {card.damage_marked > 0 && (
-              <span className="text-[10px] font-bold text-red-400">{card.damage_marked} dmg</span>
-            )}
-            {card.is_tapped && (
-              <span className="text-[10px] font-bold text-amber-500/70">Tapped</span>
-            )}
-          </div>
-        </div>
-
-        {/* Cast button (hand cards) */}
-        {canCast && !picking && !attachPick && (
-          <button
-            type="button"
-            aria-label={isAura ? 'Cast - enchant a creature' : castLabel}
-            disabled={!hasRequiredTargets}
-            onClick={handleCast}
-            className={`mb-3 flex w-full items-center justify-between rounded-2xl px-4 py-3.5 transition active:scale-95 ${
-              hasRequiredTargets ? 'bg-amber-400' : 'cursor-not-allowed bg-slate-700 opacity-70'
-            }`}
-          >
-            <span className={`font-black ${hasRequiredTargets ? 'text-amber-950' : 'text-slate-300'}`}>
-              {isAura ? 'Cast - enchant a creature' : castLabel}
-            </span>
-            <ManaCostDisplay manaCost={card.cards?.mana_cost} dark={hasRequiredTargets} />
-          </button>
-        )}
-
-        {/* Equip button (battlefield Equipment) */}
-        {isEquipment && !attachPick && (
-          <button
-            type="button"
-            aria-label="Equip"
-            disabled={equipTargets.length === 0}
-            onClick={() => setAttachPick('equip')}
-            className={`mb-3 flex w-full items-center justify-between rounded-2xl px-4 py-3.5 transition active:scale-95 ${
-              equipTargets.length > 0 ? 'bg-amber-400' : 'cursor-not-allowed bg-slate-700 opacity-70'
-            }`}
-          >
-            <span className={`font-black ${equipTargets.length > 0 ? 'text-amber-950' : 'text-slate-300'}`}>
-              {equipTargets.length > 0 ? 'Equip a creature' : 'No creatures to equip'}
-            </span>
-          </button>
-        )}
-
-        {/* Attachment picker (Aura enchant target / Equipment equip target) */}
-        {attachPick && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {attachPick === 'aura' ? 'Enchant which creature' : 'Equip which creature'}
-            </p>
-            {(attachPick === 'aura' ? enchantTargets : equipTargets).map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => {
-                  if (attachPick === 'aura') void onCastAura(card.id, c.id)
-                  else void onEquip(card.id, c.id)
-                  onClose()
-                }}
-                className="flex w-full items-center justify-between rounded-2xl border border-amber-400/40 bg-amber-400/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-slate-300">{effectiveBoardPT(c)}</span>
-              </button>
-            ))}
-            {(attachPick === 'aura' ? enchantTargets : equipTargets).length === 0 && (
-              <p className="px-1 text-xs text-slate-500">No legal creatures.</p>
-            )}
-            <button
-              type="button"
-              onClick={() => setAttachPick(null)}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {/* Target picker */}
-        {picking && spellPlan.kind === 'damage' && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              Deal {spellPlan.amount} damage to
-            </p>
-            {spellPlan.canTargetPlayer && players.map((p) => (
-              <button
-                key={p.player_id}
-                type="button"
-                onClick={() => { void onDealDamageToPlayer(card.id, p.player_id); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-3 transition active:scale-95"
-              >
-                <span className="font-bold text-white">
-                  {p.username ?? `Player ${p.seat_number}`}
-                  {p.player_id === playerId && <span className="ml-1 text-[10px] text-slate-500">(you)</span>}
-                </span>
-                <span className="text-sm font-black text-[#D4591A]">♥{p.life_total} → {Math.max(0, p.life_total - spellPlan.amount)}</span>
-              </button>
-            ))}
-            {spellPlan.canTargetCreature && targetableCreatures.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { void onDealDamageToCreature(card.id, c.id); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-slate-300">
-                  {effectiveBoardPT(c)}
-                </span>
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setPicking(false)}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {picking && spellPlan.kind === 'divided_damage' && (() => {
-          const allocated = Object.values(dmgAlloc).reduce((sum, n) => sum + n, 0)
-          const remaining = spellPlan.amount - allocated
-          const bump = (key: string, delta: number) =>
-            setDmgAlloc((prev) => {
-              const next = Math.max(0, (prev[key] ?? 0) + delta)
-              if (delta > 0 && remaining <= 0) return prev
-              return { ...prev, [key]: next }
-            })
-          const row = (key: string, name: string, sub: string) => (
-            <div key={key} className="flex items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-3 py-2">
-              <span className="min-w-0 flex-1 truncate font-bold text-white">{name}<span className="ml-1 text-[10px] text-slate-400">{sub}</span></span>
-              <div className="flex shrink-0 items-center gap-2">
-                <button type="button" onClick={() => bump(key, -1)} disabled={(dmgAlloc[key] ?? 0) === 0} className="h-7 w-7 rounded-lg border border-white/10 text-sm font-black text-white disabled:opacity-30 active:scale-90">−</button>
-                <span className="w-5 text-center text-sm font-black text-[#D4591A]">{dmgAlloc[key] ?? 0}</span>
-                <button type="button" onClick={() => bump(key, 1)} disabled={remaining <= 0} className="h-7 w-7 rounded-lg border border-white/10 text-sm font-black text-white disabled:opacity-30 active:scale-90">+</button>
-              </div>
-            </div>
-          )
-          const cast = () => {
-            const allocations: DamageAllocation[] = Object.entries(dmgAlloc)
-              .filter(([, n]) => n > 0)
-              .map(([key, n]) =>
-                key.startsWith('player:')
-                  ? { target_player_id: key.slice('player:'.length), amount: n }
-                  : { target_card_id: key.slice('card:'.length), amount: n },
-              )
-            void onDividedDamage(card.id, allocations)
-            setDmgAlloc({})
-            onClose()
-          }
-          return (
-            <div className="mb-3 space-y-2">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                Divide {spellPlan.amount} damage — {remaining} left
-              </p>
-              {spellPlan.canTargetPlayer && players.map((p) => row(`player:${p.player_id}`, p.username ?? `Player ${p.seat_number}`, p.player_id === playerId ? '(you)' : `♥${p.life_total}`))}
-              {spellPlan.canTargetCreature && targetableCreatures.map((c) => row(`card:${c.id}`, c.name, effectiveBoardPT(c)))}
-              <button
-                type="button"
-                disabled={remaining !== 0}
-                onClick={cast}
-                className="w-full rounded-2xl border border-[#D4591A] bg-[#D4591A]/20 py-2.5 text-sm font-black text-white transition active:scale-95 disabled:opacity-40"
-              >
-                Deal damage
-              </button>
-              <button
-                type="button"
-                onClick={() => { setDmgAlloc({}); setPicking(false) }}
-                className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-              >
-                Back
-              </button>
-            </div>
-          )
-        })()}
-
-        {picking && spellPlan.kind === 'pump' && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              Give +{spellPlan.power}/+{spellPlan.toughness} to
-            </p>
-            {targetableCreatures.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { void onPumpCreature(card.id, c.id); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-emerald-400/40 bg-emerald-400/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-emerald-300">{effectiveBoardPT(c)}</span>
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setPicking(false)}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {picking && spellPlan.kind === 'set_pt' && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              Make a creature {spellPlan.power}/{spellPlan.toughness} until end of turn
-            </p>
-            {targetableCreatures.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { void onSetPtCreature(card.id, c.id); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-sky-400/40 bg-sky-400/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-sky-300">{effectiveBoardPT(c)} → {spellPlan.power}/{spellPlan.toughness}</span>
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setPicking(false)}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {picking && spellPlan.kind === 'creature_effect' && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {spellPlan.label} which creature?
-            </p>
-            {targetableCreatures.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { void onCreatureEffect(card.id, c.id); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-violet-400/40 bg-violet-400/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-violet-300">{effectiveBoardPT(c)}</span>
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setPicking(false)}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {picking && spellPlan.kind === 'permanent_effect' && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {spellPlan.label} which permanent?
-            </p>
-            {targetablePermanents.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { void onPermanentEffect(card.id, c.id); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-amber-400/40 bg-amber-400/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-[10px] font-bold uppercase text-amber-300/80">{c.type_line}</span>
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setPicking(false)}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {picking && spellPlan.kind === 'multi_creature' && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {spellPlan.label} up to {spellPlan.count} — {multiTargets.length}/{spellPlan.count} chosen
-            </p>
-            {targetableCreatures.map((c) => {
-              const chosen = multiTargets.includes(c.id)
-              const atCap = multiTargets.length >= spellPlan.count
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  disabled={!chosen && atCap}
-                  onClick={() =>
-                    setMultiTargets((prev) =>
-                      prev.includes(c.id) ? prev.filter((id) => id !== c.id) : [...prev, c.id],
-                    )
-                  }
-                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-2.5 transition active:scale-95 ${
-                    chosen
-                      ? 'border-violet-400 bg-violet-400/30'
-                      : atCap
-                        ? 'border-white/5 bg-white/5 opacity-40'
-                        : 'border-violet-400/40 bg-violet-400/10'
-                  }`}
-                >
-                  <span className="truncate font-bold text-white">
-                    {chosen ? '✓ ' : ''}
-                    {c.name}
-                  </span>
-                  <span className="ml-2 shrink-0 text-xs font-black text-violet-300">{effectiveBoardPT(c)}</span>
-                </button>
-              )
-            })}
-            <button
-              type="button"
-              disabled={multiTargets.length === 0}
-              onClick={() => { void onMultiCreatureEffect(card.id, multiTargets); setMultiTargets([]); onClose() }}
-              className="w-full rounded-2xl border border-violet-400 bg-violet-400/20 py-2.5 text-sm font-black text-white transition active:scale-95 disabled:opacity-40"
-            >
-              {spellPlan.label} {multiTargets.length || ''}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setMultiTargets([]); setPicking(false) }}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {picking && spellPlan.kind === 'fight' && (
-          <div className="mb-3 space-y-2">
-            {fightFighterId === null ? (
-              <>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                  Your creature that fights
-                </p>
-                {fightFighters.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => setFightFighterId(c.id)}
-                    className="flex w-full items-center justify-between rounded-2xl border border-rose-400/40 bg-rose-400/10 px-4 py-2.5 transition active:scale-95"
-                  >
-                    <span className="truncate font-bold text-white">{c.name}</span>
-                    <span className="ml-2 shrink-0 text-xs font-black text-rose-300">{effectiveBoardPT(c)}</span>
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setPicking(false)}
-                  className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-                >
-                  Back
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                  Fights which creature?
-                </p>
-                {fightFoughtFor(fightFighterId).map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => { void onFight(card.id, fightFighterId, c.id); onClose() }}
-                    className="flex w-full items-center justify-between rounded-2xl border border-rose-400/40 bg-rose-400/10 px-4 py-2.5 transition active:scale-95"
-                  >
-                    <span className="truncate font-bold text-white">{c.name}</span>
-                    <span className="ml-2 shrink-0 text-xs font-black text-rose-300">{effectiveBoardPT(c)}</span>
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setFightFighterId(null)}
-                  className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-                >
-                  Back
-                </button>
-              </>
-            )}
-          </div>
-        )}
-
-        {picking && spellPlan.kind === 'add_counters' && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              Put {spellPlan.amount} +1/+1 counter{spellPlan.amount === 1 ? '' : 's'} on
-            </p>
-            {targetableCreatures.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { void onAddCountersCreature(card.id, c.id); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-emerald-400/40 bg-emerald-400/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-emerald-300">{effectiveBoardPT(c)}</span>
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setPicking(false)}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {picking && spellPlan.kind === 'counterspell' && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Counter which spell?</p>
-            {pendingStackItems
-              .slice()
-              .sort((a, b) => b.position - a.position)
-              .map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => { void onCounterSpell(card.id, item.id); onClose() }}
-                  className="flex w-full items-center justify-between rounded-2xl border border-cyan-400/40 bg-cyan-400/10 px-4 py-3 transition active:scale-95"
-                >
-                  <span className="font-bold text-white">{item.source_card_name ?? item.action_type}</span>
-                  <span className="text-[10px] text-slate-400">{item.controller_username ?? ''}</span>
-                </button>
-              ))}
-            <button
-              type="button"
-              onClick={() => setPicking(false)}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {/* Mana abilities (battlefield) */}
-        {manaAbilities.length > 0 && (
-          <div className="mb-3 grid grid-cols-2 gap-2">
-            {manaAbilities.flatMap((ability, i) => {
-              const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
-              const hasTapCost = ability.costs.some((c) => c.type === 'tap_self')
-              const isUnavailable = hasTapCost && card.is_tapped
-              return addManaEffects.flatMap((effect) => {
-                // 'commander' → one button per colour in the commander's identity
-                // (colourless fallback when there is none). Else the fixed colour.
-                const produces: ManaColor[] =
-                  effect.color === 'commander'
-                    ? (commanderIdentity.length > 0 ? commanderIdentity : (['C'] as ManaColor[]))
-                    : [effect.color as ManaColor]
-                return produces.map((produced) => (
-                  <button
-                    key={`${i}-${effect.color}-${produced}`}
-                    type="button"
-                    disabled={isUnavailable}
-                    onClick={() => { void onTapForMana(card.id, produced); onClose() }}
-                    className={`flex items-center gap-2.5 rounded-2xl border px-3 py-3 transition active:scale-95 ${
-                      isUnavailable
-                        ? 'border-white/5 bg-[#0F1117] opacity-30'
-                        : 'border-white/10 bg-[#0F1117] hover:border-white/20'
-                    }`}
-                  >
-                    {hasTapCost && (
-                      <span className="shrink-0 text-[9px] font-black text-slate-600">{'{T}'}</span>
-                    )}
-                    <ManaSymbol color={produced} size="md" />
-                    <span className="text-sm font-bold text-white">Add {produced}</span>
-                  </button>
-                ))
-              })
-            })}
-          </div>
-        )}
-
-        {/* Non-mana activated abilities */}
-        {otherAbilities.length > 0 && !picking && !abilityPick && (
-          <div className="space-y-1.5">
-            <p className="mb-1 text-[9px] uppercase tracking-widest text-slate-700">Abilities</p>
-            {otherAbilities.map(({ ability, index }) => {
-              const eff = getAbilityEffect(ability.effects)
-              const hasTap = ability.costs.some((c) => c.type === 'tap_self')
-              const supported = Boolean(eff)
-              const targetAvailable = Boolean(
-                eff && (!eff.needsTarget || eff.canTargetPlayer || (eff.canTargetCreature && targetableCreatures.length > 0)),
-              )
-              const available = supported && canCastInstants && (!hasTap || !card.is_tapped) && targetAvailable
-              return (
-                <button
-                  key={index}
-                  type="button"
-                  disabled={!available}
-                  onClick={() => {
-                    if (!eff) return
-                    if (eff.needsTarget) {
-                      setAbilityPick({ index, type: eff.type, amount: eff.amount, canTargetPlayer: eff.canTargetPlayer, canTargetCreature: eff.canTargetCreature })
-                    } else {
-                      void onActivateAbility(card.id, index)
-                      onClose()
-                    }
-                  }}
-                  className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 transition active:scale-95 ${
-                    available ? 'border-white/15 bg-[#0F1117]' : 'border-white/5 bg-[#0F1117]/60 opacity-50'
-                  }`}
-                >
-                  <span className="shrink-0 text-[11px] font-bold text-white">{renderAbilityCost(ability.costs)}</span>
-                  <span className="text-[10px] text-slate-400">{renderAbilityEffect(ability.effects)}</span>
-                  {!supported && <span className="ml-auto shrink-0 text-[9px] text-slate-700">Soon</span>}
-                  {supported && hasTap && card.is_tapped && (
-                    <span className="ml-auto shrink-0 text-[9px] text-amber-500/70">Tapped</span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        )}
-
-        {/* Activated ability target picker */}
-        {abilityPick && (
-          <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {abilityPick.type === 'deal_damage'
-                ? `Deal ${abilityPick.amount} damage to`
-                : `${ABILITY_VERB[abilityPick.type] ?? 'Affect'} which target?`}
-            </p>
-            {abilityPick.canTargetPlayer && players.map((p) => (
-              <button
-                key={p.player_id}
-                type="button"
-                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetPlayerId: p.player_id }); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-3 transition active:scale-95"
-              >
-                <span className="font-bold text-white">
-                  {p.username ?? `Player ${p.seat_number}`}
-                  {p.player_id === playerId && <span className="ml-1 text-[10px] text-slate-500">(you)</span>}
-                </span>
-                <span className="text-sm font-black text-[#D4591A]">♥{p.life_total} → {Math.max(0, p.life_total - abilityPick.amount)}</span>
-              </button>
-            ))}
-            {abilityPick.canTargetCreature && targetableCreatures.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetCardId: c.id }); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-slate-300">{effectiveBoardPT(c)}</span>
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setAbilityPick(null)}
-              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
-            >
-              Back
-            </button>
-          </div>
-        )}
-
-        {!hasActions && (
-          <p className="py-2 text-center text-sm text-slate-700">No actions available</p>
-        )}
-      </motion.div>
-
-      {/* Card zoom overlay */}
-      <AnimatePresence>
-        {zoomed && imageUrl && (
-          <CardZoomOverlay
-            card={card}
-            onClose={() => setZoomed(false)}
-          />
-        )}
-      </AnimatePresence>
-    </>
-  )
-}
-
-// ─── Card Zoom Overlay ────────────────────────────────────────────────────────
-
-function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClose: () => void }) {
-  const imageUrl = card.cards?.image_url
-  const oracleText = card.cards?.oracle_text
-  const pt = getPowerToughnessLabel(card)
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="absolute inset-0 z-[55] flex items-center justify-center bg-black/85 p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-        className="relative flex max-h-[92svh] w-[min(94vw,640px)] items-stretch gap-3 rounded-2xl border border-white/10 bg-[#0D1018] p-3 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Card image — bounded by viewport height, keeps MTG aspect */}
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt={card.name}
-            className="max-h-[84svh] w-auto shrink-0 self-center rounded-lg object-contain"
-          />
-        )}
-
-        {/* Text column — scrolls if long */}
-        <div className="flex min-w-0 flex-1 flex-col gap-2 overflow-y-auto py-1 pr-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="font-black text-white">{card.name}</p>
-              <p className="text-[11px] text-slate-400">{card.cards?.type_line}</p>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
-              {pt && (
-                <span
-                  className={`rounded-lg px-2 py-1 text-sm font-black text-white ${
-                    (card.plus_one_counters ?? 0) > 0 ? 'bg-emerald-600' : 'bg-slate-700'
-                  }`}
-                >
-                  {getEffectivePT(card)}
-                </span>
-              )}
-              {card.cards?.mana_cost && (
-                <ManaCostDisplay manaCost={card.cards.mana_cost} />
-              )}
-            </div>
-          </div>
-
-          <KeywordBadges keywords={getCardKeywords(card)} />
-
-          {oracleText && (
-            <p className="text-xs leading-relaxed text-slate-300 whitespace-pre-line">{oracleText}</p>
-          )}
-
-          {card.damage_marked > 0 && (
-            <p className="text-xs font-bold text-red-400">{card.damage_marked} damage marked</p>
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white/70 active:scale-95"
-        >
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-        </button>
-      </motion.div>
-    </motion.div>
-  )
-}
-
-// ─── Mana Display Components ──────────────────────────────────────────────────
-
-function ManaSymbol({ color, size = 'sm' }: { color: string; size?: 'sm' | 'md' }) {
-  const style = manaColorStyles[color as ManaColor] ?? { bg: 'bg-slate-600', text: 'text-slate-400', dot: 'bg-slate-600' }
-  const sizeClass = size === 'md' ? 'h-7 w-7 text-[11px]' : 'h-5 w-5 text-[9px]'
-  return (
-    <span
-      className={`inline-flex shrink-0 items-center justify-center rounded-full font-black text-black ${style.bg} ${sizeClass}`}
-    >
-      {color}
-    </span>
-  )
-}
-
-function KeywordBadges({ keywords }: { keywords: string[] }) {
-  if (keywords.length === 0) return null
-  return (
-    <div className="flex flex-wrap gap-1">
-      {keywords.map((k) => (
-        <span
-          key={k}
-          className="rounded bg-white/10 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-slate-300"
-        >
-          {KEYWORD_LABELS[k] ?? k}
-        </span>
-      ))}
-    </div>
-  )
-}
-
-function ManaCostDisplay({ manaCost, dark }: { manaCost?: string | null; dark?: boolean }) {
-  if (!manaCost) return null
-  const parsed = parseManaCost(manaCost)
-  const pips: React.ReactNode[] = []
-
-  if (parsed.generic > 0) {
-    pips.push(
-      <span
-        key="generic"
-        className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-black ${
-          dark ? 'bg-amber-800 text-amber-100' : 'bg-slate-700 text-white'
-        }`}
-      >
-        {parsed.generic}
-      </span>,
-    )
-  }
-
-  for (const [color, count] of Object.entries(parsed.colored)) {
-    for (let i = 0; i < count; i++) {
-      pips.push(<ManaSymbol key={`${color}-${i}`} color={color} />)
-    }
-  }
-
-  return <div className="flex items-center gap-1">{pips}</div>
-}
-
-function ManaPoolDisplay({ manaPool }: { manaPool: ManaPool }) {
-  return (
-    <div className="flex items-center gap-1">
-      {manaColors.map((c) => {
-        const amount = manaPool[c] ?? 0
-        return (
-          <span key={c} className="flex items-center gap-0.5">
-            <span
-              className={`h-1.5 w-1.5 rounded-full transition-opacity ${manaColorStyles[c].dot} ${
-                amount > 0 ? 'opacity-100' : 'opacity-20'
-              }`}
-            />
-            {amount > 0 && (
-              <span className={`text-[9px] font-black leading-none ${manaColorStyles[c].text}`}>
-                {amount}
-              </span>
-            )}
-          </span>
-        )
-      })}
-    </div>
   )
 }
 
@@ -3454,11 +2508,15 @@ function MyZonesSheet({
   exile,
   initialTab,
   onClose,
+  onCardTap,
 }: {
   graveyard: ControllerCard[]
   exile: ControllerCard[]
   initialTab: MyZoneTab
   onClose: () => void
+  // Tapping a graveyard card with an action (e.g. flashback) opens its action
+  // sheet; closes this zone sheet so the action sheet is visible.
+  onCardTap: (card: ControllerCard) => void
 }) {
   const [tab, setTab] = useState<MyZoneTab>(initialTab)
 
@@ -3541,14 +2599,34 @@ function MyZonesSheet({
                   <p className="py-8 text-center text-sm text-slate-700">Graveyard is empty</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {graveyard.map((card) => (
-                      <div key={card.id} className="w-[60px]">
-                        <MotionCard
-                          card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: false, damage_marked: 0, zone: card.zone }}
-                          size="board" useLayoutId={false} className="w-full"
-                        />
-                      </div>
-                    ))}
+                    {graveyard.map((card) => {
+                      // A card with a flashback cost is castable from here — make it
+                      // tappable (opens its action sheet) and badge it.
+                      const hasFlashback = !!normalizeCardBehaviorToV2(
+                        card.copied_script ?? card.cards?.script ?? null,
+                        card.cards?.type_line,
+                      ).flashback
+                      return (
+                        <div key={card.id} className="w-[60px]">
+                          <button
+                            type="button"
+                            disabled={!hasFlashback}
+                            onClick={() => { onCardTap(card); onClose() }}
+                            className={`relative block w-full ${hasFlashback ? 'active:scale-95' : 'cursor-default'}`}
+                          >
+                            <MotionCard
+                              card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: false, damage_marked: 0, zone: card.zone }}
+                              size="board" useLayoutId={false} className="w-full"
+                            />
+                            {hasFlashback && (
+                              <span className="absolute -right-1 -top-1 rounded-full bg-purple-400 px-1 text-[8px] font-black text-purple-950">
+                                FB
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
               </motion.div>
@@ -3853,6 +2931,7 @@ function ZoneSection({
 function DeclareAttackersLayout({
   ownCreatures,
   opponentPlayers,
+  opponentPlaneswalkers,
   turnState,
   errorMessage,
   onDeclareAttacker,
@@ -3860,18 +2939,24 @@ function DeclareAttackersLayout({
 }: {
   ownCreatures: ControllerCard[]
   opponentPlayers: GameSessionPlayer[]
+  opponentPlaneswalkers: { id: string; name: string; loyalty: number }[]
   turnState: GameTurnState | null
   errorMessage: string | null
-  onDeclareAttacker: (cardId: string, targetPlayerId: string) => Promise<void>
+  onDeclareAttacker: (cardId: string, target: { playerId?: string; planeswalkerId?: string }) => Promise<void>
   onPassPriority: () => Promise<void>
 }) {
   const untappedCreatures = ownCreatures.filter((c) => !c.is_tapped)
-  const defaultTarget = opponentPlayers[0]?.player_id ?? ''
-  const [assignments, setAssignments] = useState<Record<string, string>>({})
+  // Attackable targets: each opponent player + each opponent planeswalker.
+  const targets: { kind: 'player' | 'planeswalker'; id: string; label: string; sub: string }[] = [
+    ...opponentPlayers.map((p) => ({ kind: 'player' as const, id: p.player_id, label: p.username ?? `Player ${p.seat_number}`, sub: `♥ ${p.life_total}` })),
+    ...opponentPlaneswalkers.map((pw) => ({ kind: 'planeswalker' as const, id: pw.id, label: pw.name, sub: `◆ ${pw.loyalty}` })),
+  ]
+  const [selectedTargetId, setSelectedTargetId] = useState<string>(targets[0]?.id ?? '')
+  const selectedTarget = targets.find((t) => t.id === selectedTargetId) ?? targets[0] ?? null
+  const [attackers, setAttackers] = useState<Set<string>>(new Set())
   const [isPending, setIsPending] = useState(false)
   const [localError, setLocalError] = useState<string | null>(null)
-  const attackingCount = Object.keys(assignments).length
-  const defender = opponentPlayers[0]
+  const attackingCount = attackers.size
 
   const isAttackable = (card: ControllerCard) => {
     const turnNumber = turnState?.turn_number ?? 0
@@ -3889,20 +2974,24 @@ function DeclareAttackersLayout({
   const toggleAttacker = (cardId: string) => {
     const card = untappedCreatures.find((c) => c.id === cardId)
     if (!card || !isAttackable(card)) return
-    setAssignments((prev) => {
-      const next = { ...prev }
-      if (next[cardId]) delete next[cardId]
-      else next[cardId] = defaultTarget
+    setAttackers((prev) => {
+      const next = new Set(prev)
+      if (next.has(cardId)) next.delete(cardId)
+      else next.add(cardId)
       return next
     })
   }
 
   const submit = async () => {
+    if (!selectedTarget) return
     setIsPending(true)
     setLocalError(null)
     try {
-      for (const [cardId, targetId] of Object.entries(assignments)) {
-        if (targetId) await onDeclareAttacker(cardId, targetId)
+      const target = selectedTarget.kind === 'planeswalker'
+        ? { planeswalkerId: selectedTarget.id }
+        : { playerId: selectedTarget.id }
+      for (const cardId of attackers) {
+        await onDeclareAttacker(cardId, target)
       }
       // Pass priority — the step advances automatically when both players pass
       await onPassPriority()
@@ -3936,14 +3025,29 @@ function DeclareAttackersLayout({
         )}
       </div>
 
-      {/* Defender */}
-      {defender && (
-        <div className="flex h-[42px] shrink-0 items-center justify-between border-b border-[#2A2D38] bg-[#0A0B14] px-5">
-          <div>
-            <p className="text-[9px] uppercase tracking-widest text-slate-500">Defending</p>
-            <p className="text-sm font-black text-white">{defender.username ?? `Player ${defender.seat_number}`}</p>
+      {/* Attack target — an opponent player or one of their planeswalkers */}
+      {targets.length > 0 && (
+        <div className="shrink-0 border-b border-[#2A2D38] bg-[#0A0B14] px-3 py-2">
+          <p className="mb-1.5 px-2 text-[9px] uppercase tracking-widest text-slate-500">Attacking</p>
+          <div className="flex gap-2 overflow-x-auto">
+            {targets.map((t) => {
+              const active = t.id === selectedTargetId
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setSelectedTargetId(t.id)}
+                  className={`flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 transition active:scale-95 ${
+                    active ? 'border-[#D4591A] bg-[#D4591A]/10' : 'border-[#2A2D38] bg-[#131720]'
+                  }`}
+                >
+                  <span className="text-[8px] uppercase tracking-wider text-slate-500">{t.kind === 'planeswalker' ? 'PW' : 'Player'}</span>
+                  <span className="text-xs font-black text-white">{t.label}</span>
+                  <span className="text-[11px] font-bold text-slate-300">{t.sub}</span>
+                </button>
+              )
+            })}
           </div>
-          <p className="text-2xl font-black text-white">{defender.life_total}</p>
         </div>
       )}
 
@@ -3954,7 +3058,7 @@ function DeclareAttackersLayout({
         ) : (
           untappedCreatures.map((card) => {
             const attackable = isAttackable(card)
-            const isAttacking = Boolean(assignments[card.id])
+            const isAttacking = attackers.has(card.id)
             return (
               <motion.button
                 key={card.id}
@@ -3987,6 +3091,9 @@ function DeclareAttackersLayout({
                     className="w-full"
                   />
                 </div>
+                {card.animated && (
+                  <span className="text-[9px] font-black text-amber-300" title="Animated: this land is a creature until end of turn">⚡</span>
+                )}
                 {getEffectivePT(card) && (
                   <span
                     className={`text-[9px] font-black ${
@@ -4227,6 +3334,9 @@ function DeclareBlockersLayout({
                   useLayoutId={false}
                   className="w-full"
                 />
+                {card.animated && (
+                  <span className="text-[9px] font-black text-amber-300" title="Animated: this land is a creature until end of turn">⚡</span>
+                )}
                 {getEffectivePT(card) && (
                   <span
                     className={`text-[9px] font-black ${

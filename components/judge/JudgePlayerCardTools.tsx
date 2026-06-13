@@ -2,16 +2,21 @@ import { gameZones } from '@/lib/game/data'
 import { useJudgeCardTools } from '@/lib/game/use-judge-card-tools'
 import type { ControllerCard, GameZone } from '@/lib/game/types'
 
+// Player counters a judge can dial in (poison gates the game at 10).
+const PLAYER_COUNTER_KINDS = ['poison', 'energy', 'experience'] as const
+
 export default function JudgePlayerCardTools({
   sessionId,
   playerId,
   cards,
+  playerCounters,
   isSessionFinished,
   onChanged,
 }: {
   sessionId: string
   playerId: string
   cards: ControllerCard[]
+  playerCounters?: Record<string, number> | null
   isSessionFinished: boolean
   onChanged: () => Promise<void>
 }) {
@@ -33,6 +38,8 @@ export default function JudgePlayerCardTools({
     putSelectedCardOnBottom,
     clearSelectedCardSummoningSickness,
     adjustSelectedCardCounters,
+    adjustSelectedCardBag,
+    adjustPlayerCounterBag,
     pumpSelectedCard,
     tokenCards,
     createTokenForPlayer,
@@ -42,6 +49,12 @@ export default function JudgePlayerCardTools({
     cards,
     onChanged,
   })
+
+  // Bag counters present on the selected battlefield card (non-+1/+1 kinds).
+  const cardBagKinds = Object.entries(selectedCard?.counters ?? {})
+    .filter(([, n]) => n > 0)
+    .map(([kind]) => kind)
+    .sort()
 
   return (
     <div className="mt-3 rounded-lg border border-white/10 bg-slate-950/55 p-3">
@@ -175,6 +188,39 @@ export default function JudgePlayerCardTools({
                     </button>
                   </div>
 
+                  {/* Other counter kinds (charge/quest/…) already on the card. */}
+                  {cardBagKinds.map((kind) => (
+                    <div key={kind} className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={isSessionFinished || isPending}
+                        onClick={() => adjustSelectedCardBag(kind, -1)}
+                        className="rounded-md border border-amber-300/20 bg-amber-950/30 px-3 py-2 text-sm font-bold text-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        −
+                      </button>
+                      <span className="text-center text-xs font-semibold text-amber-200">
+                        {kind} counters: {selectedCard.counters?.[kind] ?? 0}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={isSessionFinished || isPending}
+                        onClick={() => adjustSelectedCardBag(kind, 1)}
+                        className="rounded-md border border-amber-300/20 bg-amber-950/30 px-3 py-2 text-sm font-bold text-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        +
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    disabled={isSessionFinished || isPending}
+                    onClick={() => adjustSelectedCardBag('charge', 1)}
+                    className="w-full rounded-md border border-amber-300/20 bg-amber-950/20 px-3 py-1.5 text-xs font-semibold text-amber-200 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    + Add charge counter
+                  </button>
+
                   <div className="grid grid-cols-[auto_1fr] items-center gap-2">
                     <span className="text-xs font-semibold text-sky-200">Pump (EOT)</span>
                     <div className="grid grid-cols-2 gap-2">
@@ -204,6 +250,38 @@ export default function JudgePlayerCardTools({
       ) : (
         <p className="text-xs text-slate-500">No visible cards for this player.</p>
       )}
+
+      <div className="mt-3 border-t border-white/10 pt-3">
+        <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-lime-300">Player Counters</h4>
+        <div className="grid gap-2">
+          {PLAYER_COUNTER_KINDS.map((kind) => {
+            const value = playerCounters?.[kind] ?? 0
+            return (
+              <div key={kind} className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
+                <button
+                  type="button"
+                  disabled={isSessionFinished || isPending || value <= 0}
+                  onClick={() => adjustPlayerCounterBag(kind, -1)}
+                  className="rounded-md border border-lime-300/20 bg-lime-950/30 px-3 py-2 text-sm font-bold text-lime-100 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  −
+                </button>
+                <span className="text-center text-xs font-semibold text-lime-200">
+                  {kind}: {value}{kind === 'poison' && value >= 10 ? ' (lethal)' : ''}
+                </span>
+                <button
+                  type="button"
+                  disabled={isSessionFinished || isPending}
+                  onClick={() => adjustPlayerCounterBag(kind, 1)}
+                  className="rounded-md border border-lime-300/20 bg-lime-950/30 px-3 py-2 text-sm font-bold text-lime-100 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  +
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
       {tokenCards.length > 0 ? (
         <div className="mt-3 border-t border-white/10 pt-3">

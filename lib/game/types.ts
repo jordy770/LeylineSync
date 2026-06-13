@@ -22,6 +22,12 @@ export type GameSessionPlayer = {
   username?: string | null
   seat_number: number
   life_total: number
+  // Player counter bag (poison/energy/experience). Empty when the player has none.
+  counters?: Record<string, number> | null
+  // Opening-hand state (mig 221/222): times mulliganed + whether the hand was
+  // kept. opening_hand_kept is true for sessions started before the feature.
+  mulligans?: number
+  opening_hand_kept?: boolean
   joined_at?: string
 }
 
@@ -84,6 +90,8 @@ export type GameTurnState = {
   turn_number: number
   phase: TurnPhase
   step: TurnStep
+  // The crown (mig 262/287): null when nobody is the monarch.
+  monarch_player_id?: string | null
   created_at?: string
   updated_at?: string
 }
@@ -172,6 +180,9 @@ export type PendingDecision = {
   options: unknown
   min_choices: number
   max_choices: number
+  // Decision-specific context (mig 286): divide_damage carries
+  // {amount, max_targets}; pay_x_mana_damage carries {color}.
+  params: Record<string, unknown> | null
 }
 
 // One revealed card in a scry / surveil decision's options array.
@@ -282,6 +293,10 @@ export type BoardCard = {
   controller_player_id?: string | null
   is_face_down?: boolean | null
   plus_one_counters?: number
+  // Non-+1/+1 counter bag (charge/quest/…). Empty when none.
+  counters?: Record<string, number> | null
+  // Land animation (mig 277): an active 'animated' row makes this attackable.
+  animated?: boolean
   pump_power?: number
   pump_toughness?: number
   // Colours this card has protection from (white|blue|black|red|green).
@@ -289,6 +304,8 @@ export type BoardCard = {
 }
 
 export type ControllerCard = {
+  // Land animation (mig 277): set when an active animated row exists.
+  animated?: boolean
   id: string
   card_id: string
   name: string
@@ -301,6 +318,7 @@ export type ControllerCard = {
   static_effects_suppressed?: boolean
   entered_battlefield_turn_number?: number | null
   plus_one_counters?: number
+  counters?: Record<string, number> | null
   pump_power?: number
   pump_toughness?: number
   is_commander?: boolean
@@ -322,6 +340,7 @@ export type GameCardInstanceRow = {
   static_effects_suppressed?: boolean
   entered_battlefield_turn_number?: number | null
   plus_one_counters?: number
+  counters?: Record<string, number> | null
 }
 
 export type SupabaseErrorLike = {

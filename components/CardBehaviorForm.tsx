@@ -7,16 +7,24 @@ import {
   BUILDER_SPELL_EFFECT_TYPES,
   BUILDER_TRIGGER_EVENTS,
   KEYWORD_LABELS,
+  BUILDER_STATIC_SCOPES,
+  BUILDER_TRIGGER_CONTROLLERS,
+  isWatcherEvent,
+  type BuilderTriggerController,
   defaultActivatedAbility,
   defaultEffect,
+  defaultKeywordGrant,
   defaultSpellEffect,
+  defaultStaticBuff,
   defaultTrigger,
   type BuilderActivatedAbility,
   type BuilderEffect,
   type BuilderForm,
   type BuilderKeyword,
+  type BuilderKeywordGrant,
   type BuilderSpellEffect,
   type BuilderSpellEffectType,
+  type BuilderStaticBuff,
   type BuilderTrigger,
   type BuilderTriggerEvent,
 } from '@/lib/game/card-behavior-builder'
@@ -56,6 +64,22 @@ export default function CardBehaviorForm({
     })
   }
 
+  const updateStaticBuff = (index: number, next: BuilderStaticBuff) => {
+    onChange({ ...value, staticBuffs: value.staticBuffs.map((b, i) => (i === index ? next : b)) })
+  }
+
+  const removeStaticBuff = (index: number) => {
+    onChange({ ...value, staticBuffs: value.staticBuffs.filter((_, i) => i !== index) })
+  }
+
+  const updateKeywordGrant = (index: number, next: BuilderKeywordGrant) => {
+    onChange({ ...value, keywordGrants: value.keywordGrants.map((g, i) => (i === index ? next : g)) })
+  }
+
+  const removeKeywordGrant = (index: number) => {
+    onChange({ ...value, keywordGrants: value.keywordGrants.filter((_, i) => i !== index) })
+  }
+
   const updateTrigger = (index: number, next: BuilderTrigger) => {
     onChange({ ...value, triggers: value.triggers.map((t, i) => (i === index ? next : t)) })
   }
@@ -73,14 +97,6 @@ export default function CardBehaviorForm({
 
   const removeAbility = (index: number) => {
     onChange({ ...value, activatedAbilities: value.activatedAbilities.filter((_, i) => i !== index) })
-  }
-
-  const updateSpellAction = (index: number, next: BuilderSpellEffect) => {
-    onChange({ ...value, spellEffect: value.spellEffect.map((a, i) => (i === index ? next : a)) })
-  }
-
-  const removeSpellAction = (index: number) => {
-    onChange({ ...value, spellEffect: value.spellEffect.filter((_, i) => i !== index) })
   }
 
   return (
@@ -108,6 +124,72 @@ export default function CardBehaviorForm({
             )
           })}
         </div>
+      </section>
+
+      {/* Static buffs / anthems */}
+      <section className="grid gap-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Static buffs <span className="font-normal normal-case text-slate-500">(anthems / lords)</span>
+          </h3>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange({ ...value, staticBuffs: [...value.staticBuffs, defaultStaticBuff()] })}
+            className="rounded border border-slate-700 px-2 py-1 text-xs font-semibold text-slate-200 disabled:opacity-50"
+          >
+            + Add static buff
+          </button>
+        </div>
+
+        {value.staticBuffs.length === 0 ? (
+          <p className="text-xs text-slate-500">
+            No static buffs. Use these for &quot;[Other] [Type] creatures you control get +P/+T&quot;.
+          </p>
+        ) : (
+          value.staticBuffs.map((buff, index) => (
+            <StaticBuffEditor
+              key={index}
+              buff={buff}
+              disabled={disabled}
+              onChange={(next) => updateStaticBuff(index, next)}
+              onRemove={() => removeStaticBuff(index)}
+            />
+          ))
+        )}
+      </section>
+
+      {/* Typed keyword grants */}
+      <section className="grid gap-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Keyword grants <span className="font-normal normal-case text-slate-500">(&quot;Zombies you control have flying&quot;)</span>
+          </h3>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange({ ...value, keywordGrants: [...value.keywordGrants, defaultKeywordGrant()] })}
+            className="rounded border border-slate-700 px-2 py-1 text-xs font-semibold text-slate-200 disabled:opacity-50"
+          >
+            + Add keyword grant
+          </button>
+        </div>
+
+        {value.keywordGrants.length === 0 ? (
+          <p className="text-xs text-slate-500">
+            No keyword grants. Use these for &quot;[Type] creatures you control have &lt;keyword&gt;&quot;.
+          </p>
+        ) : (
+          value.keywordGrants.map((grant, index) => (
+            <KeywordGrantEditor
+              key={index}
+              grant={grant}
+              disabled={disabled}
+              onChange={(next) => updateKeywordGrant(index, next)}
+              onRemove={() => removeKeywordGrant(index)}
+            />
+          ))
+        )}
       </section>
 
       {/* Triggered abilities */}
@@ -201,42 +283,312 @@ export default function CardBehaviorForm({
           </button>
         </div>
 
-        {value.spellEffect.length === 0 ? (
-          <p className="text-xs text-slate-500">No spell effect. Actions resolve in order (e.g. Scry 1, then Draw 1).</p>
-        ) : (
-          value.spellEffect.map((action, index) => (
-            <div key={index} className="flex flex-wrap items-center gap-2">
-              <select
-                value={effectKeyOf(action)}
-                disabled={disabled}
-                onChange={(event) =>
-                  updateSpellAction(index, defaultSpellEffect(event.target.value as BuilderSpellEffectType))
-                }
-                className={inputClass}
-              >
-                {BUILDER_SPELL_EFFECT_TYPES.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <EffectFields
-                effect={action}
-                disabled={disabled}
-                onChange={(next) => updateSpellAction(index, next as BuilderSpellEffect)}
-              />
-              <button
-                type="button"
-                disabled={disabled}
-                onClick={() => removeSpellAction(index)}
-                className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
-              >
-                ✕
-              </button>
-            </div>
-          ))
-        )}
+        <SpellActionList
+          actions={value.spellEffect}
+          disabled={disabled}
+          emptyText="No spell effect. Actions resolve in order (e.g. Scry 1, then Draw 1)."
+          onChange={(next) => onChange({ ...value, spellEffect: next })}
+        />
       </section>
+
+      {/* Flashback (cast the spell effect above from the graveyard, then exile) */}
+      <section className="grid gap-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          Flashback <span className="font-normal normal-case text-slate-500">(cast from graveyard, then exile)</span>
+        </h3>
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="text"
+            value={value.flashback}
+            disabled={disabled}
+            onChange={(event) => onChange({ ...value, flashback: event.target.value })}
+            placeholder="e.g. {7}{B}{B}{B}"
+            className={`${inputClass} flex-1`}
+          />
+          <label className="flex items-center gap-1.5 text-xs text-slate-300">
+            + pay
+            <input
+              type="number"
+              min={0}
+              max={99}
+              value={value.flashbackLife}
+              disabled={disabled}
+              title="Additional life payment (e.g. Deep Analysis pays 3 life)"
+              onChange={(event) => onChange({ ...value, flashbackLife: Math.max(0, Number(event.target.value)) })}
+              className={`${inputClass} w-16`}
+            />
+            life
+          </label>
+        </div>
+        <p className="text-xs text-slate-500">
+          Leave blank for no flashback. The cost re-casts the spell effect above from your graveyard.
+          Add a life payment for costs like Deep Analysis ({'{1}{U}'}, pay 3 life).
+        </p>
+      </section>
+
+      {/* Flashback effect — replaces the spell effect when cast via flashback */}
+      <section className="grid gap-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Flashback effect <span className="font-normal normal-case text-slate-500">(replaces the effect above on flashback)</span>
+          </h3>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange({ ...value, flashbackEffect: [...value.flashbackEffect, defaultSpellEffect('scry')] })}
+            className="rounded border border-slate-700 px-2 py-1 text-xs font-semibold text-slate-200 disabled:opacity-50"
+          >
+            + Add flashback action
+          </button>
+        </div>
+        <SpellActionList
+          actions={value.flashbackEffect}
+          disabled={disabled}
+          emptyText="Empty = the flashback cast runs the normal spell effect. Add actions for cards that do more/different from the graveyard (e.g. create ten tokens instead of five)."
+          onChange={(next) => onChange({ ...value, flashbackEffect: next })}
+        />
+      </section>
+    </div>
+  )
+}
+
+// A reusable ordered list of untargeted spell actions (a dropdown + the action's
+// fields + remove), shared by the Spell effect and Flashback effect sections.
+// Move an array item to a new index (no-op if out of range). Used by the
+// reorderable effect/action lists.
+function moveItem<T>(arr: T[], from: number, to: number): T[] {
+  if (to < 0 || to >= arr.length) return arr
+  const next = arr.slice()
+  const [item] = next.splice(from, 1)
+  next.splice(to, 0, item)
+  return next
+}
+
+// Up/down controls for reordering a list item.
+function ReorderButtons({ index, count, onMove, disabled }: {
+  index: number
+  count: number
+  onMove: (to: number) => void
+  disabled: boolean
+}) {
+  const btn = 'px-1 text-xs leading-none text-slate-500 hover:text-slate-200 disabled:opacity-30'
+  return (
+    <span className="flex items-center">
+      <button type="button" title="Move up" disabled={disabled || index === 0} onClick={() => onMove(index - 1)} className={btn}>↑</button>
+      <button type="button" title="Move down" disabled={disabled || index === count - 1} onClick={() => onMove(index + 1)} className={btn}>↓</button>
+    </span>
+  )
+}
+
+function SpellActionList({
+  actions,
+  onChange,
+  disabled,
+  emptyText,
+}: {
+  actions: BuilderSpellEffect[]
+  onChange: (next: BuilderSpellEffect[]) => void
+  disabled: boolean
+  emptyText: string
+}) {
+  if (actions.length === 0) {
+    return <p className="text-xs text-slate-500">{emptyText}</p>
+  }
+  return (
+    <>
+      {actions.map((action, index) => (
+        <div key={index} className="flex flex-wrap items-center gap-2">
+          <select
+            value={effectKeyOf(action)}
+            disabled={disabled}
+            onChange={(event) =>
+              onChange(actions.map((a, i) => (i === index ? defaultSpellEffect(event.target.value as BuilderSpellEffectType) : a)))
+            }
+            className={inputClass}
+          >
+            {BUILDER_SPELL_EFFECT_TYPES.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <EffectFields
+            effect={action}
+            disabled={disabled}
+            onChange={(next) => onChange(actions.map((a, i) => (i === index ? (next as BuilderSpellEffect) : a)))}
+          />
+          <span className="ml-auto flex items-center gap-1.5">
+            <ReorderButtons index={index} count={actions.length} disabled={disabled} onMove={(to) => onChange(moveItem(actions, index, to))} />
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => onChange(actions.filter((_, i) => i !== index))}
+              className="text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+            >
+              ✕
+            </button>
+          </span>
+        </div>
+      ))}
+    </>
+  )
+}
+
+function StaticBuffEditor({
+  buff,
+  onChange,
+  onRemove,
+  disabled,
+}: {
+  buff: BuilderStaticBuff
+  onChange: (next: BuilderStaticBuff) => void
+  onRemove: () => void
+  disabled: boolean
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 p-3 text-xs text-slate-300">
+      <input
+        type="number"
+        min={-99}
+        max={99}
+        value={buff.power}
+        disabled={disabled}
+        title="Power"
+        onChange={(event) => onChange({ ...buff, power: Number(event.target.value) })}
+        className={`${inputClass} w-16`}
+      />
+      <span>/</span>
+      <input
+        type="number"
+        min={-99}
+        max={99}
+        value={buff.toughness}
+        disabled={disabled}
+        title="Toughness"
+        onChange={(event) => onChange({ ...buff, toughness: Number(event.target.value) })}
+        className={`${inputClass} w-16`}
+      />
+      <span>to</span>
+      <input
+        type="text"
+        value={buff.creatureType}
+        disabled={disabled}
+        placeholder="any type"
+        title="Creature type (blank = all creatures)"
+        onChange={(event) => onChange({ ...buff, creatureType: event.target.value })}
+        className={`${inputClass} w-32`}
+      />
+      <span>creatures</span>
+      <select
+        value={buff.scope}
+        disabled={disabled}
+        title="Which creatures this affects"
+        onChange={(event) => onChange({ ...buff, scope: event.target.value as BuilderStaticBuff['scope'] })}
+        className={inputClass}
+      >
+        {BUILDER_STATIC_SCOPES.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <label className="flex items-center gap-1.5" title="Exclude this permanent (the &quot;Other&quot; wording)">
+        <input
+          type="checkbox"
+          checked={buff.excludeSource}
+          disabled={disabled}
+          onChange={(event) => onChange({ ...buff, excludeSource: event.target.checked })}
+        />
+        Other (not itself)
+      </label>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={onRemove}
+        className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+      >
+        ✕
+      </button>
+    </div>
+  )
+}
+
+function KeywordGrantEditor({
+  grant,
+  onChange,
+  onRemove,
+  disabled,
+}: {
+  grant: BuilderKeywordGrant
+  onChange: (next: BuilderKeywordGrant) => void
+  onRemove: () => void
+  disabled: boolean
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 p-3 text-xs text-slate-300">
+      <input
+        type="text"
+        value={grant.creatureType}
+        disabled={disabled}
+        placeholder="any type"
+        title="Creature type (blank = all creatures)"
+        onChange={(event) => onChange({ ...grant, creatureType: event.target.value })}
+        className={`${inputClass} w-32`}
+      />
+      <span>creatures</span>
+      <select
+        value={grant.scope}
+        disabled={disabled}
+        title="Which creatures this affects"
+        onChange={(event) => onChange({ ...grant, scope: event.target.value as BuilderKeywordGrant['scope'] })}
+        className={inputClass}
+      >
+        {BUILDER_STATIC_SCOPES.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <span>have</span>
+      <select
+        value={grant.keyword}
+        disabled={disabled}
+        title="Keyword"
+        onChange={(event) => onChange({ ...grant, keyword: event.target.value as BuilderKeyword })}
+        className={inputClass}
+      >
+        {BUILDER_KEYWORDS.map((keyword) => (
+          <option key={keyword} value={keyword}>
+            {KEYWORD_LABELS[keyword]}
+          </option>
+        ))}
+      </select>
+      <label className="flex items-center gap-1.5" title="Exclude this permanent (the &quot;Other&quot; wording)">
+        <input
+          type="checkbox"
+          checked={grant.excludeSource}
+          disabled={disabled}
+          onChange={(event) => onChange({ ...grant, excludeSource: event.target.checked })}
+        />
+        Other (not itself)
+      </label>
+      <label className="flex items-center gap-1.5" title="Only token creatures (&quot;Zombie tokens you control have …&quot;)">
+        <input
+          type="checkbox"
+          checked={grant.tokenOnly}
+          disabled={disabled}
+          onChange={(event) => onChange({ ...grant, tokenOnly: event.target.checked })}
+        />
+        Tokens only
+      </label>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={onRemove}
+        className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+      >
+        ✕
+      </button>
     </div>
   )
 }
@@ -281,6 +633,53 @@ function TriggerEditor({
         </button>
       </div>
 
+      {/* Watcher filter — which OTHER creature this fires on (Champion of the Perished). */}
+      {isWatcherEvent(trigger.event) && (
+        <div className="flex flex-wrap items-center gap-2 rounded border border-slate-800 bg-slate-900/40 p-2 text-xs text-slate-300">
+          <span>Whenever a</span>
+          <input
+            type="text"
+            value={trigger.filter.typeLine}
+            disabled={disabled}
+            placeholder="any type"
+            title="Creature type the trigger watches (blank = any creature)"
+            onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, typeLine: event.target.value } })}
+            className={`${inputClass} w-28`}
+          />
+          <select
+            value={trigger.filter.controller}
+            disabled={disabled}
+            title="Whose creatures this watches"
+            onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, controller: event.target.value as BuilderTriggerController } })}
+            className={inputClass}
+          >
+            {BUILDER_TRIGGER_CONTROLLERS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <label className="flex items-center gap-1.5" title="Exclude this creature (the &quot;another&quot; wording)">
+            <input
+              type="checkbox"
+              checked={trigger.filter.excludeSelf}
+              disabled={disabled}
+              onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, excludeSelf: event.target.checked } })}
+            />
+            another (not this)
+          </label>
+          <label className="flex items-center gap-1.5" title="Ignore token creatures (Midnight Reaper, Open the Graves)">
+            <input
+              type="checkbox"
+              checked={trigger.filter.nontoken}
+              disabled={disabled}
+              onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, nontoken: event.target.checked } })}
+            />
+            nontoken only
+          </label>
+        </div>
+      )}
+
       <div className="grid gap-2 border-l-2 border-slate-800 pl-3">
         {trigger.effects.map((effect, index) => (
           <EffectEditor
@@ -316,12 +715,14 @@ function EffectEditor({
   onChange,
   onRemove,
   disabled,
+  reorder,
 }: {
   effect: FlatEffect
   context: EffectContext
   onChange: (next: FlatEffect) => void
   onRemove: () => void
   disabled: boolean
+  reorder?: { index: number; count: number; onMove: (to: number) => void }
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -340,14 +741,17 @@ function EffectEditor({
 
       <EffectFields effect={effect} disabled={disabled} onChange={onChange} />
 
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={onRemove}
-        className="ml-auto text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
-      >
-        ✕
-      </button>
+      <span className="ml-auto flex items-center gap-1.5">
+        {reorder ? <ReorderButtons index={reorder.index} count={reorder.count} disabled={disabled} onMove={reorder.onMove} /> : null}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={onRemove}
+          className="text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+        >
+          ✕
+        </button>
+      </span>
     </div>
   )
 }
@@ -502,6 +906,9 @@ function EffectListControl({
   const types = effectsForContext(field.itemContext)
   return (
     <div className="grid w-full gap-2 rounded border border-slate-800 bg-slate-900/40 p-2">
+      {field.label ? (
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{field.label}</p>
+      ) : null}
       {value.length === 0 ? (
         <p className="text-xs text-slate-500">No effects.</p>
       ) : (
@@ -513,6 +920,7 @@ function EffectListControl({
             disabled={disabled}
             onChange={(next) => onChange(value.map((e, i) => (i === index ? next : e)))}
             onRemove={() => onChange(value.filter((_, i) => i !== index))}
+            reorder={{ index, count: value.length, onMove: (to) => onChange(moveItem(value, index, to)) }}
           />
         ))
       )}
@@ -568,15 +976,73 @@ function ActivatedAbilityEditor({
         </label>
 
         {ability.kind === 'effect' ? (
-          <label className="flex items-center gap-1.5">
+          <>
+            <label className="flex items-center gap-1.5">
+              <input
+                type="checkbox"
+                checked={ability.sacSelf}
+                disabled={disabled}
+                onChange={(event) => onChange({ ...ability, sacSelf: event.target.checked })}
+              />
+              Sacrifice this
+            </label>
+            <label className="flex items-center gap-1.5" title="Spark Reaper / Vampiric Rites: sacrifice a creature you control as a cost">
+              <input
+                type="checkbox"
+                checked={ability.sacCreature}
+                disabled={disabled}
+                onChange={(event) => onChange({ ...ability, sacCreature: event.target.checked })}
+              />
+              Sacrifice a creature
+            </label>
+            <label className="flex items-center gap-1.5" title="Cemetery Reaper: exile a creature card from any graveyard as a cost">
+              <input
+                type="checkbox"
+                checked={ability.exileFromGraveyard}
+                disabled={disabled}
+                onChange={(event) => onChange({ ...ability, exileFromGraveyard: event.target.checked })}
+              />
+              Exile a creature from a graveyard
+            </label>
+            <label className="flex items-center gap-1.5">
+              Mana cost
+              <input
+                type="text"
+                value={ability.mana}
+                disabled={disabled}
+                placeholder="e.g. {2}{R}"
+                onChange={(event) => onChange({ ...ability, mana: event.target.value })}
+                className={`${inputClass} w-28`}
+              />
+            </label>
+          </>
+        ) : null}
+
+        {ability.kind === 'mana' ? (
+          <label className="flex items-center gap-1.5" title="An activation mana cost, e.g. Dimir Signet pays {1}">
             Mana cost
             <input
               type="text"
               value={ability.mana}
               disabled={disabled}
-              placeholder="e.g. {2}{R}"
+              placeholder="e.g. {1}"
               onChange={(event) => onChange({ ...ability, mana: event.target.value })}
-              className={`${inputClass} w-28`}
+              className={`${inputClass} w-24`}
+            />
+          </label>
+        ) : null}
+
+        {ability.kind === 'mana' ? (
+          <label className="flex items-center gap-1.5" title="An additional 'Pay N life' cost, e.g. Talisman of Dominance pays 1 life">
+            Pay life
+            <input
+              type="number"
+              min={0}
+              max={20}
+              value={ability.payLife}
+              disabled={disabled}
+              onChange={(event) => onChange({ ...ability, payLife: Math.max(0, Number(event.target.value)) })}
+              className={`${inputClass} w-16`}
             />
           </label>
         ) : null}
@@ -584,29 +1050,55 @@ function ActivatedAbilityEditor({
 
       {/* Effect row */}
       {ability.kind === 'mana' ? (
-        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
-          <span>Add</span>
-          <input
-            type="number"
-            min={1}
-            max={9}
-            value={ability.amount}
+        <div className="grid gap-2 text-xs text-slate-300">
+          {ability.colors.map((out, ci) => (
+            <div key={ci} className="flex flex-wrap items-center gap-2">
+              <span>Add</span>
+              <input
+                type="number"
+                min={1}
+                max={9}
+                value={out.amount}
+                disabled={disabled}
+                onChange={(event) =>
+                  onChange({ ...ability, colors: ability.colors.map((o, i) => (i === ci ? { ...o, amount: Math.max(1, Number(event.target.value)) } : o)) })
+                }
+                className={`${inputClass} w-16`}
+              />
+              <select
+                value={out.color}
+                disabled={disabled}
+                onChange={(event) =>
+                  onChange({ ...ability, colors: ability.colors.map((o, i) => (i === ci ? { ...o, color: event.target.value as ManaColor } : o)) })
+                }
+                className={inputClass}
+              >
+                {BUILDER_MANA_COLORS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {ability.colors.length > 1 && (
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onChange({ ...ability, colors: ability.colors.filter((_, i) => i !== ci) })}
+                  className="text-xs text-slate-500 hover:text-red-300 disabled:opacity-50"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
             disabled={disabled}
-            onChange={(event) => onChange({ ...ability, amount: Math.max(1, Number(event.target.value)) })}
-            className={`${inputClass} w-16`}
-          />
-          <select
-            value={ability.color}
-            disabled={disabled}
-            onChange={(event) => onChange({ ...ability, color: event.target.value as ManaColor })}
-            className={inputClass}
+            onClick={() => onChange({ ...ability, colors: [...ability.colors, { color: 'C', amount: 1 }] })}
+            className="justify-self-start rounded border border-slate-700 px-2 py-1 text-xs text-slate-300 disabled:opacity-50"
           >
-            {BUILDER_MANA_COLORS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            + Add colour
+          </button>
         </div>
       ) : (
         // Generic effect: a registry effect editor (type dropdown + its fields),

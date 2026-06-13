@@ -57,7 +57,21 @@ async function main() {
     for (const file of files) {
       const rel = path.relative(root, file)
       process.stdout.write(`Applying ${rel} ... `)
-      await client.query(readFileSync(file, 'utf8'))
+      // STRICT UTF-8 check before applying. Node's 'utf8' read silently
+      // replaces invalid bytes (so a Windows-1252 em-dash would apply fine
+      // locally), but `supabase db push` sends raw bytes and hosted Postgres
+      // rejects them (SQLSTATE 22021). Fail HERE, not at prod push time.
+      const raw = readFileSync(file)
+      let sql
+      try {
+        sql = new TextDecoder('utf-8', { fatal: true }).decode(raw)
+      } catch {
+        throw new Error(
+          `${rel} is not valid UTF-8 (probably written with the Windows ` +
+          `locale encoding — re-save it as UTF-8). Hosted db push would reject it.`,
+        )
+      }
+      await client.query(sql)
       console.log('ok')
     }
   } finally {

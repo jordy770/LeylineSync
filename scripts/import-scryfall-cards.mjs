@@ -236,7 +236,8 @@ function isExtraCardObject(card) {
     typeLine === 'card' ||
     typeLine.includes('token') ||
     typeLine.includes('emblem') ||
-    typeLine.includes('plane') ||
+    // Planechase "Plane —" cards — word-boundary so we DON'T match "Planeswalker".
+    /\bplane\b/.test(typeLine) ||
     typeLine.includes('phenomenon') ||
     typeLine.includes('scheme') ||
     typeLine.includes('vanguard') ||

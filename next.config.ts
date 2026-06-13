@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
     // post-login RSC refresh. The exact tailnet host + a wildcard for other devices.
     "desktop-rop8tsg.tailb5e0d.ts.net",
     "*.ts.net",
+    // Same story for the Cloudflare Tunnel public hostname: the browser origin
+    // becomes app.dweemo.nl, which Next blocks unless allowed — breaking the
+    // post-login RSC refresh.
+    "app.dweemo.nl",
+    "*.dweemo.nl",
   ],
   images: {
     remotePatterns: [

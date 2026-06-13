@@ -15,6 +15,7 @@ import {
   getPendingDecisions,
   getPlayerManaPool,
   getProtectionColors,
+  getStatusEffects,
   getStackItems,
   getTurnState,
   normalizeManaPool,
@@ -38,6 +39,7 @@ export function useControllerGameState(sessionId: string) {
   const [boardCards, setBoardCards] = useState<BoardCard[]>([])
   const [players, setPlayers] = useState<GameSessionPlayer[]>([])
   const [turnState, setTurnState] = useState<GameTurnState | null>(null)
+  const [attackTaxes, setAttackTaxes] = useState<{ playerId: string; mana: number; life: number }[]>([])
   const [combatActionState, setCombatActionState] = useState<CombatActionState | null>(null)
   const [combatAssignments, setCombatAssignments] = useState<CombatAssignment[]>([])
   const [stackItems, setStackItems] = useState<StackItem[]>([])
@@ -74,6 +76,7 @@ export function useControllerGameState(sessionId: string) {
         nextManaPool,
         pumpTotals,
         protectionColors,
+        statusEffects,
       ] = await Promise.all([
         getGameSession(supabase, sessionId),
         getControllerCards(supabase, sessionId, currentPlayerId),
@@ -87,6 +90,7 @@ export function useControllerGameState(sessionId: string) {
         getPlayerManaPool(supabase, sessionId, currentPlayerId),
         getActivePumpTotals(supabase, sessionId),
         getProtectionColors(supabase, sessionId),
+        getStatusEffects(supabase, sessionId),
       ])
 
       // Fold active until-end-of-turn pumps onto each card so effective P/T shows
@@ -99,10 +103,12 @@ export function useControllerGameState(sessionId: string) {
       setPlayerId(currentPlayerId)
       setCards(controllerResult.cards.map(withPump))
       setBoardCards(
-        allBoardCards.map(withPump).map((card) =>
-          protectionColors[card.id] ? { ...card, protection_colors: protectionColors[card.id] } : card,
-        ),
+        allBoardCards.map(withPump).map((card) => ({
+          ...(protectionColors[card.id] ? { ...card, protection_colors: protectionColors[card.id] } : card),
+          ...(statusEffects.animatedIds.has(card.id) ? { animated: true } : {}),
+        })),
       )
+      setAttackTaxes(statusEffects.taxes)
       setPlayers(sessionPlayers)
       setTurnState(nextTurnState)
       setCombatActionState(nextCombatActionState)
@@ -163,6 +169,7 @@ export function useControllerGameState(sessionId: string) {
     boardCards,
     players,
     turnState,
+    attackTaxes,
     combatActionState,
     combatAssignments,
     stackItems,

@@ -140,6 +140,14 @@ const CASES: Case[] = [
   { name: 'activated deal_damage bare', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }], effects: [{ type: 'deal_damage', amount: 1, target_type: ['creature', 'player'] }] }] }, form: true },
   { name: 'activated mana', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }], effects: [{ type: 'add_mana', color: 'G', amount: 1 }] }] }, form: true },
   { name: 'activated commander-identity mana (Command Tower)', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }], effects: [{ type: 'add_mana', color: 'commander', amount: 1 }] }] }, form: true },
+  // Spark Reaper: a sacrifice-a-creature activated cost (single effect → form).
+  { name: 'spark reaper (sacrifice-a-creature cost) → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}{B}' }, { type: 'sacrifice_creature' }], effects: [{ type: 'draw', amount: 1 }] }] }, form: true },
+  // Dimir Signet: a mana ability with a {1} cost + two produced colours.
+  { name: 'Dimir Signet (mana cost + multi-colour) → form', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }, { type: 'add_mana', color: 'B', amount: 1 }] }] }, form: true },
+  // Talisman of Dominance — a mana ability with a "Pay N life" cost.
+  { name: 'Talisman pay-life mana ability → form', script: { schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'pay_life', amount: 1 }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }] }] }, form: true },
+  // pay_life on a NON-mana (effect) ability isn't modelled → stays in JSON.
+  { name: 'pay_life on an effect ability → json', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }, { type: 'pay_life', amount: 1 }], effects: [{ type: 'draw', amount: 1 }] }] }, form: false },
 
   // V1 / top-level `actions` key → JSON (not in known top-level keys)
   { name: 'v1 actions pump', script: { actions: [{ type: 'pump', power: 3, toughness: 3, target_type: 'creature' }] }, form: false },
@@ -154,6 +162,91 @@ const CASES: Case[] = [
   // Optional fields keep defaults → still Form.
   { name: 'trigger lose_life no recipient → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'lose_life', amount: 2 }] }] }, form: true },
   { name: 'trigger create_token no count → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'create_token', token: 'Goblin Token' }] }] }, form: true },
+
+  // Spell create_token with tapped (Army of the Damned) — form-representable.
+  { name: 'spell create_token tapped → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] } }, form: true },
+  // Flashback (top-level) round-trips through the form.
+  { name: 'flashback spell → form', script: { schema_version: 2, flashback: '{7}{B}{B}{B}', spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] } }, form: true },
+  // A non-string flashback is not form-representable.
+  { name: 'flashback non-string → json', script: { schema_version: 2, flashback: 7, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
+  // Flashback with an extra "pay N life" cost (Deep Analysis) round-trips.
+  { name: 'flashback + flashback_life → form', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 3, spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] } }, form: true },
+  // flashback_life must be a positive integer.
+  { name: 'flashback_life zero → json', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 0, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
+  { name: 'flashback_life non-integer → json', script: { schema_version: 2, flashback: '{1}{U}', flashback_life: 1.5, spell_effect: { actions: [{ type: 'draw', amount: 1 }] } }, form: false },
+  // Cemetery Reaper: an activated ability with a graveyard-exile cost + create_token.
+  { name: 'activated exile-from-graveyard + create_token → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}{B}' }, { type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'creature' }], effects: [{ type: 'create_token', token: 'Zombie Token', count: 1 }] }] }, form: true },
+  // Wayfarer's Bauble: an activated sacrifice tutor with the search_library `tapped` flag.
+  { name: 'activated search_library tapped → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }, { type: 'sacrifice_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'search_library', count: 1, to: 'battlefield', tapped: true, filter: { type_line: 'Basic Land' } }] }] }, form: true },
+  // Flame Mage: targeted deal_damage from a TRIGGER (deal_damage_target now in trigger context).
+  { name: 'trigger targeted deal_damage → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'deal_damage', amount: 2, target_type: 'creature', target_controller: 'opponent' }] }] }, form: true },
+  // A non-creature graveyard-exile filter isn't form-representable (the checkbox is creature-only).
+  { name: 'activated exile-from-graveyard non-creature filter → json', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'land' }], effects: [{ type: 'draw', amount: 1 }] }] }, form: false },
+  // An alternate flashback effect (do more/different from the graveyard) round-trips.
+  { name: 'flashback_effect alternate program → form', script: { schema_version: 2, flashback: '{2}', spell_effect: { actions: [{ type: 'draw', amount: 1 }] }, flashback_effect: { actions: [{ type: 'draw', amount: 3 }] } }, form: true },
+
+  // Static anthems / lords (pump on affected:'controller') — form-representable.
+  { name: 'static other-Zombie lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] }, form: true },
+  { name: 'static inclusive typed lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie' } }] }, form: true },
+  { name: 'static all-creatures anthem (no type) → form', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1 } }] }, form: true },
+  { name: 'static all-scope sliver lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver' } }] }, form: true },
+  { name: 'static all-scope other-sliver lord → form', script: { continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver', exclude_source: true } }] }, form: true },
+  { name: 'static lord + keyword together → form', script: { continuous_effects: [{ type: 'flying', affected: 'source', source_zone_required: 'battlefield' }, { type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] }, form: true },
+  // Typed keyword grants (Eternal Skylord / Vizier): keyword + affected controller/all + payload.creature_type.
+  { name: 'typed keyword grant (Skylord flying) → form', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie' } }] }, form: true },
+  { name: 'typed keyword grant deathtouch → form', script: { schema_version: 2, continuous_effects: [{ type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Zombie' } }] }, form: true },
+  { name: 'keyword grant all-scope no type → form', script: { schema_version: 2, continuous_effects: [{ type: 'trample', affected: 'all' }] }, form: true },
+  { name: 'keyword grant + source keyword + lord together → form', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'source', source_zone_required: 'battlefield' }, { type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Zombie' } }, { type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie' } }] }, form: true },
+  // Keyword-grant payload filters (mig 200): exclude_source ("other") + token_only.
+  { name: 'keyword grant exclude_source (Vela intimidate) → form', script: { schema_version: 2, continuous_effects: [{ type: 'intimidate', affected: 'controller', payload: { exclude_source: true } }] }, form: true },
+  { name: 'keyword grant token_only (Gleaming Overseer) → form', script: { schema_version: 2, continuous_effects: [{ type: 'hexproof', affected: 'controller', payload: { creature_type: 'Zombie', token_only: true } }, { type: 'menace', affected: 'controller', payload: { creature_type: 'Zombie', token_only: true } }] }, form: true },
+  { name: 'dual-type lord (Death Baron) → form', script: { schema_version: 2, continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Skeleton' } }, { type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }, { type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Skeleton' } }, { type: 'deathtouch', affected: 'controller', payload: { creature_type: 'Zombie', exclude_source: true } }] }, form: true },
+  // Mass keyword grant until EOT (mig 202): Lord of the Accursed's activated ability.
+  { name: 'grant_keyword_all activated (Lord of the Accursed) → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{1}{B}' }, { type: 'tap_self' }], effects: [{ type: 'grant_keyword_all', keyword: 'menace', creature_type: 'Zombie', scope: 'all' }] }] }, form: true },
+  // Lazotep Plating's spell program (amass + scoped hexproof incl. the player).
+  { name: 'grant_keyword_all spell (Lazotep Plating) → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'amass', amount: 1 }, { type: 'grant_keyword_all', keyword: 'hexproof', scope: 'controller', includes_player: true }] } }, form: true },
+  // Lieutenant conditional (mig 205) with the commanders_you_control count.
+  { name: 'Lieutenant conditional (Loyal Subordinate) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'beginning_of_combat', effects: [{ type: 'conditional', condition: { count: 'commanders_you_control', type_line: '', at_least: 1 }, effects: [{ type: 'lose_life', amount: 3, recipient: 'each_opponent' }] }] }] }, form: true },
+  // creature_left watcher (mig 201, Vela's trigger half).
+  { name: 'creature_left watcher (Vela) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_left', filter: { controller: 'you' }, effects: [{ type: 'lose_life', amount: 1, recipient: 'each_opponent' }] }] }, form: true },
+  // choose_color ETB (mig 209, Heraldic Banner).
+  { name: 'choose_color anthem (Heraldic Banner) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'choose_color', anthem: { power: 1, toughness: 0, scope: 'controller' } }] }] }, form: true },
+  // Board wipe + reanimate-one (mig 208, Necromantic Selection).
+  { name: 'mass_destroy_reanimate_one (Necromantic Selection) → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'mass_destroy_reanimate_one' }] } }, form: true },
+  // Non-canonical keyword grants bail to JSON.
+  { name: 'keyword grant empty creature_type → json', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: '' } }] }, form: false },
+  { name: 'keyword grant extra payload key → json', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie', foo: 1 } }] }, form: false },
+  { name: 'keyword grant exclude_source false (non-canonical) → json', script: { schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie', exclude_source: false } }] }, form: false },
+  // Non-canonical anthems bail to JSON (the form would round-trip them differently).
+  { name: 'static pump affected source (aura, not anthem) → json', script: { continuous_effects: [{ type: 'pump', affected: 'source', payload: { power: 1, toughness: 1 } }] }, form: false },
+  { name: 'static pump empty creature_type → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: '' } }] }, form: false },
+  { name: 'static pump exclude_source false → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, exclude_source: false } }] }, form: false },
+  { name: 'static pump extra payload key → json', script: { continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, foo: 1 } }] }, form: false },
+
+  // Deep Analysis — "target player draws two" = choose_player(any) → draw, + flashback.
+  { name: 'deep analysis choose_player draw + flashback → form', script: { schema_version: 2, flashback: '{1}{U}', spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] } }, form: true },
+
+  // Watcher triggers with a filter (Champion of the Perished) — now form-representable.
+  { name: 'champion of the perished (watcher filter) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', controller: 'you', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: true },
+  { name: 'watcher filter controller any → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_died', filter: { controller: 'any' }, effects: [{ type: 'draw', amount: 1 }] }] }, form: true },
+  { name: 'watcher filter type-only → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: true },
+  // Midnight Reaper: a nontoken death watcher.
+  { name: 'midnight reaper (nontoken death watcher) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_died', filter: { controller: 'you', nontoken: true }, effects: [{ type: 'draw', amount: 1 }, { type: 'lose_life', amount: 1, recipient: 'controller' }] }] }, form: true },
+  // Non-canonical filters bail to JSON.
+  { name: 'watcher filter unknown key → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { foo: 1 }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },
+  { name: 'watcher filter bad controller → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { controller: 'nobody' }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },
+
+  // Crippling Fear: choose_creature_type wrapping a mass pump_all — now form-representable.
+  { name: 'crippling fear (choose_creature_type + pump_all) → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'choose_creature_type', effects: [{ type: 'pump_all', power: -3, toughness: -3, scope: 'all', exclude_type: true }] }] } }, form: true },
+  { name: 'fixed-type mass pump_all → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'pump_all', power: 1, toughness: 1, scope: 'controller', creature_type: 'Zombie' }] } }, form: true },
+
+  // Zombie Apocalypse: mass reanimate + mass destroy, form-representable.
+  { name: 'zombie apocalypse (mass reanimate + destroy_all) → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'return_all_from_graveyard', creature_type: 'Zombie', to: 'battlefield' }, { type: 'destroy_all', creature_type: 'Human', scope: 'all' }] } }, form: true },
+  // Amass — a simple amount effect, form-representable in trigger + spell.
+  { name: 'amass trigger (Lazotep Reaver) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'enters_the_battlefield', effects: [{ type: 'amass', amount: 1 }] }] }, form: true },
+  { name: 'amass spell → form', script: { schema_version: 2, spell_effect: { actions: [{ type: 'amass', amount: 4 }] } }, form: true },
+  // Withered Wretch: exile_from_graveyard as a targeted activated-ability EFFECT.
+  { name: 'withered wretch (exile_from_graveyard effect) → form', script: { schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{1}' }], effects: [{ type: 'exile_from_graveyard' }] }] }, form: true },
 
   // Edge cases
   { name: 'empty object', script: {}, form: true },
@@ -185,6 +278,100 @@ for (const c of CASES.filter((x) => x.form)) {
 }
 
 // Exact-shape pins — lock the JSON a couple of representative forms emit.
+test('exact build: Army of the Damned (tapped tokens + flashback)', () => {
+  const form = parseScriptToForm({ schema_version: 2, flashback: '{7}{B}{B}{B}', spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'create_token', count: 13, token: 'Zombie Token', tapped: true }] },
+    flashback: '{7}{B}{B}{B}',
+  })
+})
+
+test('exact build: Cemetery Reaper (other-Zombie anthem)', () => {
+  const form = parseScriptToForm({ continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    continuous_effects: [{ type: 'pump', affected: 'controller', payload: { power: 1, toughness: 1, creature_type: 'Zombie', exclude_source: true } }],
+  })
+})
+
+test('exact build: sliver lord (all Slivers +1/+1, affected:all)', () => {
+  const form = parseScriptToForm({ continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver' } }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    continuous_effects: [{ type: 'pump', affected: 'all', payload: { power: 1, toughness: 1, creature_type: 'Sliver' } }],
+  })
+})
+
+test('exact build: Eternal Skylord (Zombies you control have flying)', () => {
+  const form = parseScriptToForm({ schema_version: 2, continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie' } }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    continuous_effects: [{ type: 'flying', affected: 'controller', payload: { creature_type: 'Zombie' } }],
+  })
+})
+
+test('exact build: Deep Analysis (target player draws two + flashback, pay 3 life)', () => {
+  const form = parseScriptToForm({ schema_version: 2, flashback: '{1}{U}', flashback_life: 3, spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'choose_player', filter: 'any', effects: [{ type: 'draw', amount: 2 }] }] },
+    flashback: '{1}{U}',
+    flashback_life: 3,
+  })
+})
+
+test('exact build: Cemetery Reaper ability (mana+tap+exile-from-graveyard → create_token)', () => {
+  const form = parseScriptToForm({ schema_version: 2, activated_abilities: [{ costs: [{ type: 'mana', amount: '{2}{B}' }, { type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'creature' }], effects: [{ type: 'create_token', token: 'Zombie Token', count: 1 }] }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    activated_abilities: [{ costs: [{ type: 'tap_self' }, { type: 'exile_from_graveyard', type_line: 'creature' }, { type: 'mana', amount: '{2}{B}' }], effects: [{ type: 'create_token', token: 'Zombie Token', count: 1 }] }],
+  })
+})
+
+test('exact build: flashback alternate effect (draw 1, draw 3 on flashback)', () => {
+  const form = parseScriptToForm({ schema_version: 2, flashback: '{2}', spell_effect: { actions: [{ type: 'draw', amount: 1 }] }, flashback_effect: { actions: [{ type: 'draw', amount: 3 }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'draw', amount: 1 }] },
+    flashback: '{2}',
+    flashback_effect: { actions: [{ type: 'draw', amount: 3 }] },
+  })
+})
+
+test('exact build: Champion of the Perished (watcher filter, controller you omitted)', () => {
+  const form = parseScriptToForm({ schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', controller: 'you', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }] })
+  // 'you' is the engine default, so it's omitted from the canonical JSON.
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }],
+  })
+})
+
+test('exact build: watcher filter controller opponent', () => {
+  const form = parseScriptToForm({ schema_version: 2, triggered_abilities: [{ event: 'creature_died', filter: { controller: 'opponent' }, effects: [{ type: 'draw', amount: 1 }] }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    triggered_abilities: [{ event: 'creature_died', filter: { controller: 'opponent' }, effects: [{ type: 'draw', amount: 1 }] }],
+  })
+})
+
+test('exact build: Crippling Fear (choose_creature_type → mass -3/-3 to non-chosen-type)', () => {
+  const form = parseScriptToForm({ schema_version: 2, spell_effect: { actions: [{ type: 'choose_creature_type', effects: [{ type: 'pump_all', power: -3, toughness: -3, scope: 'all', exclude_type: true }] }] } })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    spell_effect: { actions: [{ type: 'choose_creature_type', effects: [{ type: 'pump_all', power: -3, toughness: -3, scope: 'all', exclude_type: true }] }] },
+  })
+})
+
+test('exact build: Dimir Signet ({1},{T}: add U + B)', () => {
+  const form = parseScriptToForm({ schema_version: 2, activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }, { type: 'add_mana', color: 'B', amount: 1 }] }] })
+  assert.deepEqual(buildScriptFromForm(form!), {
+    schema_version: 2,
+    activated_abilities: [{ is_mana_ability: true, costs: [{ type: 'tap_self' }, { type: 'mana', amount: '{1}' }], effects: [{ type: 'add_mana', color: 'U', amount: 1 }, { type: 'add_mana', color: 'B', amount: 1 }] }],
+  })
+})
+
 test('exact build: Opt (scry+draw)', () => {
   const form = parseScriptToForm({ schema_version: 2, spell_effect: { actions: [{ type: 'scry', amount: 1 }, { type: 'draw', amount: 1 }] } })
   assert.deepEqual(buildScriptFromForm(form!), {
@@ -342,9 +529,9 @@ test('defaultSpellEffect shapes', () => {
 })
 
 test('defaultActivatedAbility shapes', () => {
-  assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, color: 'C', amount: 1 })
+  assert.deepEqual(defaultActivatedAbility('mana'), { kind: 'mana', tapSelf: true, mana: '', payLife: 0, colors: [{ color: 'C', amount: 1 }] })
   // The generic 'effect' kind defaults to a targeted deal_damage (the old 'damage' kind).
-  assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
+  assert.deepEqual(defaultActivatedAbility('effect'), { kind: 'effect', tapSelf: true, sacSelf: false, sacCreature: false, exileFromGraveyard: false, mana: '', effect: { type: 'deal_damage', amount: 1, target: 'any' } })
 })
 
 // An activated ability of a non-damage effect (a new capability) is Form-representable.
@@ -367,5 +554,5 @@ test('activated draw ability ({2}: draw) round-trips through the form', () => {
 })
 
 test('defaultTrigger shape', () => {
-  assert.deepEqual(defaultTrigger(), { event: 'enters_the_battlefield', effects: [{ type: 'gain_life', amount: 1 }] })
+  assert.deepEqual(defaultTrigger(), { event: 'enters_the_battlefield', filter: { typeLine: '', controller: 'you', excludeSelf: false, nontoken: false }, effects: [{ type: 'gain_life', amount: 1 }] })
 })

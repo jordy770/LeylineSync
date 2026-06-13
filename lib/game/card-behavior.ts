@@ -32,8 +32,9 @@ export type CardBehaviorCost =
 export type CardBehaviorAction =
   | {
       type: 'add_mana'
-      // 'commander' = one mana of any colour in your commander's colour identity.
-      color: ManaColor | 'commander'
+      // 'commander' = one mana of any colour in your commander's colour identity;
+      // 'any' = one mana of any colour (Chromatic Lantern / rainbow lands).
+      color: ManaColor | 'commander' | 'any'
       amount: number
     }
   | {
@@ -84,6 +85,12 @@ export type CardBehaviorTriggeredAbility = {
   effects: CardBehaviorAction[]
 }
 
+export type CardBehaviorLoyaltyAbility = {
+  cost: number
+  label?: string
+  effects: CardBehaviorAction[]
+}
+
 export type CardBehaviorScriptV2 = {
   schema_version: 2
   keywords?: string[]
@@ -91,6 +98,32 @@ export type CardBehaviorScriptV2 = {
   activated_abilities?: CardBehaviorActivatedAbility[]
   triggered_abilities?: CardBehaviorTriggeredAbility[]
   continuous_effects?: CardContinuousEffect[]
+  // Planeswalker starting loyalty + loyalty abilities (preserved for the UI).
+  loyalty?: number
+  loyalty_abilities?: CardBehaviorLoyaltyAbility[]
+  // Flashback cost (preserved for the UI's "Flashback" graveyard action).
+  flashback?: string
+  // Additional "Pay N life" flashback cost (Deep Analysis).
+  flashback_life?: number
+  // Alternate spell program used when cast via flashback (replaces spell_effect).
+  flashback_effect?: CardBehaviorSpellEffect
+  // Adventure half (mig 295): { name?, cost?, spell_effect } — the card's
+  // instant/sorcery side, surfaced by the controller's "Adventure" cast.
+  adventure?: { name?: string; cost?: string; spell_effect: CardBehaviorSpellEffect }
+  // Saga chapters (mig 305) — preserved so the lore/chapter engine reads them.
+  saga_chapters?: { chapter: number[]; effects: CardBehaviorAction[] }[]
+  // Engine-read top-level props (preserved verbatim so a normalize round-trip
+  // can't drop them; see card-behavior-schema.ts for their shapes).
+  enters_with_counters?: Record<string, unknown>
+  damage_removes_counters?: boolean
+  undying?: boolean
+  kicker?: string
+  cycling?: string
+  graveyard_cast_cost?: Record<string, unknown>
+  enters_tapped?: true | Record<string, unknown>
+  cant_be_countered?: boolean
+  doubles_counters?: boolean
+  cda?: Record<string, unknown>
 }
 
 export type AnyCardBehaviorScript = CardScript | CardBehaviorScriptV2
@@ -122,6 +155,17 @@ const HANDLED_KEYWORDS = new Set([
   'deathtouch', 'indestructible', 'menace', 'defender', 'lifelink', 'hexproof', 'flash',
 ])
 
+// Top-level script props that ARE behavior on their own — a script may consist
+// of nothing else (Liliana = loyalty_abilities only; Unbreathing Horde =
+// enters_with_counters + damage_removes_counters only). Keep in sync with the
+// top-level props in card-behavior-schema.ts.
+const BEHAVIOR_TOP_LEVEL_PROPS = [
+  'loyalty_abilities', 'enters_with_counters', 'damage_removes_counters',
+  'undying', 'kicker', 'graveyard_cast_cost', 'enters_tapped', 'cycling',
+  'flashback', 'flashback_effect', 'cant_be_countered', 'doubles_counters', 'cda',
+  'adventure', 'saga_chapters',
+] as const
+
 // Whether a script actually defines engine behavior (vs. an empty/absent script).
 function scriptHasBehavior(script: AnyCardBehaviorScript | null | undefined): boolean {
   if (!script || typeof script !== 'object') return false
@@ -132,7 +176,10 @@ function scriptHasBehavior(script: AnyCardBehaviorScript | null | undefined): bo
     nonEmptyArray('continuous_effects') ||
     nonEmptyArray('triggered_abilities') ||
     nonEmptyArray('activated_abilities') ||
-    s['spell_effect'] != null
+    s['spell_effect'] != null ||
+    BEHAVIOR_TOP_LEVEL_PROPS.some((key) =>
+      Array.isArray(s[key]) ? (s[key] as unknown[]).length > 0 : s[key] != null,
+    )
   )
 }
 
@@ -233,7 +280,7 @@ export function isAddManaBehaviorAction(
     action.type === 'add_mana' &&
     'color' in action &&
     typeof action.color === 'string' &&
-    ['W', 'U', 'B', 'R', 'G', 'C', 'commander'].includes(action.color) &&
+    ['W', 'U', 'B', 'R', 'G', 'C', 'commander', 'any'].includes(action.color) &&
     'amount' in action &&
     typeof action.amount === 'number'
   )
@@ -345,6 +392,23 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     activated_abilities: script.activated_abilities ?? [],
     triggered_abilities: script.triggered_abilities ?? [],
     continuous_effects: script.continuous_effects ?? [],
+    loyalty: script.loyalty,
+    loyalty_abilities: script.loyalty_abilities ?? [],
+    flashback: script.flashback,
+    flashback_life: script.flashback_life,
+    flashback_effect: script.flashback_effect,
+    adventure: script.adventure,
+    saga_chapters: script.saga_chapters,
+    enters_with_counters: script.enters_with_counters,
+    damage_removes_counters: script.damage_removes_counters,
+    undying: script.undying,
+    kicker: script.kicker,
+    cycling: script.cycling,
+    graveyard_cast_cost: script.graveyard_cast_cost,
+    enters_tapped: script.enters_tapped,
+    cant_be_countered: script.cant_be_countered,
+    doubles_counters: script.doubles_counters,
+    cda: script.cda,
   }
 }
 

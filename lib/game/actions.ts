@@ -9,6 +9,7 @@ import type {
   GameActionLog,
   GameTurnState,
   GameZone,
+  ManaColor,
   ManaPool,
   StackItem,
   SupabaseErrorLike,
@@ -64,12 +65,14 @@ export async function castCardFromHand(
   cardId: string,
   genericPayment?: Record<string, number>,
   targetCardId?: string,
+  xValue?: number | null,
 ) {
   const { data, error } = await supabase.rpc('cast_card_from_hand', {
     p_session_id: sessionId,
     p_game_card_id: cardId,
     p_generic_payment: genericPayment ?? null,
     p_target_card_id: targetCardId ?? null,
+    p_x_value: xValue ?? null,
   })
 
   if (error) {
@@ -633,6 +636,8 @@ export async function putAddCountersCreatureOnStack(
   genericPayment?: Record<string, number>,
   targetController?: TargetController | null,
   xValue?: number | null,
+  counterType?: string | null,
+  all?: boolean,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -643,6 +648,8 @@ export async function putAddCountersCreatureOnStack(
       x_value: xValue ?? null,
       timing,
       target_controller: targetController ?? null,
+      counter_type: counterType ?? null,
+      all: all ?? false,
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
@@ -871,12 +878,16 @@ export async function castSpellEffect(
   actions: unknown[],
   sourceCardId?: string | null,
   xValue?: number | null,
+  targetCardId?: string | null,
+  adventure = false,
 ) {
   const { data, error } = await supabase.rpc('cast_spell_effect', {
     p_session_id: sessionId,
     p_actions: actions,
     p_source_card_id: sourceCardId ?? null,
     p_x_value: xValue ?? null,
+    p_target_card_id: targetCardId ?? null,
+    p_adventure: adventure,
   })
 
   if (error) {
@@ -909,7 +920,7 @@ export async function activateAbility(
   sessionId: string,
   sourceCardId: string,
   abilityIndex: number,
-  target?: { targetCardId?: string | null; targetPlayerId?: string | null },
+  target?: { targetCardId?: string | null; targetPlayerId?: string | null; costCardIds?: string[] | null },
   genericPayment?: Record<string, number>,
 ) {
   const { data, error } = await supabase.rpc('activate_ability', {
@@ -919,6 +930,9 @@ export async function activateAbility(
     p_target_player_id: target?.targetPlayerId ?? null,
     p_target_card_id: target?.targetCardId ?? null,
     p_generic_payment: genericPayment ?? null,
+    // Chosen cost payments (mig 284): which cards pay sacrifice_artifacts /
+    // return_land / tap_creatures costs. Null = engine auto-pick.
+    p_cost_card_ids: target?.costCardIds ?? null,
   })
 
   if (error) {
@@ -928,12 +942,54 @@ export async function activateAbility(
   return data as StackItem
 }
 
+// Mana abilities with a cost and/or multiple produced colours (Dimir Signet:
+// "{1},{T}: Add {U}{B}"). Pays the cost, taps, and adds every colour atomically.
+export async function activateManaAbility(
+  supabase: SupabaseClient,
+  sessionId: string,
+  sourceCardId: string,
+  abilityIndex: number,
+  genericPayment?: Record<string, number>,
+  // The colour chosen for an "any colour" producer (Treasure, mig 226).
+  chosenColor?: ManaColor,
+) {
+  const { error } = await supabase.rpc('activate_mana_ability', {
+    p_session_id: sessionId,
+    p_source_card_id: sourceCardId,
+    p_ability_index: abilityIndex,
+    p_generic_payment: genericPayment ?? null,
+    p_chosen_color: chosenColor ?? null,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
+export async function activateLoyaltyAbility(
+  supabase: SupabaseClient,
+  sessionId: string,
+  sourceCardId: string,
+  abilityIndex: number,
+) {
+  const { error } = await supabase.rpc('activate_loyalty_ability', {
+    p_session_id: sessionId,
+    p_source_card_id: sourceCardId,
+    p_ability_index: abilityIndex,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
 export async function putCounterSpellOnStack(
   supabase: SupabaseClient,
   sessionId: string,
   targetStackItemId: string,
   sourceCardId: string,
   genericPayment?: Record<string, number>,
+  adventure = false,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -942,6 +998,7 @@ export async function putCounterSpellOnStack(
       target_stack_item_id: targetStackItemId,
       timing: 'instant',
       generic_payment: genericPayment ?? null,
+      adventure,
     },
     p_source_card_id: sourceCardId,
   })
@@ -1091,6 +1148,23 @@ export async function joinGameSession(supabase: SupabaseClient, sessionId: strin
   return data as number
 }
 
+// Cycling (mig 228): discard a card with a cycling cost from hand, draw one.
+export async function cycleCard(
+  supabase: SupabaseClient,
+  sessionId: string,
+  cardId: string,
+  genericPayment?: Record<string, number>,
+) {
+  const { error } = await supabase.rpc('cycle_card', {
+    p_session_id: sessionId,
+    p_game_card_id: cardId,
+    p_generic_payment: genericPayment ?? null,
+  })
+  if (error) {
+    throw error
+  }
+}
+
 export async function lockGameSession(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('lock_game_session', {
     p_session_id: sessionId,
@@ -1101,6 +1175,50 @@ export async function lockGameSession(supabase: SupabaseClient, sessionId: strin
   }
 
   return data as boolean
+}
+
+// Start the game (mig 221): locks the session, picks a RANDOM first player,
+// deals every player a 7-card opening hand, and opens the keep/mulligan
+// sequence. Creator-only; every player needs a spawned deck.
+export async function startGameSession(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('start_game_session', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as { first_player_id: string; players: number }
+}
+
+// London mulligan: your hand shuffles back, you draw seven again.
+export async function mulliganHand(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('mulligan_hand', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as number // total mulligans taken
+}
+
+// Keep the opening hand, bottoming exactly one card per mulligan taken.
+export async function keepOpeningHand(
+  supabase: SupabaseClient,
+  sessionId: string,
+  bottomCardIds: string[] = [],
+) {
+  const { error } = await supabase.rpc('keep_opening_hand', {
+    p_session_id: sessionId,
+    p_bottom_card_ids: bottomCardIds,
+  })
+
+  if (error) {
+    throw error
+  }
 }
 
 export async function finishGameSession(supabase: SupabaseClient, sessionId: string) {
@@ -1138,12 +1256,14 @@ export async function declareAttacker(
   supabase: SupabaseClient,
   sessionId: string,
   attackerCardId: string,
-  defendingPlayerId: string,
+  defendingPlayerId: string | null,
+  defendingPlaneswalkerId?: string | null,
 ) {
   const { data, error } = await supabase.rpc('declare_attacker', {
     p_session_id: sessionId,
     p_attacker_card_id: attackerCardId,
     p_defending_player_id: defendingPlayerId,
+    p_defending_planeswalker_id: defendingPlaneswalkerId ?? null,
   })
 
   if (error) {
@@ -1208,6 +1328,46 @@ export async function adjustCardCounters(
   }
 
   return data as number
+}
+
+// Judge: adjust a non-+1/+1 bag counter (charge/quest/…) on a card. Returns the bag.
+export async function adjustCardBagCounter(
+  supabase: SupabaseClient,
+  sessionId: string,
+  gameCardId: string,
+  kind: string,
+  delta: number,
+) {
+  const { data, error } = await supabase.rpc('adjust_card_bag_counter', {
+    p_session_id: sessionId,
+    p_game_card_id: gameCardId,
+    p_kind: kind,
+    p_delta: delta,
+  })
+  if (error) {
+    throw error
+  }
+  return data as Record<string, number>
+}
+
+// Judge: adjust a player counter (poison/energy/experience). Returns the bag.
+export async function adjustPlayerCounter(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+  kind: string,
+  delta: number,
+) {
+  const { data, error } = await supabase.rpc('adjust_player_counter', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+    p_kind: kind,
+    p_delta: delta,
+  })
+  if (error) {
+    throw error
+  }
+  return data as Record<string, number>
 }
 
 export async function applyPtPump(

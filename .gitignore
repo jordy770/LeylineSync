@@ -50,3 +50,17 @@ next-env.d.ts
 
 # Supabase scratch schema dump (local baseline authoring only)
 supabase/_hosted_schema.sql
+
+# Scryfall oracle dump (165 MB) — used only by scripts/import-scryfall-cards.mjs.
+# Download a fresh "Oracle Cards" bulk file from https://scryfall.com/docs/api/bulk-data
+# into lib/ (the importer's default path) or pass --file.
+lib/oracle-cards-*.json
+
+# OpenWolf transient runtime state (regenerated every session).
+.wolf/hooks/_session.json
+.wolf/token-ledger.json
+.wolf/designqc-captures/
+.wolf/designqc-report.json
+
+# Generated deck triage reports (regenerate with npm run deck:triage).
+docs/commander-decks/*.triage.md

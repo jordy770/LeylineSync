@@ -106,6 +106,7 @@ export default function JudgePanel({ sessionId }: { sessionId: string }) {
                 sessionId={sessionId}
                 playerId={player.player_id}
                 cards={stats.cards}
+                playerCounters={player.counters}
                 isSessionFinished={isSessionFinished}
                 onChanged={refresh}
               />

@@ -271,7 +271,7 @@ export class Scenario {
    */
   async castPermanent(
     gameCardId: string,
-    opts: { target?: string; generic?: Record<string, number> } = {},
+    opts: { target?: string; generic?: Record<string, number>; kicked?: boolean; sacrificeIds?: string[]; x?: number } = {},
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'cast_card_from_hand', {
@@ -279,6 +279,9 @@ export class Scenario {
         p_game_card_id: gameCardId,
         p_generic_payment: opts.generic ? JSON.stringify(opts.generic) : null,
         p_target_card_id: opts.target ?? null,
+        p_kicked: opts.kicked ?? false,
+        p_sacrifice_ids: opts.sacrificeIds ?? null,
+        p_x_value: opts.x ?? null,
       }),
     )
   }
@@ -474,6 +477,8 @@ export class Scenario {
     actions: unknown[],
     sourceCardId: string | null = null,
     xValue: number | null = null,
+    targetCardId: string | null = null,
+    adventure = false,
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'cast_spell_effect', {
@@ -481,6 +486,8 @@ export class Scenario {
         p_actions: JSON.stringify(actions),
         p_source_card_id: sourceCardId,
         p_x_value: xValue,
+        p_target_card_id: targetCardId,
+        p_adventure: adventure,
       }),
     )
   }
@@ -523,10 +530,11 @@ export class Scenario {
     options: unknown
     min_choices: number
     max_choices: number
+    params: Record<string, unknown>
   } | null> {
     const res = await this.client.query(
       `select id, deciding_player_id, source_stack_item_id, decision_type,
-              options, min_choices, max_choices
+              options, min_choices, max_choices, params
        from public.game_pending_decisions
        where session_id = $1 and status = 'pending'
        order by created_at limit 1`,
@@ -549,7 +557,7 @@ export class Scenario {
   async activate(
     sourceCardId: string,
     index = 0,
-    target: { targetCardId?: string; targetPlayerId?: string } = {},
+    target: { targetCardId?: string; targetPlayerId?: string; xValue?: number; costCardIds?: string[] } = {},
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'activate_ability', {
@@ -559,6 +567,48 @@ export class Scenario {
         p_target_player_id: target.targetPlayerId ?? null,
         p_target_card_id: target.targetCardId ?? null,
         p_generic_payment: null,
+        p_x_value: target.xValue ?? null,
+        p_cost_card_ids: target.costCardIds ?? null,
+      }),
+    )
+  }
+
+  /** Activate a mana ability (cost + multi-colour) as the acting seat; returns the pool. */
+  async activateMana(
+    sourceCardId: string,
+    index = 0,
+    generic: Record<string, number> | null = null,
+    chosenColor: string | null = null,
+  ): Promise<Record<string, number>> {
+    return this.run(() =>
+      rpc(this.client, 'activate_mana_ability', {
+        p_session_id: this.sessionId,
+        p_source_card_id: sourceCardId,
+        p_ability_index: index,
+        p_generic_payment: generic,
+        p_chosen_color: chosenColor,
+      }),
+    ) as Promise<Record<string, number>>
+  }
+
+  /** Cycle a card from the acting seat's hand (discard it, draw one). */
+  async cycle(cardId: string, generic: Record<string, number> | null = null): Promise<string | null> {
+    return this.run(() =>
+      rpc(this.client, 'cycle_card', {
+        p_session_id: this.sessionId,
+        p_game_card_id: cardId,
+        p_generic_payment: generic,
+      }),
+    ) as Promise<string | null>
+  }
+
+  /** Activate loyalty ability `index` on a planeswalker the acting seat controls. */
+  async activateLoyalty(sourceCardId: string, index = 0): Promise<unknown> {
+    return this.run(() =>
+      rpc(this.client, 'activate_loyalty_ability', {
+        p_session_id: this.sessionId,
+        p_source_card_id: sourceCardId,
+        p_ability_index: index,
       }),
     )
   }
@@ -658,12 +708,25 @@ export class Scenario {
   }
 
   /** Declare the acting seat's creature as an attacker against `defender`. */
-  async declareAttacker(attackerCardId: string, defender: Seat): Promise<unknown> {
+  async declareAttacker(attackerCardId: string, defender: Seat, exert = false): Promise<unknown> {
     return this.run(() =>
       rpc(this.client, 'declare_attacker', {
         p_session_id: this.sessionId,
         p_attacker_card_id: attackerCardId,
         p_defending_player_id: this.players[defender],
+        p_exert: exert,
+      }),
+    )
+  }
+
+  /** Declare `attackerCardId` attacking a planeswalker (its controller is derived). */
+  async declareAttackerVsPlaneswalker(attackerCardId: string, planeswalkerCardId: string): Promise<unknown> {
+    return this.run(() =>
+      rpc(this.client, 'declare_attacker', {
+        p_session_id: this.sessionId,
+        p_attacker_card_id: attackerCardId,
+        p_defending_player_id: null,
+        p_defending_planeswalker_id: planeswalkerCardId,
       }),
     )
   }
