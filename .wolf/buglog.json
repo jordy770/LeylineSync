@@ -11457,6 +11457,23 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T01:02:12.956Z"
+    },
+    {
+      "id": "bug-705",
+      "timestamp": "2026-06-13T00:00:00Z",
+      "error_message": "Creature has summoning sickness (P0001) in combat for creatures that entered turns ago",
+      "file": "supabase/functions_src/move_card_to_zone.sql",
+      "root_cause": "move_card_to_zone re-stamped entered_battlefield_turn_number (and force-untapped) on EVERY battlefield-targeted call, including same-zone moves — board repositioning / judge zone re-sends reset sickness on veteran creatures. The normal cast/advance flow was verified correct first (repro test walks a full turn cycle)",
+      "fix": "both effects now fire only on a genuine entry (zone is distinct from battlefield), mig 290; regression tests cover the turn-cycle attack and the same-zone move",
+      "tags": [
+        "summoning-sickness",
+        "move_card_to_zone",
+        "same-zone",
+        "restamp"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T00:00:00Z"
     }
   ]
 }
