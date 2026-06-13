@@ -11441,6 +11441,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T00:05:23.555Z"
+    },
+    {
+      "id": "bug-704",
+      "timestamp": "2026-06-13T01:02:12.956Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T01:02:12.956Z"
     }
   ]
 }

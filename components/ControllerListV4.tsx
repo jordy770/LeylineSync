@@ -299,6 +299,37 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     }
   }, [turnState?.step])
 
+  // Auto-pass (opponents' turns), persisted per session.
+  const [autoPass, setAutoPass] = useState(false)
+  useEffect(() => {
+    setAutoPass(typeof window !== 'undefined' && localStorage.getItem('leyline-autopass-' + sessionId) === '1')
+  }, [sessionId])
+  const toggleAutoPass = () => {
+    setAutoPass((v) => {
+      localStorage.setItem('leyline-autopass-' + sessionId, v ? '0' : '1')
+      return !v
+    })
+  }
+
+  // With the toggle on, priority landing on you while it is NOT your turn
+  // passes automatically after a short beat. Hard exemptions: anything
+  // passBlockReason already blocks (your decision, a trigger target), the
+  // declare-blockers step (never skip your blocks), and a finished session.
+  // Your own turn always stays manual.
+  useEffect(() => {
+    if (!autoPass || !playerId || !turnState || isSessionFinished) return
+    if (turnState.priority_player_id !== playerId) return
+    if (turnState.active_player_id === playerId) return
+    if (turnState.step === 'declare_blockers') return
+    if (passBlockReason) return
+    const timer = setTimeout(() => {
+      passPriorityAction(supabase, sessionId)
+        .then(() => refresh())
+        .catch(() => { /* lost a race to a state change; the next tick re-evaluates */ })
+    }, 700)
+    return () => clearTimeout(timer)
+  }, [autoPass, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState])
+
   // Combat damage is fully resolved once the 'regular' pass has run
   const combatDamageResolved = combatDamageStage === 'regular'
   const canResolveCombatDamage =
@@ -719,6 +750,8 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 canResolveCombatDamage={canResolveCombatDamage}
                 combatDamageStage={combatDamageStage}
                 blockPassReason={passBlockReason}
+                autoPass={autoPass}
+                onToggleAutoPass={toggleAutoPass}
                 onResolveCombatDamage={actions.resolveCombatDamage}
                 onPassPriority={actions.passPriority}
               />
@@ -1926,6 +1959,8 @@ function PriorityPanel({
   canResolveCombatDamage,
   combatDamageStage,
   blockPassReason,
+  autoPass,
+  onToggleAutoPass,
   onResolveCombatDamage,
   onPassPriority,
 }: {
@@ -1934,6 +1969,8 @@ function PriorityPanel({
   canResolveCombatDamage: boolean
   combatDamageStage: string | null
   blockPassReason?: string | null
+  autoPass: boolean
+  onToggleAutoPass: () => void
   onResolveCombatDamage: () => Promise<void>
   onPassPriority: () => Promise<void>
 }) {
@@ -1978,6 +2015,15 @@ function PriorityPanel({
           <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-800" />
         </div>
       )}
+
+      <button
+        type="button"
+        onClick={onToggleAutoPass}
+        title="Auto-pass priority on opponents' turns. Never skips your decisions, trigger targets or blocks; your own turn stays manual."
+        className={`w-full rounded-xl border px-1 py-2 text-[8px] font-black uppercase tracking-widest transition active:scale-95 ${autoPass ? 'border-amber-300/60 bg-amber-400/20 text-amber-300' : 'border-[#1E2230] text-slate-600'}`}
+      >
+        Auto{autoPass ? ' ✓' : ''}
+      </button>
 
       <div className="mt-auto flex flex-col items-center gap-1">
         <div

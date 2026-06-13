@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T00:05:23.513Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T01:02:12.907Z
 > Files: 189 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
@@ -88,7 +88,7 @@
 
 ## components/
 
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~39375 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~40020 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~4637 tok)
 
 ## components/board/
