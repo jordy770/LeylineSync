@@ -997,5 +997,7 @@
 
   "Dig Through Time": {"schema_version":2,"spell_effect":{"actions":[{"type":"look_top","count":7,"to":"hand","picks":2,"min_picks":2}]}},
 
-  "Observed Stasis": {"schema_version":2,"keywords":["flash"],"continuous_effects":[{"type":"cant_attack","affected":"enchanted","source_zone_required":"battlefield"},{"type":"cant_block","affected":"enchanted","source_zone_required":"battlefield"}]}
+  "Observed Stasis": {"schema_version":2,"keywords":["flash"],"continuous_effects":[{"type":"cant_attack","affected":"enchanted","source_zone_required":"battlefield"},{"type":"cant_block","affected":"enchanted","source_zone_required":"battlefield"}]},
+
+  "Emet-Selch of the Third Seat": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"amount":2,"from_zone":"graveyard"},"source_zone_required":"battlefield"}]}
 }

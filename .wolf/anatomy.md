@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T18:51:45.826Z
-> Files: 217 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T18:57:24.071Z
+> Files: 218 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -203,7 +203,7 @@
 - `mulligan_hand.sql` — supabase/functions_src/mulligan_hand.sql (~681 tok)
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2455 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
-- `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
+- `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~974 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2533 tok)
 - `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~7219 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3450 tok)
@@ -316,6 +316,7 @@
 - `dragon-lands.test.ts` — mig 237 — three Dragon-deck lands: (~1000 tok)
 - `dragons-combat-damage.test.ts` — mig 247 — Broodcaller Scourge + Parapet Thrasher: "Whenever one or more (~1436 tok)
 - `dragons-deck.test.ts` — Dragons deck — proving tests for the Tier-0 compositions (cards authored (~2449 tok)
+- `emet-selch.test.ts` — Emet-Selch (mig 304): "Spells you cast from your graveyard cost {2} less." (~435 tok)
 - `enrage.test.ts` — mig 254 — enrage: "whenever this creature is dealt damage", broadcast from (~1122 tok)
 - `enters-tapped-lands.test.ts` — Enters-tapped lands (mig 217) — top-level `enters_tapped` read in (~1071 tok)
 - `exert-and-transform.test.ts` — mig 236 — three cards: (~1238 tok)
