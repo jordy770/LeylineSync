@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T19:54:14.521Z
-> Files: 220 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T20:01:00.859Z
+> Files: 221 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -180,8 +180,8 @@
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~12521 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
-- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5432 tok)
-- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2775 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5551 tok)
+- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2836 tok)
 - `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
@@ -194,7 +194,7 @@
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~612 tok)
 - `fire_tap_triggers.sql` — supabase/functions_src/fire_tap_triggers.sql (~297 tok)
 - `fire_turn_step_triggers.sql` — supabase/functions_src/fire_turn_step_triggers.sql (~673 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~3189 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~3204 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1540 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
@@ -351,6 +351,7 @@
 - `tyrants-thundermane.test.ts` — mig 244 — Leyline Tyrant + Hammerhead Tyrant + Thundermane Dragon. (~1802 tok)
 - `undying.test.ts` — Undying (mig 219) — "When this creature dies, if it had no +1/+1 counters on (~820 tok)
 - `ureni.test.ts` — Ureni of the Unwritten (mig 223) — "Whenever Ureni enters or attacks, look at (~1186 tok)
+- `urianger.test.ts` — Urianger Augurelt (mig 307): "Whenever you cast a spell from exile, you gain 2 (~483 tok)
 - `victimize.test.ts` — Victimize (mig 218) — "Choose two target creature cards in your graveyard. (~849 tok)
 - `zenith-festival.test.ts` — Zenith Festival — "Exile the top X cards of your library. You may play (~503 tok)
 - `zz-debug.test.ts` — Declares s (~385 tok)

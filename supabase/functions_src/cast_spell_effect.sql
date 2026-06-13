@@ -195,6 +195,10 @@ begin
   -- the cast to spell_cast watchers. The caster is the source's controller.
   if p_source_card_id is not null then
     perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'spell_cast');
+    -- "Whenever you cast a spell from exile" (mig 307, Urianger Augurelt).
+    if v_source_zone = 'exile' then
+      perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'cast_from_exile');
+    end if;
   end if;
 
   -- Adventure (mig 295): the card is exiled with a non-expiring play_from_exile

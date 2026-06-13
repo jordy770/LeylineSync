@@ -153,7 +153,8 @@ begin
       -- ability_activated (mig 258, Runic Armasaur) defaults to '' — any
       -- permanent whose non-mana ability was activated.
       if v_changed_type not ilike '%' || coalesce(v_f_type,
-           case p_event when 'spell_cast' then '' when 'land_entered' then 'land'
+           case p_event when 'spell_cast' then '' when 'cast_from_exile' then ''
+                        when 'land_entered' then 'land'
                         when 'ability_activated' then '' else 'creature' end) || '%' then
         continue;
       end if;

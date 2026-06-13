@@ -22,6 +22,7 @@ declare
   v_session_status text;
   v_turn_state public.game_turn_state;
   v_card public.game_cards;
+  v_cast_zone text;
   v_card_type_line text;
   v_card_mana_cost text;
   v_is_aura boolean;
@@ -89,6 +90,9 @@ begin
     and game_cards.owner_id = auth.uid()
     and game_cards.zone in ('hand', 'graveyard', 'exile', 'library')
   for update of game_cards;
+
+  -- Original cast zone (v_card is later overwritten by the stack-move RETURNING).
+  v_cast_zone := v_card.zone;
 
   if not found then
     raise exception 'Card not found in hand or not owned by current user';
@@ -471,6 +475,12 @@ begin
   -- "Whenever you/an opponent cast a spell" (mig 234, Taurean Mauler): a permanent
   -- spell is a spell too. (Lands return earlier, so they don't reach here.)
   perform public.fire_watcher_triggers(p_session_id, p_game_card_id, auth.uid(), 'spell_cast');
+
+  -- "Whenever you cast a spell from exile" (mig 307, Urianger Augurelt): the
+  -- source's ORIGINAL cast zone (v_card.zone is now 'stack' after the move).
+  if v_cast_zone = 'exile' then
+    perform public.fire_watcher_triggers(p_session_id, p_game_card_id, auth.uid(), 'cast_from_exile');
+  end if;
 
   update public.game_turn_state
   set

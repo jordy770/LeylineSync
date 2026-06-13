@@ -11879,6 +11879,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T19:54:14.540Z"
+    },
+    {
+      "id": "bug-731",
+      "timestamp": "2026-06-13T20:01:00.879Z",
+      "error_message": "Incorrect value in code",
+      "file": "supabase/functions_src/cast_card_from_hand.sql",
+      "root_cause": "Had 's pre-cast zone (v_card was read before the stack",
+      "fix": "Changed to 's ORIGINAL cast zone (v_card.zone is now '",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T20:01:00.879Z"
     }
   ]
 }
