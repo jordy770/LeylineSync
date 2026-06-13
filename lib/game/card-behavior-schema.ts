@@ -1155,6 +1155,10 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
   // controller is relative to this card's controller; exclude_self:true = "another …".
   filter: z.object({
     type_line: z.string().optional(),
+    // Negative type match (mig 292): skip the event when the subject's type
+    // line matches — "whenever you cast a NONCREATURE spell" = spell_cast +
+    // exclude_type 'Creature'. Complements type_line (which only INCLUDES).
+    exclude_type: z.string().optional(),
     controller: z.enum(['you', 'opponent', 'any']).optional(),
     exclude_self: z.boolean().optional(),
     // "a NONTOKEN creature …" (Midnight Reaper, Open the Graves) — the watcher

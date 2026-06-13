@@ -1,7 +1,12 @@
--- supabase/functions_src/fire_watcher_triggers.sql
--- CANONICAL current definition (seeded from 202605010181_watcher_nontoken_filter.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010292_noncreature_spell_filter
+-- Negative type filter on watcher triggers (mig 292): a `filter.exclude_type`
+-- on a triggered_ability now skips the event when the changed card's type line
+-- matches it. Unlocks "whenever you cast a NONCREATURE spell" (spell_cast +
+-- exclude_type 'Creature') — the Scions Spellcraft magecraft payoffs (Y'shtola,
+-- Archmage Emeritus, Hermes, Papalymo, G'raha, Krile, Lyse, the Wizard tokens).
+-- The positive type_line filter could only INCLUDE a type, never exclude one.
+-- Generated from supabase/functions_src (fire_watcher_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.fire_watcher_triggers(
   p_session_id uuid,
