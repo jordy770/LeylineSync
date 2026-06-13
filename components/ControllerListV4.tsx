@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   activateAbility,
   activateLoyaltyAbility,
@@ -82,6 +82,7 @@ import {
   manaColors,
   manaColorStyles,
   manaCostColors,
+  playerHasInstantResponse,
   targetTypeMatches,
 } from './controller/shared'
 
@@ -101,6 +102,33 @@ const stepGroups: { label: string; steps: GameTurnState['step'][] }[] = [
   { label: 'M2',  steps: ['postcombat_main'] },
   { label: 'END', steps: ['end', 'cleanup'] },
 ]
+
+// ─── Auto-pass ───────────────────────────────────────────────────────────────
+
+// Per-session auto-pass controls (persisted to localStorage). Each switch is
+// independent; see the auto-pass effect for how they combine.
+type AutoPassSettings = {
+  op: boolean   // auto-pass priority on opponents' turns
+  own: boolean  // auto-pass your own turn's empty phases (untap/upkeep/draw/begin+end combat/end)
+  stk: boolean  // on opponents' turns, STOP when a new object hits the stack
+  rsp: boolean  // on opponents' turns, STOP when you have a castable response
+}
+const AUTOPASS_OFF: AutoPassSettings = { op: false, own: false, stk: false, rsp: false }
+const autoPassStorageKey = (sessionId: string) => 'leyline-autopass-' + sessionId
+function loadAutoPassSettings(sessionId: string): AutoPassSettings {
+  if (typeof window === 'undefined') return AUTOPASS_OFF
+  const raw = localStorage.getItem(autoPassStorageKey(sessionId))
+  if (!raw) return AUTOPASS_OFF
+  if (raw === '1') return { ...AUTOPASS_OFF, op: true } // migrate the v1 boolean toggle
+  try {
+    return { ...AUTOPASS_OFF, ...(JSON.parse(raw) as Partial<AutoPassSettings>) }
+  } catch {
+    return AUTOPASS_OFF
+  }
+}
+// Your own steps with nothing to decide — auto-passed when `own` is on. Main
+// phases and combat decision steps (declare_attackers/combat_damage) stay manual.
+const OWN_SKIP_STEPS: GameTurnState['step'][] = ['untap', 'upkeep', 'draw', 'beginning_of_combat', 'end_of_combat', 'end']
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -299,36 +327,80 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     }
   }, [turnState?.step])
 
-  // Auto-pass (opponents' turns), persisted per session.
-  const [autoPass, setAutoPass] = useState(false)
+  // Auto-pass controls, persisted per session.
+  const [autoPass, setAutoPass] = useState<AutoPassSettings>(AUTOPASS_OFF)
   useEffect(() => {
-    setAutoPass(typeof window !== 'undefined' && localStorage.getItem('leyline-autopass-' + sessionId) === '1')
+    setAutoPass(loadAutoPassSettings(sessionId))
   }, [sessionId])
-  const toggleAutoPass = () => {
-    setAutoPass((v) => {
-      localStorage.setItem('leyline-autopass-' + sessionId, v ? '0' : '1')
-      return !v
+  const updateAutoPass = (patch: Partial<AutoPassSettings>) => {
+    setAutoPass((prev) => {
+      const next = { ...prev, ...patch }
+      localStorage.setItem(autoPassStorageKey(sessionId), JSON.stringify(next))
+      return next
     })
   }
 
-  // With the toggle on, priority landing on you while it is NOT your turn
-  // passes automatically after a short beat. Hard exemptions: anything
-  // passBlockReason already blocks (your decision, a trigger target), the
-  // declare-blockers step (never skip your blocks), and a finished session.
-  // Your own turn always stays manual.
+  // "Yield rest of turn": one-shot — pass every priority until your next turn.
+  // Holds the turn_number it was armed on; cleared once it's your turn again or
+  // the turn number has advanced past it.
+  const yieldUntilTurnRef = useRef<number | null>(null)
+  const [isYielding, setIsYielding] = useState(false)
   useEffect(() => {
-    if (!autoPass || !playerId || !turnState || isSessionFinished) return
+    if (yieldUntilTurnRef.current === null || !turnState) return
+    if (isActivePlayer || turnState.turn_number > yieldUntilTurnRef.current) {
+      yieldUntilTurnRef.current = null
+      setIsYielding(false)
+    }
+  }, [turnState, isActivePlayer])
+  const yieldRestOfTurn = () => {
+    if (!turnState) return
+    yieldUntilTurnRef.current = turnState.turn_number
+    setIsYielding(true)
+  }
+
+  // Stack signature the player has already acknowledged (looked at + passed).
+  // While `stk` is on, a new (unacknowledged) object on an opponent's stack
+  // stops auto-pass; once the player passes manually we record it so the same
+  // stack doesn't re-stop forever.
+  const currentStackKey = pendingStackItems.map((i) => i.id).sort().join(',')
+  const ackStackKeyRef = useRef<string>('')
+
+  // Whether you currently hold a castable response (instant/flash in hand or an
+  // instant-speed activated ability) — used by the `rsp` stop condition.
+  const iHaveResponse = useMemo(
+    () => playerHasInstantResponse(cards, canCastInstants, pendingStackItems.length, availableMana),
+    [cards, canCastInstants, pendingStackItems.length, availableMana],
+  )
+
+  // Single decision: when priority lands on you, should it auto-pass? Hard
+  // exemptions always win — your pending decision / trigger target
+  // (passBlockReason), the declare-blockers step (never skip your blocks), and a
+  // finished session. Your own turn only auto-passes its empty phases.
+  useEffect(() => {
+    if (!playerId || !turnState || isSessionFinished) return
     if (turnState.priority_player_id !== playerId) return
-    if (turnState.active_player_id === playerId) return
-    if (turnState.step === 'declare_blockers') return
     if (passBlockReason) return
+    if (turnState.step === 'declare_blockers') return
+
+    let willPass: boolean
+    if (yieldUntilTurnRef.current !== null) {
+      willPass = true // yielding: pass through everything until your next turn
+    } else if (turnState.active_player_id === playerId) {
+      willPass = autoPass.own && OWN_SKIP_STEPS.includes(turnState.step)
+    } else {
+      willPass = autoPass.op
+      if (willPass && autoPass.stk && currentStackKey && currentStackKey !== ackStackKeyRef.current) willPass = false
+      if (willPass && autoPass.rsp && iHaveResponse) willPass = false
+    }
+    if (!willPass) return
+
     const timer = setTimeout(() => {
       passPriorityAction(supabase, sessionId)
-        .then(() => refresh())
+        .then(() => { ackStackKeyRef.current = currentStackKey; return refresh() })
         .catch(() => { /* lost a race to a state change; the next tick re-evaluates */ })
     }, 700)
     return () => clearTimeout(timer)
-  }, [autoPass, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState])
+  }, [autoPass, isYielding, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState, currentStackKey, iHaveResponse])
 
   // Combat damage is fully resolved once the 'regular' pass has run
   const combatDamageResolved = combatDamageStage === 'regular'
@@ -418,7 +490,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
   }
 
   const actions = {
-    passPriority: async () => { await passPriorityAction(supabase, sessionId); await refresh() },
+    passPriority: async () => { ackStackKeyRef.current = currentStackKey; await passPriorityAction(supabase, sessionId); await refresh() },
     advanceStep: async () => { await advanceStep(supabase, sessionId); await refresh() },
     // Plain cast — permanents and untargeted spells
     castSpell: async (cardId: string) => {
@@ -751,7 +823,9 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 combatDamageStage={combatDamageStage}
                 blockPassReason={passBlockReason}
                 autoPass={autoPass}
-                onToggleAutoPass={toggleAutoPass}
+                onChangeAutoPass={updateAutoPass}
+                isYielding={isYielding}
+                onYieldTurn={yieldRestOfTurn}
                 onResolveCombatDamage={actions.resolveCombatDamage}
                 onPassPriority={actions.passPriority}
               />
@@ -1953,6 +2027,13 @@ function PayXDamageBody({
   )
 }
 
+const AUTOPASS_ROWS: { key: keyof AutoPassSettings; label: string; hint: string }[] = [
+  { key: 'op', label: "Opp. turns", hint: "Auto-pass priority during opponents' turns" },
+  { key: 'own', label: 'My empty phases', hint: 'Auto-pass your untap/upkeep/draw/combat-begin/end steps' },
+  { key: 'stk', label: 'Stop on stack', hint: "Stop when a new object hits an opponent's stack" },
+  { key: 'rsp', label: 'Stop if I can act', hint: 'Stop when you hold a castable instant or ability' },
+]
+
 function PriorityPanel({
   hasPriority,
   isSessionFinished,
@@ -1960,7 +2041,9 @@ function PriorityPanel({
   combatDamageStage,
   blockPassReason,
   autoPass,
-  onToggleAutoPass,
+  onChangeAutoPass,
+  isYielding,
+  onYieldTurn,
   onResolveCombatDamage,
   onPassPriority,
 }: {
@@ -1969,12 +2052,16 @@ function PriorityPanel({
   canResolveCombatDamage: boolean
   combatDamageStage: string | null
   blockPassReason?: string | null
-  autoPass: boolean
-  onToggleAutoPass: () => void
+  autoPass: AutoPassSettings
+  onChangeAutoPass: (patch: Partial<AutoPassSettings>) => void
+  isYielding: boolean
+  onYieldTurn: () => void
   onResolveCombatDamage: () => Promise<void>
   onPassPriority: () => Promise<void>
 }) {
   const [isPending, setIsPending] = useState(false)
+  const [autoOpen, setAutoOpen] = useState(false)
+  const anyAutoOn = autoPass.op || autoPass.own || autoPass.stk || autoPass.rsp
   const canPass = hasPriority && !isSessionFinished && !blockPassReason
 
   const run = async (fn: () => Promise<void>) => {
@@ -2016,14 +2103,61 @@ function PriorityPanel({
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={onToggleAutoPass}
-        title="Auto-pass priority on opponents' turns. Never skips your decisions, trigger targets or blocks; your own turn stays manual."
-        className={`w-full rounded-xl border px-1 py-2 text-[8px] font-black uppercase tracking-widest transition active:scale-95 ${autoPass ? 'border-amber-300/60 bg-amber-400/20 text-amber-300' : 'border-[#1E2230] text-slate-600'}`}
-      >
-        Auto{autoPass ? ' ✓' : ''}
-      </button>
+      <div className="relative w-full">
+        <button
+          type="button"
+          onClick={() => setAutoOpen((v) => !v)}
+          title="Auto-pass settings. Never skips your decisions, trigger targets or blocks."
+          className={`w-full rounded-xl border px-1 py-2 text-[8px] font-black uppercase tracking-widest transition active:scale-95 ${
+            isYielding
+              ? 'border-sky-300/60 bg-sky-400/20 text-sky-300'
+              : anyAutoOn
+                ? 'border-amber-300/60 bg-amber-400/20 text-amber-300'
+                : 'border-[#1E2230] text-slate-600'
+          }`}
+        >
+          Auto{isYielding ? ' »' : anyAutoOn ? ' ✓' : ''}
+        </button>
+
+        {autoOpen && (
+          <>
+            {/* click-away */}
+            <div className="fixed inset-0 z-40" onClick={() => setAutoOpen(false)} />
+            <div className="absolute right-full top-0 z-50 mr-2 w-44 rounded-2xl border border-[#1E2230] bg-[#0C0E14] p-2 shadow-xl">
+              <p className="px-1 pb-1 text-[8px] font-black uppercase tracking-widest text-slate-500">Auto-pass</p>
+              {AUTOPASS_ROWS.map((row) => {
+                const on = autoPass[row.key]
+                return (
+                  <button
+                    key={row.key}
+                    type="button"
+                    onClick={() => onChangeAutoPass({ [row.key]: !on })}
+                    title={row.hint}
+                    className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left transition active:scale-95 hover:bg-white/5"
+                  >
+                    <span className={`text-[10px] font-semibold ${on ? 'text-amber-300' : 'text-slate-400'}`}>{row.label}</span>
+                    <span
+                      className={`flex h-4 w-7 shrink-0 items-center rounded-full px-0.5 transition-colors ${on ? 'bg-amber-400/80' : 'bg-slate-700'}`}
+                    >
+                      <span className={`h-3 w-3 rounded-full bg-white transition-transform ${on ? 'translate-x-3' : ''}`} />
+                    </span>
+                  </button>
+                )
+              })}
+              <button
+                type="button"
+                onClick={() => { onYieldTurn(); setAutoOpen(false) }}
+                title="Pass every priority until your next turn"
+                className={`mt-1 w-full rounded-lg border px-2 py-1.5 text-[9px] font-black uppercase tracking-widest transition active:scale-95 ${
+                  isYielding ? 'border-sky-300/60 bg-sky-400/20 text-sky-300' : 'border-[#1E2230] text-slate-400 hover:bg-white/5'
+                }`}
+              >
+                {isYielding ? 'Yielding…' : 'Yield rest of turn'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
 
       <div className="mt-auto flex flex-col items-center gap-1">
         <div

@@ -5,6 +5,7 @@ import {
   normalizeCardBehaviorToV2,
 } from '@/lib/game/card-behavior'
 import { doesCardRequireStackTarget, getCanQuickCast, getPowerToughnessLabel } from '@/lib/game/controller-selectors'
+import { parseManaCost } from '@/lib/game/mana'
 import type { BoardCard, ControllerCard, ManaColor } from '@/lib/game/types'
 
 export const manaColors: ManaColor[] = ['W', 'U', 'B', 'R', 'G', 'C']
@@ -183,10 +184,27 @@ export function formatCounterBag(bag: Record<string, number> | null | undefined)
     .map(([kind, n]) => ({ kind: COUNTER_LABELS[kind] ?? kind, n }))
 }
 
-export const UNTARGETED_SPELL_ACTION_TYPES = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'add_counters_all', 'tap_all', 'untap_all', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard', 'proliferate']
+// Keep in sync with the engine's spell-program vocabulary (apply_trigger_effects
+// + apply_triggered_ability_effects). FOURTH drifting copy found (after
+// bug-688/693/705-era finds): Lazotep Plating's amass + grant_keyword_all were
+// missing here, so its cast button never enabled — likewise Whipflare,
+// Culling Ritual, Open the Vaults, Selvala's Stampede and friends.
+export const UNTARGETED_SPELL_ACTION_TYPES = [
+  'scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'add_counters_all', 'tap_all', 'untap_all',
+  'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard', 'proliferate',
+  'amass', 'grant_keyword_all', 'deal_damage_all', 'destroy_all', 'destroy_all_mv', 'destroy_all_creatures_token',
+  'return_all_from_graveyard', 'bounce_all', 'exile_all', 'pump_all', 'prevent_damage', 'add_poison', 'add_player_counters',
+  'look_top', 'impulse', 'put_from_hand', 'destroy_up_to', 'bounce_up_to', 'vote_wild_free',
+  'graveyard_to_library_top', 'exile_from_any_graveyard', 'mass_destroy_reanimate_one',
+  'damage_each_opponent_by_hand', 'gain_control_all', 'exile_tops_cast', 'conditional', 'choose_creature_type', 'choose_color',
+]
 // Effects that open a resolution-time choice — a spell containing one must run as a
 // program (single dedicated cast kinds can't surface the prompt).
-export const DECISION_SPELL_ACTION_TYPES = ['scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard', 'proliferate']
+export const DECISION_SPELL_ACTION_TYPES = [
+  'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard', 'proliferate',
+  'look_top', 'put_from_hand', 'destroy_up_to', 'bounce_up_to', 'vote_wild_free', 'graveyard_to_library_top',
+  'exile_from_any_graveyard', 'mass_destroy_reanimate_one', 'exile_tops_cast', 'choose_creature_type', 'choose_color',
+]
 
 // Maps a spell_effect action type to a targeted-creature stack action + a picker label.
 export const CREATURE_EFFECT_MAP: Record<string, { effect: TargetedCreatureActionType; label: string }> = {
@@ -410,7 +428,11 @@ export function getSpellPlan(card: ControllerCard): SpellPlan {
   // otherwise Opt matches `draw` first and the scry is dropped.
   const hasDecisionEffect = actions.some((a) => DECISION_SPELL_ACTION_TYPES.includes(a.type ?? ''))
   const allUntargeted = actions.every((a) => UNTARGETED_SPELL_ACTION_TYPES.includes(a.type ?? ''))
-  if (actions.length > 0 && allUntargeted && (hasDecisionEffect || actions.length > 1)) {
+  // Legacy single-action kinds keep their dedicated cast UIs below; anything
+  // newer runs as a program even alone (Noxious Assault's lone pump_all).
+  const LEGACY_SINGLE = ['scry', 'surveil', 'draw', 'gain_life', 'lose_life', 'mill', 'create_token', 'add_counters_all', 'tap_all', 'untap_all', 'search_library', 'discard', 'may', 'choose_player', 'sacrifice', 'return_from_graveyard', 'proliferate']
+  if (actions.length > 0 && allUntargeted
+      && (hasDecisionEffect || actions.length > 1 || !LEGACY_SINGLE.includes(actions[0]?.type ?? ''))) {
     const xRequired = actions.some(
       (a) => (a as { amount?: unknown }).amount === 'X' || (a as { count?: unknown }).count === 'X',
     )
@@ -477,4 +499,52 @@ export function canCastHandSpell(
     return card.zone === 'hand' && (isSorcerySpeed ? canCastSorceries : canCastInstants)
   }
   return getCanQuickCast(card, canCastSorceries, canCastInstants, pendingStackCount)
+}
+
+// Total mana pips in a cost string ({2}{R} → 3). Generic + one per coloured pip.
+function manaCostTotal(manaCost?: string | null): number {
+  const cost = parseManaCost(manaCost)
+  return cost.generic + manaColors.reduce((sum, c) => sum + cost.colored[c], 0)
+}
+
+// Does this player have a response they could make right now — a castable,
+// affordable instant/flash in hand, or an affordable instant-speed activated
+// ability on the battlefield? Used by the controller's auto-pass to STOP
+// instead of passing through opponents' priority windows. Affordability is
+// approximate (mana pips vs available mana + tap-source availability), matching
+// the spirit of the cast-button enable checks elsewhere; the engine still
+// rejects anything genuinely illegal.
+export function playerHasInstantResponse(
+  cards: ControllerCard[],
+  canCastInstants: boolean,
+  pendingStackCount: number,
+  availableMana: number,
+): boolean {
+  if (!canCastInstants) return false
+  // Hand: castable at instant speed (canCastSorceries=false isolates instants/
+  // flash) and affordable.
+  const handResponse = cards.some((card) => {
+    if (card.zone !== 'hand') return false
+    if (!canCastHandSpell(card, false, true, pendingStackCount)) return false
+    const total = manaCostTotal(card.cards?.mana_cost)
+    return total === 0 || availableMana >= total
+  })
+  if (handResponse) return true
+  // Battlefield: any non-mana, instant-speed activated ability that's affordable.
+  return cards.some((card) => {
+    if (card.zone !== 'battlefield') return false
+    const script = normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)
+    return (script.activated_abilities ?? []).some((ability) => {
+      if (ability.is_mana_ability) return false
+      if (ability.timing === 'sorcery') return false
+      // Mirrors activate_ability's zone gate (mig 289): missing means battlefield.
+      if ((ability.source_zone_required ?? 'battlefield') !== 'battlefield') return false
+      const costs = ability.costs ?? []
+      if (costs.some((c) => c.type === 'tap_self') && card.is_tapped) return false
+      const manaCost = costs.find((c) => c.type === 'mana') as { amount?: string } | undefined
+      if (!manaCost?.amount) return true
+      const total = manaCostTotal(manaCost.amount)
+      return total === 0 || availableMana >= total
+    })
+  })
 }
