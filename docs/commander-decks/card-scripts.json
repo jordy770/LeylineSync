@@ -999,5 +999,7 @@
 
   "Observed Stasis": {"schema_version":2,"keywords":["flash"],"continuous_effects":[{"type":"cant_attack","affected":"enchanted","source_zone_required":"battlefield"},{"type":"cant_block","affected":"enchanted","source_zone_required":"battlefield"}]},
 
-  "Emet-Selch of the Third Seat": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"amount":2,"from_zone":"graveyard"},"source_zone_required":"battlefield"}]}
+  "Emet-Selch of the Third Seat": {"schema_version":2,"continuous_effects":[{"type":"cost_reduction","affected":"controller","payload":{"amount":2,"from_zone":"graveyard"},"source_zone_required":"battlefield"}]},
+
+  "Summon: Good King Mog XII": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"lifelink","affected":"source","source_zone_required":"battlefield"}],"saga_chapters":[{"chapter":[1],"effects":[{"type":"create_token","token":"Moogle Token","count":2}]},{"chapter":[2,3],"effects":[]},{"chapter":[4],"effects":[{"type":"add_counters_all","counter_type":"plus_one_one","amount":2,"target_controller":"you","type_line":"Moogle","exclude_source":true}]}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"advance_saga"}]},{"event":"draw_step","effects":[{"type":"advance_saga"}]}]}
 }

@@ -1,7 +1,11 @@
--- supabase/functions_src/apply_triggered_ability_effects.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010305_sagas
+-- Saga subsystem (mig 305, Summon: Good King Mog XII). A new advance_saga effect
+-- adds a lore counter to its source, fires every saga_chapters entry whose
+-- chapter list contains the new lore value, and sacrifices the saga once the
+-- highest chapter is reached. The saga drives it from enters_the_battlefield
+-- (lore 1) and draw_step (lore +1) triggers.
+-- Generated from supabase/functions_src (apply_triggered_ability_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_triggered_ability_effects(
   p_session_id uuid,

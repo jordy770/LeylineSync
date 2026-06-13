@@ -198,7 +198,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'living_weapon', 'attach_all_equipment', 'gain_control_all', 'bounce_all', 'destroy_all_creatures_token',
   'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
   'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
-  'job_select',
+  'job_select', 'advance_saga',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -271,7 +271,7 @@ const AmountSchema = z.union([z.number(), z.literal('X'), z.literal('event_amoun
 
 // Which kind of counter an add_counters effect places. "plus_one_one" is the
 // engine's fast +1/+1 column; everything else lives in the jsonb counter bag.
-const PermanentCounterTypeSchema = z.enum(['plus_one_one', 'minus_one_one', 'charge', 'quest', 'study', 'gold', 'generic']).optional()
+const PermanentCounterTypeSchema = z.enum(['plus_one_one', 'minus_one_one', 'charge', 'quest', 'study', 'gold', 'generic', 'lore']).optional()
 // Player counters live on game_session_players. "poison" >= 10 loses the game.
 const PlayerCounterTypeSchema = z.enum(['poison', 'energy', 'experience'])
 
@@ -1099,6 +1099,10 @@ const CardBehaviorActionSchema = z.union([
   z.object({ type: z.literal('curse_attack_zombie') }),
   // Job select (mig 297): create a 1/1 Hero token and attach this Equipment to it.
   z.object({ type: z.literal('job_select') }),
+  // Saga (mig 305): add a lore counter, fire the matching chapter from
+  // `saga_chapters`, sacrifice after the final chapter. Driven by the saga's
+  // enters_the_battlefield + draw_step triggers.
+  z.object({ type: z.literal('advance_saga') }),
   UnknownV2ActionSchema,
 ])
 
@@ -1305,6 +1309,14 @@ export const CardBehaviorScriptV2Schema = z.object({
     cost: z.string().optional(),
     spell_effect: CardBehaviorSpellEffectSchema,
   }).optional(),
+  // Saga chapters (mig 305): each entry's untargeted `effects` resolve when the
+  // saga's lore counter reaches a number in `chapter`. Driven by an advance_saga
+  // effect on the saga's enters_the_battlefield + draw_step triggers; it
+  // sacrifices the saga after the highest chapter. (Summon: Good King Mog XII.)
+  saga_chapters: z.array(z.object({
+    chapter: z.array(z.number().int().positive()).nonempty(),
+    effects: z.array(z.record(z.string(), z.unknown())),
+  })).optional(),
   // Flashback: a mana cost the card can be cast for from the GRAVEYARD, after which
   // it is exiled (Army of the Damned: "Flashback {7}{B}{B}{B}"). Read server-side by
   // cast_spell_effect when the source is in the graveyard.
