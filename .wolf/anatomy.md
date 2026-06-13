@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T16:29:50.369Z
-> Files: 209 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T18:07:08.315Z
+> Files: 210 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -283,6 +283,7 @@
 - `breya-recursion.test.ts` — mig 265 — Hanna artifact-or-enchantment return, Myr Retriever exclude-self dies return. (~700 tok)
 - `breya-recursion.test.ts` — mig 265 — Breya recursion. Engine touch: return_from_graveyard filter (~782 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
+- `circle-of-power.test.ts` — Circle of Power (no migration): the spell makes a 0/1 black Wizard token whose (~774 tok)
 - `copy-permanent.test.ts` — mig 239 — token-copy primitive (Will of the Temur + Reflections of Littjara). (~2624 tok)
 - `cost-reduction.test.ts` — Cost reduction (mig 231) — reduced_mana_cost shaves generic mana at cast: (~942 tok)
 - `courser-mosswort.test.ts` — mig 248 — Hellkite Courser + Mosswort Bridge. (~1485 tok)

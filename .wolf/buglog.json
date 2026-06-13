@@ -11748,6 +11748,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T15:33:44.876Z"
+    },
+    {
+      "id": "bug-723",
+      "timestamp": "2026-06-13T18:07:08.335Z",
+      "error_message": "Type error",
+      "file": "tests/feature/circle-of-power.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T18:07:08.335Z"
     }
   ]
 }
