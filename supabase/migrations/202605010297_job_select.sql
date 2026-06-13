@@ -1,7 +1,11 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010297_job_select
+-- Job select (mig 297): a new job_select effect creates a 1/1 colourless Hero
+-- creature token and attaches the entering Equipment to it (mirrors mig 267's
+-- living_weapon with a Hero token). Used by the FFXIV "Job select" Equipment
+-- (Astrologian's Planisphere, Sage's Nouliths, Dancer's Chakrams, …); their
+-- equipped-creature bonuses ride affected:'equipped' continuous effects.
+-- Generated from supabase/functions_src (apply_trigger_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,

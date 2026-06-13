@@ -891,7 +891,7 @@
 
   "Cut a Deal": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":1,"recipient":"each_opponent"}]}},
 
-  "Dancer's Chakrams": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":2,"toughness":2}},{"type":"lifelink","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+  "Dancer's Chakrams": {"schema_version":2,"equip_cost":"{3}","triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"job_select"}]}],"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":2,"toughness":2},"source_zone_required":"battlefield"},{"type":"lifelink","affected":"equipped","source_zone_required":"battlefield"}]},
 
   "Darkwater Catacombs": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1},{"type":"add_mana","color":"B","amount":1}]}]},
 
@@ -977,5 +977,13 @@
 
   "Hermes, Overseer of Elpis": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature"},"effects":[{"type":"create_token","token":"Bird Token","count":1}]}]},
 
-  "Murderous Rider": {"schema_version":2,"continuous_effects":[{"type":"lifelink","affected":"source","source_zone_required":"battlefield"}],"adventure":{"name":"Swift End","cost":"{1}{B}{B}","spell_effect":{"actions":[{"type":"destroy","target_type":["creature","planeswalker"]},{"type":"lose_life","amount":2,"recipient":"controller"}]}}}
+  "Murderous Rider": {"schema_version":2,"continuous_effects":[{"type":"lifelink","affected":"source","source_zone_required":"battlefield"}],"adventure":{"name":"Swift End","cost":"{1}{B}{B}","spell_effect":{"actions":[{"type":"destroy","target_type":["creature","planeswalker"]},{"type":"lose_life","amount":2,"recipient":"controller"}]}}},
+
+  "Astrologian's Planisphere": {"schema_version":2,"equip_cost":"{2}","triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"job_select"}]}]},
+
+  "Blue Mage's Cane": {"schema_version":2,"equip_cost":"{2}","triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"job_select"}]}],"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":0,"toughness":2},"source_zone_required":"battlefield"}]},
+
+  "Reaper's Scythe": {"schema_version":2,"equip_cost":"{2}","triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"job_select"}]},{"event":"end_step","filter":{"controller":"you"},"effects":[{"type":"add_counters","amount":{"count":"players_lost_life_this_turn"},"counter_type":"generic"}]}]},
+
+  "Sage's Nouliths": {"schema_version":2,"equip_cost":"{3}","triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"job_select"}]}],"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":1,"toughness":0},"source_zone_required":"battlefield"}]}
 }

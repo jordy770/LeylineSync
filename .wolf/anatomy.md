@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T14:08:27.457Z
-> Files: 202 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T14:37:06.303Z
+> Files: 204 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -137,7 +137,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12266 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18892 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18935 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4067 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
 
@@ -175,7 +175,7 @@
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1003 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~19431 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~19814 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~11234 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
@@ -258,6 +258,7 @@
 - `202605010294_life_lost_this_turn.sql` — 202605010294_life_lost_this_turn (~7174 tok)
 - `202605010295_adventures.sql` — 202605010295_adventures (~6474 tok)
 - `202605010296_adventure_counter.sql` — 202605010296_adventure_counter (~2542 tok)
+- `202605010297_job_select.sql` — 202605010297_job_select (~19896 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -313,6 +314,7 @@
 - `gadrak.test.ts` — Gadrak, the Crown-Scourge (mig 229) — (~1191 tok)
 - `game-start.test.ts` — Game start sequence (mig 221) — random first player, 7-card opening hands, (~1843 tok)
 - `goad-territorial.test.ts` — mig 249 — Vengeful Ancestor (goad) + Territorial Hellkite. (~1713 tok)
+- `job-select.test.ts` — Job select (mig 297): when a "Job select" Equipment enters, it creates a 1/1 (~502 tok)
 - `kessig-chaos-warp.test.ts` — mig 242 — Kessig Wolf Run + Chaos Warp. (~1297 tok)
 - `landfall.test.ts` — mig 238 — Nesting Dragon (landfall) + Sarkhan cost reduction. (~843 tok)
 - `life-lost-this-turn.test.ts` — Life-loss-this-turn tracker (mig 294): a BEFORE UPDATE trigger accumulates (~670 tok)
@@ -353,7 +355,7 @@
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
 - `card-scripts-validation.test.ts` — Every curated entry in docs/commander-decks/card-scripts.json must pass (~458 tok)
 - `card-scripts-validation.test.ts` — validates every docs/commander-decks/card-scripts.json entry against validateCardScript (the hosted upsert gate), added after bug-687/688. (~350 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~2422 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~2928 tok)
 
 ## vercel/
 

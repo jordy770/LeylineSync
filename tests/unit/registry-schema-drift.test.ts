@@ -67,6 +67,7 @@ const JSON_ONLY: Record<string, string> = {
   become_monarch: 'you become the monarch (Regal Behemoth, mig 262); JSON/AI-authored',
   equip: 'attach this Equipment to target creature you control (Breya Equipment cluster, mig 266); JSON/AI-authored',
   living_weapon: 'Germ token + attach the Equipment to it (Bonehoard / Grip of Phyresis, mig 267); JSON/AI-authored',
+  job_select: '1/1 Hero token + attach this Equipment to it (FFXIV Job select, mig 297); JSON/AI-authored',
   attach_all_equipment: 'attach every Equipment you control to the source (Armory Automaton, mig 267); JSON/AI-authored',
   gain_control_all: 'permanently steal every matching opposing permanent (Hellkite Tyrant, mig 269); JSON/AI-authored',
   bounce_all: 'return each nonland permanent to its owners hand (Coastal Breach, mig 269); JSON/AI-authored',

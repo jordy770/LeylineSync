@@ -198,6 +198,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'living_weapon', 'attach_all_equipment', 'gain_control_all', 'bounce_all', 'destroy_all_creatures_token',
   'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
   'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
+  'job_select',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -1087,6 +1088,8 @@ const CardBehaviorActionSchema = z.union([
   // "Enchant player" curse: registers an attack-trigger on the recipient player
   // (the chosen enchanted player) — Curse of Disturbance. JSON/AI-authored.
   z.object({ type: z.literal('curse_attack_zombie') }),
+  // Job select (mig 297): create a 1/1 Hero token and attach this Equipment to it.
+  z.object({ type: z.literal('job_select') }),
   UnknownV2ActionSchema,
 ])
 
