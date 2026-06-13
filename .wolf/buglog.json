@@ -11863,6 +11863,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T19:43:18.066Z"
+    },
+    {
+      "id": "bug-730",
+      "timestamp": "2026-06-13T19:54:14.540Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/feature/sublime-epiphany.test.ts",
+      "root_cause": "Had 'bounce'",
+      "fix": "Changed to 'bounce_up_to'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T19:54:14.540Z"
     }
   ]
 }

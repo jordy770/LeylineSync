@@ -1,7 +1,10 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010306_sublime_epiphany
+-- choose_up_to (mig 306, Sublime Epiphany). A choose_one action/mode can now set
+-- a max number of picks (choose_up_to, capped at the mode count) — "choose one
+-- or more". The chosen modes splice into the program and run through the full
+-- resolver, so targeted modes (bounce / copy / draw-to-player) park their picks.
+-- Generated from supabase/functions_src (apply_trigger_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,

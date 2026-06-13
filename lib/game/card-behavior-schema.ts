@@ -776,6 +776,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('choose_one'),
     prompt: z.string().optional(),
     choose: z.number().int().positive().optional(),
+    // "Choose one or more" (mig 306, Sublime Epiphany): max picks = choose_up_to
+    // (capped at the mode count); minimum stays `choose` (1).
+    choose_up_to: z.number().int().positive().optional(),
     // "If you control a commander as you cast this spell, you may choose both"
     // (Will of the Temur): raises max_choices to every mode when the chooser
     // controls a commander.
