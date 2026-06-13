@@ -1187,6 +1187,10 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     has_keyword: z.literal('flying').optional(),
     // "whenever a GOADED creature attacks" (mig 249 — Vengeful Ancestor).
     goaded: z.boolean().optional(),
+    // "whenever you attack with N or more creatures" (mig 301 — Champions from
+    // Beyond). Counts the attacking player's declared attackers this combat;
+    // pair with once_per_turn so it fires a single time once the threshold is met.
+    attackers_at_least: z.number().int().positive().optional(),
   }).optional(),
   targets: z.array(CardBehaviorTargetSchema).optional(),
   effects: z.array(CardBehaviorActionSchema),

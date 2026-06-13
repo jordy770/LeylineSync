@@ -1,7 +1,12 @@
--- supabase/functions_src/fire_watcher_triggers.sql
--- CANONICAL current definition (seeded from 202605010181_watcher_nontoken_filter.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010301_attack_count
+-- Attacker-count trigger (mig 301, Champions from Beyond's Light Party). The
+-- creature_attacks watcher gains a filter.attackers_at_least N ("whenever you
+-- attack with N or more creatures"), counting the attacking player's declared
+-- attackers this combat. The once_per_turn stamp is now keyed per ABILITY (its
+-- id) and deferred until after all filters pass, so a card with two such
+-- watchers (Light 4+ / Full 8+) stamps each independently and fires once.
+-- Generated from supabase/functions_src (fire_watcher_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.fire_watcher_triggers(
   p_session_id uuid,

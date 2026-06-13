@@ -33,3 +33,26 @@ test('CH1 Champions ETB creates X Hero tokens', async () => {
     assert.equal(heroes.rows[0].n, 3)
   })
 })
+
+// CH2 — Light Party: attacking with 4+ creatures fires once (draws); 3 does not.
+test('CH2 Light Party fires once when you attack with four or more creatures', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.spawnCreature('A', 'Champions Test')
+    const atk = []
+    for (let i = 0; i < 4; i++) atk.push(await s.spawnCreature('A', 'Air Elemental Test'))
+    await s.spawn('A', 'Air Elemental Test', 'library')
+
+    await s.setTurn({ phase: 'combat', step: 'declare_attackers', active: 'A', priority: 'A' })
+    const handBefore = await s.zoneCount('A', 'hand')
+
+    await s.as('A').declareAttacker(atk[0], 'B')
+    await s.as('A').declareAttacker(atk[1], 'B')
+    await s.as('A').declareAttacker(atk[2], 'B')
+    assert.equal(await s.zoneCount('A', 'hand'), handBefore) // 3 attackers — below threshold
+    await s.as('A').declareAttacker(atk[3], 'B')
+    await s.as('A').resolveStack() // Light Party trigger resolves
+
+    assert.equal(await s.zoneCount('A', 'hand'), handBefore + 1) // 4th attacker fired the draw
+  })
+})

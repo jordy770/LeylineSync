@@ -11812,6 +11812,41 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T18:26:15.167Z"
+    },
+    {
+      "id": "bug-727",
+      "timestamp": "2026-06-13T18:30:00.000Z",
+      "error_message": "Login via Cloudflare Tunnel hostname (app.dweemo.nl) silently fails: form submits, page refreshes, no error, user stays on /auth/login",
+      "file": "next.config.ts",
+      "root_cause": "Next.js dev server blocks cross-origin RSC requests from hostnames not in allowedDevOrigins. signInWithPassword succeeds but the post-login router.refresh() RSC request from origin app.dweemo.nl is blocked, so navigation to / never completes. Same class of issue previously fixed for tailscale (*.ts.net).",
+      "fix": "Added 'app.dweemo.nl' and '*.dweemo.nl' to allowedDevOrigins in next.config.ts; restart dev server to apply.",
+      "tags": [
+        "nextjs",
+        "allowedDevOrigins",
+        "rsc-refresh",
+        "supabase-auth",
+        "cloudflare-tunnel",
+        "reverse-proxy"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T18:30:00.000Z"
+    },
+    {
+      "id": "bug-728",
+      "timestamp": "2026-06-13T18:31:50.455Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/champions-from-beyond.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T18:31:50.455Z"
     }
   ]
 }

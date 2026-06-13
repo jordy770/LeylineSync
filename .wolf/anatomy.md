@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T18:26:15.141Z
-> Files: 213 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T18:31:50.436Z
+> Files: 214 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -138,7 +138,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12283 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~19141 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~19229 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4067 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
 
@@ -194,7 +194,7 @@
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~612 tok)
 - `fire_tap_triggers.sql` — supabase/functions_src/fire_tap_triggers.sql (~297 tok)
 - `fire_turn_step_triggers.sql` — supabase/functions_src/fire_turn_step_triggers.sql (~673 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~2829 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~3189 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1540 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
@@ -263,6 +263,7 @@
 - `202605010298_syphon_mind.sql` — 202605010298_syphon_mind (~23658 tok)
 - `202605010299_ardbert.sql` — 202605010299_ardbert (~14550 tok)
 - `202605010300_x_permanents.sql` — 202605010300_x_permanents (~17516 tok)
+- `202605010301_attack_count.sql` — 202605010301_attack_count (~3292 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -284,7 +285,7 @@
 - `breya-manabase.test.ts` — mig 263 — Breya karoo land bounce (bounce_up_to type_line) + double-mana tap. (~500 tok)
 - `breya-recursion.test.ts` — mig 265 — Hanna artifact-or-enchantment return, Myr Retriever exclude-self dies return. (~700 tok)
 - `breya-recursion.test.ts` — mig 265 — Breya recursion. Engine touch: return_from_graveyard filter (~782 tok)
-- `champions-from-beyond.test.ts` — Champions from Beyond (mig 300, Stage A): an {X} permanent whose ETB creates (~409 tok)
+- `champions-from-beyond.test.ts` — Champions from Beyond (mig 300, Stage A): an {X} permanent whose ETB creates (~721 tok)
 - `checkland-min-power.test.ts` — Checklands + the watcher min_power filter (mig 225). (~972 tok)
 - `circle-of-power.test.ts` — Circle of Power (no migration): the spell makes a 0/1 black Wizard token whose (~774 tok)
 - `copy-permanent.test.ts` — mig 239 — token-copy primitive (Will of the Temur + Reflections of Littjara). (~2624 tok)
