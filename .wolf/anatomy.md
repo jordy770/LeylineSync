@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T14:37:06.303Z
-> Files: 204 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T15:33:54.883Z
+> Files: 207 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -137,7 +137,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12266 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18935 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18996 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4067 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
 
@@ -175,7 +175,7 @@
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1003 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~19814 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~20187 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~11234 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
@@ -205,7 +205,7 @@
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2392 tok)
 - `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~7219 tok)
-- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3358 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3450 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~800 tok)
 - `return_all_from_graveyard.sql` — supabase/functions_src/return_all_from_graveyard.sql (~838 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
@@ -259,6 +259,7 @@
 - `202605010295_adventures.sql` — 202605010295_adventures (~6474 tok)
 - `202605010296_adventure_counter.sql` — 202605010296_adventure_counter (~2542 tok)
 - `202605010297_job_select.sql` — 202605010297_job_select (~19896 tok)
+- `202605010298_syphon_mind.sql` — 202605010298_syphon_mind (~23658 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -324,6 +325,7 @@
 - `noncreature-spell-trigger.test.ts` — Noncreature-spell watcher (mig 292): a spell_cast triggered ability with (~933 tok)
 - `omen-casts.test.ts` — mig 289 — Flush Out from hand: discard park, draw two, shuffle-self-away. (~500 tok)
 - `opportunistic-dragon.test.ts` — mig 246 — Opportunistic Dragon: "When this creature enters, choose target (~810 tok)
+- `propaganda.test.ts` — Propaganda / attack tax (existing attack_tax mechanism): creatures can't (~511 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
 - `reality-shift.test.ts` — mig 251 — Reality Shift (manifest): "Exile target creature. Its controller (~1052 tok)
 - `reflexive-watcher.test.ts` — Reflexive watchers (mig 227) — the entering/attacking creature ITSELF gains (~953 tok)
@@ -331,6 +333,7 @@
 - `selvalas-stampede.test.ts` — mig 252 — Selvala's Stampede (council's dilemma voting): starting with the (~1095 tok)
 - `siege-dragonstorm.test.ts` — mig 245 — Frontier Siege + Breaching Dragonstorm. (~1740 tok)
 - `spell-cast-watcher.test.ts` — Spell-cast watcher (mig 234): (~722 tok)
+- `syphon-mind.test.ts` — Syphon Mind (mig 298): each other player discards a card (each_opponent, at (~488 tok)
 - `treasure.test.ts` — Treasure tokens (mig 226) — "{T}, Sacrifice this artifact: Add one mana of (~660 tok)
 - `tyrants-thundermane.test.ts` — mig 244 — Leyline Tyrant + Hammerhead Tyrant + Thundermane Dragon. (~1802 tok)
 - `undying.test.ts` — Undying (mig 219) — "When this creature dies, if it had no +1/+1 counters on (~820 tok)

@@ -260,6 +260,13 @@ begin
     select count(*)::integer into v_n
     from public.game_session_players
     where session_id = p_session_id and coalesce(life_lost_this_turn, 0) > 0;
+
+  elsif v_count = 'num_opponents' then
+    -- Other players in the game (mig 298, Syphon Mind: "draw a card for each
+    -- card discarded this way" ~ one per opponent who discarded).
+    select count(*)::integer into v_n
+    from public.game_session_players
+    where session_id = p_session_id and player_id is distinct from p_controller_id;
   end if;
 
   -- times (mig 268, Filigree Angel: 'gain 3 life for each artifact you

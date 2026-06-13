@@ -228,7 +228,7 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters', 'countered_creatures_you_control', 'opponent_hand_excess', 'lands_and_graveyard_lands', 'opponent_lands', 'max_life_lost_this_turn', 'players_lost_life_this_turn']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters', 'countered_creatures_you_control', 'opponent_hand_excess', 'lands_and_graveyard_lands', 'opponent_lands', 'max_life_lost_this_turn', 'players_lost_life_this_turn', 'num_opponents']),
   // times (mig 268, Filigree Angel / Benevolent Offering): the resolved count
   // is multiplied by this. Re-added in the mig 281 cleanup — the original
   // edit silently no-opped on a CRLF regex; the hosted upsert validator
@@ -355,7 +355,9 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('discard'),
     count: z.number().optional(),
-    who: z.enum(['you', 'opponent']).optional(),
+    // each_opponent / each_player (mig 298, Syphon Mind): every (other) player
+    // discards `count` cards — at random (the chooser nuance is approximated).
+    who: z.enum(['you', 'opponent', 'each_opponent', 'each_player']).optional(),
     random: z.boolean().optional(),
   }),
   // Optional "you may": a yes/no gate that, if accepted, runs the inner effects.
