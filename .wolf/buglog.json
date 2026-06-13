@@ -11474,6 +11474,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T00:00:00Z"
+    },
+    {
+      "id": "bug-706",
+      "timestamp": "2026-06-13T00:00:00Z",
+      "error_message": "Nogi Draco-Zealot does not reduce the Dragon commander cast cost",
+      "file": "supabase/functions_src/cast_commander.sql",
+      "root_cause": "cast_commander paid the PRINTED mana cost directly — reduced_mana_cost was only consulted by cast_card_from_hand and cast_spell_effect, so NO static cost reduction (Nogi, Dragonlords Servant, Etherium Sculptor, Millicent affinity) ever applied to command-zone casts",
+      "fix": "the printed-cost payment now runs through reduced_mana_cost (mig 291); commander tax stays a separate unreduced payment (strict-rules nuance documented). Regression: Nogi discounts a {4}{R}{R} commander to {3}{R}{R} exactly",
+      "tags": [
+        "cost_reduction",
+        "cast_commander",
+        "command-zone"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T00:00:00Z"
     }
   ]
 }
