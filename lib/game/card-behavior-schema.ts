@@ -917,6 +917,9 @@ const CardBehaviorActionSchema = z.union([
     // the source for a later play_hideaway; min_picks 1 makes it mandatory.
     to: z.enum(['battlefield', 'hand', 'exile']).optional(),
     min_picks: z.number().int().nonnegative().optional(),
+    // How many to take (mig 302, Dig Through Time: "put TWO into your hand").
+    // Defaults to 1.
+    picks: z.number().int().positive().optional(),
     filter: z.object({
       type_line: z.string().optional(),
       creature: z.boolean().optional(),

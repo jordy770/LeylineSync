@@ -452,7 +452,15 @@ begin
     v_dest := coalesce(v_decision.params ->> 'to', 'battlefield');
     for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
     loop
-      if v_dest = 'exile' then
+      if v_dest = 'hand' then
+        -- "Put N into your hand" (mig 302, Dig Through Time); the rest bottom.
+        select coalesce(max(zone_position), -1) + 1 into v_pos
+        from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = 'hand';
+        update public.game_cards
+        set zone = 'hand', zone_position = v_pos, controller_player_id = owner_id,
+            is_tapped = false, damage_marked = 0
+        where id = v_card;
+      elsif v_dest = 'exile' then
         select coalesce(max(zone_position), -1) + 1 into v_pos
         from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = 'exile';
         update public.game_cards
