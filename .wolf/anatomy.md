@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T15:33:54.883Z
-> Files: 207 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T16:29:50.369Z
+> Files: 209 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -137,7 +137,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12266 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18996 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~19092 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4067 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
 
@@ -176,7 +176,7 @@
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~651 tok)
 - `apply_targeted_triggered_ability_effects.sql` — supabase/functions_src/apply_targeted_triggered_ability_effects.sql (~502 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~20187 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~11234 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~11913 tok)
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5263 tok)
@@ -193,7 +193,7 @@
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~612 tok)
 - `fire_tap_triggers.sql` — supabase/functions_src/fire_tap_triggers.sql (~297 tok)
 - `fire_turn_step_triggers.sql` — supabase/functions_src/fire_turn_step_triggers.sql (~673 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~2721 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~2829 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1540 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~406 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1834 tok)
@@ -260,6 +260,7 @@
 - `202605010296_adventure_counter.sql` — 202605010296_adventure_counter (~2542 tok)
 - `202605010297_job_select.sql` — 202605010297_job_select (~19896 tok)
 - `202605010298_syphon_mind.sql` — 202605010298_syphon_mind (~23658 tok)
+- `202605010299_ardbert.sql` — 202605010299_ardbert (~14550 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -270,6 +271,7 @@
 ## tests/feature/
 
 - `adventures.test.ts` — Adventure mechanic (mig 295): casting the adventure half (cast_spell_effect (~1331 tok)
+- `ardbert.test.ts` — Ardbert, Warrior of Darkness (mig 299): casting a white/black spell puts a (~656 tok)
 - `atsushi.test.ts` — Atsushi, the Blazing Sky (mig 230) — a MODAL dies trigger ("choose one"): (~1292 tok)
 - `become-copy.test.ts` — mig 240 — become_copy: an EXISTING card becomes a copy of another. (~1756 tok)
 - `become-the-avalanche.test.ts` — mig 243 — Become the Avalanche: "Draw a card for each creature you control (~662 tok)

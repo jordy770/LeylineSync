@@ -4108,3 +4108,18 @@
 | 17:33 | Edited tests/feature/propaganda.test.ts | manaPool() → manaOf() | ~35 |
 | 17:33 | Created tests/feature/syphon-mind.test.ts | — | ~488 |
 | 18:55 | PROPAGANDA + SYPHON MIND. Propaganda = NO migration: declare_attacker already has an attack_tax continuous-effect mechanism (charges payload.mana/life per attacker vs the defending player) — scripted {type:'attack_tax',affected:'controller',payload:{mana:2}}. Syphon Mind = mig 298: discard gains who:'each_opponent'/'each_player' (every (other) player discards N at random/immediate — chooser nuance approximated, avoids parking N decisions) + resolve_count_amount gains num_opponents; scripted [discard each_opponent random 1, draw {count:num_opponents}]. Tests PROP1 (pays {2}), PROP2 (rejected w/o mana), SYPH1 (3-player: B+C discard, A draws 2). FULL SUITE 1481/1481, tsc clean. ~19 deck cards now functional | declare_attacker(none), apply_trigger_effects.sql, resolve_count_amount.sql, mig 298, card-behavior-schema.ts, card-scripts.json, propaganda.test.ts, syphon-mind.test.ts, test-cards.json | 1481/1481 green | ~14k |
+| 17:38 | Session end: 46 writes across 20 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 18 reads | ~146774 tok |
+| 18:04 | Session end: 46 writes across 20 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 18 reads | ~146774 tok |
+| 18:07 | Session end: 46 writes across 20 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 20 reads | ~146774 tok |
+| 18:23 | Session end: 46 writes across 20 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 20 reads | ~146774 tok |
+| 18:24 | Session end: 46 writes across 20 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 20 reads | ~146774 tok |
+| 18:28 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | added 1 condition(s) | ~135 |
+| 18:28 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | added 1 condition(s) | ~155 |
+| 18:28 | Edited supabase/functions_src/fire_watcher_triggers.sql | 4→5 lines | ~30 |
+| 18:28 | Edited supabase/functions_src/fire_watcher_triggers.sql | 6→6 lines | ~99 |
+| 18:28 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified filter() | ~132 |
+| 18:28 | Edited lib/game/card-behavior-schema.ts | modified value() | ~146 |
+| 18:28 | Edited lib/game/card-behavior-schema.ts | 7→9 lines | ~122 |
+| 18:29 | Edited supabase/migrations/202605010299_ardbert.sql | 2→7 lines | ~127 |
+| 18:29 | Created tests/feature/ardbert.test.ts | — | ~656 |
+| 19:25 | ARDBERT (mig 299) — two small watcher/effect additions: fire_watcher_triggers gains a spell_color filter ("cast a WHITE/BLACK spell" = cast card's mana_cost ilike '%W%'/'%B%'); add_counters_all gains an optional type_line filter ("each LEGENDARY creature"). Ardbert scripted: white→ +1/+1 each legendary + vigilance EOT; black→ +1/+1 + menace EOT (grant_keyword_all creature_type 'Legendary' matches via type_line ilike). Tests ARD1 (white buffs legendaries, not non-legendaries), ARD2 (red doesn't fire). FULL SUITE 1484/1484, tsc clean. ~20 deck cards now functional | fire_watcher_triggers.sql, apply_triggered_ability_effects.sql, mig 299, card-behavior-schema.ts, card-scripts.json, ardbert.test.ts, test-cards.json | 1484/1484 green | ~12k |

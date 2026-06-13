@@ -19,6 +19,7 @@ as $$
 declare
   v_changed_type text;
   v_changed_mv integer;
+  v_changed_mana_cost text;
   v_changed_is_token boolean;
   v_watcher record;
   v_ability jsonb;
@@ -30,9 +31,9 @@ declare
 begin
   -- Token at either level: catalog tokens (cards.is_token) or copy tokens
   -- (game_cards.is_token, mig 239).
-  select cards.type_line, public.mana_value(cards.mana_cost),
+  select cards.type_line, public.mana_value(cards.mana_cost), cards.mana_cost,
          coalesce(cards.is_token, false) or coalesce(gc.is_token, false)
-  into v_changed_type, v_changed_mv, v_changed_is_token
+  into v_changed_type, v_changed_mv, v_changed_mana_cost, v_changed_is_token
   from public.game_cards gc
   join public.cards on cards.id = gc.card_id
   where gc.id = p_changed_card_id and gc.session_id = p_session_id;
@@ -173,6 +174,13 @@ begin
       -- reads the cast card's mana value (lands/tokens = 0).
       if v_filter ? 'min_mana_value'
          and coalesce(v_changed_mv, 0) < (v_filter ->> 'min_mana_value')::integer then
+        continue;
+      end if;
+
+      -- Colour filter (mig 299): "whenever you cast a WHITE/BLACK spell" (Ardbert).
+      -- A spell is that colour if its mana cost contains the colour symbol.
+      if v_filter ? 'spell_color'
+         and coalesce(v_changed_mana_cost, '') not ilike '%' || upper(v_filter ->> 'spell_color') || '%' then
         continue;
       end if;
 

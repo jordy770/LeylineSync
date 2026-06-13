@@ -843,6 +843,8 @@ const CardBehaviorActionSchema = z.union([
     all: z.boolean().optional(),
     // "each OTHER creature you control" (Bellowing Aegisaur, mig 256).
     exclude_source: z.boolean().optional(),
+    // Optional type-line filter (mig 299, Ardbert: "each LEGENDARY creature").
+    type_line: z.string().optional(),
   }),
   z.object({
     // Put player counters (poison/energy/experience) on players. Default recipient
@@ -1168,6 +1170,9 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     // N. For spell_cast reads the cast spell's MV — "a noncreature spell with
     // mana value 3 or greater" (Y'shtola) = exclude_type 'Creature' + min_mana_value 3.
     min_mana_value: z.number().int().optional(),
+    // Spell colour (mig 299): "whenever you cast a WHITE/BLACK spell" (Ardbert) —
+    // the cast spell's mana cost must contain this colour symbol.
+    spell_color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
     controller: z.enum(['you', 'opponent', 'any']).optional(),
     exclude_self: z.boolean().optional(),
     // "a NONTOKEN creature …" (Midnight Reaper, Open the Graves) — the watcher

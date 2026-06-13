@@ -989,5 +989,7 @@
 
   "Propaganda": {"schema_version":2,"continuous_effects":[{"type":"attack_tax","affected":"controller","payload":{"mana":2},"source_zone_required":"battlefield"}]},
 
-  "Syphon Mind": {"schema_version":2,"spell_effect":{"actions":[{"type":"discard","who":"each_opponent","count":1,"random":true},{"type":"draw","amount":{"count":"num_opponents"},"recipient":"controller"}]}}
+  "Syphon Mind": {"schema_version":2,"spell_effect":{"actions":[{"type":"discard","who":"each_opponent","count":1,"random":true},{"type":"draw","amount":{"count":"num_opponents"},"recipient":"controller"}]}},
+
+  "Ardbert, Warrior of Darkness": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","spell_color":"W"},"effects":[{"type":"add_counters_all","counter_type":"plus_one_one","amount":1,"target_controller":"you","type_line":"Legendary"},{"type":"grant_keyword_all","keyword":"vigilance","scope":"controller","creature_type":"Legendary"}]},{"event":"spell_cast","filter":{"controller":"you","spell_color":"B"},"effects":[{"type":"add_counters_all","counter_type":"plus_one_one","amount":1,"target_controller":"you","type_line":"Legendary"},{"type":"grant_keyword_all","keyword":"menace","scope":"controller","creature_type":"Legendary"}]}]}
 }
