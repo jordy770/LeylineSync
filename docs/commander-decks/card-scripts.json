@@ -915,11 +915,11 @@
 
   "Glacial Fortress": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Plains","Island"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
 
-  "Hildibrand Manderville": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"controller","payload":{"power":1,"toughness":1,"token_only":true}}]},
+  "Hildibrand Manderville": {"schema_version":2,"adventure":{"name":"Hildibrand Manderville (Adventure)","cost":"{1}{B}","spell_effect":{"actions":[{"type":"create_token","token":"Zombie Token","count":1}]}}},
 
   "Hraesvelgr of the First Brood": {"schema_version":2,"keywords":["flying","vigilance"],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"pump","power":1,"toughness":0,"until_end_of_turn":true,"target_type":"creature"}]}]},
 
-  "Hypnotic Sprite": {"schema_version":2,"keywords":["flying"]},
+  "Hypnotic Sprite": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"adventure":{"name":"Mesmeric Glare","cost":"{1}{U}","spell_effect":{"actions":[{"type":"counter","target_type":"spell"}]}}},
 
   "Idyllic Beachfront": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
 
@@ -975,5 +975,7 @@
 
   "Lyse Hext": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature"},"effects":[{"type":"pump","power":1,"toughness":1}]}]},
 
-  "Hermes, Overseer of Elpis": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature"},"effects":[{"type":"create_token","token":"Bird Token","count":1}]}]}
+  "Hermes, Overseer of Elpis": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature"},"effects":[{"type":"create_token","token":"Bird Token","count":1}]}]},
+
+  "Murderous Rider": {"schema_version":2,"continuous_effects":[{"type":"lifelink","affected":"source","source_zone_required":"battlefield"}],"adventure":{"name":"Swift End","cost":"{1}{B}{B}","spell_effect":{"actions":[{"type":"destroy","target_type":["creature","planeswalker"],"then":[{"type":"lose_life","amount":2}]}]}}}
 }

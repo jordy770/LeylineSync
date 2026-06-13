@@ -8,7 +8,11 @@ create or replace function public.cast_spell_effect(
   p_actions jsonb,
   p_source_card_id uuid default null,
   p_x_value integer default null,
-  p_target_card_id uuid default null
+  p_target_card_id uuid default null,
+  -- Adventure (mig 295): casting the adventure HALF of a card. On resolution the
+  -- source goes to exile (not the graveyard) with a non-expiring play_from_exile
+  -- permission, so the creature face can be cast from exile later.
+  p_adventure boolean default false
 )
 returns public.game_stack_items
 language plpgsql
@@ -193,9 +197,29 @@ begin
     perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'spell_cast');
   end if;
 
+  -- Adventure (mig 295): the card is exiled with a non-expiring play_from_exile
+  -- permission so its creature face can be cast from exile later. Checked before
+  -- the type_line graveyard rule because the source is a CREATURE card.
+  if p_adventure and p_source_card_id is not null then
+    select coalesce(max(zone_position), -1) + 1 into v_next_exile
+    from public.game_cards
+    where session_id = p_session_id and owner_id = auth.uid() and zone = 'exile';
+
+    update public.game_cards
+    set zone = 'exile', zone_position = v_next_exile, controller_player_id = owner_id,
+        is_tapped = false, damage_marked = 0
+    where id = p_source_card_id;
+
+    insert into public.game_continuous_effects (
+      session_id, source_card_id, affected_player_id, effect_type, payload
+    ) values (
+      p_session_id, p_source_card_id, auth.uid(), 'play_from_exile',
+      jsonb_build_object('card_ids', jsonb_build_array(p_source_card_id), 'permanent', true)
+    );
+
   -- Non-permanent spell leaves its cast zone on cast: a hand cast goes to the
   -- graveyard; a flashback cast (from the graveyard) is exiled instead.
-  if v_is_flashback then
+  elsif v_is_flashback then
     select coalesce(max(zone_position), -1) + 1 into v_next_exile
     from public.game_cards
     where session_id = p_session_id and owner_id = auth.uid() and zone = 'exile';
@@ -221,4 +245,4 @@ begin
   return v_stack;
 end;
 $$;
-grant execute on function public.cast_spell_effect(uuid, jsonb, uuid, integer, uuid) to authenticated;
+grant execute on function public.cast_spell_effect(uuid, jsonb, uuid, integer, uuid, boolean) to authenticated;

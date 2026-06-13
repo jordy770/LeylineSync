@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T13:13:20.691Z
-> Files: 199 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T13:43:24.501Z
+> Files: 201 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -137,7 +137,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18731 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18892 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
 
@@ -168,7 +168,7 @@
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1813 tok)
 - `add_mana_from_card.sql` — basic-land/manual mana rpc (7-arg, commander identity + monarch land bonus); canonical since mig 262. (~900 tok)
 - `add_mana_from_card.sql` — supabase/functions_src/add_mana_from_card.sql (~1460 tok)
-- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3558 tok)
+- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3611 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~5988 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1707 tok)
@@ -180,7 +180,7 @@
 - `become_copy.sql` — supabase/functions_src/become_copy.sql (~1020 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~670 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5263 tok)
-- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2441 tok)
+- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2775 tok)
 - `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
@@ -256,6 +256,7 @@
 - `202605010292_noncreature_spell_filter.sql` — 202605010292_noncreature_spell_filter (~2707 tok)
 - `202605010293_spell_mana_value_filter.sql` — 202605010293_spell_mana_value_filter (~2803 tok)
 - `202605010294_life_lost_this_turn.sql` — 202605010294_life_lost_this_turn (~7174 tok)
+- `202605010295_adventures.sql` — 202605010295_adventures (~6474 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -265,6 +266,7 @@
 
 ## tests/feature/
 
+- `adventures.test.ts` — Adventure mechanic (mig 295): casting the adventure half (cast_spell_effect (~688 tok)
 - `atsushi.test.ts` — Atsushi, the Blazing Sky (mig 230) — a MODAL dies trigger ("choose one"): (~1292 tok)
 - `become-copy.test.ts` — mig 240 — become_copy: an EXISTING card becomes a copy of another. (~1756 tok)
 - `become-the-avalanche.test.ts` — mig 243 — Become the Avalanche: "Draw a card for each creature you control (~662 tok)
@@ -340,7 +342,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~9995 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10011 tok)
 
 ## tests/regression/
 

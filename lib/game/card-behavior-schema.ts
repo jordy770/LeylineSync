@@ -1276,6 +1276,16 @@ export const CardBehaviorScriptV2Schema = z.object({
     effects: z.array(CardBehaviorActionSchema),
   })).optional(),
   spell_effect: CardBehaviorSpellEffectSchema.optional(),
+  // Adventure (mig 295): the card's other half — an instant/sorcery you may cast
+  // from hand (Swift End, Mesmeric Glare). Cast via cast_spell_effect with
+  // p_adventure=true; on resolution the card is exiled with a non-expiring
+  // play_from_exile permission, so the creature face (spell_effect/this card's
+  // permanent) can be cast from exile later. `name`/`cost` are for client display.
+  adventure: z.object({
+    name: z.string().optional(),
+    cost: z.string().optional(),
+    spell_effect: CardBehaviorSpellEffectSchema,
+  }).optional(),
   // Flashback: a mana cost the card can be cast for from the GRAVEYARD, after which
   // it is exiled (Army of the Damned: "Flashback {7}{B}{B}{B}"). Read server-side by
   // cast_spell_effect when the source is in the graveyard.
