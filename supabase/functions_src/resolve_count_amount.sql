@@ -246,6 +246,20 @@ begin
       and coalesce(g.controller_player_id, g.owner_id) = p_controller_id
       and g.zone = 'battlefield'
       and c.mana_cost is not null;
+
+  elsif v_count = 'max_life_lost_this_turn' then
+    -- Most life any single player has lost this turn (mig 294). Gates
+    -- "if a player lost N or more life this turn" (Y'shtola) via `conditional`.
+    select coalesce(max(life_lost_this_turn), 0)::integer into v_n
+    from public.game_session_players
+    where session_id = p_session_id;
+
+  elsif v_count = 'players_lost_life_this_turn' then
+    -- Number of players who have lost life this turn (mig 294, Reaper's Scythe:
+    -- "a soul counter for each player who lost life this turn").
+    select count(*)::integer into v_n
+    from public.game_session_players
+    where session_id = p_session_id and coalesce(life_lost_this_turn, 0) > 0;
   end if;
 
   -- times (mig 268, Filigree Angel: 'gain 3 life for each artifact you

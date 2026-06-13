@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T11:55:54.668Z
-> Files: 196 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T13:13:20.691Z
+> Files: 199 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -137,7 +137,7 @@
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18698 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18731 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
 
@@ -168,7 +168,7 @@
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~1813 tok)
 - `add_mana_from_card.sql` — basic-land/manual mana rpc (7-arg, commander identity + monarch land bonus); canonical since mig 262. (~900 tok)
 - `add_mana_from_card.sql` — supabase/functions_src/add_mana_from_card.sql (~1460 tok)
-- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3455 tok)
+- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3558 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~5988 tok)
 - `apply_damage_allocations.sql` — supabase/functions_src/apply_damage_allocations.sql (~592 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1707 tok)
@@ -205,12 +205,13 @@
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2392 tok)
 - `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~7219 tok)
-- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~2258 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3358 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~800 tok)
 - `return_all_from_graveyard.sql` — supabase/functions_src/return_all_from_graveyard.sql (~838 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
 - `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~13265 tok)
+- `track_life_lost.sql` — supabase/functions_src/track_life_lost.sql (~259 tok)
 - `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~391 tok)
 - `turn_manifest_up.sql` — supabase/functions_src/turn_manifest_up.sql (~655 tok)
 
@@ -254,6 +255,7 @@
 - `202605010262_dino_finale.sql` — 202605010262_dino_finale (~60868 tok)
 - `202605010292_noncreature_spell_filter.sql` — 202605010292_noncreature_spell_filter (~2707 tok)
 - `202605010293_spell_mana_value_filter.sql` — 202605010293_spell_mana_value_filter (~2803 tok)
+- `202605010294_life_lost_this_turn.sql` — 202605010294_life_lost_this_turn (~7174 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -310,6 +312,7 @@
 - `goad-territorial.test.ts` — mig 249 — Vengeful Ancestor (goad) + Territorial Hellkite. (~1713 tok)
 - `kessig-chaos-warp.test.ts` — mig 242 — Kessig Wolf Run + Chaos Warp. (~1297 tok)
 - `landfall.test.ts` — mig 238 — Nesting Dragon (landfall) + Sarkhan cost reduction. (~843 tok)
+- `life-lost-this-turn.test.ts` — Life-loss-this-turn tracker (mig 294): a BEFORE UPDATE trigger accumulates (~670 tok)
 - `monstrosity.test.ts` — Monstrosity (mig 232) — Stormbreath Dragon: "{5}{R}{R}: Monstrosity 3. When (~781 tok)
 - `multiplayer-pods.test.ts` — 4-player pod semantics: corrupted gates, edict chains, goad redirection, monarch theft, per-player taxes. (~1100 tok)
 - `multiplayer-pods.test.ts` — Four-player pod sweep: the engine grew through six decks of mostly-1v1 (~2740 tok)

@@ -348,6 +348,15 @@ begin
   where session_id = p_session_id
   returning * into v_current_state;
 
+  -- Reset per-turn life-loss tracking at the start of each new turn (mig 294).
+  -- 'untap' is reached only on the end -> next-turn transition, so this fires
+  -- once per turn AFTER the end-step triggers (Y'shtola) have read the tally.
+  if v_next_step = 'untap' then
+    update public.game_session_players
+    set life_lost_this_turn = 0
+    where session_id = p_session_id;
+  end if;
+
   return v_current_state;
 end;
 $$;
