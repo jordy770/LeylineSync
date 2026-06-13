@@ -61,6 +61,7 @@ export function CardActionSheet({
   onSpellEffect,
   onModalSpell,
   onCounterSpell,
+  onCastAdventure,
   onActivateAbility,
   onActivateManaAbility,
   onActivateLoyalty,
@@ -94,6 +95,7 @@ export function CardActionSheet({
   onSpellEffect: (cardId: string) => Promise<void>
   onModalSpell: (cardId: string) => Promise<void>
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
+  onCastAdventure: (cardId: string, opts: { targetCardId?: string | null; stackItemId?: string | null }) => Promise<void>
   onActivateAbility: (
     sourceId: string,
     abilityIndex: number,
@@ -159,8 +161,21 @@ export function CardActionSheet({
     // The follow-up target pick (Shacklegeist: tap two Spirits → tap target).
     then: { type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null
   }>(null)
+  // Adventure (mig 295/296): when on, the whole cast UI (plan, target pickers,
+  // cast button) is driven by the card's adventure half instead of its creature
+  // face; the cast is routed to onCastAdventure with the adventure flag.
+  const adventure = script.adventure
+  const [adventureMode, setAdventureMode] = useState(false)
 
-  const spellPlan = getSpellPlan(card)
+  const planCard = adventureMode && adventure
+    ? ({
+        ...card,
+        copied_script: { schema_version: 2, spell_effect: adventure.spell_effect },
+        // Adventures are instant-speed here; force the timing accordingly.
+        cards: { ...(card.cards ?? {}), type_line: 'Instant' },
+      } as ControllerCard)
+    : card
+  const spellPlan = getSpellPlan(planCard)
   // Controller restriction for the chosen creature target ("an opponent controls"
   // / "you control"), relative to the caster. Defaults to any for untargeted plans.
   const spellTargetController: TargetController =
@@ -221,7 +236,11 @@ export function CardActionSheet({
     (c) => isCreature(c) && c.controller_player_id === playerId && !creatureProtectedFrom(c, spellColors),
   )
 
-  const canCast = canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackCount)
+  // In adventure mode the cast is the instant-speed adventure half, so gate on
+  // planCard (type_line forced to Instant) rather than the creature face.
+  const canCast = canCastHandSpell(planCard, canCastSorceries, canCastInstants, pendingStackCount)
+  // The adventure half can be entered whenever the creature is in hand.
+  const canEnterAdventure = !!adventure && zone === 'hand' && !adventureMode
   // Flashback: a card in the graveyard carrying a `flashback` cost can be re-cast
   // from there for that cost (the server then exiles it). Supported here for the
   // untargeted programs Army of the Damned-style cards use.
@@ -283,6 +302,10 @@ export function CardActionSheet({
       setAttachPick('aura')
     } else if (needsTarget) {
       setPicking(true)
+    } else if (adventureMode) {
+      // Untargeted adventure half (e.g. Hildibrand's create-token).
+      void onCastAdventure(card.id, {})
+      onClose()
     } else if (spellPlan.kind === 'draw') {
       void onDrawCards(card.id)
       onClose()
@@ -307,7 +330,7 @@ export function CardActionSheet({
 
   const handleCycle = () => { void onCycleCard(card.id); onClose() }
 
-  const hasActions = canCast || canFlashback || canCycle || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0 || (script.loyalty_abilities?.length ?? 0) > 0
+  const hasActions = canCast || canEnterAdventure || canFlashback || canCycle || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0 || (script.loyalty_abilities?.length ?? 0) > 0
 
   return (
     <>
@@ -400,6 +423,16 @@ export function CardActionSheet({
         </div>
 
         {/* Cast button (hand cards) */}
+        {adventureMode && !picking && (
+          <button
+            type="button"
+            onClick={() => setAdventureMode(false)}
+            className="mb-2 self-start text-[10px] font-black uppercase tracking-widest text-violet-300/80 transition active:scale-95"
+          >
+            ← Back to creature
+          </button>
+        )}
+
         {canCast && !picking && !attachPick && (
           <button
             type="button"
@@ -413,7 +446,23 @@ export function CardActionSheet({
             <span className={`font-black ${hasRequiredTargets ? 'text-amber-950' : 'text-slate-300'}`}>
               {isAura ? 'Cast - enchant a creature' : castLabel}
             </span>
-            <ManaCostDisplay manaCost={card.cards?.mana_cost} dark={hasRequiredTargets} />
+            <ManaCostDisplay manaCost={adventureMode ? adventure?.cost : card.cards?.mana_cost} dark={hasRequiredTargets} />
+          </button>
+        )}
+
+        {/* Adventure entry — switch the cast UI to the card's adventure half */}
+        {canEnterAdventure && !picking && !attachPick && (
+          <button
+            type="button"
+            aria-label={`Adventure${adventure?.name ? ` - ${adventure.name}` : ''}`}
+            onClick={() => setAdventureMode(true)}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-violet-400/50 bg-violet-400/15 px-4 py-3 transition active:scale-95"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[9px] font-black uppercase tracking-widest text-violet-300/80">Adventure</span>
+              <span className="font-bold text-violet-100">{adventure?.name ?? 'Cast adventure'}</span>
+            </span>
+            <ManaCostDisplay manaCost={adventure?.cost} />
           </button>
         )}
 
@@ -686,7 +735,7 @@ export function CardActionSheet({
               <button
                 key={c.id}
                 type="button"
-                onClick={() => { void onPermanentEffect(card.id, c.id); onClose() }}
+                onClick={() => { void (adventureMode ? onCastAdventure(card.id, { targetCardId: c.id }) : onPermanentEffect(card.id, c.id)); onClose() }}
                 className="flex w-full items-center justify-between rounded-2xl border border-amber-400/40 bg-amber-400/10 px-4 py-2.5 transition active:scale-95"
               >
                 <span className="truncate font-bold text-white">{c.name}</span>
@@ -845,7 +894,7 @@ export function CardActionSheet({
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() => { void onCounterSpell(card.id, item.id); onClose() }}
+                  onClick={() => { void (adventureMode ? onCastAdventure(card.id, { stackItemId: item.id }) : onCounterSpell(card.id, item.id)); onClose() }}
                   className="flex w-full items-center justify-between rounded-2xl border border-cyan-400/40 bg-cyan-400/10 px-4 py-3 transition active:scale-95"
                 >
                   <span className="font-bold text-white">{item.source_card_name ?? item.action_type}</span>

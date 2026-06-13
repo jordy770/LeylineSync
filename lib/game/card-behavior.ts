@@ -107,6 +107,9 @@ export type CardBehaviorScriptV2 = {
   flashback_life?: number
   // Alternate spell program used when cast via flashback (replaces spell_effect).
   flashback_effect?: CardBehaviorSpellEffect
+  // Adventure half (mig 295): { name?, cost?, spell_effect } — the card's
+  // instant/sorcery side, surfaced by the controller's "Adventure" cast.
+  adventure?: { name?: string; cost?: string; spell_effect: CardBehaviorSpellEffect }
   // Engine-read top-level props (preserved verbatim so a normalize round-trip
   // can't drop them; see card-behavior-schema.ts for their shapes).
   enters_with_counters?: Record<string, unknown>
@@ -158,6 +161,7 @@ const BEHAVIOR_TOP_LEVEL_PROPS = [
   'loyalty_abilities', 'enters_with_counters', 'damage_removes_counters',
   'undying', 'kicker', 'graveyard_cast_cost', 'enters_tapped', 'cycling',
   'flashback', 'flashback_effect', 'cant_be_countered', 'doubles_counters', 'cda',
+  'adventure',
 ] as const
 
 // Whether a script actually defines engine behavior (vs. an empty/absent script).
@@ -391,6 +395,7 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     flashback: script.flashback,
     flashback_life: script.flashback_life,
     flashback_effect: script.flashback_effect,
+    adventure: script.adventure,
     enters_with_counters: script.enters_with_counters,
     damage_removes_counters: script.damage_removes_counters,
     undying: script.undying,

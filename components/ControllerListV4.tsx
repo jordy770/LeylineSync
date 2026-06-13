@@ -639,6 +639,27 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       await putCounterSpellOnStack(supabase, sessionId, stackItemId, cardId)
       await refresh()
     },
+    // Adventure (mig 295/296): cast a card's adventure half. The card is exiled
+    // with a permanent play_from_exile permission so the creature face can be
+    // cast from exile later. A counter adventure routes through the counter path
+    // (stack target); everything else through cast_spell_effect (optional
+    // permanent target), both with the adventure flag set.
+    castAdventure: async (
+      cardId: string,
+      opts: { targetCardId?: string | null; stackItemId?: string | null } = {},
+    ) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const script = card ? normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line) : null
+      const actions = script?.adventure?.spell_effect?.actions
+      if (!actions || actions.length === 0) return
+      const isCounter = actions.some((a) => (a as { type?: string }).type === 'counter')
+      if (isCounter && opts.stackItemId) {
+        await putCounterSpellOnStack(supabase, sessionId, opts.stackItemId, cardId, undefined, true)
+      } else {
+        await castSpellEffect(supabase, sessionId, actions, cardId, null, opts.targetCardId ?? null, true)
+      }
+      await refresh()
+    },
     activateAbility: async (
       sourceCardId: string,
       abilityIndex: number,
@@ -864,6 +885,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
             onSpellEffect={async (cardId) => { await actions.spellEffect(cardId) }}
             onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
+            onCastAdventure={async (cardId, opts) => { await actions.castAdventure(cardId, opts) }}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
             onActivateManaAbility={async (sourceId, abilityIndex) => { await actions.activateManaAbility(sourceId, abilityIndex) }}
             onActivateLoyalty={async (sourceId, abilityIndex) => { await actions.activateLoyalty(sourceId, abilityIndex) }}

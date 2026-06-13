@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T13:43:24.501Z
-> Files: 201 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T14:08:27.457Z
+> Files: 202 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -96,7 +96,7 @@
 
 ## components/
 
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~41975 tok)
+- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~42358 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~4637 tok)
 
 ## components/board/
@@ -104,7 +104,7 @@
 
 ## components/controller/
 
-- `CardActionSheet.tsx` — CardActionSheet (~17417 tok)
+- `CardActionSheet.tsx` — CardActionSheet (~18188 tok)
 - `CardDisplay.tsx` — Small display atoms: ManaSymbol, KeywordBadges, ManaCostDisplay, ManaPoolDisplay. (~660 tok)
 - `OpeningHandOverlay.tsx` — Full-screen opening-hand overlay (London mulligan): keep/mulligan buttons, bottom-card selection chips, waiting-for-others variant. Rendered by ControllerListV4 while any player has opening_hand_kept === false. (~1249 tok)
 - `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~8333 tok)
@@ -135,10 +135,10 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12175 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12266 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~18892 tok)
-- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~3968 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4067 tok)
 - `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
 
 ## lib/supabase/
@@ -200,7 +200,7 @@
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
 - `mana_value.sql` — supabase/functions_src/mana_value.sql (~258 tok)
 - `mulligan_hand.sql` — supabase/functions_src/mulligan_hand.sql (~681 tok)
-- `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2165 tok)
+- `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2455 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2392 tok)
@@ -257,6 +257,7 @@
 - `202605010293_spell_mana_value_filter.sql` — 202605010293_spell_mana_value_filter (~2803 tok)
 - `202605010294_life_lost_this_turn.sql` — 202605010294_life_lost_this_turn (~7174 tok)
 - `202605010295_adventures.sql` — 202605010295_adventures (~6474 tok)
+- `202605010296_adventure_counter.sql` — 202605010296_adventure_counter (~2542 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -266,7 +267,7 @@
 
 ## tests/feature/
 
-- `adventures.test.ts` — Adventure mechanic (mig 295): casting the adventure half (cast_spell_effect (~688 tok)
+- `adventures.test.ts` — Adventure mechanic (mig 295): casting the adventure half (cast_spell_effect (~1331 tok)
 - `atsushi.test.ts` — Atsushi, the Blazing Sky (mig 230) — a MODAL dies trigger ("choose one"): (~1292 tok)
 - `become-copy.test.ts` — mig 240 — become_copy: an EXISTING card becomes a copy of another. (~1756 tok)
 - `become-the-avalanche.test.ts` — mig 243 — Become the Avalanche: "Draw a card for each creature you control (~662 tok)

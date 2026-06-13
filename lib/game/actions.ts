@@ -877,6 +877,7 @@ export async function castSpellEffect(
   sourceCardId?: string | null,
   xValue?: number | null,
   targetCardId?: string | null,
+  adventure = false,
 ) {
   const { data, error } = await supabase.rpc('cast_spell_effect', {
     p_session_id: sessionId,
@@ -884,6 +885,7 @@ export async function castSpellEffect(
     p_source_card_id: sourceCardId ?? null,
     p_x_value: xValue ?? null,
     p_target_card_id: targetCardId ?? null,
+    p_adventure: adventure,
   })
 
   if (error) {
@@ -985,6 +987,7 @@ export async function putCounterSpellOnStack(
   targetStackItemId: string,
   sourceCardId: string,
   genericPayment?: Record<string, number>,
+  adventure = false,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -993,6 +996,7 @@ export async function putCounterSpellOnStack(
       target_stack_item_id: targetStackItemId,
       timing: 'instant',
       generic_payment: genericPayment ?? null,
+      adventure,
     },
     p_source_card_id: sourceCardId,
   })

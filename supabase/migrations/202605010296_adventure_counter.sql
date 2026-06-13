@@ -1,7 +1,11 @@
--- supabase/functions_src/put_action_on_stack.sql
--- CANONICAL current definition (seeded from 202605010195_intimidate_hexproof.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010296_adventure_counter
+-- Adventure half cast via put_action_on_stack (mig 296): when the payload carries
+-- adventure=true (a stack-targeted adventure like Hypnotic Sprite // Mesmeric
+-- Glare's counter), the source creature card is exiled with a non-expiring
+-- play_from_exile permission instead of going to the graveyard — mirroring
+-- cast_spell_effect's p_adventure path (mig 295) for the counter/ability route.
+-- Generated from supabase/functions_src (put_action_on_stack) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.put_action_on_stack(
   p_session_id uuid,

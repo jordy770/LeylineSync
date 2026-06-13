@@ -4055,3 +4055,33 @@
 | 15:43 | Created tests/feature/adventures.test.ts | — | ~688 |
 | 15:46 | Session end: 8 writes across 6 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 4 reads | ~33124 tok |
 | 16:30 | ENGINE FEATURE mig 295 — ADVENTURES. cast_spell_effect gained p_adventure: casts the adventure half's spell_effect, then exiles the source (a CREATURE card) with a NON-EXPIRING play_from_exile permission (payload.permanent:true) instead of graveyard; the creature face then casts from exile via cast_card_from_hand's existing exile-permission path (line 167). advance_step's impulse-window cleanup skips permanent rows. New `adventure` script block {name,cost,spell_effect}. Signature change → dropped the old 5-arg cast_spell_effect overload (5-arg callers resolve to the 6-arg via the default). Scripted Hypnotic Sprite (flying // Mesmeric Glare counter — MV<=3 NOT enforced), Murderous Rider (lifelink // Swift End destroy creature/pw + lose 2; dies→library-bottom unsupported), Hildibrand (// create Zombie; token-anthem + dies-recast unsupported). Test adventures.test.ts ADV1 (cast→exile+effect) ADV2 (creature casts from exile). FULL SUITE 1469/1469, tsc clean. FOLLOW-UP: client wiring — controller needs an 'Adventure' cast button reading script.adventure → cast_spell_effect(p_adventure:true); engine ready, UI not yet | cast_spell_effect.sql, advance_step.sql, mig 295, card-behavior-schema.ts, card-scripts.json, scenario.ts, adventures.test.ts, test-cards.json | 1469/1469 green | ~20k |
+| 15:47 | Session end: 8 writes across 6 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 4 reads | ~33124 tok |
+| 15:49 | Session end: 8 writes across 6 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 4 reads | ~33124 tok |
+| 15:51 | Session end: 8 writes across 6 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 4 reads | ~33124 tok |
+| 15:54 | Session end: 8 writes across 6 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 5 reads | ~33124 tok |
+| 15:57 | Session end: 8 writes across 6 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 7 reads | ~87274 tok |
+| 15:58 | Edited tests/feature/adventures.test.ts | expanded (+24 lines) | ~382 |
+| 15:59 | Edited tests/feature/adventures.test.ts | 4→4 lines | ~54 |
+| 16:00 | Edited supabase/functions_src/put_action_on_stack.sql | modified coalesce() | ~448 |
+| 16:00 | Edited supabase/migrations/202605010296_adventure_counter.sql | modified put_action_on_stack() | ~155 |
+| 16:02 | Edited lib/game/card-behavior.ts | modified half() | ~126 |
+| 16:02 | Edited lib/game/card-behavior.ts | 2→3 lines | ~31 |
+| 16:02 | Edited lib/game/card-behavior.ts | 4→5 lines | ~60 |
+| 16:02 | Edited lib/game/actions.ts | 11→13 lines | ~111 |
+| 16:02 | Session end: 16 writes across 10 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 11 reads | ~112324 tok |
+| 16:02 | Edited lib/game/actions.ts | 14→16 lines | ~131 |
+| 16:03 | Edited components/ControllerListV4.tsx | added optional chaining | ~415 |
+| 16:03 | Edited components/ControllerListV4.tsx | 2→3 lines | ~101 |
+| 16:03 | Edited components/controller/CardActionSheet.tsx | CSS: onCastAdventure, opts | ~77 |
+| 16:03 | Edited components/controller/CardActionSheet.tsx | 2→3 lines | ~15 |
+| 16:04 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~236 |
+| 16:04 | Edited components/controller/CardActionSheet.tsx | added 1 condition(s) | ~142 |
+| 16:04 | Edited components/controller/CardActionSheet.tsx | CSS: targetCardId | ~164 |
+| 16:04 | Edited components/controller/CardActionSheet.tsx | inline fix | ~45 |
+| 16:05 | Edited components/controller/CardActionSheet.tsx | 1→5 lines | ~116 |
+| 16:05 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~351 |
+| 16:05 | Edited components/controller/CardActionSheet.tsx | inline fix | ~56 |
+| 16:05 | Edited components/controller/CardActionSheet.tsx | CSS: active | ~168 |
+| 16:07 | Edited tests/feature/adventures.test.ts | expanded (+20 lines) | ~368 |
+| 16:08 | Edited tests/feature/adventures.test.ts | 4→5 lines | ~113 |
+| 17:30 | ADVENTURE BUTTON (client) + mig 296. Controller now surfaces the adventure half: CardActionSheet gets an "Adventure: <name>" entry that flips adventureMode → spellPlan is recomputed from a synthetic planCard (copied_script = {spell_effect: adventure}, type_line forced 'Instant' so canCast gates at instant speed), reusing ALL existing target-pickers; the 3 cast sites (untargeted/ permanent-target/ counter) route to a new onCastAdventure when in adventure mode (+ a "← Back to creature"). New ControllerListV4.castAdventure: counter→putCounterSpellOnStack(adventure:true), else castSpellEffect(...,adventure:true). castSpellEffect + putCounterSpellOnStack wrappers gained an adventure flag. mig 296: put_action_on_stack exiles the source + permanent play_from_exile when payload.adventure (mirrors mig 295 for the counter/stack-target route). KEY FIX: a destroy `then` rider does NOT apply via the cast_spell_effect program path — split into separate actions (Murderous Rider: destroy + lose_life). GOTCHA: normalizeCardBehaviorToV2 builds a fixed key set and STRIPPED `adventure` — added it to the type, BEHAVIOR_TOP_LEVEL_PROPS, and the normalize return. Tests ADV1-4 (cast→exile, recast from exile, targeted destroy, counter via put_action_on_stack). FULL SUITE 1471/1471, tsc+lint clean. All 3 Adventure cards now castable in-app | put_action_on_stack.sql, mig 296, card-behavior.ts, actions.ts, ControllerListV4.tsx, CardActionSheet.tsx, card-scripts.json, scenario.ts, adventures.test.ts, test-cards.json | 1471/1471 green | ~30k |

@@ -977,5 +977,5 @@
 
   "Hermes, Overseer of Elpis": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature"},"effects":[{"type":"create_token","token":"Bird Token","count":1}]}]},
 
-  "Murderous Rider": {"schema_version":2,"continuous_effects":[{"type":"lifelink","affected":"source","source_zone_required":"battlefield"}],"adventure":{"name":"Swift End","cost":"{1}{B}{B}","spell_effect":{"actions":[{"type":"destroy","target_type":["creature","planeswalker"],"then":[{"type":"lose_life","amount":2}]}]}}}
+  "Murderous Rider": {"schema_version":2,"continuous_effects":[{"type":"lifelink","affected":"source","source_zone_required":"battlefield"}],"adventure":{"name":"Swift End","cost":"{1}{B}{B}","spell_effect":{"actions":[{"type":"destroy","target_type":["creature","planeswalker"]},{"type":"lose_life","amount":2,"recipient":"controller"}]}}}
 }

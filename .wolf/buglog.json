@@ -11652,6 +11652,86 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T11:55:54.686Z"
+    },
+    {
+      "id": "bug-717",
+      "timestamp": "2026-06-13T13:58:26.043Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/adventures.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T13:58:26.043Z"
+    },
+    {
+      "id": "bug-718",
+      "timestamp": "2026-06-13T14:03:02.091Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T14:03:02.091Z"
+    },
+    {
+      "id": "bug-719",
+      "timestamp": "2026-06-13T14:04:08.087Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: <ManaCostDisplay manaCost={adventureMode ? adventure?.cost :; {/* Adventure entry — switch the cast UI to the card's adven",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-13T14:05:30.379Z"
+    },
+    {
+      "id": "bug-720",
+      "timestamp": "2026-06-13T14:04:45.036Z",
+      "error_message": "Type error",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T14:04:45.036Z"
+    },
+    {
+      "id": "bug-721",
+      "timestamp": "2026-06-13T14:07:21.523Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/adventures.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T14:07:21.523Z"
     }
   ]
 }
