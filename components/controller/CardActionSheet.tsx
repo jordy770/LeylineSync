@@ -110,8 +110,12 @@ export function CardActionSheet({
     card.cards?.type_line,
   )
   const zone = card.zone
+  // Mirrors activate_ability's zone gate (mig 289): a missing
+  // source_zone_required means BATTLEFIELD, not anywhere — otherwise a
+  // creature's pump ability shows on the card while it's still in hand
+  // (Stormshriek Feral) and the engine rejects the tap anyway.
   const abilityAvailableInZone = (req?: string | null) =>
-    !req || req === 'any' || req === zone
+    req === 'any' || (req ?? 'battlefield') === zone
 
   // Keep the original index so activate_mana_ability can address the ability.
   const manaAbilities = (script.activated_abilities ?? [])

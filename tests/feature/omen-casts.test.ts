@@ -3,6 +3,7 @@
 
 import { test, before } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { withRolledBackTx } from '../harness/db'
 import { Scenario } from '../harness/scenario'
 import { ensureTestCards } from '../harness/seed'
@@ -18,7 +19,7 @@ test('OC1 Flush Out casts from hand and shuffles itself away', async () => {
     const s = await Scenario.create(client)
     await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
     // Local catalog row for the DFC (tx-scoped, like the smoke test).
-    const scripts = JSON.parse(require('node:fs').readFileSync('docs/commander-decks/card-scripts.json', 'utf8'))
+    const scripts = JSON.parse(readFileSync('docs/commander-decks/card-scripts.json', 'utf8'))
     await client.query(
       `insert into public.cards (id, name, type_line, oracle_text, power_toughness, mana_cost, is_token, script)
        values (gen_random_uuid(), 'Stormshriek Feral // Flush Out', 'Creature — Dragon // Sorcery — Omen', null, '3/3', '{4}{R}', false, $1::jsonb)`,
