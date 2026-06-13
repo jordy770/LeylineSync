@@ -867,9 +867,9 @@
 
   "Y'shtola, Night's Blessed": {"schema_version":2,"keywords":["vigilance"],"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature","min_mana_value":3},"effects":[{"type":"deal_damage","amount":2,"recipient":"each_opponent"},{"type":"gain_life","amount":2,"recipient":"controller"}]},{"event":"each_end_step","effects":[{"type":"conditional","condition":{"count":"max_life_lost_this_turn","at_least":4},"effects":[{"type":"draw","amount":1,"recipient":"controller"}]}]}]},
 
-  "Alisaie Leveilleur": {"schema_version":2,"keywords":["first_strike"]},
+  "Alisaie Leveilleur": {"schema_version":2,"keywords":["first_strike"],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"name":"Alphinaud Leveilleur"}}]}]},
 
-  "Alphinaud Leveilleur": {"schema_version":2,"keywords":["vigilance"]},
+  "Alphinaud Leveilleur": {"schema_version":2,"keywords":["vigilance"],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":1,"to":"hand","filter":{"name":"Alisaie Leveilleur"}}]}]},
 
   "Archaeomancer's Map": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":2,"to":"hand","reveal":true,"filter":{"type_line":"Plains"}}]}]},
 
