@@ -865,7 +865,7 @@
 
   "Lazotep Plating": {"schema_version":2,"spell_effect":{"actions":[{"type":"amass","amount":1},{"type":"grant_keyword_all","keyword":"hexproof","scope":"controller","includes_player":true}]}},
 
-  "Y'shtola, Night's Blessed": {"schema_version":2,"keywords":["vigilance"]},
+  "Y'shtola, Night's Blessed": {"schema_version":2,"keywords":["vigilance"],"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature","min_mana_value":3},"effects":[{"type":"deal_damage","amount":2,"recipient":"each_opponent"},{"type":"gain_life","amount":2,"recipient":"controller"}]}]},
 
   "Alisaie Leveilleur": {"schema_version":2,"keywords":["first_strike"]},
 

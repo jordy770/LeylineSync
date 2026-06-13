@@ -1159,6 +1159,10 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     // line matches — "whenever you cast a NONCREATURE spell" = spell_cast +
     // exclude_type 'Creature'. Complements type_line (which only INCLUDES).
     exclude_type: z.string().optional(),
+    // Minimum mana value (mig 293): skip when the subject's mana value is below
+    // N. For spell_cast reads the cast spell's MV — "a noncreature spell with
+    // mana value 3 or greater" (Y'shtola) = exclude_type 'Creature' + min_mana_value 3.
+    min_mana_value: z.number().int().optional(),
     controller: z.enum(['you', 'opponent', 'any']).optional(),
     exclude_self: z.boolean().optional(),
     // "a NONTOKEN creature …" (Midnight Reaper, Open the Graves) — the watcher

@@ -11636,6 +11636,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-13T11:10:56.361Z"
+    },
+    {
+      "id": "bug-716",
+      "timestamp": "2026-06-13T11:55:54.686Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/noncreature-spell-trigger.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-13T11:55:54.686Z"
     }
   ]
 }

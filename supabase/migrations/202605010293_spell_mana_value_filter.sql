@@ -1,7 +1,11 @@
--- supabase/functions_src/fire_watcher_triggers.sql
--- CANONICAL current definition (seeded from 202605010181_watcher_nontoken_filter.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010293_spell_mana_value_filter
+-- Mana-value filter on watcher triggers (mig 293): a `filter.min_mana_value`
+-- on a triggered_ability skips the event when the changed card's mana value is
+-- below N. For spell_cast this reads the cast spell's mana value — unlocking
+-- "whenever you cast a noncreature spell with mana value 3 or greater"
+-- (Y'shtola, Night's Blessed). Pairs with mig 292's exclude_type.
+-- Generated from supabase/functions_src (fire_watcher_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.fire_watcher_triggers(
   p_session_id uuid,
