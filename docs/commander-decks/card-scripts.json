@@ -861,5 +861,117 @@
 
   "Whirlwing Stormbrood // Dynamic Soar": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"activated_abilities":[{"source_zone_required":"hand","costs":[{"type":"mana","amount":"{2}{G}"}],"effects":[{"type":"add_counters","amount":3,"counter_type":"plus_one_one","target_type":"creature","target_controller":"you"},{"type":"shuffle_self_into_library"}]}]},
 
-  "Wayfarer's Bauble": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]}]}
+  "Wayfarer's Bauble": {"schema_version":2,"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"search_library","count":1,"to":"battlefield","tapped":true,"filter":{"type_line":"Basic Land"}}]}]},
+
+  "Lazotep Plating": {"schema_version":2,"spell_effect":{"actions":[{"type":"amass","amount":1},{"type":"grant_keyword_all","keyword":"hexproof","scope":"controller","includes_player":true}]}},
+
+  "Y'shtola, Night's Blessed": {"schema_version":2,"keywords":["vigilance"]},
+
+  "Alisaie Leveilleur": {"schema_version":2,"keywords":["first_strike"]},
+
+  "Alphinaud Leveilleur": {"schema_version":2,"keywords":["vigilance"]},
+
+  "Archaeomancer's Map": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"search_library","count":2,"to":"hand","reveal":true,"filter":{"type_line":"Plains"}}]}]},
+
+  "Archmage Emeritus": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","type_line":"Instant"},"effects":[{"type":"draw","amount":1}]},{"event":"spell_cast","filter":{"controller":"you","type_line":"Sorcery"},"effects":[{"type":"draw","amount":1}]}]},
+
+  "Authority of the Consuls": {"schema_version":2,"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"opponent"},"effects":[{"type":"gain_life","amount":1}]}]},
+
+  "Bastion of Remembrance": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Human Soldier Token","count":1}]},{"event":"creature_died","filter":{"controller":"you"},"effects":[{"type":"lose_life","amount":1,"recipient":"each_opponent"},{"type":"gain_life","amount":1}]}]},
+
+  "Circle of Power": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":2,"recipient":"controller"},{"type":"lose_life","amount":2,"recipient":"controller"},{"type":"create_token","token":"Wizard Token","count":1},{"type":"pump_all","power":1,"toughness":0,"scope":"controller","creature_type":"Wizard"},{"type":"grant_keyword_all","keyword":"lifelink","scope":"controller","creature_type":"Wizard"}]}},
+
+  "Cleansing Nova": {"schema_version":2,"spell_effect":{"modes":[{"label":"Destroy all creatures.","actions":[{"type":"destroy_all","type_line":"Creature"}]},{"label":"Destroy all artifacts and enchantments.","actions":[{"type":"destroy_all","type_line":"Artifact"},{"type":"destroy_all","type_line":"Enchantment"}]}]}},
+
+  "Contaminated Aquifer": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Coveted Jewel": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"draw","amount":3}]}],"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":3}]}]},
+
+  "Crux of Fate": {"schema_version":2,"spell_effect":{"actions":[{"type":"choose_one","prompt":"Crux of Fate","modes":[{"label":"Destroy all Dragon creatures","actions":[{"type":"destroy_all","creature_type":"Dragon"}]},{"label":"Destroy all non-Dragon creatures","actions":[{"type":"destroy_all","exclude_type":"Dragon"}]}]}]}},
+
+  "Cut a Deal": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":1,"recipient":"each_opponent"}]}},
+
+  "Dancer's Chakrams": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"equipped","payload":{"power":2,"toughness":2}},{"type":"lifelink","affected":"equipped"}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{3}"}],"effects":[{"type":"equip","target_type":"creature","target_controller":"you"}]}]},
+
+  "Darkwater Catacombs": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1},{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Demolition Field": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{2}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"destroy_up_to","count":1,"target_filter":{"controller":"opponent","type_line":"land"}},{"type":"may","prompt":"Search your library for a basic land card, put it onto the battlefield, then shuffle?","effects":[{"type":"search_library","count":1,"to":"battlefield","filter":{"type_line":"Basic Land"}}]}]}]},
+
+  "Desolate Mire": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1},{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Drowned Catacomb": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Island","Swamp"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Exsanguinate": {"schema_version":2,"spell_effect":{"actions":[{"type":"lose_life","amount":"X","recipient":"each_opponent"},{"type":"gain_life","amount":"X","recipient":"controller"}]}},
+
+  "Eye of Nidhogg": {"schema_version":2,"continuous_effects":[{"type":"set_pt","affected":"enchanted","payload":{"power":4,"toughness":2}},{"type":"flying","affected":"enchanted"},{"type":"deathtouch","affected":"enchanted"}],"triggered_abilities":[{"event":"dies","effects":[{"type":"return_self_to_hand"}]}]},
+
+  "Fandaniel, Telophoroi Ascian": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","type_line":"Instant"},"effects":[{"type":"surveil","amount":1}]},{"event":"spell_cast","filter":{"controller":"you","type_line":"Sorcery"},"effects":[{"type":"surveil","amount":1}]}]},
+
+  "Fetid Heath": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]}]},
+
+  "Final Judgment": {"schema_version":2,"spell_effect":{"actions":[{"type":"exile_all","types":["Creature"]}]}},
+
+  "G'raha Tia, Scion Reborn": {"schema_version":2,"keywords":["lifelink"]},
+
+  "Glacial Fortress": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Plains","Island"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Hildibrand Manderville": {"schema_version":2,"continuous_effects":[{"type":"pump","affected":"controller","payload":{"power":1,"toughness":1,"token_only":true}}]},
+
+  "Hraesvelgr of the First Brood": {"schema_version":2,"keywords":["flying","vigilance"],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"pump","power":1,"toughness":0,"until_end_of_turn":true,"target_type":"creature"}]}]},
+
+  "Hypnotic Sprite": {"schema_version":2,"keywords":["flying"]},
+
+  "Idyllic Beachfront": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Into the Story": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","amount":4}]}},
+
+  "Isolated Chapel": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Plains","Swamp"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Krile Baldesion": {"schema_version":2,"keywords":["lifelink"]},
+
+  "Lethal Scheme": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy","target_type":"permanent"}]}},
+
+  "Lingering Souls": {"schema_version":2,"spell_effect":{"actions":[{"type":"create_token","token":"Spirit Token","count":2}]},"flashback":"1B"},
+
+  "Relic of Legends": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_creatures","count":1,"type_line":"Legendary"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+
+  "Rite of Replication": {"schema_version":2,"spell_effect":{"actions":[{"type":"copy_permanent","target_filter":{"controller":"any","type_line":"creature"}}]}},
+
+  "Scavenger Grounds": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"costs":[{"type":"mana","amount":"{2}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"exile_graveyard","recipient":"all_players"}]}]},
+
+  "Snuff Out": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy","target_type":"creature"}]}},
+
+  "Sunken Ruins": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]}]},
+
+  "Sunlit Marsh": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Talisman of Hierarchy": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1},{"type":"deal_damage","target":"controller","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"B","amount":1},{"type":"deal_damage","target":"controller","amount":1}]}]},
+
+  "Talisman of Progress": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"U","amount":1}]}]},
+
+  "Tataru Taru": {"schema_version":2,"triggered_abilities":[{"event":"fire_etb","effects":[{"type":"draw","amount":1}]}]},
+
+  "Thancred Waters": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature"},"effects":[{"type":"grant_keyword","keyword":"indestructible"}]}]},
+
+  "Thought Vessel": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]}]},
+
+  "Tome of Legends": {"schema_version":2,"enters_with_counters":{"amount":1,"counter_type":"generic"},"triggered_abilities":[{"event":"creature_entered","filter":{"controller":"you","commander":true},"effects":[{"type":"add_counters","amount":1,"counter_type":"generic"}]},{"event":"creature_attacks","filter":{"controller":"you","commander":true},"effects":[{"type":"add_counters","amount":1,"counter_type":"generic"}]}],"activated_abilities":[{"costs":[{"type":"mana","amount":"{1}"},{"type":"tap_self"},{"type":"remove_counters","counter_type":"generic","amount":1}],"effects":[{"type":"draw","amount":1}]}]},
+
+  "Torrential Gearhulk": {"schema_version":2,"keywords":["Flash"]},
+
+  "Transpose": {"schema_version":2,"spell_effect":{"actions":[{"type":"draw","recipient":"controller","amount":1},{"type":"discard","recipient":"controller","amount":1},{"type":"lose_life","recipient":"controller","amount":1}]}},
+
+  "Underground River": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"},{"type":"pay_life","amount":1}],"effects":[{"type":"add_mana","color":"U","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"},{"type":"pay_life","amount":1}],"effects":[{"type":"add_mana","color":"B","amount":1}]}]},
+
+  "Vindicate": {"schema_version":2,"spell_effect":{"actions":[{"type":"destroy","target_type":"permanent"}]}},
+
+  "Void Rend": {"schema_version":2,"cant_be_countered":true,"spell_effect":{"actions":[{"type":"destroy","target_type":"permanent","target_filter":{"controller":"any","nonland":true}}]}},
+
+  "White Auracite": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]}]},
+
+  "Papalymo Totolymo": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature"},"effects":[{"type":"deal_damage","amount":1,"recipient":"each_opponent"},{"type":"gain_life","amount":1,"recipient":"controller"}]}]},
+
+  "Estinien Varlineau": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature"},"effects":[{"type":"add_counters","amount":1,"counter_type":"plus_one_one"},{"type":"grant_keyword","keyword":"flying"}]}]},
+
+  "Lyse Hext": {"schema_version":2,"triggered_abilities":[{"event":"spell_cast","filter":{"controller":"you","exclude_type":"Creature"},"effects":[{"type":"pump","power":1,"toughness":1}]}]}
 }

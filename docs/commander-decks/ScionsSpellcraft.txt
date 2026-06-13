@@ -1,4 +1,4 @@
-﻿# PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage
+# PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage
 #
 # Format (same as the in-app importer): one "1 Card Name" line per card,
 # `#` comments and section headers (Commander / Creatures / Deck / ...) are
