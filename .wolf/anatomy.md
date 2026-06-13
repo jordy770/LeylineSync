@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T18:41:59.352Z
-> Files: 215 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T18:51:45.826Z
+> Files: 217 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -185,8 +185,8 @@
 - `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
-- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3166 tok)
-- `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1539 tok)
+- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3313 tok)
+- `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1685 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1069 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~354 tok)
@@ -204,7 +204,7 @@
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2455 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~889 tok)
-- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2392 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2533 tok)
 - `resolve_combat_damage.sql` — supabase/functions_src/resolve_combat_damage.sql (~7219 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3450 tok)
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~800 tok)
@@ -264,6 +264,7 @@
 - `202605010299_ardbert.sql` — 202605010299_ardbert (~14550 tok)
 - `202605010300_x_permanents.sql` — 202605010300_x_permanents (~17516 tok)
 - `202605010301_attack_count.sql` — 202605010301_attack_count (~3292 tok)
+- `202605010303_pacify.sql` — 202605010303_pacify (~7726 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -331,6 +332,7 @@
 - `multiplayer-pods.test.ts` — 4-player pod semantics: corrupted gates, edict chains, goad redirection, monarch theft, per-player taxes. (~1100 tok)
 - `multiplayer-pods.test.ts` — Four-player pod sweep: the engine grew through six decks of mostly-1v1 (~2740 tok)
 - `noncreature-spell-trigger.test.ts` — Noncreature-spell watcher (mig 292): a spell_cast triggered ability with (~933 tok)
+- `observed-stasis.test.ts` — Observed Stasis / pacify (mig 303): an Aura that gives the enchanted creature (~662 tok)
 - `omen-casts.test.ts` — mig 289 — Flush Out from hand: discard park, draw two, shuffle-self-away. (~500 tok)
 - `opportunistic-dragon.test.ts` — mig 246 — Opportunistic Dragon: "When this creature enters, choose target (~810 tok)
 - `propaganda.test.ts` — Propaganda / attack tax (existing attack_tax mechanism): creatures can't (~511 tok)

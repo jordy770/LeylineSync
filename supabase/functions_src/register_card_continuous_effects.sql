@@ -121,7 +121,12 @@ begin
       -- STATIC attack tax (mig 275, Ghostly Prison / Norn's Annex / Windborn
       -- Muse): payload {mana:N} or {life:N}; declare_attacker auto-pays per
       -- attacker against the protected (controller) player.
-      'attack_tax'
+      'attack_tax',
+      -- PACIFY (mig 303, Observed Stasis): affected:'enchanted' rows that forbid
+      -- the host from attacking / blocking; declare_attacker / declare_blocker
+      -- reject the action while the source (Aura) stays fielded.
+      'cant_attack',
+      'cant_block'
     ) then
       raise exception 'Unsupported continuous effect type: %', v_effect_type;
     end if;

@@ -82,6 +82,17 @@ begin
     raise exception 'This blocker is already assigned';
   end if;
 
+  -- Pacify (mig 303, Observed Stasis): a 'cant_block' continuous effect on the
+  -- creature (e.g. from an Aura that "can't attack or block") forbids blocking.
+  if exists (
+    select 1 from public.game_continuous_effects ce
+    join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+    where ce.session_id = p_session_id and ce.effect_type = 'cant_block'
+      and ce.affected_card_id = p_blocker_card_id and src.zone = 'battlefield'
+  ) then
+    raise exception 'This creature cannot block';
+  end if;
+
   select cards.type_line
   into v_blocker_type_line
   from public.game_cards

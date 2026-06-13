@@ -190,6 +190,17 @@ begin
     end if;
   end;
 
+  -- Pacify (mig 303, Observed Stasis): a 'cant_attack' continuous effect on the
+  -- creature (e.g. from an Aura that "can't attack or block") forbids attacking.
+  if exists (
+    select 1 from public.game_continuous_effects ce
+    join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+    where ce.session_id = p_session_id and ce.effect_type = 'cant_attack'
+      and ce.affected_card_id = p_attacker_card_id and src.zone = 'battlefield'
+  ) then
+    raise exception 'This creature cannot attack';
+  end if;
+
   -- Goad (mig 249): a goaded creature can't attack the player who goaded it
   -- while another opponent is available ("attacks a player other than you if
   -- able"). With only one opponent, attacking the goader is legal.
