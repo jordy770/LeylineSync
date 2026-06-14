@@ -1083,7 +1083,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       {/* Opening-hand overlay — keep/mulligan until every player has kept */}
       {currentPlayer && playersNotKept.length > 0 && (
         <OpeningHandOverlay
-          handCards={handCards.map((c) => ({ id: c.id, name: c.name }))}
+          handCards={handCards.map((c) => ({ id: c.id, name: c.name, image_url: c.cards?.image_url ?? null }))}
           mulligans={currentPlayer.mulligans ?? 0}
           waitingFor={openingHandWaitingFor}
           kept={currentPlayer.opening_hand_kept !== false}

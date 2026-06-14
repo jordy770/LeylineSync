@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { getErrorMessage } from '@/lib/game/actions'
+import MotionCard from '../MotionCard'
 
 // ─── Opening Hand Overlay ─────────────────────────────────────────────────────
 // Full-screen overlay shown during the opening-hand phase (after "Start game",
@@ -17,7 +18,7 @@ export function OpeningHandOverlay({
   onMulligan,
   kept,
 }: {
-  handCards: { id: string; name: string }[]
+  handCards: { id: string; name: string; image_url?: string | null }[]
   mulligans: number
   waitingFor: string[]
   onKeep: (bottomIds: string[]) => Promise<void>
@@ -69,15 +70,15 @@ export function OpeningHandOverlay({
 
   return (
     <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/85 p-4">
-      <div className="w-full max-w-md rounded-xl border border-white/10 bg-[#181C28] p-4">
+      <div className="w-full max-w-4xl rounded-xl border border-white/10 bg-[#181C28] p-4">
         <p className="text-base font-black text-white">Opening hand</p>
         {mulligans > 0 && (
           <p className="mt-1 text-xs text-slate-400">
-            Select {mulligans} card{mulligans === 1 ? '' : 's'} to put on the bottom of your
+            Tap {mulligans} card{mulligans === 1 ? '' : 's'} to put on the bottom of your
             library.
           </p>
         )}
-        <div className="mt-3 flex max-h-[50vh] flex-wrap gap-2 overflow-y-auto">
+        <div className="mt-3 flex max-h-[55vh] flex-wrap justify-center gap-3 overflow-y-auto">
           {handCards.map((card) => {
             const selected = selectedIds.includes(card.id)
             return (
@@ -86,13 +87,22 @@ export function OpeningHandOverlay({
                 type="button"
                 disabled={busy || mulligans === 0}
                 onClick={() => toggleSelected(card.id)}
-                className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition active:scale-95 ${
-                  selected
-                    ? 'border-amber-400 bg-amber-400/20 text-amber-200'
-                    : 'border-white/10 bg-slate-800 text-slate-200'
-                } ${mulligans === 0 ? '' : 'cursor-pointer'} disabled:opacity-70`}
+                title={card.name}
+                className={`relative w-24 shrink-0 rounded-lg transition active:scale-95 disabled:cursor-default ${
+                  selected ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-[#181C28]' : ''
+                } ${mulligans === 0 ? '' : 'cursor-pointer'}`}
               >
-                {card.name}
+                <MotionCard
+                  card={{ id: card.id, name: card.name, image_url: card.image_url, zone: 'hand' }}
+                  size="board"
+                  useLayoutId={false}
+                  className={selected ? 'opacity-90' : undefined}
+                />
+                {selected && (
+                  <span className="absolute -right-1.5 -top-1.5 rounded-full bg-amber-400 px-1.5 py-0.5 text-[9px] font-black text-amber-950 shadow ring-1 ring-black/40">
+                    Bottom
+                  </span>
+                )}
               </button>
             )
           })}

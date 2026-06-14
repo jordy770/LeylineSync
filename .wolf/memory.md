@@ -4519,3 +4519,12 @@
 | 01:03 | Edited components/ControllerListV4.tsx | CSS: Dragon | ~216 |
 | 01:05 | Created tests/feature/opportunistic-dragon.test.ts | — | ~1288 |
 | 01:11 | fix: Opportunistic Dragon target restriction (mig 310) — reusable trigger target_filter {type_line_any}; helpers + enqueue payload/has-target + choose validation + client picker; OD1-3 tests; full suite 1521 pass | functions_src/{enqueue_triggered_ability,choose_triggered_ability_creature_target}.sql, mig 310, ControllerListV4.tsx, card-scripts.json, test-cards.json, opportunistic-dragon.test.ts | full suite green | ~45k |
+| 01:12 | Session end: 98 writes across 19 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 14 reads | ~189270 tok |
+| 01:16 | Session end: 98 writes across 19 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 14 reads | ~189270 tok |
+| 01:18 | Edited scripts/upsert-deck-scripts.mjs | modified map() | ~213 |
+| 01:19 | Session end: 99 writes across 20 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 15 reads | ~191615 tok |
+| 01:37 | Edited components/controller/OpeningHandOverlay.tsx | added 1 import(s) | ~36 |
+| 01:37 | Edited components/controller/OpeningHandOverlay.tsx | inline fix | ~20 |
+| 01:37 | Edited components/controller/OpeningHandOverlay.tsx | expanded (+9 lines) | ~522 |
+| 01:37 | Edited components/ControllerListV4.tsx | added optional chaining | ~32 |
+| 01:38 | mulligan overlay shows full card art (MotionCard) instead of name text; widened panel; bottom-selection ring + badge preserved | components/controller/OpeningHandOverlay.tsx, components/ControllerListV4.tsx | tsc+eslint clean | ~6k |
