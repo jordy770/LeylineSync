@@ -88,7 +88,11 @@ Genuine unsurfaced gaps found:
 1. **Attachment naming across owners.** `getControllerCards` is owner-scoped, so
    an Aura you control on an *opponent's* creature shows 🔗 but can't name the
    host. A board-level (all-cards) lookup would resolve it.
-2. **Onboarding.** `components/tutorial/` is still Supabase starter boilerplate —
-   no in-game "your first turn" flow for couch-play guests.
+2. **Onboarding — DONE 2026-06-14 (v1).** `ControllerCoachOverlay` — a short,
+   skippable 5-slide first-run intro (controller vs board, playing cards, auto
+   mana, auto-flowing priority, layout). Auto-opens once per device
+   (`leyline-coach-seen-v1`), re-openable via the `?` in the status bar. NOT an
+   interactive walkthrough — a quick orientation for couch-play guests. (The old
+   `components/tutorial/` Supabase boilerplate is unrelated and still unused.)
 3. Re-run a real engine-vs-UI scan after the next big engine arc; this doc is a
    snapshot, not a guarantee.

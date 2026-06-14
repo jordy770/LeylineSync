@@ -71,6 +71,7 @@ import type {
 import MotionCard from './MotionCard'
 import { CardActionSheet } from './controller/CardActionSheet'
 import { OpeningHandOverlay } from './controller/OpeningHandOverlay'
+import { ControllerCoachOverlay } from './controller/ControllerCoachOverlay'
 import { ManaCostDisplay, ManaPoolDisplay } from './controller/CardDisplay'
 import {
   canCastHandSpell,
@@ -122,6 +123,9 @@ const AUTOPASS_OFF: AutoPassSettings = { op: false, own: false, stk: false, rsp:
 // who opened the popover and stored explicit prefs keep them.
 const AUTOPASS_DEFAULT: AutoPassSettings = { op: true, own: true, stk: true, rsp: false }
 const autoPassStorageKey = (sessionId: string) => 'leyline-autopass-' + sessionId
+// First-run controller coach (onboarding) — shown once per device, re-openable
+// via the ? in the status bar. Bump the version to re-show after a redesign.
+const COACH_SEEN_KEY = 'leyline-coach-seen-v1'
 function loadAutoPassSettings(sessionId: string): AutoPassSettings {
   if (typeof window === 'undefined') return AUTOPASS_DEFAULT
   const raw = localStorage.getItem(autoPassStorageKey(sessionId))
@@ -247,6 +251,16 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
 
   const currentPlayer = players.find((p) => p.player_id === playerId) ?? null
   const opponentPlayers = players.filter((p) => p.player_id !== playerId)
+
+  // First-run onboarding coach: auto-open once per device, re-openable via the ?.
+  const [coachOpen, setCoachOpen] = useState(false)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !localStorage.getItem(COACH_SEEN_KEY)) setCoachOpen(true)
+  }, [])
+  const closeCoach = () => {
+    if (typeof window !== 'undefined') localStorage.setItem(COACH_SEEN_KEY, '1')
+    setCoachOpen(false)
+  }
   // Opening-hand phase — players who still have to keep. Legacy sessions (and
   // sessions not started via start_game_session) have opening_hand_kept
   // true/undefined for everyone, so the overlay never shows there.
@@ -851,6 +865,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
               isActivePlayer={isActivePlayer}
               libraryCount={ownLibraryCount}
               commanderDamage={playerId ? commanderDamage[playerId] : undefined}
+              onOpenHelp={() => setCoachOpen(true)}
             />
             {/* Command zone — cast your commander (sorcery speed) with live tax. */}
             {commandZone.length > 0 && (
@@ -991,6 +1006,8 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
         />
       )}
 
+      {coachOpen && <ControllerCoachOverlay onClose={closeCoach} />}
+
       {errorMessage && (
         <div className="absolute inset-x-3 bottom-4 z-[60] rounded-lg border border-red-400/20 bg-red-950/90 p-3 text-xs text-red-100">
           {errorMessage}
@@ -1027,6 +1044,7 @@ function StatusBar({
   isActivePlayer,
   libraryCount,
   commanderDamage,
+  onOpenHelp,
 }: {
   currentPlayer: GameSessionPlayer | null
   turnState: GameTurnState | null
@@ -1034,6 +1052,7 @@ function StatusBar({
   isActivePlayer: boolean
   libraryCount: number
   commanderDamage: CommanderDamageEntry[] | undefined
+  onOpenHelp: () => void
 }) {
   const currentGroupIdx = stepGroups.findIndex((g) =>
     g.steps.includes(turnState?.step as GameTurnState['step']),
@@ -1100,6 +1119,15 @@ function StatusBar({
             {kind === 'poison' ? `☠${n}` : `${n} ${kind}`}
           </span>
         ))}
+        <button
+          type="button"
+          onClick={onOpenHelp}
+          aria-label="How to play"
+          title="How to use your controller"
+          className="ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] font-black text-slate-400 transition active:scale-95 hover:text-slate-200"
+        >
+          ?
+        </button>
       </div>
     </header>
   )

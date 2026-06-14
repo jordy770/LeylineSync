@@ -4423,3 +4423,20 @@
 | 23:44 | Edited docs/client-coverage-audit.md | expanded (+18 lines) | ~419 |
 | 23:44 | commander damage display: getCommanderDamage (resolve source game-card → name) in both hooks + realtime; ⚔ badge (worst total, ≥15 amber/≥21 red lethal, per-source tooltip) on controller status bar + opponent pills + all board seats | data.ts, use-controller-game-state.ts, use-board-game-state.ts, ControllerListV4.tsx, GameBoard.tsx, client-coverage-audit.md | tsc+eslint clean | ~28k |
 | 23:44 | Edited lib/game/data.ts | removed 22 lines | ~23 |
+| 23:44 | Session end: 27 writes across 5 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 4 reads | ~48295 tok |
+| 23:44 | Edited lib/game/data.ts | added nullish coalescing | ~210 |
+| 23:45 | Session end: 28 writes across 5 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 4 reads | ~48505 tok |
+| 23:47 | Created mockups/controller-concepts.html | — | ~5831 |
+| 23:47 | Edited mockups/controller-concepts.html | inline fix | ~35 |
+| 23:48 | Built interactive controller concept mockups (Arcane Console / Tactile Deck / Clean HUD) for phone controller restyle | mockups/controller-concepts.html | created standalone HTML, opened in browser | ~3500 |
+| 23:48 | Created components/controller/ControllerCoachOverlay.tsx | — | ~1024 |
+| 23:48 | Edited components/ControllerListV4.tsx | added 1 import(s) | ~42 |
+| 23:48 | Edited components/ControllerListV4.tsx | 1→4 lines | ~82 |
+| 23:48 | Session end: 33 writes across 7 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~58254 tok |
+| 23:48 | Edited components/ControllerListV4.tsx | added optional chaining | ~158 |
+| 23:48 | Edited components/ControllerListV4.tsx | 6→8 lines | ~83 |
+| 23:49 | Edited components/ControllerListV4.tsx | 3→4 lines | ~55 |
+| 23:49 | Edited components/ControllerListV4.tsx | CSS: onOpenHelp | ~86 |
+| 23:49 | Edited components/ControllerListV4.tsx | CSS: active, hover | ~147 |
+| 23:49 | Edited docs/client-coverage-audit.md | 2→6 lines | ~124 |
+| 23:49 | onboarding v1: ControllerCoachOverlay (5-slide skippable first-run intro, progress dots) — auto-opens once per device (leyline-coach-seen-v1), re-openable via ? in status bar | components/controller/ControllerCoachOverlay.tsx, ControllerListV4.tsx, client-coverage-audit.md | tsc+eslint clean | ~14k |
