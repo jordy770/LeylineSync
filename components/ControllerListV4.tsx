@@ -49,7 +49,7 @@ import {
   selectFirstManaAbility,
 } from '@/lib/game/card-behavior'
 import { getPowerToughnessLabel } from '@/lib/game/controller-selectors'
-import { parseManaCost } from '@/lib/game/mana'
+import { parseManaCost, type ParsedManaCost } from '@/lib/game/mana'
 import { planAutoTap, type ManaSource } from '@/lib/game/auto-tap'
 import { getOpponentZoneData } from '@/lib/game/data'
 import type { CommanderDamageEntry, OpponentZoneData } from '@/lib/game/data'
@@ -178,6 +178,67 @@ function getAutoTapColor(card: ControllerCard): ManaColor | null {
   return getAutoTapMana(card)?.color ?? null
 }
 
+const BASIC_LAND_COLOR: Record<string, ManaColor> = {
+  plains: 'W', island: 'U', swamp: 'B', mountain: 'R', forest: 'G', wastes: 'C',
+}
+
+/**
+ * What mana colours an untapped land can make, for the hand "playable" hint:
+ *   ManaColor[]  — the fixed colour(s) it taps for (one entry = a single colour)
+ *   'flexible'   — any-colour / commander / multi-colour: a wildcard pip
+ *   null         — not a recognizable mana source (counted as a wildcard too)
+ * Scripted mana abilities take precedence; basics (no script) map from their
+ * type-line subtype. This drives colour-correct affordability, not the payment
+ * (the server + planAutoTap remain authoritative).
+ */
+function getProducibleColors(card: ControllerCard): ManaColor[] | 'flexible' | null {
+  const script = normalizeCardBehaviorToV2(
+    card.copied_script ?? card.cards?.script ?? null,
+    card.cards?.type_line,
+  )
+  const manaAbilities = script.activated_abilities?.filter((a) => a.is_mana_ability) ?? []
+  if (manaAbilities.length > 0) {
+    const colors = new Set<ManaColor>()
+    for (const ability of manaAbilities) {
+      for (const effect of ability.effects) {
+        if (!isAddManaBehaviorAction(effect)) continue
+        if (effect.color === 'any' || effect.color === 'commander') return 'flexible'
+        colors.add(effect.color as ManaColor)
+      }
+    }
+    if (colors.size > 1) return 'flexible'
+    if (colors.size === 1) return [...colors]
+  }
+  const tl = (card.cards?.type_line ?? '').toLowerCase()
+  const basics = Object.entries(BASIC_LAND_COLOR).filter(([sub]) => tl.includes(sub)).map(([, c]) => c)
+  if (basics.length > 1) return 'flexible'
+  if (basics.length === 1) return basics
+  return null
+}
+
+/**
+ * Colour-aware affordability: can `byColor` mana + `flexible` wildcard pips cover
+ * `cost`? Coloured pips are paid by matching colour first, then wildcards; the
+ * generic remainder from leftover colour mana + remaining wildcards. Mirrors the
+ * planner's `affordable()` with a wildcard pool for any/multi/unknown sources.
+ */
+function canAffordCost(cost: ParsedManaCost, byColor: Record<ManaColor, number>, flexible: number): boolean {
+  let wild = flexible
+  let leftover = 0
+  for (const c of manaColors) {
+    const need = cost.colored[c]
+    const have = byColor[c] ?? 0
+    if (have >= need) {
+      leftover += have - need
+    } else {
+      const short = need - have
+      if (wild < short) return false
+      wild -= short
+    }
+  }
+  return leftover + wild >= cost.generic
+}
+
 // The player's commander colour identity (W/U/B/R/G letters) from the mana symbols in
 // their commander's mana cost + rules text — drives `color:'commander'` mana sources
 // (Command Tower, Arcane Signet). Empty (colourless / no commander) → falls back to C.
@@ -301,6 +362,19 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
   ).length
   const floatingManaTotal = manaColors.reduce((sum, c) => sum + (manaPool[c] ?? 0), 0)
   const availableMana = untappedLandCount + floatingManaTotal
+  // Colour-aware availability for the hand "playable" hint: floating pool + each
+  // untapped land's producible colour (any/multi/unknown lands = wildcard pips).
+  const availableByColor = manaColors.reduce((acc, c) => {
+    acc[c] = manaPool[c] ?? 0
+    return acc
+  }, {} as Record<ManaColor, number>)
+  let flexibleMana = 0
+  for (const c of battlefieldCards) {
+    if (c.is_tapped || !c.cards?.type_line?.toLowerCase().includes('land')) continue
+    const colors = getProducibleColors(c)
+    if (colors === 'flexible' || colors === null) flexibleMana += 1
+    else availableByColor[colors[0]] += 1
+  }
   const topStackItem = pendingStackItems.slice().sort((a, b) => b.position - a.position)[0] ?? null
   const mustChooseTriggerTarget = Boolean(
     playerId &&
@@ -908,7 +982,8 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 ownExile={ownExile}
                 canCastSorceries={canCastSorceries}
                 canCastInstants={canCastInstants}
-                availableMana={availableMana}
+                availableByColor={availableByColor}
+                flexibleMana={flexibleMana}
                 canPlayLand={canPlayLand}
                 mustDiscard={mustDiscard}
                 discardCount={discardCount}
@@ -1150,7 +1225,6 @@ function MainArea({
   ownExile,
   canCastSorceries,
   canCastInstants,
-  availableMana,
   canPlayLand,
   mustDiscard,
   discardCount,
@@ -1158,6 +1232,8 @@ function MainArea({
   turnState,
   attackTaxes,
   commanderDamage,
+  availableByColor,
+  flexibleMana,
   canOrderBlockers,
   onCardTap,
   onTapForMana,
@@ -1181,7 +1257,8 @@ function MainArea({
   ownExile: ControllerCard[]
   canCastSorceries: boolean
   canCastInstants: boolean
-  availableMana: number
+  availableByColor: Record<ManaColor, number>
+  flexibleMana: number
   canPlayLand: boolean
   mustDiscard: boolean
   discardCount: number
@@ -1445,7 +1522,7 @@ function MainArea({
             const isLand = card.cards?.type_line?.toLowerCase().includes('land') ?? false
             const manaCost = parseManaCost(card.cards?.mana_cost)
             const totalCost = manaCost.generic + manaColors.reduce((sum, c) => sum + manaCost.colored[c], 0)
-            const canAfford = totalCost === 0 || availableMana >= totalCost
+            const canAfford = totalCost === 0 || canAffordCost(manaCost, availableByColor, flexibleMana)
             const playable = isLand
               ? canPlayLand
               : canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford

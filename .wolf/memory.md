@@ -4440,3 +4440,43 @@
 | 23:49 | Edited components/ControllerListV4.tsx | CSS: active, hover | ~147 |
 | 23:49 | Edited docs/client-coverage-audit.md | 2→6 lines | ~124 |
 | 23:49 | onboarding v1: ControllerCoachOverlay (5-slide skippable first-run intro, progress dots) — auto-opens once per device (leyline-coach-seen-v1), re-openable via ? in status bar | components/controller/ControllerCoachOverlay.tsx, ControllerListV4.tsx, client-coverage-audit.md | tsc+eslint clean | ~14k |
+| 23:50 | Session end: 39 writes across 7 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~58998 tok |
+| 23:52 | Created mockups/controller-concepts-2.html | — | ~6628 |
+| 23:52 | Added 4 bold/distinct controller concepts (Grimoire / JRPG / CRT Terminal / Neobrutalism) | mockups/controller-concepts-2.html | created, opened in browser | ~3200 |
+| 23:52 | Session end: 40 writes across 8 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~66100 tok |
+| 23:58 | Created mockups/controller-base.css | — | ~3965 |
+| 23:59 | Created mockups/controller-base.js | — | ~3101 |
+| 23:59 | Edited mockups/controller-base.css | 4→4 lines | ~110 |
+| 00:00 | Created mockups/controller-concepts.html | — | ~1804 |
+| 00:01 | Created mockups/controller-concepts-2.html | — | ~2738 |
+| 00:01 | Reworked mockup UI elements: shared base.css/base.js with realistic card frames, mana pips, priority cluster (hold/pass/auto-pass), action sheet + scry prompt; refactored all 7 themes to variable contract | mockups/controller-base.{css,js}, controller-concepts{,-2}.html | done | ~5000 |
+| 00:01 | Session end: 45 writes across 10 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~78142 tok |
+| 00:11 | Created mockups/clean-hud-action.html | — | ~5934 |
+| 00:11 | Edited mockups/clean-hud-action.html | inline fix | ~10 |
+| 00:11 | Built Clean HUD action-panel prototype: docked non-modal bar, primary/secondary hierarchy, mana affordability, inline targeting, slide-to-confirm + undo toast | mockups/clean-hud-action.html | done | ~4000 |
+| 00:11 | Session end: 47 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~84510 tok |
+| 00:13 | Session end: 47 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~84510 tok |
+| 00:18 | Edited mockups/clean-hud-action.html | expanded (+19 lines) | ~604 |
+| 00:18 | Edited mockups/clean-hud-action.html | inline fix | ~49 |
+| 00:18 | Edited mockups/clean-hud-action.html | expanded (+7 lines) | ~115 |
+| 00:18 | Edited mockups/clean-hud-action.html | modified toUpperCase() | ~296 |
+| 00:18 | Edited mockups/clean-hud-action.html | added 5 condition(s) | ~410 |
+| 00:18 | Added hold-to-peek full-size card preview with oracle text (inline {symbols}) to Clean HUD action prototype | mockups/clean-hud-action.html | done | ~1500 |
+| 00:19 | Session end: 52 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~86089 tok |
+| 00:26 | Edited mockups/clean-hud-action.html | expanded (+8 lines) | ~199 |
+| 00:26 | Edited mockups/clean-hud-action.html | expanded (+7 lines) | ~107 |
+| 00:26 | Edited mockups/clean-hud-action.html | inline fix | ~40 |
+| 00:27 | Edited mockups/clean-hud-action.html | 3→6 lines | ~162 |
+| 00:27 | Edited mockups/clean-hud-action.html | 3→3 lines | ~68 |
+| 00:27 | Edited mockups/clean-hud-action.html | added 8 condition(s) | ~516 |
+| 00:28 | Option A: added drag-to-attack arrow (drag ATTACK btn to an opponent) + real Scryfall art in hold-peek; swapped demo card to Dragonlord Silumgar | mockups/clean-hud-action.html | done | ~1800 |
+| 00:28 | Edited components/ControllerListV4.tsx | inline fix | ~20 |
+| 00:28 | Edited components/ControllerListV4.tsx | added 9 condition(s) | ~772 |
+| 00:28 | Edited components/ControllerListV4.tsx | added optional chaining | ~216 |
+| 00:28 | Session end: 61 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 8 reads | ~110863 tok |
+| 00:28 | Edited components/ControllerListV4.tsx | 1→2 lines | ~28 |
+| 00:28 | Edited components/ControllerListV4.tsx | 8→10 lines | ~48 |
+| 00:29 | Edited components/ControllerListV4.tsx | 4→3 lines | ~16 |
+| 00:29 | Edited components/ControllerListV4.tsx | CSS: availableByColor, flexibleMana | ~42 |
+| 00:29 | Edited components/ControllerListV4.tsx | inline fix | ~30 |
+| 00:30 | fix: colour-aware playable-cards highlight (was colourless availableMana>=totalCost) — getProducibleColors + canAffordCost with wildcard pool; build availableByColor/flexibleMana from untapped lands | components/ControllerListV4.tsx | tsc+eslint clean | ~16k |
