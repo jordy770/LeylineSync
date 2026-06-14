@@ -54,14 +54,16 @@ connections. (`components/board/` is just chrome; the page mounts `GameBoard`.)
 Its gap was that **none of the controller's state badges existed here** — the
 shared screen the whole table watches.
 
-- **Monarch 👑 + poison ☠ — DONE 2026-06-14**: a shared `SeatStatusBadges`
-  (monarch crown; poison with ≥3 corrupted / ≥10 lethal highlight) renders in all
-  three seat panels. Reads board-loaded data (turnState + player.counters) — no
-  query change.
-- **Still board-side TODO** (need data plumbing the board doesn't load yet):
-  attachments (`attached_to` not in `getBoardCards`), attack-tax (no board status
-  query), animated lands (`animated` not selected). Per-card badges would also
-  need a wrapper around the board `MotionCard`s.
+Board state parity — **DONE 2026-06-14**:
+- **Seat badges** (`SeatStatusBadges`, all three panels): monarch 👑, poison ☠
+  (≥3 corrupted / ≥10 lethal), attack-tax ⛔ (tooltip explains the per-attacker
+  cost).
+- **Card badges** (`BoardCardBadges`, focus + quadrant panels): attachments
+  📎N (host) / 🔗 (attached, tooltip names host), animated lands ⚡.
+- Plumbing: `getBoardCards` now selects `attached_to`; `useBoardGameState` folds
+  `getStatusEffects` (animated ids + attack taxes) into board state and subscribes
+  to `game_continuous_effects` for live updates. The minimap thumbnails are left
+  un-badged (too small).
 
 ## Other fresh targets
 

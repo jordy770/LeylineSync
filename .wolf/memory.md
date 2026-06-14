@@ -4347,3 +4347,28 @@
 | 22:55 | Edited app/layout.tsx | removed 6 lines | ~10 |
 | --:-- | DevTools Installability gave real blockers: data-URI icons "failed to load" (caused by crossorigin=use-credentials putting manifest in CORS mode -> data: icons rejected) -> no square icon -> install blocked; plus missing screenshots. Reverted to clean app/manifest.ts with square file icons (192/512) + wide/narrow screenshots; removed route-handler manifest, data-uri module, use-credentials link. Generated screenshot-wide/narrow.png via sharp. Required dev-server restart (deleted route file -> turbopack ghost module 500). CONCLUSION: code-only cannot satisfy Access (needs creds for manifest) AND working icons -> Access Bypass policy for /manifest.webmanifest,/sw.js,/icon-*,/screenshot-* is mandatory on the tunnel. | app/manifest.ts, app/layout.tsx, public/screenshot-wide.png, public/screenshot-narrow.png, (deleted app/manifest.webmanifest/route.ts + app/manifest-icons.ts) | local manifest 200, all assets 200, tsc+eslint clean | ~7k |
 | 22:58 | Session end: 32 writes across 13 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 22 reads | ~106234 tok |
+| 23:06 | Edited lib/game/types.ts | modified animation() | ~103 |
+| 23:06 | Edited lib/game/data.ts | 6→7 lines | ~45 |
+| 23:06 | Edited lib/game/data.ts | 5→6 lines | ~78 |
+| 23:06 | Edited lib/game/use-board-game-state.ts | 7→8 lines | ~41 |
+| 23:07 | Edited lib/game/use-board-game-state.ts | modified catch() | ~369 |
+| 23:07 | Edited lib/game/use-board-game-state.ts | 2→3 lines | ~111 |
+| 23:07 | Edited lib/game/use-board-game-state.ts | 10→11 lines | ~41 |
+| 23:08 | Edited components/GameBoard.tsx | inline fix | ~36 |
+| 23:08 | Edited components/GameBoard.tsx | added 2 condition(s) | ~948 |
+| 23:08 | Edited components/GameBoard.tsx | 4→5 lines | ~26 |
+| 23:08 | Edited components/GameBoard.tsx | inline fix | ~28 |
+| 23:08 | Edited components/GameBoard.tsx | 7→8 lines | ~110 |
+| 23:09 | Edited components/GameBoard.tsx | 6→7 lines | ~94 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: attackTaxes | ~65 |
+| 23:09 | Edited components/GameBoard.tsx | 4→4 lines | ~87 |
+| 23:09 | Edited components/GameBoard.tsx | added nullish coalescing | ~280 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: attackTaxes | ~82 |
+| 23:09 | Edited components/GameBoard.tsx | 3→3 lines | ~61 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: attackTaxes | ~88 |
+| 23:10 | Edited components/GameBoard.tsx | 3→3 lines | ~38 |
+| 23:10 | Session end: 52 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~115525 tok |
+| 23:10 | Edited components/GameBoard.tsx | added nullish coalescing | ~328 |
+| 23:10 | Edited docs/client-coverage-audit.md | 8→10 lines | ~166 |
+| 23:11 | board state parity: attachments 📎🔗 + animated ⚡ card badges + attack-tax ⛔ seat badge on GameBoard; plumb attached_to into getBoardCards + getStatusEffects(animated/taxes) into useBoardGameState + game_continuous_effects realtime | components/GameBoard.tsx, lib/game/use-board-game-state.ts, lib/game/data.ts, lib/game/types.ts, docs/client-coverage-audit.md | tsc+eslint clean | ~22k |
+| 23:11 | Edited lib/game/data.ts | removed 22 lines | ~23 |

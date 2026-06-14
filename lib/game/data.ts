@@ -68,7 +68,8 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       zone,
       controller_player_id,
       plus_one_counters,
-      counters
+      counters,
+      attached_to
     `)
     .eq('session_id', sessionId)
     .eq('zone', 'battlefield')
@@ -103,6 +104,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       controller_player_id: item.controller_player_id ?? null,
       plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
       counters: (item as { counters?: Record<string, number> | null }).counters ?? null,
+      attached_to: (item as { attached_to?: string | null }).attached_to ?? null,
     }
   })
 }
