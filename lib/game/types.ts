@@ -323,6 +323,8 @@ export type ControllerCard = {
   pump_toughness?: number
   is_commander?: boolean
   command_zone_casts?: number
+  // Host card id this permanent is attached to (Equipment/Aura), else null.
+  attached_to?: string | null
   cards: LinkedCard | null
 }
 

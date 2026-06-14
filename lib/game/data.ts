@@ -254,7 +254,8 @@ export async function getControllerCards(
       plus_one_counters,
       counters,
       is_commander,
-      command_zone_casts
+      command_zone_casts,
+      attached_to
     `)
     .eq('session_id', sessionId)
     .eq('owner_id', playerId)
@@ -292,6 +293,7 @@ export async function getControllerCards(
       counters: (card as { counters?: Record<string, number> | null }).counters ?? null,
       is_commander: (card as { is_commander?: boolean }).is_commander ?? false,
       command_zone_casts: (card as { command_zone_casts?: number }).command_zone_casts ?? 0,
+      attached_to: (card as { attached_to?: string | null }).attached_to ?? null,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,
       cards: linkedCard,
     }

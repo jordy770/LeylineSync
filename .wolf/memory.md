@@ -4312,3 +4312,23 @@
 | 21:08 | Edited tests/feature/pod-auto-skip.test.ts | 6→7 lines | ~146 |
 | 21:10 | pod auto-skip: server-side priority chaining (new pass_priority canonical + mig 309 + autopass_settings sync + 5 tests) | functions_src/pass_priority.sql, mig 309, actions.ts, ControllerListV4.tsx, scenario.ts, pod-auto-skip.test.ts | full suite 1519 pass, tsc clean | ~40k |
 | 21:11 | Session end: 11 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 11 reads | ~77291 tok |
+| 21:31 | Session end: 11 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 11 reads | ~77291 tok |
+| 21:37 | Edited lib/game/actions.ts | 14→9 lines | ~97 |
+| 21:38 | Edited lib/game/actions.ts | 9→14 lines | ~180 |
+| 21:38 | Session end: 13 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 11 reads | ~77727 tok |
+| 22:11 | Session end: 13 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 11 reads | ~77727 tok |
+| 22:30 | verified client decision-rendering parity: all 28 engine decision types handled; 13 CardPickBody-routed types contract-checked (options {game_card_id,name}, submit {chosen}) — PASS | ControllerListV4.tsx, submit_decision.sql, apply_trigger_effects.sql | static smoke-test pass | ~12k |
+| 22:30 | Session end: 13 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 13 reads | ~92281 tok |
+| 22:34 | Edited lib/game/types.ts | 4→6 lines | ~55 |
+| 22:34 | Edited lib/game/data.ts | 5→6 lines | ~38 |
+| 22:34 | Edited lib/game/data.ts | 3→4 lines | ~90 |
+| 22:34 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~219 |
+| 22:34 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~398 |
+| 22:35 | attachment rendering: plumb game_cards.attached_to into ControllerCard; 📎N host badge + 🔗 attachment badge on controller battlefield | lib/game/types.ts, lib/game/data.ts, components/ControllerListV4.tsx | tsc clean | ~10k |
+| 22:36 | Session end: 18 writes across 8 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 15 reads | ~102221 tok |
+| 22:38 | Created app/manifest.webmanifest/route.ts | — | ~400 |
+| 22:38 | Edited app/layout.tsx | 2→7 lines | ~126 |
+| --:-- | Code-only PWA fix for Cloudflare Access: replaced app/manifest.ts file-convention with app/manifest.webmanifest/route.ts (icons inlined as data URIs via app/manifest-icons.ts so no cookie-less icon fetch); added <link rel=manifest crossorigin=use-credentials> in layout (React19 hoists) so manifest carries Access cookie. Verified: route 200, data-URI icons, link in HTML. Residual: sw.js still credential-less but SW reg sends same-origin cookies. | app/manifest.webmanifest/route.ts, app/manifest-icons.ts, app/layout.tsx, (deleted app/manifest.ts) | tsc+eslint clean | ~6k |
+| 22:39 | Created docs/client-coverage-audit.md | — | ~933 |
+| 22:40 | Session end: 21 writes across 11 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 16 reads | ~104211 tok |
+| 22:40 | Edited lib/game/data.ts | removed 22 lines | ~23 |

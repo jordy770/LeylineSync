@@ -1194,6 +1194,18 @@ function MainArea({
       !c.cards?.type_line?.toLowerCase().includes('creature'),
   )
 
+  // Equipment/Auras attached to a permanent (game_cards.attached_to), grouped by
+  // host id, plus a name lookup so each tile can show what it's wearing / what
+  // it's attached to. Host may be an opponent's card (not in this set) → unnamed.
+  const attachmentsByHost = new Map<string, ControllerCard[]>()
+  for (const c of battlefieldCards) {
+    if (!c.attached_to) continue
+    const list = attachmentsByHost.get(c.attached_to) ?? []
+    list.push(c)
+    attachmentsByHost.set(c.attached_to, list)
+  }
+  const cardNameById = new Map(battlefieldCards.map((c) => [c.id, c.name]))
+
   const handleCardTap = (card: ControllerCard) => {
     const autoColor = getAutoTapColor(card)
     if (autoColor !== null) void onTapForMana(card.id, autoColor)
@@ -1296,6 +1308,24 @@ function MainArea({
             {getEffectivePT(card) && getEffectivePT(card) !== getPowerToughnessLabel(card) && (
               <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow ring-1 ring-black/40">
                 {getEffectivePT(card)}
+              </span>
+            )}
+            {/* Host: this permanent has Equipment/Auras attached to it. */}
+            {attachmentsByHost.has(card.id) && (
+              <span
+                className="absolute -top-1 -left-1 rounded-full bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-amber-950 shadow ring-1 ring-black/40"
+                title={`Attached: ${attachmentsByHost.get(card.id)!.map((a) => a.name).join(', ')}`}
+              >
+                📎{attachmentsByHost.get(card.id)!.length}
+              </span>
+            )}
+            {/* Attachment: this Equipment/Aura is attached to a host. */}
+            {card.attached_to && (
+              <span
+                className="absolute -top-1 -left-1 rounded-full bg-sky-500 px-1.5 py-0.5 text-[9px] font-black text-sky-950 shadow ring-1 ring-black/40"
+                title={`Attached to ${cardNameById.get(card.attached_to) ?? 'a permanent'}`}
+              >
+                🔗
               </span>
             )}
           </button>
