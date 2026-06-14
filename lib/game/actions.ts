@@ -1472,12 +1472,17 @@ export async function spawnDeckForSession(
   supabase: SupabaseClient,
   sessionId: string,
   deckId: string,
+  // Curated precon decks are trusted starting points (a subset catalog can leave
+  // them shy of 100/singleton), so the lobby spawns them with the Commander
+  // legality gate off. Owned decks keep the default enforcement.
+  enforceLegality = true,
 ) {
   // Seeds the library and — in a Commander game — the commander into the command
   // zone. The previous Deno edge function (spawn-deck) is superseded by this RPC.
   const { data, error } = await supabase.rpc('spawn_deck_for_session', {
     p_session_id: sessionId,
     p_deck_id: deckId,
+    p_enforce_legality: enforceLegality,
   })
 
   if (error) {
