@@ -54,6 +54,7 @@ import { planAutoTap, type ManaSource } from '@/lib/game/auto-tap'
 import { getOpponentZoneData } from '@/lib/game/data'
 import type { CommanderDamageEntry, OpponentZoneData } from '@/lib/game/data'
 import { useControllerGameState } from '@/lib/game/use-controller-game-state'
+import { useLongPress } from '@/lib/game/use-long-press'
 import type {
   BoardCard,
   CombatAssignment,
@@ -69,7 +70,7 @@ import type {
   StackItem,
 } from '@/lib/game/types'
 import MotionCard from './MotionCard'
-import { CardActionSheet } from './controller/CardActionSheet'
+import { CardActionSheet, CardZoomOverlay } from './controller/CardActionSheet'
 import { OpeningHandOverlay } from './controller/OpeningHandOverlay'
 import { ControllerCoachOverlay } from './controller/ControllerCoachOverlay'
 import { ManaCostDisplay, ManaPoolDisplay } from './controller/CardDisplay'
@@ -982,6 +983,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 ownExile={ownExile}
                 canCastSorceries={canCastSorceries}
                 canCastInstants={canCastInstants}
+                isActivePlayer={isActivePlayer}
                 availableByColor={availableByColor}
                 flexibleMana={flexibleMana}
                 canPlayLand={canPlayLand}
@@ -1225,6 +1227,7 @@ function MainArea({
   ownExile,
   canCastSorceries,
   canCastInstants,
+  isActivePlayer,
   canPlayLand,
   mustDiscard,
   discardCount,
@@ -1257,6 +1260,7 @@ function MainArea({
   ownExile: ControllerCard[]
   canCastSorceries: boolean
   canCastInstants: boolean
+  isActivePlayer: boolean
   availableByColor: Record<ManaColor, number>
   flexibleMana: number
   canPlayLand: boolean
@@ -1284,6 +1288,9 @@ function MainArea({
   const [myZoneTab, setMyZoneTab] = useState<MyZoneTab>('graveyard')
   const [myZoneOpen, setMyZoneOpen] = useState(false)
   const [orderingAssignment, setOrderingAssignment] = useState<CombatAssignment | null>(null)
+  // Hold-to-peek: press & hold any card to read its full-size oracle text.
+  const [peekCard, setPeekCard] = useState<ControllerCard | null>(null)
+  const bindPeek = useLongPress()
 
   // Keep the ordering sheet's assignment fresh as combat data refreshes
   const orderingAssignmentLive = orderingAssignment
@@ -1345,6 +1352,11 @@ function MainArea({
 
   return (
     <main className="flex min-w-0 flex-1 flex-col">
+      {/* Hold-to-peek full-size card + oracle text (reuses the sheet's zoom). */}
+      <AnimatePresence>
+        {peekCard && <CardZoomOverlay card={peekCard} onClose={() => setPeekCard(null)} />}
+      </AnimatePresence>
+
       {/* ── Opponent pills ────────────────────────────────────────────── */}
       <div className="flex h-8 shrink-0 items-center gap-2 overflow-x-auto border-b border-[#1E2230] bg-[#09090D] px-3">
         {opponentPlayers.map((p) => {
@@ -1430,6 +1442,7 @@ function MainArea({
             key={card.id}
             type="button"
             onClick={() => handleCardTap(card)}
+            {...bindPeek(() => setPeekCard(card))}
             className="relative w-14 shrink-0 transition-transform active:scale-95"
           >
             <MotionCard
@@ -1475,6 +1488,7 @@ function MainArea({
               key={card.id}
               type="button"
               onClick={() => handleCardTap(card)}
+              {...bindPeek(() => setPeekCard(card))}
               className="w-10 shrink-0 transition-transform active:scale-95"
             >
               <MotionCard
@@ -1508,6 +1522,7 @@ function MainArea({
                   key={card.id}
                   type="button"
                   onClick={() => void onDiscardCard(card.id)}
+                  {...bindPeek(() => setPeekCard(card))}
                   className="w-12 shrink-0 rounded-lg ring-1 ring-red-500/60 ring-offset-1 ring-offset-[#0C0E14] transition-all active:scale-95"
                 >
                   <MotionCard
@@ -1526,13 +1541,17 @@ function MainArea({
             const playable = isLand
               ? canPlayLand
               : canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford
-            const hasPriorityWindow = canCastInstants || (canCastSorceries && isLand)
+            // Only invite plays on YOUR turn — a calm hand on opponents' turns.
+            // Instants stay castable by tapping a card (the server gates legality);
+            // this only suppresses the "playable" highlight.
+            const hasPriorityWindow = isActivePlayer && (canCastInstants || (canCastSorceries && isLand))
 
             return (
               <button
                 key={card.id}
                 type="button"
                 onClick={() => onCardTap(card)}
+                {...bindPeek(() => setPeekCard(card))}
                 className={`w-12 shrink-0 rounded-lg transition-all active:scale-95 ${
                   hasPriorityWindow
                     ? playable

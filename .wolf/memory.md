@@ -4480,3 +4480,20 @@
 | 00:29 | Edited components/ControllerListV4.tsx | CSS: availableByColor, flexibleMana | ~42 |
 | 00:29 | Edited components/ControllerListV4.tsx | inline fix | ~30 |
 | 00:30 | fix: colour-aware playable-cards highlight (was colourless availableMana>=totalCost) — getProducibleColors + canAffordCost with wildcard pool; build availableByColor/flexibleMana from untapped lands | components/ControllerListV4.tsx | tsc+eslint clean | ~16k |
+| 00:30 | Session end: 66 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 8 reads | ~111963 tok |
+| 00:36 | Created lib/game/use-long-press.ts | — | ~573 |
+| 00:36 | Edited components/controller/CardActionSheet.tsx | inline fix | ~29 |
+| 00:37 | Edited components/ControllerListV4.tsx | added 1 import(s) | ~39 |
+| 00:37 | Edited components/ControllerListV4.tsx | inline fix | ~23 |
+| 00:37 | Edited components/ControllerListV4.tsx | CSS: Hold-to-peek | ~138 |
+| 00:37 | Edited components/ControllerListV4.tsx | 3→4 lines | ~56 |
+| 00:37 | Edited components/ControllerListV4.tsx | 3→4 lines | ~56 |
+| 00:37 | Edited components/ControllerListV4.tsx | 3→4 lines | ~81 |
+| 00:37 | Edited components/ControllerListV4.tsx | 2→3 lines | ~54 |
+| 00:37 | Edited components/ControllerListV4.tsx | 3→8 lines | ~105 |
+| 00:38 | Ported hold-to-peek to real controller: new useLongPress hook, exported CardZoomOverlay, long-press on board/land/hand cards opens full-size oracle zoom. tsc+eslint clean | lib/game/use-long-press.ts, components/ControllerListV4.tsx, components/controller/CardActionSheet.tsx | done | ~3000 |
+| 00:39 | Edited components/ControllerListV4.tsx | 4→5 lines | ~70 |
+| 00:39 | Edited components/ControllerListV4.tsx | 13→14 lines | ~69 |
+| 00:39 | Edited components/ControllerListV4.tsx | CSS: isActivePlayer | ~50 |
+| 00:39 | Edited components/ControllerListV4.tsx | 1→4 lines | ~96 |
+| 00:40 | playable highlight = your turn only: gate hasPriorityWindow on isActivePlayer (no playable ring on opponents turns; instants still castable via tap) | components/ControllerListV4.tsx | tsc+eslint clean | ~5k |
