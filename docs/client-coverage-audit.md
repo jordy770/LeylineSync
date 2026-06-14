@@ -46,18 +46,29 @@ more silent auto-picking.
 | Attachments | 📎N host badge + 🔗 attachment badge on the controller battlefield (`game_cards.attached_to`, added 2026-06-14) |
 | Trigger targeting | `choose_trigger_target` client path (4 call sites) |
 
-## What's actually next (fresh targets, not yet built)
+## Big-screen board view (`components/GameBoard.tsx`)
 
-1. **Big-screen board view is a stub.** `components/board/` is only chrome,
-   connection overlay, and a stack rail; `app/board/[id]/page.tsx` renders no
-   battlefield cards. This is now the largest unbuilt surface — the shared "couch"
-   screen the whole table looks at. Everything above lives only on the personal
-   controller. Building the board render (and re-applying the state badges there)
-   is the high-leverage next step.
-2. **Attachment naming across owners.** `getControllerCards` is owner-scoped, so
+The board IS built — `GameBoard.tsx` renders per-seat battlefields (focus +
+grid + minimap variants), life totals, priority glow, stack rail, and combat
+connections. (`components/board/` is just chrome; the page mounts `GameBoard`.)
+Its gap was that **none of the controller's state badges existed here** — the
+shared screen the whole table watches.
+
+- **Monarch 👑 + poison ☠ — DONE 2026-06-14**: a shared `SeatStatusBadges`
+  (monarch crown; poison with ≥3 corrupted / ≥10 lethal highlight) renders in all
+  three seat panels. Reads board-loaded data (turnState + player.counters) — no
+  query change.
+- **Still board-side TODO** (need data plumbing the board doesn't load yet):
+  attachments (`attached_to` not in `getBoardCards`), attack-tax (no board status
+  query), animated lands (`animated` not selected). Per-card badges would also
+  need a wrapper around the board `MotionCard`s.
+
+## Other fresh targets
+
+1. **Attachment naming across owners.** `getControllerCards` is owner-scoped, so
    an Aura you control on an *opponent's* creature shows 🔗 but can't name the
    host. A board-level (all-cards) lookup would resolve it.
-3. **Onboarding.** `components/tutorial/` is still Supabase starter boilerplate —
+2. **Onboarding.** `components/tutorial/` is still Supabase starter boilerplate —
    no in-game "your first turn" flow for couch-play guests.
-4. Re-run a real engine-vs-UI scan after the next big engine arc; this doc is a
+3. Re-run a real engine-vs-UI scan after the next big engine arc; this doc is a
    snapshot, not a guarantee.

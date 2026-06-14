@@ -4332,3 +4332,18 @@
 | 22:39 | Created docs/client-coverage-audit.md | — | ~933 |
 | 22:40 | Session end: 21 writes across 11 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 16 reads | ~104211 tok |
 | 22:40 | Edited lib/game/data.ts | removed 22 lines | ~23 |
+| 22:41 | Edited lib/game/data.ts | added nullish coalescing | ~210 |
+| 22:41 | Session end: 23 writes across 11 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 16 reads | ~104474 tok |
+| 22:47 | Session end: 23 writes across 11 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 16 reads | ~104474 tok |
+| 22:53 | Edited components/GameBoard.tsx | added nullish coalescing | ~396 |
+| 22:54 | Edited components/GameBoard.tsx | 6→7 lines | ~97 |
+| 22:54 | Edited components/GameBoard.tsx | CSS: turnState | ~70 |
+| 22:54 | Edited components/GameBoard.tsx | modified getPlayerLabel() | ~102 |
+| 22:54 | Edited components/GameBoard.tsx | 3→4 lines | ~106 |
+| 22:54 | Edited components/GameBoard.tsx | 4→5 lines | ~82 |
+| 22:54 | Edited docs/client-coverage-audit.md | expanded (+11 lines) | ~385 |
+| 22:54 | Created app/manifest.ts | — | ~485 |
+| 22:54 | board-view state badges: shared SeatStatusBadges (monarch 👑 + poison ☠ corrupted/lethal) wired into all 3 GameBoard seat panels; corrected audit (board is built, not a stub) | components/GameBoard.tsx, docs/client-coverage-audit.md | tsc clean | ~9k |
+| 22:55 | Edited app/layout.tsx | removed 6 lines | ~10 |
+| --:-- | DevTools Installability gave real blockers: data-URI icons "failed to load" (caused by crossorigin=use-credentials putting manifest in CORS mode -> data: icons rejected) -> no square icon -> install blocked; plus missing screenshots. Reverted to clean app/manifest.ts with square file icons (192/512) + wide/narrow screenshots; removed route-handler manifest, data-uri module, use-credentials link. Generated screenshot-wide/narrow.png via sharp. Required dev-server restart (deleted route file -> turbopack ghost module 500). CONCLUSION: code-only cannot satisfy Access (needs creds for manifest) AND working icons -> Access Bypass policy for /manifest.webmanifest,/sw.js,/icon-*,/screenshot-* is mandatory on the tunnel. | app/manifest.ts, app/layout.tsx, public/screenshot-wide.png, public/screenshot-narrow.png, (deleted app/manifest.webmanifest/route.ts + app/manifest-icons.ts) | local manifest 200, all assets 200, tsc+eslint clean | ~7k |
+| 22:58 | Session end: 32 writes across 13 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 22 reads | ~106234 tok |

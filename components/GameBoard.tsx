@@ -110,6 +110,7 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
                   <MiniPlayerWidget
                     key={seat.player?.player_id ?? seat.index}
                     seat={seat}
+                    turnState={turnState}
                     registerTargetRef={registerTargetRef}
                     onClick={() => setFocusedPlayerId(seat.player?.player_id ?? null)}
                   />
@@ -179,6 +180,7 @@ function FocusSeatPanel({
             {seat.player ? getPlayerLabel(seat.player) : 'Waiting for players'}
             {seat.isPriority ? <span className="text-cyan-300"> - Priority</span> : null}
           </h2>
+          {seat.player && <SeatStatusBadges player={seat.player} turnState={turnState} />}
         </div>
         <div className="rounded-md border border-white/15 bg-slate-950/70 px-3 py-2 text-right">
           <p className="text-[10px] uppercase text-cyan-200/80">Phase</p>
@@ -219,10 +221,12 @@ function FocusSeatPanel({
 
 function MiniPlayerWidget({
   seat,
+  turnState,
   registerTargetRef,
   onClick,
 }: {
   seat: BoardSeat
+  turnState: GameTurnState | null
   registerTargetRef: (playerId: string, element: HTMLElement | null) => void
   onClick?: () => void
 }) {
@@ -257,6 +261,7 @@ function MiniPlayerWidget({
             P{seat.player.seat_number}
           </p>
           <p className="truncate text-sm font-bold text-white">{getPlayerLabel(seat.player)}</p>
+          <SeatStatusBadges player={seat.player} turnState={turnState} />
         </div>
         <p className={seat.isPriority ? 'text-3xl font-bold text-amber-300 [@media(max-height:640px)]:text-xl' : 'text-3xl font-bold text-cyan-200 [@media(max-height:640px)]:text-xl'}>
           {seat.player.life_total}
@@ -347,6 +352,7 @@ function PlayerQuadrantPanel({
             <p className="text-xs text-slate-400 [@media(max-height:640px)]:text-[10px]">
               P{seat.player.seat_number} &middot; {formatStepLabel(turnState?.step)}
             </p>
+            <SeatStatusBadges player={seat.player} turnState={turnState} />
           </div>
         </div>
         <div className="text-right">
@@ -419,5 +425,43 @@ function formatStepLabel(step: GameTurnState['step'] | undefined) {
 
 function getPlayerInitial(player: GameSessionPlayer) {
   return (player.username?.trim()[0] || `P${player.seat_number}`[0] || 'P').toUpperCase()
+}
+
+// Shared per-seat state badges for the big screen: the crown (monarch) and
+// poison (with the corrupted ≥3 / lethal ≥10 highlights). Both read data the
+// board already loads — no extra query. Renders nothing when neither applies.
+function SeatStatusBadges({
+  player,
+  turnState,
+}: {
+  player: GameSessionPlayer
+  turnState: GameTurnState | null
+}) {
+  const isMonarch = turnState?.monarch_player_id === player.player_id
+  const poison = player.counters?.poison ?? 0
+  if (!isMonarch && poison <= 0) return null
+
+  return (
+    <div className="mt-1 flex flex-wrap items-center gap-1">
+      {isMonarch && (
+        <span
+          className="rounded bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-black text-amber-300"
+          title="The monarch — draws at their end step; combat damage steals the crown"
+        >
+          👑 Monarch
+        </span>
+      )}
+      {poison > 0 && (
+        <span
+          className={`rounded px-1.5 py-0.5 text-[10px] font-black ${
+            poison >= 3 ? 'bg-lime-400/20 text-lime-300' : 'text-lime-400'
+          }`}
+          title={`${poison} poison${poison >= 10 ? ' — LETHAL' : poison >= 3 ? ' — CORRUPTED' : ''}`}
+        >
+          ☠{poison}
+        </span>
+      )}
+    </div>
+  )
 }
 
