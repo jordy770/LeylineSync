@@ -4198,3 +4198,117 @@
 | 22:01 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→3 lines | ~50 |
 | 00:55 | URIANGER (mig 307) — cast_from_exile event. cast_card_from_hand + cast_spell_effect fire a 'cast_from_exile' watcher when the source's ORIGINAL zone was exile (Adventures/impulse); fire_watcher_triggers type-filter defaults it to '' (any card). Urianger Augurelt: "whenever you cast a spell from exile, gain 2 life." PARTIAL — Draw Arcanum / Play Arcanum (the multi-card exile-tag economy) + the land-from-exile case OMITTED. BUG fixed: v_card is overwritten to zone='stack' by the stack-move RETURNING, so captured v_cast_zone BEFORE the move; ALSO the migration was generated before the canonical edit (stale) — regenerated. Test URI1 (cast creature from exile w/ permission → +2 life). FULL SUITE 1503/1503, tsc clean. *** ALL 71 needs-building Scions cards now addressed: ~28 functional + documented partials (Mog II/III, Emet recast, Epiphany counter modes, Champions Full Party, Observed Stasis lose-abilities/ETB, Urianger Draw/Play Arcanum). 16 engine migrations 292-307 *** | cast_card_from_hand.sql, cast_spell_effect.sql, fire_watcher_triggers.sql, mig 307, card-scripts.json, urianger.test.ts, test-cards.json | 1503/1503 green | ~16k |
 | 22:05 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 39 reads | ~197690 tok |
+| 23:44 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 39 reads | ~197690 tok |
+| 01:21 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 39 reads | ~197690 tok |
+| 01:26 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 40 reads | ~197690 tok |
+| 01:35 | Pencil: refined controller view -> "premium table" variant (felt+walnut+gold) | docs/leylinesync_pencil.pen (frame FxWj8) | new frame next to Mobile Landscape v2 | ~16k |
+| 01:36 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 40 reads | ~197690 tok |
+
+## Session: 2026-06-14 12:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-14 12:44
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:38 | Created lib/game/auto-tap.ts | — | ~682 |
+| 17:38 | Edited components/ControllerListV4.tsx | CSS: color, amount, amount | ~405 |
+| 17:38 | Edited components/ControllerListV4.tsx | added 1 import(s) | ~33 |
+| 17:39 | Edited components/ControllerListV4.tsx | added optional chaining | ~377 |
+| 17:39 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~71 |
+| 17:39 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~69 |
+| 17:39 | Edited components/ControllerListV4.tsx | modified if() | ~82 |
+| 17:39 | Edited components/ControllerListV4.tsx | modified if() | ~76 |
+| 17:39 | Edited components/ControllerListV4.tsx | 2→3 lines | ~45 |
+| 17:39 | Edited components/ControllerListV4.tsx | 2→3 lines | ~51 |
+| 17:39 | Edited components/ControllerListV4.tsx | 2→3 lines | ~70 |
+| 17:40 | Edited components/ControllerListV4.tsx | modified if() | ~89 |
+| 17:40 | Edited components/ControllerListV4.tsx | modified if() | ~95 |
+| 17:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~65 |
+| 17:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~66 |
+| 17:40 | Edited components/ControllerListV4.tsx | modified if() | ~105 |
+| 17:40 | Edited components/ControllerListV4.tsx | modified if() | ~40 |
+| 17:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~74 |
+| 17:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~82 |
+| 17:41 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~68 |
+| 17:41 | Created tests/unit/auto-tap.test.ts | — | ~808 |
+| 17:42 | Edited lib/game/auto-tap.ts | 3→2 lines | ~31 |
+| 17:43 | Auto-pay: tap untapped single-colour cost-free sources before casting when pool is short | lib/game/auto-tap.ts, components/ControllerListV4.tsx, tests/unit/auto-tap.test.ts | 8 unit tests pass, tsc+eslint clean | ~9k |
+| 17:44 | Session end: 22 writes across 3 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts) | 4 reads | ~59660 tok |
+| 17:53 | Session end: 22 writes across 3 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts) | 4 reads | ~59660 tok |
+| 17:55 | Edited next.config.ts | 5→7 lines | ~107 |
+| 17:55 | Session end: 23 writes across 4 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts) | 5 reads | ~60112 tok |
+| 18:05 | Session end: 23 writes across 4 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts) | 5 reads | ~60112 tok |
+| 18:19 | Created ../../.cloudflared/config.yml | — | ~181 |
+| 18:19 | Session end: 24 writes across 5 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 5 reads | ~60293 tok |
+| 18:23 | Session end: 24 writes across 5 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 5 reads | ~60293 tok |
+| 18:29 | Created public/icon.svg | — | ~255 |
+| 18:31 | Created app/manifest.ts | — | ~298 |
+| 18:32 | Edited app/layout.tsx | 2→2 lines | ~26 |
+| 18:32 | Edited app/layout.tsx | expanded (+14 lines) | ~177 |
+| 18:32 | Created app/controller/[id]/ControllerFullscreen.tsx | — | ~416 |
+| 18:32 | Edited app/controller/[id]/page.tsx | added 1 import(s) | ~37 |
+| 18:32 | Edited app/controller/[id]/page.tsx | 2→3 lines | ~41 |
+| --:-- | Remove mobile URL bar for phone controllers: PWA manifest (standalone) + iOS appleWebApp meta + viewport-fit cover + Android tap-to-fullscreen; controller already used svh so layout was fine | app/manifest.ts, app/layout.tsx, app/controller/[id]/page.tsx, app/controller/[id]/ControllerFullscreen.tsx, public/icon.svg | tsc+eslint clean | ~4k |
+| 18:33 | Session end: 31 writes across 10 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 7 reads | ~61561 tok |
+| 18:50 | Created supabase/functions_src/spawn_deck_for_session.sql | — | ~998 |
+| 18:50 | Created supabase/functions_src/commander_deck_legality.sql | — | ~806 |
+| 18:51 | Edited supabase/migrations/202605010308_precon_decks.sql | modified public() | ~427 |
+| 18:51 | Edited lib/game/data.ts | added nullish coalescing | ~210 |
+| 18:51 | Edited components/GameSessionLobby.tsx | 5→6 lines | ~37 |
+| 18:51 | Edited components/GameSessionLobby.tsx | 1→2 lines | ~38 |
+| 18:52 | Edited components/GameSessionLobby.tsx | 5→6 lines | ~80 |
+| 18:52 | Edited components/GameSessionLobby.tsx | modified if() | ~120 |
+| 18:52 | Edited components/GameSessionLobby.tsx | expanded (+15 lines) | ~396 |
+| 18:52 | Edited components/GameSessionLobby.tsx | 3→3 lines | ~56 |
+| 18:53 | Edited lib/game/actions.ts | modified spawnDeckForSession() | ~200 |
+| 18:53 | Edited components/GameSessionLobby.tsx | 2→3 lines | ~50 |
+| 18:54 | Created scripts/seed-precon-decks.mjs | — | ~1759 |
+| 18:54 | Edited package.json | 2→3 lines | ~40 |
+| 18:55 | Edited tests/harness/scenario.ts | modified createPreconDeck() | ~228 |
+| 18:55 | Created tests/feature/precon-decks.test.ts | — | ~762 |
+| 18:05 | Shared/global precon decks: is_precon column + RLS + spawn/legality lookup relaxed; lobby shows "Precons" optgroup; seeding script | mig 308, functions_src/{spawn_deck_for_session,commander_deck_legality}.sql, lib/game/{data,actions}.ts, GameSessionLobby.tsx, scripts/seed-precon-decks.mjs, tests/feature/precon-decks.test.ts | 15 feature tests pass, tsc+eslint clean, dry-run found 4 complete decks | ~30k |
+| 18:58 | Session end: 47 writes across 20 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 16 reads | ~87715 tok |
+| 19:11 | Edited scripts/seed-precon-decks.mjs | 3→6 lines | ~96 |
+| 19:11 | Edited scripts/seed-precon-decks.mjs | added 1 condition(s) | ~74 |
+| 18:20 | Normalized 6 precon decklists (comment category headers; canonical "Front // Back" for split/DFC/adventure cards) → 10/11 now catalog-complete (was 4); seeding script disambiguates duplicate commander names | docs/commander-decks/*.txt, scripts/seed-precon-decks.mjs | dry-run: 10 complete, only empty GraveDanger skipped | ~6k |
+| 19:13 | Session end: 49 writes across 20 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 16 reads | ~87898 tok |
+| 19:47 | Created app/controller/[id]/AddToHomeScreen.tsx | — | ~1044 |
+| 19:47 | Edited app/controller/[id]/page.tsx | added 1 import(s) | ~31 |
+| 19:47 | Edited app/controller/[id]/page.tsx | 2→3 lines | ~25 |
+| --:-- | Add A2HS nudge: dismissible bottom banner, Android beforeinstallprompt Install button + iOS Safari Share instructions, hidden in standalone/after dismiss (localStorage); mounted in controller page | app/controller/[id]/AddToHomeScreen.tsx, app/controller/[id]/page.tsx | tsc+eslint clean | ~2k |
+| 19:47 | Session end: 52 writes across 21 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 16 reads | ~89395 tok |
+| 19:53 | Edited proxy.ts | 4→6 lines | ~108 |
+| --:-- | Run on cloudflare tunnel (app.dweemo.nl): dev+tunnel already up. Fixed manifest auth-gating (proxy.ts matcher missing .webmanifest -> 307 to login -> install would fail). Tunnel is behind Cloudflare Access which gates everything incl. manifest (credential-less fetch) — flagged to user, needs Access bypass policy for real-device install. | proxy.ts | local manifest 200; tunnel behind Access | ~3k |
+| 19:55 | Session end: 53 writes across 22 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 18 reads | ~89503 tok |
+| 20:03 | Edited app/manifest.ts | 14→9 lines | ~169 |
+| 20:04 | Created public/sw.js | — | ~212 |
+| 20:04 | Created app/ServiceWorkerRegister.tsx | — | ~161 |
+| 20:04 | Edited app/layout.tsx | added 1 import(s) | ~37 |
+| 20:04 | Edited app/layout.tsx | 3→4 lines | ~26 |
+| 20:04 | Edited proxy.ts | 5→7 lines | ~133 |
+| --:-- | Fix "no install option": added service worker (public/sw.js passthrough) + ServiceWorkerRegister in root layout (Chrome needs SW+fetch handler for beforeinstallprompt); generated icon-192/512.png via sharp + referenced in manifest; exempted sw.js from proxy.ts matcher (was 307->login). Local: sw.js+manifest 200. Tunnel: Cloudflare Access still gates credential-less manifest fetch. | public/sw.js, app/ServiceWorkerRegister.tsx, app/layout.tsx, app/manifest.ts, proxy.ts, public/icon-192.png, public/icon-512.png | tsc+eslint clean | ~5k |
+| 20:10 | Session end: 59 writes across 24 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 18 reads | ~90241 tok |
+| 20:15 | Session end: 59 writes across 24 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 18 reads | ~90241 tok |
+
+## Session: 2026-06-14 20:43
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 20:54 | Edited components/ControllerListV4.tsx | CSS: fast, AUTOPASS_DEFAULT | ~252 |
+| 20:54 | Edited components/ControllerListV4.tsx | CSS: beat | ~142 |
+| 20:54 | Edited components/ControllerListV4.tsx | CSS: AUTOPASS_BEAT_STACK_MS | ~102 |
+| 20:54 | early-game pacing: auto-pass defaults on (op+own+stk) for fresh sessions + adaptive beat (250ms empty / 700ms stack) | components/ControllerListV4.tsx | tsc clean | ~6k |
+| 20:55 | Session end: 3 writes across 1 files (ControllerListV4.tsx) | 4 reads | ~47801 tok |
+| 21:06 | Created supabase/functions_src/pass_priority.sql | — | ~1900 |
+| 21:06 | Edited supabase/migrations/202605010309_pod_auto_skip.sql | modified public() | ~456 |
+| 21:06 | Edited lib/game/actions.ts | added 1 condition(s) | ~205 |
+| 21:07 | Edited components/ControllerListV4.tsx | 3→4 lines | ~27 |
+| 21:07 | Edited components/ControllerListV4.tsx | CSS: non-fatal | ~182 |
+| 21:07 | Edited tests/harness/scenario.ts | modified passPriority() | ~311 |
+| 21:07 | Created tests/feature/pod-auto-skip.test.ts | — | ~1413 |
+| 21:08 | Edited tests/feature/pod-auto-skip.test.ts | 6→7 lines | ~146 |
+| 21:10 | pod auto-skip: server-side priority chaining (new pass_priority canonical + mig 309 + autopass_settings sync + 5 tests) | functions_src/pass_priority.sql, mig 309, actions.ts, ControllerListV4.tsx, scenario.ts, pod-auto-skip.test.ts | full suite 1519 pass, tsc clean | ~40k |
+| 21:11 | Session end: 11 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 11 reads | ~77291 tok |

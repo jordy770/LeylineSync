@@ -40,6 +40,7 @@ import {
   resolveCombatDamage,
   setCombatBlockerOrder,
   submitDecision,
+  syncAutoPassSettings,
 } from '@/lib/game/actions'
 import type { DamageAllocation, CombatDamageAssignments } from '@/lib/game/actions'
 import {
@@ -49,6 +50,7 @@ import {
 } from '@/lib/game/card-behavior'
 import { getPowerToughnessLabel } from '@/lib/game/controller-selectors'
 import { parseManaCost } from '@/lib/game/mana'
+import { planAutoTap, type ManaSource } from '@/lib/game/auto-tap'
 import { getOpponentZoneData } from '@/lib/game/data'
 import type { OpponentZoneData } from '@/lib/game/data'
 import { useControllerGameState } from '@/lib/game/use-controller-game-state'
@@ -114,11 +116,16 @@ type AutoPassSettings = {
   rsp: boolean  // on opponents' turns, STOP when you have a castable response
 }
 const AUTOPASS_OFF: AutoPassSettings = { op: false, own: false, stk: false, rsp: false }
+// Fresh sessions start fast: skip opponents' turns AND your own empty phases,
+// but always stop when a new object hits the stack (and for every decision /
+// trigger target / block — those are hard exemptions in the effect). Players
+// who opened the popover and stored explicit prefs keep them.
+const AUTOPASS_DEFAULT: AutoPassSettings = { op: true, own: true, stk: true, rsp: false }
 const autoPassStorageKey = (sessionId: string) => 'leyline-autopass-' + sessionId
 function loadAutoPassSettings(sessionId: string): AutoPassSettings {
-  if (typeof window === 'undefined') return AUTOPASS_OFF
+  if (typeof window === 'undefined') return AUTOPASS_DEFAULT
   const raw = localStorage.getItem(autoPassStorageKey(sessionId))
-  if (!raw) return AUTOPASS_OFF
+  if (!raw) return AUTOPASS_DEFAULT
   if (raw === '1') return { ...AUTOPASS_OFF, op: true } // migrate the v1 boolean toggle
   try {
     return { ...AUTOPASS_OFF, ...(JSON.parse(raw) as Partial<AutoPassSettings>) }
@@ -129,11 +136,22 @@ function loadAutoPassSettings(sessionId: string): AutoPassSettings {
 // Your own steps with nothing to decide — auto-passed when `own` is on. Main
 // phases and combat decision steps (declare_attackers/combat_damage) stay manual.
 const OWN_SKIP_STEPS: GameTurnState['step'][] = ['untap', 'upkeep', 'draw', 'beginning_of_combat', 'end_of_combat', 'end']
+// Adaptive auto-pass beat: snappy through genuinely dead windows (empty stack),
+// but a longer, visible beat when an object is on the stack so the table can see
+// it before it's passed. Sequential pod passes make the empty-window beat the
+// dominant cost of early-game dead time, so it's kept short.
+const AUTOPASS_BEAT_EMPTY_MS = 250
+const AUTOPASS_BEAT_STACK_MS = 700
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Returns the single mana color to auto-produce when a card has exactly one simple tap ability. */
-function getAutoTapColor(card: ControllerCard): ManaColor | null {
+/**
+ * The mana an untapped card auto-produces when it has exactly one simple
+ * tap-for-one-colour ability (tap is the only cost, one fixed colour). Returns
+ * null for tapped sources, multi-ability sources, sources with extra costs
+ * (life/sacrifice), and 'commander'/'any' sources that need a colour choice.
+ */
+function getAutoTapMana(card: ControllerCard): { color: ManaColor; amount: number } | null {
   if (card.is_tapped) return null
   const script = normalizeCardBehaviorToV2(
     card.copied_script ?? card.cards?.script ?? null,
@@ -146,8 +164,14 @@ function getAutoTapColor(card: ControllerCard): ManaColor | null {
   const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
   if (addManaEffects.length !== 1) return null
   // A 'commander'/'any' source needs a colour choice — don't auto-tap; open the picker.
-  const color = addManaEffects[0].color
-  return color === 'commander' || color === 'any' ? null : color
+  const { color, amount } = addManaEffects[0]
+  if (color === 'commander' || color === 'any') return null
+  return { color, amount: Math.max(1, amount ?? 1) }
+}
+
+/** Returns the single mana color to auto-produce when a card has exactly one simple tap ability. */
+function getAutoTapColor(card: ControllerCard): ManaColor | null {
+  return getAutoTapMana(card)?.color ?? null
 }
 
 // The player's commander colour identity (W/U/B/R/G letters) from the mana symbols in
@@ -339,6 +363,14 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       return next
     })
   }
+  // Mirror this player's auto-pass intent to the server so pass_priority can
+  // chain skips for them (pod auto-skip). Runs on load and whenever it changes.
+  useEffect(() => {
+    if (!playerId) return
+    syncAutoPassSettings(supabase, sessionId, autoPass).catch(() => {
+      /* non-fatal: server just won't auto-skip this player */
+    })
+  }, [autoPass, sessionId, playerId, supabase])
 
   // "Yield rest of turn": one-shot — pass every priority until your next turn.
   // Holds the turn_number it was armed on; cleared once it's your turn again or
@@ -394,11 +426,12 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     }
     if (!willPass) return
 
+    const beatMs = currentStackKey ? AUTOPASS_BEAT_STACK_MS : AUTOPASS_BEAT_EMPTY_MS
     const timer = setTimeout(() => {
       passPriorityAction(supabase, sessionId)
         .then(() => { ackStackKeyRef.current = currentStackKey; return refresh() })
         .catch(() => { /* lost a race to a state change; the next tick re-evaluates */ })
-    }, 700)
+    }, beatMs)
     return () => clearTimeout(timer)
   }, [autoPass, isYielding, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState, currentStackKey, iHaveResponse])
 
@@ -489,11 +522,37 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     await refresh()
   }
 
+  // Auto-pay: when the floating pool can't cover a spell's printed cost, tap
+  // enough untapped single-colour, cost-free sources to make up the difference
+  // before casting — so you can cast straight from hand without hand-tapping
+  // lands first. Skipped for {X} costs (the amount depends on the chosen X) and
+  // for anything the safe-greedy planner can't cover unambiguously, leaving
+  // those to manual tapping. Already-affordable casts tap nothing.
+  const autoPay = async (card: ControllerCard | null) => {
+    if (!card || !playerId) return
+    const manaCost = card.cards?.mana_cost ?? ''
+    if (/x/i.test(manaCost)) return
+    const sources: ManaSource[] = battlefieldCards.flatMap((c) => {
+      const m = getAutoTapMana(c)
+      return m ? [{ id: c.id, color: m.color, amount: m.amount }] : []
+    })
+    const plan = planAutoTap(parseManaCost(manaCost), manaPool, sources)
+    if (!plan || plan.length === 0) return
+    for (const tap of plan) {
+      await addManaFromCard({
+        supabase, cardId: tap.id, sessionId, playerId,
+        color: tap.color, amount: tap.amount, shouldTapCard: true,
+      })
+    }
+    await refresh()
+  }
+
   const actions = {
     passPriority: async () => { ackStackKeyRef.current = currentStackKey; await passPriorityAction(supabase, sessionId); await refresh() },
     advanceStep: async () => { await advanceStep(supabase, sessionId); await refresh() },
     // Plain cast — permanents and untargeted spells
     castSpell: async (cardId: string) => {
+      await autoPay(cards.find((c) => c.id === cardId) ?? null)
       await castCardFromHand(supabase, sessionId, cardId)
       await refresh()
     },
@@ -504,6 +563,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     },
     // Aura cast — a permanent that enters attached to the chosen creature.
     castAura: async (cardId: string, targetCardId: string) => {
+      await autoPay(cards.find((c) => c.id === cardId) ?? null)
       await castCardFromHand(supabase, sessionId, cardId, undefined, targetCardId)
       await refresh()
     },
@@ -524,6 +584,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'damage') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await putDealDamagePlayerOnStack(supabase, sessionId, targetPlayerId, plan.amount, plan.timing, cardId, undefined, x)
       await refresh()
     },
@@ -533,6 +594,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'damage') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await putDealDamageCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController, x)
       await refresh()
     },
@@ -540,6 +602,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'pump') return
+      await autoPay(card)
       await putPumpCreatureOnStack(supabase, sessionId, targetCardId, plan.power, plan.toughness, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
@@ -547,6 +610,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'set_pt') return
+      await autoPay(card)
       await putSetPtCreatureOnStack(supabase, sessionId, targetCardId, plan.power, plan.toughness, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
@@ -556,6 +620,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'add_counters') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await putAddCountersCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController, x, plan.counterType, plan.all)
       await refresh()
     },
@@ -564,6 +629,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'creature_effect') return
+      await autoPay(card)
       if (plan.effect === 'gain_control_creature') {
         await putGainControlCreatureOnStack(supabase, sessionId, targetCardId, plan.duration ?? 'permanent', plan.untap ?? false, plan.haste ?? false, plan.timing, cardId, undefined, plan.targetController)
       } else if (plan.keyword) {
@@ -578,6 +644,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'multi_creature' || targetCardIds.length === 0) return
+      await autoPay(card)
       await castMultiCreatureEffect(supabase, sessionId, plan.effectKind, targetCardIds, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
@@ -586,6 +653,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'permanent_effect') return
+      await autoPay(card)
       await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then, plan.controllerSearchesBasicLand)
       await refresh()
     },
@@ -594,6 +662,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'divided_damage' || allocations.length === 0) return
+      await autoPay(card)
       await castDividedDamage(supabase, sessionId, plan.amount, allocations, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
@@ -602,6 +671,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'fight') return
+      await autoPay(card)
       await castFight(supabase, sessionId, fighterCardId, foughtCardId, cardId, plan.foughtController)
       await refresh()
     },
@@ -612,6 +682,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'draw') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await putDrawCardsOnStack(supabase, sessionId, plan.amount, plan.timing, cardId, undefined, x)
       await refresh()
     },
@@ -623,6 +694,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'spell_effect') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await castSpellEffect(supabase, sessionId, plan.actions, cardId, x)
       await refresh()
     },
@@ -631,11 +703,13 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'modal') return
+      await autoPay(card)
       await castModalSpell(supabase, sessionId, plan.modes, plan.choose, cardId)
       await refresh()
     },
     // Counterspell targeting a specific pending stack item
     counterSpell: async (cardId: string, stackItemId: string) => {
+      await autoPay(cards.find((c) => c.id === cardId) ?? null)
       await putCounterSpellOnStack(supabase, sessionId, stackItemId, cardId)
       await refresh()
     },
