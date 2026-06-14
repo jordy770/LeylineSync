@@ -4497,3 +4497,25 @@
 | 00:39 | Edited components/ControllerListV4.tsx | CSS: isActivePlayer | ~50 |
 | 00:39 | Edited components/ControllerListV4.tsx | 1→4 lines | ~96 |
 | 00:40 | playable highlight = your turn only: gate hasPriorityWindow on isActivePlayer (no playable ring on opponents turns; instants still castable via tap) | components/ControllerListV4.tsx | tsc+eslint clean | ~5k |
+| 00:41 | Session end: 80 writes across 13 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 8 reads | ~113621 tok |
+| 00:41 | Edited components/ControllerListV4.tsx | added 11 condition(s) | ~1341 |
+| 00:42 | Edited components/ControllerListV4.tsx | expanded (+20 lines) | ~330 |
+| 00:42 | Edited components/ControllerListV4.tsx | 8→11 lines | ~164 |
+| 00:42 | Edited components/ControllerListV4.tsx | CSS: touchAction | ~139 |
+| 00:42 | Edited components/ControllerListV4.tsx | 5→5 lines | ~94 |
+| 00:42 | Edited components/ControllerListV4.tsx | 3→3 lines | ~43 |
+| 00:43 | Edited components/ControllerListV4.tsx | 3→5 lines | ~83 |
+| 00:43 | Ported drag-to-attack into DeclareAttackersLayout: per-attacker target Map (was single shared target), drag a creature onto a target pill draws an arrow + assigns it; tap still toggles to selected target. tsc+eslint clean | components/ControllerListV4.tsx | done | ~2500 |
+| 00:44 | Session end: 87 writes across 13 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 8 reads | ~115914 tok |
+| 00:59 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 4→5 lines | ~35 |
+| 00:59 | Edited supabase/functions_src/enqueue_triggered_ability.sql | expanded (+22 lines) | ~462 |
+| 00:59 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 2→3 lines | ~56 |
+| 00:59 | Created supabase/functions_src/choose_triggered_ability_creature_target.sql | — | ~1052 |
+| 01:00 | Edited supabase/migrations/202605010310_opportunistic_dragon_target_filter.sql | modified public() | ~586 |
+| 01:01 | Edited docs/commander-decks/card-scripts.json | inline fix | ~57 |
+| 01:02 | Edited tests/fixtures/test-cards.json | inline fix | ~74 |
+| 01:03 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~221 |
+| 01:03 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~181 |
+| 01:03 | Edited components/ControllerListV4.tsx | CSS: Dragon | ~216 |
+| 01:05 | Created tests/feature/opportunistic-dragon.test.ts | — | ~1288 |
+| 01:11 | fix: Opportunistic Dragon target restriction (mig 310) — reusable trigger target_filter {type_line_any}; helpers + enqueue payload/has-target + choose validation + client picker; OD1-3 tests; full suite 1521 pass | functions_src/{enqueue_triggered_ability,choose_triggered_ability_creature_target}.sql, mig 310, ControllerListV4.tsx, card-scripts.json, test-cards.json, opportunistic-dragon.test.ts | full suite green | ~45k |

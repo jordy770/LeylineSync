@@ -12606,6 +12606,105 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-15T00:00:00.000Z"
+    },
+    {
+      "id": "bug-776",
+      "timestamp": "2026-06-14T22:41:51.466Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-14T22:41:51.466Z"
+    },
+    {
+      "id": "bug-777",
+      "timestamp": "2026-06-14T22:42:33.979Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→11 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-14T22:42:33.979Z"
+    },
+    {
+      "id": "bug-778",
+      "timestamp": "2026-06-14T22:59:31.524Z",
+      "error_message": "Incorrect value in code",
+      "file": "supabase/functions_src/enqueue_triggered_ability.sql",
+      "root_cause": "Had 'timing'",
+      "fix": "Changed to 'target_filter'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-14T22:59:31.524Z"
+    },
+    {
+      "id": "bug-779",
+      "timestamp": "2026-06-14T23:00:49.671Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010310_opportunistic_dragon_target_filter.sql",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 6→42 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-14T23:00:49.672Z"
+    },
+    {
+      "id": "bug-780",
+      "timestamp": "2026-06-14T23:03:20.048Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: boardCards.some((c) => {; if (!creatureMatchesController(c, playerId, topStackItem.pay",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-14T23:03:37.587Z"
+    },
+    {
+      "id": "bug-1480",
+      "timestamp": "2026-06-15T00:00:00.000Z",
+      "error_message": "Opportunistic Dragon could target ANY opponent permanent/creature instead of only Human or artifact",
+      "file": "supabase/functions_src/enqueue_triggered_ability.sql, choose_triggered_ability_creature_target.sql, components/ControllerListV4.tsx, docs/commander-decks/card-scripts.json",
+      "root_cause": "The card script used target_type:\"permanent\" with no type restriction; the engine validated only the target controller (not type), and the client picker offered any matching permanent. mig 246 explicitly approximated the Human-or-artifact restriction.",
+      "fix": "mig 310: added a reusable trigger target_filter ({type_line_any|type_line}). Helpers card_type_line_matches_filter + trigger_effects_target_filter; enqueue_triggered_ability stamps it into the payload and is filter-aware for the has-legal-target gate (no soft-lock); choose_triggered_ability_creature_target rejects mismatched targets; client picker (matchesTargetFilter) only offers matching permanents. Opportunistic Dragon script gets target_filter type_line_any [Human, Artifact].",
+      "tags": [
+        "target",
+        "filter",
+        "trigger",
+        "gain_control",
+        "opportunistic-dragon",
+        "engine"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T00:00:00.000Z"
     }
   ]
 }

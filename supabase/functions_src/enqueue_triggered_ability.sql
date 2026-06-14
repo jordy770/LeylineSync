@@ -19,6 +19,7 @@ declare
   v_target_type jsonb;
   v_requires_target boolean;
   v_target_controller text;
+  v_target_filter jsonb;
   v_has_target boolean;
   v_active_player_id uuid;
   v_player_count integer;
@@ -35,8 +36,30 @@ begin
 
   if v_requires_target then
     v_target_controller := coalesce(public.trigger_effects_target_controller(p_effects), 'any');
+    -- Optional type-line restriction on the target (mig 310, Opportunistic Dragon:
+    -- "Human or artifact"). Carried into the payload so the client + the chooser
+    -- both enforce it.
+    v_target_filter := public.trigger_effects_target_filter(p_effects);
 
-    if public.behavior_target_type_is_creature_only(v_target_type) then
+    if v_target_filter is not null then
+      -- Filter-aware availability: don't enqueue a "choose target" trigger when no
+      -- battlefield permanent matches BOTH the target type and the type-line
+      -- filter — otherwise the trigger would sit unresolvable with no legal pick.
+      v_has_target := exists (
+        select 1
+        from public.game_cards gc
+        join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id
+          and gc.zone = 'battlefield'
+          and public.card_type_line_matches_target(c.type_line, v_target_type)
+          and public.card_type_line_matches_filter(c.type_line, v_target_filter)
+          and (
+            v_target_controller = 'any'
+            or (v_target_controller = 'opponent' and gc.controller_player_id is distinct from p_controller_id)
+            or (v_target_controller = 'you' and gc.controller_player_id = p_controller_id)
+          )
+      );
+    elsif public.behavior_target_type_is_creature_only(v_target_type) then
       v_has_target := public.session_has_targetable_creature(p_session_id, p_controller_id, v_target_controller);
     else
       v_has_target := public.session_has_targetable_permanent(p_session_id, p_controller_id, v_target_controller, v_target_type);
@@ -85,6 +108,7 @@ begin
       'target_type', case when v_requires_target then v_target_type else null end,
       'target_count', case when v_requires_target then public.trigger_effects_target_count(p_effects) else null end,
       'target_controller', case when v_requires_target then v_target_controller else null end,
+      'target_filter', case when v_requires_target then v_target_filter else null end,
       'timing', 'triggered',
       'apnap_rank', v_apnap_rank,
       'triggering_card_id', p_triggering_card_id
