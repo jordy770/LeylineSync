@@ -10,6 +10,7 @@ import {
   type BoardSeat,
 } from '@/lib/game/board-selectors'
 import { useBoardGameState } from '@/lib/game/use-board-game-state'
+import type { CommanderDamageEntry } from '@/lib/game/data'
 import type {
   BoardCard,
   GameSessionPlayer,
@@ -23,7 +24,7 @@ import MotionCard from './MotionCard'
 import CombatManager from './CombatManager'
 
 export default function GameBoard({ sessionId }: { sessionId: string }) {
-  const { cards, players, turnState, combatAssignments, stackItems, attackTaxes, errorMessage } = useBoardGameState(sessionId)
+  const { cards, players, turnState, combatAssignments, stackItems, attackTaxes, commanderDamage, errorMessage } = useBoardGameState(sessionId)
   const [focusedPlayerId, setFocusedPlayerId] = useState<string | null>(null)
   const boardRef = useRef<HTMLDivElement | null>(null)
   const [targetElements, setTargetElements] = useState<Map<string, HTMLElement>>(() => new Map())
@@ -103,7 +104,7 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
             exit={{ opacity: 0, x: 20 }}
             className="relative z-20 grid min-h-[72vh] gap-5 [transform-style:preserve-3d] [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_7.5rem_minmax(9rem,11rem)] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
           >
-            <FocusSeatPanel seat={focusSeat} turnState={turnState} attackTaxes={attackTaxes} />
+            <FocusSeatPanel seat={focusSeat} turnState={turnState} attackTaxes={attackTaxes} commanderDamage={commanderDamage} />
             <StackRail stackItems={pendingStackItems} />
             <motion.aside layout className="grid content-start gap-3 [@media(max-height:640px)]:gap-2">
               <AnimatePresence initial={false}>
@@ -113,6 +114,7 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
                     seat={seat}
                     turnState={turnState}
                     attackTaxes={attackTaxes}
+                    commanderDamage={commanderDamage}
                     registerTargetRef={registerTargetRef}
                     onClick={() => setFocusedPlayerId(seat.player?.player_id ?? null)}
                   />
@@ -136,6 +138,7 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
                     seat={seat}
                     turnState={turnState}
                     attackTaxes={attackTaxes}
+                    commanderDamage={commanderDamage}
                     onFocus={() => setFocusedPlayerId(seat.player?.player_id ?? null)}
                   />
                 ))
@@ -161,10 +164,12 @@ function FocusSeatPanel({
   seat,
   turnState,
   attackTaxes,
+  commanderDamage,
 }: {
   seat: BoardSeat
   turnState: GameTurnState | null
   attackTaxes: AttackTax[]
+  commanderDamage: Record<string, CommanderDamageEntry[]>
 }) {
   const { countByHost, nameById } = seatAttachments(seat.cards)
   return (
@@ -186,7 +191,14 @@ function FocusSeatPanel({
             {seat.player ? getPlayerLabel(seat.player) : 'Waiting for players'}
             {seat.isPriority ? <span className="text-cyan-300"> - Priority</span> : null}
           </h2>
-          {seat.player && <SeatStatusBadges player={seat.player} turnState={turnState} attackTaxes={attackTaxes} />}
+          {seat.player && (
+            <SeatStatusBadges
+              player={seat.player}
+              turnState={turnState}
+              attackTaxes={attackTaxes}
+              commanderDamage={commanderDamage[seat.player.player_id]}
+            />
+          )}
         </div>
         <div className="rounded-md border border-white/15 bg-slate-950/70 px-3 py-2 text-right">
           <p className="text-[10px] uppercase text-cyan-200/80">Phase</p>
@@ -235,12 +247,14 @@ function MiniPlayerWidget({
   seat,
   turnState,
   attackTaxes,
+  commanderDamage,
   registerTargetRef,
   onClick,
 }: {
   seat: BoardSeat
   turnState: GameTurnState | null
   attackTaxes: AttackTax[]
+  commanderDamage: Record<string, CommanderDamageEntry[]>
   registerTargetRef: (playerId: string, element: HTMLElement | null) => void
   onClick?: () => void
 }) {
@@ -275,7 +289,12 @@ function MiniPlayerWidget({
             P{seat.player.seat_number}
           </p>
           <p className="truncate text-sm font-bold text-white">{getPlayerLabel(seat.player)}</p>
-          <SeatStatusBadges player={seat.player} turnState={turnState} attackTaxes={attackTaxes} />
+          <SeatStatusBadges
+            player={seat.player}
+            turnState={turnState}
+            attackTaxes={attackTaxes}
+            commanderDamage={commanderDamage[seat.player.player_id]}
+          />
         </div>
         <p className={seat.isPriority ? 'text-3xl font-bold text-amber-300 [@media(max-height:640px)]:text-xl' : 'text-3xl font-bold text-cyan-200 [@media(max-height:640px)]:text-xl'}>
           {seat.player.life_total}
@@ -317,11 +336,13 @@ function PlayerQuadrantPanel({
   seat,
   turnState,
   attackTaxes,
+  commanderDamage,
   onFocus,
 }: {
   seat: BoardSeat
   turnState: GameTurnState | null
   attackTaxes: AttackTax[]
+  commanderDamage: Record<string, CommanderDamageEntry[]>
   onFocus: () => void
 }) {
   const { countByHost, nameById } = seatAttachments(seat.cards)
@@ -369,7 +390,12 @@ function PlayerQuadrantPanel({
             <p className="text-xs text-slate-400 [@media(max-height:640px)]:text-[10px]">
               P{seat.player.seat_number} &middot; {formatStepLabel(turnState?.step)}
             </p>
-            <SeatStatusBadges player={seat.player} turnState={turnState} attackTaxes={attackTaxes} />
+            <SeatStatusBadges
+              player={seat.player}
+              turnState={turnState}
+              attackTaxes={attackTaxes}
+              commanderDamage={commanderDamage[seat.player.player_id]}
+            />
           </div>
         </div>
         <div className="text-right">
@@ -459,15 +485,18 @@ function SeatStatusBadges({
   player,
   turnState,
   attackTaxes,
+  commanderDamage,
 }: {
   player: GameSessionPlayer
   turnState: GameTurnState | null
   attackTaxes: AttackTax[]
+  commanderDamage: CommanderDamageEntry[] | undefined
 }) {
   const isMonarch = turnState?.monarch_player_id === player.player_id
   const poison = player.counters?.poison ?? 0
   const taxes = attackTaxes.filter((t) => t.playerId === player.player_id)
-  if (!isMonarch && poison <= 0 && taxes.length === 0) return null
+  const cmdrWorst = commanderDamage?.length ? Math.max(...commanderDamage.map((e) => e.damage)) : 0
+  if (!isMonarch && poison <= 0 && taxes.length === 0 && cmdrWorst <= 0) return null
 
   return (
     <div className="mt-1 flex flex-wrap items-center gap-1">
@@ -497,6 +526,18 @@ function SeatStatusBadges({
             .join(' and ')} per attacker`}
         >
           ⛔ Tax
+        </span>
+      )}
+      {cmdrWorst > 0 && (
+        <span
+          className={`rounded px-1.5 py-0.5 text-[10px] font-black ${
+            cmdrWorst >= 21 ? 'bg-red-500/30 text-red-200' : cmdrWorst >= 15 ? 'bg-amber-500/20 text-amber-300' : 'text-orange-300'
+          }`}
+          title={`Commander damage taken:\n${commanderDamage!
+            .map((e) => `${e.name}: ${e.damage}/21${e.damage >= 21 ? ' — LETHAL' : ''}`)
+            .join('\n')}`}
+        >
+          ⚔{cmdrWorst}
         </span>
       )}
     </div>

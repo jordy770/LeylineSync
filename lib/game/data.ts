@@ -367,6 +367,51 @@ export async function getGameSessionPlayers(supabase: SupabaseClient, sessionId:
   return (data ?? []) as GameSessionPlayer[]
 }
 
+export type CommanderDamageEntry = { sourceCardId: string; name: string; damage: number }
+
+// Cumulative commander combat damage each player has taken, keyed by defender
+// player id (Commander: 21 from a single commander is lethal). Resolves the
+// source game-card to its catalog name. Empty in non-Commander games.
+export async function getCommanderDamage(
+  supabase: SupabaseClient,
+  sessionId: string,
+): Promise<Record<string, CommanderDamageEntry[]>> {
+  const { data, error } = await supabase
+    .from('game_commander_damage')
+    .select('defender_player_id, source_card_id, damage')
+    .eq('session_id', sessionId)
+    .gt('damage', 0)
+
+  if (error) {
+    console.error('Failed to load commander damage:', error.message)
+    return {}
+  }
+
+  const rows = (data ?? []) as { defender_player_id: string; source_card_id: string; damage: number }[]
+  if (rows.length === 0) return {}
+
+  // source_card_id is a game_cards.id → resolve to its catalog name.
+  const sourceIds = [...new Set(rows.map((r) => r.source_card_id))]
+  const { data: gcData } = await supabase
+    .from('game_cards')
+    .select('id, card_id')
+    .in('id', sourceIds)
+  const cardIdByGameCard = new Map((gcData ?? []).map((r) => [r.id as string, r.card_id as string]))
+  const names = await getLinkedCardsById(supabase, [...cardIdByGameCard.values()], 'id, name')
+
+  const byDefender: Record<string, CommanderDamageEntry[]> = {}
+  for (const r of rows) {
+    const cardId = cardIdByGameCard.get(r.source_card_id)
+    const name = (cardId ? names.get(cardId)?.name : null) ?? 'Commander'
+    ;(byDefender[r.defender_player_id] ??= []).push({
+      sourceCardId: r.source_card_id,
+      name,
+      damage: r.damage,
+    })
+  }
+  return byDefender
+}
+
 export async function getGameActionLogs(
   supabase: SupabaseClient,
   sessionId: string,

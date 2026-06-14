@@ -52,7 +52,7 @@ import { getPowerToughnessLabel } from '@/lib/game/controller-selectors'
 import { parseManaCost } from '@/lib/game/mana'
 import { planAutoTap, type ManaSource } from '@/lib/game/auto-tap'
 import { getOpponentZoneData } from '@/lib/game/data'
-import type { OpponentZoneData } from '@/lib/game/data'
+import type { CommanderDamageEntry, OpponentZoneData } from '@/lib/game/data'
 import { useControllerGameState } from '@/lib/game/use-controller-game-state'
 import type {
   BoardCard,
@@ -229,6 +229,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     players,
     turnState,
     attackTaxes,
+    commanderDamage,
     combatAssignments,
     stackItems,
     pendingDecisions,
@@ -849,6 +850,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
               manaPool={manaPool}
               isActivePlayer={isActivePlayer}
               libraryCount={ownLibraryCount}
+              commanderDamage={playerId ? commanderDamage[playerId] : undefined}
             />
             {/* Command zone — cast your commander (sorcery speed) with live tax. */}
             {commandZone.length > 0 && (
@@ -897,6 +899,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 discardCount={discardCount}
                 combatAssignments={combatAssignments}
                 attackTaxes={attackTaxes}
+                commanderDamage={commanderDamage}
                 turnState={turnState}
                 canOrderBlockers={canOrderBlockers}
                 onCardTap={setSelectedCard}
@@ -997,6 +1000,24 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
   )
 }
 
+// Commander damage taken (Commander: 21 from one commander is lethal). Shows the
+// worst single-commander total, coloured by danger; tooltip lists every source.
+function CommanderDamageBadge({ entries }: { entries: CommanderDamageEntry[] | undefined }) {
+  if (!entries || entries.length === 0) return null
+  const worst = Math.max(...entries.map((e) => e.damage))
+  const tone = worst >= 21 ? 'bg-red-500/30 text-red-200' : worst >= 15 ? 'bg-amber-500/20 text-amber-300' : 'text-orange-300'
+  return (
+    <span
+      className={`rounded px-1 text-[10px] font-black ${tone}`}
+      title={`Commander damage taken:\n${entries
+        .map((e) => `${e.name}: ${e.damage}/21${e.damage >= 21 ? ' — LETHAL' : ''}`)
+        .join('\n')}`}
+    >
+      ⚔{worst}
+    </span>
+  )
+}
+
 // ─── Status Bar ───────────────────────────────────────────────────────────────
 
 function StatusBar({
@@ -1005,12 +1026,14 @@ function StatusBar({
   manaPool,
   isActivePlayer,
   libraryCount,
+  commanderDamage,
 }: {
   currentPlayer: GameSessionPlayer | null
   turnState: GameTurnState | null
   manaPool: ManaPool
   isActivePlayer: boolean
   libraryCount: number
+  commanderDamage: CommanderDamageEntry[] | undefined
 }) {
   const currentGroupIdx = stepGroups.findIndex((g) =>
     g.steps.includes(turnState?.step as GameTurnState['step']),
@@ -1067,6 +1090,7 @@ function StatusBar({
           <span className="text-[7px] uppercase tracking-wider text-slate-700">lib</span>
         </div>
         <span className="text-xl font-black leading-none text-white">{currentPlayer?.life_total ?? '—'}</span>
+        <CommanderDamageBadge entries={commanderDamage} />
         {formatCounterBag(currentPlayer?.counters).map(({ kind, n }) => (
           <span
             key={kind}
@@ -1105,6 +1129,7 @@ function MainArea({
   combatAssignments,
   turnState,
   attackTaxes,
+  commanderDamage,
   canOrderBlockers,
   onCardTap,
   onTapForMana,
@@ -1135,6 +1160,7 @@ function MainArea({
   combatAssignments: CombatAssignment[]
   turnState: GameTurnState | null
   attackTaxes: { playerId: string; mana: number; life: number }[]
+  commanderDamage: Record<string, CommanderDamageEntry[]>
   canOrderBlockers: boolean
   onCardTap: (card: ControllerCard) => void
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
@@ -1230,6 +1256,7 @@ function MainArea({
                 {p.username ?? `P${p.seat_number}`}
               </span>
               <span className="text-[9px] font-black text-white">♥{p.life_total}</span>
+              <CommanderDamageBadge entries={commanderDamage[p.player_id]} />
               {turnState?.monarch_player_id === p.player_id && (
                 <span className="text-[9px]" title="The monarch (draws at their end step; combat damage steals the crown)">👑</span>
               )}

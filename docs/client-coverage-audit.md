@@ -65,6 +65,24 @@ Board state parity — **DONE 2026-06-14**:
   to `game_continuous_effects` for live updates. The minimap thumbnails are left
   un-badged (too small).
 
+## RPC-coverage scan (2026-06-14)
+
+Diffed all 102 authenticated RPCs vs the 78 the client calls. Nearly all of the
+67 uncalled ones are internal engine helpers (`apply_*`/`fire_*`/`card_has_*`/
+`resolve_*`, invoked via `perform`/`select` inside other RPCs). `order_pending_
+triggers` (APNAP) is auto-invoked by `resolve_top_of_stack` — not a gap.
+
+Genuine unsurfaced gaps found:
+- **Commander damage — DONE 2026-06-14.** `game_commander_damage` (mig 137,
+  21-from-one-commander lethal) was never loaded client-side — an invisible loss
+  condition. Now: `getCommanderDamage` (resolves source game-card → name) loaded
+  in both hooks (+ realtime), shown as a ⚔ badge (worst single-commander total;
+  ≥15 amber / ≥21 red lethal; tooltip per source) on the controller status bar +
+  opponent pills and on every board seat.
+- **`set_commander_redirect`** (LOW/MED) — command-zone-vs-graveyard preference, unsurfaced.
+- **`commander_deck_legality`** (LOW/MED) — no legality feedback in the deck editor.
+- **`cleanup_finished_session`** (LOW) — post-game housekeeping, unsurfaced.
+
 ## Other fresh targets
 
 1. **Attachment naming across owners.** `getControllerCards` is owner-scoped, so

@@ -4372,3 +4372,54 @@
 | 23:10 | Edited docs/client-coverage-audit.md | 8→10 lines | ~166 |
 | 23:11 | board state parity: attachments 📎🔗 + animated ⚡ card badges + attack-tax ⛔ seat badge on GameBoard; plumb attached_to into getBoardCards + getStatusEffects(animated/taxes) into useBoardGameState + game_continuous_effects realtime | components/GameBoard.tsx, lib/game/use-board-game-state.ts, lib/game/data.ts, lib/game/types.ts, docs/client-coverage-audit.md | tsc+eslint clean | ~22k |
 | 23:11 | Edited lib/game/data.ts | removed 22 lines | ~23 |
+| 23:12 | Edited lib/game/data.ts | added nullish coalescing | ~210 |
+| 23:12 | Session end: 56 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~116264 tok |
+| 23:15 | Session end: 56 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~116264 tok |
+| 23:22 | Session end: 56 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~116264 tok |
+| 23:25 | Edited app/manifest.ts | 3→5 lines | ~115 |
+| 23:25 | Edited app/manifest.ts | 3→2 lines | ~28 |
+| 23:26 | Session end: 58 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~116407 tok |
+| 23:37 | Edited lib/game/data.ts | added optional chaining | ~526 |
+| 23:37 | Edited lib/game/use-controller-game-state.ts | 4→5 lines | ~33 |
+| 23:37 | Edited lib/game/use-controller-game-state.ts | 5→5 lines | ~33 |
+| 23:37 | Edited lib/game/use-controller-game-state.ts | added 1 import(s) | ~68 |
+| 23:37 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~59 |
+| 23:38 | Edited lib/game/use-controller-game-state.ts | 18→20 lines | ~241 |
+| 23:38 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~35 |
+| 23:38 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~118 |
+| 23:38 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~22 |
+| 23:38 | Edited components/ControllerListV4.tsx | 14→15 lines | ~82 |
+| 23:39 | Edited components/ControllerListV4.tsx | 2→2 lines | ~38 |
+
+## Session: 2026-06-14 23:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 23:40 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~339 |
+| 23:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~70 |
+| 23:40 | Edited components/ControllerListV4.tsx | 7→8 lines | ~93 |
+| 23:40 | Edited components/ControllerListV4.tsx | 4→5 lines | ~68 |
+| 23:40 | Edited components/ControllerListV4.tsx | 5→6 lines | ~29 |
+| 23:40 | Edited components/ControllerListV4.tsx | CSS: commanderDamage | ~66 |
+| 23:40 | Edited components/ControllerListV4.tsx | 4→5 lines | ~109 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | added 1 import(s) | ~62 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | 14→16 lines | ~241 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | modified catch() | ~30 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | 2→3 lines | ~122 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | 7→8 lines | ~33 |
+| 23:41 | Edited components/GameBoard.tsx | inline fix | ~41 |
+| 23:41 | Edited components/GameBoard.tsx | added 1 import(s) | ~63 |
+| 23:41 | Edited components/GameBoard.tsx | CSS: commanderDamage | ~176 |
+| 23:41 | Edited components/GameBoard.tsx | CSS: taken | ~250 |
+| 23:42 | Edited components/GameBoard.tsx | inline fix | ~37 |
+| 23:42 | Edited components/GameBoard.tsx | 8→9 lines | ~126 |
+| 23:42 | Edited components/GameBoard.tsx | 7→8 lines | ~110 |
+| 23:42 | Edited components/GameBoard.tsx | CSS: commanderDamage | ~87 |
+| 23:42 | Edited components/GameBoard.tsx | expanded (+7 lines) | ~109 |
+| 23:42 | Edited components/GameBoard.tsx | CSS: commanderDamage | ~104 |
+| 23:42 | Edited components/GameBoard.tsx | 3→8 lines | ~94 |
+| 23:42 | Edited components/GameBoard.tsx | CSS: commanderDamage | ~94 |
+| 23:43 | Edited components/GameBoard.tsx | 3→8 lines | ~74 |
+| 23:44 | Edited docs/client-coverage-audit.md | expanded (+18 lines) | ~419 |
+| 23:44 | commander damage display: getCommanderDamage (resolve source game-card → name) in both hooks + realtime; ⚔ badge (worst total, ≥15 amber/≥21 red lethal, per-source tooltip) on controller status bar + opponent pills + all board seats | data.ts, use-controller-game-state.ts, use-board-game-state.ts, ControllerListV4.tsx, GameBoard.tsx, client-coverage-audit.md | tsc+eslint clean | ~28k |
+| 23:44 | Edited lib/game/data.ts | removed 22 lines | ~23 |
