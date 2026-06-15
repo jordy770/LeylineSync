@@ -4,7 +4,7 @@
 Commander
 1 Krenko, Mob Boss
 
-Creatures
+# Creatures
 1 Goblin Chieftain
 1 Goblin King
 1 Goblin Warchief
@@ -40,7 +40,7 @@ Creatures
 1 Goblin Cratermaker
 1 Squee, Goblin Nabob
 
-Instants & Sorceries
+# Instants & Sorceries
 1 Lightning Bolt
 1 Chaos Warp
 1 Faithless Looting
@@ -51,7 +51,7 @@ Instants & Sorceries
 1 Brightstone Ritual
 1 Massive Raid
 
-Artifacts
+# Artifacts
 1 Sol Ring
 1 Arcane Signet
 1 Fellwar Stone
@@ -62,13 +62,13 @@ Artifacts
 1 Swiftfoot Boots
 1 Coat of Arms
 
-Enchantments
+# Enchantments
 1 Shared Animosity
 1 Impact Tremors
 1 Goblin Bombardment
 1 Door of Destinies
 
-Lands
+# Lands
 1 Castle Embereth
 1 Rogue's Passage
 1 Cavern of Souls

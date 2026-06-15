@@ -582,6 +582,27 @@ export async function getUserDecks(supabase: SupabaseClient) {
   })) as DeckSummary[]
 }
 
+// Shared precon decks — curated decklists every player can spawn (not owned by
+// anyone). Visible via the "Anyone can read precon decks" RLS policy.
+export async function getPreconDecks(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('decks')
+    .select('id, name, list_data, created_at')
+    .eq('is_precon', true)
+    .order('name', { ascending: true })
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []).map((deck) => ({
+    id: deck.id,
+    name: deck.name ?? null,
+    card_count: Array.isArray(deck.list_data) ? deck.list_data.length : 0,
+    created_at: deck.created_at ?? null,
+  })) as DeckSummary[]
+}
+
 export async function getDeckDetail(supabase: SupabaseClient, deckId: string) {
   const { data, error } = await supabase
     .from('decks')

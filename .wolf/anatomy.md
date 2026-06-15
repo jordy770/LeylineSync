@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-14T19:08:10.149Z
-> Files: 243 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-14T23:37:35.606Z
+> Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -55,7 +55,7 @@
 ## app/
 
 - `layout.tsx` — defaultUrl (~465 tok)
-- `manifest.ts` — PWA manifest. The key field for the couch-play controller is `display: (~391 tok)
+- `manifest.ts` — PWA manifest. `display: "standalone"` is what removes the browser URL bar once (~518 tok)
 - `ServiceWorkerRegister.tsx` — ServiceWorkerRegister (~161 tok)
 
 ## app/api/cards/generate-behavior/
@@ -104,12 +104,17 @@
 ## app/judge/[id]/
 
 
+## app/manifest.webmanifest/
+
+- `route.ts` — PWA manifest served as a route handler (instead of the app/manifest.ts file (~400 tok)
+
 ## app/protected/
 
 
 ## components/
 
-- `ControllerListV4.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~43391 tok)
+- `ControllerListV4.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~47404 tok)
+- `GameBoard.tsx` — GameBoard (~7148 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~4956 tok)
 
 ## components/board/
@@ -117,9 +122,10 @@
 
 ## components/controller/
 
-- `CardActionSheet.tsx` — CardActionSheet (~18188 tok)
+- `CardActionSheet.tsx` — CardActionSheet (~18190 tok)
 - `CardDisplay.tsx` — Small display atoms: ManaSymbol, KeywordBadges, ManaCostDisplay, ManaPoolDisplay. (~660 tok)
-- `OpeningHandOverlay.tsx` — Full-screen opening-hand overlay (London mulligan): keep/mulligan buttons, bottom-card selection chips, waiting-for-others variant. Rendered by ControllerListV4 while any player has opening_hand_kept === false. (~1249 tok)
+- `ControllerCoachOverlay.tsx` — SLIDES (~1024 tok)
+- `OpeningHandOverlay.tsx` — OpeningHandOverlay (~1408 tok)
 - `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~8333 tok)
 
 ## components/judge/
@@ -136,11 +142,11 @@
 
 ## docs/
 
-- `client-coverage-audit.md` — Client coverage audit — engine vs UI (June 2026) (~1033 tok)
+- `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1365 tok)
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~12467 tok)
+- `card-scripts.json` (~41542 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -153,11 +159,22 @@
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~19554 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4128 tok)
-- `data.ts` — Sums active until-end-of-turn (~6552 tok)
-- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
+- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 14 more (~7118 tok)
+- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2735 tok)
+- `use-board-game-state.ts` — Exports useBoardGameState (~1310 tok)
+- `use-controller-game-state.ts` — Exports useControllerGameState (~2286 tok)
+- `use-long-press.ts` — Press-and-hold detection for card "peek" (hold a card to read its full (~573 tok)
 
 ## lib/supabase/
 
+
+## mockups/
+
+- `clean-hud-action.html` — Clean HUD · Action Panel (~8016 tok)
+- `controller-base.css` — Styles: 83 rules, 33 vars (~3984 tok)
+- `controller-base.js` — STATE: poolHTML, cardHTML, controllerHTML, activate, openSheet (~3101 tok)
+- `controller-concepts-2.html` — LeylineSync · Controller Concepts (Set 2 — bold) (~2738 tok)
+- `controller-concepts.html` — LeylineSync · Controller Concepts (Set 1) (~1804 tok)
 
 ## public/
 
@@ -171,7 +188,7 @@
 - `seed-precon-decks.mjs` — Parse a decklist the way import_deck_from_text does (quantity, Commander header, set-code strip). (~1843 tok)
 - `setup-local-test-db.mjs` — Rebuilds the LOCAL test-harness database from scratch. (~912 tok)
 - `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3330 tok)
-- `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2117 tok)
+- `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2311 tok)
 - `validate-fixtures-offline.mts` — Offline fixture validation — no DB, no credentials (unlike validate:scripts, (~332 tok)
 
 ## supabase/
@@ -200,13 +217,14 @@
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5551 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2836 tok)
 - `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
+- `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1052 tok)
 - `commander_deck_legality.sql` — supabase/functions_src/commander_deck_legality.sql (~806 tok)
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3313 tok)
 - `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1685 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
-- `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1069 tok)
+- `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1426 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~354 tok)
 - `fire_becomes_target_triggers.sql` — supabase/functions_src/fire_becomes_target_triggers.sql (~801 tok)
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~612 tok)
@@ -287,6 +305,7 @@
 - `202605010303_pacify.sql` — 202605010303_pacify (~7726 tok)
 - `202605010308_precon_decks.sql` — 202605010308_precon_decks (~1988 tok)
 - `202605010309_pod_auto_skip.sql` — 202605010309_pod_auto_skip (~2036 tok)
+- `202605010310_opportunistic_dragon_target_filter.sql` — 202605010310_opportunistic_dragon_target_filter (~2890 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -357,7 +376,7 @@
 - `noncreature-spell-trigger.test.ts` — Noncreature-spell watcher (mig 292): a spell_cast triggered ability with (~933 tok)
 - `observed-stasis.test.ts` — Observed Stasis / pacify (mig 303): an Aura that gives the enchanted creature (~662 tok)
 - `omen-casts.test.ts` — mig 289 — Flush Out from hand: discard park, draw two, shuffle-self-away. (~500 tok)
-- `opportunistic-dragon.test.ts` — mig 246 — Opportunistic Dragon: "When this creature enters, choose target (~810 tok)
+- `opportunistic-dragon.test.ts` — mig 246 / mig 310 — Opportunistic Dragon: "When this creature enters, choose (~1288 tok)
 - `pod-auto-skip.test.ts` — Server-side pod auto-skip (mig 309): when a player passes priority on an empty (~1443 tok)
 - `precon-decks.test.ts` — Shared precon decks (mig 308): a curated deck with is_precon = true and no (~762 tok)
 - `propaganda.test.ts` — Propaganda / attack tax (existing attack_tax mechanism): creatures can't (~511 tok)
@@ -382,7 +401,7 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~33915 tok)
+- `test-cards.json` (~43176 tok)
 
 ## tests/harness/
 

@@ -1224,7 +1224,7 @@ export function CardActionSheet({
 
 // ─── Card Zoom Overlay ────────────────────────────────────────────────────────
 
-function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClose: () => void }) {
+export function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClose: () => void }) {
   const imageUrl = card.cards?.image_url
   const oracleText = card.cards?.oracle_text
   const pt = getPowerToughnessLabel(card)

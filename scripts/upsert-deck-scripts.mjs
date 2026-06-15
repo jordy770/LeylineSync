@@ -121,7 +121,20 @@ const supabase = createClient(
   { auth: { persistSession: false, autoRefreshToken: false } },
 )
 
-const stable = (v) => JSON.stringify(v, Object.keys(v ?? {}).sort())
+// Canonical JSON for order-independent comparison: recursively sort object keys
+// (arrays keep their order — element order is significant in scripts). NOTE: the
+// previous one-liner `JSON.stringify(v, Object.keys(v).sort())` passed an ARRAY
+// as the replacer, which JSON.stringify treats as a property ALLOWLIST applied at
+// every nesting level — so it dropped all nested fields and reported any two
+// scripts with the same top-level keys as identical, silently refusing to push
+// nested edits (e.g. a new target_filter).
+const canonicalize = (v) =>
+  Array.isArray(v)
+    ? v.map(canonicalize)
+    : v && typeof v === 'object'
+      ? Object.keys(v).sort().reduce((acc, k) => { acc[k] = canonicalize(v[k]); return acc }, {})
+      : v
+const stable = (v) => JSON.stringify(canonicalize(v))
 let updated = 0, current = 0, skippedDiffering = 0, notFound = 0, written = 0
 
 for (const { name, script } of plan) {

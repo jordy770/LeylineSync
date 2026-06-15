@@ -4,7 +4,7 @@
 Commander
 1 Atraxa, Praetors' Voice
 
-Counters & proliferate payoffs
+# Counters & proliferate payoffs
 1 Doubling Season
 1 Hardened Scales
 1 Cathars' Crusade
@@ -34,13 +34,13 @@ Counters & proliferate payoffs
 1 Inspiring Call
 1 Tezzeret's Gambit
 
-Planeswalkers
+# Planeswalkers
 1 Vraska, Golgari Queen
 1 Vivien Reid
 1 Teferi, Hero of Dominaria
 1 Kaya, Orzhov Usurper
 
-Ramp
+# Ramp
 1 Sol Ring
 1 Arcane Signet
 1 Fellwar Stone
@@ -52,12 +52,12 @@ Ramp
 1 Farseek
 1 Nature's Lore
 
-Card advantage
+# Card advantage
 1 Sign in Blood
 1 Read the Bones
 1 Return of the Wildspeaker
 
-Interaction
+# Interaction
 1 Swords to Plowshares
 1 Path to Exile
 1 Beast Within
@@ -69,7 +69,7 @@ Interaction
 1 Despark
 1 Generous Gift
 
-Lands
+# Lands
 1 Command Tower
 1 Exotic Orchard
 1 City of Brass

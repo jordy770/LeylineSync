@@ -15,6 +15,7 @@ import {
   getCurrentPlayerSessions,
   getGameSession,
   getGameSessionPlayers,
+  getPreconDecks,
   getUserDecks,
 } from '@/lib/game/data'
 import type { DeckSummary, GameSession, GameSessionPlayer } from '@/lib/game/types'
@@ -24,6 +25,7 @@ export default function GameSessionLobby() {
   const [sessionIdInput, setSessionIdInput] = useState('')
   const [selectedDeckId, setSelectedDeckId] = useState('')
   const [userDecks, setUserDecks] = useState<DeckSummary[]>([])
+  const [preconDecks, setPreconDecks] = useState<DeckSummary[]>([])
   const [playerSessions, setPlayerSessions] = useState<GameSession[]>([])
   const [activeSession, setActiveSession] = useState<GameSession | null>(null)
   const [players, setPlayers] = useState<GameSessionPlayer[]>([])
@@ -48,9 +50,10 @@ export default function GameSessionLobby() {
   }
 
   const refreshUserDecks = async () => {
-    const decks = await getUserDecks(supabase)
+    const [decks, precons] = await Promise.all([getUserDecks(supabase), getPreconDecks(supabase)])
     setUserDecks(decks)
-    setSelectedDeckId((current) => current || decks[0]?.id || '')
+    setPreconDecks(precons)
+    setSelectedDeckId((current) => current || decks[0]?.id || precons[0]?.id || '')
   }
 
   useEffect(() => {
@@ -58,15 +61,17 @@ export default function GameSessionLobby() {
 
     const loadPlayerSessions = async () => {
       try {
-        const [sessions, decks] = await Promise.all([
+        const [sessions, decks, precons] = await Promise.all([
           getCurrentPlayerSessions(supabase),
           getUserDecks(supabase),
+          getPreconDecks(supabase),
         ])
 
         if (isMounted) {
           setPlayerSessions(sessions)
           setUserDecks(decks)
-          setSelectedDeckId((current) => current || decks[0]?.id || '')
+          setPreconDecks(precons)
+          setSelectedDeckId((current) => current || decks[0]?.id || precons[0]?.id || '')
         }
       } catch (error) {
         const message = getErrorMessage(error)
@@ -212,7 +217,8 @@ export default function GameSessionLobby() {
     setIsWorking(true)
 
     try {
-      const result = await spawnDeckForSession(supabase, activeSession.id, deckId)
+      const isPrecon = preconDecks.some((deck) => deck.id === deckId)
+      const result = await spawnDeckForSession(supabase, activeSession.id, deckId, !isPrecon)
       setStatusMessage(
         `${result.library} card(s) spawned into your library` +
           (result.commander_seeded ? ' · commander placed in the command zone' : ''),
@@ -390,17 +396,32 @@ export default function GameSessionLobby() {
                 id="deck-select"
                 value={selectedDeckId}
                 onChange={(event) => setSelectedDeckId(event.target.value)}
-                disabled={isWorking || userDecks.length === 0}
+                disabled={isWorking || (userDecks.length === 0 && preconDecks.length === 0)}
                 className="min-w-0 flex-1 rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {userDecks.length === 0 ? (
+                {userDecks.length === 0 && preconDecks.length === 0 ? (
                   <option value="">No decks found</option>
                 ) : (
-                  userDecks.map((deck) => (
-                    <option key={deck.id} value={deck.id}>
-                      {deck.name || 'Untitled Deck'} ({deck.card_count})
-                    </option>
-                  ))
+                  <>
+                    {userDecks.length > 0 && (
+                      <optgroup label="Your decks">
+                        {userDecks.map((deck) => (
+                          <option key={deck.id} value={deck.id}>
+                            {deck.name || 'Untitled Deck'} ({deck.card_count})
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                    {preconDecks.length > 0 && (
+                      <optgroup label="Precons">
+                        {preconDecks.map((deck) => (
+                          <option key={deck.id} value={deck.id}>
+                            {deck.name || 'Untitled Precon'} ({deck.card_count})
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                  </>
                 )}
               </select>
               <button
@@ -412,7 +433,7 @@ export default function GameSessionLobby() {
                 Spawn Deck
               </button>
             </div>
-            {userDecks.length === 0 ? (
+            {userDecks.length === 0 && preconDecks.length === 0 ? (
               <p className="mt-2 text-xs text-slate-400">Create a deck first, then refresh this list.</p>
             ) : null}
           </div>

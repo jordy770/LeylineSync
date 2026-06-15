@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LeylineSync · Controller Concepts (Set 2 — bold)</title>
+<link rel="stylesheet" href="controller-base.css" />
+<style>
+  /* ============ D — ILLUMINATED GRIMOIRE (vellum, ink, gold) ============ */
+  [data-theme="grimoire"] {
+    --font-ui: var(--serif); --font-num: var(--serif);
+    --screen-bg:
+      radial-gradient(circle at 30% 10%, rgba(120,90,40,.18), transparent 40%),
+      repeating-linear-gradient(0deg, rgba(120,90,40,.03) 0 3px, transparent 3px 6px),
+      linear-gradient(170deg, #efe3c7 0%, #e3d2ab 55%, #d8c499 100%);
+    --ink: #3a2a16; --muted: #7a5a2a;
+    --bar-bg: linear-gradient(180deg,#5a3d1c,#422c12); --bar-ink: #f3e6c4; --bar-border: 3px double #c8a64a;
+    --accent: radial-gradient(circle at 50% 0,#f7e08a,#d4ad3a); --accent-ink: #2a1d0e;
+    --prio: radial-gradient(circle at 50% 0,#f7e08a,#c8a23a); --prio-ink: #2a1408;
+    --good: #f7eccb; --danger: #9a3020; --radius: 7px;
+    --card-bg: linear-gradient(170deg,#fbf3da,#ecd9ad); --card-ink: #3a2a14; --card-border: 1px solid #8a6a3a;
+    --card-shadow: 0 3px 7px rgba(80,50,20,.4), inset 0 0 0 2px rgba(200,166,74,.3);
+    --card-banner: rgba(120,90,40,.16); --card-art: linear-gradient(170deg,#cdb079,#a9824a);
+    --card-pt-bg: rgba(120,30,18,.12); --card-pt-ink: #6a1d12;
+    --land-art: linear-gradient(170deg,#c9b277,#a98c4e); --land-border: 1px solid #7a5a2a;
+    --panel-bg: linear-gradient(180deg,#f3e6c4,#e0cb9a); --panel-border: 2px solid #8a6a2a; --panel-ink: #3a2a14;
+    --zbtn-bg: linear-gradient(180deg,#5a3d1c,#3e2a12); --zbtn-border: 1px solid #8a6a2a; --zbtn-ink: #f0e0b6;
+  }
+  [data-theme="grimoire"] .seg b, [data-theme="grimoire"] .pill, [data-theme="grimoire"] .row-label,
+  [data-theme="grimoire"] .pbtn, [data-theme="grimoire"] .zbtn, [data-theme="grimoire"] .sheet-head h4 { font-variant: small-caps; letter-spacing: .04em; }
+  [data-theme="grimoire"] .autopass, [data-theme="grimoire"] .prio-stack { color: #4a3414; }
+  [data-theme="grimoire"] .sheet-head h4::first-letter { font-size: 1.6em; color: #9a3020; }
+  [data-theme="grimoire"] .life::after { content: " ✦"; color: #c8a64a; }
+
+  /* ============ E — 16-BIT JRPG (pixel battle menu) ============ */
+  [data-theme="jrpg"] {
+    --font-ui: var(--mono); --font-num: var(--mono);
+    --screen-bg: #0a0a2a; --ink: #fff; --muted: #8888d0;
+    --bar-bg: #000040; --bar-ink: #fff; --bar-border: 4px solid #fff;
+    --accent: #fff; --accent-ink: #000040; --prio: #ffd000; --prio-ink: #000040;
+    --good: #40ff80; --danger: #ff5050; --radius: 0px;
+    --card-bg: #101060; --card-ink: #fff; --card-border: 2px solid #fff; --card-radius: 0px;
+    --card-shadow: 3px 3px 0 #000; --card-banner: #000060; --card-art: linear-gradient(160deg,#2020a0,#101060);
+    --card-pt-bg: #000040; --card-pt-ink: #ffd000;
+    --land-art: #103810; --land-border: 2px solid #40ff80;
+    --panel-bg: #000080; --panel-border: 3px solid #fff; --panel-ink: #fff;
+    --zbtn-bg: #000060; --zbtn-border: 2px solid #fff; --zbtn-ink: #fff;
+  }
+  [data-theme="jrpg"] * { letter-spacing: .02em; }
+  [data-theme="jrpg"] .seg b, [data-theme="jrpg"] .life, [data-theme="jrpg"] .card .nm,
+  [data-theme="jrpg"] .pt, [data-theme="jrpg"] .row-label { text-shadow: 2px 2px 0 #000; }
+  [data-theme="jrpg"] .pill.on { border: 2px solid #ffd000; }
+  [data-theme="jrpg"] .sheet, [data-theme="jrpg"] .priority, [data-theme="jrpg"] .zbtn, [data-theme="jrpg"] .opp { box-shadow: 3px 3px 0 #000; }
+  [data-theme="jrpg"] .act { position: relative; padding-left: 18px; }
+  [data-theme="jrpg"] .act::before { content: "▶"; position: absolute; left: 5px; color: #ffd000; opacity: 0; }
+  [data-theme="jrpg"] .act:hover::before { opacity: 1; }
+  [data-theme="jrpg"] .pbtn.main::before { content: "▶ "; }
+
+  /* ============ F — CRT TERMINAL (amber phosphor, scanlines) ============ */
+  [data-theme="crt"] {
+    --font-ui: var(--mono); --font-num: var(--mono);
+    --screen-bg: #0a0700; --ink: #ffb000; --muted: #8a6000;
+    --bar-bg: #140d00; --bar-ink: #ffb000; --bar-border: 1px solid #5a3f00;
+    --accent: #ffb000; --accent-ink: #0a0700; --prio: #ffb000; --prio-ink: #0a0700;
+    --good: #ffb000; --danger: #ff5a3a; --radius: 0px;
+    --card-bg: rgba(255,176,0,.04); --card-ink: #ffc040; --card-border: 1px solid #7a5500; --card-radius: 0px;
+    --card-shadow: none; --card-banner: rgba(255,176,0,.06); --card-art: repeating-linear-gradient(135deg, rgba(255,176,0,.10) 0 3px, transparent 3px 6px);
+    --card-pt-bg: transparent; --card-pt-ink: #ffd060;
+    --land-art: rgba(255,176,0,.04); --land-border: 1px dashed #7a5500;
+    --panel-bg: #140d00; --panel-border: 1px solid #ffb000; --panel-ink: #ffb000;
+    --zbtn-bg: transparent; --zbtn-border: 1px solid #7a5500; --zbtn-ink: #ffb000;
+    text-shadow: 0 0 6px rgba(255,176,0,.5);
+  }
+  [data-theme="crt"]::before { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 9; background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px); }
+  [data-theme="crt"] .dot { animation: crt-blink 1.1s step-end infinite; box-shadow: 0 0 8px #ffb000; }
+  [data-theme="crt"] .pbtn.main { animation: crt-blink 1.4s step-end infinite; }
+  @keyframes crt-blink { 50% { opacity: .3; } }
+  [data-theme="crt"] .seg b::before { content: "> "; opacity: .6; }
+  [data-theme="crt"] .card .pt::before { content: "["; } [data-theme="crt"] .card .pt::after { content: "]"; }
+  [data-theme="crt"] .zbtn b::before { content: "["; } [data-theme="crt"] .zbtn b::after { content: "]"; }
+  [data-theme="crt"] .life::before { content: "HP:"; opacity: .6; font-weight: 400; }
+  [data-theme="crt"] .sheet-head h4::before { content: "// "; opacity: .6; }
+  [data-theme="crt"] .opp.threat { color: #ff8a5a; }
+
+  /* ============ G — NEOBRUTALISM (flat, thick, hard shadows) ============ */
+  [data-theme="brutal"] {
+    --font-ui: var(--sans); --font-num: var(--sans);
+    --screen-bg: #f4f1e8; --ink: #15110a; --muted: #6b5a2a;
+    --bar-bg: #ffe14d; --bar-ink: #15110a; --bar-border: 3px solid #15110a;
+    --accent: #15110a; --accent-ink: #ffe14d; --prio: #ffe14d; --prio-ink: #15110a;
+    --good: #15110a; --danger: #ff5470; --radius: 0px;
+    --card-bg: #4dd0ff; --card-ink: #15110a; --card-border: 3px solid #15110a; --card-radius: 0px;
+    --card-shadow: 3px 3px 0 #15110a; --card-banner: rgba(255,255,255,.45); --card-art: repeating-linear-gradient(45deg,#15110a 0 3px,transparent 3px 9px);
+    --card-pt-bg: #15110a; --card-pt-ink: #fff;
+    --land-art: #7dffa8; --land-border: 3px solid #15110a;
+    --panel-bg: #fff; --panel-border: 3px solid #15110a; --panel-ink: #15110a;
+    --zbtn-bg: #fff; --zbtn-border: 2px solid #15110a; --zbtn-ink: #15110a;
+  }
+  [data-theme="brutal"] { font-weight: 600; }
+  [data-theme="brutal"] .seg b, [data-theme="brutal"] .pt, [data-theme="brutal"] .card .nm,
+  [data-theme="brutal"] .sheet-head h4, [data-theme="brutal"] .pbtn { font-weight: 900; }
+  [data-theme="brutal"] .card:nth-child(2) { background: #b58cff; }
+  [data-theme="brutal"] .card:nth-child(3) { background: #7dffa8; }
+  [data-theme="brutal"] .card:nth-child(4) { background: #ff9f4d; }
+  [data-theme="brutal"] .card.attacking { background: #ff5470; color: #fff; }
+  [data-theme="brutal"] .opp, [data-theme="brutal"] .zbtn, [data-theme="brutal"] .pbtn { box-shadow: 2px 2px 0 #15110a; }
+  [data-theme="brutal"] .opp.threat { background: #ff5470; color: #fff; }
+  [data-theme="brutal"] .pbtn.main { box-shadow: 4px 4px 0 #15110a; text-transform: uppercase; }
+  [data-theme="brutal"] .pbtn.main:active { box-shadow: 1px 1px 0 #15110a; transform: translate(3px,3px); }
+  [data-theme="brutal"] .life { background: #ff5470; color: #fff; padding: 1px 7px; border: 2px solid #15110a; box-shadow: 2px 2px 0 #15110a; }
+  [data-theme="brutal"] .act:nth-child(2){background:#b58cff} [data-theme="brutal"] .act:nth-child(3){background:#7dffa8}
+  [data-theme="brutal"] .act:nth-child(4){background:#ffe14d} [data-theme="brutal"] .act:nth-child(5){background:#ff9f4d}
+  [data-theme="brutal"] .act { box-shadow: 2px 2px 0 #15110a; font-weight: 800; }
+</style>
+</head>
+<body>
+  <div class="page-head">
+    <h1><span class="star">✳</span> Controller Concepts — Set 2 (bold &amp; weird)</h1>
+    <p>Same high-fidelity elements (real cards · pips · priority cluster · scry prompt) in four directions that leave the dark-app mold. Click cards, lands, <b>Library</b> zone (→ Scry), <b>⚙</b>, Hold &amp; Pass. &nbsp;<a href="controller-concepts.html">← set 1</a></p>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-go="grimoire">Illuminated Grimoire <small>vellum · ink · gold</small></button>
+    <button class="tab" data-go="jrpg">16-bit JRPG <small>pixel battle menu</small></button>
+    <button class="tab" data-go="crt">CRT Terminal <small>amber phosphor</small></button>
+    <button class="tab" data-go="brutal">Neobrutalism <small>flat · thick · loud</small></button>
+  </div>
+  <div class="stage">
+    <div class="device">
+      <div class="screen active" data-theme="grimoire" id="screen-grimoire"></div>
+      <div class="screen" data-theme="jrpg" id="screen-jrpg"></div>
+      <div class="screen" data-theme="crt" id="screen-crt"></div>
+      <div class="screen" data-theme="brutal" id="screen-brutal"></div>
+    </div>
+    <div class="caption" id="caption"></div>
+  </div>
+  <script>
+    window.CAPTIONS = {
+      grimoire: "Illuminated Grimoire — the controller as a spellbook. Vellum card-stock, ink small-caps, gold-leaf priority, drop-cap card names in the action sheet. Full MTG-as-magic fantasy.",
+      jrpg: "16-bit JRPG — pixel command windows with hard 1px shadows. The action sheet reads like a FIGHT/MAGIC menu with a ▶ cursor on hover; priority is a chunky ▶ button.",
+      crt: "CRT Terminal — 'LeylineOS' on amber phosphor with a scanline overlay, blinking cursor + priority, ASCII [ ] brackets around P/T and zone counts. Ultra-diegetic.",
+      brutal: "Neobrutalism — loud flat color blocks, thick black borders, hard offset shadows. Each permanent a different primary; the Pass button physically depresses on click.",
+    };
+  </script>
+  <script src="controller-base.js"></script>
+</body>
+</html>

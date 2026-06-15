@@ -4528,3 +4528,4 @@
 | 01:37 | Edited components/controller/OpeningHandOverlay.tsx | expanded (+9 lines) | ~522 |
 | 01:37 | Edited components/ControllerListV4.tsx | added optional chaining | ~32 |
 | 01:38 | mulligan overlay shows full card art (MotionCard) instead of name text; widened panel; bottom-selection ring + badge preserved | components/controller/OpeningHandOverlay.tsx, components/ControllerListV4.tsx | tsc+eslint clean | ~6k |
+| 01:38 | Session end: 103 writes across 21 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 16 reads | ~192225 tok |

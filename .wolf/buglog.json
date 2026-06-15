@@ -12705,6 +12705,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-15T00:00:00.000Z"
+    },
+    {
+      "id": "bug-782",
+      "timestamp": "2026-06-14T23:18:35.049Z",
+      "error_message": "Wrong operator: ?? should be ===",
+      "file": "scripts/upsert-deck-scripts.mjs",
+      "root_cause": "Used \"??\" instead of \"===\"",
+      "fix": "Changed operator ?? → ===",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-14T23:18:35.049Z"
+    },
+    {
+      "id": "bug-783",
+      "timestamp": "2026-06-14T23:37:30.769Z",
+      "error_message": "CSS fix: active",
+      "file": "components/controller/OpeningHandOverlay.tsx",
+      "root_cause": "active: scale-95 ${ → scale-95 disabled:cursor-default ${",
+      "fix": "Changed active: scale-95 ${ → scale-95 disabled:cursor-default ${",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-14T23:37:30.769Z"
+    },
+    {
+      "id": "bug-784",
+      "timestamp": "2026-06-14T23:37:35.626Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-14T23:37:35.626Z"
     }
   ]
 }
