@@ -299,6 +299,19 @@ export class Scenario {
     return res.rows[0]!.id
   }
 
+  /** Create a shared precon deck (is_precon, ownerless) selectable by any player; returns its id. */
+  async createPreconDeck(name: string, cardNames: string[], commanderName?: string): Promise<string> {
+    const ids = await Promise.all(cardNames.map((n) => this.cardId(n)))
+    const commanderId = commanderName ? await this.cardId(commanderName) : null
+    const res = await this.client.query<{ id: string }>(
+      `insert into public.decks (owner_id, name, list_data, commander_card_id, created_by, is_precon)
+       values (null, $1, $2::jsonb, $3, null, true)
+       returning id`,
+      [name, JSON.stringify(ids), commanderId],
+    )
+    return res.rows[0]!.id
+  }
+
   /** Import a deck from decklist text as the acting seat; returns the import result. */
   async importDeck(
     name: string,
@@ -616,6 +629,24 @@ export class Scenario {
   /** Pass priority as the acting seat (rotates priority; resolves/advances once all pass). */
   async passPriority(seat: Seat = this.acting): Promise<unknown> {
     return this.run(() => rpc(this.client, 'pass_priority', { p_session_id: this.sessionId }), seat)
+  }
+
+  /** Persist a seat's server-side auto-pass intent (the {op,own,stk,rsp} blob). */
+  async setAutoPass(seat: Seat, settings: Record<string, boolean>): Promise<void> {
+    await this.client.query(
+      `update public.game_session_players set autopass_settings = $3::jsonb
+       where session_id = $1 and player_id = $2`,
+      [this.sessionId, this.players[seat], JSON.stringify(settings)],
+    )
+  }
+
+  /** Current turn step + active player (for pod auto-skip assertions). */
+  async turnStep(): Promise<{ step: string; phase: string; active_player_id: string }> {
+    const res = await this.client.query<{ step: string; phase: string; active_player_id: string }>(
+      'select step, phase, active_player_id from public.game_turn_state where session_id = $1',
+      [this.sessionId],
+    )
+    return res.rows[0]
   }
 
   /** Advance one turn step as the acting seat; returns the resulting turn-state row. */

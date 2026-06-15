@@ -284,6 +284,24 @@ export async function passPriority(supabase: SupabaseClient, sessionId: string) 
   return data as GameTurnState
 }
 
+// Sync the caller's auto-pass intent to the server so pass_priority can chain
+// skips for them (pod auto-skip). Fire-and-forget from the controller; failures
+// are non-fatal (the server just won't auto-skip this player → old behavior).
+export async function syncAutoPassSettings(
+  supabase: SupabaseClient,
+  sessionId: string,
+  settings: Record<string, boolean>,
+) {
+  const { error } = await supabase.rpc('set_autopass_settings', {
+    p_session_id: sessionId,
+    p_settings: settings,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
 // Judge tool: pass priority on behalf of all players (resolve the stack or advance the step).
 export async function devPassPriority(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('dev_pass_priority', {
@@ -1454,12 +1472,17 @@ export async function spawnDeckForSession(
   supabase: SupabaseClient,
   sessionId: string,
   deckId: string,
+  // Curated precon decks are trusted starting points (a subset catalog can leave
+  // them shy of 100/singleton), so the lobby spawns them with the Commander
+  // legality gate off. Owned decks keep the default enforcement.
+  enforceLegality = true,
 ) {
   // Seeds the library and — in a Commander game — the commander into the command
   // zone. The previous Deno edge function (spawn-deck) is superseded by this RPC.
   const { data, error } = await supabase.rpc('spawn_deck_for_session', {
     p_session_id: sessionId,
     p_deck_id: deckId,
+    p_enforce_legality: enforceLegality,
   })
 
   if (error) {

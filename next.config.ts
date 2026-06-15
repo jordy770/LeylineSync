@@ -20,7 +20,9 @@ const nextConfig: NextConfig = {
     "*.ts.net",
     // Same story for the Cloudflare Tunnel public hostname: the browser origin
     // becomes app.dweemo.nl, which Next blocks unless allowed — breaking the
-    // post-login RSC refresh.
+    // post-login RSC refresh. `*.dweemo.nl` does NOT match the bare apex, so the
+    // apex is listed explicitly for when the tunnel routes dweemo.nl itself.
+    "dweemo.nl",
     "app.dweemo.nl",
     "*.dweemo.nl",
   ],

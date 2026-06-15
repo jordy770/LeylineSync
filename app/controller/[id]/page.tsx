@@ -1,5 +1,7 @@
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
+import ControllerFullscreen from './ControllerFullscreen';
+import AddToHomeScreen from './AddToHomeScreen';
 
 // Lazy-load each controller version so opening the page only compiles the ONE
 // requested via ?v=. V4 is the product controller (and the default); V1 is the
@@ -34,6 +36,8 @@ async function ControllerContent({
 
   return (
     <main className="leyline-table-bg min-h-screen overflow-visible text-white">
+      <ControllerFullscreen />
+      <AddToHomeScreen />
       {useLegacyController ? (
         <ControllerList sessionId={id} />
       ) : (

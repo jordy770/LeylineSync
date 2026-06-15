@@ -10,7 +10,9 @@ import {
   type BoardSeat,
 } from '@/lib/game/board-selectors'
 import { useBoardGameState } from '@/lib/game/use-board-game-state'
+import type { CommanderDamageEntry } from '@/lib/game/data'
 import type {
+  BoardCard,
   GameSessionPlayer,
   GameTurnState,
 } from '@/lib/game/types'
@@ -22,7 +24,7 @@ import MotionCard from './MotionCard'
 import CombatManager from './CombatManager'
 
 export default function GameBoard({ sessionId }: { sessionId: string }) {
-  const { cards, players, turnState, combatAssignments, stackItems, errorMessage } = useBoardGameState(sessionId)
+  const { cards, players, turnState, combatAssignments, stackItems, attackTaxes, commanderDamage, errorMessage } = useBoardGameState(sessionId)
   const [focusedPlayerId, setFocusedPlayerId] = useState<string | null>(null)
   const boardRef = useRef<HTMLDivElement | null>(null)
   const [targetElements, setTargetElements] = useState<Map<string, HTMLElement>>(() => new Map())
@@ -102,7 +104,7 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
             exit={{ opacity: 0, x: 20 }}
             className="relative z-20 grid min-h-[72vh] gap-5 [transform-style:preserve-3d] [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_7.5rem_minmax(9rem,11rem)] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
           >
-            <FocusSeatPanel seat={focusSeat} turnState={turnState} />
+            <FocusSeatPanel seat={focusSeat} turnState={turnState} attackTaxes={attackTaxes} commanderDamage={commanderDamage} />
             <StackRail stackItems={pendingStackItems} />
             <motion.aside layout className="grid content-start gap-3 [@media(max-height:640px)]:gap-2">
               <AnimatePresence initial={false}>
@@ -110,6 +112,9 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
                   <MiniPlayerWidget
                     key={seat.player?.player_id ?? seat.index}
                     seat={seat}
+                    turnState={turnState}
+                    attackTaxes={attackTaxes}
+                    commanderDamage={commanderDamage}
                     registerTargetRef={registerTargetRef}
                     onClick={() => setFocusedPlayerId(seat.player?.player_id ?? null)}
                   />
@@ -132,6 +137,8 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
                     key={seat.player?.player_id ?? seat.index}
                     seat={seat}
                     turnState={turnState}
+                    attackTaxes={attackTaxes}
+                    commanderDamage={commanderDamage}
                     onFocus={() => setFocusedPlayerId(seat.player?.player_id ?? null)}
                   />
                 ))
@@ -156,10 +163,15 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
 function FocusSeatPanel({
   seat,
   turnState,
+  attackTaxes,
+  commanderDamage,
 }: {
   seat: BoardSeat
   turnState: GameTurnState | null
+  attackTaxes: AttackTax[]
+  commanderDamage: Record<string, CommanderDamageEntry[]>
 }) {
+  const { countByHost, nameById } = seatAttachments(seat.cards)
   return (
     <motion.section
       layout
@@ -179,6 +191,14 @@ function FocusSeatPanel({
             {seat.player ? getPlayerLabel(seat.player) : 'Waiting for players'}
             {seat.isPriority ? <span className="text-cyan-300"> - Priority</span> : null}
           </h2>
+          {seat.player && (
+            <SeatStatusBadges
+              player={seat.player}
+              turnState={turnState}
+              attackTaxes={attackTaxes}
+              commanderDamage={commanderDamage[seat.player.player_id]}
+            />
+          )}
         </div>
         <div className="rounded-md border border-white/15 bg-slate-950/70 px-3 py-2 text-right">
           <p className="text-[10px] uppercase text-cyan-200/80">Phase</p>
@@ -191,20 +211,26 @@ function FocusSeatPanel({
       >
         <AnimatePresence initial={false}>
           {seat.cards.map((card) => (
-            <MotionCard
-              key={card.id}
-              card={{
-                id: card.id,
-                name: card.name,
-                image_url: card.image_url,
-                is_tapped: card.is_tapped,
-                damage_marked: card.damage_marked,
-                zone: card.zone,
-              }}
-              size="board"
-              className="max-w-40 [transform:translateZ(14px)] [@media(max-height:640px)]:max-w-20"
-              visualClassName="shadow-[0_16px_26px_rgba(0,0,0,0.42)]"
-            />
+            <motion.div key={card.id} layout className="relative">
+              <MotionCard
+                card={{
+                  id: card.id,
+                  name: card.name,
+                  image_url: card.image_url,
+                  is_tapped: card.is_tapped,
+                  damage_marked: card.damage_marked,
+                  zone: card.zone,
+                }}
+                size="board"
+                className="max-w-40 [transform:translateZ(14px)] [@media(max-height:640px)]:max-w-20"
+                visualClassName="shadow-[0_16px_26px_rgba(0,0,0,0.42)]"
+              />
+              <BoardCardBadges
+                card={card}
+                attachmentCount={countByHost.get(card.id) ?? 0}
+                hostName={card.attached_to ? nameById.get(card.attached_to) ?? null : null}
+              />
+            </motion.div>
           ))}
         </AnimatePresence>
       </motion.div>
@@ -219,10 +245,16 @@ function FocusSeatPanel({
 
 function MiniPlayerWidget({
   seat,
+  turnState,
+  attackTaxes,
+  commanderDamage,
   registerTargetRef,
   onClick,
 }: {
   seat: BoardSeat
+  turnState: GameTurnState | null
+  attackTaxes: AttackTax[]
+  commanderDamage: Record<string, CommanderDamageEntry[]>
   registerTargetRef: (playerId: string, element: HTMLElement | null) => void
   onClick?: () => void
 }) {
@@ -257,6 +289,12 @@ function MiniPlayerWidget({
             P{seat.player.seat_number}
           </p>
           <p className="truncate text-sm font-bold text-white">{getPlayerLabel(seat.player)}</p>
+          <SeatStatusBadges
+            player={seat.player}
+            turnState={turnState}
+            attackTaxes={attackTaxes}
+            commanderDamage={commanderDamage[seat.player.player_id]}
+          />
         </div>
         <p className={seat.isPriority ? 'text-3xl font-bold text-amber-300 [@media(max-height:640px)]:text-xl' : 'text-3xl font-bold text-cyan-200 [@media(max-height:640px)]:text-xl'}>
           {seat.player.life_total}
@@ -297,12 +335,17 @@ function MiniPlayerWidget({
 function PlayerQuadrantPanel({
   seat,
   turnState,
+  attackTaxes,
+  commanderDamage,
   onFocus,
 }: {
   seat: BoardSeat
   turnState: GameTurnState | null
+  attackTaxes: AttackTax[]
+  commanderDamage: Record<string, CommanderDamageEntry[]>
   onFocus: () => void
 }) {
+  const { countByHost, nameById } = seatAttachments(seat.cards)
   if (!seat.player) {
     return null
   }
@@ -347,6 +390,12 @@ function PlayerQuadrantPanel({
             <p className="text-xs text-slate-400 [@media(max-height:640px)]:text-[10px]">
               P{seat.player.seat_number} &middot; {formatStepLabel(turnState?.step)}
             </p>
+            <SeatStatusBadges
+              player={seat.player}
+              turnState={turnState}
+              attackTaxes={attackTaxes}
+              commanderDamage={commanderDamage[seat.player.player_id]}
+            />
           </div>
         </div>
         <div className="text-right">
@@ -373,22 +422,28 @@ function PlayerQuadrantPanel({
           <motion.div layout className="grid grid-cols-3 gap-2 [@media(max-height:640px)]:grid-cols-4 [@media(max-height:640px)]:gap-1 sm:grid-cols-4 2xl:grid-cols-5">
             <AnimatePresence initial={false}>
               {seat.cards.slice(0, 10).map((card) => (
-                <MotionCard
-                  key={card.id}
-                  card={{
-                    id: card.id,
-                    name: card.name,
-                    image_url: card.image_url,
-                    is_tapped: card.is_tapped,
-                    damage_marked: card.damage_marked,
-                    zone: card.zone,
-                  }}
-                  size="board"
-                  className="[@media(max-height:640px)]:max-w-14"
-                  visualClassName={`shadow-[0_12px_24px_rgba(0,0,0,0.42)] ${
-                    seat.isPriority ? 'ring-1 ring-amber-300/25' : ''
-                  }`}
-                />
+                <motion.div key={card.id} layout className="relative">
+                  <MotionCard
+                    card={{
+                      id: card.id,
+                      name: card.name,
+                      image_url: card.image_url,
+                      is_tapped: card.is_tapped,
+                      damage_marked: card.damage_marked,
+                      zone: card.zone,
+                    }}
+                    size="board"
+                    className="[@media(max-height:640px)]:max-w-14"
+                    visualClassName={`shadow-[0_12px_24px_rgba(0,0,0,0.42)] ${
+                      seat.isPriority ? 'ring-1 ring-amber-300/25' : ''
+                    }`}
+                  />
+                  <BoardCardBadges
+                    card={card}
+                    attachmentCount={countByHost.get(card.id) ?? 0}
+                    hostName={card.attached_to ? nameById.get(card.attached_to) ?? null : null}
+                  />
+                </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
@@ -419,5 +474,125 @@ function formatStepLabel(step: GameTurnState['step'] | undefined) {
 
 function getPlayerInitial(player: GameSessionPlayer) {
   return (player.username?.trim()[0] || `P${player.seat_number}`[0] || 'P').toUpperCase()
+}
+
+// Shared per-seat state badges for the big screen: the crown (monarch) and
+// poison (with the corrupted ≥3 / lethal ≥10 highlights). Both read data the
+// board already loads — no extra query. Renders nothing when neither applies.
+type AttackTax = { playerId: string; mana: number; life: number }
+
+function SeatStatusBadges({
+  player,
+  turnState,
+  attackTaxes,
+  commanderDamage,
+}: {
+  player: GameSessionPlayer
+  turnState: GameTurnState | null
+  attackTaxes: AttackTax[]
+  commanderDamage: CommanderDamageEntry[] | undefined
+}) {
+  const isMonarch = turnState?.monarch_player_id === player.player_id
+  const poison = player.counters?.poison ?? 0
+  const taxes = attackTaxes.filter((t) => t.playerId === player.player_id)
+  const cmdrWorst = commanderDamage?.length ? Math.max(...commanderDamage.map((e) => e.damage)) : 0
+  if (!isMonarch && poison <= 0 && taxes.length === 0 && cmdrWorst <= 0) return null
+
+  return (
+    <div className="mt-1 flex flex-wrap items-center gap-1">
+      {isMonarch && (
+        <span
+          className="rounded bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-black text-amber-300"
+          title="The monarch — draws at their end step; combat damage steals the crown"
+        >
+          👑 Monarch
+        </span>
+      )}
+      {poison > 0 && (
+        <span
+          className={`rounded px-1.5 py-0.5 text-[10px] font-black ${
+            poison >= 3 ? 'bg-lime-400/20 text-lime-300' : 'text-lime-400'
+          }`}
+          title={`${poison} poison${poison >= 10 ? ' — LETHAL' : poison >= 3 ? ' — CORRUPTED' : ''}`}
+        >
+          ☠{poison}
+        </span>
+      )}
+      {taxes.length > 0 && (
+        <span
+          className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-black text-amber-400"
+          title={`To attack this player, ${taxes
+            .map((t) => (t.mana > 0 ? `pay {${t.mana}}` : `pay ${t.life} life`))
+            .join(' and ')} per attacker`}
+        >
+          ⛔ Tax
+        </span>
+      )}
+      {cmdrWorst > 0 && (
+        <span
+          className={`rounded px-1.5 py-0.5 text-[10px] font-black ${
+            cmdrWorst >= 21 ? 'bg-red-500/30 text-red-200' : cmdrWorst >= 15 ? 'bg-amber-500/20 text-amber-300' : 'text-orange-300'
+          }`}
+          title={`Commander damage taken:\n${commanderDamage!
+            .map((e) => `${e.name}: ${e.damage}/21${e.damage >= 21 ? ' — LETHAL' : ''}`)
+            .join('\n')}`}
+        >
+          ⚔{cmdrWorst}
+        </span>
+      )}
+    </div>
+  )
+}
+
+// Per-card badges for the board: attachments (📎N host / 🔗 attached) and
+// animated lands (⚡). Rendered inside a `relative` wrapper over a board card.
+function BoardCardBadges({
+  card,
+  attachmentCount,
+  hostName,
+}: {
+  card: BoardCard
+  attachmentCount: number
+  hostName: string | null
+}) {
+  if (!card.animated && !card.attached_to && attachmentCount === 0) return null
+  return (
+    <>
+      {attachmentCount > 0 && (
+        <span
+          className="absolute -left-1 -top-1 z-10 rounded-full bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-amber-950 shadow ring-1 ring-black/40"
+          title={`${attachmentCount} attached`}
+        >
+          📎{attachmentCount}
+        </span>
+      )}
+      {card.attached_to && (
+        <span
+          className="absolute -left-1 -top-1 z-10 rounded-full bg-sky-500 px-1.5 py-0.5 text-[9px] font-black text-sky-950 shadow ring-1 ring-black/40"
+          title={hostName ? `Attached to ${hostName}` : 'Attached'}
+        >
+          🔗
+        </span>
+      )}
+      {card.animated && (
+        <span
+          className="absolute -bottom-1 -left-1 z-10 rounded-full bg-fuchsia-500 px-1.5 py-0.5 text-[9px] font-black text-fuchsia-950 shadow ring-1 ring-black/40"
+          title="Animated — can attack this turn"
+        >
+          ⚡
+        </span>
+      )}
+    </>
+  )
+}
+
+// Group a seat's attachments by host id + a name lookup, for the card badges.
+function seatAttachments(cards: BoardCard[]) {
+  const countByHost = new Map<string, number>()
+  for (const c of cards) {
+    if (c.attached_to) countByHost.set(c.attached_to, (countByHost.get(c.attached_to) ?? 0) + 1)
+  }
+  const nameById = new Map(cards.map((c) => [c.id, c.name]))
+  return { countByHost, nameById }
 }
 

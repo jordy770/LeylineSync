@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clean HUD · Action Panel</title>
+<style>
+  :root { --mono: ui-monospace,"Cascadia Code","Consolas",monospace; --sans: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --bg:#0b0d12; --panel:#11141c; --panel2:#161a24; --line:#2a3040; --ink:#e8edf5; --mut:#586379;
+    --cyan:#5cc9f5; --green:#7fc08a; --red:#e8826c; --amber:#f5b942; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#07080c; color:var(--ink); font-family:var(--sans);
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:28px 16px 70px; gap:18px; }
+  .head { text-align:center; max-width:820px; }
+  .head h1 { margin:0 0 6px; font-size:21px; display:flex; gap:9px; justify-content:center; align-items:center; }
+  .head .star { color:var(--cyan); } .head p { margin:0; color:#8b95a7; font-size:13px; line-height:1.5; }
+  .head a { color:var(--cyan); }
+  .device { width:880px; max-width:96vw; aspect-ratio:880/410; border-radius:30px; padding:11px;
+    background:linear-gradient(160deg,#1a1d27,#0a0c11); box-shadow:0 30px 80px rgba(0,0,0,.6); position:relative; }
+  .device::after{content:"";position:absolute;left:50%;top:16px;width:7px;height:7px;border-radius:50%;background:#05060a;transform:translateX(-50%);}
+  .screen { width:100%; height:100%; border-radius:20px; overflow:hidden; background:var(--bg);
+    position:relative; display:flex; flex-direction:column; font-family:var(--sans); }
+  .hint { color:#7a8498; font-size:12px; max-width:820px; text-align:center; line-height:1.5; }
+  .hint b { color:#c3cbd9; }
+
+  /* top bar */
+  .topbar { display:flex; align-items:center; gap:0; height:38px; background:var(--panel); border-bottom:2px solid var(--cyan); flex-shrink:0; }
+  .topbar > div { padding:0 12px; height:100%; display:flex; align-items:center; gap:6px; }
+  .topbar > div + div { border-left:1px solid var(--line); }
+  .topbar b { font-family:var(--mono); font-size:12px; }
+  .dot { width:7px; height:7px; border-radius:2px; background:var(--cyan); }
+  .pool { display:flex; gap:5px; font-family:var(--mono); font-weight:700; font-size:12px; }
+  .pool .pip { width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:9px; }
+  .pip.w{background:#fbf7d8;color:#5b5226}.pip.u{background:#a8d4ef;color:#0e3a52}.pip.b{background:#b3a8a2;color:#1a1212}
+  .pip.r{background:#f3a78d;color:#5a1c0c}.pip.g{background:#98d2a4;color:#123a1e}.pip.c{background:#ccc5bf;color:#2a2620}
+  .pip.sm{width:10px;height:10px;font-size:6px;} .pip.spent{outline:2px solid var(--green);} .pip.short{outline:2px solid var(--red);}
+  .grow{flex:1;} .life{font-family:var(--mono);font-weight:800;font-size:15px;color:var(--green);margin-left:auto;}
+
+  /* targeting banner */
+  .tgt-banner { display:none; align-items:center; justify-content:center; gap:8px; height:28px; flex-shrink:0;
+    background:var(--cyan); color:#07090d; font-family:var(--mono); font-weight:700; font-size:12px; letter-spacing:.04em; }
+  .screen.targeting .tgt-banner { display:flex; animation:slidedown .2s ease; }
+  @keyframes slidedown{from{transform:translateY(-100%);}to{transform:none;}}
+
+  /* opponents */
+  .opp-row{display:flex;gap:6px;padding:7px 12px;flex-shrink:0;}
+  .opp{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;padding:4px 9px;border-radius:4px;
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--mut);cursor:default;}
+  .opp.threat{border-left-color:var(--red);}
+  .screen.targeting .opp.cantgt{cursor:pointer;border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan),0 0 14px rgba(92,201,245,.35);animation:pulse 1.3s ease-in-out infinite;}
+  .opp.picked{border-color:var(--green)!important;box-shadow:0 0 0 2px var(--green)!important;animation:none!important;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 1px var(--cyan),0 0 8px rgba(92,201,245,.25);}50%{box-shadow:0 0 0 2px var(--cyan),0 0 20px rgba(92,201,245,.6);}}
+
+  /* board */
+  .board{flex:1;display:flex;flex-direction:column;gap:5px;padding:3px 12px;min-height:0;overflow:hidden;}
+  .rl{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);}
+  .perms{display:flex;gap:8px;}
+  .card{width:56px;height:78px;flex-shrink:0;cursor:pointer;position:relative;display:flex;flex-direction:column;
+    overflow:hidden;background:var(--panel2);border:1px solid var(--line);border-top:3px solid var(--green);border-radius:4px;transition:transform .14s ease,box-shadow .14s ease;}
+  .card.land{border-top-color:var(--cyan);} .card.art-i{border-top-color:var(--cyan);}
+  .card:hover{transform:translateY(-4px);}
+  .card.sel{box-shadow:0 0 0 2px var(--cyan),0 0 16px rgba(92,201,245,.4);transform:translateY(-6px);}
+  .card .ban{display:flex;justify-content:space-between;gap:2px;padding:2px 3px;font-size:6.5px;font-weight:700;background:var(--panel);font-family:var(--sans);}
+  .card .cst{display:flex;gap:1px;}
+  .card .art{flex:1;background:linear-gradient(160deg,#222a3a,#161c28);}
+  .card .ty{font-size:5.5px;padding:1px 3px;background:var(--panel);color:#9aa6b8;font-family:var(--mono);}
+  .card .pt{position:absolute;right:2px;bottom:2px;font-family:var(--mono);font-size:8px;font-weight:800;background:#07090d;padding:0 3px;border-radius:3px;}
+  .card.atk{border-color:var(--red);border-top-color:var(--red);}
+  .screen.targeting .card.cantgt{cursor:pointer;border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan);animation:pulse 1.3s ease-in-out infinite;}
+  .card.picked{border-color:var(--green)!important;box-shadow:0 0 0 2px var(--green)!important;animation:none!important;}
+  .lands{display:flex;gap:6px;}
+  .land-s{width:30px;height:42px;border-radius:4px;background:var(--panel2);border:1px solid var(--line);border-top:3px solid var(--cyan);transition:.14s;}
+  .land-s.tap{opacity:.35;transform:rotate(90deg);}
+  .land-s.willtap{box-shadow:0 0 0 2px var(--amber);}
+
+  /* hand */
+  .hand{display:flex;padding:6px 12px 8px;flex-shrink:0;}
+  .hand .card{width:48px;height:66px;margin-right:-16px;box-shadow:0 5px 12px rgba(0,0,0,.5);}
+  .hand .card:hover{transform:translateY(-10px);margin-right:-4px;z-index:2;}
+  .hand .card.sel{margin-right:-4px;z-index:3;}
+
+  /* ── ACTION DOCK (the focus) ──────────────────────────────────── */
+  .dock{position:absolute;left:0;right:0;bottom:0;transform:translateY(110%);transition:transform .22s cubic-bezier(.2,.8,.2,1);
+    background:var(--panel);border-top:2px solid var(--cyan);display:flex;align-items:stretch;gap:10px;padding:9px 12px;z-index:5;
+    box-shadow:0 -16px 40px rgba(0,0,0,.5);}
+  .dock.show{transform:none;}
+  .dock .who{display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:120px;}
+  .dock .who .nm{font-weight:800;font-size:14px;}
+  .dock .who .ty{font-family:var(--mono);font-size:10px;color:var(--mut);}
+  .dock .who .pt{font-family:var(--mono);font-size:11px;color:var(--green);}
+  .dock .sep{width:1px;background:var(--line);}
+  .dock .secs{display:flex;gap:7px;align-items:center;flex-wrap:wrap;flex:1;}
+  .dock .grow{flex:1;}
+  /* secondary chips */
+  .chip{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding:8px 11px;border-radius:5px;
+    background:var(--panel2);border:1px solid var(--line);color:#c3ccda;cursor:pointer;white-space:nowrap;}
+  .chip:hover{border-color:#3a455e;}
+  .chip.red{color:var(--red);border-color:#43302e;}
+  .chip.cyan{color:var(--cyan);}
+  /* primary button */
+  .primary{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;min-width:172px;
+    padding:8px 16px;border-radius:6px;cursor:pointer;border:none;font-family:var(--sans);
+    background:var(--green);color:#07120a;transition:.12s;}
+  .primary:hover{filter:brightness(1.08);}
+  .primary .lab{font-weight:900;font-size:14px;letter-spacing:.03em;display:flex;align-items:center;gap:6px;}
+  .primary .sub{font-family:var(--mono);font-size:9px;opacity:.8;display:flex;align-items:center;gap:4px;}
+  .primary.combat{background:var(--red);color:#190806;}
+  .primary.tap{background:var(--amber);color:#1a1205;}
+  .primary.disabled{background:var(--panel2);color:var(--mut);border:1px solid var(--line);cursor:not-allowed;}
+  .primary.disabled .sub{color:var(--red);opacity:1;}
+  .close{align-self:center;width:30px;height:30px;border-radius:5px;border:1px solid var(--line);background:var(--panel2);
+    color:#9aa6b8;cursor:pointer;font-size:15px;line-height:1;}
+
+  /* slide-to-confirm (destructive) */
+  .slide{position:relative;min-width:200px;height:42px;border-radius:6px;background:#2a1614;border:1px solid var(--red);overflow:hidden;cursor:grab;align-self:center;}
+  .slide .track{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--red);}
+  .slide .knob{position:absolute;left:3px;top:3px;bottom:3px;width:42px;border-radius:4px;background:var(--red);color:#190806;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;transition:left .05s linear;}
+  .slide .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(232,130,108,.18);}
+
+  /* targeting dock variant */
+  .dock .tgtinfo{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;}
+  .dock .tgtchip{padding:4px 9px;border-radius:5px;background:var(--panel2);border:1px solid var(--green);color:var(--green);}
+
+  /* undo toast */
+  .toast{position:absolute;left:50%;bottom:14px;transform:translateX(-50%) translateY(140%);transition:transform .25s ease;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:12px;z-index:8;box-shadow:0 10px 30px rgba(0,0,0,.5);}
+  .toast.show{transform:translateX(-50%);}
+  .toast .msg{font-size:12px;} .toast .msg b{color:var(--cyan);}
+  .toast .undo{font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--amber);border:1px solid #4a3a1a;background:#1d160a;padding:5px 10px;border-radius:5px;cursor:pointer;}
+  .toast .bar{position:absolute;left:0;bottom:0;height:2px;background:var(--cyan);width:100%;transform-origin:left;animation:drain 5s linear forwards;}
+  @keyframes drain{from{transform:scaleX(1);}to{transform:scaleX(0);}}
+
+  /* ── HOLD-TO-PEEK full card preview ───────────────────────────── */
+  .preview-wrap{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:20;}
+  .preview-wrap.show{display:flex;}
+  .preview-back{position:absolute;inset:0;background:rgba(3,5,9,.74);backdrop-filter:blur(3px);}
+  .bigcard{position:relative;width:232px;height:324px;border-radius:12px;overflow:hidden;background:var(--panel2);
+    border:1px solid var(--line);border-top:4px solid var(--green);box-shadow:0 24px 60px rgba(0,0,0,.7);display:flex;flex-direction:column;animation:pop .14s ease;}
+  @keyframes pop{from{transform:scale(.9);opacity:.4;}to{transform:none;opacity:1;}}
+  .bigcard.art-i{border-top-color:var(--cyan);} .bigcard.atk{border-top-color:var(--red);}
+  .bigcard .bhead{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 11px;background:var(--panel);}
+  .bigcard .bn{font-weight:800;font-size:14px;}
+  .bigcard .bcost{display:flex;gap:2px;flex-shrink:0;}
+  .bigcard .bart{height:92px;flex-shrink:0;background:repeating-linear-gradient(135deg,rgba(92,201,245,.06) 0 6px,transparent 6px 12px),linear-gradient(160deg,#222a3a,#161c28);}
+  .bigcard .bty{font-family:var(--mono);font-size:10px;padding:5px 11px;background:var(--panel);color:#9aa6b8;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .bigcard .btext{flex:1;padding:10px 12px;font-size:11.5px;line-height:1.5;color:#d4dbe6;overflow:auto;}
+  .bigcard .btext i{color:var(--mut);}
+  .bigcard .bpt{align-self:flex-end;margin:0 10px 9px;font-family:var(--mono);font-weight:800;font-size:13px;background:#07090d;padding:1px 8px;border-radius:4px;}
+  .tapsym{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:3px;background:#2a3040;color:#e8edf5;font-size:9px;vertical-align:-2px;}
+  .peekhint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:var(--mut);letter-spacing:.05em;}
+  .bigcard .bart img{width:100%;height:100%;object-fit:cover;display:block;}
+
+  /* ── DRAG-TO-ATTACK arrow ─────────────────────────────────────── */
+  .arrow-layer{position:absolute;inset:0;pointer-events:none;z-index:15;display:none;}
+  .arrow-layer.show{display:block;}
+  .arrow-layer line{stroke:var(--red);stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(232,130,108,.6));}
+  .screen.atkdrag .opp{cursor:pointer;border-color:var(--red);}
+  .screen.atkdrag .opp.drop{box-shadow:0 0 0 2px var(--red),0 0 18px rgba(232,130,108,.6)!important;transform:scale(1.05);}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1><span class="star">✳</span> Clean HUD — Action Panel, reworked</h1>
+    <p>Non-modal docked bar · primary+secondary hierarchy · live mana affordability · inline targeting · slide-to-confirm + undo.
+       Tap a card below to act. Try <b>Lightning Bolt</b> (targeting), <b>Dragonlord</b> (can't pay), <b>Ureni</b> (attack), and a card's <b>Discard</b> (slide).</p>
+  </div>
+
+  <div class="device"><div class="screen" id="screen">
+    <div class="topbar">
+      <div><span class="dot"></span><b>Jordy</b><span style="font-family:var(--mono);font-size:10px;color:var(--mut)">T3</span></div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--mut)">COMBAT</div>
+      <div class="pool" id="pool"></div>
+      <div class="grow"></div>
+      <div><span class="life">40</span></div>
+    </div>
+
+    <div class="tgt-banner" id="tgtBanner">◎ CHOOSE TARGET — any creature or player</div>
+
+    <div class="opp-row" id="oppRow"></div>
+
+    <div class="board">
+      <div class="rl">Your battlefield</div>
+      <div class="perms" id="boardRow"></div>
+      <div class="rl">Lands &nbsp;<span id="landNote" style="color:var(--amber)"></span></div>
+      <div class="lands" id="landRow"></div>
+    </div>
+
+    <div class="hand" id="handRow"></div>
+
+    <!-- DRAG-TO-ATTACK ARROW -->
+    <svg class="arrow-layer" id="arrowLayer">
+      <defs><marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto">
+        <path d="M0,0 L9,4.5 L0,9 Z" fill="#e8826c"/></marker></defs>
+      <line id="arrowLine" marker-end="url(#ah)" x1="0" y1="0" x2="0" y2="0"/>
+    </svg>
+
+    <!-- ACTION DOCK -->
+    <div class="dock" id="dock"></div>
+
+    <!-- UNDO TOAST -->
+    <div class="toast" id="toast">
+      <span class="msg" id="toastMsg"></span>
+      <button class="undo" id="undoBtn">↶ Undo</button>
+      <span class="bar"></span>
+    </div>
+
+    <!-- HOLD-TO-PEEK PREVIEW -->
+    <div class="preview-wrap" id="preview">
+      <div class="preview-back"></div>
+      <div id="bigcard"></div>
+      <div class="peekhint">release to close</div>
+    </div>
+  </div></div>
+
+  <div class="hint">Design goals: thumb-reachable (actions hug the right edge), board stays visible, the one obvious move is unmissable, and irreversible actions need intent. <a href="controller-concepts.html">← all concepts</a></div>
+
+<script>
+/* ── data ─────────────────────────────────────────────────────── */
+const pool = {w:2,u:1,b:0,r:3,g:0};
+const opps = [{n:"Mara",l:33},{n:"Theo",l:18,threat:true},{n:"Ines",l:40}];
+const board = [
+  {id:"ureni", nm:"Ureni", ty:"Dragon", cost:["3","g","u"], pt:"8/8", atk:true, kind:"creature"},
+  {id:"solemn",nm:"Solemn Simulacrum", ty:"Artifact Creature", cost:["4"], pt:"2/2", kind:"creature"},
+];
+const hand = [
+  {id:"bolt", nm:"Lightning Bolt", ty:"Instant", cost:["r"], kind:"instant", needsTarget:true, pay:{ok:true,taps:["r"],spend:["r"]}},
+  {id:"drag", nm:"Dragonlord Silumgar", ty:"Creature — Elder Dragon", cost:["4","u","b"], pt:"3/5", kind:"creature", pay:{ok:false,short:"1 more B"}},
+  {id:"sol",  nm:"Sol Ring", ty:"Artifact", cost:["1"], kind:"artifact", pay:{ok:true,taps:["c"],spend:["c"]}},
+];
+const lands = [{c:"r"},{c:"u"},{c:"w"},{c:"r"},{c:"g"},{c:"c"}]; // willtap highlighted during cast
+
+/* oracle text for the hold-to-peek preview (real rules text, {symbols} rendered inline) */
+const ORACLE = {
+  bolt:   "Lightning Bolt deals 3 damage to any target.",
+  ureni:  "Flash, trample<br>When Ureni enters or attacks, look at the top ten cards of your library. You may put a creature card from among them onto the battlefield. Put the rest on the bottom of your library in a random order.",
+  solemn: "When Solemn Simulacrum enters, you may search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.<br>When Solemn Simulacrum dies, you may draw a card.",
+  drag:   "Flying, deathtouch<br>When Dragonlord Silumgar enters, gain control of target creature or planeswalker for as long as you control Dragonlord Silumgar.",
+  sol:    "{T}: Add {C}{C}.<br><i>(Two colorless mana, fast.)</i>",
+};
+/* exact Scryfall names → real card art in the peek (falls back to gradient offline) */
+const SCRYFALL = { bolt:"Lightning Bolt", ureni:"Ureni of the Unwritten", solemn:"Solemn Simulacrum", drag:"Dragonlord Silumgar", sol:"Sol Ring" };
+const artURL = (id) => `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(SCRYFALL[id])}&format=image&version=art_crop`;
+const symbolize = (t) => t
+  .replace(/\{([WUBRGC0-9])\}/g, (_,s) => `<span class="pip ${isNaN(s)?s:'c'} sm">${isNaN(s)?s.toUpperCase():s}</span>`)
+  .replace(/\{T\}/g, '<span class="tapsym">↻</span>');
+
+/* ── render statics ───────────────────────────────────────────── */
+const pip=(s,sm,cls="")=>`<span class="pip ${isNaN(s)?s:'c'} ${sm?'sm':''} ${cls}">${isNaN(s)?s.toUpperCase():s}</span>`;
+const cost=(a,sm)=>a.map(c=>pip(c,sm)).join("");
+document.getElementById("pool").innerHTML = Object.entries(pool).map(([c,n])=>`${pip(c)}<span style="opacity:${n?1:.35}">${n}</span>`).join(" ");
+const oppRow=document.getElementById("oppRow");
+oppRow.innerHTML = opps.map((o,i)=>`<div class="opp ${o.threat?'threat':''}" data-tgt="opp:${i}"><span class="dot" style="background:var(--mut)"></span>${o.n} ${o.l}</div>`).join("");
+function cardHTML(c, where){
+  return `<div class="card ${c.kind==='instant'||c.kind==='artifact'?'art-i':''} ${c.atk?'atk':''}" data-card="${c.id}" data-where="${where}" data-tgt="${c.kind==='creature'?'crea:'+c.id:''}">
+    <div class="ban"><span>${c.nm}</span><span class="cst">${cost(c.cost,true)}</span></div>
+    <div class="art"></div><div class="ty">${c.ty}</div>${c.pt?`<span class="pt">${c.pt}</span>`:''}</div>`;
+}
+document.getElementById("boardRow").innerHTML = board.map(c=>cardHTML(c,"board")).join("");
+document.getElementById("handRow").innerHTML = hand.map(c=>cardHTML(c,"hand")).join("");
+document.getElementById("landRow").innerHTML = lands.map((l,i)=>`<div class="land-s" data-land="${i}"></div>`).join("");
+
+/* ── state machine ────────────────────────────────────────────── */
+const screen=document.getElementById("screen"), dock=document.getElementById("dock"), toast=document.getElementById("toast");
+let current=null, pendingTarget=null;
+
+function find(id){ return board.find(c=>c.id===id)||hand.find(c=>c.id===id); }
+function clearSel(){ document.querySelectorAll(".card.sel").forEach(e=>e.classList.remove("sel")); }
+function clearTgt(){ document.querySelectorAll(".cantgt,.picked").forEach(e=>e.classList.remove("cantgt","picked")); document.getElementById("landRow").querySelectorAll(".willtap").forEach(e=>e.classList.remove("willtap")); document.getElementById("landNote").textContent=""; }
+
+function primaryFor(c){
+  if(c.where==="board" && c.kind==="creature"){
+    return c.atk
+      ? {cls:"combat", lab:"⚔ ATTACK", sub:"tap, or drag to a player"}
+      : {cls:"tap",    lab:"↳ TAP",    sub:"add ability to stack"};
+  }
+  if(c.pay && !c.pay.ok) return {cls:"disabled", lab:"CAN'T PAY", sub:"✕ need "+c.pay.short};
+  const taps = c.pay?.taps?.length||0;
+  return {cls:"", lab:"▸ CAST", sub:(taps?`taps ${taps} land`:"free")+(c.needsTarget?" · needs target":"")};
+}
+
+function openDock(c){
+  current=c; clearSel(); clearTgt(); screen.classList.remove("targeting");
+  document.querySelector(`.card[data-card="${c.id}"][data-where="${c.where}"]`)?.classList.add("sel");
+  const p = primaryFor(c);
+  // affordability strip on the cast button
+  let strip = "";
+  if(c.pay){
+    if(c.pay.ok) strip = c.pay.spend.map(s=>pip(s,true,"spent")).join("");
+    else strip = c.cost.map(s=>pip(s,true)).join("");
+  }
+  const secs = (c.where==="board")
+      ? [{t:"Activate",cls:"cyan"},{t:"Move…",cls:""},{t:"Details",cls:""}]
+      : [{t:"Discard",cls:"red"},{t:"Reveal",cls:""},{t:"Details",cls:""}];
+  dock.innerHTML = `
+    <div class="who"><span class="nm">${c.nm}</span><span class="ty">${c.ty}</span>${c.pt?`<span class="pt">${c.pt}</span>`:''}</div>
+    <div class="sep"></div>
+    <div class="secs">${secs.map(s=>`<div class="chip ${s.cls}" data-sec="${s.t}">${s.t}</div>`).join("")}</div>
+    <button class="primary ${p.cls}" id="primaryBtn" ${p.cls==='disabled'?'disabled':''}>
+      <span class="lab">${p.lab} ${strip?`<span style="display:flex;gap:1px">${strip}</span>`:''}</span>
+      <span class="sub">${p.sub}</span>
+    </button>
+    <button class="close" data-close>✕</button>`;
+  dock.classList.add("show");
+  // preview which lands will tap
+  if(c.pay?.ok && c.pay.taps){
+    const note=document.getElementById("landNote"); note.textContent="↳ will tap "+c.pay.taps.length;
+    let need=[...c.pay.taps]; document.querySelectorAll(".land-s").forEach((el,i)=>{ const idx=need.indexOf(lands[i].c); if(idx>-1 && !el.classList.contains("tap")){ el.classList.add("willtap"); need.splice(idx,1);} });
+  }
+}
+
+function closeDock(){ dock.classList.remove("show"); clearSel(); clearTgt(); screen.classList.remove("targeting"); current=null; }
+
+function enterTargeting(c){
+  screen.classList.add("targeting"); dock.classList.remove("show");
+  document.querySelectorAll('[data-tgt]:not([data-tgt=""])').forEach(e=>e.classList.add("cantgt"));
+}
+function pickTarget(el){
+  document.querySelectorAll(".picked").forEach(e=>e.classList.remove("picked"));
+  el.classList.add("picked"); pendingTarget = el;
+  const label = el.dataset.tgt.startsWith("opp") ? opps[+el.dataset.tgt.split(":")[1]].n : find(el.dataset.tgt.split(":")[1]).nm;
+  // show confirm dock
+  dock.innerHTML = `
+    <div class="who"><span class="nm">${current.nm}</span><span class="ty">targeting</span></div>
+    <div class="sep"></div>
+    <div class="secs"><div class="tgtinfo">→ <span class="tgtchip">${label}</span></div></div>
+    <button class="primary" id="confirmBtn"><span class="lab">✓ CONFIRM</span><span class="sub">resolve spell</span></button>
+    <button class="close" data-close>✕</button>`;
+  dock.classList.add("show");
+}
+
+function commit(msg){
+  closeDock();
+  document.getElementById("toastMsg").innerHTML = msg;
+  toast.classList.remove("show"); void toast.offsetWidth; // restart drain animation
+  toast.classList.add("show");
+  const bar = toast.querySelector(".bar"); bar.style.animation="none"; void bar.offsetWidth; bar.style.animation="drain 5s linear forwards";
+  clearTimeout(commit._t); commit._t=setTimeout(()=>toast.classList.remove("show"),5000);
+}
+
+/* ── slide to confirm (destructive) ───────────────────────────── */
+function slideToConfirm(label, onDone){
+  dock.innerHTML = `
+    <div class="who"><span class="nm">${current.nm}</span><span class="ty" style="color:var(--red)">irreversible</span></div>
+    <div class="sep"></div><div class="grow"></div>
+    <div class="slide" id="slide"><div class="fill" id="slideFill"></div><div class="track">→ slide to ${label}</div><div class="knob" id="knob">›</div></div>
+    <button class="close" data-close>✕</button>`;
+  const slide=document.getElementById("slide"), knob=document.getElementById("knob"), fill=document.getElementById("slideFill");
+  let drag=false, max=0;
+  const start=e=>{drag=true; max=slide.clientWidth-knob.clientWidth-6; knob.style.transition="none"; e.preventDefault();};
+  const move=e=>{ if(!drag)return; const x=(e.touches?e.touches[0].clientX:e.clientX)-slide.getBoundingClientRect().left-21;
+    const px=Math.max(0,Math.min(max,x)); knob.style.left=(3+px)+"px"; fill.style.width=(px+42)+"px";
+    if(px>=max-2){ drag=false; onDone(); } };
+  const end=()=>{ if(!drag)return; drag=false; knob.style.transition="left .15s"; knob.style.left="3px"; fill.style.width="0"; };
+  knob.addEventListener("mousedown",start); knob.addEventListener("touchstart",start,{passive:false});
+  window.addEventListener("mousemove",move); window.addEventListener("touchmove",move,{passive:false});
+  window.addEventListener("mouseup",end); window.addEventListener("touchend",end);
+}
+
+/* ── hold-to-peek: press & hold a card to read full-size oracle text ── */
+const preview=document.getElementById("preview"), bigcard=document.getElementById("bigcard");
+let pressTimer=null, peeking=false, suppressClick=false;
+function showPreview(c){
+  const kindCls = (c.kind==="instant"||c.kind==="artifact"||c.kind==="land") ? "art-i" : (c.atk?"atk":"");
+  bigcard.className=""; bigcard.classList.add("bigcard"); if(kindCls) bigcard.classList.add(kindCls);
+  bigcard.innerHTML = `
+    <div class="bhead"><span class="bn">${c.nm}</span><span class="bcost">${cost(c.cost,true)}</span></div>
+    <div class="bart">${SCRYFALL[c.id]?`<img src="${artURL(c.id)}" alt="" onerror="this.style.display='none'">`:""}</div>
+    <div class="bty">${c.ty}</div>
+    <div class="btext">${symbolize(ORACLE[c.id]||"")}</div>
+    ${c.pt?`<span class="bpt">${c.pt}</span>`:""}`;
+  preview.classList.add("show");
+}
+function endPress(){
+  if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; }
+  if(peeking){ preview.classList.remove("show"); peeking=false; suppressClick=true; }
+}
+screen.addEventListener("pointerdown",e=>{
+  const cardEl=e.target.closest(".card[data-card]"); if(!cardEl) return;
+  const c=find(cardEl.dataset.card);
+  pressTimer=setTimeout(()=>{ peeking=true; showPreview(c); }, 380);
+});
+["pointerup","pointerleave","pointercancel"].forEach(ev=>screen.addEventListener(ev,endPress));
+
+/* ── drag-to-attack: drag from the ATTACK button to an opponent ───── */
+const arrowLayer=document.getElementById("arrowLayer"), arrowLine=document.getElementById("arrowLine");
+let atk=null; // {sx,sy, active, drop}
+screen.addEventListener("pointerdown",e=>{
+  const btn=e.target.closest("#primaryBtn");
+  if(!btn || !current || current.where!=="board" || !current.atk) return;
+  const r=screen.getBoundingClientRect(), b=btn.getBoundingClientRect();
+  atk={ sx:b.left+b.width/2-r.left, sy:b.top-r.top, active:false, drop:null };
+});
+window.addEventListener("pointermove",e=>{
+  if(!atk) return;
+  const r=screen.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+  if(!atk.active && Math.hypot(x-atk.sx,y-atk.sy)>10){ atk.active=true; screen.classList.add("atkdrag"); arrowLayer.classList.add("show"); }
+  if(!atk.active) return;
+  arrowLine.setAttribute("x1",atk.sx); arrowLine.setAttribute("y1",atk.sy);
+  arrowLine.setAttribute("x2",x); arrowLine.setAttribute("y2",y);
+  const el=document.elementFromPoint(e.clientX,e.clientY), opp=el&&el.closest(".opp");
+  document.querySelectorAll(".opp.drop").forEach(o=>o.classList.remove("drop"));
+  atk.drop = opp ? opp : null; if(opp) opp.classList.add("drop");
+});
+window.addEventListener("pointerup",()=>{
+  if(!atk) return;
+  const wasActive=atk.active, dropOpp=atk.drop;
+  arrowLayer.classList.remove("show"); screen.classList.remove("atkdrag");
+  document.querySelectorAll(".opp.drop").forEach(o=>o.classList.remove("drop"));
+  if(wasActive){
+    suppressClick=true; // don't let the click also fire
+    if(dropOpp){ const nm=dropOpp.textContent.trim().split(" ")[0]; commit(`<b>${current.nm}</b> attacking ${nm}.`); }
+    else commit(`<b>${current.nm}</b> declared as attacker.`);
+  }
+  atk=null;
+});
+
+/* ── one delegated click handler ──────────────────────────────── */
+screen.addEventListener("click",e=>{
+  if(suppressClick){ suppressClick=false; return; }   // a hold-peek just happened — ignore the click
+  // targeting picks first
+  if(screen.classList.contains("targeting")){
+    const t=e.target.closest(".cantgt"); if(t){ pickTarget(t); return; }
+  }
+  const cardEl=e.target.closest(".card[data-card]");
+  if(cardEl && !screen.classList.contains("targeting")){
+    const c=find(cardEl.dataset.card); c.where=cardEl.dataset.where; openDock(c); return;
+  }
+  if(e.target.closest("[data-close]")){ closeDock(); return; }
+  const land=e.target.closest(".land-s"); if(land && !screen.classList.contains("targeting")){ land.classList.toggle("tap"); return; }
+
+  const prim=e.target.closest("#primaryBtn");
+  if(prim){
+    if(current.where==="board"){ // tap / attack
+      commit(`<b>${current.nm}</b> ${current.atk?'attacking':'tapped'}.`); return;
+    }
+    if(current.pay && !current.pay.ok) return; // disabled
+    if(current.needsTarget){ enterTargeting(current); return; }
+    commit(`Cast <b>${current.nm}</b>.`); return;
+  }
+  if(e.target.closest("#confirmBtn")){
+    const label = pendingTarget.dataset.tgt.startsWith("opp")?opps[+pendingTarget.dataset.tgt.split(":")[1]].n:find(pendingTarget.dataset.tgt.split(":")[1]).nm;
+    commit(`<b>${current.nm}</b> → ${label}.`); return;
+  }
+  const sec=e.target.closest("[data-sec]");
+  if(sec){
+    const t=sec.dataset.sec;
+    if(t==="Discard") slideToConfirm("discard", ()=>commit(`Discarded <b>${current.nm}</b>.`));
+    else if(t==="Move…") slideToConfirm("move to graveyard", ()=>commit(`<b>${current.nm}</b> → graveyard.`));
+    else if(t==="Activate") commit(`Activated <b>${current.nm}</b>'s ability.`);
+    else closeDock();
+    return;
+  }
+});
+document.getElementById("undoBtn").addEventListener("click",()=>toast.classList.remove("show"));
+</script>
+</body>
+</html>

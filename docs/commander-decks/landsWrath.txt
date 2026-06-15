@@ -24,7 +24,7 @@ Deck
 1 Arcane Signet
 1 Armorcraft Judge
 1 Banishing Light
-1 Beanstalk Giant
+1 Beanstalk Giant // Fertile Footsteps
 1 Blighted Woodland
 1 Boros Garrison
 1 Boros Guildgate
@@ -85,7 +85,7 @@ Deck
 1 Sol Ring
 1 Sporemound
 1 Springbloom Druid
-1 Struggle/Survive
+1 Struggle // Survive
 1 Sun Titan
 1 Sylvan Advocate
 1 Sylvan Reclamation

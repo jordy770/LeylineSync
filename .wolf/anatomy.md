@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-13T20:01:00.859Z
-> Files: 221 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-14T23:37:35.606Z
+> Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -11,9 +11,15 @@
 
 - `leylinesync-product-vision.md` (~247 tok)
 
+## ../../.cloudflared/
+
+- `config.yml` — Cloudflare Tunnel ingress for the LeylineSync dev server. (~181 tok)
+
 ## ./
 
-- `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~345 tok)
+- `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~387 tok)
+- `package.json` — Node.js package manifest (~482 tok)
+- `proxy.ts` — Exports proxy, config (~272 tok)
 - `scratch-check-hosted.mjs` — Declares loadEnvFile (~567 tok)
 - `scratch-ign.mjs` — Declares c (~161 tok)
 - `scratch-mv.mjs` — Declares c (~215 tok)
@@ -48,6 +54,9 @@
 
 ## app/
 
+- `layout.tsx` — defaultUrl (~465 tok)
+- `manifest.ts` — PWA manifest. `display: "standalone"` is what removes the browser URL bar once (~518 tok)
+- `ServiceWorkerRegister.tsx` — ServiceWorkerRegister (~161 tok)
 
 ## app/api/cards/generate-behavior/
 
@@ -85,6 +94,9 @@
 
 ## app/controller/[id]/
 
+- `AddToHomeScreen.tsx` — DISMISS_KEY (~1044 tok)
+- `ControllerFullscreen.tsx` — ControllerFullscreen (~416 tok)
+- `page.tsx` — Lazy-load each controller version so opening the page only compiles the ONE (~419 tok)
 
 ## app/decks/
 
@@ -92,22 +104,28 @@
 ## app/judge/[id]/
 
 
+## app/manifest.webmanifest/
+
+- `route.ts` — PWA manifest served as a route handler (instead of the app/manifest.ts file (~400 tok)
+
 ## app/protected/
 
 
 ## components/
 
-- `ControllerListV4.tsx` — Returns the single mana color to auto-produce when a card has exactly one simple tap ability. (~42358 tok)
-- `GameSessionLobby.tsx` — GameSessionLobby (~4637 tok)
+- `ControllerListV4.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~47404 tok)
+- `GameBoard.tsx` — GameBoard (~7148 tok)
+- `GameSessionLobby.tsx` — GameSessionLobby (~4956 tok)
 
 ## components/board/
 
 
 ## components/controller/
 
-- `CardActionSheet.tsx` — CardActionSheet (~18188 tok)
+- `CardActionSheet.tsx` — CardActionSheet (~18190 tok)
 - `CardDisplay.tsx` — Small display atoms: ManaSymbol, KeywordBadges, ManaCostDisplay, ManaPoolDisplay. (~660 tok)
-- `OpeningHandOverlay.tsx` — Full-screen opening-hand overlay (London mulligan): keep/mulligan buttons, bottom-card selection chips, waiting-for-others variant. Rendered by ControllerListV4 while any player has opening_hand_kept === false. (~1249 tok)
+- `ControllerCoachOverlay.tsx` — SLIDES (~1024 tok)
+- `OpeningHandOverlay.tsx` — OpeningHandOverlay (~1408 tok)
 - `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~8333 tok)
 
 ## components/judge/
@@ -124,11 +142,11 @@
 
 ## docs/
 
-- `client-coverage-audit.md` — Client coverage audit — engine vs UI (June 2026) (~1033 tok)
+- `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1365 tok)
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~12467 tok)
+- `card-scripts.json` (~41542 tok)
 - `next-deck.txt` — PASTE YOUR NEXT DECKLIST BELOW, then run:  npm run deck:triage (~164 tok)
 
 ## lib/
@@ -136,25 +154,41 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~12283 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~12527 tok)
+- `auto-tap.ts` — An untapped, single-colour, cost-free mana source the auto-tapper may use: (~673 tok)
 - `card-behavior-registry.ts` — Declarative registry of the form-editable card effects. ONE entry per effect (~12304 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~19554 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4128 tok)
-- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2588 tok)
+- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 14 more (~7118 tok)
+- `types.ts` — Exports ManaPool, ManaColor, GameZone, GameSessionStatus + 29 more (~2735 tok)
+- `use-board-game-state.ts` — Exports useBoardGameState (~1310 tok)
+- `use-controller-game-state.ts` — Exports useControllerGameState (~2286 tok)
+- `use-long-press.ts` — Press-and-hold detection for card "peek" (hold a card to read its full (~573 tok)
 
 ## lib/supabase/
 
 
+## mockups/
+
+- `clean-hud-action.html` — Clean HUD · Action Panel (~8016 tok)
+- `controller-base.css` — Styles: 83 rules, 33 vars (~3984 tok)
+- `controller-base.js` — STATE: poolHTML, cardHTML, controllerHTML, activate, openSheet (~3101 tok)
+- `controller-concepts-2.html` — LeylineSync · Controller Concepts (Set 2 — bold) (~2738 tok)
+- `controller-concepts.html` — LeylineSync · Controller Concepts (Set 1) (~1804 tok)
+
 ## public/
 
+- `icon.svg` (~255 tok)
+- `sw.js` — Minimal service worker. Its only job is to make the app installable: Chrome (~212 tok)
 
 ## scripts/
 
 - `fix-scions-scripts.mjs` — Declares SCRIPTS (~751 tok)
 - `merge-scions-scripts.mjs` — One-off: merge the scions-spellcraft-build workflow output into card-scripts.json. (~481 tok)
+- `seed-precon-decks.mjs` — Parse a decklist the way import_deck_from_text does (quantity, Commander header, set-code strip). (~1843 tok)
 - `setup-local-test-db.mjs` — Rebuilds the LOCAL test-harness database from scratch. (~912 tok)
 - `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3330 tok)
-- `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2117 tok)
+- `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2311 tok)
 - `validate-fixtures-offline.mts` — Offline fixture validation — no DB, no credentials (unlike validate:scripts, (~332 tok)
 
 ## supabase/
@@ -183,12 +217,14 @@
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5551 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~2836 tok)
 - `cease_token_if_off_battlefield.sql` — supabase/functions_src/cease_token_if_off_battlefield.sql (~308 tok)
+- `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1052 tok)
+- `commander_deck_legality.sql` — supabase/functions_src/commander_deck_legality.sql (~806 tok)
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~943 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~815 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3313 tok)
 - `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1685 tok)
 - `divide_damage_options.sql` — supabase/functions_src/divide_damage_options.sql (~676 tok)
-- `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1069 tok)
+- `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1426 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~354 tok)
 - `fire_becomes_target_triggers.sql` — supabase/functions_src/fire_becomes_target_triggers.sql (~801 tok)
 - `fire_card_triggers.sql` — supabase/functions_src/fire_card_triggers.sql (~612 tok)
@@ -201,6 +237,7 @@
 - `keep_opening_hand.sql` — supabase/functions_src/keep_opening_hand.sql (~643 tok)
 - `mana_value.sql` — supabase/functions_src/mana_value.sql (~258 tok)
 - `mulligan_hand.sql` — supabase/functions_src/mulligan_hand.sql (~681 tok)
+- `pass_priority.sql` — supabase/functions_src/pass_priority.sql (~1900 tok)
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2455 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1154 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~974 tok)
@@ -210,6 +247,7 @@
 - `resolve_dynamic_amount.sql` — supabase/functions_src/resolve_dynamic_amount.sql (~800 tok)
 - `return_all_from_graveyard.sql` — supabase/functions_src/return_all_from_graveyard.sql (~838 tok)
 - `revert_copy_before_leave.sql` — supabase/functions_src/revert_copy_before_leave.sql (~354 tok)
+- `spawn_deck_for_session.sql` — supabase/functions_src/spawn_deck_for_session.sql (~998 tok)
 - `start_game_session.sql` — supabase/functions_src/start_game_session.sql (~1078 tok)
 - `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~13399 tok)
 - `track_life_lost.sql` — supabase/functions_src/track_life_lost.sql (~259 tok)
@@ -265,6 +303,9 @@
 - `202605010300_x_permanents.sql` — 202605010300_x_permanents (~17516 tok)
 - `202605010301_attack_count.sql` — 202605010301_attack_count (~3292 tok)
 - `202605010303_pacify.sql` — 202605010303_pacify (~7726 tok)
+- `202605010308_precon_decks.sql` — 202605010308_precon_decks (~1988 tok)
+- `202605010309_pod_auto_skip.sql` — 202605010309_pod_auto_skip (~2036 tok)
+- `202605010310_opportunistic_dragon_target_filter.sql` — 202605010310_opportunistic_dragon_target_filter (~2890 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -335,7 +376,9 @@
 - `noncreature-spell-trigger.test.ts` — Noncreature-spell watcher (mig 292): a spell_cast triggered ability with (~933 tok)
 - `observed-stasis.test.ts` — Observed Stasis / pacify (mig 303): an Aura that gives the enchanted creature (~662 tok)
 - `omen-casts.test.ts` — mig 289 — Flush Out from hand: discard park, draw two, shuffle-self-away. (~500 tok)
-- `opportunistic-dragon.test.ts` — mig 246 — Opportunistic Dragon: "When this creature enters, choose target (~810 tok)
+- `opportunistic-dragon.test.ts` — mig 246 / mig 310 — Opportunistic Dragon: "When this creature enters, choose (~1288 tok)
+- `pod-auto-skip.test.ts` — Server-side pod auto-skip (mig 309): when a player passes priority on an empty (~1443 tok)
+- `precon-decks.test.ts` — Shared precon decks (mig 308): a curated deck with is_precon = true and no (~762 tok)
 - `propaganda.test.ts` — Propaganda / attack tax (existing attack_tax mechanism): creatures can't (~511 tok)
 - `ramp.test.ts` — Temur Dragons ramp package (free compositions, no new engine): (~925 tok)
 - `reality-shift.test.ts` — mig 251 — Reality Shift (manifest): "Exile target creature. Its controller (~1052 tok)
@@ -358,17 +401,18 @@
 
 ## tests/fixtures/
 
-- `test-cards.json` (~33915 tok)
+- `test-cards.json` (~43176 tok)
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10025 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10462 tok)
 
 ## tests/regression/
 
 
 ## tests/unit/
 
+- `auto-tap.test.ts` — planAutoTap — the controller's safe-greedy auto-pay planner. Picks which (~808 tok)
 - `card-config-status.test.ts` — getCardConfigStatus — the deck editor's "scripted / vanilla / needs behaviour" (~891 tok)
 - `card-scripts-validation.test.ts` — Every curated entry in docs/commander-decks/card-scripts.json must pass (~458 tok)
 - `card-scripts-validation.test.ts` — validates every docs/commander-decks/card-scripts.json entry against validateCardScript (the hosted upsert gate), added after bug-687/688. (~350 tok)

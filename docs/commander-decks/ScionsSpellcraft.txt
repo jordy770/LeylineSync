@@ -57,9 +57,9 @@ Deck
 1 G'raha Tia, Scion Reborn
 1 Glacial Fortress
 1 Hermes, Overseer of Elpis
-1 Hildibrand Manderville
+1 Hildibrand Manderville // Gentleman's Rise
 1 Hraesvelgr of the First Brood
-1 Hypnotic Sprite
+1 Hypnotic Sprite // Mesmeric Glare
 1 Idyllic Beachfront
 1 Into the Story
 3 Island
@@ -68,7 +68,7 @@ Deck
 1 Lethal Scheme
 1 Lingering Souls
 1 Lyse Hext
-1 Murderous Rider
+1 Murderous Rider // Swift End
 1 Observed Stasis
 1 Papalymo Totolymo
 1 Path of Ancestry

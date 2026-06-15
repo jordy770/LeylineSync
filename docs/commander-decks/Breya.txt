@@ -83,7 +83,7 @@ Deck
 1 Trading Post
 1 Transguild Promenade
 1 Trash for Treasure
-1 Trial/Error
+1 Trial // Error
 1 Trinket Mage
 1 Vedalken Engineer
 1 Whipflare

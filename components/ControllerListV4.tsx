@@ -40,6 +40,7 @@ import {
   resolveCombatDamage,
   setCombatBlockerOrder,
   submitDecision,
+  syncAutoPassSettings,
 } from '@/lib/game/actions'
 import type { DamageAllocation, CombatDamageAssignments } from '@/lib/game/actions'
 import {
@@ -48,10 +49,12 @@ import {
   selectFirstManaAbility,
 } from '@/lib/game/card-behavior'
 import { getPowerToughnessLabel } from '@/lib/game/controller-selectors'
-import { parseManaCost } from '@/lib/game/mana'
+import { parseManaCost, type ParsedManaCost } from '@/lib/game/mana'
+import { planAutoTap, type ManaSource } from '@/lib/game/auto-tap'
 import { getOpponentZoneData } from '@/lib/game/data'
-import type { OpponentZoneData } from '@/lib/game/data'
+import type { CommanderDamageEntry, OpponentZoneData } from '@/lib/game/data'
 import { useControllerGameState } from '@/lib/game/use-controller-game-state'
+import { useLongPress } from '@/lib/game/use-long-press'
 import type {
   BoardCard,
   CombatAssignment,
@@ -67,8 +70,9 @@ import type {
   StackItem,
 } from '@/lib/game/types'
 import MotionCard from './MotionCard'
-import { CardActionSheet } from './controller/CardActionSheet'
+import { CardActionSheet, CardZoomOverlay } from './controller/CardActionSheet'
 import { OpeningHandOverlay } from './controller/OpeningHandOverlay'
+import { ControllerCoachOverlay } from './controller/ControllerCoachOverlay'
 import { ManaCostDisplay, ManaPoolDisplay } from './controller/CardDisplay'
 import {
   canCastHandSpell,
@@ -114,11 +118,19 @@ type AutoPassSettings = {
   rsp: boolean  // on opponents' turns, STOP when you have a castable response
 }
 const AUTOPASS_OFF: AutoPassSettings = { op: false, own: false, stk: false, rsp: false }
+// Fresh sessions start fast: skip opponents' turns AND your own empty phases,
+// but always stop when a new object hits the stack (and for every decision /
+// trigger target / block — those are hard exemptions in the effect). Players
+// who opened the popover and stored explicit prefs keep them.
+const AUTOPASS_DEFAULT: AutoPassSettings = { op: true, own: true, stk: true, rsp: false }
 const autoPassStorageKey = (sessionId: string) => 'leyline-autopass-' + sessionId
+// First-run controller coach (onboarding) — shown once per device, re-openable
+// via the ? in the status bar. Bump the version to re-show after a redesign.
+const COACH_SEEN_KEY = 'leyline-coach-seen-v1'
 function loadAutoPassSettings(sessionId: string): AutoPassSettings {
-  if (typeof window === 'undefined') return AUTOPASS_OFF
+  if (typeof window === 'undefined') return AUTOPASS_DEFAULT
   const raw = localStorage.getItem(autoPassStorageKey(sessionId))
-  if (!raw) return AUTOPASS_OFF
+  if (!raw) return AUTOPASS_DEFAULT
   if (raw === '1') return { ...AUTOPASS_OFF, op: true } // migrate the v1 boolean toggle
   try {
     return { ...AUTOPASS_OFF, ...(JSON.parse(raw) as Partial<AutoPassSettings>) }
@@ -129,11 +141,22 @@ function loadAutoPassSettings(sessionId: string): AutoPassSettings {
 // Your own steps with nothing to decide — auto-passed when `own` is on. Main
 // phases and combat decision steps (declare_attackers/combat_damage) stay manual.
 const OWN_SKIP_STEPS: GameTurnState['step'][] = ['untap', 'upkeep', 'draw', 'beginning_of_combat', 'end_of_combat', 'end']
+// Adaptive auto-pass beat: snappy through genuinely dead windows (empty stack),
+// but a longer, visible beat when an object is on the stack so the table can see
+// it before it's passed. Sequential pod passes make the empty-window beat the
+// dominant cost of early-game dead time, so it's kept short.
+const AUTOPASS_BEAT_EMPTY_MS = 250
+const AUTOPASS_BEAT_STACK_MS = 700
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Returns the single mana color to auto-produce when a card has exactly one simple tap ability. */
-function getAutoTapColor(card: ControllerCard): ManaColor | null {
+/**
+ * The mana an untapped card auto-produces when it has exactly one simple
+ * tap-for-one-colour ability (tap is the only cost, one fixed colour). Returns
+ * null for tapped sources, multi-ability sources, sources with extra costs
+ * (life/sacrifice), and 'commander'/'any' sources that need a colour choice.
+ */
+function getAutoTapMana(card: ControllerCard): { color: ManaColor; amount: number } | null {
   if (card.is_tapped) return null
   const script = normalizeCardBehaviorToV2(
     card.copied_script ?? card.cards?.script ?? null,
@@ -146,8 +169,87 @@ function getAutoTapColor(card: ControllerCard): ManaColor | null {
   const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
   if (addManaEffects.length !== 1) return null
   // A 'commander'/'any' source needs a colour choice — don't auto-tap; open the picker.
-  const color = addManaEffects[0].color
-  return color === 'commander' || color === 'any' ? null : color
+  const { color, amount } = addManaEffects[0]
+  if (color === 'commander' || color === 'any') return null
+  return { color, amount: Math.max(1, amount ?? 1) }
+}
+
+/** Returns the single mana color to auto-produce when a card has exactly one simple tap ability. */
+function getAutoTapColor(card: ControllerCard): ManaColor | null {
+  return getAutoTapMana(card)?.color ?? null
+}
+
+const BASIC_LAND_COLOR: Record<string, ManaColor> = {
+  plains: 'W', island: 'U', swamp: 'B', mountain: 'R', forest: 'G', wastes: 'C',
+}
+
+/**
+ * What mana colours an untapped land can make, for the hand "playable" hint:
+ *   ManaColor[]  — the fixed colour(s) it taps for (one entry = a single colour)
+ *   'flexible'   — any-colour / commander / multi-colour: a wildcard pip
+ *   null         — not a recognizable mana source (counted as a wildcard too)
+ * Scripted mana abilities take precedence; basics (no script) map from their
+ * type-line subtype. This drives colour-correct affordability, not the payment
+ * (the server + planAutoTap remain authoritative).
+ */
+function getProducibleColors(card: ControllerCard): ManaColor[] | 'flexible' | null {
+  const script = normalizeCardBehaviorToV2(
+    card.copied_script ?? card.cards?.script ?? null,
+    card.cards?.type_line,
+  )
+  const manaAbilities = script.activated_abilities?.filter((a) => a.is_mana_ability) ?? []
+  if (manaAbilities.length > 0) {
+    const colors = new Set<ManaColor>()
+    for (const ability of manaAbilities) {
+      for (const effect of ability.effects) {
+        if (!isAddManaBehaviorAction(effect)) continue
+        if (effect.color === 'any' || effect.color === 'commander') return 'flexible'
+        colors.add(effect.color as ManaColor)
+      }
+    }
+    if (colors.size > 1) return 'flexible'
+    if (colors.size === 1) return [...colors]
+  }
+  const tl = (card.cards?.type_line ?? '').toLowerCase()
+  const basics = Object.entries(BASIC_LAND_COLOR).filter(([sub]) => tl.includes(sub)).map(([, c]) => c)
+  if (basics.length > 1) return 'flexible'
+  if (basics.length === 1) return basics
+  return null
+}
+
+/**
+ * Colour-aware affordability: can `byColor` mana + `flexible` wildcard pips cover
+ * `cost`? Coloured pips are paid by matching colour first, then wildcards; the
+ * generic remainder from leftover colour mana + remaining wildcards. Mirrors the
+ * planner's `affordable()` with a wildcard pool for any/multi/unknown sources.
+ */
+function canAffordCost(cost: ParsedManaCost, byColor: Record<ManaColor, number>, flexible: number): boolean {
+  let wild = flexible
+  let leftover = 0
+  for (const c of manaColors) {
+    const need = cost.colored[c]
+    const have = byColor[c] ?? 0
+    if (have >= need) {
+      leftover += have - need
+    } else {
+      const short = need - have
+      if (wild < short) return false
+      wild -= short
+    }
+  }
+  return leftover + wild >= cost.generic
+}
+
+// Mirror of the engine's card_type_line_matches_filter: a trigger's payload
+// `target_filter` narrows legal targets by type line (Opportunistic Dragon:
+// Human or artifact). type_line_any = OR over substrings; type_line = one.
+type TargetTypeLineFilter = { type_line_any?: string[]; type_line?: string }
+function matchesTargetFilter(typeLine: string | null | undefined, filter: TargetTypeLineFilter | null | undefined): boolean {
+  if (!filter) return true
+  const tl = (typeLine ?? '').toLowerCase()
+  if (Array.isArray(filter.type_line_any)) return filter.type_line_any.some((w) => tl.includes(w.toLowerCase()))
+  if (typeof filter.type_line === 'string') return tl.includes(filter.type_line.toLowerCase())
+  return true
 }
 
 // The player's commander colour identity (W/U/B/R/G letters) from the mana symbols in
@@ -205,6 +307,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     players,
     turnState,
     attackTaxes,
+    commanderDamage,
     combatAssignments,
     stackItems,
     pendingDecisions,
@@ -222,6 +325,16 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
 
   const currentPlayer = players.find((p) => p.player_id === playerId) ?? null
   const opponentPlayers = players.filter((p) => p.player_id !== playerId)
+
+  // First-run onboarding coach: auto-open once per device, re-openable via the ?.
+  const [coachOpen, setCoachOpen] = useState(false)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !localStorage.getItem(COACH_SEEN_KEY)) setCoachOpen(true)
+  }, [])
+  const closeCoach = () => {
+    if (typeof window !== 'undefined') localStorage.setItem(COACH_SEEN_KEY, '1')
+    setCoachOpen(false)
+  }
   // Opening-hand phase — players who still have to keep. Legacy sessions (and
   // sessions not started via start_game_session) have opening_hand_kept
   // true/undefined for everyone, so the overlay never shows there.
@@ -262,6 +375,19 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
   ).length
   const floatingManaTotal = manaColors.reduce((sum, c) => sum + (manaPool[c] ?? 0), 0)
   const availableMana = untappedLandCount + floatingManaTotal
+  // Colour-aware availability for the hand "playable" hint: floating pool + each
+  // untapped land's producible colour (any/multi/unknown lands = wildcard pips).
+  const availableByColor = manaColors.reduce((acc, c) => {
+    acc[c] = manaPool[c] ?? 0
+    return acc
+  }, {} as Record<ManaColor, number>)
+  let flexibleMana = 0
+  for (const c of battlefieldCards) {
+    if (c.is_tapped || !c.cards?.type_line?.toLowerCase().includes('land')) continue
+    const colors = getProducibleColors(c)
+    if (colors === 'flexible' || colors === null) flexibleMana += 1
+    else availableByColor[colors[0]] += 1
+  }
   const topStackItem = pendingStackItems.slice().sort((a, b) => b.position - a.position)[0] ?? null
   const mustChooseTriggerTarget = Boolean(
     playerId &&
@@ -269,11 +395,14 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     topStackItem.controller_player_id === playerId &&
     topStackItem.payload?.target_required === true &&
     !topStackItem.payload?.target_card_id &&
-    boardCards.some(
-      (c) =>
-        c.type_line?.toLowerCase().includes('creature') &&
-        creatureMatchesController(c, playerId, topStackItem.payload?.target_controller as string | undefined),
-    ),
+    boardCards.some((c) => {
+      if (!creatureMatchesController(c, playerId, topStackItem.payload?.target_controller as string | undefined)) return false
+      const tt = topStackItem.payload?.target_type as string | string[] | undefined
+      const typeOk = isCreatureOnlyTargetType(tt)
+        ? (c.type_line?.toLowerCase().includes('creature') ?? false)
+        : cardMatchesTargetType(c.type_line, (tt ?? 'permanent') as string | string[])
+      return typeOk && matchesTargetFilter(c.type_line, topStackItem.payload?.target_filter as TargetTypeLineFilter | undefined)
+    }),
   )
 
   // A pending decision suspends the game (server blocks pass_priority too). The
@@ -339,6 +468,14 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       return next
     })
   }
+  // Mirror this player's auto-pass intent to the server so pass_priority can
+  // chain skips for them (pod auto-skip). Runs on load and whenever it changes.
+  useEffect(() => {
+    if (!playerId) return
+    syncAutoPassSettings(supabase, sessionId, autoPass).catch(() => {
+      /* non-fatal: server just won't auto-skip this player */
+    })
+  }, [autoPass, sessionId, playerId, supabase])
 
   // "Yield rest of turn": one-shot — pass every priority until your next turn.
   // Holds the turn_number it was armed on; cleared once it's your turn again or
@@ -394,11 +531,12 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     }
     if (!willPass) return
 
+    const beatMs = currentStackKey ? AUTOPASS_BEAT_STACK_MS : AUTOPASS_BEAT_EMPTY_MS
     const timer = setTimeout(() => {
       passPriorityAction(supabase, sessionId)
         .then(() => { ackStackKeyRef.current = currentStackKey; return refresh() })
         .catch(() => { /* lost a race to a state change; the next tick re-evaluates */ })
-    }, 700)
+    }, beatMs)
     return () => clearTimeout(timer)
   }, [autoPass, isYielding, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState, currentStackKey, iHaveResponse])
 
@@ -489,11 +627,37 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     await refresh()
   }
 
+  // Auto-pay: when the floating pool can't cover a spell's printed cost, tap
+  // enough untapped single-colour, cost-free sources to make up the difference
+  // before casting — so you can cast straight from hand without hand-tapping
+  // lands first. Skipped for {X} costs (the amount depends on the chosen X) and
+  // for anything the safe-greedy planner can't cover unambiguously, leaving
+  // those to manual tapping. Already-affordable casts tap nothing.
+  const autoPay = async (card: ControllerCard | null) => {
+    if (!card || !playerId) return
+    const manaCost = card.cards?.mana_cost ?? ''
+    if (/x/i.test(manaCost)) return
+    const sources: ManaSource[] = battlefieldCards.flatMap((c) => {
+      const m = getAutoTapMana(c)
+      return m ? [{ id: c.id, color: m.color, amount: m.amount }] : []
+    })
+    const plan = planAutoTap(parseManaCost(manaCost), manaPool, sources)
+    if (!plan || plan.length === 0) return
+    for (const tap of plan) {
+      await addManaFromCard({
+        supabase, cardId: tap.id, sessionId, playerId,
+        color: tap.color, amount: tap.amount, shouldTapCard: true,
+      })
+    }
+    await refresh()
+  }
+
   const actions = {
     passPriority: async () => { ackStackKeyRef.current = currentStackKey; await passPriorityAction(supabase, sessionId); await refresh() },
     advanceStep: async () => { await advanceStep(supabase, sessionId); await refresh() },
     // Plain cast — permanents and untargeted spells
     castSpell: async (cardId: string) => {
+      await autoPay(cards.find((c) => c.id === cardId) ?? null)
       await castCardFromHand(supabase, sessionId, cardId)
       await refresh()
     },
@@ -504,6 +668,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
     },
     // Aura cast — a permanent that enters attached to the chosen creature.
     castAura: async (cardId: string, targetCardId: string) => {
+      await autoPay(cards.find((c) => c.id === cardId) ?? null)
       await castCardFromHand(supabase, sessionId, cardId, undefined, targetCardId)
       await refresh()
     },
@@ -524,6 +689,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'damage') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await putDealDamagePlayerOnStack(supabase, sessionId, targetPlayerId, plan.amount, plan.timing, cardId, undefined, x)
       await refresh()
     },
@@ -533,6 +699,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'damage') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await putDealDamageCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController, x)
       await refresh()
     },
@@ -540,6 +707,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'pump') return
+      await autoPay(card)
       await putPumpCreatureOnStack(supabase, sessionId, targetCardId, plan.power, plan.toughness, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
@@ -547,6 +715,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'set_pt') return
+      await autoPay(card)
       await putSetPtCreatureOnStack(supabase, sessionId, targetCardId, plan.power, plan.toughness, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
@@ -556,6 +725,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'add_counters') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await putAddCountersCreatureOnStack(supabase, sessionId, targetCardId, plan.amount, plan.timing, cardId, undefined, plan.targetController, x, plan.counterType, plan.all)
       await refresh()
     },
@@ -564,6 +734,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'creature_effect') return
+      await autoPay(card)
       if (plan.effect === 'gain_control_creature') {
         await putGainControlCreatureOnStack(supabase, sessionId, targetCardId, plan.duration ?? 'permanent', plan.untap ?? false, plan.haste ?? false, plan.timing, cardId, undefined, plan.targetController)
       } else if (plan.keyword) {
@@ -578,6 +749,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'multi_creature' || targetCardIds.length === 0) return
+      await autoPay(card)
       await castMultiCreatureEffect(supabase, sessionId, plan.effectKind, targetCardIds, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
@@ -586,6 +758,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'permanent_effect') return
+      await autoPay(card)
       await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then, plan.controllerSearchesBasicLand)
       await refresh()
     },
@@ -594,6 +767,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'divided_damage' || allocations.length === 0) return
+      await autoPay(card)
       await castDividedDamage(supabase, sessionId, plan.amount, allocations, plan.timing, cardId, undefined, plan.targetController)
       await refresh()
     },
@@ -602,6 +776,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'fight') return
+      await autoPay(card)
       await castFight(supabase, sessionId, fighterCardId, foughtCardId, cardId, plan.foughtController)
       await refresh()
     },
@@ -612,6 +787,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'draw') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await putDrawCardsOnStack(supabase, sessionId, plan.amount, plan.timing, cardId, undefined, x)
       await refresh()
     },
@@ -623,6 +799,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       if (!card || plan?.kind !== 'spell_effect') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
       await castSpellEffect(supabase, sessionId, plan.actions, cardId, x)
       await refresh()
     },
@@ -631,11 +808,13 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'modal') return
+      await autoPay(card)
       await castModalSpell(supabase, sessionId, plan.modes, plan.choose, cardId)
       await refresh()
     },
     // Counterspell targeting a specific pending stack item
     counterSpell: async (cardId: string, stackItemId: string) => {
+      await autoPay(cards.find((c) => c.id === cardId) ?? null)
       await putCounterSpellOnStack(supabase, sessionId, stackItemId, cardId)
       await refresh()
     },
@@ -775,6 +954,8 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
               manaPool={manaPool}
               isActivePlayer={isActivePlayer}
               libraryCount={ownLibraryCount}
+              commanderDamage={playerId ? commanderDamage[playerId] : undefined}
+              onOpenHelp={() => setCoachOpen(true)}
             />
             {/* Command zone — cast your commander (sorcery speed) with live tax. */}
             {commandZone.length > 0 && (
@@ -817,12 +998,15 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
                 ownExile={ownExile}
                 canCastSorceries={canCastSorceries}
                 canCastInstants={canCastInstants}
-                availableMana={availableMana}
+                isActivePlayer={isActivePlayer}
+                availableByColor={availableByColor}
+                flexibleMana={flexibleMana}
                 canPlayLand={canPlayLand}
                 mustDiscard={mustDiscard}
                 discardCount={discardCount}
                 combatAssignments={combatAssignments}
                 attackTaxes={attackTaxes}
+                commanderDamage={commanderDamage}
                 turnState={turnState}
                 canOrderBlockers={canOrderBlockers}
                 onCardTap={setSelectedCard}
@@ -899,7 +1083,7 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
       {/* Opening-hand overlay — keep/mulligan until every player has kept */}
       {currentPlayer && playersNotKept.length > 0 && (
         <OpeningHandOverlay
-          handCards={handCards.map((c) => ({ id: c.id, name: c.name }))}
+          handCards={handCards.map((c) => ({ id: c.id, name: c.name, image_url: c.cards?.image_url ?? null }))}
           mulligans={currentPlayer.mulligans ?? 0}
           waitingFor={openingHandWaitingFor}
           kept={currentPlayer.opening_hand_kept !== false}
@@ -914,12 +1098,32 @@ export default function ControllerListV4({ sessionId }: { sessionId: string }) {
         />
       )}
 
+      {coachOpen && <ControllerCoachOverlay onClose={closeCoach} />}
+
       {errorMessage && (
         <div className="absolute inset-x-3 bottom-4 z-[60] rounded-lg border border-red-400/20 bg-red-950/90 p-3 text-xs text-red-100">
           {errorMessage}
         </div>
       )}
     </div>
+  )
+}
+
+// Commander damage taken (Commander: 21 from one commander is lethal). Shows the
+// worst single-commander total, coloured by danger; tooltip lists every source.
+function CommanderDamageBadge({ entries }: { entries: CommanderDamageEntry[] | undefined }) {
+  if (!entries || entries.length === 0) return null
+  const worst = Math.max(...entries.map((e) => e.damage))
+  const tone = worst >= 21 ? 'bg-red-500/30 text-red-200' : worst >= 15 ? 'bg-amber-500/20 text-amber-300' : 'text-orange-300'
+  return (
+    <span
+      className={`rounded px-1 text-[10px] font-black ${tone}`}
+      title={`Commander damage taken:\n${entries
+        .map((e) => `${e.name}: ${e.damage}/21${e.damage >= 21 ? ' — LETHAL' : ''}`)
+        .join('\n')}`}
+    >
+      ⚔{worst}
+    </span>
   )
 }
 
@@ -931,12 +1135,16 @@ function StatusBar({
   manaPool,
   isActivePlayer,
   libraryCount,
+  commanderDamage,
+  onOpenHelp,
 }: {
   currentPlayer: GameSessionPlayer | null
   turnState: GameTurnState | null
   manaPool: ManaPool
   isActivePlayer: boolean
   libraryCount: number
+  commanderDamage: CommanderDamageEntry[] | undefined
+  onOpenHelp: () => void
 }) {
   const currentGroupIdx = stepGroups.findIndex((g) =>
     g.steps.includes(turnState?.step as GameTurnState['step']),
@@ -993,6 +1201,7 @@ function StatusBar({
           <span className="text-[7px] uppercase tracking-wider text-slate-700">lib</span>
         </div>
         <span className="text-xl font-black leading-none text-white">{currentPlayer?.life_total ?? '—'}</span>
+        <CommanderDamageBadge entries={commanderDamage} />
         {formatCounterBag(currentPlayer?.counters).map(({ kind, n }) => (
           <span
             key={kind}
@@ -1002,6 +1211,15 @@ function StatusBar({
             {kind === 'poison' ? `☠${n}` : `${n} ${kind}`}
           </span>
         ))}
+        <button
+          type="button"
+          onClick={onOpenHelp}
+          aria-label="How to play"
+          title="How to use your controller"
+          className="ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] font-black text-slate-400 transition active:scale-95 hover:text-slate-200"
+        >
+          ?
+        </button>
       </div>
     </header>
   )
@@ -1024,13 +1242,16 @@ function MainArea({
   ownExile,
   canCastSorceries,
   canCastInstants,
-  availableMana,
+  isActivePlayer,
   canPlayLand,
   mustDiscard,
   discardCount,
   combatAssignments,
   turnState,
   attackTaxes,
+  commanderDamage,
+  availableByColor,
+  flexibleMana,
   canOrderBlockers,
   onCardTap,
   onTapForMana,
@@ -1054,13 +1275,16 @@ function MainArea({
   ownExile: ControllerCard[]
   canCastSorceries: boolean
   canCastInstants: boolean
-  availableMana: number
+  isActivePlayer: boolean
+  availableByColor: Record<ManaColor, number>
+  flexibleMana: number
   canPlayLand: boolean
   mustDiscard: boolean
   discardCount: number
   combatAssignments: CombatAssignment[]
   turnState: GameTurnState | null
   attackTaxes: { playerId: string; mana: number; life: number }[]
+  commanderDamage: Record<string, CommanderDamageEntry[]>
   canOrderBlockers: boolean
   onCardTap: (card: ControllerCard) => void
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
@@ -1079,6 +1303,9 @@ function MainArea({
   const [myZoneTab, setMyZoneTab] = useState<MyZoneTab>('graveyard')
   const [myZoneOpen, setMyZoneOpen] = useState(false)
   const [orderingAssignment, setOrderingAssignment] = useState<CombatAssignment | null>(null)
+  // Hold-to-peek: press & hold any card to read its full-size oracle text.
+  const [peekCard, setPeekCard] = useState<ControllerCard | null>(null)
+  const bindPeek = useLongPress()
 
   // Keep the ordering sheet's assignment fresh as combat data refreshes
   const orderingAssignmentLive = orderingAssignment
@@ -1120,6 +1347,18 @@ function MainArea({
       !c.cards?.type_line?.toLowerCase().includes('creature'),
   )
 
+  // Equipment/Auras attached to a permanent (game_cards.attached_to), grouped by
+  // host id, plus a name lookup so each tile can show what it's wearing / what
+  // it's attached to. Host may be an opponent's card (not in this set) → unnamed.
+  const attachmentsByHost = new Map<string, ControllerCard[]>()
+  for (const c of battlefieldCards) {
+    if (!c.attached_to) continue
+    const list = attachmentsByHost.get(c.attached_to) ?? []
+    list.push(c)
+    attachmentsByHost.set(c.attached_to, list)
+  }
+  const cardNameById = new Map(battlefieldCards.map((c) => [c.id, c.name]))
+
   const handleCardTap = (card: ControllerCard) => {
     const autoColor = getAutoTapColor(card)
     if (autoColor !== null) void onTapForMana(card.id, autoColor)
@@ -1128,6 +1367,11 @@ function MainArea({
 
   return (
     <main className="flex min-w-0 flex-1 flex-col">
+      {/* Hold-to-peek full-size card + oracle text (reuses the sheet's zoom). */}
+      <AnimatePresence>
+        {peekCard && <CardZoomOverlay card={peekCard} onClose={() => setPeekCard(null)} />}
+      </AnimatePresence>
+
       {/* ── Opponent pills ────────────────────────────────────────────── */}
       <div className="flex h-8 shrink-0 items-center gap-2 overflow-x-auto border-b border-[#1E2230] bg-[#09090D] px-3">
         {opponentPlayers.map((p) => {
@@ -1144,6 +1388,7 @@ function MainArea({
                 {p.username ?? `P${p.seat_number}`}
               </span>
               <span className="text-[9px] font-black text-white">♥{p.life_total}</span>
+              <CommanderDamageBadge entries={commanderDamage[p.player_id]} />
               {turnState?.monarch_player_id === p.player_id && (
                 <span className="text-[9px]" title="The monarch (draws at their end step; combat damage steals the crown)">👑</span>
               )}
@@ -1212,6 +1457,7 @@ function MainArea({
             key={card.id}
             type="button"
             onClick={() => handleCardTap(card)}
+            {...bindPeek(() => setPeekCard(card))}
             className="relative w-14 shrink-0 transition-transform active:scale-95"
           >
             <MotionCard
@@ -1222,6 +1468,24 @@ function MainArea({
             {getEffectivePT(card) && getEffectivePT(card) !== getPowerToughnessLabel(card) && (
               <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow ring-1 ring-black/40">
                 {getEffectivePT(card)}
+              </span>
+            )}
+            {/* Host: this permanent has Equipment/Auras attached to it. */}
+            {attachmentsByHost.has(card.id) && (
+              <span
+                className="absolute -top-1 -left-1 rounded-full bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-amber-950 shadow ring-1 ring-black/40"
+                title={`Attached: ${attachmentsByHost.get(card.id)!.map((a) => a.name).join(', ')}`}
+              >
+                📎{attachmentsByHost.get(card.id)!.length}
+              </span>
+            )}
+            {/* Attachment: this Equipment/Aura is attached to a host. */}
+            {card.attached_to && (
+              <span
+                className="absolute -top-1 -left-1 rounded-full bg-sky-500 px-1.5 py-0.5 text-[9px] font-black text-sky-950 shadow ring-1 ring-black/40"
+                title={`Attached to ${cardNameById.get(card.attached_to) ?? 'a permanent'}`}
+              >
+                🔗
               </span>
             )}
           </button>
@@ -1239,6 +1503,7 @@ function MainArea({
               key={card.id}
               type="button"
               onClick={() => handleCardTap(card)}
+              {...bindPeek(() => setPeekCard(card))}
               className="w-10 shrink-0 transition-transform active:scale-95"
             >
               <MotionCard
@@ -1272,6 +1537,7 @@ function MainArea({
                   key={card.id}
                   type="button"
                   onClick={() => void onDiscardCard(card.id)}
+                  {...bindPeek(() => setPeekCard(card))}
                   className="w-12 shrink-0 rounded-lg ring-1 ring-red-500/60 ring-offset-1 ring-offset-[#0C0E14] transition-all active:scale-95"
                 >
                   <MotionCard
@@ -1286,17 +1552,21 @@ function MainArea({
             const isLand = card.cards?.type_line?.toLowerCase().includes('land') ?? false
             const manaCost = parseManaCost(card.cards?.mana_cost)
             const totalCost = manaCost.generic + manaColors.reduce((sum, c) => sum + manaCost.colored[c], 0)
-            const canAfford = totalCost === 0 || availableMana >= totalCost
+            const canAfford = totalCost === 0 || canAffordCost(manaCost, availableByColor, flexibleMana)
             const playable = isLand
               ? canPlayLand
               : canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackItems.length) && canAfford
-            const hasPriorityWindow = canCastInstants || (canCastSorceries && isLand)
+            // Only invite plays on YOUR turn — a calm hand on opponents' turns.
+            // Instants stay castable by tapping a card (the server gates legality);
+            // this only suppresses the "playable" highlight.
+            const hasPriorityWindow = isActivePlayer && (canCastInstants || (canCastSorceries && isLand))
 
             return (
               <button
                 key={card.id}
                 type="button"
                 onClick={() => onCardTap(card)}
+                {...bindPeek(() => setPeekCard(card))}
                 className={`w-12 shrink-0 rounded-lg transition-all active:scale-95 ${
                   hasPriorityWindow
                     ? playable
@@ -1418,13 +1688,17 @@ function TargetedTriggerPrompt({
   // The trigger's target_type (creature by default, or a permanent type like
   // artifact/enchantment) decides which board cards are offered.
   const triggerTargetType = topItem.payload?.target_type as string | string[] | undefined
+  const triggerTargetFilter = topItem.payload?.target_filter as TargetTypeLineFilter | undefined
   const targetableCreatures = boardCards.filter((c) => {
     if (!creatureMatchesController(c, playerId, topItem.payload?.target_controller as string | undefined)) {
       return false
     }
-    return isCreatureOnlyTargetType(triggerTargetType)
+    const typeOk = isCreatureOnlyTargetType(triggerTargetType)
       ? (c.type_line?.toLowerCase().includes('creature') ?? false)
       : cardMatchesTargetType(c.type_line, (triggerTargetType ?? 'permanent') as string | string[])
+    // A type-line restriction (Opportunistic Dragon: Human or artifact) further
+    // narrows the offered permanents; the engine enforces the same filter.
+    return typeOk && matchesTargetFilter(c.type_line, triggerTargetFilter)
   })
   const multi = targetCount > 1
   const choose = async (targetCardId: string) => {
@@ -2951,12 +3225,18 @@ function DeclareAttackersLayout({
     ...opponentPlayers.map((p) => ({ kind: 'player' as const, id: p.player_id, label: p.username ?? `Player ${p.seat_number}`, sub: `♥ ${p.life_total}` })),
     ...opponentPlaneswalkers.map((pw) => ({ kind: 'planeswalker' as const, id: pw.id, label: pw.name, sub: `◆ ${pw.loyalty}` })),
   ]
+  type AttackTarget = { kind: 'player' | 'planeswalker'; id: string }
   const [selectedTargetId, setSelectedTargetId] = useState<string>(targets[0]?.id ?? '')
   const selectedTarget = targets.find((t) => t.id === selectedTargetId) ?? targets[0] ?? null
-  const [attackers, setAttackers] = useState<Set<string>>(new Set())
+  // Per-attacker assignment: each chosen creature → the target it attacks. Tap a
+  // creature to assign it to the currently-selected target; drag it onto a target
+  // pill to assign it there (see the drag-to-attack arrow below).
+  const [assign, setAssign] = useState<Map<string, AttackTarget>>(new Map())
   const [isPending, setIsPending] = useState(false)
   const [localError, setLocalError] = useState<string | null>(null)
-  const attackingCount = attackers.size
+  const attackingCount = assign.size
+  const targetLabel = (t: AttackTarget | undefined) =>
+    t ? (targets.find((x) => x.id === t.id)?.label ?? '?') : null
 
   const isAttackable = (card: ControllerCard) => {
     const turnNumber = turnState?.turn_number ?? 0
@@ -2971,27 +3251,74 @@ function DeclareAttackersLayout({
     return true
   }
 
+  const setAttacker = (cardId: string, target: AttackTarget) => {
+    const card = untappedCreatures.find((c) => c.id === cardId)
+    if (!card || !isAttackable(card)) return
+    setAssign((prev) => new Map(prev).set(cardId, target))
+  }
   const toggleAttacker = (cardId: string) => {
     const card = untappedCreatures.find((c) => c.id === cardId)
     if (!card || !isAttackable(card)) return
-    setAttackers((prev) => {
-      const next = new Set(prev)
+    setAssign((prev) => {
+      const next = new Map(prev)
       if (next.has(cardId)) next.delete(cardId)
-      else next.add(cardId)
+      else if (selectedTarget) next.set(cardId, { kind: selectedTarget.kind, id: selectedTarget.id })
       return next
     })
   }
 
+  // ── drag-to-attack: drag a creature onto a target pill to assign it there ──
+  const rootRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef<{ cardId: string; sx: number; sy: number; active: boolean } | null>(null)
+  const suppressClick = useRef<Set<string>>(new Set())
+  const [arrow, setArrow] = useState<{ sx: number; sy: number; x: number; y: number } | null>(null)
+  const [dropTargetId, setDropTargetId] = useState<string | null>(null)
+
+  const onCardPointerDown = (e: React.PointerEvent, card: ControllerCard) => {
+    // Drop any stale suppress flag from a drag that ended off this card.
+    suppressClick.current.delete(card.id)
+    if (!isAttackable(card)) return
+    const root = rootRef.current?.getBoundingClientRect()
+    const btn = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    if (!root) return
+    dragRef.current = { cardId: card.id, sx: btn.left + btn.width / 2 - root.left, sy: btn.top + btn.height / 2 - root.top, active: false }
+  }
+  const onRootPointerMove = (e: React.PointerEvent) => {
+    const d = dragRef.current
+    if (!d) return
+    const root = rootRef.current?.getBoundingClientRect()
+    if (!root) return
+    const x = e.clientX - root.left, y = e.clientY - root.top
+    if (!d.active && Math.hypot(x - d.sx, y - d.sy) > 12) d.active = true
+    if (!d.active) return
+    setArrow({ sx: d.sx, sy: d.sy, x, y })
+    const pill = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.closest('[data-atk-target]') as HTMLElement | null
+    setDropTargetId(pill?.dataset.atkTarget ?? null)
+  }
+  const onRootPointerUp = () => {
+    const d = dragRef.current
+    if (d?.active) {
+      // Swallow the click that follows so the creature's tap-toggle doesn't fire.
+      suppressClick.current.add(d.cardId)
+      const t = dropTargetId ? targets.find((x) => x.id === dropTargetId) : null
+      if (t) setAttacker(d.cardId, { kind: t.kind, id: t.id })
+    }
+    dragRef.current = null
+    setArrow(null)
+    setDropTargetId(null)
+  }
+  const onCardClick = (cardId: string) => {
+    if (suppressClick.current.has(cardId)) { suppressClick.current.delete(cardId); return }
+    toggleAttacker(cardId)
+  }
+
   const submit = async () => {
-    if (!selectedTarget) return
+    if (assign.size === 0) return
     setIsPending(true)
     setLocalError(null)
     try {
-      const target = selectedTarget.kind === 'planeswalker'
-        ? { planeswalkerId: selectedTarget.id }
-        : { playerId: selectedTarget.id }
-      for (const cardId of attackers) {
-        await onDeclareAttacker(cardId, target)
+      for (const [cardId, t] of assign) {
+        await onDeclareAttacker(cardId, t.kind === 'planeswalker' ? { planeswalkerId: t.id } : { playerId: t.id })
       }
       // Pass priority — the step advances automatically when both players pass
       await onPassPriority()
@@ -3009,7 +3336,27 @@ function DeclareAttackersLayout({
   }
 
   return (
-    <div className="flex h-[100svh] flex-col bg-[#0F1117]">
+    <div
+      ref={rootRef}
+      onPointerMove={onRootPointerMove}
+      onPointerUp={onRootPointerUp}
+      onPointerLeave={onRootPointerUp}
+      className="relative flex h-[100svh] flex-col bg-[#0F1117]"
+    >
+      {/* Drag-to-attack arrow — from the dragged creature to the pointer. */}
+      {arrow && (
+        <svg className="pointer-events-none absolute inset-0 z-50 h-full w-full">
+          <defs>
+            <marker id="atk-arrowhead" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto">
+              <path d="M0,0 L9,4.5 L0,9 Z" fill="#D4591A" />
+            </marker>
+          </defs>
+          <line
+            x1={arrow.sx} y1={arrow.sy} x2={arrow.x} y2={arrow.y}
+            stroke="#D4591A" strokeWidth="4" strokeLinecap="round" markerEnd="url(#atk-arrowhead)"
+          />
+        </svg>
+      )}
       {/* Banner */}
       <div className="flex h-9 shrink-0 items-center justify-between border-b-2 border-[#D4591A] bg-[#120905] px-4">
         <div className="flex items-center gap-2">
@@ -3036,9 +3383,12 @@ function DeclareAttackersLayout({
                 <button
                   key={t.id}
                   type="button"
+                  data-atk-target={t.id}
                   onClick={() => setSelectedTargetId(t.id)}
                   className={`flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 transition active:scale-95 ${
-                    active ? 'border-[#D4591A] bg-[#D4591A]/10' : 'border-[#2A2D38] bg-[#131720]'
+                    dropTargetId === t.id
+                      ? 'border-[#D4591A] bg-[#D4591A]/25 ring-2 ring-[#D4591A]'
+                      : active ? 'border-[#D4591A] bg-[#D4591A]/10' : 'border-[#2A2D38] bg-[#131720]'
                   }`}
                 >
                   <span className="text-[8px] uppercase tracking-wider text-slate-500">{t.kind === 'planeswalker' ? 'PW' : 'Player'}</span>
@@ -3058,13 +3408,16 @@ function DeclareAttackersLayout({
         ) : (
           untappedCreatures.map((card) => {
             const attackable = isAttackable(card)
-            const isAttacking = attackers.has(card.id)
+            const assignedTo = assign.get(card.id)
+            const isAttacking = !!assignedTo
             return (
               <motion.button
                 key={card.id}
                 type="button"
-                onClick={() => toggleAttacker(card.id)}
+                onPointerDown={(e) => onCardPointerDown(e, card)}
+                onClick={() => onCardClick(card.id)}
                 whileTap={attackable ? { scale: 0.94 } : {}}
+                style={{ touchAction: 'pan-x' }}
                 className={`relative flex w-[72px] shrink-0 flex-col items-center gap-1 rounded-xl border-2 p-1.5 transition-colors ${
                   !attackable
                     ? 'border-[#1C2030] bg-[#0C0F14] opacity-45'
@@ -3074,8 +3427,8 @@ function DeclareAttackersLayout({
                 }`}
               >
                 {isAttacking && (
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-[#D4591A] px-1.5 py-0.5">
-                    <span className="text-[7px] font-black uppercase text-white">Atk</span>
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#D4591A] px-1.5 py-0.5">
+                    <span className="text-[7px] font-black uppercase text-white">→ {targetLabel(assignedTo)}</span>
                   </div>
                 )}
                 {!attackable && (
@@ -3104,7 +3457,7 @@ function DeclareAttackersLayout({
                   </span>
                 )}
                 {attackable && !isAttacking && (
-                  <span className="text-[8px] text-slate-600">Tap to attack</span>
+                  <span className="text-[8px] text-slate-600">Tap / drag ↑</span>
                 )}
               </motion.button>
             )

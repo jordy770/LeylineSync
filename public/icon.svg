@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LeylineSync">
+  <!-- Full-bleed background so the icon is maskable-safe -->
+  <rect width="512" height="512" fill="#0F1117"/>
+  <defs>
+    <linearGradient id="ley" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5EE6C7"/>
+      <stop offset="1" stop-color="#6C8CFF"/>
+    </linearGradient>
+  </defs>
+  <!-- Ley lines converging on a node, inside the ~80% maskable safe zone -->
+  <g stroke="url(#ley)" stroke-width="16" stroke-linecap="round" fill="none" opacity="0.95">
+    <path d="M256 96 V200"/>
+    <path d="M256 312 V416"/>
+    <path d="M124 170 L214 222"/>
+    <path d="M298 290 L388 342"/>
+    <path d="M124 342 L214 290"/>
+    <path d="M298 222 L388 170"/>
+  </g>
+  <circle cx="256" cy="256" r="46" fill="url(#ley)"/>
+  <circle cx="256" cy="256" r="46" fill="none" stroke="#0F1117" stroke-width="10"/>
+</svg>

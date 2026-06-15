@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LeylineSync · Controller Concepts (Set 1)</title>
+<link rel="stylesheet" href="controller-base.css" />
+<style>
+  /* ============ A — ARCANE CONSOLE (obsidian + neon leyline glow) ============ */
+  [data-theme="arcane"] {
+    --font-ui: var(--sans); --font-num: var(--mono);
+    --screen-bg:
+      radial-gradient(circle at 50% -10%, rgba(56,189,248,.16), transparent 55%),
+      radial-gradient(circle at 85% 120%, rgba(139,92,246,.18), transparent 50%),
+      linear-gradient(160deg, #06070d 0%, #0a0f1c 55%, #060810 100%);
+    --ink: #d8e6f5; --muted: #5f7da0;
+    --bar-bg: rgba(8,12,22,.7); --bar-ink: #d8e6f5; --bar-border: 1px solid rgba(92,201,245,.16);
+    --accent: #5cc9f5; --accent-ink: #03121c; --prio: linear-gradient(180deg,#fcd34d,#f59e0b); --prio-ink: #03121c;
+    --good: #34d399; --danger: #f87171; --radius: 11px;
+    --card-bg: linear-gradient(160deg,rgba(30,41,70,.92),rgba(12,18,34,.95)); --card-ink: #cfe6fb;
+    --card-border: 1px solid rgba(120,200,255,.22); --card-shadow: 0 6px 16px rgba(0,0,0,.5), inset 0 0 14px rgba(56,189,248,.06);
+    --card-banner: rgba(8,16,30,.6); --card-art: linear-gradient(160deg,#21406b,#10203a);
+    --card-pt-bg: rgba(4,12,22,.8); --card-pt-ink: #7ee0ff;
+    --land-art: linear-gradient(160deg,rgba(20,30,52,.9),rgba(10,16,30,.95)); --land-border: 1px solid rgba(92,201,245,.22);
+    --panel-bg: rgba(12,18,34,.85); --panel-border: 1px solid rgba(92,201,245,.22); --panel-ink: #cfe6fb;
+    --zbtn-bg: rgba(15,23,42,.7); --zbtn-border: 1px solid rgba(148,163,184,.22); --zbtn-ink: #aecbe6;
+  }
+  [data-theme="arcane"] .topbar, [data-theme="arcane"] .sheet, [data-theme="arcane"] .prompt,
+  [data-theme="arcane"] .opp, [data-theme="arcane"] .autopass { backdrop-filter: blur(12px); }
+  [data-theme="arcane"] .pill.on { box-shadow: 0 0 14px rgba(56,189,248,.55); }
+
+  /* ============ B — TACTILE DECK (felt, leather, gold leaf) ============ */
+  [data-theme="tactile"] {
+    --font-ui: Georgia, "Times New Roman", serif; --font-num: Georgia, serif;
+    --screen-bg:
+      radial-gradient(circle at 50% 0%, rgba(20,60,45,.7), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(0,0,0,.04) 0 2px, transparent 2px 4px),
+      linear-gradient(160deg, #14271d 0%, #0d1c15 50%, #0a1610 100%);
+    --ink: #ecdfc4; --muted: #8a7a58;
+    --bar-bg: linear-gradient(180deg,#1f1812,#160f0a); --bar-ink: #f0e6cf; --bar-border: 2px solid #3c2c1c;
+    --accent: linear-gradient(180deg,#f3d77a,#c89b2c); --accent-ink: #2a1d0e; --prio: linear-gradient(180deg,#f3d77a,#c89b2c); --prio-ink: #2a1d0e;
+    --good: #f3e7c8; --danger: #b9442f; --radius: 9px;
+    --card-bg: linear-gradient(165deg,#f3e9cf,#d9c79c); --card-ink: #3a2c14; --card-border: 1px solid #8a6a3a;
+    --card-shadow: 0 4px 10px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.6);
+    --card-banner: rgba(120,90,40,.18); --card-art: linear-gradient(160deg,#caa86a,#8a6a3a);
+    --card-pt-bg: rgba(255,255,255,.6); --card-pt-ink: #2a1d0e;
+    --land-art: linear-gradient(165deg,#2e4a32,#1d3322); --land-border: 1px solid #d4af37;
+    --panel-bg: linear-gradient(180deg,#241b12,#160f0a); --panel-border: 1px solid #4a3622; --panel-ink: #e7d6ad;
+    --zbtn-bg: linear-gradient(180deg,#2a2016,#1a130c); --zbtn-border: 1px solid #4a3622; --zbtn-ink: #d9c79c;
+  }
+  [data-theme="tactile"] .pill.on, [data-theme="tactile"] .pbtn.main { box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 3px 6px rgba(0,0,0,.5); border-radius: 6px; }
+  [data-theme="tactile"] .life::before { content: "♥ "; color: #b9442f; }
+
+  /* ============ C — CLEAN HUD (flat, high-contrast, color-coded) ============ */
+  [data-theme="hud"] {
+    --font-ui: var(--sans); --font-num: var(--mono);
+    --screen-bg: #0b0d12; --ink: #e8edf5; --muted: #586379;
+    --bar-bg: #11141c; --bar-ink: #e8edf5; --bar-border: 2px solid #5cc9f5;
+    --accent: #5cc9f5; --accent-ink: #07090d; --prio: #f5b942; --prio-ink: #1a1205;
+    --good: #7fffb0; --danger: #e8826c; --radius: 4px;
+    --card-bg: #161a24; --card-ink: #d4dbe6; --card-border: 1px solid #2a3040; --card-radius: 4px;
+    --card-shadow: none; --card-banner: #11141c; --card-art: linear-gradient(160deg,#222a3a,#161c28);
+    --card-pt-bg: #07090d; --card-pt-ink: #fff;
+    --land-art: #161a24; --land-border: 1px solid #2a3040;
+    --panel-bg: #11141c; --panel-border: 1px solid #2a3040; --panel-ink: #e8edf5;
+    --zbtn-bg: #161a24; --zbtn-border: 1px solid #2a3040; --zbtn-ink: #aab4c6;
+  }
+  [data-theme="hud"] .card { border-top: 3px solid #7fc08a; }
+  [data-theme="hud"] .card.attacking { border-top-color: #e8826c; }
+  [data-theme="hud"] .land { border-top: 3px solid #5cc9f5; }
+  [data-theme="hud"] .phase-pills .pill { border-radius: 0; text-transform: uppercase; }
+  [data-theme="hud"] .pill.on { border-radius: 0; }
+  [data-theme="hud"] .opp { border-left: 3px solid #586379; } [data-theme="hud"] .opp.threat { border-left-color: #e8826c; }
+</style>
+</head>
+<body>
+  <div class="page-head">
+    <h1><span class="star">✳</span> Controller Concepts — Set 1</h1>
+    <p>High-fidelity rebuild: real card frames, mana pips, a full priority cluster, action sheet &amp; a Scry prompt. Click cards, lands, zone <b>Library</b> (→ Scry), <b>⚙</b> (auto-pass), Hold &amp; Pass. &nbsp;<a href="controller-concepts-2.html">bold set →</a></p>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-go="arcane">Arcane Console <small>obsidian · neon glow</small></button>
+    <button class="tab" data-go="tactile">Tactile Deck <small>felt · leather · gold</small></button>
+    <button class="tab" data-go="hud">Clean HUD <small>flat · color-coded</small></button>
+  </div>
+  <div class="stage">
+    <div class="device">
+      <div class="screen active" data-theme="arcane" id="screen-arcane"></div>
+      <div class="screen" data-theme="tactile" id="screen-tactile"></div>
+      <div class="screen" data-theme="hud" id="screen-hud"></div>
+    </div>
+    <div class="caption" id="caption"></div>
+  </div>
+  <script>
+    window.CAPTIONS = {
+      arcane: "Arcane Console — glassmorphism + electric cyan ambience. Real card frames (banner · art · type · P/T), pips in the pool & costs, gold pulsing priority. Tapped cards & lands rotate 90°.",
+      tactile: "Tactile Deck — card-stock permanents on green felt, leather panels, gold-leaf accents. Serif type, embossed buttons. Warm and physical for couch play.",
+      hud: "Clean HUD — flat tiles, color-coded top borders (creatures green / lands cyan / attackers red), mono numerics. The same realistic anatomy, stripped of chrome for fast reads.",
+    };
+  </script>
+  <script src="controller-base.js"></script>
+</body>
+</html>

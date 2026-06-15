@@ -8,6 +8,7 @@ import {
   getBoardCards,
   getCombatActionState,
   getCombatAssignments,
+  getCommanderDamage,
   getControllerCards,
   getCurrentPlayerId,
   getGameSession,
@@ -21,6 +22,7 @@ import {
   normalizeManaPool,
 } from './data'
 import { enableFallbackRefresh, fallbackRefreshIntervalMs } from './dev'
+import type { CommanderDamageEntry } from './data'
 import type {
   BoardCard,
   CombatActionState,
@@ -40,6 +42,7 @@ export function useControllerGameState(sessionId: string) {
   const [players, setPlayers] = useState<GameSessionPlayer[]>([])
   const [turnState, setTurnState] = useState<GameTurnState | null>(null)
   const [attackTaxes, setAttackTaxes] = useState<{ playerId: string; mana: number; life: number }[]>([])
+  const [commanderDamage, setCommanderDamage] = useState<Record<string, CommanderDamageEntry[]>>({})
   const [combatActionState, setCombatActionState] = useState<CombatActionState | null>(null)
   const [combatAssignments, setCombatAssignments] = useState<CombatAssignment[]>([])
   const [stackItems, setStackItems] = useState<StackItem[]>([])
@@ -77,6 +80,7 @@ export function useControllerGameState(sessionId: string) {
         pumpTotals,
         protectionColors,
         statusEffects,
+        nextCommanderDamage,
       ] = await Promise.all([
         getGameSession(supabase, sessionId),
         getControllerCards(supabase, sessionId, currentPlayerId),
@@ -91,6 +95,7 @@ export function useControllerGameState(sessionId: string) {
         getActivePumpTotals(supabase, sessionId),
         getProtectionColors(supabase, sessionId),
         getStatusEffects(supabase, sessionId),
+        getCommanderDamage(supabase, sessionId),
       ])
 
       // Fold active until-end-of-turn pumps onto each card so effective P/T shows
@@ -109,6 +114,7 @@ export function useControllerGameState(sessionId: string) {
         })),
       )
       setAttackTaxes(statusEffects.taxes)
+      setCommanderDamage(nextCommanderDamage)
       setPlayers(sessionPlayers)
       setTurnState(nextTurnState)
       setCombatActionState(nextCombatActionState)
@@ -144,6 +150,7 @@ export function useControllerGameState(sessionId: string) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, loadControllerState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers' }, loadControllerState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, loadControllerState)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_commander_damage', filter: `session_id=eq.${sessionId}` }, loadControllerState)
       .subscribe((status, error) => {
         console.log('Controller v2 realtime status:', status)
         if (error) {
@@ -170,6 +177,7 @@ export function useControllerGameState(sessionId: string) {
     players,
     turnState,
     attackTaxes,
+    commanderDamage,
     combatActionState,
     combatAssignments,
     stackItems,

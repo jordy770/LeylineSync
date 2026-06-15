@@ -5,10 +5,13 @@ import { createClient } from '@/lib/supabase/client'
 import {
   getBoardCards,
   getCombatAssignments,
+  getCommanderDamage,
   getGameSessionPlayers,
   getStackItems,
+  getStatusEffects,
   getTurnState,
 } from './data'
+import type { CommanderDamageEntry } from './data'
 import { enableFallbackRefresh, fallbackRefreshIntervalMs } from './dev'
 import type {
   BoardCard,
@@ -25,25 +28,33 @@ export function useBoardGameState(sessionId: string) {
   const [turnState, setTurnState] = useState<GameTurnState | null>(null)
   const [combatAssignments, setCombatAssignments] = useState<CombatAssignment[]>([])
   const [stackItems, setStackItems] = useState<StackItem[]>([])
+  const [attackTaxes, setAttackTaxes] = useState<{ playerId: string; mana: number; life: number }[]>([])
+  const [commanderDamage, setCommanderDamage] = useState<Record<string, CommanderDamageEntry[]>>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
     try {
-      const [boardCards, sessionPlayers, nextTurnState, nextCombatAssignments, nextStackItems] =
+      const [boardCards, sessionPlayers, nextTurnState, nextCombatAssignments, nextStackItems, status, nextCommanderDamage] =
         await Promise.all([
           getBoardCards(supabase, sessionId),
           getGameSessionPlayers(supabase, sessionId),
           getTurnState(supabase, sessionId),
           getCombatAssignments(supabase, sessionId),
           getStackItems(supabase, sessionId),
+          getStatusEffects(supabase, sessionId),
+          getCommanderDamage(supabase, sessionId),
         ])
 
       setErrorMessage(null)
-      setCards(boardCards)
+      // Fold the 'animated' status (mig 277) onto each card so the board can
+      // badge animated lands without a second lookup.
+      setCards(boardCards.map((c) => (status.animatedIds.has(c.id) ? { ...c, animated: true } : c)))
       setPlayers(sessionPlayers)
       setTurnState(nextTurnState)
       setCombatAssignments(nextCombatAssignments)
       setStackItems(nextStackItems)
+      setAttackTaxes(status.taxes)
+      setCommanderDamage(nextCommanderDamage)
     } catch (error) {
       console.error('Failed to fetch board state:', error)
       setErrorMessage(error instanceof Error ? error.message : 'Could not load board state')
@@ -61,6 +72,8 @@ export function useBoardGameState(sessionId: string) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_session_players', filter: `session_id=eq.${sessionId}` }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers' }, refresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, refresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_commander_damage', filter: `session_id=eq.${sessionId}` }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_stack_items', filter: `session_id=eq.${sessionId}` }, refresh)
       .subscribe((status, error) => {
         console.log('Board realtime status:', status)
@@ -87,6 +100,8 @@ export function useBoardGameState(sessionId: string) {
     turnState,
     combatAssignments,
     stackItems,
+    attackTaxes,
+    commanderDamage,
     errorMessage,
     refresh,
   }

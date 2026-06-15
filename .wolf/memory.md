@@ -4198,3 +4198,334 @@
 | 22:01 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→3 lines | ~50 |
 | 00:55 | URIANGER (mig 307) — cast_from_exile event. cast_card_from_hand + cast_spell_effect fire a 'cast_from_exile' watcher when the source's ORIGINAL zone was exile (Adventures/impulse); fire_watcher_triggers type-filter defaults it to '' (any card). Urianger Augurelt: "whenever you cast a spell from exile, gain 2 life." PARTIAL — Draw Arcanum / Play Arcanum (the multi-card exile-tag economy) + the land-from-exile case OMITTED. BUG fixed: v_card is overwritten to zone='stack' by the stack-move RETURNING, so captured v_cast_zone BEFORE the move; ALSO the migration was generated before the canonical edit (stale) — regenerated. Test URI1 (cast creature from exile w/ permission → +2 life). FULL SUITE 1503/1503, tsc clean. *** ALL 71 needs-building Scions cards now addressed: ~28 functional + documented partials (Mog II/III, Emet recast, Epiphany counter modes, Champions Full Party, Observed Stasis lose-abilities/ETB, Urianger Draw/Play Arcanum). 16 engine migrations 292-307 *** | cast_card_from_hand.sql, cast_spell_effect.sql, fire_watcher_triggers.sql, mig 307, card-scripts.json, urianger.test.ts, test-cards.json | 1503/1503 green | ~16k |
 | 22:05 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 39 reads | ~197690 tok |
+| 23:44 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 39 reads | ~197690 tok |
+| 01:21 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 39 reads | ~197690 tok |
+| 01:26 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 40 reads | ~197690 tok |
+| 01:35 | Pencil: refined controller view -> "premium table" variant (felt+walnut+gold) | docs/leylinesync_pencil.pen (frame FxWj8) | new frame next to Mobile Landscape v2 | ~16k |
+| 01:36 | Session end: 112 writes across 42 files (cast_spell_effect.sql, advance_step.sql, card-behavior-schema.ts, 202605010295_adventures.sql, scenario.ts) | 40 reads | ~197690 tok |
+
+## Session: 2026-06-14 12:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-14 12:44
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:38 | Created lib/game/auto-tap.ts | — | ~682 |
+| 17:38 | Edited components/ControllerListV4.tsx | CSS: color, amount, amount | ~405 |
+| 17:38 | Edited components/ControllerListV4.tsx | added 1 import(s) | ~33 |
+| 17:39 | Edited components/ControllerListV4.tsx | added optional chaining | ~377 |
+| 17:39 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~71 |
+| 17:39 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~69 |
+| 17:39 | Edited components/ControllerListV4.tsx | modified if() | ~82 |
+| 17:39 | Edited components/ControllerListV4.tsx | modified if() | ~76 |
+| 17:39 | Edited components/ControllerListV4.tsx | 2→3 lines | ~45 |
+| 17:39 | Edited components/ControllerListV4.tsx | 2→3 lines | ~51 |
+| 17:39 | Edited components/ControllerListV4.tsx | 2→3 lines | ~70 |
+| 17:40 | Edited components/ControllerListV4.tsx | modified if() | ~89 |
+| 17:40 | Edited components/ControllerListV4.tsx | modified if() | ~95 |
+| 17:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~65 |
+| 17:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~66 |
+| 17:40 | Edited components/ControllerListV4.tsx | modified if() | ~105 |
+| 17:40 | Edited components/ControllerListV4.tsx | modified if() | ~40 |
+| 17:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~74 |
+| 17:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~82 |
+| 17:41 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~68 |
+| 17:41 | Created tests/unit/auto-tap.test.ts | — | ~808 |
+| 17:42 | Edited lib/game/auto-tap.ts | 3→2 lines | ~31 |
+| 17:43 | Auto-pay: tap untapped single-colour cost-free sources before casting when pool is short | lib/game/auto-tap.ts, components/ControllerListV4.tsx, tests/unit/auto-tap.test.ts | 8 unit tests pass, tsc+eslint clean | ~9k |
+| 17:44 | Session end: 22 writes across 3 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts) | 4 reads | ~59660 tok |
+| 17:53 | Session end: 22 writes across 3 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts) | 4 reads | ~59660 tok |
+| 17:55 | Edited next.config.ts | 5→7 lines | ~107 |
+| 17:55 | Session end: 23 writes across 4 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts) | 5 reads | ~60112 tok |
+| 18:05 | Session end: 23 writes across 4 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts) | 5 reads | ~60112 tok |
+| 18:19 | Created ../../.cloudflared/config.yml | — | ~181 |
+| 18:19 | Session end: 24 writes across 5 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 5 reads | ~60293 tok |
+| 18:23 | Session end: 24 writes across 5 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 5 reads | ~60293 tok |
+| 18:29 | Created public/icon.svg | — | ~255 |
+| 18:31 | Created app/manifest.ts | — | ~298 |
+| 18:32 | Edited app/layout.tsx | 2→2 lines | ~26 |
+| 18:32 | Edited app/layout.tsx | expanded (+14 lines) | ~177 |
+| 18:32 | Created app/controller/[id]/ControllerFullscreen.tsx | — | ~416 |
+| 18:32 | Edited app/controller/[id]/page.tsx | added 1 import(s) | ~37 |
+| 18:32 | Edited app/controller/[id]/page.tsx | 2→3 lines | ~41 |
+| --:-- | Remove mobile URL bar for phone controllers: PWA manifest (standalone) + iOS appleWebApp meta + viewport-fit cover + Android tap-to-fullscreen; controller already used svh so layout was fine | app/manifest.ts, app/layout.tsx, app/controller/[id]/page.tsx, app/controller/[id]/ControllerFullscreen.tsx, public/icon.svg | tsc+eslint clean | ~4k |
+| 18:33 | Session end: 31 writes across 10 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 7 reads | ~61561 tok |
+| 18:50 | Created supabase/functions_src/spawn_deck_for_session.sql | — | ~998 |
+| 18:50 | Created supabase/functions_src/commander_deck_legality.sql | — | ~806 |
+| 18:51 | Edited supabase/migrations/202605010308_precon_decks.sql | modified public() | ~427 |
+| 18:51 | Edited lib/game/data.ts | added nullish coalescing | ~210 |
+| 18:51 | Edited components/GameSessionLobby.tsx | 5→6 lines | ~37 |
+| 18:51 | Edited components/GameSessionLobby.tsx | 1→2 lines | ~38 |
+| 18:52 | Edited components/GameSessionLobby.tsx | 5→6 lines | ~80 |
+| 18:52 | Edited components/GameSessionLobby.tsx | modified if() | ~120 |
+| 18:52 | Edited components/GameSessionLobby.tsx | expanded (+15 lines) | ~396 |
+| 18:52 | Edited components/GameSessionLobby.tsx | 3→3 lines | ~56 |
+| 18:53 | Edited lib/game/actions.ts | modified spawnDeckForSession() | ~200 |
+| 18:53 | Edited components/GameSessionLobby.tsx | 2→3 lines | ~50 |
+| 18:54 | Created scripts/seed-precon-decks.mjs | — | ~1759 |
+| 18:54 | Edited package.json | 2→3 lines | ~40 |
+| 18:55 | Edited tests/harness/scenario.ts | modified createPreconDeck() | ~228 |
+| 18:55 | Created tests/feature/precon-decks.test.ts | — | ~762 |
+| 18:05 | Shared/global precon decks: is_precon column + RLS + spawn/legality lookup relaxed; lobby shows "Precons" optgroup; seeding script | mig 308, functions_src/{spawn_deck_for_session,commander_deck_legality}.sql, lib/game/{data,actions}.ts, GameSessionLobby.tsx, scripts/seed-precon-decks.mjs, tests/feature/precon-decks.test.ts | 15 feature tests pass, tsc+eslint clean, dry-run found 4 complete decks | ~30k |
+| 18:58 | Session end: 47 writes across 20 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 16 reads | ~87715 tok |
+| 19:11 | Edited scripts/seed-precon-decks.mjs | 3→6 lines | ~96 |
+| 19:11 | Edited scripts/seed-precon-decks.mjs | added 1 condition(s) | ~74 |
+| 18:20 | Normalized 6 precon decklists (comment category headers; canonical "Front // Back" for split/DFC/adventure cards) → 10/11 now catalog-complete (was 4); seeding script disambiguates duplicate commander names | docs/commander-decks/*.txt, scripts/seed-precon-decks.mjs | dry-run: 10 complete, only empty GraveDanger skipped | ~6k |
+| 19:13 | Session end: 49 writes across 20 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 16 reads | ~87898 tok |
+| 19:47 | Created app/controller/[id]/AddToHomeScreen.tsx | — | ~1044 |
+| 19:47 | Edited app/controller/[id]/page.tsx | added 1 import(s) | ~31 |
+| 19:47 | Edited app/controller/[id]/page.tsx | 2→3 lines | ~25 |
+| --:-- | Add A2HS nudge: dismissible bottom banner, Android beforeinstallprompt Install button + iOS Safari Share instructions, hidden in standalone/after dismiss (localStorage); mounted in controller page | app/controller/[id]/AddToHomeScreen.tsx, app/controller/[id]/page.tsx | tsc+eslint clean | ~2k |
+| 19:47 | Session end: 52 writes across 21 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 16 reads | ~89395 tok |
+| 19:53 | Edited proxy.ts | 4→6 lines | ~108 |
+| --:-- | Run on cloudflare tunnel (app.dweemo.nl): dev+tunnel already up. Fixed manifest auth-gating (proxy.ts matcher missing .webmanifest -> 307 to login -> install would fail). Tunnel is behind Cloudflare Access which gates everything incl. manifest (credential-less fetch) — flagged to user, needs Access bypass policy for real-device install. | proxy.ts | local manifest 200; tunnel behind Access | ~3k |
+| 19:55 | Session end: 53 writes across 22 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 18 reads | ~89503 tok |
+| 20:03 | Edited app/manifest.ts | 14→9 lines | ~169 |
+| 20:04 | Created public/sw.js | — | ~212 |
+| 20:04 | Created app/ServiceWorkerRegister.tsx | — | ~161 |
+| 20:04 | Edited app/layout.tsx | added 1 import(s) | ~37 |
+| 20:04 | Edited app/layout.tsx | 3→4 lines | ~26 |
+| 20:04 | Edited proxy.ts | 5→7 lines | ~133 |
+| --:-- | Fix "no install option": added service worker (public/sw.js passthrough) + ServiceWorkerRegister in root layout (Chrome needs SW+fetch handler for beforeinstallprompt); generated icon-192/512.png via sharp + referenced in manifest; exempted sw.js from proxy.ts matcher (was 307->login). Local: sw.js+manifest 200. Tunnel: Cloudflare Access still gates credential-less manifest fetch. | public/sw.js, app/ServiceWorkerRegister.tsx, app/layout.tsx, app/manifest.ts, proxy.ts, public/icon-192.png, public/icon-512.png | tsc+eslint clean | ~5k |
+| 20:10 | Session end: 59 writes across 24 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 18 reads | ~90241 tok |
+| 20:15 | Session end: 59 writes across 24 files (auto-tap.ts, ControllerListV4.tsx, auto-tap.test.ts, next.config.ts, config.yml) | 18 reads | ~90241 tok |
+
+## Session: 2026-06-14 20:43
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 20:54 | Edited components/ControllerListV4.tsx | CSS: fast, AUTOPASS_DEFAULT | ~252 |
+| 20:54 | Edited components/ControllerListV4.tsx | CSS: beat | ~142 |
+| 20:54 | Edited components/ControllerListV4.tsx | CSS: AUTOPASS_BEAT_STACK_MS | ~102 |
+| 20:54 | early-game pacing: auto-pass defaults on (op+own+stk) for fresh sessions + adaptive beat (250ms empty / 700ms stack) | components/ControllerListV4.tsx | tsc clean | ~6k |
+| 20:55 | Session end: 3 writes across 1 files (ControllerListV4.tsx) | 4 reads | ~47801 tok |
+| 21:06 | Created supabase/functions_src/pass_priority.sql | — | ~1900 |
+| 21:06 | Edited supabase/migrations/202605010309_pod_auto_skip.sql | modified public() | ~456 |
+| 21:06 | Edited lib/game/actions.ts | added 1 condition(s) | ~205 |
+| 21:07 | Edited components/ControllerListV4.tsx | 3→4 lines | ~27 |
+| 21:07 | Edited components/ControllerListV4.tsx | CSS: non-fatal | ~182 |
+| 21:07 | Edited tests/harness/scenario.ts | modified passPriority() | ~311 |
+| 21:07 | Created tests/feature/pod-auto-skip.test.ts | — | ~1413 |
+| 21:08 | Edited tests/feature/pod-auto-skip.test.ts | 6→7 lines | ~146 |
+| 21:10 | pod auto-skip: server-side priority chaining (new pass_priority canonical + mig 309 + autopass_settings sync + 5 tests) | functions_src/pass_priority.sql, mig 309, actions.ts, ControllerListV4.tsx, scenario.ts, pod-auto-skip.test.ts | full suite 1519 pass, tsc clean | ~40k |
+| 21:11 | Session end: 11 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 11 reads | ~77291 tok |
+| 21:31 | Session end: 11 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 11 reads | ~77291 tok |
+| 21:37 | Edited lib/game/actions.ts | 14→9 lines | ~97 |
+| 21:38 | Edited lib/game/actions.ts | 9→14 lines | ~180 |
+| 21:38 | Session end: 13 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 11 reads | ~77727 tok |
+| 22:11 | Session end: 13 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 11 reads | ~77727 tok |
+| 22:30 | verified client decision-rendering parity: all 28 engine decision types handled; 13 CardPickBody-routed types contract-checked (options {game_card_id,name}, submit {chosen}) — PASS | ControllerListV4.tsx, submit_decision.sql, apply_trigger_effects.sql | static smoke-test pass | ~12k |
+| 22:30 | Session end: 13 writes across 6 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 13 reads | ~92281 tok |
+| 22:34 | Edited lib/game/types.ts | 4→6 lines | ~55 |
+| 22:34 | Edited lib/game/data.ts | 5→6 lines | ~38 |
+| 22:34 | Edited lib/game/data.ts | 3→4 lines | ~90 |
+| 22:34 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~219 |
+| 22:34 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~398 |
+| 22:35 | attachment rendering: plumb game_cards.attached_to into ControllerCard; 📎N host badge + 🔗 attachment badge on controller battlefield | lib/game/types.ts, lib/game/data.ts, components/ControllerListV4.tsx | tsc clean | ~10k |
+| 22:36 | Session end: 18 writes across 8 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 15 reads | ~102221 tok |
+| 22:38 | Created app/manifest.webmanifest/route.ts | — | ~400 |
+| 22:38 | Edited app/layout.tsx | 2→7 lines | ~126 |
+| --:-- | Code-only PWA fix for Cloudflare Access: replaced app/manifest.ts file-convention with app/manifest.webmanifest/route.ts (icons inlined as data URIs via app/manifest-icons.ts so no cookie-less icon fetch); added <link rel=manifest crossorigin=use-credentials> in layout (React19 hoists) so manifest carries Access cookie. Verified: route 200, data-URI icons, link in HTML. Residual: sw.js still credential-less but SW reg sends same-origin cookies. | app/manifest.webmanifest/route.ts, app/manifest-icons.ts, app/layout.tsx, (deleted app/manifest.ts) | tsc+eslint clean | ~6k |
+| 22:39 | Created docs/client-coverage-audit.md | — | ~933 |
+| 22:40 | Session end: 21 writes across 11 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 16 reads | ~104211 tok |
+| 22:40 | Edited lib/game/data.ts | removed 22 lines | ~23 |
+| 22:41 | Edited lib/game/data.ts | added nullish coalescing | ~210 |
+| 22:41 | Session end: 23 writes across 11 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 16 reads | ~104474 tok |
+| 22:47 | Session end: 23 writes across 11 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 16 reads | ~104474 tok |
+| 22:53 | Edited components/GameBoard.tsx | added nullish coalescing | ~396 |
+| 22:54 | Edited components/GameBoard.tsx | 6→7 lines | ~97 |
+| 22:54 | Edited components/GameBoard.tsx | CSS: turnState | ~70 |
+| 22:54 | Edited components/GameBoard.tsx | modified getPlayerLabel() | ~102 |
+| 22:54 | Edited components/GameBoard.tsx | 3→4 lines | ~106 |
+| 22:54 | Edited components/GameBoard.tsx | 4→5 lines | ~82 |
+| 22:54 | Edited docs/client-coverage-audit.md | expanded (+11 lines) | ~385 |
+| 22:54 | Created app/manifest.ts | — | ~485 |
+| 22:54 | board-view state badges: shared SeatStatusBadges (monarch 👑 + poison ☠ corrupted/lethal) wired into all 3 GameBoard seat panels; corrected audit (board is built, not a stub) | components/GameBoard.tsx, docs/client-coverage-audit.md | tsc clean | ~9k |
+| 22:55 | Edited app/layout.tsx | removed 6 lines | ~10 |
+| --:-- | DevTools Installability gave real blockers: data-URI icons "failed to load" (caused by crossorigin=use-credentials putting manifest in CORS mode -> data: icons rejected) -> no square icon -> install blocked; plus missing screenshots. Reverted to clean app/manifest.ts with square file icons (192/512) + wide/narrow screenshots; removed route-handler manifest, data-uri module, use-credentials link. Generated screenshot-wide/narrow.png via sharp. Required dev-server restart (deleted route file -> turbopack ghost module 500). CONCLUSION: code-only cannot satisfy Access (needs creds for manifest) AND working icons -> Access Bypass policy for /manifest.webmanifest,/sw.js,/icon-*,/screenshot-* is mandatory on the tunnel. | app/manifest.ts, app/layout.tsx, public/screenshot-wide.png, public/screenshot-narrow.png, (deleted app/manifest.webmanifest/route.ts + app/manifest-icons.ts) | local manifest 200, all assets 200, tsc+eslint clean | ~7k |
+| 22:58 | Session end: 32 writes across 13 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 22 reads | ~106234 tok |
+| 23:06 | Edited lib/game/types.ts | modified animation() | ~103 |
+| 23:06 | Edited lib/game/data.ts | 6→7 lines | ~45 |
+| 23:06 | Edited lib/game/data.ts | 5→6 lines | ~78 |
+| 23:06 | Edited lib/game/use-board-game-state.ts | 7→8 lines | ~41 |
+| 23:07 | Edited lib/game/use-board-game-state.ts | modified catch() | ~369 |
+| 23:07 | Edited lib/game/use-board-game-state.ts | 2→3 lines | ~111 |
+| 23:07 | Edited lib/game/use-board-game-state.ts | 10→11 lines | ~41 |
+| 23:08 | Edited components/GameBoard.tsx | inline fix | ~36 |
+| 23:08 | Edited components/GameBoard.tsx | added 2 condition(s) | ~948 |
+| 23:08 | Edited components/GameBoard.tsx | 4→5 lines | ~26 |
+| 23:08 | Edited components/GameBoard.tsx | inline fix | ~28 |
+| 23:08 | Edited components/GameBoard.tsx | 7→8 lines | ~110 |
+| 23:09 | Edited components/GameBoard.tsx | 6→7 lines | ~94 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: attackTaxes | ~65 |
+| 23:09 | Edited components/GameBoard.tsx | 4→4 lines | ~87 |
+| 23:09 | Edited components/GameBoard.tsx | added nullish coalescing | ~280 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: attackTaxes | ~82 |
+| 23:09 | Edited components/GameBoard.tsx | 3→3 lines | ~61 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: attackTaxes | ~88 |
+| 23:10 | Edited components/GameBoard.tsx | 3→3 lines | ~38 |
+| 23:10 | Session end: 52 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~115525 tok |
+| 23:10 | Edited components/GameBoard.tsx | added nullish coalescing | ~328 |
+| 23:10 | Edited docs/client-coverage-audit.md | 8→10 lines | ~166 |
+| 23:11 | board state parity: attachments 📎🔗 + animated ⚡ card badges + attack-tax ⛔ seat badge on GameBoard; plumb attached_to into getBoardCards + getStatusEffects(animated/taxes) into useBoardGameState + game_continuous_effects realtime | components/GameBoard.tsx, lib/game/use-board-game-state.ts, lib/game/data.ts, lib/game/types.ts, docs/client-coverage-audit.md | tsc+eslint clean | ~22k |
+| 23:11 | Edited lib/game/data.ts | removed 22 lines | ~23 |
+| 23:12 | Edited lib/game/data.ts | added nullish coalescing | ~210 |
+| 23:12 | Session end: 56 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~116264 tok |
+| 23:15 | Session end: 56 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~116264 tok |
+| 23:22 | Session end: 56 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~116264 tok |
+| 23:25 | Edited app/manifest.ts | 3→5 lines | ~115 |
+| 23:25 | Edited app/manifest.ts | 3→2 lines | ~28 |
+| 23:26 | Session end: 58 writes across 14 files (ControllerListV4.tsx, pass_priority.sql, 202605010309_pod_auto_skip.sql, actions.ts, scenario.ts) | 23 reads | ~116407 tok |
+| 23:37 | Edited lib/game/data.ts | added optional chaining | ~526 |
+| 23:37 | Edited lib/game/use-controller-game-state.ts | 4→5 lines | ~33 |
+| 23:37 | Edited lib/game/use-controller-game-state.ts | 5→5 lines | ~33 |
+| 23:37 | Edited lib/game/use-controller-game-state.ts | added 1 import(s) | ~68 |
+| 23:37 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~59 |
+| 23:38 | Edited lib/game/use-controller-game-state.ts | 18→20 lines | ~241 |
+| 23:38 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~35 |
+| 23:38 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~118 |
+| 23:38 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~22 |
+| 23:38 | Edited components/ControllerListV4.tsx | 14→15 lines | ~82 |
+| 23:39 | Edited components/ControllerListV4.tsx | 2→2 lines | ~38 |
+
+## Session: 2026-06-14 23:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 23:40 | Edited components/ControllerListV4.tsx | added 1 condition(s) | ~339 |
+| 23:40 | Edited components/ControllerListV4.tsx | 2→3 lines | ~70 |
+| 23:40 | Edited components/ControllerListV4.tsx | 7→8 lines | ~93 |
+| 23:40 | Edited components/ControllerListV4.tsx | 4→5 lines | ~68 |
+| 23:40 | Edited components/ControllerListV4.tsx | 5→6 lines | ~29 |
+| 23:40 | Edited components/ControllerListV4.tsx | CSS: commanderDamage | ~66 |
+| 23:40 | Edited components/ControllerListV4.tsx | 4→5 lines | ~109 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | added 1 import(s) | ~62 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | 14→16 lines | ~241 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | modified catch() | ~30 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | 2→3 lines | ~122 |
+| 23:41 | Edited lib/game/use-board-game-state.ts | 7→8 lines | ~33 |
+| 23:41 | Edited components/GameBoard.tsx | inline fix | ~41 |
+| 23:41 | Edited components/GameBoard.tsx | added 1 import(s) | ~63 |
+| 23:41 | Edited components/GameBoard.tsx | CSS: commanderDamage | ~176 |
+| 23:41 | Edited components/GameBoard.tsx | CSS: taken | ~250 |
+| 23:42 | Edited components/GameBoard.tsx | inline fix | ~37 |
+| 23:42 | Edited components/GameBoard.tsx | 8→9 lines | ~126 |
+| 23:42 | Edited components/GameBoard.tsx | 7→8 lines | ~110 |
+| 23:42 | Edited components/GameBoard.tsx | CSS: commanderDamage | ~87 |
+| 23:42 | Edited components/GameBoard.tsx | expanded (+7 lines) | ~109 |
+| 23:42 | Edited components/GameBoard.tsx | CSS: commanderDamage | ~104 |
+| 23:42 | Edited components/GameBoard.tsx | 3→8 lines | ~94 |
+| 23:42 | Edited components/GameBoard.tsx | CSS: commanderDamage | ~94 |
+| 23:43 | Edited components/GameBoard.tsx | 3→8 lines | ~74 |
+| 23:44 | Edited docs/client-coverage-audit.md | expanded (+18 lines) | ~419 |
+| 23:44 | commander damage display: getCommanderDamage (resolve source game-card → name) in both hooks + realtime; ⚔ badge (worst total, ≥15 amber/≥21 red lethal, per-source tooltip) on controller status bar + opponent pills + all board seats | data.ts, use-controller-game-state.ts, use-board-game-state.ts, ControllerListV4.tsx, GameBoard.tsx, client-coverage-audit.md | tsc+eslint clean | ~28k |
+| 23:44 | Edited lib/game/data.ts | removed 22 lines | ~23 |
+| 23:44 | Session end: 27 writes across 5 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 4 reads | ~48295 tok |
+| 23:44 | Edited lib/game/data.ts | added nullish coalescing | ~210 |
+| 23:45 | Session end: 28 writes across 5 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 4 reads | ~48505 tok |
+| 23:47 | Created mockups/controller-concepts.html | — | ~5831 |
+| 23:47 | Edited mockups/controller-concepts.html | inline fix | ~35 |
+| 23:48 | Built interactive controller concept mockups (Arcane Console / Tactile Deck / Clean HUD) for phone controller restyle | mockups/controller-concepts.html | created standalone HTML, opened in browser | ~3500 |
+| 23:48 | Created components/controller/ControllerCoachOverlay.tsx | — | ~1024 |
+| 23:48 | Edited components/ControllerListV4.tsx | added 1 import(s) | ~42 |
+| 23:48 | Edited components/ControllerListV4.tsx | 1→4 lines | ~82 |
+| 23:48 | Session end: 33 writes across 7 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~58254 tok |
+| 23:48 | Edited components/ControllerListV4.tsx | added optional chaining | ~158 |
+| 23:48 | Edited components/ControllerListV4.tsx | 6→8 lines | ~83 |
+| 23:49 | Edited components/ControllerListV4.tsx | 3→4 lines | ~55 |
+| 23:49 | Edited components/ControllerListV4.tsx | CSS: onOpenHelp | ~86 |
+| 23:49 | Edited components/ControllerListV4.tsx | CSS: active, hover | ~147 |
+| 23:49 | Edited docs/client-coverage-audit.md | 2→6 lines | ~124 |
+| 23:49 | onboarding v1: ControllerCoachOverlay (5-slide skippable first-run intro, progress dots) — auto-opens once per device (leyline-coach-seen-v1), re-openable via ? in status bar | components/controller/ControllerCoachOverlay.tsx, ControllerListV4.tsx, client-coverage-audit.md | tsc+eslint clean | ~14k |
+| 23:50 | Session end: 39 writes across 7 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~58998 tok |
+| 23:52 | Created mockups/controller-concepts-2.html | — | ~6628 |
+| 23:52 | Added 4 bold/distinct controller concepts (Grimoire / JRPG / CRT Terminal / Neobrutalism) | mockups/controller-concepts-2.html | created, opened in browser | ~3200 |
+| 23:52 | Session end: 40 writes across 8 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~66100 tok |
+| 23:58 | Created mockups/controller-base.css | — | ~3965 |
+| 23:59 | Created mockups/controller-base.js | — | ~3101 |
+| 23:59 | Edited mockups/controller-base.css | 4→4 lines | ~110 |
+| 00:00 | Created mockups/controller-concepts.html | — | ~1804 |
+| 00:01 | Created mockups/controller-concepts-2.html | — | ~2738 |
+| 00:01 | Reworked mockup UI elements: shared base.css/base.js with realistic card frames, mana pips, priority cluster (hold/pass/auto-pass), action sheet + scry prompt; refactored all 7 themes to variable contract | mockups/controller-base.{css,js}, controller-concepts{,-2}.html | done | ~5000 |
+| 00:01 | Session end: 45 writes across 10 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~78142 tok |
+| 00:11 | Created mockups/clean-hud-action.html | — | ~5934 |
+| 00:11 | Edited mockups/clean-hud-action.html | inline fix | ~10 |
+| 00:11 | Built Clean HUD action-panel prototype: docked non-modal bar, primary/secondary hierarchy, mana affordability, inline targeting, slide-to-confirm + undo toast | mockups/clean-hud-action.html | done | ~4000 |
+| 00:11 | Session end: 47 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~84510 tok |
+| 00:13 | Session end: 47 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~84510 tok |
+| 00:18 | Edited mockups/clean-hud-action.html | expanded (+19 lines) | ~604 |
+| 00:18 | Edited mockups/clean-hud-action.html | inline fix | ~49 |
+| 00:18 | Edited mockups/clean-hud-action.html | expanded (+7 lines) | ~115 |
+| 00:18 | Edited mockups/clean-hud-action.html | modified toUpperCase() | ~296 |
+| 00:18 | Edited mockups/clean-hud-action.html | added 5 condition(s) | ~410 |
+| 00:18 | Added hold-to-peek full-size card preview with oracle text (inline {symbols}) to Clean HUD action prototype | mockups/clean-hud-action.html | done | ~1500 |
+| 00:19 | Session end: 52 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 6 reads | ~86089 tok |
+| 00:26 | Edited mockups/clean-hud-action.html | expanded (+8 lines) | ~199 |
+| 00:26 | Edited mockups/clean-hud-action.html | expanded (+7 lines) | ~107 |
+| 00:26 | Edited mockups/clean-hud-action.html | inline fix | ~40 |
+| 00:27 | Edited mockups/clean-hud-action.html | 3→6 lines | ~162 |
+| 00:27 | Edited mockups/clean-hud-action.html | 3→3 lines | ~68 |
+| 00:27 | Edited mockups/clean-hud-action.html | added 8 condition(s) | ~516 |
+| 00:28 | Option A: added drag-to-attack arrow (drag ATTACK btn to an opponent) + real Scryfall art in hold-peek; swapped demo card to Dragonlord Silumgar | mockups/clean-hud-action.html | done | ~1800 |
+| 00:28 | Edited components/ControllerListV4.tsx | inline fix | ~20 |
+| 00:28 | Edited components/ControllerListV4.tsx | added 9 condition(s) | ~772 |
+| 00:28 | Edited components/ControllerListV4.tsx | added optional chaining | ~216 |
+| 00:28 | Session end: 61 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 8 reads | ~110863 tok |
+| 00:28 | Edited components/ControllerListV4.tsx | 1→2 lines | ~28 |
+| 00:28 | Edited components/ControllerListV4.tsx | 8→10 lines | ~48 |
+| 00:29 | Edited components/ControllerListV4.tsx | 4→3 lines | ~16 |
+| 00:29 | Edited components/ControllerListV4.tsx | CSS: availableByColor, flexibleMana | ~42 |
+| 00:29 | Edited components/ControllerListV4.tsx | inline fix | ~30 |
+| 00:30 | fix: colour-aware playable-cards highlight (was colourless availableMana>=totalCost) — getProducibleColors + canAffordCost with wildcard pool; build availableByColor/flexibleMana from untapped lands | components/ControllerListV4.tsx | tsc+eslint clean | ~16k |
+| 00:30 | Session end: 66 writes across 11 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 8 reads | ~111963 tok |
+| 00:36 | Created lib/game/use-long-press.ts | — | ~573 |
+| 00:36 | Edited components/controller/CardActionSheet.tsx | inline fix | ~29 |
+| 00:37 | Edited components/ControllerListV4.tsx | added 1 import(s) | ~39 |
+| 00:37 | Edited components/ControllerListV4.tsx | inline fix | ~23 |
+| 00:37 | Edited components/ControllerListV4.tsx | CSS: Hold-to-peek | ~138 |
+| 00:37 | Edited components/ControllerListV4.tsx | 3→4 lines | ~56 |
+| 00:37 | Edited components/ControllerListV4.tsx | 3→4 lines | ~56 |
+| 00:37 | Edited components/ControllerListV4.tsx | 3→4 lines | ~81 |
+| 00:37 | Edited components/ControllerListV4.tsx | 2→3 lines | ~54 |
+| 00:37 | Edited components/ControllerListV4.tsx | 3→8 lines | ~105 |
+| 00:38 | Ported hold-to-peek to real controller: new useLongPress hook, exported CardZoomOverlay, long-press on board/land/hand cards opens full-size oracle zoom. tsc+eslint clean | lib/game/use-long-press.ts, components/ControllerListV4.tsx, components/controller/CardActionSheet.tsx | done | ~3000 |
+| 00:39 | Edited components/ControllerListV4.tsx | 4→5 lines | ~70 |
+| 00:39 | Edited components/ControllerListV4.tsx | 13→14 lines | ~69 |
+| 00:39 | Edited components/ControllerListV4.tsx | CSS: isActivePlayer | ~50 |
+| 00:39 | Edited components/ControllerListV4.tsx | 1→4 lines | ~96 |
+| 00:40 | playable highlight = your turn only: gate hasPriorityWindow on isActivePlayer (no playable ring on opponents turns; instants still castable via tap) | components/ControllerListV4.tsx | tsc+eslint clean | ~5k |
+| 00:41 | Session end: 80 writes across 13 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 8 reads | ~113621 tok |
+| 00:41 | Edited components/ControllerListV4.tsx | added 11 condition(s) | ~1341 |
+| 00:42 | Edited components/ControllerListV4.tsx | expanded (+20 lines) | ~330 |
+| 00:42 | Edited components/ControllerListV4.tsx | 8→11 lines | ~164 |
+| 00:42 | Edited components/ControllerListV4.tsx | CSS: touchAction | ~139 |
+| 00:42 | Edited components/ControllerListV4.tsx | 5→5 lines | ~94 |
+| 00:42 | Edited components/ControllerListV4.tsx | 3→3 lines | ~43 |
+| 00:43 | Edited components/ControllerListV4.tsx | 3→5 lines | ~83 |
+| 00:43 | Ported drag-to-attack into DeclareAttackersLayout: per-attacker target Map (was single shared target), drag a creature onto a target pill draws an arrow + assigns it; tap still toggles to selected target. tsc+eslint clean | components/ControllerListV4.tsx | done | ~2500 |
+| 00:44 | Session end: 87 writes across 13 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 8 reads | ~115914 tok |
+| 00:59 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 4→5 lines | ~35 |
+| 00:59 | Edited supabase/functions_src/enqueue_triggered_ability.sql | expanded (+22 lines) | ~462 |
+| 00:59 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 2→3 lines | ~56 |
+| 00:59 | Created supabase/functions_src/choose_triggered_ability_creature_target.sql | — | ~1052 |
+| 01:00 | Edited supabase/migrations/202605010310_opportunistic_dragon_target_filter.sql | modified public() | ~586 |
+| 01:01 | Edited docs/commander-decks/card-scripts.json | inline fix | ~57 |
+| 01:02 | Edited tests/fixtures/test-cards.json | inline fix | ~74 |
+| 01:03 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~221 |
+| 01:03 | Edited components/ControllerListV4.tsx | added nullish coalescing | ~181 |
+| 01:03 | Edited components/ControllerListV4.tsx | CSS: Dragon | ~216 |
+| 01:05 | Created tests/feature/opportunistic-dragon.test.ts | — | ~1288 |
+| 01:11 | fix: Opportunistic Dragon target restriction (mig 310) — reusable trigger target_filter {type_line_any}; helpers + enqueue payload/has-target + choose validation + client picker; OD1-3 tests; full suite 1521 pass | functions_src/{enqueue_triggered_ability,choose_triggered_ability_creature_target}.sql, mig 310, ControllerListV4.tsx, card-scripts.json, test-cards.json, opportunistic-dragon.test.ts | full suite green | ~45k |
+| 01:12 | Session end: 98 writes across 19 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 14 reads | ~189270 tok |
+| 01:16 | Session end: 98 writes across 19 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 14 reads | ~189270 tok |
+| 01:18 | Edited scripts/upsert-deck-scripts.mjs | modified map() | ~213 |
+| 01:19 | Session end: 99 writes across 20 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 15 reads | ~191615 tok |
+| 01:37 | Edited components/controller/OpeningHandOverlay.tsx | added 1 import(s) | ~36 |
+| 01:37 | Edited components/controller/OpeningHandOverlay.tsx | inline fix | ~20 |
+| 01:37 | Edited components/controller/OpeningHandOverlay.tsx | expanded (+9 lines) | ~522 |
+| 01:37 | Edited components/ControllerListV4.tsx | added optional chaining | ~32 |
+| 01:38 | mulligan overlay shows full card art (MotionCard) instead of name text; widened panel; bottom-selection ring + badge preserved | components/controller/OpeningHandOverlay.tsx, components/ControllerListV4.tsx | tsc+eslint clean | ~6k |
+| 01:38 | Session end: 103 writes across 21 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 16 reads | ~192225 tok |

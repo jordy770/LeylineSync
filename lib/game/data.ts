@@ -68,7 +68,8 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       zone,
       controller_player_id,
       plus_one_counters,
-      counters
+      counters,
+      attached_to
     `)
     .eq('session_id', sessionId)
     .eq('zone', 'battlefield')
@@ -103,6 +104,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       controller_player_id: item.controller_player_id ?? null,
       plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
       counters: (item as { counters?: Record<string, number> | null }).counters ?? null,
+      attached_to: (item as { attached_to?: string | null }).attached_to ?? null,
     }
   })
 }
@@ -254,7 +256,8 @@ export async function getControllerCards(
       plus_one_counters,
       counters,
       is_commander,
-      command_zone_casts
+      command_zone_casts,
+      attached_to
     `)
     .eq('session_id', sessionId)
     .eq('owner_id', playerId)
@@ -292,6 +295,7 @@ export async function getControllerCards(
       counters: (card as { counters?: Record<string, number> | null }).counters ?? null,
       is_commander: (card as { is_commander?: boolean }).is_commander ?? false,
       command_zone_casts: (card as { command_zone_casts?: number }).command_zone_casts ?? 0,
+      attached_to: (card as { attached_to?: string | null }).attached_to ?? null,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,
       cards: linkedCard,
     }
@@ -361,6 +365,51 @@ export async function getGameSessionPlayers(supabase: SupabaseClient, sessionId:
   }
 
   return (data ?? []) as GameSessionPlayer[]
+}
+
+export type CommanderDamageEntry = { sourceCardId: string; name: string; damage: number }
+
+// Cumulative commander combat damage each player has taken, keyed by defender
+// player id (Commander: 21 from a single commander is lethal). Resolves the
+// source game-card to its catalog name. Empty in non-Commander games.
+export async function getCommanderDamage(
+  supabase: SupabaseClient,
+  sessionId: string,
+): Promise<Record<string, CommanderDamageEntry[]>> {
+  const { data, error } = await supabase
+    .from('game_commander_damage')
+    .select('defender_player_id, source_card_id, damage')
+    .eq('session_id', sessionId)
+    .gt('damage', 0)
+
+  if (error) {
+    console.error('Failed to load commander damage:', error.message)
+    return {}
+  }
+
+  const rows = (data ?? []) as { defender_player_id: string; source_card_id: string; damage: number }[]
+  if (rows.length === 0) return {}
+
+  // source_card_id is a game_cards.id → resolve to its catalog name.
+  const sourceIds = [...new Set(rows.map((r) => r.source_card_id))]
+  const { data: gcData } = await supabase
+    .from('game_cards')
+    .select('id, card_id')
+    .in('id', sourceIds)
+  const cardIdByGameCard = new Map((gcData ?? []).map((r) => [r.id as string, r.card_id as string]))
+  const names = await getLinkedCardsById(supabase, [...cardIdByGameCard.values()], 'id, name')
+
+  const byDefender: Record<string, CommanderDamageEntry[]> = {}
+  for (const r of rows) {
+    const cardId = cardIdByGameCard.get(r.source_card_id)
+    const name = (cardId ? names.get(cardId)?.name : null) ?? 'Commander'
+    ;(byDefender[r.defender_player_id] ??= []).push({
+      sourceCardId: r.source_card_id,
+      name,
+      damage: r.damage,
+    })
+  }
+  return byDefender
 }
 
 export async function getGameActionLogs(
@@ -520,6 +569,27 @@ export async function getUserDecks(supabase: SupabaseClient) {
     .select('id, name, list_data, created_at')
     .or(`created_by.eq.${playerId},owner_id.eq.${playerId}`)
     .order('created_at', { ascending: false })
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []).map((deck) => ({
+    id: deck.id,
+    name: deck.name ?? null,
+    card_count: Array.isArray(deck.list_data) ? deck.list_data.length : 0,
+    created_at: deck.created_at ?? null,
+  })) as DeckSummary[]
+}
+
+// Shared precon decks — curated decklists every player can spawn (not owned by
+// anyone). Visible via the "Anyone can read precon decks" RLS policy.
+export async function getPreconDecks(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('decks')
+    .select('id, name, list_data, created_at')
+    .eq('is_precon', true)
+    .order('name', { ascending: true })
 
   if (error) {
     throw error
