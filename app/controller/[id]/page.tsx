@@ -6,8 +6,10 @@ import AddToHomeScreen from './AddToHomeScreen';
 // Lazy-load each controller version so opening the page only compiles the ONE
 // requested via ?v=. V4 is the product controller (and the default); V1 is the
 // legacy fallback, kept reachable via ?v=1. V2/V3 were retired 2026-06-10.
+// V5 is a HandFan (Arena-style fan hand) prototype, reachable via ?v=5.
 const ControllerList = dynamic(() => import('@/components/ControllerList'));
 const ControllerListV4 = dynamic(() => import('@/components/ControllerListV4'));
+const ControllerListV5 = dynamic(() => import('@/components/ControllerListV5'));
 
 export default function ControllerPage({
   params,
@@ -32,14 +34,15 @@ async function ControllerContent({
 }) {
   const { id } = await params;
   const { v } = await searchParams;
-  const useLegacyController = v === '1';
 
   return (
     <main className="leyline-table-bg min-h-screen overflow-visible text-white">
       <ControllerFullscreen />
       <AddToHomeScreen />
-      {useLegacyController ? (
+      {v === '1' ? (
         <ControllerList sessionId={id} />
+      ) : v === '5' ? (
+        <ControllerListV5 sessionId={id} />
       ) : (
         <ControllerListV4 sessionId={id} />
       )}

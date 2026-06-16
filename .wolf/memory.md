@@ -4529,3 +4529,220 @@
 | 01:37 | Edited components/ControllerListV4.tsx | added optional chaining | ~32 |
 | 01:38 | mulligan overlay shows full card art (MotionCard) instead of name text; widened panel; bottom-selection ring + badge preserved | components/controller/OpeningHandOverlay.tsx, components/ControllerListV4.tsx | tsc+eslint clean | ~6k |
 | 01:38 | Session end: 103 writes across 21 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 16 reads | ~192225 tok |
+
+## Session: 2026-06-15 09:44
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:46 | Created components/controller/HandFan.tsx | — | ~1982 |
+| 09:46 | Edited components/controller/HandFan.tsx | inline fix | ~23 |
+| 09:46 | Edited components/controller/HandFan.tsx | inline fix | ~15 |
+| 09:46 | HandFan Arena-style hand prototype (4 states: collapse/fan/hover-push/zoom), reuses MotionCard | components/controller/HandFan.tsx | created, lint clean | ~1500 |
+| 09:47 | Session end: 3 writes across 1 files (HandFan.tsx) | 3 reads | ~49906 tok |
+| 09:54 | Created app/controller-style-lab/page.tsx | — | ~628 |
+| 09:55 | Edited lib/supabase/proxy.ts | expanded (+7 lines) | ~138 |
+| 09:55 | controller-style-lab demo route for HandFan + dev-only auth bypass | app/controller-style-lab/page.tsx, lib/supabase/proxy.ts | route serves 200 cold | ~900 |
+| 09:56 | Session end: 5 writes across 3 files (HandFan.tsx, page.tsx, proxy.ts) | 5 reads | ~51331 tok |
+| 10:02 | Created components/controller/HandFan.tsx | — | ~3298 |
+| 10:02 | Edited app/controller-style-lab/page.tsx | added 1 import(s) | ~31 |
+| 10:02 | Edited app/controller-style-lab/page.tsx | modified ControllerStyleLab() | ~65 |
+| 10:02 | Edited app/controller-style-lab/page.tsx | CSS: active | ~244 |
+| 10:02 | HandFan drag-to-reorder + drag-to-center-cast (two-layer motion divs), demo Reset/cast-log | components/controller/HandFan.tsx, app/controller-style-lab/page.tsx | lint clean, route 200 | ~2200 |
+| 10:03 | Session end: 9 writes across 3 files (HandFan.tsx, page.tsx, proxy.ts) | 5 reads | ~54969 tok |
+| 10:27 | Edited components/controller/HandFan.tsx | modified visualIndex() | ~128 |
+| 10:27 | Edited components/controller/HandFan.tsx | 4→3 lines | ~46 |
+| 10:28 | Edited components/controller/HandFan.tsx | 2→4 lines | ~81 |
+| 10:28 | Edited components/controller/HandFan.tsx | 7→7 lines | ~97 |
+| 10:29 | Created tmp-buglog.cjs | — | ~391 |
+| 10:29 | fix HandFan drag-right (layout double-transform + wrong gap slot + centering) | components/controller/HandFan.tsx, .wolf/buglog.json | lint clean, route 200 | ~1200 |
+| 10:29 | Session end: 14 writes across 4 files (HandFan.tsx, page.tsx, proxy.ts, tmp-buglog.cjs) | 6 reads | ~59068 tok |
+| 10:33 | Edited components/controller/HandFan.tsx | gap() → anchor() | ~165 |
+| 10:33 | Edited components/controller/HandFan.tsx | 2→3 lines | ~64 |
+| 10:33 | Edited components/controller/HandFan.tsx | 4→7 lines | ~115 |
+| 10:33 | Edited components/controller/HandFan.tsx | added nullish coalescing | ~275 |
+| 10:33 | Edited components/controller/HandFan.tsx | 4→5 lines | ~29 |
+| 10:33 | Edited components/controller/HandFan.tsx | 5→6 lines | ~66 |
+| 10:33 | HandFan: fixed anchor so dragged card tracks finger + hysteresis on gap recompute (dropRef deadband) | components/controller/HandFan.tsx | lint clean, route 200 | ~900 |
+| 10:34 | Session end: 20 writes across 4 files (HandFan.tsx, page.tsx, proxy.ts, tmp-buglog.cjs) | 6 reads | ~59782 tok |
+| 10:44 | Created components/controller/HandFan.tsx | — | ~3907 |
+| 10:45 | HandFan: extract FanCard, own inner drag via motion values + spring-home on release (kills stuck-offset scatter from throws) | components/controller/HandFan.tsx | lint+tsc clean, route 200 | ~1800 |
+| 10:45 | Created tmp-buglog.cjs | — | ~367 |
+| 10:45 | Session end: 22 writes across 4 files (HandFan.tsx, page.tsx, proxy.ts, tmp-buglog.cjs) | 6 reads | ~64082 tok |
+| 13:08 | Edited components/controller/HandFan.tsx | expanded (+6 lines) | ~180 |
+| 13:08 | Edited components/controller/HandFan.tsx | modified HandFan() | ~38 |
+| 13:08 | Edited components/controller/HandFan.tsx | added 1 condition(s) | ~52 |
+| 13:08 | Edited components/controller/HandFan.tsx | added optional chaining | ~85 |
+| 13:09 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~23 |
+| 13:09 | Edited components/ControllerListV5.tsx | added 2 condition(s) | ~235 |
+| 13:10 | Edited components/ControllerListV5.tsx | 2→2 lines | ~64 |
+| 13:10 | Edited components/ControllerListV5.tsx | inline fix | ~23 |
+| 13:10 | Edited app/controller/[id]/page.tsx | 5→7 lines | ~156 |
+| 13:10 | Edited app/controller/[id]/page.tsx | modified return() | ~123 |
+| 13:11 | Edited components/ControllerListV5.tsx | 4→3 lines | ~18 |
+| 13:11 | Edited components/ControllerListV5.tsx | removed 24 lines | ~16 |
+| 13:11 | Edited components/ControllerListV5.tsx | reduced (-6 lines) | ~42 |
+| 13:12 | Edited components/ControllerListV5.tsx | inline fix | ~14 |
+| 13:13 | copy V4 -> ControllerListV5, wire HandFan as hand (tapOpensZoom/castRemovesCard props), route ?v=5 | components/ControllerListV5.tsx, components/controller/HandFan.tsx, app/controller/[id]/page.tsx | lint+tsc clean (0 errors) | ~3500 |
+| 13:13 | Session end: 36 writes across 5 files (HandFan.tsx, page.tsx, proxy.ts, tmp-buglog.cjs, ControllerListV5.tsx) | 8 reads | ~112165 tok |
+
+## Session: 2026-06-15 13:29
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:36 | Edited components/ControllerListV5.tsx | added optional chaining | ~235 |
+| 13:36 | Edited components/ControllerListV5.tsx | modified if() | ~92 |
+| 13:37 | Edited components/ControllerListV5.tsx | inline fix | ~48 |
+
+## Session: 2026-06-15 13:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| --:-- | Auto-skip declare_attackers when no creature can legally attack (fewer pass-priority taps) | components/ControllerListV5.tsx | done, typechecks | ~6k |
+| 14:07 | Edited components/ControllerListV5.tsx | CSS: Conservative | ~172 |
+| 14:07 | Edited components/ControllerListV5.tsx | 9→12 lines | ~211 |
+| 14:07 | Edited components/ControllerListV5.tsx | inline fix | ~21 |
+| --:-- | Auto-skip declare_blockers when no block is possible; falls through to op/stk/rsp so held tricks still stop it | components/ControllerListV5.tsx | done, typechecks | ~5k |
+| 14:08 | Session end: 3 writes across 1 files (ControllerListV5.tsx) | 12 reads | ~53045 tok |
+| 14:11 | Edited components/ControllerListV5.tsx | 5→7 lines | ~139 |
+| 14:11 | Edited components/ControllerListV5.tsx | inline fix | ~28 |
+| --:-- | Suppress blockers layout when no block possible (gate layoutState on hasBlockDecision) so it no longer flashes | components/ControllerListV5.tsx | done, typechecks | ~2k |
+| 14:11 | Session end: 5 writes across 1 files (ControllerListV5.tsx) | 12 reads | ~53279 tok |
+| 14:20 | Diagnosed "cloudflare OTP redirect not working" = Cloudflare Access Bypass-Everyone policy (not Supabase code); fix = policy Action Allow | .wolf/cerebrum.md | resolved | ~6k |
+| 14:20 | Session end: 5 writes across 1 files (ControllerListV5.tsx) | 12 reads | ~53279 tok |
+| 14:23 | Edited components/controller/HandFan.tsx | expanded (+12 lines) | ~137 |
+| 14:23 | Edited components/controller/HandFan.tsx | removed 13 lines | ~21 |
+| 14:24 | HandFan: removed grab handle, added tap-outside backdrop to collapse | components/controller/HandFan.tsx | lint clean, lab 200 | ~500 |
+| 14:24 | Session end: 7 writes across 2 files (ControllerListV5.tsx, HandFan.tsx) | 12 reads | ~53437 tok |
+| 14:34 | Edited components/controller/HandFan.tsx | CSS: Playability | ~156 |
+| 14:34 | Edited components/controller/HandFan.tsx | added 1 import(s) | ~248 |
+| 14:34 | Edited components/controller/HandFan.tsx | 2→2 lines | ~41 |
+| 14:34 | Edited components/controller/HandFan.tsx | CSS: ringed, dimmed | ~118 |
+| 14:34 | Edited components/controller/HandFan.tsx | 6→10 lines | ~97 |
+| 14:35 | Edited components/controller/HandFan.tsx | modified HandFan() | ~28 |
+| 14:35 | Edited components/controller/HandFan.tsx | 7→8 lines | ~131 |
+| 14:35 | Edited components/controller/HandFan.tsx | setCastArmed() → setLifted() | ~137 |
+| 14:35 | Edited components/controller/HandFan.tsx | modified handleDragEnd() | ~145 |
+| 14:35 | Edited components/controller/HandFan.tsx | CSS: details | ~78 |
+| 14:35 | Edited components/controller/HandFan.tsx | reduced (-13 lines) | ~192 |
+| 14:35 | Edited components/controller/HandFan.tsx | added nullish coalescing | ~221 |
+| 14:36 | Edited components/controller/HandFan.tsx | openCard() → activate() | ~67 |
+| 14:36 | Edited app/controller-style-lab/page.tsx | modified ControllerStyleLab() | ~422 |
+| 14:36 | Edited app/controller-style-lab/page.tsx | 6→5 lines | ~36 |
+| 14:37 | Edited components/ControllerListV5.tsx | inline fix | ~20 |
+| 14:37 | Edited components/ControllerListV5.tsx | 3→4 lines | ~24 |
+| 14:37 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~266 |
+| 14:37 | Edited components/ControllerListV5.tsx | expanded (+6 lines) | ~83 |
+| 14:38 | Edited components/ControllerListV5.tsx | CSS: canPlayLand | ~384 |
+| 14:38 | HandFan: playable amber-ring + dim cues (playable/showPlayability props); replaced drag-to-center cast with lift-to-open-details; restored v5 playability calc | components/controller/HandFan.tsx, components/ControllerListV5.tsx, app/controller-style-lab/page.tsx | lint+tsc clean (0), lab 200 | ~2600 |
+| 14:39 | Session end: 27 writes across 3 files (ControllerListV5.tsx, HandFan.tsx, page.tsx) | 14 reads | ~61498 tok |
+| 14:48 | designqc: captured 2 screenshots (14KB, ~5000 tok) | C:/Program Files/Git/controller-style-lab | ready for eval | ~0 |
+| 14:48 | designqc: captured 2 screenshots (14KB, ~5000 tok) | /controller-style-lab | ready for eval | ~0 |
+| 14:49 | designqc: captured 2 screenshots (22KB, ~5000 tok) | /controller-style-lab | ready for eval | ~0 |
+| 14:49 | Edited components/controller/HandFan.tsx | inline fix | ~14 |
+| 14:49 | designqc: captured 2 screenshots (31KB, ~5000 tok) | /controller-style-lab | ready for eval | ~0 |
+| 14:51 | Edited components/controller/HandFan.tsx | inline fix | ~14 |
+| 14:51 | Edited components/controller/HandFan.tsx | CSS: isDragging | ~275 |
+| 14:51 | Edited components/controller/HandFan.tsx | removed 5 lines | ~9 |
+| 14:51 | Edited components/controller/HandFan.tsx | 3→4 lines | ~61 |
+| 14:52 | HandFan: confirmed handle removed (designqc); fixed cards not sliding home via effect-based inner-offset reset on isDragging transition | components/controller/HandFan.tsx | lint+tsc clean | ~1400 |
+| 14:52 | Session end: 32 writes across 3 files (ControllerListV5.tsx, HandFan.tsx, page.tsx) | 14 reads | ~61970 tok |
+| 15:04 | Session end: 32 writes across 3 files (ControllerListV5.tsx, HandFan.tsx, page.tsx) | 14 reads | ~61970 tok |
+| 15:10 | Edited components/controller/HandFan.tsx | modified Gestures() | ~101 |
+| 15:10 | Edited components/controller/HandFan.tsx | 2→6 lines | ~78 |
+| 15:10 | Edited components/controller/HandFan.tsx | 9→12 lines | ~152 |
+| 15:10 | Edited components/controller/HandFan.tsx | 3→2 lines | ~37 |
+| 15:10 | Edited components/controller/HandFan.tsx | modified FanCard() | ~115 |
+| 15:10 | Edited components/controller/HandFan.tsx | 12→13 lines | ~95 |
+| 15:10 | Edited components/controller/HandFan.tsx | modified HandFan() | ~150 |
+| 15:11 | Edited components/controller/HandFan.tsx | 8→6 lines | ~100 |
+| 15:11 | Edited components/controller/HandFan.tsx | modified handleDrag() | ~52 |
+| 15:11 | Edited components/controller/HandFan.tsx | modified handleDragEnd() | ~95 |
+| 15:11 | Edited components/controller/HandFan.tsx | removed 19 lines | ~28 |
+| 15:11 | Edited components/controller/HandFan.tsx | CSS: 22 | ~255 |
+| 15:11 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~165 |
+| 15:12 | Edited app/controller-style-lab/page.tsx | 4→3 lines | ~41 |
+| 15:12 | HandFan: hold-to-peek (onHold prop + useLongPress, wired to v5 setPeekCard); removed lift-to-open-details gesture | components/controller/HandFan.tsx, components/ControllerListV5.tsx, app/controller-style-lab/page.tsx | lint+tsc clean (0), lab 200 | ~1600 |
+| 15:12 | Session end: 46 writes across 3 files (ControllerListV5.tsx, HandFan.tsx, page.tsx) | 15 reads | ~64327 tok |
+| 15:23 | Edited components/controller/HandFan.tsx | 3→4 lines | ~74 |
+| 15:23 | HandFan: long-press peek tuned to 250ms (scoped via useLongPress(250)) | components/controller/HandFan.tsx | lint clean | ~200 |
+| 15:23 | Session end: 47 writes across 3 files (ControllerListV5.tsx, HandFan.tsx, page.tsx) | 15 reads | ~64401 tok |
+| 15:43 | Edited components/controller/HandFan.tsx | 3→4 lines | ~72 |
+| 15:43 | Edited components/controller/HandFan.tsx | 3→6 lines | ~104 |
+| 15:43 | Edited components/controller/HandFan.tsx | 2→3 lines | ~62 |
+| 15:44 | Edited components/controller/HandFan.tsx | modified HandFan() | ~43 |
+| 15:44 | Edited components/controller/HandFan.tsx | 6→8 lines | ~128 |
+| 15:44 | Edited components/controller/HandFan.tsx | CSS: innerHeight | ~174 |
+| 15:44 | Edited components/controller/HandFan.tsx | added optional chaining | ~146 |
+| 15:44 | Edited components/controller/HandFan.tsx | expanded (+29 lines) | ~373 |
+| 15:44 | Edited components/controller/HandFan.tsx | CSS: 34 | ~88 |
+| 15:45 | Edited components/ControllerListV5.tsx | added optional chaining | ~242 |
+| 15:45 | Edited components/ControllerListV5.tsx | 3→4 lines | ~53 |
+| 15:45 | Edited components/ControllerListV5.tsx | 3→4 lines | ~18 |
+| 15:45 | Edited components/ControllerListV5.tsx | CSS: onQuickPlay | ~54 |
+| 15:45 | Edited components/ControllerListV5.tsx | CSS: play | ~151 |
+| 15:46 | Edited app/controller-style-lab/page.tsx | 3→4 lines | ~60 |
+| 15:46 | Edited app/controller-style-lab/page.tsx | 5→6 lines | ~51 |
+| 15:46 | HandFan: drag-up cast zone (onCast prop); v5 quickPlay = direct cast for kind:normal non-land, else action sheet; choice cards open popup (cast-time sheet or resolution-time pendingDecision) | components/controller/HandFan.tsx, components/ControllerListV5.tsx, app/controller-style-lab/page.tsx | lint+tsc clean (0), lab 200 | ~2400 |
+| 15:47 | Session end: 63 writes across 3 files (ControllerListV5.tsx, HandFan.tsx, page.tsx) | 15 reads | ~66286 tok |
+| 15:52 | Edited next.config.ts | 9→11 lines | ~64 |
+| 16:08 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~407 |
+| 16:08 | Edited components/ControllerListV5.tsx | 6→6 lines | ~74 |
+| 16:08 | Edited components/ControllerListV5.tsx | modified catch() | ~56 |
+| 16:08 | Edited components/ControllerListV5.tsx | CSS: active | ~139 |
+| 16:09 | v5 error UX: reportError (console+toast), unhandledrejection safety net (kills dev Issue overlay), auto-dismiss + dismissible toast; devIndicators:false hides Next dev button | components/ControllerListV5.tsx, next.config.ts | lint+tsc clean (0) | ~1500 |
+| 16:09 | Session end: 68 writes across 4 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts) | 16 reads | ~79656 tok |
+| 16:17 | Edited components/ControllerListV5.tsx | setErrorMessage() → setActionError() | ~443 |
+| 16:17 | Edited components/ControllerListV5.tsx | inline fix | ~14 |
+| 16:17 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~155 |
+| 16:18 | Created tmp-buglog.cjs | — | ~378 |
+| 16:18 | fix: error toast wiped by realtime refresh — split action errors into local actionError (hook resets errorMessage on every load) | components/ControllerListV5.tsx, .wolf/buglog.json | lint+tsc clean | ~800 |
+| 16:18 | Session end: 72 writes across 5 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 17 reads | ~82959 tok |
+| 16:42 | Edited components/controller/shared.ts | added optional chaining | ~636 |
+| 16:42 | Edited components/ControllerListV5.tsx | 3→4 lines | ~30 |
+| 16:42 | Edited components/ControllerListV5.tsx | expanded (+8 lines) | ~210 |
+| 16:42 | Edited components/ControllerListV5.tsx | CSS: auto-passed | ~228 |
+| 16:42 | Edited components/ControllerListV5.tsx | inline fix | ~39 |
+| --:-- | Auto-skip more own-turn dead windows: attacker declare_blockers (no instant) + empty main phase (nothing playable); new playerHasMainPhaseAction helper | components/ControllerListV5.tsx, components/controller/shared.ts | done, tsc+lint clean | ~8k |
+| 16:44 | Session end: 77 writes across 6 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 17 reads | ~84660 tok |
+| 16:49 | Session end: 77 writes across 6 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 18 reads | ~95122 tok |
+| 17:29 | Edited components/controller/HandFan.tsx | 3→7 lines | ~114 |
+| 17:29 | Edited components/controller/HandFan.tsx | added optional chaining | ~192 |
+| 17:29 | Created tmp-buglog.cjs | — | ~348 |
+| 17:30 | fix: drag-to-cast also fired tap (cast + accordion) — swallow post-drag click via draggedRef in FanCard | components/controller/HandFan.tsx, .wolf/buglog.json | lint+tsc clean, lab 200 | ~600 |
+| 17:30 | Session end: 80 writes across 6 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 18 reads | ~95800 tok |
+| 17:41 | Edited components/ControllerListV5.tsx | 12→13 lines | ~203 |
+| 17:41 | quickPlay: lands now play directly (castCardFromHand) instead of opening the action sheet | components/ControllerListV5.tsx | lint+tsc clean | ~300 |
+| 17:41 | Session end: 81 writes across 6 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 19 reads | ~114508 tok |
+| 18:09 | Edited scripts/import-scryfall-cards.mjs | added 1 condition(s) | ~170 |
+| --:-- | Fix importer mana_cost for two-faced cards (adventure/Omen/MDFC): use front-face cost, not Scryfall joined string that parseManaCost sums | scripts/import-scryfall-cards.mjs | fixed + verified in hosted DB | ~6k |
+| 18:11 | Session end: 82 writes across 7 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 20 reads | ~117910 tok |
+| 20:47 | Edited components/controller/HandFan.tsx | reduced (-9 lines) | ~45 |
+| 20:47 | Edited components/controller/HandFan.tsx | CSS: props, prev | ~286 |
+| 20:47 | Edited components/controller/HandFan.tsx | CSS: a, b | ~164 |
+| 20:47 | Edited components/ControllerListV5.tsx | 1→5 lines | ~76 |
+| 20:48 | fix: hand reshuffled on refresh — stable id-tiebreak sort (v5) + id-preserving reconcile in HandFan (also refreshes stale playable/dim) | components/ControllerListV5.tsx, components/controller/HandFan.tsx | lint+tsc clean, lab 200 | ~1200 |
+| 20:48 | Session end: 86 writes across 7 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 20 reads | ~119320 tok |
+| 00:43 | Session end: 86 writes across 7 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 22 reads | ~120128 tok |
+| 00:47 | Created supabase/migrations/202605010311_profile_on_signup.sql | — | ~436 |
+| 00:48 | fix: signup never created public.profiles — add handle_new_user trigger + backfill (mig 311); validated vs local DB | supabase/migrations/202605010311_profile_on_signup.sql, .wolf/buglog.json | SQL_OK (rolled back) | ~900 |
+| 00:48 | Session end: 87 writes across 8 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 23 reads | ~120595 tok |
+| 00:54 | Edited components/ControllerListV5.tsx | added 3 condition(s) | ~681 |
+| 00:54 | Edited components/ControllerListV5.tsx | CSS: sides, switch | ~596 |
+| 00:54 | Edited components/ControllerListV5.tsx | make() → step() | ~163 |
+| 00:54 | Edited components/ControllerListV5.tsx | inline fix | ~38 |
+| 00:55 | Edited components/ControllerListV5.tsx | expanded (+7 lines) | ~167 |
+| 00:55 | Edited components/ControllerListV5.tsx | 6→1 lines | ~19 |
+| 00:56 | Edited components/ControllerListV5.tsx | expanded (+15 lines) | ~319 |
+| 00:56 | Edited components/ControllerListV5.tsx | inline fix | ~36 |
+| 00:56 | Edited components/ControllerListV5.tsx | 22→27 lines | ~483 |
+| --:-- | Granular auto-pass toggles (V5): split own-turn skips into own/atk/blk/mn + grouped scrollable popover; blk now owns blockers-skip + layout suppression; back-compat backfill from own | components/ControllerListV5.tsx | done, tsc+lint clean | ~10k |
+| 00:57 | Session end: 96 writes across 8 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 24 reads | ~125619 tok |
+| 10:05 | Created lib/game/auto-pass.ts | — | ~1248 |
+| 10:05 | Edited components/ControllerListV5.tsx | reduced (-9 lines) | ~82 |
+| 10:05 | Edited components/ControllerListV5.tsx | 4→1 lines | ~23 |
+| 10:05 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~46 |
+| 10:05 | Edited components/ControllerListV5.tsx | inline fix | ~22 |
+| 10:06 | Edited components/ControllerListV5.tsx | reduced (-10 lines) | ~340 |
+| 10:07 | Created tests/unit/auto-pass.test.ts | — | ~2099 |
+| --:-- | Extract shouldAutoPass to lib/game/auto-pass.ts (pure) + AutoPassSettings/OWN_SKIP_STEPS; effect now calls it; 38 unit tests | lib/game/auto-pass.ts, tests/unit/auto-pass.test.ts, components/ControllerListV5.tsx | done, 38/38 pass, tsc+lint clean | ~9k |
+| 10:08 | Session end: 103 writes across 10 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 25 reads | ~132324 tok |

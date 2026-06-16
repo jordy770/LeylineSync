@@ -548,3 +548,49 @@ export function playerHasInstantResponse(
     })
   })
 }
+
+// Does the player have ANY action available in their own main phase — a land to
+// play, an affordable castable spell (sorcery speed is open), or an affordable
+// usable activated ability (any speed, since it's your main)? Used by auto-pass
+// to advance a genuinely dead main phase. Affordability is approximate, matching
+// playerHasInstantResponse; the engine still rejects anything truly illegal.
+export function playerHasMainPhaseAction(
+  cards: ControllerCard[],
+  canCastSorceries: boolean,
+  canCastInstants: boolean,
+  pendingStackCount: number,
+  availableMana: number,
+  canPlayLand: boolean,
+): boolean {
+  // A land you can still play this turn.
+  if (
+    canPlayLand &&
+    cards.some((c) => c.zone === 'hand' && (c.cards?.type_line?.toLowerCase().includes('land') ?? false))
+  ) {
+    return true
+  }
+  // A castable, affordable spell in hand.
+  const handAction = cards.some((card) => {
+    if (card.zone !== 'hand') return false
+    if (!canCastHandSpell(card, canCastSorceries, canCastInstants, pendingStackCount)) return false
+    const total = manaCostTotal(card.cards?.mana_cost)
+    return total === 0 || availableMana >= total
+  })
+  if (handAction) return true
+  // A usable, affordable activated ability — unlike the instant-response check,
+  // sorcery-speed abilities count here (it's your main phase).
+  return cards.some((card) => {
+    if (card.zone !== 'battlefield') return false
+    const script = normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)
+    return (script.activated_abilities ?? []).some((ability) => {
+      if (ability.is_mana_ability) return false
+      if ((ability.source_zone_required ?? 'battlefield') !== 'battlefield') return false
+      const costs = ability.costs ?? []
+      if (costs.some((c) => c.type === 'tap_self') && card.is_tapped) return false
+      const manaCost = costs.find((c) => c.type === 'mana') as { amount?: string } | undefined
+      if (!manaCost?.amount) return true
+      const total = manaCostTotal(manaCost.amount)
+      return total === 0 || availableMana >= total
+    })
+  })
+}
