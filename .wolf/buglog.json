@@ -12753,6 +12753,1012 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-14T23:37:35.626Z"
+    },
+    {
+      "id": "bug-785",
+      "timestamp": "2026-06-15T07:46:17.095Z",
+      "error_message": "Type error",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T07:46:17.095Z"
+    },
+    {
+      "id": "bug-786",
+      "timestamp": "2026-06-15T07:46:17.880Z",
+      "error_message": "Wrong reference: React should be ReactPointerEvent",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Used \"React\" instead of \"ReactPointerEvent\"",
+      "fix": "Changed React → ReactPointerEvent",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T07:46:17.880Z"
+    },
+    {
+      "id": "bug-787",
+      "timestamp": "2026-06-15T08:02:17.697Z",
+      "error_message": "Incorrect value in code",
+      "file": "app/controller-style-lab/page.tsx",
+      "root_cause": "Had '@/components/controller/HandFan'",
+      "fix": "Changed to 'react'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T08:02:17.697Z"
+    },
+    {
+      "id": "bug-788",
+      "timestamp": "2026-06-15T08:02:27.737Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/controller-style-lab/page.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→26 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T08:02:27.737Z"
+    },
+    {
+      "id": "bug-789",
+      "timestamp": "2026-06-15T08:27:41.520Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→12 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T08:27:41.520Z"
+    },
+    {
+      "id": "bug-790",
+      "timestamp": "2026-06-15T08:28:28.423Z",
+      "error_message": "CSS fix: x",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "x: slot.x + pushX, → slot.x + pushX - CARD_HALF,",
+      "fix": "Changed x: slot.x + pushX, → slot.x + pushX - CARD_HALF,",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T08:28:28.423Z"
+    },
+    {
+      "id": "bug-791",
+      "timestamp": "2026-06-15T08:29:17.135Z",
+      "error_message": "HandFan drag-to-reorder: fan rendered ~2x too wide with an oversized gap when dragging right",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "framer-motion `layout` prop combined with explicit animate{x} double-applied the transform; the dragged card also reserved its origin slot instead of the moving drop-gap, double-occupying a slot. Tailwind -translate-x-1/2 centering was silently overridden by framer's inline transform.",
+      "fix": "Removed `layout` (x is animated manually so reorder springs anyway); visualIndex returns the drop gap `to` for the dragged card so every slot fills exactly once; baked CARD_HALF centering into the animated x instead of the overridden CSS class.",
+      "tags": [
+        "framer-motion",
+        "drag",
+        "reorder",
+        "layout",
+        "transform",
+        "handfan",
+        "controller"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T08:29:17.135Z"
+    },
+    {
+      "id": "bug-792",
+      "timestamp": "2026-06-15T08:33:37.306Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T08:33:37.306Z"
+    },
+    {
+      "id": "bug-793",
+      "timestamp": "2026-06-15T08:45:18.781Z",
+      "error_message": "HandFan: throwing/flicking a card to the side left cards scattered hundreds of px apart and misaligned at rest",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Relied on framer `dragSnapToOrigin` for the inner grab layer. On a fast throw the dragEnd reorder re-renders before the snap-back completes, disrupting framer's origin tracking, so the inner drag offset sticks. Each throw stranded another card with a leftover transform.",
+      "fix": "Extracted a FanCard component that owns its inner offset via useMotionValue(dx,dy) and explicitly springs them back to 0 with the imperative animate() on drag end, instead of dragSnapToOrigin. Outer layer still animates the slot position for reorder.",
+      "tags": [
+        "framer-motion",
+        "drag",
+        "dragSnapToOrigin",
+        "useMotionValue",
+        "reorder",
+        "handfan",
+        "controller"
+      ],
+      "related_bugs": [
+        "bug-791"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T08:45:18.781Z"
+    },
+    {
+      "id": "bug-794",
+      "timestamp": "2026-06-15T11:08:18.098Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→13 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T11:08:18.098Z"
+    },
+    {
+      "id": "bug-795",
+      "timestamp": "2026-06-15T11:08:32.552Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T11:08:32.552Z"
+    },
+    {
+      "id": "bug-796",
+      "timestamp": "2026-06-15T11:09:52.292Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "No early return/throw for edge case: !card",
+      "fix": "Added guard clause: if (!card)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T11:09:52.292Z"
+    },
+    {
+      "id": "bug-797",
+      "timestamp": "2026-06-15T11:10:04.311Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Had \"flex shrink-0 flex-col items-center gap-1.5 borde",
+      "fix": "Changed to \"relative z-40 ml-auto flex shrink-0 flex-col item",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T11:10:04.311Z"
+    },
+    {
+      "id": "bug-798",
+      "timestamp": "2026-06-15T11:10:14.428Z",
+      "error_message": "Wrong reference: ControllerListV4 should be ControllerListV5",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Used \"ControllerListV4\" instead of \"ControllerListV5\"",
+      "fix": "Changed ControllerListV4 → ControllerListV5",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T11:10:14.428Z"
+    },
+    {
+      "id": "bug-799",
+      "timestamp": "2026-06-15T11:10:21.252Z",
+      "error_message": "Missing import: @/components/ControllerListV5",
+      "file": "app/controller/[id]/page.tsx",
+      "root_cause": "Module(s) not imported: @/components/ControllerListV5",
+      "fix": "Added import(s) for @/components/ControllerListV5",
+      "tags": [
+        "auto-detected",
+        "missing-import",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T11:10:21.252Z"
+    },
+    {
+      "id": "bug-800",
+      "timestamp": "2026-06-15T11:11:45.719Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 15→9 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T11:11:45.719Z"
+    },
+    {
+      "id": "bug-801",
+      "timestamp": "2026-06-15T11:36:43.754Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T11:36:43.754Z"
+    },
+    {
+      "id": "bug-802",
+      "timestamp": "2026-06-15T12:07:10.639Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:07:10.639Z"
+    },
+    {
+      "id": "bug-803",
+      "timestamp": "2026-06-15T12:07:20.537Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 9→12 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:07:20.537Z"
+    },
+    {
+      "id": "bug-804",
+      "timestamp": "2026-06-15T12:11:13.972Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Condition was: if (step === 'declare_blockers' && incomingAttackers.l)",
+      "fix": "Changed to: if (step === 'declare_blockers' && hasBlockDecision &&)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:11:13.972Z"
+    },
+    {
+      "id": "bug-805",
+      "timestamp": "2026-06-15T12:11:18.871Z",
+      "error_message": "Wrong reference: incomingAttackers should be hasBlockDecision",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Used \"incomingAttackers\" instead of \"hasBlockDecision\"",
+      "fix": "Changed incomingAttackers → hasBlockDecision",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:11:18.871Z"
+    },
+    {
+      "id": "bug-806",
+      "timestamp": "2026-06-15T12:34:23.574Z",
+      "error_message": "CSS fix: Collapsed",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Collapsed: tap the handle / panel to fan the hand up. → tap the fan to raise it",
+      "fix": "Changed Collapsed: tap the handle / panel to fan the hand up. → tap the fan to raise it",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-06-15T12:35:42.994Z"
+    },
+    {
+      "id": "bug-807",
+      "timestamp": "2026-06-15T12:35:53.862Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:35:53.862Z"
+    },
+    {
+      "id": "bug-808",
+      "timestamp": "2026-06-15T12:36:27.875Z",
+      "error_message": "CSS fix: id",
+      "file": "app/controller-style-lab/page.tsx",
+      "root_cause": "id: 'c7', name: 'Cultivate', image_url: null → 'c7', name: 'Cultivate', image_url: null, showPlayability: true, playable: false",
+      "fix": "Changed id: 'c7', name: 'Cultivate', image_url: null → 'c7', name: 'Cultivate', image_url: null, showPlayability: true, playable: false",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:36:27.875Z"
+    },
+    {
+      "id": "bug-809",
+      "timestamp": "2026-06-15T12:36:38.349Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/controller-style-lab/page.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:36:38.349Z"
+    },
+    {
+      "id": "bug-810",
+      "timestamp": "2026-06-15T12:37:28.419Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:37:28.419Z"
+    },
+    {
+      "id": "bug-811",
+      "timestamp": "2026-06-15T12:38:17.058Z",
+      "error_message": "CSS fix: id",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "id: c.id, name: c.name, image_url: c.cards?.image_url ?? null → c.id, name: c.name, image_url: c.cards?.image_url ?? null, playable, showPlayability",
+      "fix": "Changed id: c.id, name: c.name, image_url: c.cards?.image_url ?? null → c.id, name: c.name, image_url: c.cards?.image_url ?? null, playable, showPlayability",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:38:17.058Z"
+    },
+    {
+      "id": "bug-812",
+      "timestamp": "2026-06-15T12:49:36.318Z",
+      "error_message": "Wrong reference: false should be true",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Used \"false\" instead of \"true\"",
+      "fix": "Changed false → true",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-15T12:51:30.530Z"
+    },
+    {
+      "id": "bug-813",
+      "timestamp": "2026-06-15T12:51:41.474Z",
+      "error_message": "Missing guard clause",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "No early return/throw for edge case: isDragging",
+      "fix": "Added guard clause: if (isDragging)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T12:51:41.474Z"
+    },
+    {
+      "id": "bug-814",
+      "timestamp": "2026-06-15T13:10:27.596Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 9→12 lines (3 removed) | Also: // --- drag --------------------------------------; // Lifted up out of the hand → arm \"open details\", | Also: const card = hand[i]; if (liftedRef.current && card) { | Also: {/* Hint shown once a card is lifted far enough to; <AnimatePresence>",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-06-15T13:11:24.516Z"
+    },
+    {
+      "id": "bug-815",
+      "timestamp": "2026-06-15T13:11:35.581Z",
+      "error_message": "CSS fix: scale",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "scale: isDragged ? (lifted ? 1.34 : 1.22) : popped ? 1.3 : 1, → isDragged ? 1.22 : popped ? 1.3 : 1,",
+      "fix": "Changed scale: isDragged ? (lifted ? 1.34 : 1.22) : popped ? 1.3 : 1, → isDragged ? 1.22 : popped ? 1.3 : 1,",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T13:11:35.581Z"
+    },
+    {
+      "id": "bug-816",
+      "timestamp": "2026-06-15T13:11:58.038Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T13:11:58.038Z"
+    },
+    {
+      "id": "bug-817",
+      "timestamp": "2026-06-15T13:23:20.025Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→4 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T13:23:20.025Z"
+    },
+    {
+      "id": "bug-818",
+      "timestamp": "2026-06-15T13:44:19.369Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Condition was: if (!el)",
+      "fix": "Changed to: if (canCast)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T13:44:19.369Z"
+    },
+    {
+      "id": "bug-819",
+      "timestamp": "2026-06-15T13:44:28.143Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Cast zone — appears while dragging a card (only if onCas; <AnimatePresence>",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-15T13:44:39.202Z"
+    },
+    {
+      "id": "bug-820",
+      "timestamp": "2026-06-15T13:44:45.463Z",
+      "error_message": "CSS fix: scale",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "scale: isDragged ? 1.22 : popped ? 1.3 : 1, → isDragged ? (castArmed ? 1.34 : 1.22) : popped ? 1.3 : 1,",
+      "fix": "Changed scale: isDragged ? 1.22 : popped ? 1.3 : 1, → isDragged ? (castArmed ? 1.34 : 1.22) : popped ? 1.3 : 1,",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T13:44:45.463Z"
+    },
+    {
+      "id": "bug-821",
+      "timestamp": "2026-06-15T13:45:12.958Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T13:45:12.958Z"
+    },
+    {
+      "id": "bug-822",
+      "timestamp": "2026-06-15T14:08:04.202Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "No early return/throw for edge case: !errorMessage",
+      "fix": "Added guard clause: if (!errorMessage)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:08:04.202Z"
+    },
+    {
+      "id": "bug-823",
+      "timestamp": "2026-06-15T14:08:10.964Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:08:10.964Z"
+    },
+    {
+      "id": "bug-824",
+      "timestamp": "2026-06-15T14:08:25.512Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→10 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:08:25.512Z"
+    },
+    {
+      "id": "bug-825",
+      "timestamp": "2026-06-15T14:17:28.608Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 26→32 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:17:28.608Z"
+    },
+    {
+      "id": "bug-826",
+      "timestamp": "2026-06-15T14:17:33.231Z",
+      "error_message": "Wrong reference: setErrorMessage should be setActionError",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Used \"setErrorMessage\" instead of \"setActionError\"",
+      "fix": "Changed setErrorMessage → setActionError",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:17:33.231Z"
+    },
+    {
+      "id": "bug-827",
+      "timestamp": "2026-06-15T14:17:41.011Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:17:41.011Z"
+    },
+    {
+      "id": "bug-828",
+      "timestamp": "2026-06-15T14:18:18.173Z",
+      "error_message": "Error toast vanished almost instantly — a background refresh erased the popup",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Action errors were stored in the shared useControllerGameState `errorMessage`, which loadControllerState() resets to null on every successful load. A load fires on every realtime DB change, so any action-error toast got wiped within moments.",
+      "fix": "Gave v5 a component-local `actionError` state for action/runtime errors, separate from the hook's load-error `errorMessage`. reportError, the unhandledrejection net, and the manual 'No mana ability found' messages now set actionError, which a refresh cannot clear. Toast shows actionError ?? errorMessage. Hook left untouched so v4/base controllers are unaffected.",
+      "tags": [
+        "error-handling",
+        "toast",
+        "realtime",
+        "refresh",
+        "useControllerGameState",
+        "controller",
+        "handfan"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:18:18.173Z"
+    },
+    {
+      "id": "bug-829",
+      "timestamp": "2026-06-15T14:42:17.847Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:42:17.847Z"
+    },
+    {
+      "id": "bug-830",
+      "timestamp": "2026-06-15T14:42:29.764Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:42:29.764Z"
+    },
+    {
+      "id": "bug-831",
+      "timestamp": "2026-06-15T14:42:37.997Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→13 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T14:42:37.997Z"
+    },
+    {
+      "id": "bug-832",
+      "timestamp": "2026-06-15T15:29:22.295Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T15:29:22.295Z"
+    },
+    {
+      "id": "bug-833",
+      "timestamp": "2026-06-15T15:30:03.702Z",
+      "error_message": "Dragging a hand card to the cast zone also fired the tap handler — the card cast AND the action sheet opened",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "After a framer-motion drag, the browser still dispatches a click on the card. Framer did not reliably suppress it in this two-layer setup, so onDragEnd (cast/reorder) ran and then onClick → onTapCard ran too — double-firing.",
+      "fix": "FanCard tracks a draggedRef: reset to false on every pointerdown, set true on onDragStart. onClick early-returns (and clears the ref) when draggedRef is true, swallowing the click that tails a drag. A pure tap has no dragStart so it still opens details.",
+      "tags": [
+        "framer-motion",
+        "drag",
+        "click",
+        "double-fire",
+        "handfan",
+        "controller",
+        "cast"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T15:30:03.702Z"
+    },
+    {
+      "id": "bug-834",
+      "timestamp": "2026-06-15T15:41:19.044Z",
+      "error_message": "Wrong operator: && should be ||",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Used \"&&\" instead of \"||\"",
+      "fix": "Changed operator && → ||",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T15:41:19.044Z"
+    },
+    {
+      "id": "bug-835",
+      "timestamp": "2026-06-15T16:09:18.198Z",
+      "error_message": "Wrong return value",
+      "file": "scripts/import-scryfall-cards.mjs",
+      "root_cause": "Was returning: card.mana_cost || card.card_faces?.map((face) => f",
+      "fix": "Now returns: card.mana_cost",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T16:09:18.198Z"
+    },
+    {
+      "id": "bug-importer-manacost-sum",
+      "timestamp": "2026-06-15T17:00:00.000Z",
+      "error_message": "Stormshriek Feral // Flush Out (and other two-faced cards) imported with a summed/inflated mana_cost",
+      "file": "scripts/import-scryfall-cards.mjs",
+      "root_cause": "Scryfall reports a JOINED top-level mana_cost for adventure/Omen/MDFC layouts (e.g. '{4}{R} // {1}{R}'). getManaCost stored that whole string, and downstream parseManaCost sums every pip across the ' // ', inflating the cost (phantom {5}{R}{R}, cmc 7 instead of the real {4}{R}, cmc 5).",
+      "fix": "getManaCost now returns the front face's cost when the top-level cost is a joined two-face string (contains '//') or is empty; the second face's cost rides in the card script. type_line/oracle_text keep their joined form (intentional).",
+      "tags": [
+        "importer",
+        "mana_cost",
+        "adventure",
+        "omen",
+        "mdfc",
+        "scryfall",
+        "two-faced"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T17:00:00.000Z"
+    },
+    {
+      "id": "bug-837",
+      "timestamp": "2026-06-15T18:47:24.467Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "9 lines replaced/restructured",
+      "fix": "Rewrote 13→4 lines (9 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T18:47:24.467Z"
+    },
+    {
+      "id": "bug-838",
+      "timestamp": "2026-06-15T18:47:32.991Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T18:47:32.991Z"
+    },
+    {
+      "id": "bug-839",
+      "timestamp": "2026-06-15T18:47:44.034Z",
+      "error_message": "Missing guard clause",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "No early return/throw for edge case: a.length !== b.length",
+      "fix": "Added guard clause: if (a.length !== b.length)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T18:47:44.034Z"
+    },
+    {
+      "id": "bug-840",
+      "timestamp": "2026-06-15T18:48:38.298Z",
+      "error_message": "Hand cards loaded in a different order / arrangement on every app refresh",
+      "file": "components/ControllerListV5.tsx, components/controller/HandFan.tsx",
+      "root_cause": "Two compounding issues: (1) v5 sorted the hand by zone_position only, so tied positions reshuffled arbitrarily each refresh; (2) HandFan fully reset its local order whenever the incoming id-order string changed, snapping to the new (shuffled) server order and also leaving playable/dim cues stale.",
+      "fix": "Added an id tiebreaker to the v5 hand sort for a deterministic order. Replaced HandFans propSig full-reset with an id-preserving reconcile: keep the players arrangement by id, refresh each cards data, append new cards, drop removed ones, and skip while dragging. sameHand() guards against needless re-renders.",
+      "tags": [
+        "handfan",
+        "controller",
+        "sort",
+        "reorder",
+        "realtime",
+        "refresh",
+        "stale-state"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T18:48:38.298Z"
+    },
+    {
+      "id": "bug-841",
+      "timestamp": "2026-06-15T22:48:28.115Z",
+      "error_message": "Creating an account via Supabase never created an attached public.profiles row (username/is_pro never set)",
+      "file": "supabase/migrations/202605010311_profile_on_signup.sql",
+      "root_cause": "sign-up only called supabase.auth.signUp; there was no trigger on auth.users and no app code inserting public.profiles, so every new user was left without a profile row (all \"left join public.profiles\" came back empty).",
+      "fix": "Added migration 202605010311: standard SECURITY DEFINER handle_new_user() trigger AFTER INSERT ON auth.users that inserts (id, username) into public.profiles (username from metadata or email local-part), idempotent via ON CONFLICT. Plus a backfill for existing profileless users. Validated against local DB in a rolled-back txn. Needs `supabase db push` to deploy to hosted.",
+      "tags": [
+        "supabase",
+        "auth",
+        "profiles",
+        "trigger",
+        "signup",
+        "migration",
+        "handle_new_user"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T22:48:28.115Z"
+    },
+    {
+      "id": "bug-842",
+      "timestamp": "2026-06-15T22:54:27.675Z",
+      "error_message": "CSS fix: AUTOPASS_OFF, fast, AUTOPASS_DEFAULT",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "AUTOPASS_OFF: AutoPassSettings = { op: false, own: false, stk: false, rsp: false → AutoPassSettings = { op: false, own: false, stk: false, rsp: false, atk: false, blk: false, mn: false; fast: skip opponents' turns AND your own empty phases, → skip opponents' turns AND your own empty/dead steps; AUTOPASS_DEFAULT: AutoPassSettings = { op: true, own: true, stk: true, rsp: false → AutoPassSettings = { op: true, own: true, stk: true, rsp: false, atk: true, blk: true, mn: true",
+      "fix": "Changed AUTOPASS_OFF: AutoPassSettings = { op: false, own: false, stk: false, rsp: false → AutoPassSettings = { op: false, own: false, stk: false, rsp: false, atk: false, blk: false, mn: false; fast: skip opponents' turns AND your own empty phases, → skip opponents' turns AND your own empty/dead steps; AUTOPASS_DEFAULT: AutoPassSettings = { op: true, own: true, stk: true, rsp: false → AutoPassSettings = { op: true, own: true, stk: true, rsp: false, atk: true, blk: true, mn: true",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T22:54:27.675Z"
+    },
+    {
+      "id": "bug-843",
+      "timestamp": "2026-06-15T22:54:57.956Z",
+      "error_message": "Wrong reference: myDeclaredAttackers should be incomingAttackers",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Used \"myDeclaredAttackers\" instead of \"incomingAttackers\"",
+      "fix": "Changed myDeclaredAttackers → incomingAttackers",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T22:54:57.956Z"
+    },
+    {
+      "id": "bug-844",
+      "timestamp": "2026-06-15T22:56:02.614Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 6→21 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-15T22:56:02.614Z"
+    },
+    {
+      "id": "bug-845",
+      "timestamp": "2026-06-16T08:05:21.183Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "11 lines replaced/restructured",
+      "fix": "Rewrote 12→3 lines (11 removed) | Also: if (!playerId || !turnState || isSessionFinished) ; if (turnState.priority_player_id !== playerId) ret",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-16T08:06:00.207Z"
     }
   ]
 }

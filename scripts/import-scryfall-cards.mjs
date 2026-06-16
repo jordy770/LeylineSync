@@ -282,7 +282,14 @@ function getImageUrl(card) {
 }
 
 function getManaCost(card) {
-  return card.mana_cost || card.card_faces?.map((face) => face.mana_cost).filter(Boolean).join(' // ') || null
+  // Two-faced layouts (adventure / Omen / MDFC) report a JOINED top-level cost,
+  // e.g. Stormshriek Feral // Flush Out → "{4}{R} // {1}{R}". Storing that string
+  // makes parseManaCost SUM both halves (→ a phantom {5}{R}{R}). Use the front
+  // face's cost (the primary castable face); the second face's cost rides in the
+  // card script. Single-faced cards keep their plain top-level cost.
+  if (card.mana_cost && !card.mana_cost.includes('//')) return card.mana_cost
+  const frontFaceCost = card.card_faces?.find((face) => face.mana_cost)?.mana_cost
+  return frontFaceCost || card.mana_cost || null
 }
 
 function getTypeLine(card) {
