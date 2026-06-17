@@ -1,10 +1,7 @@
--- supabase/functions_src/commander_deck_legality.sql
--- CANONICAL current definition (seeded from 202605010141_commander_deck_legality.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
---
--- Precon support: the deck lookup also accepts a shared precon deck (is_precon,
--- owner_id null) so spawn_deck_for_session can legality-check one before seeding.
+-- 202605010316_commander_legality_no_commander_fix
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (commander_deck_legality) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.commander_deck_legality(p_deck_id uuid)
 returns jsonb

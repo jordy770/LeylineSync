@@ -1,10 +1,8 @@
--- supabase/functions_src/keep_opening_hand.sql
--- CANONICAL current definition (created in mig 221).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs.
+-- 202605010317_commander_free_mulligan
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (keep_opening_hand) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
--- London mulligan, the keep half (mig 221): after N mulligans the CALLER keeps
--- by putting exactly N cards from their hand on the BOTTOM of their library
--- (any order; we preserve the order given). N = 0 keeps the hand as-is.
 create or replace function public.keep_opening_hand(
   p_session_id uuid,
   p_bottom_card_ids uuid[] default array[]::uuid[]

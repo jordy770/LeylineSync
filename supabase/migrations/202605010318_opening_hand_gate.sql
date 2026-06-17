@@ -1,20 +1,7 @@
--- supabase/functions_src/pass_priority.sql
--- CANONICAL current definition (seeded from 202605010140_skip_eliminated_players.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
---
--- Server-side pod auto-skip (mig 309, 2026-06-14): when a player passes priority
--- on an EMPTY stack, fast-forward through every downstream player whose PERSISTED
--- autopass_settings say they'd pass here too, collapsing N client round-trips
--- (one pass_priority + realtime hop per opponent) into a single call. It is
--- faithful to the client's own auto-pass decision — it only skips a player the
--- client itself would have auto-passed for:
---   * an opponent of the active player needs op = true AND rsp = false (a player
---     who wants to stop for responses keeps getting priority, their client decides);
---   * the active player (only relevant if reached mid-chain) needs own = true AND
---     an empty step.
--- A NON-empty stack or the declare_blockers step keeps the per-client behavior
--- unchanged: the stk/rsp response windows and block declarations stay manual.
+-- 202605010318_opening_hand_gate
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (pass_priority) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.pass_priority(p_session_id uuid)
 returns public.game_turn_state
