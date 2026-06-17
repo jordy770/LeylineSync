@@ -69,6 +69,9 @@ type HandFanProps = {
   /** Open the built-in zoom pop-over on tap (default). Turn off to delegate
    *  entirely to `onSelect` (e.g. to open a host action sheet). */
   tapOpensZoom?: boolean
+  /** Cleanup discard: red-ring every card ("tap to discard") and disable the
+   *  drag-up cast zone. The host's `onSelect` should perform the discard. */
+  discardMode?: boolean
 }
 
 // --- fan geometry ----------------------------------------------------------
@@ -131,6 +134,7 @@ type FanCardProps = {
   isDragging: boolean
   ringed: boolean
   dimmed: boolean
+  discarding: boolean
   peekProps?: PeekProps
   onTapCard: () => void
   onDragStart: () => void
@@ -146,6 +150,7 @@ function FanCard({
   isDragging,
   ringed,
   dimmed,
+  discarding,
   peekProps,
   onTapCard,
   onDragStart,
@@ -175,7 +180,7 @@ function FanCard({
 
   return (
     <motion.div
-      className="absolute bottom-0 left-0 w-[84px] origin-bottom"
+      className="pointer-events-auto absolute bottom-0 left-0 w-[84px] origin-bottom"
       style={{ zIndex }}
       initial={false}
       animate={outer}
@@ -208,8 +213,11 @@ function FanCard({
         }}
         className={cn(
           'cursor-grab touch-none rounded-lg transition-opacity active:cursor-grabbing',
-          ringed && 'ring-1 ring-amber-400/80 ring-offset-1 ring-offset-[#0C0E14]',
-          dimmed && 'opacity-40',
+          // Discard cue takes precedence over the playable/dim cues.
+          discarding
+            ? 'ring-2 ring-red-500/80 ring-offset-1 ring-offset-[#0C0E14]'
+            : ringed && 'ring-1 ring-amber-400/80 ring-offset-1 ring-offset-[#0C0E14]',
+          dimmed && !discarding && 'opacity-40',
         )}
       >
         <MotionCard
@@ -228,8 +236,10 @@ export default function HandFan({
   onHold,
   onCast,
   tapOpensZoom = true,
+  discardMode = false,
 }: HandFanProps) {
-  const canCast = Boolean(onCast)
+  // No drag-to-cast while discarding — a tap discards the card instead.
+  const canCast = Boolean(onCast) && !discardMode
   const [expanded, setExpanded] = useState(false)
   const [active, setActive] = useState<number | null>(null) // mouse-hover pop
   const [zoomed, setZoomed] = useState<HandFanCard | null>(null)
@@ -239,7 +249,11 @@ export default function HandFan({
   // (snappier than the 350ms default) is scoped to the fan only.
   const bindPeek = useLongPress()
 
-  // Local order so the prototype can reorder / cast without a parent round-trip.
+  // Local hand order. DECISION: reorder is a purely cosmetic, per-device
+  // arrangement — it is intentionally NOT persisted to the server (each phone is
+  // a personal controller; hand order is private and has no game meaning). The
+  // reconcile effect below preserves it by id across refreshes; it resets on
+  // remount, which is acceptable for a cosmetic sort.
   const [hand, setHand] = useState<HandFanCard[]>(cards)
 
   // Drag state.
@@ -380,7 +394,7 @@ export default function HandFan({
                 borderColor: castArmed ? 'rgba(251,191,36,0.95)' : 'rgba(148,163,184,0.4)',
                 backgroundColor: castArmed ? 'rgba(251,191,36,0.12)' : 'rgba(12,14,20,0.5)',
               }}
-              className="flex h-28 w-44 items-center justify-center rounded-2xl border-2 border-dashed text-center"
+              className="flex h-28 w-72 items-center justify-center rounded-2xl border-2 border-dashed text-center"
             >
               <span
                 className={`text-xs font-black uppercase tracking-widest ${
@@ -410,7 +424,14 @@ export default function HandFan({
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center">
         <motion.div
           ref={fanRef}
-          className="pointer-events-auto relative h-[210px] w-full max-w-md touch-none select-none"
+          // Click-through when collapsed so the empty fan box doesn't block the
+          // lands/board above; the cards themselves stay tappable (pointer-events-auto
+          // on each FanCard) to raise the hand. Expanded, the whole panel is live and
+          // the z-20 backdrop catches outside taps to collapse.
+          className={cn(
+            'relative h-[210px] w-full max-w-md touch-none select-none',
+            expanded ? 'pointer-events-auto' : 'pointer-events-none',
+          )}
           animate={{ y: expanded ? 0 : COLLAPSED_Y }}
           transition={{ type: 'spring', stiffness: 320, damping: 32 }}
           onPointerMove={handlePointerMove}
@@ -457,6 +478,7 @@ export default function HandFan({
                     isDragging={isDragged}
                     ringed={showCues && (card.playable ?? false)}
                     dimmed={showCues && !(card.playable ?? false) && !isDragged}
+                    discarding={discardMode}
                     peekProps={onHold && expanded ? bindPeek(() => onHold(card)) : undefined}
                     onTapCard={() => {
                       if (!expanded) {

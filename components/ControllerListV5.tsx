@@ -1450,6 +1450,16 @@ function MainArea({
   }
   const cardNameById = new Map(battlefieldCards.map((c) => [c.id, c.name]))
 
+  // Responsive battlefield sizing: cards fill the row HEIGHT (so they scale to the
+  // device — big on a desktop's tall board, smaller on a short phone row) and never
+  // exceed it, so there's no vertical overflow/scrollbar. Width follows MotionCard's
+  // 2:3 ratio via the wrapper's aspect-[2/3]. The max-height cap shrinks as the board
+  // fills so more cards fit before the row scrolls horizontally; long-press peeks a
+  // full-size card for an unreadable one.
+  const permCount = creatures.length + other.length
+  const permMaxH = permCount <= 4 ? 220 : permCount <= 7 ? 170 : permCount <= 10 ? 130 : permCount <= 14 ? 104 : 84
+  const landsStripH = lands.length <= 8 ? 80 : lands.length <= 14 ? 64 : 52
+
   const handleCardTap = (card: ControllerCard) => {
     const autoColor = getAutoTapColor(card)
     if (autoColor !== null) void onTapForMana(card.id, autoColor)
@@ -1542,19 +1552,26 @@ function MainArea({
       <div className="relative flex min-h-0 flex-1 flex-col">
 
       {/* My battlefield — creatures & other permanents */}
-      <div className="flex min-h-0 flex-1 items-center gap-2 overflow-x-auto bg-[#0C0F16] px-3 py-2">
+      <div className="flex min-h-0 flex-1 items-center gap-2 overflow-x-auto overflow-y-hidden bg-[#0C0F16] px-3 py-2">
         {[...creatures, ...other].map((card) => (
           <button
             key={card.id}
             type="button"
             onClick={() => handleCardTap(card)}
             {...bindPeek(() => setPeekCard(card))}
-            className="relative w-14 shrink-0 transition-transform active:scale-95"
+            style={{ maxHeight: permMaxH }}
+            className="relative h-full aspect-[2/3] shrink-0 transition-transform active:scale-95"
           >
             <MotionCard
               card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
               size="board"
               useLayoutId={false}
+              // Allow swipe-to-scroll on the strip. MotionCard defaults to touch-none
+              // (for draggable hand cards); we override with touch-auto. NB: must be
+              // touch-auto, not touch-pan-x — tailwind-merge keeps those in different
+              // groups, so touch-pan-x would NOT replace touch-none (both would apply
+              // and touch-none would win, blocking the scroll).
+              className="touch-auto"
             />
             {getEffectivePT(card) && getEffectivePT(card) !== getPowerToughnessLabel(card) && (
               <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow ring-1 ring-black/40">
@@ -1588,19 +1605,25 @@ function MainArea({
 
       {/* Lands strip */}
       {lands.length > 0 && (
-        <div className="flex h-14 shrink-0 items-center gap-2 border-t border-[#1E2230] bg-[#090B10] px-3">
+        <div
+          style={{ height: landsStripH }}
+          className="flex shrink-0 items-center gap-2 overflow-x-auto overflow-y-hidden border-t border-[#1E2230] bg-[#090B10] px-3 py-1.5"
+        >
           {lands.map((card) => (
             <button
               key={card.id}
               type="button"
               onClick={() => handleCardTap(card)}
               {...bindPeek(() => setPeekCard(card))}
-              className="w-10 shrink-0 transition-transform active:scale-95"
+              className="h-full aspect-[2/3] shrink-0 transition-transform active:scale-95"
             >
               <MotionCard
                 card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
                 size="board"
                 useLayoutId={false}
+                // Allow swipe-to-scroll through a long lands row (touch-auto overrides
+                // MotionCard's touch-none; touch-pan-x would not — see note above).
+                className="touch-auto"
               />
             </button>
           ))}
@@ -1618,7 +1641,7 @@ function MainArea({
       )}
 
       {/* Hand + zone access */}
-      <div className="flex h-[76px] shrink-0 items-center border-t border-[#1E2230] bg-[#0C0E14]">
+      <div className="flex h-11 shrink-0 items-center border-t border-[#1E2230] bg-[#0C0E14]">
         {/* Hand — Arena-style fan (v5). HandFan is a fixed bottom overlay, so it
             leaves this flex row; the zone buttons below are elevated to stay tappable. */}
         <HandFan
@@ -1636,6 +1659,7 @@ function MainArea({
             return { id: c.id, name: c.name, image_url: c.cards?.image_url ?? null, playable, showPlayability }
           })}
           tapOpensZoom={false}
+          discardMode={mustDiscard}
           onSelect={(c) => {
             const card = handCards.find((h) => h.id === c.id)
             if (!card) return
@@ -1657,7 +1681,7 @@ function MainArea({
         />
 
         {/* Fixed zone buttons — z-40 keeps them above the fixed HandFan overlay */}
-        <div className="relative z-40 ml-auto flex shrink-0 flex-col items-center gap-1.5 border-l border-[#1E2230] bg-[#0C0E14] px-2.5">
+        <div className="relative z-40 ml-auto flex shrink-0 flex-row items-center gap-2 border-l border-[#1E2230] bg-[#0C0E14] px-2.5">
           {([
             { tab: 'graveyard' as MyZoneTab, label: 'GY', count: ownGraveyard.length, countCls: 'text-slate-400' },
             { tab: 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     countCls: 'text-amber-500' },
@@ -1666,7 +1690,7 @@ function MainArea({
               key={tab}
               type="button"
               onClick={() => { setMyZoneTab(tab); setMyZoneOpen(true) }}
-              className="flex w-full items-center justify-between gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-1 active:scale-95"
+              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-1 active:scale-95"
             >
               <span className="text-[9px] font-black text-slate-500">{label}</span>
               <span className={`text-[10px] font-black ${countCls}`}>{count}</span>

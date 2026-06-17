@@ -4,9 +4,10 @@ import ControllerFullscreen from './ControllerFullscreen';
 import AddToHomeScreen from './AddToHomeScreen';
 
 // Lazy-load each controller version so opening the page only compiles the ONE
-// requested via ?v=. V4 is the product controller (and the default); V1 is the
-// legacy fallback, kept reachable via ?v=1. V2/V3 were retired 2026-06-10.
-// V5 is a HandFan (Arena-style fan hand) prototype, reachable via ?v=5.
+// requested via ?v=. V5 (Arena-style HandFan) is now the default product
+// controller. V4 is kept reachable via ?v=4 as a fallback while V5's gesture
+// UX is validated on real devices; V1 is the legacy fallback via ?v=1. V2/V3
+// were retired 2026-06-10.
 const ControllerList = dynamic(() => import('@/components/ControllerList'));
 const ControllerListV4 = dynamic(() => import('@/components/ControllerListV4'));
 const ControllerListV5 = dynamic(() => import('@/components/ControllerListV5'));
@@ -41,10 +42,10 @@ async function ControllerContent({
       <AddToHomeScreen />
       {v === '1' ? (
         <ControllerList sessionId={id} />
-      ) : v === '5' ? (
-        <ControllerListV5 sessionId={id} />
-      ) : (
+      ) : v === '4' ? (
         <ControllerListV4 sessionId={id} />
+      ) : (
+        <ControllerListV5 sessionId={id} />
       )}
     </main>
   );
