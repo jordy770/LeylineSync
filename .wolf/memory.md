@@ -4746,3 +4746,219 @@
 | 10:07 | Created tests/unit/auto-pass.test.ts | — | ~2099 |
 | --:-- | Extract shouldAutoPass to lib/game/auto-pass.ts (pure) + AutoPassSettings/OWN_SKIP_STEPS; effect now calls it; 38 unit tests | lib/game/auto-pass.ts, tests/unit/auto-pass.test.ts, components/ControllerListV5.tsx | done, 38/38 pass, tsc+lint clean | ~9k |
 | 10:08 | Session end: 103 writes across 10 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 25 reads | ~132324 tok |
+| 10:39 | Session end: 103 writes across 10 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 25 reads | ~132324 tok |
+| 12:11 | Edited app/controller/[id]/page.tsx | 7→8 lines | ~165 |
+| 12:11 | Edited app/controller/[id]/page.tsx | 7→7 lines | ~56 |
+| 12:11 | Edited components/controller/HandFan.tsx | CSS: discard | ~101 |
+| 12:11 | Edited components/controller/HandFan.tsx | CSS: discarding | ~36 |
+| 12:12 | Edited components/controller/HandFan.tsx | 6→7 lines | ~25 |
+| 12:12 | Edited components/controller/HandFan.tsx | 5→8 lines | ~122 |
+| 12:12 | Edited components/controller/HandFan.tsx | 5→7 lines | ~60 |
+| 12:12 | Edited components/controller/HandFan.tsx | 3→4 lines | ~67 |
+| 12:12 | Edited components/controller/HandFan.tsx | CSS: DECISION | ~122 |
+| 12:12 | Edited components/ControllerListV5.tsx | 8→9 lines | ~107 |
+| --:-- | Promote V5 to default controller (page.tsx; V4 now ?v=4 fallback); add HandFan discard cue (red ring + cast disabled) + document reorder as cosmetic | app/controller/[id]/page.tsx, components/controller/HandFan.tsx, components/ControllerListV5.tsx | done, tsc+lint clean | ~7k |
+| 12:13 | Session end: 113 writes across 10 files (ControllerListV5.tsx, HandFan.tsx, page.tsx, next.config.ts, tmp-buglog.cjs) | 28 reads | ~182054 tok |
+
+## Session: 2026-06-16 12:45
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-16 12:46
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:48 | Edited components/sign-up-form.tsx | 2→3 lines | ~40 |
+| 14:48 | Edited components/sign-up-form.tsx | CSS: data, username | ~237 |
+| 14:49 | Edited components/sign-up-form.tsx | expanded (+14 lines) | ~187 |
+| 14:49 | add required Username field to sign-up form, passed via options.data.username (read by handle_new_user trigger) | components/sign-up-form.tsx | lint+tsc clean | ~400 |
+| 14:50 | Session end: 3 writes across 1 files (sign-up-form.tsx) | 1 reads | ~464 tok |
+| 15:00 | Created supabase/migrations/202605010312_username_unique.sql | — | ~416 |
+| 15:01 | Edited components/sign-up-form.tsx | CSS: p_username | ~386 |
+| 15:01 | unique username: mig 312 (dedup existing collisions -> case-insensitive unique index on lower(username) + is_username_available RPC) + pre-check & race fallback in sign-up form | supabase/migrations/202605010312_username_unique.sql, components/sign-up-form.tsx | SQL_OK (rolled back), lint+tsc clean | ~900 |
+| 15:01 | Session end: 5 writes across 2 files (sign-up-form.tsx, 202605010312_username_unique.sql) | 1 reads | ~2733 tok |
+| 15:22 | Edited components/controller/HandFan.tsx | inline fix | ~37 |
+| 15:23 | Edited components/controller/HandFan.tsx | "flex h-28 w-44 items-cent" → "flex h-40 w-60 items-cent" | ~33 |
+| 15:24 | Session end: 7 writes across 3 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx) | 1 reads | ~2803 tok |
+| 16:16 | Edited components/controller/HandFan.tsx | inline fix | ~24 |
+| 16:16 | Edited components/controller/HandFan.tsx | "flex h-40 w-60 items-cent" → "flex h-28 w-72 items-cent" | ~33 |
+| 16:16 | Session end: 9 writes across 3 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx) | 1 reads | ~2860 tok |
+| 16:24 | Edited components/ControllerListV5.tsx | expanded (+8 lines) | ~174 |
+| 16:24 | Edited components/ControllerListV5.tsx | CSS: width | ~69 |
+| 16:25 | Edited components/ControllerListV5.tsx | CSS: width | ~134 |
+| --:-- | Responsive battlefield card sizing (V5): creatures/other 56px->108-44px by count, lands 40px->58-38px, lands strip auto-height + scroll; uses empty board, shrinks as it fills, peek for full read | components/ControllerListV5.tsx | done, tsc+lint clean | ~4k |
+| 16:26 | Session end: 12 writes across 4 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx) | 3 reads | ~52178 tok |
+| 16:38 | Edited components/controller/HandFan.tsx | 4→4 lines | ~43 |
+| 16:38 | Edited components/controller/HandFan.tsx | expanded (+7 lines) | ~171 |
+| --:-- | Fix: collapsed HandFan blocked land/board taps (210px pointer-events-auto box); panel now click-through when collapsed, cards keep pointer-events-auto to still raise the hand | components/controller/HandFan.tsx | done, tsc+lint clean | ~3k |
+| 16:40 | Session end: 14 writes across 4 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx) | 4 reads | ~57854 tok |
+| 16:50 | Created supabase/migrations/202605010313_dedupe_cards.sql | — | ~857 |
+| 16:51 | Edited scripts/import-scryfall-cards.mjs | modified upsertBatchWithRetry() | ~184 |
+| 16:51 | dedupe duplicate cards: mig 313 (canonical per oracle_id, remap game_cards+decks, delete, unique index) + importer onConflict oracle_id DO NOTHING | supabase/migrations/202605010313_dedupe_cards.sql, scripts/import-scryfall-cards.mjs | SQL_OK (rolled back), lint clean | ~2500 |
+| 16:51 | Session end: 16 writes across 6 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 6 reads | ~62189 tok |
+| 17:01 | Edited components/ControllerListV5.tsx | the() → HEIGHT() | ~204 |
+| 17:01 | Edited components/ControllerListV5.tsx | CSS: maxHeight | ~141 |
+| 17:01 | Edited components/ControllerListV5.tsx | CSS: height | ~150 |
+| 17:02 | Edited components/ControllerListV5.tsx | 12→12 lines | ~150 |
+| 17:03 | Session end: 20 writes across 6 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 6 reads | ~63018 tok |
+| 17:04 | Edited components/ControllerListV5.tsx | "flex h-[76px] shrink-0 it" → "flex h-[56px] shrink-0 it" | ~28 |
+| 17:07 | Session end: 21 writes across 6 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 6 reads | ~63124 tok |
+| 17:08 | Edited components/ControllerListV5.tsx | 12→12 lines | ~230 |
+| 17:08 | Edited components/ControllerListV5.tsx | "flex h-[56px] shrink-0 it" → "flex h-11 shrink-0 items-" | ~27 |
+| --:-- | Hand/zone bar slimmer: GY/EX side-by-side (flex-row) + bar h-76->h-11 (44px); reclaims board height, clears fan peek | components/ControllerListV5.tsx | done, lint clean | ~2k |
+| 17:09 | Session end: 23 writes across 6 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 6 reads | ~63381 tok |
+| 17:16 | Created scripts/audit-duplicate-cards.sql | — | ~891 |
+| 17:17 | Edited scripts/audit-duplicate-cards.sql | added 1 import(s) | ~50 |
+| 17:17 | add read-only pre-flight audit for card dedupe (counts, references-to-remap, canonical picks) | scripts/audit-duplicate-cards.sql | runs clean on local (353 cards, 0 dupes) | ~700 |
+| 17:17 | Session end: 25 writes across 7 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 7 reads | ~64389 tok |
+| 17:18 | Edited components/ControllerListV5.tsx | 6→9 lines | ~162 |
+| 17:18 | Edited components/ControllerListV5.tsx | 6→8 lines | ~119 |
+| --:-- | Fix: cant scroll crowded battlefield strips; MotionCard touch-none blocked swipe-scroll, added touch-pan-x override on board+land cards | components/ControllerListV5.tsx | done, tsc+lint clean | ~2k |
+| 17:19 | Session end: 27 writes across 7 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 7 reads | ~64721 tok |
+| 17:31 | Edited components/ControllerListV5.tsx | CSS: NB | ~142 |
+| 17:31 | Edited components/ControllerListV5.tsx | 4→5 lines | ~76 |
+| --:-- | Real fix for battlefield scroll: touch-pan-x didnt override touch-none (different tailwind-merge groups); use touch-auto on board+land MotionCards | components/ControllerListV5.tsx | done, lint clean | ~3k |
+| 17:32 | Session end: 29 writes across 7 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 8 reads | ~65546 tok |
+| 00:03 | Created tmp-audit-cards.mjs | — | ~973 |
+| 00:15 | Created supabase/migrations/202605010313_dedupe_cards.sql | — | ~1176 |
+| 00:15 | Edited supabase/migrations/202605010313_dedupe_cards.sql | modified min() | ~92 |
+| 00:16 | Created scripts/audit-duplicate-cards.sql | — | ~732 |
+| 00:16 | corrected card-dedupe: real dupes are NULL-oracle rows shadowing real cards by name; mig 313 rewritten to merge unique-name junk into real + carry curated script; audit SQL updated | supabase/migrations/202605010313_dedupe_cards.sql, scripts/audit-duplicate-cards.sql | SQL_OK (rolled back), hosted audited read-only | ~3000 |
+| 00:17 | Session end: 33 writes across 8 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 8 reads | ~68731 tok |
+| 00:38 | Created tmp-forest-test.mjs | — | ~439 |
+| 00:38 | Session end: 34 writes across 9 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 8 reads | ~69202 tok |
+| 01:09 | Session end: 34 writes across 9 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 8 reads | ~69202 tok |
+| 01:12 | Session end: 34 writes across 9 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 8 reads | ~69202 tok |
+| 01:26 | Session end: 34 writes across 9 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 8 reads | ~69202 tok |
+| 01:42 | Edited components/DeckManager.tsx | added 2 condition(s) | ~149 |
+| 01:43 | Edited components/DeckManager.tsx | CSS: hover | ~507 |
+| 01:44 | Edited components/DeckManager.tsx | expanded (+11 lines) | ~174 |
+| 01:44 | Edited components/DeckManager.tsx | 5→6 lines | ~30 |
+| 01:44 | Edited components/DeckManager.tsx | added optional chaining | ~1880 |
+| 01:46 | Edited components/DeckManager.tsx | inline fix | ~26 |
+| 01:47 | Edited components/DeckManager.tsx | inline fix | ~15 |
+| 01:47 | Edited components/DeckManager.tsx | inline fix | ~26 |
+| 01:47 | deck builder: add visual Grid view (toggle, localStorage), cards grouped by type with art thumbnails + qty stepper/commander/remove/behavior controls | components/DeckManager.tsx | lint+tsc clean (0) | ~1800 |
+| 01:48 | Session end: 42 writes across 10 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 27 reads | ~128964 tok |
+| 01:56 | Created scripts/bot-runner.mjs | — | ~3480 |
+| 01:57 | Session end: 43 writes across 11 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 29 reads | ~133690 tok |
+| 01:58 | Edited scripts/bot-runner.mjs | modified if() | ~75 |
+| 01:58 | Edited scripts/bot-runner.mjs | added 2 condition(s) | ~295 |
+| 01:58 | Edited scripts/bot-runner.mjs | modified parseArgs() | ~28 |
+| 01:59 | Created scratch-bot-smoke.mjs | — | ~1756 |
+| 01:59 | Edited scratch-bot-smoke.mjs | 4→2 lines | ~22 |
+| 02:00 | Edited scratch-bot-smoke.mjs | added error handling | ~110 |
+| 02:01 | Edited scratch-bot-smoke.mjs | added 1 condition(s) | ~252 |
+| 02:03 | Edited scratch-bot-smoke.mjs | modified for() | ~169 |
+| 02:03 | Edited scripts/bot-runner.mjs | and() → first() | ~322 |
+| 02:04 | Edited scripts/bot-runner.mjs | added 1 condition(s) | ~128 |
+| 02:04 | Edited scripts/bot-runner.mjs | 1→4 lines | ~60 |
+| --:-- | Built AI CPU test bot (scripts/bot-runner.mjs): local pg runner, joins a seat, vanilla deck, keeps hand/plays land/casts/attacks/passes, generic decision auto-resolver; verified vs live local DB (reached turn 7, cast+attacked, no soft-lock) | scripts/bot-runner.mjs | done, smoke-verified | ~14k |
+| 02:05 | Session end: 54 writes across 12 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 30 reads | ~142687 tok |
+| 02:10 | Created supabase/functions_src/handle_cast_permanent.sql | — | ~930 |
+| 02:11 | Created scratch-entered.mjs | — | ~1493 |
+| 02:12 | Edited scripts/bot-runner.mjs | first() → creatures() | ~299 |
+| 02:12 | Edited scripts/bot-runner.mjs | modified if() | ~26 |
+| 02:12 | Edited supabase/functions_src/handle_cast_permanent.sql | inline fix | ~30 |
+| --:-- | Engine fix: hard-cast creatures stayed summoning-sick forever (handle_cast_permanent never stamped entered_battlefield_turn_number); mig 314 + functions_src; bot no longer needs sickness cheat; full suite 1559/1559 | supabase/functions_src/handle_cast_permanent.sql, supabase/migrations/202605010314_cast_permanent_entered.sql, scripts/bot-runner.mjs | done, all tests pass | ~12k |
+| 02:16 | Session end: 59 writes across 14 files (sign-up-form.tsx, 202605010312_username_unique.sql, HandFan.tsx, ControllerListV5.tsx, 202605010313_dedupe_cards.sql) | 31 reads | ~145663 tok |
+
+## Session: 2026-06-17 09:30
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-17 09:31
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-17 09:31
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-17 09:31
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:08 | Created components/GameSessionLobby.tsx | — | ~7898 |
+| 10:08 | Edited app/page.tsx | added 1 import(s) | ~111 |
+| 10:09 | Edited app/page.tsx | CSS: sm | ~294 |
+| 10:10 | designqc: captured 4 screenshots (114KB, ~10000 tok) | / | ready for eval | ~0 |
+| 10:11 | Edited components/GameSessionLobby.tsx | CSS: sm | ~161 |
+| 10:11 | Edited components/GameSessionLobby.tsx | 8→9 lines | ~60 |
+| 10:11 | Edited components/GameSessionLobby.tsx | 2→2 lines | ~34 |
+| 10:11 | designqc: captured 4 screenshots (128KB, ~10000 tok) | / | ready for eval | ~0 |
+| 10:12 | redesign home games overview: GameSessionLobby as dark arcane game-hub (lucide icons, status badges, session cards w/ copy+quick-open, polished active-session panel, empty state) + gradient hero in page.tsx | components/GameSessionLobby.tsx, app/page.tsx | lint+tsc clean (0), screenshot-verified (anon/empty state) | ~2600 |
+| 10:12 | Session end: 6 writes across 2 files (GameSessionLobby.tsx, page.tsx) | 3 reads | ~19191 tok |
+| 10:28 | Edited app/layout.tsx | 2→2 lines | ~31 |
+| 10:29 | Edited app/layout.tsx | CSS: weight, weight, style | ~155 |
+| 10:29 | Edited app/layout.tsx | 1→4 lines | ~43 |
+| 10:29 | Edited app/globals.css | modified media() | ~656 |
+| 10:30 | Created components/LandingHero.tsx | — | ~2024 |
+| 10:31 | Created app/page.tsx | — | ~1412 |
+| 10:31 | Edited components/LandingHero.tsx | "font-display text-[19px] " → "font-display text-[19px] " | ~42 |
+| 10:32 | designqc: captured 6 screenshots (202KB, ~15000 tok) | / | ready for eval | ~0 |
+| 10:33 | Edited components/LandingHero.tsx | inline fix | ~8 |
+| 10:33 | designqc: captured 6 screenshots (203KB, ~15000 tok) | / | ready for eval | ~0 |
+| 10:34 | landing redesign (frontend-design): hero = MTG "Leyline Sync" Legendary Enchantment card w/ SVG leyline art (board->4 controllers, animated conduits); Cinzel+Spectral fonts, void/parchment/gold palette, mana-pip device; lobby reskinned violet->amber for cohesion | app/page.tsx, app/layout.tsx, app/globals.css, components/LandingHero.tsx, components/GameSessionLobby.tsx | lint+tsc clean (0), screenshot-verified desktop+mobile | ~3500 |
+| 10:34 | Session end: 14 writes across 5 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 5 reads | ~24027 tok |
+| 10:40 | Created components/SiteNav.tsx | — | ~349 |
+| 10:40 | Edited app/page.tsx | 8→5 lines | ~75 |
+| 10:40 | Edited app/page.tsx | removed 23 lines | ~48 |
+| 10:40 | Created app/decks/page.tsx | — | ~657 |
+| 10:41 | Edited components/DeckManager.tsx | "text-lg font-semibold" → "font-display text-lg trac" | ~27 |
+| 10:41 | Edited components/DeckManager.tsx | "text-lg font-semibold" → "font-display text-lg trac" | ~27 |
+| 10:41 | Edited components/DeckManager.tsx | "text-sm font-semibold tex" → "font-display text-base tr" | ~28 |
+| 10:42 | Edited lib/supabase/proxy.ts | 3→4 lines | ~54 |
+| 10:42 | designqc: captured 4 screenshots (98KB, ~10000 tok) | /decks | ready for eval | ~0 |
+| 10:43 | Edited lib/supabase/proxy.ts | 4→3 lines | ~38 |
+| 10:43 | carry landing identity into /decks: SiteNav shared component (landing+decks), decks page void/ley-grid shell + spellbook header (Cinzel), DeckManager sky->amber + Cinzel section headers; reverted temp /decks auth bypass | app/decks/page.tsx, app/page.tsx, components/SiteNav.tsx, components/DeckManager.tsx, lib/supabase/proxy.ts | lint+tsc clean (0), screenshot-verified | ~1600 |
+| 10:43 | Session end: 23 writes across 8 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 6 reads | ~25602 tok |
+| 10:51 | Created mockups/style-themes.html | — | ~5232 |
+| 10:57 | designqc: captured 6 screenshots (310KB, ~15000 tok) | /style-themes.html | ready for eval | ~0 |
+| 10:58 | frontend-design: theme chooser mockup — 5 grounded LeylineSync directions (Leyline/Spark/Five Colors/Grimoire/Arena HUD) as live specimens w/ palettes, type, components, signature element | mockups/style-themes.html | screenshot-verified all 5 | ~3000 |
+| 10:58 | Session end: 24 writes across 9 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 7 reads | ~31614 tok |
+| 11:20 | Edited app/globals.css | expanded (+22 lines) | ~403 |
+| 11:21 | Created app/style-guide/page.tsx | — | ~4649 |
+| 11:21 | Edited lib/supabase/proxy.ts | 3→4 lines | ~56 |
+| 11:22 | designqc: captured 6 screenshots (247KB, ~15000 tok) | /style-guide | ready for eval | ~0 |
+| 11:22 | Leyline chosen -> living style guide: documented token system in globals.css + /style-guide page (colour/type/shape/components/voice), built on real tokens; added /style-guide to dev bypass | app/globals.css, app/style-guide/page.tsx, lib/supabase/proxy.ts | lint+tsc clean (0), route 200, screenshot-verified | ~2400 |
+| 11:23 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/leylinesync-ui-identity.md | — | ~457 |
+| 11:23 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~93 |
+| 11:23 | Session end: 29 writes across 11 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 8 reads | ~37311 tok |
+| 12:03 | Edited app/globals.css | CSS: --text-bright | ~79 |
+| 12:04 | Edited components/LandingHero.tsx | "var(--text)" → "#ece3cd" | ~4 |
+| 12:04 | Edited app/globals.css | 33→35 lines | ~372 |
+| 12:05 | Created components/AuthShell.tsx | — | ~294 |
+| 12:05 | Edited app/auth/login/page.tsx | added 1 import(s) | ~50 |
+| 12:05 | Edited app/auth/login/page.tsx | removed 12 lines | ~31 |
+| 12:05 | Edited components/login-form.tsx | "text-2xl" → "font-display text-2xl tra" | ~32 |
+| 12:05 | Edited components/login-form.tsx | 6→6 lines | ~81 |
+| 12:05 | Edited components/login-form.tsx | 7→7 lines | ~71 |
+| 12:06 | Edited app/auth/sign-up/page.tsx | added 1 import(s) | ~60 |
+| 12:06 | Edited components/sign-up-form.tsx | "text-2xl" → "font-display text-2xl tra" | ~33 |
+| 12:06 | Edited components/sign-up-form.tsx | 3→3 lines | ~43 |
+| 12:07 | Edited supabase/functions_src/get_session_players.sql | 4→5 lines | ~52 |
+| 12:07 | designqc: captured 6 screenshots (166KB, ~15000 tok) | /auth/login, /auth/sign-up, / | ready for eval | ~0 |
+| 12:07 | Created supabase/functions_src/add_bot_to_session.sql | — | ~784 |
+| 12:07 | Edited supabase/migrations/202605010315_bot_seat.sql | modified public() | ~162 |
+| 12:08 | A: auth screens -> Leyline (AuthShell void+Cinzel wordmark, gold titles/links on login+signup); B: retheme board/controller table chrome CSS cyan/navy->void/gold (no UI change); C: migrate landing/decks/SiteNav/LandingHero hardcoded hex -> --var tokens (+--text-bright; fixed 2 SVG fills) | app/globals.css, components/AuthShell.tsx, login-form, sign-up-form, auth pages, page.tsx, decks/page.tsx, SiteNav, LandingHero | lint+tsc clean (0), login/signup/landing screenshot-verified | ~2600 |
+| 12:08 | Session end: 44 writes across 17 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 13 reads | ~41643 tok |
+| 12:08 | Edited lib/game/actions.ts | added 1 condition(s) | ~182 |
+| 12:09 | Edited components/GameSessionLobby.tsx | 8→9 lines | ~51 |
+| 12:09 | Edited components/GameSessionLobby.tsx | CSS: opponent | ~348 |
+| 12:09 | Edited components/GameSessionLobby.tsx | expanded (+10 lines) | ~324 |
+| 12:10 | Created scripts/bot-runner.mjs | — | ~3239 |
+| 12:11 | Edited scripts/bot-runner.mjs | added optional chaining | ~261 |
+| 12:11 | Edited scripts/bot-runner.mjs | modified if() | ~33 |
+| 12:11 | Edited scripts/bot-runner.mjs | 4→3 lines | ~29 |
+| 12:12 | Created scratch-watch.mjs | — | ~1308 |
+| 12:13 | Edited scripts/bot-runner.mjs | 4→6 lines | ~92 |
+| 12:13 | Created scratch-watch.mjs | — | ~1110 |
+| --:-- | In-app Add CPU: mig 315 (is_bot col + add_bot_to_session RPC + label CPU in get_session_players), lobby Add CPU button, bot-runner --watch drives all is_bot seats; fixed land_play_limit query bug; verified flow + suite | supabase/migrations/202605010315_bot_seat.sql, components/GameSessionLobby.tsx, lib/game/actions.ts, scripts/bot-runner.mjs | done, verified | ~13k |
+| 12:14 | Session end: 55 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 15 reads | ~65395 tok |
+| 12:32 | Edited components/GameSessionLobby.tsx | 4→5 lines | ~17 |
+| 12:32 | Edited components/GameSessionLobby.tsx | CSS: e | ~106 |

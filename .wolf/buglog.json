@@ -13759,6 +13759,668 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-06-16T08:06:00.207Z"
+    },
+    {
+      "id": "bug-846",
+      "timestamp": "2026-06-16T10:11:22.596Z",
+      "error_message": "Type error",
+      "file": "app/controller/[id]/page.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T10:11:22.596Z"
+    },
+    {
+      "id": "bug-847",
+      "timestamp": "2026-06-16T10:12:13.224Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→8 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T10:12:13.224Z"
+    },
+    {
+      "id": "bug-848",
+      "timestamp": "2026-06-16T10:12:28.588Z",
+      "error_message": "Type error",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T10:12:28.588Z"
+    },
+    {
+      "id": "bug-849",
+      "timestamp": "2026-06-16T12:48:52.466Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/sign-up-form.tsx",
+      "root_cause": "Had \");\n  const [password, setPassword] = useState(\"",
+      "fix": "Changed to \");\n  const [email, setEmail] = useState(\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T12:48:52.466Z"
+    },
+    {
+      "id": "bug-850",
+      "timestamp": "2026-06-16T13:01:07.439Z",
+      "error_message": "CSS fix: message",
+      "file": "components/sign-up-form.tsx",
+      "root_cause": "message: \"An error occurred\") → \"An error occurred\"",
+      "fix": "Changed message: \"An error occurred\") → \"An error occurred\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T13:01:07.439Z"
+    },
+    {
+      "id": "bug-851",
+      "timestamp": "2026-06-16T13:23:10.274Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Had \"flex h-28 w-44 items-center justify-center rounde",
+      "fix": "Changed to \"flex h-40 w-60 items-center justify-center rounde",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T13:23:10.274Z"
+    },
+    {
+      "id": "bug-852",
+      "timestamp": "2026-06-16T14:16:25.663Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Had \"flex h-40 w-60 items-center justify-center rounde",
+      "fix": "Changed to \"flex h-28 w-72 items-center justify-center rounde",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T14:16:25.663Z"
+    },
+    {
+      "id": "bug-853",
+      "timestamp": "2026-06-16T14:24:45.955Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T14:24:45.955Z"
+    },
+    {
+      "id": "bug-854",
+      "timestamp": "2026-06-16T14:38:29.437Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/controller/HandFan.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T14:38:29.437Z"
+    },
+    {
+      "id": "bug-855",
+      "timestamp": "2026-06-16T14:51:11.277Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/import-scryfall-cards.mjs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→12 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T14:51:11.277Z"
+    },
+    {
+      "id": "bug-856",
+      "timestamp": "2026-06-16T14:51:39.970Z",
+      "error_message": "Duplicate cards in the catalog (e.g. multiple Forest rows) — one per Scryfall printing",
+      "file": "supabase/migrations/202605010313_dedupe_cards.sql, scripts/import-scryfall-cards.mjs",
+      "root_cause": "public.cards had no unique constraint on oracle_id, and the importer upserted onConflict id (per-printing). Every printing of a card became its own row.",
+      "fix": "Migration 313: collapse dups to a canonical row per oracle_id/name (prefer scripted, then most-referenced via game_cards+decks, then lowest id), remap game_cards.card_id and decks.list_data (jsonb), delete dups, add unique index cards_oracle_id_key. Importer now upserts onConflict oracle_id with ignoreDuplicates (DO NOTHING) so re-imports cant duplicate. Validated SQL vs local (rolled back); needs db push + branch/backup test against real catalog.",
+      "tags": [
+        "cards",
+        "duplicate",
+        "oracle_id",
+        "import",
+        "migration",
+        "dedupe",
+        "unique-index"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T14:51:39.970Z"
+    },
+    {
+      "id": "bug-857",
+      "timestamp": "2026-06-16T15:01:28.701Z",
+      "error_message": "CSS fix: sizing, 2",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "sizing: cards grow to use the (usually empty) board and → cards fill the row HEIGHT (so they scale to the; 2: 3 ratio. Long-press still peeks a → 3 ratio via the wrapper's aspect-[2/3]. The max-height cap shrinks as the board",
+      "fix": "Changed sizing: cards grow to use the (usually empty) board and → cards fill the row HEIGHT (so they scale to the; 2: 3 ratio. Long-press still peeks a → 3 ratio via the wrapper's aspect-[2/3]. The max-height cap shrinks as the board",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T15:01:28.701Z"
+    },
+    {
+      "id": "bug-858",
+      "timestamp": "2026-06-16T15:04:34.697Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Had \"flex h-[76px] shrink-0 items-center border-t bord",
+      "fix": "Changed to \"flex h-[56px] shrink-0 items-center border-t bord",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-16T15:08:43.210Z"
+    },
+    {
+      "id": "bug-859",
+      "timestamp": "2026-06-16T15:31:02.897Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→8 lines (3 removed) | Also: // Allow horizontal swipe-to-scroll through a long; className=\"touch-pan-x\"",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-16T15:31:09.731Z"
+    },
+    {
+      "id": "bug-touch-merge-group",
+      "timestamp": "2026-06-16T18:00:00.000Z",
+      "error_message": "Can't swipe-scroll the battlefield lands/creature strips on mobile; first fix (touch-pan-x) had no effect",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Board MotionCards inherit touch-none (touch-action:none) from MotionCard's base classes (intended for draggable hand cards), which blocks the browser's swipe-to-scroll on the overflow-x-auto strips. The first attempted override passed className='touch-pan-x', but tailwind-merge keeps touch-none and touch-pan-x in DIFFERENT class groups (pan-x/pan-y can coexist), so it did NOT replace touch-none — both classes applied and touch-none won, so scrolling stayed blocked.",
+      "fix": "Override with className='touch-auto' instead — touch-auto is in the SAME tailwind-merge group as touch-none, so it actually replaces it. Applied to both the creature/other row and the lands strip MotionCards.",
+      "tags": [
+        "mobile",
+        "touch-action",
+        "tailwind-merge",
+        "scroll",
+        "controller",
+        "v5",
+        "battlefield"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T18:00:00.000Z"
+    },
+    {
+      "id": "bug-861",
+      "timestamp": "2026-06-16T22:16:47.453Z",
+      "error_message": "Duplicate cards (e.g. 2 Forests) — corrected diagnosis after auditing hosted DB",
+      "file": "supabase/migrations/202605010313_dedupe_cards.sql",
+      "root_cause": "Hosted audit: oracle_id rows are clean (no printing dupes). The dupes are ~11.7k rows with oracle_id=NULL that shadow a real card by name (a non-Scryfall bulk import never set oracle_id). 195 of them carry a curated script; decks/games reference the null rows. Original mig 313 grouped by oracle_id and would NOT fix this.",
+      "fix": "Rewrote mig 313: merge each NULL-oracle row into the real card of the same name when exactly one real card has that name (skip Un-set/ambiguous, leave ~1.2k unmatched nulls). Carry the junk script onto the canonical card, remap game_cards.card_id + decks.list_data, delete junk, add unique index on oracle_id. Fixed min(uuid) -> min(id::text)::uuid. Validated vs local (rolled back); audited counts read-only vs hosted (44395 rows, 11753 unambiguous junk, 769 game + 504 deck refs, 18 scripts to carry).",
+      "tags": [
+        "cards",
+        "duplicate",
+        "oracle_id",
+        "null",
+        "merge",
+        "migration",
+        "audit",
+        "script-preserve"
+      ],
+      "related_bugs": [
+        "bug-856"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T22:16:47.453Z"
+    },
+    {
+      "id": "bug-862",
+      "timestamp": "2026-06-16T23:42:58.221Z",
+      "error_message": "Type error",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: {viewMode === 'grid' ? (; <DeckGrid",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-16T23:44:19.424Z"
+    },
+    {
+      "id": "bug-863",
+      "timestamp": "2026-06-16T23:44:52.040Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T23:44:52.040Z"
+    },
+    {
+      "id": "bug-864",
+      "timestamp": "2026-06-16T23:47:02.674Z",
+      "error_message": "Wrong reference: LinkedCard should be DeckCardLine",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Used \"LinkedCard\" instead of \"DeckCardLine\"",
+      "fix": "Changed LinkedCard → DeckCardLine",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-16T23:47:07.812Z"
+    },
+    {
+      "id": "bug-865",
+      "timestamp": "2026-06-16T23:58:17.974Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "9 lines replaced/restructured",
+      "fix": "Rewrote 12→5 lines (9 removed) | Also: // Vanilla creature candidates (no ETB/triggers/de; // catalog wins; falls back to any plain creature.",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-16T23:58:35.061Z"
+    },
+    {
+      "id": "bug-866",
+      "timestamp": "2026-06-16T23:58:27.069Z",
+      "error_message": "Missing guard clause",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "No early return/throw for edge case: !land",
+      "fix": "Added guard clause: if (!land)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T23:58:27.069Z"
+    },
+    {
+      "id": "bug-867",
+      "timestamp": "2026-06-17T00:00:11.192Z",
+      "error_message": "Missing error handling in function",
+      "file": "scratch-bot-smoke.mjs",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T00:00:11.192Z"
+    },
+    {
+      "id": "bug-868",
+      "timestamp": "2026-06-17T00:04:04.793Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→8 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T00:04:04.793Z"
+    },
+    {
+      "id": "bug-869",
+      "timestamp": "2026-06-17T00:12:46.839Z",
+      "error_message": "Wrong reference: game_stack_items should be public",
+      "file": "supabase/functions_src/handle_cast_permanent.sql",
+      "root_cause": "Used \"game_stack_items\" instead of \"public\"",
+      "fix": "Changed game_stack_items → public",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T00:12:46.839Z"
+    },
+    {
+      "id": "bug-cast-permanent-entered",
+      "timestamp": "2026-06-17T12:00:00.000Z",
+      "error_message": "Some creatures keep their summoning sickness forever — hard-cast creatures can never attack",
+      "file": "supabase/functions_src/handle_cast_permanent.sql (mig 314)",
+      "root_cause": "handle_cast_permanent (resolves a permanent SPELL onto the battlefield) moved the card with a raw UPDATE that set zone/position/tapped/damage but NOT entered_battlefield_turn_number. NULL entered -> declare_attacker coalesce(entered,turn)>=turn treats it as permanently sick. Only hard-cast permanents affected; tokens/effect creatures enter via move_card_to_zone/create_token which stamp entered, so only SOME creatures stuck. finalize_stack_resolution does not stamp it either.",
+      "fix": "mig 314: handle_cast_permanent selects current turn_number and sets entered_battlefield_turn_number = coalesce(turn_number, entered, 0) on the battlefield UPDATE; qualified param type as public.game_stack_items for the migration search_path. Verified: creature cast turn 1 -> entered=1, attacks turn 3 with no cheat; full suite 1559/1559 pass.",
+      "tags": [
+        "engine",
+        "summoning-sickness",
+        "entered_battlefield_turn_number",
+        "cast_permanent",
+        "stack-resolution",
+        "combat",
+        "migration"
+      ],
+      "related_bugs": [
+        "bug-11464"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T12:00:00.000Z"
+    },
+    {
+      "id": "bug-871",
+      "timestamp": "2026-06-17T08:09:02.077Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/page.tsx",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 8→17 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T08:09:02.077Z"
+    },
+    {
+      "id": "bug-872",
+      "timestamp": "2026-06-17T08:11:26.830Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Had \"rounded-2xl border border-white/10 bg-white/[0.03",
+      "fix": "Changed to \"rounded-2xl border border-white/10 bg-white/[0.04",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T08:11:26.830Z"
+    },
+    {
+      "id": "bug-873",
+      "timestamp": "2026-06-17T08:29:07.026Z",
+      "error_message": "CSS fix: variable",
+      "file": "app/layout.tsx",
+      "root_cause": "variable: \"--font-geist-sans\", → \"--font-spectral\",",
+      "fix": "Changed variable: \"--font-geist-sans\", → \"--font-spectral\",",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T08:29:07.026Z"
+    },
+    {
+      "id": "bug-874",
+      "timestamp": "2026-06-17T08:31:47.112Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/LandingHero.tsx",
+      "root_cause": "Had \"font-display text-[19px] font-600 leading-none tr",
+      "fix": "Changed to \"font-display text-[19px] font-semibold leading-no",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T08:31:47.112Z"
+    },
+    {
+      "id": "bug-875",
+      "timestamp": "2026-06-17T08:40:12.018Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/page.tsx",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 8→5 lines (4 removed) | Also: {/* Nav */}; <nav className=\"h-16 w-full border-b border-[var(-",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-17T08:40:19.844Z"
+    },
+    {
+      "id": "bug-876",
+      "timestamp": "2026-06-17T08:41:32.024Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Had \"text-lg font-semibold\"",
+      "fix": "Changed to \"font-display text-lg tracking-wide text-amber-200",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-06-17T08:41:44.405Z"
+    },
+    {
+      "id": "bug-877",
+      "timestamp": "2026-06-17T08:43:09.852Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/supabase/proxy.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→3 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T08:43:09.852Z"
+    },
+    {
+      "id": "bug-878",
+      "timestamp": "2026-06-17T09:20:10.630Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/globals.css",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 10→32 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "css"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T09:20:10.630Z"
+    },
+    {
+      "id": "bug-879",
+      "timestamp": "2026-06-17T10:04:04.568Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/LandingHero.tsx",
+      "root_cause": "Had \"var(--text)\"",
+      "fix": "Changed to \"#ece3cd\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T10:04:04.568Z"
+    },
+    {
+      "id": "bug-880",
+      "timestamp": "2026-06-17T10:05:35.073Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/auth/login/page.tsx",
+      "root_cause": "10 lines replaced/restructured",
+      "fix": "Rewrote 12→3 lines (10 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T10:05:35.073Z"
+    },
+    {
+      "id": "bug-881",
+      "timestamp": "2026-06-17T10:05:42.676Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/login-form.tsx",
+      "root_cause": "Had \"text-2xl\"",
+      "fix": "Changed to \"font-display text-2xl tracking-wide text-[var(--g",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T10:05:42.676Z"
+    },
+    {
+      "id": "bug-882",
+      "timestamp": "2026-06-17T10:06:24.595Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/sign-up-form.tsx",
+      "root_cause": "Had \"text-2xl\"",
+      "fix": "Changed to \"font-display text-2xl tracking-wide text-[var(--g",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-17T10:06:34.867Z"
+    },
+    {
+      "id": "bug-883",
+      "timestamp": "2026-06-17T10:11:10.060Z",
+      "error_message": "Null/undefined access in ",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T10:11:10.060Z"
+    },
+    {
+      "id": "bug-runner-land-play-limit",
+      "timestamp": "2026-06-17T13:00:00.000Z",
+      "error_message": "bot-runner tick: column \"land_play_limit\" does not exist",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "The bot tick selected lands_played_this_turn AND land_play_limit from game_turn_state, but land_play_limit is NOT a column there (it is computed via get_land_play_limit / surfaced by getTurnState). The query threw. Caught by an end-to-end verify smoke before shipping (the earlier full-game smoke used a different inline query so never hit it).",
+      "fix": "Removed land_play_limit from the runner query; playMainPhase already defaults turn.land_play_limit ?? 1, correct for the vanilla bot.",
+      "tags": [
+        "bot-runner",
+        "game_turn_state",
+        "land_play_limit",
+        "schema"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T13:00:00.000Z"
+    },
+    {
+      "id": "bug-885",
+      "timestamp": "2026-06-17T10:32:29.907Z",
+      "error_message": "Missing guard clause",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "No early return/throw for edge case: !activeSession",
+      "fix": "Added guard clause: if (!activeSession)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T10:32:29.907Z"
     }
   ]
 }
