@@ -14,7 +14,8 @@ CREATE OR REPLACE FUNCTION "public"."get_session_players"("p_session_id" "uuid")
     game_session_players.player_id,
     coalesce(
       nullif(profiles.username, ''),
-      left(game_session_players.player_id::text, 8)
+      case when game_session_players.is_bot then 'CPU 🤖'
+           else left(game_session_players.player_id::text, 8) end
     ) as username,
     game_session_players.seat_number,
     game_session_players.life_total,

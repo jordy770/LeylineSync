@@ -1166,6 +1166,20 @@ export async function joinGameSession(supabase: SupabaseClient, sessionId: strin
   return data as number
 }
 
+// Seat an AI CPU opponent (local testing). Its turns are driven by
+// `scripts/bot-runner.mjs --watch`. Returns the bot's player id.
+export async function addBotToSession(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('add_bot_to_session', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as string
+}
+
 // Cycling (mig 228): discard a card with a cycling cost from hand, draw one.
 export async function cycleCard(
   supabase: SupabaseClient,
