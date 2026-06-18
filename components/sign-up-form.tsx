@@ -20,6 +20,7 @@ export function SignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -33,6 +34,18 @@ export function SignUpForm({
     setIsLoading(true);
     setError(null);
 
+    const trimmedUsername = username.trim();
+    if (trimmedUsername.length < 3) {
+      setError("Username must be at least 3 characters");
+      setIsLoading(false);
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(trimmedUsername)) {
+      setError("Username can only contain letters, numbers and underscores");
+      setIsLoading(false);
+      return;
+    }
+
     if (password !== repeatPassword) {
       setError("Passwords do not match");
       setIsLoading(false);
@@ -40,17 +53,39 @@ export function SignUpForm({
     }
 
     try {
+      // Friendly pre-check. The unique index is the real guard (handles the
+      // check-then-signup race), but this gives an instant, clear message.
+      const { data: available, error: availabilityError } = await supabase.rpc(
+        "is_username_available",
+        { p_username: trimmedUsername },
+      );
+      if (availabilityError) throw availabilityError;
+      if (!available) {
+        setError("That username is already taken");
+        setIsLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/protected`,
+          // Read by the handle_new_user() trigger to seed public.profiles.username.
+          data: { username: trimmedUsername },
         },
       });
       if (error) throw error;
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      const message = error instanceof Error ? error.message : "An error occurred";
+      // A username taken in the race between the check and signup trips the
+      // unique index inside the trigger.
+      setError(
+        /profiles_username_lower_key|duplicate key/i.test(message)
+          ? "That username is already taken"
+          : message,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -60,12 +95,26 @@ export function SignUpForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Sign up</CardTitle>
+          <CardTitle className="font-display text-2xl tracking-wide text-[var(--gold-bright)]">Sign up</CardTitle>
           <CardDescription>Create a new account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="planeswalker99"
+                  autoComplete="username"
+                  required
+                  minLength={3}
+                  maxLength={24}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -108,7 +157,7 @@ export function SignUpForm({
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <Link href="/auth/login" className="underline underline-offset-4">
+              <Link href="/auth/login" className="text-[var(--frame-gold)] underline underline-offset-4">
                 Login
               </Link>
             </div>

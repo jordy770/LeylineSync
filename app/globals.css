@@ -67,37 +67,141 @@
   }
 }
 
+/* ── Leyline design tokens (the chosen identity — documented at /style-guide) ─
+   The world is the Magic card and the leyline: an arcane void ground, card-stock
+   parchment for "rules text", and a heraldic gold for the legendary frame. The
+   five colours of mana are a structural accent. Green is the "cast / go" action. */
+:root {
+  /* Ground & surfaces */
+  --void: #0b0a12;          /* page background */
+  --ink-2: #15111f;         /* raised dark panel */
+  --ink-warm: #16100a;      /* warm inner plate, inside the gold frame */
+  /* Card-stock parchment */
+  --parchment: #ece3cd;     /* rules-text surface */
+  --parchment-2: #d8cba9;   /* parchment shadow edge */
+  --parchment-ink: #2c2616; /* text on parchment */
+  /* Heraldic gold — legendary frame & primary accent */
+  --frame-gold: #c99a3a;
+  --gold-bright: #f0ce78;
+  /* Text on the void */
+  --text-bright: #f3ead2;   /* brightest — big titles */
+  --text: #e9dfc6;          /* primary */
+  --text-dim: #bcae8e;      /* secondary */
+  --text-faint: #8b7f63;    /* captions / collector line */
+  --rune: #6b5e7a;          /* muted arcane */
+  /* The five colours of mana — a structural device, used as accents */
+  --mana-w: #f4efdd;
+  --mana-u: #2e6fc9;
+  --mana-b: #4a3b5c;
+  --mana-r: #c0402b;
+  --mana-g: #3c7a4e;
+  /* Semantic */
+  --cast: #3c7a4e;          /* create / confirm — green mana */
+  --warn: #d9a53b;          /* needs attention */
+  --danger: #c0402b;        /* destructive */
+}
+
 @layer utilities {
+  .font-display {
+    font-family: var(--font-cinzel), "Times New Roman", serif;
+  }
+  .font-rules {
+    font-family: var(--font-spectral), Georgia, serif;
+  }
+
+  /* Arcane ground: void wash + two faint mana glows + a fine ley grid. */
+  .landing-void {
+    background-color: var(--void);
+    background-image:
+      radial-gradient(circle at 50% -8%, rgba(201, 154, 58, 0.14), transparent 42%),
+      radial-gradient(circle at 88% 8%, rgba(46, 111, 201, 0.08), transparent 38%),
+      radial-gradient(circle at 8% 92%, rgba(60, 122, 78, 0.08), transparent 40%);
+  }
+  .ley-grid {
+    background-image:
+      linear-gradient(rgba(201, 154, 58, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201, 154, 58, 0.05) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
+    mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
+  }
+
+  /* Legendary gold frame — a thin double bevel like a card border. */
+  .card-frame {
+    background:
+      linear-gradient(150deg, var(--gold-bright), var(--frame-gold) 28%, #6c4f1c 70%, var(--frame-gold));
+    box-shadow:
+      0 2px 0 rgba(255, 255, 255, 0.25) inset,
+      0 30px 80px rgba(0, 0, 0, 0.6),
+      0 0 50px rgba(201, 154, 58, 0.12);
+  }
+  .card-parchment {
+    background:
+      radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.5), transparent 60%),
+      linear-gradient(180deg, var(--parchment), var(--parchment-2));
+  }
+
+  /* Energy flowing along the leyline conduits. */
+  .ley-flow {
+    stroke-dasharray: 5 11;
+    animation: ley-flow 1.5s linear infinite;
+  }
+  @keyframes ley-flow {
+    to {
+      stroke-dashoffset: -16;
+    }
+  }
+  .ley-node {
+    animation: ley-breathe 3.2s ease-in-out infinite;
+  }
+  @keyframes ley-breathe {
+    0%,
+    100% {
+      opacity: 0.85;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ley-flow,
+    .ley-node {
+      animation: none;
+    }
+  }
+
+  /* In-game table chrome, recoloured to the Leyline identity (void + gold).
+     Pure theme — structure/behaviour of the board & controller are unchanged. */
   .leyline-table-bg {
     background:
-      radial-gradient(circle at 50% 0%, rgba(8, 145, 178, 0.2), transparent 30rem),
-      radial-gradient(circle at 12% 18%, rgba(245, 158, 11, 0.08), transparent 22rem),
-      linear-gradient(135deg, #020617 0%, #0f172a 48%, #020617 100%);
+      radial-gradient(circle at 50% 0%, rgba(201, 154, 58, 0.16), transparent 30rem),
+      radial-gradient(circle at 12% 18%, rgba(240, 206, 120, 0.06), transparent 22rem),
+      linear-gradient(135deg, #0b0a12 0%, #15111f 48%, #0b0a12 100%);
   }
 
   .leyline-table-grid {
-    background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.32) 1px, transparent 0);
+    background-image: radial-gradient(circle at 2px 2px, rgba(201, 154, 58, 0.22) 1px, transparent 0);
     background-size: 40px 40px;
   }
 
   .leyline-glass-panel {
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    background: rgba(15, 23, 42, 0.74);
+    border: 1px solid rgba(201, 154, 58, 0.18);
+    background: rgba(21, 17, 31, 0.74);
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
     backdrop-filter: blur(14px);
   }
 
   .leyline-priority-panel {
-    border-color: rgba(251, 191, 36, 0.72);
+    border-color: rgba(240, 206, 120, 0.72);
     background:
-      radial-gradient(circle at 18% 0%, rgba(251, 191, 36, 0.16), transparent 18rem),
-      rgba(15, 23, 42, 0.78);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38), 0 0 34px rgba(245, 158, 11, 0.18);
+      radial-gradient(circle at 18% 0%, rgba(201, 154, 58, 0.16), transparent 18rem),
+      rgba(21, 17, 31, 0.78);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38), 0 0 34px rgba(201, 154, 58, 0.2);
   }
 
   .leyline-phase-pill {
-    border: 1px solid rgba(148, 163, 184, 0.26);
-    background: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(201, 154, 58, 0.26);
+    background: rgba(21, 17, 31, 0.82);
     box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
     backdrop-filter: blur(12px);
   }

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Cinzel, Geist, Spectral } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import ServiceWorkerRegister from "./ServiceWorkerRegister";
 import "./globals.css";
@@ -34,6 +34,23 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+// Cinzel — engraved Roman caps for the card title plate / display.
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  weight: ["500", "600", "700"],
+  display: "swap",
+  subsets: ["latin"],
+});
+
+// Spectral — a screen serif standing in for Magic's rules-text face.
+const spectral = Spectral({
+  variable: "--font-spectral",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
+  subsets: ["latin"],
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,7 +58,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`} suppressHydrationWarning>
+      <body
+        className={`${geistSans.className} ${cinzel.variable} ${spectral.variable} antialiased`}
+        suppressHydrationWarning
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

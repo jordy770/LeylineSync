@@ -52,7 +52,7 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="font-display text-2xl tracking-wide text-[var(--gold-bright)]">Login</CardTitle>
           <CardDescription>
             Enter your email below to login to your account
           </CardDescription>
@@ -76,7 +76,7 @@ export function LoginForm({
                   <Label htmlFor="password">Password</Label>
                   <Link
                     href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className="ml-auto inline-block text-sm text-[var(--frame-gold)] underline-offset-4 hover:underline"
                   >
                     Forgot your password?
                   </Link>
@@ -98,7 +98,7 @@ export function LoginForm({
               Don&apos;t have an account?{" "}
               <Link
                 href="/auth/sign-up"
-                className="underline underline-offset-4"
+                className="text-[var(--frame-gold)] underline underline-offset-4"
               >
                 Sign up
               </Link>

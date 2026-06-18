@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LeylineSync · Theme Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Chakra+Petch:wght@500;700&family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Spectral:ital,wght@0,400;0,600;1,400&family=Syne:wght@600;800&family=UnifrakturMaguntia&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --gutter: clamp(16px, 4vw, 48px); }
+
+  /* ── gallery frame: a neutral contact sheet so the themes pop ───────── */
+  body {
+    background: #0c0c0f;
+    color: #d8d8de;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+  .masthead {
+    padding: clamp(40px, 7vw, 88px) var(--gutter) clamp(28px, 4vw, 48px);
+    border-bottom: 1px solid #1d1d22;
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .masthead .kicker { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: #6f6f7a; }
+  .masthead h1 {
+    font-family: "Inter", sans-serif; font-weight: 700; letter-spacing: -0.02em;
+    font-size: clamp(28px, 5vw, 46px); color: #f2f2f5; margin-top: 14px; line-height: 1.05;
+  }
+  .masthead p { max-width: 56ch; margin-top: 16px; color: #9a9aa6; font-size: 14px; }
+  .masthead .how { margin-top: 18px; color: #c9a84a; font-size: 13px; }
+
+  .sheet { max-width: 1120px; margin: 0 auto; padding: var(--gutter); display: grid; gap: var(--gutter); }
+
+  /* ── shared specimen structure (kept low-specificity) ───────────────── */
+  .panel {
+    border-radius: 18px;
+    overflow: clip;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .panel-head {
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+    padding: 22px var(--pad, 30px) 0;
+  }
+  .panel-head .idx { font-family: "JetBrains Mono", monospace; font-size: 12px; opacity: 0.55; letter-spacing: 0.1em; }
+  .panel-head .name { font-family: var(--display); font-size: clamp(22px, 3.4vw, 30px); letter-spacing: var(--display-tracking, 0); color: var(--head); line-height: 1; }
+  .panel-head .concept { font-size: 12px; letter-spacing: 0.04em; opacity: 0.7; }
+
+  .panel-body { padding: 18px var(--pad, 30px) 30px; display: grid; gap: 26px; grid-template-columns: 1.05fr 1fr; }
+  @media (max-width: 720px) { .panel-body { grid-template-columns: 1fr; } }
+
+  .eyebrow { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.55; margin-bottom: 6px; }
+  .specimen { font-family: var(--display); color: var(--head); letter-spacing: var(--display-tracking, 0); font-size: clamp(24px, 4vw, 34px); line-height: 1.08; font-weight: var(--display-weight, 700); }
+  .lede { font-size: 15px; line-height: 1.55; margin-top: 18px; opacity: 0.92; max-width: 42ch; }
+
+  .swatches { display: flex; gap: 0; border-radius: 10px; overflow: clip; border: 1px solid rgba(0,0,0,0.18); }
+  .swatch { flex: 1; height: 56px; display: flex; align-items: flex-end; }
+  .swatch span { font-family: "JetBrains Mono", monospace; font-size: 8.5px; padding: 3px 4px; opacity: 0.85; }
+
+  .components { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 22px; }
+  .btn { font-family: var(--ui, var(--body)); font-size: 13px; font-weight: 600; padding: 11px 18px; border-radius: var(--btn-radius, 9px); border: none; cursor: default; letter-spacing: var(--btn-tracking, 0); }
+  .btn-primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--accent-glow, none); }
+  .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--head); }
+  .pill { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--head); }
+
+  .sig { margin-top: 24px; }
+
+  /* ════════════ 01 · LEYLINE ════════════ */
+  .t-leyline {
+    --bg: radial-gradient(circle at 50% -10%, rgba(201,154,58,0.14), transparent 45%), #0b0a12;
+    --text: #c9bda0; --head: #f3ead2; --accent: #2f6a44; --on-accent: #eafaef;
+    --line: rgba(201,154,58,0.4); --display: "Cinzel", serif; --display-tracking: 0.02em; --body: "Spectral", serif;
+  }
+  .t-leyline .leyline-card { border-radius: 12px; padding: 6px; background: linear-gradient(150deg,#f0ce78,#c99a3a 30%,#6c4f1c 72%,#c99a3a); box-shadow: 0 18px 40px rgba(0,0,0,0.5); }
+  .t-leyline .leyline-card .plate { background: linear-gradient(180deg,#241c12,#16100a); border-radius: 7px; padding: 9px 12px; display:flex; justify-content:space-between; align-items:center; }
+  .t-leyline .leyline-card .plate b { font-family:"Cinzel"; color:#f3ead2; font-weight:600; }
+  .t-leyline .leyline-card .text { font-family:"Spectral"; font-style: italic; color:#2c2616; background: linear-gradient(180deg,#ece3cd,#d8cba9); border-radius: 7px; padding: 10px 12px; margin-top:6px; font-size: 13px; }
+
+  /* ════════════ 02 · SPARK ════════════ */
+  .t-spark {
+    --bg: radial-gradient(120% 90% at 80% -10%, rgba(255,77,157,0.16), transparent 50%), radial-gradient(120% 90% at 10% 110%, rgba(70,224,255,0.14), transparent 55%), #080b22;
+    --text: #aeb9e0; --head: #eaf0ff; --accent: #46e0ff; --on-accent: #042029;
+    --accent-glow: 0 0 24px rgba(70,224,255,0.45); --line: rgba(174,185,224,0.3);
+    --display: "Syne", sans-serif; --display-weight: 800; --body: "Inter", sans-serif; --ui:"Inter";
+  }
+  .t-spark .spark-card { border:1px solid rgba(70,224,255,0.3); border-radius:14px; padding:18px; background: linear-gradient(160deg, rgba(70,224,255,0.07), rgba(255,77,157,0.06)); position:relative; overflow:clip; }
+  .t-spark .spark-card .bolt { position:absolute; right:-10px; top:-10px; font-size:64px; color: rgba(70,224,255,0.18); }
+  .t-spark .spark-card h4 { font-family:"Syne"; font-weight:800; color:#eaf0ff; font-size:18px; }
+  .t-spark .spark-card p { font-size:13px; color:#aeb9e0; margin-top:6px; }
+
+  /* ════════════ 03 · FIVE COLORS ════════════ */
+  .t-five {
+    --bg: #f7f4ec; --text: #4b463d; --head: #1a1714; --accent: #1a1714; --on-accent: #f7f4ec;
+    --line: rgba(26,23,20,0.18); --display: "Bricolage Grotesque", sans-serif; --display-weight: 800; --display-tracking:-0.02em; --body: "Inter", sans-serif; --ui:"Inter";
+    --btn-radius: 999px;
+  }
+  .t-five .pie { display:flex; gap:8px; margin-top: 4px; }
+  .t-five .pie i { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-family:"JetBrains Mono"; font-size:12px; font-weight:600; box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), 0 2px 5px rgba(0,0,0,0.18); }
+  .t-five .mana-card { border:1px solid rgba(26,23,20,0.14); border-radius:16px; overflow:clip; background:#fff; box-shadow:0 12px 30px rgba(26,23,20,0.08); }
+  .t-five .mana-card .strip { height:6px; background: linear-gradient(90deg,#f2ecd8 0 20%,#2e6fc9 20% 40%,#4a3b5c 40% 60%,#c0402b 60% 80%,#3c7a4e 80% 100%); }
+  .t-five .mana-card .in { padding:14px 16px; }
+  .t-five .mana-card h4 { font-family:"Bricolage Grotesque"; font-weight:800; color:#1a1714; font-size:17px; letter-spacing:-0.01em; }
+  .t-five .mana-card p { font-size:13px; color:#6b6457; margin-top:4px; }
+
+  /* ════════════ 04 · GRIMOIRE ════════════ */
+  .t-grimoire {
+    --bg: radial-gradient(circle at 50% 0%, #f1e9d2, #e6dabe 70%); --text: #4a3b22; --head: #1c1206;
+    --accent: #a6321f; --on-accent: #f3ead2; --line: rgba(28,18,6,0.28);
+    --display: "UnifrakturMaguntia", serif; --body: "EB Garamond", serif;
+  }
+  .t-grimoire .name { font-size: clamp(26px,4vw,38px); }
+  .t-grimoire .folio { border:1px solid rgba(28,18,6,0.22); border-radius:4px; padding:16px 18px; background: rgba(255,255,255,0.22); position:relative; }
+  .t-grimoire .folio .drop { float:left; font-family:"UnifrakturMaguntia"; font-size:58px; line-height:0.8; color:#a6321f; margin:6px 10px 0 0; }
+  .t-grimoire .folio p { font-family:"EB Garamond"; font-size:15px; color:#3a2c14; }
+  .t-grimoire .folio .rule { height:1px; background: linear-gradient(90deg, transparent, #b8893b, transparent); margin:12px 0; }
+  .t-grimoire .folio .mark { font-family:"EB Garamond"; font-style:italic; font-size:13px; color:#6b5230; }
+
+  /* ════════════ 05 · ARENA HUD ════════════ */
+  .t-arena {
+    --bg: linear-gradient(160deg,#0d141c,#0a1119); --text: #9fb2c2; --head: #dce8f0;
+    --accent: #2bd4d4; --on-accent: #04201f; --line: rgba(43,212,212,0.32); --accent-glow: 0 0 18px rgba(43,212,212,0.3);
+    --display: "Chakra Petch", sans-serif; --display-weight: 700; --display-tracking: 0.01em; --body: "Inter", sans-serif; --ui:"Chakra Petch"; --btn-tracking:0.04em;
+  }
+  .t-arena .hud { border:1px solid rgba(43,212,212,0.28); border-radius:10px; background: rgba(43,212,212,0.04); padding:14px 16px; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); }
+  .t-arena .hud .row { display:flex; justify-content:space-between; align-items:center; }
+  .t-arena .hud h4 { font-family:"Chakra Petch"; font-weight:700; color:#dce8f0; font-size:16px; letter-spacing:0.02em; }
+  .t-arena .hud .meta { font-family:"JetBrains Mono"; font-size:11px; color:#f5a524; }
+  .t-arena .hud p { font-size:13px; color:#9fb2c2; margin-top:8px; }
+  .t-arena .hud .bar { height:5px; border-radius:3px; margin-top:12px; background:#16202b; overflow:clip; }
+  .t-arena .hud .bar i { display:block; height:100%; width:62%; background: linear-gradient(90deg,#2bd4d4,#f5a524); }
+</style>
+</head>
+<body>
+  <header class="masthead">
+    <p class="kicker">LeylineSync · Theme Directions</p>
+    <h1>Five ways the table could look.</h1>
+    <p>Each panel is a live preview in its own colours and fonts — real buttons, real type, a signature element. Couch-play Magic: one board on the screen, a controller in every hand.</p>
+    <p class="how">Pick one by name or number and we'll build the full style guide from it.</p>
+  </header>
+
+  <main class="sheet">
+
+    <!-- 01 LEYLINE -->
+    <section class="panel t-leyline">
+      <div class="panel-head">
+        <span class="idx">01</span><span class="name">Leyline</span>
+        <span class="concept">arcane · the card as artifact</span>
+      </div>
+      <div class="panel-body">
+        <div>
+          <p class="eyebrow">Display — Cinzel · Body — Spectral</p>
+          <h3 class="specimen">Where the leylines cross,<br />the table remembers.</h3>
+          <p class="lede">A gold legendary frame, parchment rules text, an engraved title plate. Ceremonial and collectible — it treats the product like a card you'd sleeve.</p>
+          <div class="components">
+            <button class="btn btn-primary">Create game</button>
+            <button class="btn btn-ghost">Join with ID</button>
+            <span class="pill">Commander</span>
+          </div>
+        </div>
+        <div>
+          <div class="swatches">
+            <div class="swatch" style="background:#0b0a12"><span style="color:#c9bda0">#0B0A12</span></div>
+            <div class="swatch" style="background:#15111f"><span style="color:#c9bda0">#15111F</span></div>
+            <div class="swatch" style="background:#ece3cd"><span style="color:#3a3420">#ECE3CD</span></div>
+            <div class="swatch" style="background:#c99a3a"><span style="color:#2a2010">#C99A3A</span></div>
+            <div class="swatch" style="background:#3c7a4e"><span style="color:#eafaef">#3C7A4E</span></div>
+          </div>
+          <div class="sig leyline-card">
+            <div class="plate"><b>Leyline Sync</b><span style="color:#c99a3a;font-size:12px">◆ Mythic</span></div>
+            <div class="text">"The table remembers every spell."</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 SPARK -->
+    <section class="panel t-spark">
+      <div class="panel-head">
+        <span class="idx">02</span><span class="name">Spark</span>
+        <span class="concept">cosmic · the planeswalker's ignition</span>
+      </div>
+      <div class="panel-body">
+        <div>
+          <p class="eyebrow">Display — Syne · Body — Inter</p>
+          <h3 class="specimen">The spark ignites.</h3>
+          <p class="lede">Deep cosmic indigo with an electric arc — cyan into magenta. Energetic and modern, built on the moment a spell leaves your hand and lands on the board.</p>
+          <div class="components">
+            <button class="btn btn-primary">Create game</button>
+            <button class="btn btn-ghost">Join with ID</button>
+            <span class="pill">Commander</span>
+          </div>
+        </div>
+        <div>
+          <div class="swatches">
+            <div class="swatch" style="background:#080b22"><span style="color:#aeb9e0">#080B22</span></div>
+            <div class="swatch" style="background:#11173a"><span style="color:#aeb9e0">#11173A</span></div>
+            <div class="swatch" style="background:#46e0ff"><span style="color:#042029">#46E0FF</span></div>
+            <div class="swatch" style="background:#ff4d9d"><span style="color:#2a0817">#FF4D9D</span></div>
+            <div class="swatch" style="background:#eaf0ff"><span style="color:#11173a">#EAF0FF</span></div>
+          </div>
+          <div class="sig spark-card">
+            <span class="bolt">⚡</span>
+            <h4>Cast from your hand</h4>
+            <p>It resolves on the screen the instant you let go — every device sees the same stack.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 FIVE COLORS -->
+    <section class="panel t-five">
+      <div class="panel-head">
+        <span class="idx">03</span><span class="name">Five Colors</span>
+        <span class="concept">bright · the colour pie as the brand</span>
+      </div>
+      <div class="panel-body">
+        <div>
+          <p class="eyebrow">Display — Bricolage Grotesque · Body — Inter</p>
+          <h3 class="specimen">Five colours, one table.</h3>
+          <p class="lede">A clean tabletop in daylight, with Magic's five mana colours as the whole system. Friendly, confident, unmistakably a game — the most welcoming way in.</p>
+          <div class="pie">
+            <i style="background:#f2ecd8;color:#3a3420;border:1px solid #c9be9b">W</i>
+            <i style="background:#2e6fc9;color:#fff">U</i>
+            <i style="background:#4a3b5c;color:#fff">B</i>
+            <i style="background:#c0402b;color:#fff">R</i>
+            <i style="background:#3c7a4e;color:#fff">G</i>
+          </div>
+          <div class="components">
+            <button class="btn btn-primary">Create game</button>
+            <button class="btn btn-ghost">Join with ID</button>
+            <span class="pill">Commander</span>
+          </div>
+        </div>
+        <div>
+          <div class="swatches">
+            <div class="swatch" style="background:#f7f4ec"><span style="color:#4b463d">#F7F4EC</span></div>
+            <div class="swatch" style="background:#2e6fc9"><span style="color:#fff">#2E6FC9</span></div>
+            <div class="swatch" style="background:#4a3b5c"><span style="color:#fff">#4A3B5C</span></div>
+            <div class="swatch" style="background:#c0402b"><span style="color:#fff">#C0402B</span></div>
+            <div class="swatch" style="background:#3c7a4e"><span style="color:#fff">#3C7A4E</span></div>
+          </div>
+          <div class="sig mana-card">
+            <div class="strip"></div>
+            <div class="in"><h4>Your pod is ready</h4><p>Four seats, five colours, one screen. Pass a phone to every player.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 GRIMOIRE -->
+    <section class="panel t-grimoire">
+      <div class="panel-head">
+        <span class="idx">04</span><span class="name">Grimoire</span>
+        <span class="concept">old-world · an illuminated manuscript</span>
+      </div>
+      <div class="panel-body">
+        <div>
+          <p class="eyebrow">Display — UnifrakturMaguntia · Body — EB Garamond</p>
+          <h3 class="specimen">A grimoire for the<br />modern table.</h3>
+          <p class="lede">Vellum and ink, gold-leaf and a vermilion rubric, an illuminated drop cap. For players who feel the ritual of shuffling up — heavy with history.</p>
+          <div class="components">
+            <button class="btn btn-primary">Create game</button>
+            <button class="btn btn-ghost">Join with ID</button>
+            <span class="pill">Commander</span>
+          </div>
+        </div>
+        <div>
+          <div class="swatches">
+            <div class="swatch" style="background:#ece3c8"><span style="color:#4a3b22">#ECE3C8</span></div>
+            <div class="swatch" style="background:#1c1206"><span style="color:#ece3c8">#1C1206</span></div>
+            <div class="swatch" style="background:#b8893b"><span style="color:#1c1206">#B8893B</span></div>
+            <div class="swatch" style="background:#a6321f"><span style="color:#f3ead2">#A6321F</span></div>
+            <div class="swatch" style="background:#6b5230"><span style="color:#f3ead2">#6B5230</span></div>
+          </div>
+          <div class="sig folio">
+            <p><span class="drop">W</span>hen the leylines cross beneath the table, every spell cast is remembered — the stack, the mana, the board, kept in one shared record.</p>
+            <div class="rule"></div>
+            <p class="mark">— from the Codex of the Shared Table</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 ARENA HUD -->
+    <section class="panel t-arena">
+      <div class="panel-head">
+        <span class="idx">05</span><span class="name">Arena HUD</span>
+        <span class="concept">digital · the table as a heads-up display</span>
+      </div>
+      <div class="panel-body">
+        <div>
+          <p class="eyebrow">Display — Chakra Petch · Body — Inter · Data — JetBrains Mono</p>
+          <h3 class="specimen">Your phone is the controller.</h3>
+          <p class="lede">Cool slate panels, cyan and ember, beveled HUD corners — the look of the live board itself. Crisp and built for play, not for show.</p>
+          <div class="components">
+            <button class="btn btn-primary">Create game</button>
+            <button class="btn btn-ghost">Join with ID</button>
+            <span class="pill">Commander</span>
+          </div>
+        </div>
+        <div>
+          <div class="swatches">
+            <div class="swatch" style="background:#0d141c"><span style="color:#9fb2c2">#0D141C</span></div>
+            <div class="swatch" style="background:#16202b"><span style="color:#9fb2c2">#16202B</span></div>
+            <div class="swatch" style="background:#2bd4d4"><span style="color:#04201f">#2BD4D4</span></div>
+            <div class="swatch" style="background:#f5a524"><span style="color:#2a1c04">#F5A524</span></div>
+            <div class="swatch" style="background:#dce8f0"><span style="color:#16202b">#DCE8F0</span></div>
+          </div>
+          <div class="sig hud">
+            <div class="row"><h4>Seat 1 · You</h4><span class="meta">40 LIFE</span></div>
+            <p>Untapped: 5 lands · 2 in hand · priority yours.</p>
+            <div class="bar"><i></i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>
