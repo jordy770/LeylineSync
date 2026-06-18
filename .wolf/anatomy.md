@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T09:30:53.654Z
-> Files: 19 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T12:31:54.278Z
+> Files: 22 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -90,14 +90,15 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~55766 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~56252 tok)
 
 ## components/board/
 
 
 ## components/controller/
 
-- `CardActionSheet.tsx` — CardActionSheet (~19037 tok)
+- `CardActionSheet.tsx` — CardActionSheet (~19181 tok)
+- `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~9950 tok)
 
 ## components/judge/
 
@@ -113,6 +114,7 @@
 
 ## docs/
 
+- `backlog.md` — Backlog (~160 tok)
 
 ## docs/commander-decks/
 
@@ -123,8 +125,9 @@
 ## lib/game/
 
 - `bot-brain.ts` — Raw type line, e.g. "Creature — Goblin" or "Basic Land — Mountain". (~1791 tok)
-- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~7815 tok)
+- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~8194 tok)
 - `types.ts` — Exports ManaPool, RestrictedManaEntry, ManaColor, GameZone + 30 more (~2991 tok)
+- `use-controller-game-state.ts` — Exports useControllerGameState (~2587 tok)
 
 ## lib/supabase/
 

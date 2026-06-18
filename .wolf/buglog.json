@@ -15667,6 +15667,158 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-06-18"
+    },
+    {
+      "id": "bug-959",
+      "timestamp": "2026-06-18T10:20:23.880Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:20:23.880Z"
+    },
+    {
+      "id": "bug-960",
+      "timestamp": "2026-06-18T10:21:11.663Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Had 'multi_creature'",
+      "fix": "Changed to 'targeted_spell_effect'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:21:11.663Z"
+    },
+    {
+      "id": "bug-961",
+      "timestamp": "2026-06-18T10:21:23.682Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 10→14 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:21:23.682Z"
+    },
+    {
+      "id": "bug-962",
+      "timestamp": "2026-06-18T10:22:07.985Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:22:07.985Z"
+    },
+    {
+      "id": "bug-reality-shift-uncastable",
+      "timestamp": "2026-06-18",
+      "error_message": "Reality Shift could not be activated/cast from the controller.",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Its script action `exile_and_manifest` was supported by the engine (mig 251, via cast_spell_effect with a creature target) but the client cast planner getSpellPlan had no case for it: not in CREATURE_EFFECT_MAP and not in UNTARGETED_SPELL_ACTION_TYPES, so the plan fell through to kind 'normal' (cast as a vanilla permanent with no target) — which does nothing for a targeted Instant.",
+      "fix": "Added a new SpellPlan kind 'targeted_spell_effect' for creature-targeted spells that resolve via the cast_spell_effect program path (TARGETED_SPELL_EFFECT_TYPES=['exile_and_manifest']). getSpellPlan returns it (label 'Exile (manifest)'); CardActionSheet reuses the creature picker (requiresCreatureTarget/needsTarget/targetController updated) and on pick calls onTargetedSpellEffect -> ControllerListV5 targetedSpellEffect -> castSpellEffect(actions, cardId, x, targetCardId). Engine path already proven by reality-shift.test.ts RS1. Verified getSpellPlan now classifies Reality Shift as targeted_spell_effect; tsc clean.",
+      "tags": [
+        "ui",
+        "controller",
+        "spell-plan",
+        "exile_and_manifest",
+        "reality-shift",
+        "getSpellPlan",
+        "cast"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
+    },
+    {
+      "id": "bug-964",
+      "timestamp": "2026-06-18T10:29:22.662Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/data.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:29:22.662Z"
+    },
+    {
+      "id": "bug-965",
+      "timestamp": "2026-06-18T10:30:07.354Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:30:07.354Z"
+    },
+    {
+      "id": "bug-966",
+      "timestamp": "2026-06-18T10:33:03.489Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T10:33:03.489Z"
+    },
+    {
+      "id": "bug-cost-reduction-not-in-playable",
+      "timestamp": "2026-06-18",
+      "error_message": "Cost reduction wasn't reflected in the controller's playable hint, and auto-pay tapped for the full printed cost — so a card affordable only AFTER reduction read as unplayable / failed to auto-tap.",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "The server reduces generic mana at cast via reduced_mana_cost (self cost_reduction script prop + static cost_reduction continuous effects), but the client used the PRINTED mana_cost for both the hand 'playable' affordability hint and autoPay's planAutoTap. There was no client mirror of the reduction.",
+      "fix": "Added genericCostReduction() in controller/shared.ts mirroring reduced_mana_cost (SELF: card's raw cost_reduction incl. its `if` count over board permanents; STATIC: cost_reduction effects loaded via new data.ts getCostReductions, matched by type_line + from_zone). Loaded costReductions in use-controller-game-state; applied it to the hand playable/canAfford computation and to autoPay (reduce parsed.generic before planAutoTap). Verified the mirror (static Dragon -1, self if-Dragon -2, non-match 0). tsc clean; client-only (server already reduces at cast).",
+      "tags": [
+        "ui",
+        "controller",
+        "cost-reduction",
+        "reduced_mana_cost",
+        "playable",
+        "auto-pay",
+        "affordability"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
     }
   ]
 }

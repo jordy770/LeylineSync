@@ -5305,3 +5305,40 @@
 | 17:30 | mark copy/token permanents on all board views: plumbed game_cards.is_token + copy_original_card_id → BoardCard & ControllerCard (data.ts/types.ts); V5 shows a violet "Token"/"Copy" badge (top-center) on own board (creatures/other/lands) + OpponentBoardOverlay board cards. Engine: create_copy_token sets is_token=true (Littjara), Clone-style sets copy_original_card_id | components/ControllerListV5.tsx, lib/game/data.ts, lib/game/types.ts | tsc clean | ~4k |
 | 11:31 | Session end: 55 writes across 15 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 16 reads | ~99877 tok |
 | 11:44 | Session end: 55 writes across 15 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 16 reads | ~99877 tok |
+| 12:17 | Session end: 55 writes across 15 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 18 reads | ~99877 tok |
+| 12:20 | Edited components/controller/shared.ts | 1→5 lines | ~175 |
+| 12:20 | Edited components/controller/shared.ts | added nullish coalescing | ~282 |
+| 12:20 | Edited components/controller/shared.ts | 2→7 lines | ~142 |
+| 12:20 | Edited components/controller/shared.ts | 5→6 lines | ~52 |
+| 12:20 | Edited components/controller/CardActionSheet.tsx | 5→6 lines | ~65 |
+| 12:21 | Edited components/controller/CardActionSheet.tsx | 5→6 lines | ~88 |
+| 12:21 | Edited components/controller/CardActionSheet.tsx | 2→3 lines | ~62 |
+| 12:21 | Edited components/controller/CardActionSheet.tsx | added 1 condition(s) | ~195 |
+| 12:21 | Edited components/controller/CardActionSheet.tsx | 5→6 lines | ~39 |
+| 12:21 | Edited components/controller/CardActionSheet.tsx | CSS: onTargetedSpellEffect | ~45 |
+| 12:22 | Edited components/ControllerListV5.tsx | added optional chaining | ~269 |
+| 12:22 | Edited components/ControllerListV5.tsx | 1→2 lines | ~70 |
+| 12:23 | Fix: Reality Shift (exile_and_manifest) uncastable — new targeted_spell_effect plan kind | components/controller/shared.ts, CardActionSheet.tsx, ControllerListV5.tsx | tsc clean; classifies correctly | ~12k |
+| 12:23 | Session end: 67 writes across 16 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 18 reads | ~111197 tok |
+| 12:29 | Edited lib/game/data.ts | added nullish coalescing | ~406 |
+| 12:30 | Edited components/controller/shared.ts | added optional chaining | ~606 |
+| 12:30 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~24 |
+| 12:30 | Edited lib/game/use-controller-game-state.ts | 2→2 lines | ~42 |
+| 12:30 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~47 |
+| 12:31 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~35 |
+| 12:31 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~42 |
+| 12:31 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~51 |
+| 12:31 | Edited lib/game/use-controller-game-state.ts | 4→5 lines | ~27 |
+| 12:32 | Edited components/ControllerListV5.tsx | 11→12 lines | ~68 |
+| 12:32 | Edited components/ControllerListV5.tsx | CSS: generic | ~200 |
+| 12:32 | Edited components/ControllerListV5.tsx | 4→5 lines | ~30 |
+| 12:33 | Edited components/ControllerListV5.tsx | CSS: generic | ~178 |
+| 12:33 | Edited components/ControllerListV5.tsx | 5→6 lines | ~30 |
+| 12:33 | Edited components/ControllerListV5.tsx | CSS: costReductions | ~31 |
+| 12:33 | Edited components/ControllerListV5.tsx | inline fix | ~28 |
+| 12:34 | Edited components/ControllerListV5.tsx | 2→3 lines | ~41 |
+| 12:35 | Fix: cost reduction now in playable hint + auto-pay (client mirror of reduced_mana_cost) | shared.ts, data.ts, use-controller-game-state.ts, ControllerListV5.tsx | tsc clean; mirror verified | ~14k |
+| 12:35 | Session end: 84 writes across 17 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 20 reads | ~116167 tok |
+| 14:31 | Created docs/backlog.md | — | ~171 |
+| 14:32 | Session end: 85 writes across 18 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 20 reads | ~116350 tok |
+| 14:33 | Session end: 85 writes across 18 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 20 reads | ~116350 tok |
