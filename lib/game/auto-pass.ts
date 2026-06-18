@@ -49,6 +49,9 @@ export type AutoPassDecisionInput = {
   hasBlockDecision: boolean
   /** You have something to do in your main phase (land / spell / ability). */
   hasMainPhaseAction: boolean
+  /** Your opening hand isn't kept yet — never auto-pass (it would advance the turn
+   *  and draw a card while the mulligan overlay is still open). */
+  openingHandPending: boolean
 }
 
 /**
@@ -59,7 +62,7 @@ export type AutoPassDecisionInput = {
  */
 export function shouldAutoPass(s: AutoPassDecisionInput): boolean {
   // Hard exemptions — never auto-pass through these, even while yielding.
-  if (!s.hasPriority || s.isSessionFinished || s.passBlocked) return false
+  if (!s.hasPriority || s.isSessionFinished || s.passBlocked || s.openingHandPending) return false
   if (s.step === 'declare_blockers' && s.hasBlockDecision) return false
 
   if (s.isYielding) return true

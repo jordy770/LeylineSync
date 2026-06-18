@@ -24,6 +24,7 @@ function input(over: Partial<AutoPassDecisionInput> = {}, settings: Partial<Auto
     hasEligibleAttacker: false,
     hasBlockDecision: false,
     hasMainPhaseAction: false,
+    openingHandPending: false,
     ...over,
   }
 }
@@ -43,6 +44,11 @@ test('finished session → never pass', () => {
 
 test('a pending decision blocks passing', () => {
   assert.equal(decide({ passBlocked: true }), false)
+})
+
+test('opening hand not kept → never pass (would draw before the keep)', () => {
+  // Even on a normally-skipped empty step.
+  assert.equal(decide({ step: 'draw', openingHandPending: true }), false)
 })
 
 test('declare_blockers with a real block to make → never auto-pass', () => {

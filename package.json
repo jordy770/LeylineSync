@@ -12,7 +12,9 @@
     "validate:fixtures": "node --import tsx scripts/validate-fixtures-offline.mts",
     "deck:triage": "node --import tsx scripts/triage-decklist.mjs",
     "deck:upsert": "node --import tsx scripts/upsert-deck-scripts.mjs",
-    "deck:seed-precons": "node scripts/seed-precon-decks.mjs"
+    "deck:seed-precons": "node scripts/seed-precon-decks.mjs",
+    "bot": "node --import tsx scripts/bot-runner.mjs",
+    "seed:local-play": "node scripts/seed-local-play.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",

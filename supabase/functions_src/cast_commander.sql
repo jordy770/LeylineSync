@@ -88,9 +88,13 @@ begin
   -- tax when the printed generic runs out.
   perform public.pay_mana_cost(p_session_id, auth.uid(),
     public.reduced_mana_cost(p_session_id, auth.uid(), p_game_card_id, v_mana_cost),
-    p_generic_payment);
+    p_generic_payment,
+    p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_type_line, ''),
+      'is_commander', true));
   if v_tax > 0 then
-    perform public.pay_mana_cost(p_session_id, auth.uid(), '{' || v_tax || '}', null);
+    perform public.pay_mana_cost(p_session_id, auth.uid(), '{' || v_tax || '}', null,
+      p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_type_line, ''),
+        'is_commander', true));
   end if;
 
   -- A cast from the command zone bumps the tax for next time (CR 903.8).

@@ -136,6 +136,10 @@ export type SpellPlan =
   | { kind: 'set_pt'; power: number; toughness: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   | { kind: 'add_counters'; amount: number; timing: 'instant' | 'sorcery'; targetController: TargetController; xRequired?: boolean; counterType?: string; all?: boolean }
   | { kind: 'creature_effect'; effect: TargetedCreatureActionType; label: string; keyword?: string; duration?: string; untap?: boolean; haste?: boolean; timing: 'instant' | 'sorcery'; targetController: TargetController }
+  // A spell that needs a CREATURE target but resolves via the cast_spell_effect
+  // program path rather than a stack creature-action (Reality Shift's
+  // exile_and_manifest). Carries the full actions array + the chosen target.
+  | { kind: 'targeted_spell_effect'; actions: unknown[]; label: string; timing: 'instant' | 'sorcery'; targetController: TargetController; xRequired?: boolean }
   // Multi-target removal: pick up to `count` creatures, apply `effectKind` to each.
   | { kind: 'multi_creature'; effectKind: MultiCreatureKind; label: string; count: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   // Non-creature permanent removal: destroy/exile/… a target of `targetType`.
@@ -205,6 +209,11 @@ export const DECISION_SPELL_ACTION_TYPES = [
   'look_top', 'put_from_hand', 'destroy_up_to', 'bounce_up_to', 'vote_wild_free', 'graveyard_to_library_top',
   'exile_from_any_graveyard', 'mass_destroy_reanimate_one', 'exile_tops_cast', 'choose_creature_type', 'choose_color',
 ]
+
+// Spell-effect action types that need a CREATURE target but resolve via the
+// cast_spell_effect program path (no dedicated stack creature-action), so they
+// can't go through CREATURE_EFFECT_MAP. Reality Shift = exile_and_manifest.
+export const TARGETED_SPELL_EFFECT_TYPES = ['exile_and_manifest']
 
 // Maps a spell_effect action type to a targeted-creature stack action + a picker label.
 export const CREATURE_EFFECT_MAP: Record<string, { effect: TargetedCreatureActionType; label: string }> = {
@@ -296,6 +305,55 @@ export const ABILITY_VERB: Record<string, string> = {
 }
 
 /** Classifies what a hand spell does so the cast flow can pick targets correctly. */
+// Client mirror of the server's reduced_mana_cost (generic only): how much to
+// shave off a card's GENERIC mana when the player casts it, so the "playable"
+// hint + auto-pay match what the server actually charges. Sources:
+//   • SELF — the card's own top-level `cost_reduction` script prop (normalize
+//     drops it, so read the raw script); honours its optional `if` count.
+//   • STATIC — `cost_reduction` effects the player controls (passed in), matched
+//     by type_line + from_zone, mirroring reduced_mana_cost.
+export function genericCostReduction(
+  card: ControllerCard,
+  reductions: { amount: number; type_line: string | null; from_zone: string | null }[],
+  boardCards: { type_line?: string | null; controller_player_id?: string | null }[],
+  playerId: string | null,
+): number {
+  const typeLine = (card.cards?.type_line ?? '').toLowerCase()
+  const zone = card.zone
+  let total = 0
+
+  const raw = (card.copied_script ?? card.cards?.script ?? null) as
+    | { cost_reduction?: { amount?: number; if?: { count?: string; type_line?: string; at_least?: number } } }
+    | null
+  const self = raw?.cost_reduction
+  if (self && typeof self.amount === 'number') {
+    if (self.if) {
+      const base =
+        self.if.count === 'lands_you_control' ? 'land'
+        : self.if.count === 'artifacts_you_control' ? 'artifact'
+        : 'creature'
+      const filter = (self.if.type_line ?? '').toLowerCase()
+      const n = boardCards.filter(
+        (c) =>
+          (c.controller_player_id ?? null) === playerId &&
+          (c.type_line ?? '').toLowerCase().includes(base) &&
+          (filter === '' || (c.type_line ?? '').toLowerCase().includes(filter)),
+      ).length
+      if (n >= (self.if.at_least ?? 1)) total += self.amount
+    } else {
+      total += self.amount
+    }
+  }
+
+  for (const r of reductions) {
+    const typeOk = !r.type_line || typeLine.includes(r.type_line.toLowerCase())
+    const zoneOk = !r.from_zone || r.from_zone === zone
+    if (typeOk && zoneOk) total += Math.max(0, r.amount)
+  }
+
+  return Math.max(0, total)
+}
+
 export function getSpellPlan(card: ControllerCard): SpellPlan {
   const script = normalizeCardBehaviorToV2(
     card.copied_script ?? card.cards?.script ?? null,
@@ -422,6 +480,17 @@ export function getSpellPlan(card: ControllerCard): SpellPlan {
     return { kind: 'creature_effect', effect: mapped.effect, label: mapped.label, timing, targetController: readTargetController(creatureEffect) }
   }
 
+  // Targeted spell-effect programs: need a creature target but resolve via the
+  // cast_spell_effect program path, not a stack creature-action (Reality Shift's
+  // exile_and_manifest). Must be checked before the untargeted program block.
+  const targetedProgram = actions.find((a) => TARGETED_SPELL_EFFECT_TYPES.includes(a.type ?? '')) as
+    | (CardBehaviorAction & { target_controller?: unknown; target_type?: unknown })
+    | undefined
+  if (targetedProgram && isCreatureOnlyTargetType(targetedProgram.target_type)) {
+    const label = targetedProgram.type === 'exile_and_manifest' ? 'Exile (manifest)' : 'Target'
+    return { kind: 'targeted_spell_effect', actions, label, timing, targetController: readTargetController(targetedProgram) }
+  }
+
   // A spell whose effects include a scry/surveil (a resolution-time decision) or
   // is a multi-action untargeted combo runs as an effect program (e.g. Opt: scry,
   // then draw). This MUST be checked before the single-action `draw` case below,
@@ -491,6 +560,7 @@ export function canCastHandSpell(
     plan.kind === 'set_pt' ||
     plan.kind === 'add_counters' ||
     plan.kind === 'creature_effect' ||
+    plan.kind === 'targeted_spell_effect' ||
     plan.kind === 'draw' ||
     plan.kind === 'spell_effect' ||
     plan.kind === 'modal'

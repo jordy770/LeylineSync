@@ -53,7 +53,7 @@ import { parseManaCost, type ParsedManaCost } from '@/lib/game/mana'
 import { planAutoTap, type ManaSource } from '@/lib/game/auto-tap'
 import { shouldAutoPass, type AutoPassSettings } from '@/lib/game/auto-pass'
 import { getOpponentZoneData } from '@/lib/game/data'
-import type { CommanderDamageEntry, OpponentZoneData } from '@/lib/game/data'
+import type { CommanderDamageEntry, CostReductionEffect, OpponentZoneData } from '@/lib/game/data'
 import { useControllerGameState } from '@/lib/game/use-controller-game-state'
 import { useLongPress } from '@/lib/game/use-long-press'
 import type {
@@ -63,10 +63,12 @@ import type {
   ControllerCard,
   GameSessionPlayer,
   GameTurnState,
+  GameZone,
   ManaColor,
   ManaPool,
   ModalModeOption,
   PendingDecision,
+  RestrictedManaEntry,
   ScryOption,
   StackItem,
 } from '@/lib/game/types'
@@ -75,13 +77,14 @@ import HandFan from './controller/HandFan'
 import { CardActionSheet, CardZoomOverlay } from './controller/CardActionSheet'
 import { OpeningHandOverlay } from './controller/OpeningHandOverlay'
 import { ControllerCoachOverlay } from './controller/ControllerCoachOverlay'
-import { ManaCostDisplay, ManaPoolDisplay } from './controller/CardDisplay'
+import { ManaCostDisplay, ManaPoolDisplay, RestrictedManaDisplay } from './controller/CardDisplay'
 import {
   canCastHandSpell,
   cardMatchesTargetType,
   creatureMatchesController,
   effectiveBoardPT,
   formatCounterBag,
+  genericCostReduction,
   getEffectivePT,
   getSpellPlan,
   isCreatureOnlyTargetType,
@@ -219,6 +222,14 @@ function getProducibleColors(card: ControllerCard): ManaColor[] | 'flexible' | n
   return null
 }
 
+// A copy or token permanent — badged on every board view so players can tell a
+// real card from a copy/token (e.g. Reflections of Littjara's copy tokens).
+function copyTokenTag(card: { is_token?: boolean | null; copy_original_card_id?: string | null }): 'Token' | 'Copy' | null {
+  if (card.is_token) return 'Token'
+  if (card.copy_original_card_id) return 'Copy'
+  return null
+}
+
 /**
  * Colour-aware affordability: can `byColor` mana + `flexible` wildcard pips cover
  * `cost`? Coloured pips are paid by matching colour first, then wildcards; the
@@ -313,8 +324,12 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     stackItems,
     pendingDecisions,
     manaPool,
+    restrictedMana,
+    costReductions,
+    playableFromExileIds,
     playerId,
     isSessionFinished,
+    format,
     isLoading,
     errorMessage,
     setErrorMessage,
@@ -323,6 +338,16 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
 
   // The oldest pending decision this player must act on (one at a time).
   const myPendingDecision = pendingDecisions.find((d) => d.deciding_player_id === playerId) ?? null
+
+  // game_card_id → {name, image_url} so decision pickers can show card art. Your
+  // own cards (`cards`) span every zone incl. library; boardCards fills in
+  // opponents' battlefield cards. Options that resolve to neither fall back to name.
+  const cardImageById = useMemo(() => {
+    const m = new Map<string, { name: string; image_url: string | null }>()
+    for (const c of cards) m.set(c.id, { name: c.name, image_url: c.cards?.image_url ?? null })
+    for (const b of boardCards) if (!m.has(b.id)) m.set(b.id, { name: b.name, image_url: b.image_url ?? null })
+    return m
+  }, [cards, boardCards])
 
   const currentPlayer = players.find((p) => p.player_id === playerId) ?? null
   const opponentPlayers = players.filter((p) => p.player_id !== playerId)
@@ -597,6 +622,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       hasEligibleAttacker,
       hasBlockDecision,
       hasMainPhaseAction,
+      openingHandPending: currentPlayer?.opening_hand_kept === false,
     })
     if (!willPass) return
 
@@ -607,7 +633,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         .catch(() => { /* lost a race to a state change; the next tick re-evaluates */ })
     }, beatMs)
     return () => clearTimeout(timer)
-  }, [autoPass, isYielding, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState, currentStackKey, iHaveResponse, hasEligibleAttacker, hasBlockDecision, hasMainPhaseAction])
+  }, [autoPass, isYielding, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState, currentStackKey, iHaveResponse, hasEligibleAttacker, hasBlockDecision, hasMainPhaseAction, currentPlayer?.opening_hand_kept])
 
   // Combat damage is fully resolved once the 'regular' pass has run
   const combatDamageResolved = combatDamageStage === 'regular'
@@ -634,10 +660,16 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       setActionError('No mana ability found.')
       return
     }
-    // A mana ability with a SACRIFICE cost (Treasure) can't use the client-side
-    // tap-and-add path (it must sacrifice the source); route it through the
-    // engine's activate_mana_ability, passing the chosen colour for "any".
-    if (ability.costs.some((c) => c.type === 'sacrifice_self')) {
+    // Two cases can't use the simple client-side tap-and-add path and must run
+    // through the engine's activate_mana_ability (which reads the script):
+    //  • a SACRIFICE cost (Treasure) — the source must be sacrificed;
+    //  • a RESTRICTED producer (Haven of the Spirit Dragon "spend only to cast a
+    //    Dragon …") — the engine writes the mana into restricted_mana with the
+    //    restriction from the script. Both pass the chosen colour for "any".
+    const isRestricted = ability.effects.some(
+      (e) => isAddManaBehaviorAction(e) && (e as { restriction?: unknown }).restriction != null,
+    )
+    if (isRestricted || ability.costs.some((c) => c.type === 'sacrifice_self')) {
       const normalized = normalizeCardBehaviorToV2(script, card?.cards?.type_line)
       const index = (normalized.activated_abilities ?? []).findIndex((a) => a === ability)
       await activateManaAbility(supabase, sessionId, cardId, Math.max(0, index), undefined, color)
@@ -710,7 +742,12 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       const m = getAutoTapMana(c)
       return m ? [{ id: c.id, color: m.color, amount: m.amount }] : []
     })
-    const plan = planAutoTap(parseManaCost(manaCost), manaPool, sources)
+    // Apply cost reduction (mirrors the server's reduced_mana_cost) so auto-pay
+    // taps for what's actually owed, not the printed generic.
+    const parsed = parseManaCost(manaCost)
+    const reduction = genericCostReduction(card, costReductions, boardCards, playerId)
+    const cost = reduction > 0 ? { ...parsed, generic: Math.max(0, parsed.generic - reduction) } : parsed
+    const plan = planAutoTap(cost, manaPool, sources)
     if (!plan || plan.length === 0) return
     for (const tap of plan) {
       await addManaFromCard({
@@ -811,6 +848,18 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       } else {
         await putTargetedCreatureActionOnStack(supabase, sessionId, plan.effect, targetCardId, plan.timing, cardId, undefined, plan.targetController)
       }
+      await refresh()
+    },
+    // A creature-targeted spell that resolves via the cast_spell_effect program
+    // path (Reality Shift's exile_and_manifest) — pass the chosen creature target.
+    targetedSpellEffect: async (cardId: string, targetCardId: string) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const plan = card ? getSpellPlan(card) : null
+      if (!card || plan?.kind !== 'targeted_spell_effect') return
+      let x: number | null = null
+      if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      await autoPay(card)
+      await castSpellEffect(supabase, sessionId, plan.actions, cardId, x, targetCardId)
       await refresh()
     },
     // Multi-target removal — destroy/exile/bounce/tap/untap of up to N creatures.
@@ -1001,6 +1050,9 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         {layoutState === 'declare_attackers' ? (
           <motion.div key="attackers" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <DeclareAttackersLayout
+              supabase={supabase}
+              sessionId={sessionId}
+              boardCards={boardCards}
               ownCreatures={ownCreatures}
               opponentPlayers={opponentPlayers}
               opponentPlaneswalkers={opponentPlaneswalkers}
@@ -1035,6 +1087,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
               currentPlayer={currentPlayer}
               turnState={turnState}
               manaPool={manaPool}
+              restrictedMana={restrictedMana}
               isActivePlayer={isActivePlayer}
               libraryCount={ownLibraryCount}
               commanderDamage={playerId ? commanderDamage[playerId] : undefined}
@@ -1079,11 +1132,13 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
                 pendingStackItems={pendingStackItems}
                 ownGraveyard={ownGraveyard}
                 ownExile={ownExile}
+                playableFromExileIds={playableFromExileIds}
                 canCastSorceries={canCastSorceries}
                 canCastInstants={canCastInstants}
                 isActivePlayer={isActivePlayer}
                 availableByColor={availableByColor}
                 flexibleMana={flexibleMana}
+                costReductions={costReductions}
                 canPlayLand={canPlayLand}
                 mustDiscard={mustDiscard}
                 discardCount={discardCount}
@@ -1103,6 +1158,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
                 onChooseTriggerTarget={actions.chooseTriggerTarget}
                 onChooseTriggerTargets={actions.chooseTriggerTargets}
                 pendingDecision={myPendingDecision}
+                cardImageById={cardImageById}
                 onSubmitDecision={actions.submitDecision}
               />
               <PriorityPanel
@@ -1128,6 +1184,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         {selectedCardLive && (
           <CardActionSheet
             card={selectedCardLive}
+            playableFromExile={playableFromExileIds.has(selectedCardLive.id)}
             canCastSorceries={canCastSorceries}
             canCastInstants={canCastInstants}
             pendingStackCount={pendingStackItems.length}
@@ -1145,6 +1202,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             onSetPtCreature={async (cardId, targetCardId) => { await actions.setPtCreature(cardId, targetCardId) }}
             onAddCountersCreature={async (cardId, targetCardId) => { await actions.addCountersCreature(cardId, targetCardId) }}
             onCreatureEffect={async (cardId, targetCardId) => { await actions.creatureEffect(cardId, targetCardId) }}
+            onTargetedSpellEffect={async (cardId, targetCardId) => { await actions.targetedSpellEffect(cardId, targetCardId) }}
             onMultiCreatureEffect={async (cardId, targetCardIds) => { await actions.multiCreatureEffect(cardId, targetCardIds) }}
             onPermanentEffect={async (cardId, targetCardId) => { await actions.permanentEffect(cardId, targetCardId) }}
             onDividedDamage={async (cardId, allocations) => { await actions.dividedDamage(cardId, allocations) }}
@@ -1169,6 +1227,12 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         <OpeningHandOverlay
           handCards={handCards.map((c) => ({ id: c.id, name: c.name, image_url: c.cards?.image_url ?? null }))}
           mulligans={currentPlayer.mulligans ?? 0}
+          // Commander's first mulligan is free → bottom one fewer (matches keep_opening_hand).
+          bottomCount={
+            format === 'commander'
+              ? Math.max(0, (currentPlayer.mulligans ?? 0) - 1)
+              : currentPlayer.mulligans ?? 0
+          }
           waitingFor={openingHandWaitingFor}
           kept={currentPlayer.opening_hand_kept !== false}
           onKeep={async (bottomIds) => {
@@ -1222,6 +1286,7 @@ function StatusBar({
   currentPlayer,
   turnState,
   manaPool,
+  restrictedMana,
   isActivePlayer,
   libraryCount,
   commanderDamage,
@@ -1230,6 +1295,7 @@ function StatusBar({
   currentPlayer: GameSessionPlayer | null
   turnState: GameTurnState | null
   manaPool: ManaPool
+  restrictedMana: RestrictedManaEntry[]
   isActivePlayer: boolean
   libraryCount: number
   commanderDamage: CommanderDamageEntry[] | undefined
@@ -1284,6 +1350,7 @@ function StatusBar({
 
       {/* Right: mana pool + library count + priority indicator + life */}
       <div className="flex shrink-0 items-center justify-end gap-2">
+        <RestrictedManaDisplay entries={restrictedMana} />
         <ManaPoolDisplay manaPool={manaPool} />
         <div className="flex flex-col items-center">
           <span className="text-sm font-black leading-none text-slate-400">{libraryCount}</span>
@@ -1329,6 +1396,7 @@ function MainArea({
   pendingStackItems,
   ownGraveyard,
   ownExile,
+  playableFromExileIds,
   canCastSorceries,
   canCastInstants,
   isActivePlayer,
@@ -1341,6 +1409,7 @@ function MainArea({
   commanderDamage,
   availableByColor,
   flexibleMana,
+  costReductions,
   canOrderBlockers,
   onCardTap,
   onQuickPlay,
@@ -1351,6 +1420,7 @@ function MainArea({
   onChooseTriggerTarget,
   onChooseTriggerTargets,
   pendingDecision,
+  cardImageById,
   onSubmitDecision,
 }: {
   supabase: ReturnType<typeof import('@/lib/supabase/client').createClient>
@@ -1363,11 +1433,13 @@ function MainArea({
   pendingStackItems: StackItem[]
   ownGraveyard: ControllerCard[]
   ownExile: ControllerCard[]
+  playableFromExileIds: Set<string>
   canCastSorceries: boolean
   canCastInstants: boolean
   isActivePlayer: boolean
   availableByColor: Record<ManaColor, number>
   flexibleMana: number
+  costReductions: CostReductionEffect[]
   canPlayLand: boolean
   mustDiscard: boolean
   discardCount: number
@@ -1388,6 +1460,7 @@ function MainArea({
   onChooseTriggerTarget: (stackItemId: string, targetCardId: string) => Promise<void>
   onChooseTriggerTargets: (stackItemId: string, targetCardIds: string[]) => Promise<void>
   pendingDecision: PendingDecision | null
+  cardImageById: Map<string, { name: string; image_url: string | null }>
   onSubmitDecision: (decisionId: string, result: Record<string, unknown>) => Promise<void>
 }) {
   const [focusedOpponentId, setFocusedOpponentId] = useState<string | null>(null)
@@ -1396,6 +1469,7 @@ function MainArea({
   const [orderingAssignment, setOrderingAssignment] = useState<CombatAssignment | null>(null)
   // Hold-to-peek: press & hold any card to read its full-size oracle text.
   const [peekCard, setPeekCard] = useState<ControllerCard | null>(null)
+  const [showStack, setShowStack] = useState(false)
   const bindPeek = useLongPress()
 
   // Keep the ordering sheet's assignment fresh as combat data refreshes
@@ -1439,8 +1513,9 @@ function MainArea({
   )
 
   // Equipment/Auras attached to a permanent (game_cards.attached_to), grouped by
-  // host id, plus a name lookup so each tile can show what it's wearing / what
-  // it's attached to. Host may be an opponent's card (not in this set) → unnamed.
+  // host id. attachmentsByHost is owner-scoped (your own permanents). The name
+  // lookup is BOARD-WIDE (boardCards spans every seat) so an Aura/Equipment you
+  // control on an OPPONENT's permanent can still name its host.
   const attachmentsByHost = new Map<string, ControllerCard[]>()
   for (const c of battlefieldCards) {
     if (!c.attached_to) continue
@@ -1448,7 +1523,7 @@ function MainArea({
     list.push(c)
     attachmentsByHost.set(c.attached_to, list)
   }
-  const cardNameById = new Map(battlefieldCards.map((c) => [c.id, c.name]))
+  const cardNameById = new Map(boardCards.map((c) => [c.id, c.name]))
 
   // Responsive battlefield sizing: cards fill the row HEIGHT (so they scale to the
   // device — big on a desktop's tall board, smaller on a short phone row) and never
@@ -1518,8 +1593,13 @@ function MainArea({
 
       {/* ── Stack strip ──────────────────────────────────────────────── */}
       {pendingStackItems.length > 0 && (
-        <StackStrip items={pendingStackItems} />
+        <StackStrip items={pendingStackItems} onOpen={() => setShowStack(true)} />
       )}
+      <AnimatePresence>
+        {showStack && pendingStackItems.length > 0 && (
+          <StackOverlay items={pendingStackItems} onClose={() => setShowStack(false)} />
+        )}
+      </AnimatePresence>
 
       <TargetedTriggerPrompt
         pendingStackItems={pendingStackItems}
@@ -1533,6 +1613,7 @@ function MainArea({
         <PendingDecisionPrompt
           decision={pendingDecision}
           boardCards={boardCards}
+          cardImageById={cardImageById}
           onSubmit={onSubmitDecision}
         />
       )}
@@ -1543,6 +1624,7 @@ function MainArea({
         <CombatDamageStrip
           assignments={combatAssignments}
           boardCards={boardCards}
+          players={opponentPlayers}
           canOrderBlockers={canOrderBlockers}
           onOrderBlockers={setOrderingAssignment}
         />
@@ -1576,6 +1658,13 @@ function MainArea({
             {getEffectivePT(card) && getEffectivePT(card) !== getPowerToughnessLabel(card) && (
               <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow ring-1 ring-black/40">
                 {getEffectivePT(card)}
+              </span>
+            )}
+            {/* Copy/token marker — top-center, clear of the attachment (top-left)
+                and P/T (bottom-right) badges. */}
+            {copyTokenTag(card) && (
+              <span className="absolute -top-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-500 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-white shadow ring-1 ring-black/40">
+                {copyTokenTag(card)}
               </span>
             )}
             {/* Host: this permanent has Equipment/Auras attached to it. */}
@@ -1615,7 +1704,7 @@ function MainArea({
               type="button"
               onClick={() => handleCardTap(card)}
               {...bindPeek(() => setPeekCard(card))}
-              className="h-full aspect-[2/3] shrink-0 transition-transform active:scale-95"
+              className="relative h-full aspect-[2/3] shrink-0 transition-transform active:scale-95"
             >
               <MotionCard
                 card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
@@ -1625,6 +1714,11 @@ function MainArea({
                 // MotionCard's touch-none; touch-pan-x would not — see note above).
                 className="touch-auto"
               />
+              {copyTokenTag(card) && (
+                <span className="absolute -top-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-500 px-1 py-0.5 text-[8px] font-black uppercase tracking-wide text-white shadow ring-1 ring-black/40">
+                  {copyTokenTag(card)}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -1648,7 +1742,12 @@ function MainArea({
           cards={handCards.map((c) => {
             // Same playable/priority logic the v4 hand row used for its rings.
             const isLand = c.cards?.type_line?.toLowerCase().includes('land') ?? false
-            const manaCost = parseManaCost(c.cards?.mana_cost)
+            const parsedCost = parseManaCost(c.cards?.mana_cost)
+            // Mirror the server's cost reduction so reduced-cost cards read as playable.
+            const reduction = genericCostReduction(c, costReductions, boardCards, playerId)
+            const manaCost = reduction > 0
+              ? { ...parsedCost, generic: Math.max(0, parsedCost.generic - reduction) }
+              : parsedCost
             const totalCost = manaCost.generic + manaColors.reduce((sum, col) => sum + manaCost.colored[col], 0)
             const canAfford = totalCost === 0 || canAffordCost(manaCost, availableByColor, flexibleMana)
             const playable = isLand
@@ -1705,6 +1804,7 @@ function MainArea({
           <MyZonesSheet
             graveyard={ownGraveyard}
             exile={ownExile}
+            playableFromExileIds={playableFromExileIds}
             initialTab={myZoneTab}
             onClose={() => setMyZoneOpen(false)}
             onCardTap={onCardTap}
@@ -1882,13 +1982,18 @@ function modalModeIsTargeted(mode: ModalModeOption): boolean {
 function PendingDecisionPrompt({
   decision,
   boardCards,
+  cardImageById,
   onSubmit,
 }: {
   decision: PendingDecision
   boardCards: BoardCard[]
+  cardImageById: Map<string, { name: string; image_url: string | null }>
   onSubmit: (decisionId: string, result: Record<string, unknown>) => Promise<void>
 }) {
   const [isPending, setIsPending] = useState(false)
+  // Tap a revealed card in a pick/scry to zoom it (shared across the bodies).
+  const [zoomed, setZoomed] = useState<{ id: string; name: string } | null>(null)
+  const onZoom = (id: string, name: string) => setZoomed({ id, name })
 
   const submit = async (result: Record<string, unknown>) => {
     setIsPending(true)
@@ -1900,16 +2005,18 @@ function PendingDecisionPrompt({
   }
 
   return (
-    <div className="border-b border-indigo-500/20 bg-indigo-950/30 px-3 py-2">
-      <p className="mb-2 truncate text-[11px] font-black uppercase tracking-widest text-indigo-300">
+    // Cap the panel so a long option list never eats the whole screen (the board
+    // stays visible below) and the confirm button stays reachable.
+    <div className="flex max-h-[55vh] flex-col overflow-y-auto border-b border-indigo-500/20 bg-indigo-950/30 px-3 py-2">
+      <p className="mb-2 shrink-0 truncate text-[11px] font-black uppercase tracking-widest text-indigo-300">
         {decision.prompt ?? 'Make a choice'}
       </p>
       {decision.decision_type === 'choose_mode' ? (
         <ChooseModeBody decision={decision} boardCards={boardCards} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'scry' || decision.decision_type === 'surveil' ? (
-        <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} isPending={isPending} onSubmit={submit} />
+        <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
       ) : CARD_PICK_DECISIONS.has(decision.decision_type) ? (
-        <CardPickBody decision={decision} isPending={isPending} onSubmit={submit} />
+        <CardPickBody decision={decision} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'confirm' ? (
         <ConfirmBody isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'choose_player' ? (
@@ -1926,6 +2033,21 @@ function PendingDecisionPrompt({
         <PayXDamageBody decision={decision} isPending={isPending} onSubmit={submit} />
       ) : (
         <p className="text-[10px] text-slate-500">Unsupported decision: {decision.decision_type}</p>
+      )}
+
+      {zoomed && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm"
+          onClick={() => setZoomed(null)}
+        >
+          <div className="w-64 max-w-[80vw]" onClick={(e) => e.stopPropagation()}>
+            <MotionCard
+              card={{ id: zoomed.id, name: zoomed.name, image_url: cardImageById.get(zoomed.id)?.image_url ?? null, zone: 'hand' }}
+              size="board"
+              useLayoutId={false}
+            />
+          </div>
+        </div>
       )}
     </div>
   )
@@ -1971,8 +2093,9 @@ function ChooseModeBody({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-col gap-1.5">
+    <div className="flex min-h-0 flex-col gap-2">
+      {/* Modes scroll; the target picker and confirm below stay visible. */}
+      <div className="flex flex-col gap-1.5 overflow-y-auto" style={{ maxHeight: '32vh' }}>
         {modes.map((mode, idx) => {
           const on = selected.includes(idx)
           return (
@@ -2026,7 +2149,7 @@ function ChooseModeBody({
         type="button"
         disabled={!canConfirm}
         onClick={confirm}
-        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+        className="mt-1 shrink-0 self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
       >
         Confirm
       </button>
@@ -2037,11 +2160,15 @@ function ChooseModeBody({
 function ScrySurveilBody({
   decision,
   surveil,
+  cardImageById,
+  onZoom,
   isPending,
   onSubmit,
 }: {
   decision: PendingDecision
   surveil: boolean
+  cardImageById: Map<string, { name: string; image_url: string | null }>
+  onZoom: (id: string, name: string) => void
   isPending: boolean
   onSubmit: (result: Record<string, unknown>) => Promise<void>
 }) {
@@ -2059,13 +2186,22 @@ function ScrySurveilBody({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-[10px] text-slate-400">Top of library is first. Choose where each card goes.</p>
-      <div className="flex flex-col gap-1.5">
+    <div className="flex min-h-0 flex-col gap-2">
+      <p className="shrink-0 text-[10px] text-slate-400">Top of library is first. Choose where each card goes.</p>
+      {/* The card list scrolls; the confirm button below stays visible. */}
+      <div className="flex flex-col gap-1.5 overflow-y-auto" style={{ maxHeight: '34vh' }}>
         {cards.map((c) => {
           const where = placement[c.game_card_id] ?? 'top'
           return (
             <div key={c.game_card_id} className="flex items-center gap-2 rounded-xl border border-indigo-400/20 bg-indigo-400/5 px-2 py-1.5">
+              <button
+                type="button"
+                onClick={() => onZoom(c.game_card_id, c.name)}
+                title={`${c.name} — tap to zoom`}
+                className="w-9 shrink-0 rounded transition active:scale-95"
+              >
+                <MotionCard card={{ id: c.game_card_id, name: c.name, image_url: cardImageById.get(c.game_card_id)?.image_url ?? null, zone: 'hand' }} size="board" useLayoutId={false} />
+              </button>
               <span className="min-w-0 flex-1 truncate text-xs font-bold text-white">{c.name}</span>
               <div className="flex shrink-0 overflow-hidden rounded-lg border border-indigo-400/30">
                 <button
@@ -2093,7 +2229,7 @@ function ScrySurveilBody({
         type="button"
         disabled={isPending}
         onClick={confirm}
-        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+        className="mt-1 shrink-0 self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
       >
         Confirm
       </button>
@@ -2116,10 +2252,14 @@ const CARD_PICK_DECISIONS = new Set([
 
 function CardPickBody({
   decision,
+  cardImageById,
+  onZoom,
   isPending,
   onSubmit,
 }: {
   decision: PendingDecision
+  cardImageById: Map<string, { name: string; image_url: string | null }>
+  onZoom: (id: string, name: string) => void
   isPending: boolean
   onSubmit: (result: Record<string, unknown>) => Promise<void>
 }) {
@@ -2139,25 +2279,38 @@ function CardPickBody({
   const canConfirm = !isPending && selected.length >= decision.min_choices && selected.length <= decision.max_choices
 
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-[10px] text-slate-400">
+    <div className="flex min-h-0 flex-col gap-2">
+      <p className="shrink-0 text-[10px] text-slate-400">
         Choose {decision.min_choices === decision.max_choices ? decision.max_choices : `${decision.min_choices}–${decision.max_choices}`}.
       </p>
-      <div className="flex flex-wrap gap-2">
+      {/* The card list scrolls; the confirm button below stays visible. */}
+      <div className="flex flex-wrap gap-2 overflow-y-auto" style={{ maxHeight: '34vh' }}>
         {cards.map((c) => {
           const on = selected.includes(c.game_card_id)
+          const img = cardImageById.get(c.game_card_id)?.image_url ?? null
           return (
-            <button
-              key={c.game_card_id}
-              type="button"
-              disabled={isPending}
-              onClick={() => toggle(c.game_card_id)}
-              className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition active:scale-95 disabled:opacity-50 ${
-                on ? 'border-indigo-400 bg-indigo-400/20 text-white' : 'border-indigo-400/30 bg-indigo-400/5 text-slate-200'
-              }`}
-            >
-              <span className="max-w-32 truncate">{c.name}</span>
-            </button>
+            <div key={c.game_card_id} className="w-20 shrink-0">
+              <button
+                type="button"
+                onClick={() => onZoom(c.game_card_id, c.name)}
+                title={`${c.name} — tap to zoom`}
+                className={`block w-full rounded-lg transition active:scale-95 ${
+                  on ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-indigo-950' : ''
+                }`}
+              >
+                <MotionCard card={{ id: c.game_card_id, name: c.name, image_url: img, zone: 'hand' }} size="board" useLayoutId={false} />
+              </button>
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => toggle(c.game_card_id)}
+                className={`mt-1 w-full rounded-md px-2 py-1 text-[10px] font-bold transition active:scale-95 disabled:opacity-50 ${
+                  on ? 'bg-indigo-400 text-indigo-950' : 'bg-indigo-400/15 text-slate-200 hover:bg-indigo-400/25'
+                }`}
+              >
+                {on ? 'Chosen ✓' : 'Choose'}
+              </button>
+            </div>
           )
         })}
       </div>
@@ -2165,7 +2318,7 @@ function CardPickBody({
         type="button"
         disabled={!canConfirm}
         onClick={() => void onSubmit({ chosen: selected })}
-        className="self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
+        className="mt-1 shrink-0 self-start rounded-xl bg-indigo-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-950 transition active:scale-95 disabled:opacity-40"
       >
         Confirm{decision.min_choices === 0 ? ` (${selected.length})` : ''}
       </button>
@@ -2584,11 +2737,13 @@ function PriorityPanel({
 function CombatDamageStrip({
   assignments,
   boardCards,
+  players,
   canOrderBlockers,
   onOrderBlockers,
 }: {
   assignments: CombatAssignment[]
   boardCards: BoardCard[]
+  players: GameSessionPlayer[]
   canOrderBlockers: boolean
   onOrderBlockers: (assignment: CombatAssignment) => void
 }) {
@@ -2644,7 +2799,13 @@ function CombatDamageStrip({
                   {canOrderThis && <span className="text-[10px] font-black text-[#D4591A]">⇅</span>}
                 </button>
               ) : (
-                <span className="text-[9px] font-bold text-slate-300">{a.defending_username ?? 'opponent'}</span>
+                <span className="text-[9px] font-bold text-slate-300">
+                  {/* Prefer the players list (it labels the CPU bot "CPU 🤖"); the
+                      combat RPC falls back to an id-prefix for profile-less players. */}
+                  {players.find((p) => p.player_id === a.defending_player_id)?.username
+                    ?? a.defending_username
+                    ?? 'opponent'}
+                </span>
               )}
             </div>
           )
@@ -2849,41 +3010,178 @@ function BlockerOrderSheet({
 
 // ─── Stack Strip ──────────────────────────────────────────────────────────────
 
-function StackStrip({ items }: { items: StackItem[] }) {
-  // Highest position = most recently added = top of stack
+// Human label for a card-less stack item (an ability/trigger: "deal_damage_player"
+// → "Deal Damage Player"). Card spells use their name instead.
+function prettyStackAction(actionType: string): string {
+  return actionType
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+}
+
+// Adapt a stack item to the ControllerCard shape CardZoomOverlay reads (only the
+// fields it touches: name + cards.{image_url,type_line}). The source card lives
+// in zone 'stack', so its image rides the get_stack_items RPC (mig 322).
+function stackItemToZoomCard(item: StackItem): ControllerCard {
+  const id = item.source_card_id ?? item.id
+  const name = item.source_card_name ?? prettyStackAction(item.action_type)
+  return {
+    id,
+    card_id: id,
+    name,
+    is_tapped: false,
+    damage_marked: 0,
+    zone: 'stack',
+    zone_position: 0,
+    cards: {
+      id,
+      name,
+      image_url: item.source_card_image_url ?? null,
+      type_line: item.source_card_type_line ?? null,
+      power_toughness: null,
+    },
+  }
+}
+
+function StackStrip({ items, onOpen }: { items: StackItem[]; onOpen: () => void }) {
+  // Highest position = most recently added = top of stack (resolves first).
   const sorted = [...items].sort((a, b) => b.position - a.position)
 
   return (
-    <div className="shrink-0 border-b border-orange-900/40 bg-orange-950/20">
+    <button
+      type="button"
+      onClick={onOpen}
+      className="block w-full shrink-0 border-b border-orange-900/40 bg-orange-950/20 text-left active:bg-orange-950/40"
+    >
       <div className="flex items-center gap-2 overflow-x-auto px-3 py-1.5">
         <span className="shrink-0 text-[8px] font-black uppercase tracking-widest text-orange-500">
-          Stack
+          Stack {sorted.length}
         </span>
         {sorted.map((item, i) => (
           <div
             key={item.id}
-            className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1 ${
+            className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-1.5 py-1 ${
               i === 0
                 ? 'border-orange-500/40 bg-orange-500/10 text-orange-200'
                 : 'border-white/5 bg-white/5 text-slate-400'
             }`}
           >
-            {i === 0 && (
-              <span className="text-[7px] font-black uppercase tracking-wider text-orange-500">Top</span>
+            {item.source_card_image_url ? (
+              <img
+                src={item.source_card_image_url}
+                alt=""
+                className="h-9 w-[26px] shrink-0 rounded-[3px] object-cover object-top"
+              />
+            ) : (
+              <span className="flex h-9 w-[26px] shrink-0 items-center justify-center rounded-[3px] bg-white/10 text-[7px] font-black uppercase text-slate-400">
+                ABL
+              </span>
             )}
-            <span className="text-[10px] font-bold">
-              {item.source_card_name ?? item.action_type}
-            </span>
-            <span className="text-[9px] text-slate-600">
-              {item.controller_username ?? ''}
-            </span>
-            {item.target_username && (
-              <span className="text-[9px] text-slate-600">→ {item.target_username}</span>
-            )}
+            <div className="flex min-w-0 flex-col">
+              {i === 0 && (
+                <span className="text-[7px] font-black uppercase tracking-wider text-orange-500">Top</span>
+              )}
+              <span className="truncate text-[10px] font-bold">
+                {item.source_card_name ?? prettyStackAction(item.action_type)}
+              </span>
+              {item.target_username && (
+                <span className="truncate text-[8px] text-slate-600">→ {item.target_username}</span>
+              )}
+            </div>
           </div>
         ))}
+        <span className="ml-auto shrink-0 text-[9px] font-bold text-orange-500/70">tap ⤢</span>
       </div>
-    </div>
+    </button>
+  )
+}
+
+// Full-screen stack viewer: a downward fan of card images (top of stack at top,
+// each card's title peeking above the next), tap any spell to zoom. Card-less
+// items (abilities/triggers) render as a labelled tile.
+function StackOverlay({ items, onClose }: { items: StackItem[]; onClose: () => void }) {
+  const sorted = [...items].sort((a, b) => b.position - a.position) // top resolves first
+  const [zoomCard, setZoomCard] = useState<ControllerCard | null>(null)
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[50] flex flex-col bg-black/85"
+        onClick={onClose}
+      >
+        <div className="flex shrink-0 items-center justify-between px-4 py-3" onClick={(e) => e.stopPropagation()}>
+          <p className="text-sm font-black text-orange-300">
+            Stack <span className="text-[10px] font-bold text-orange-500/70">· top resolves first</span>
+          </p>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300 active:scale-95"
+          >
+            Close
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 pb-10" onClick={(e) => e.stopPropagation()}>
+          <div className="mx-auto flex w-[260px] flex-col">
+            {sorted.map((item, i) => {
+              const isTop = i === 0
+              const hasImage = Boolean(item.source_card_image_url)
+              const label = item.source_card_name ?? prettyStackAction(item.action_type)
+              // Uniform "peek" rows showing each card's title region, lightly
+              // shingled (small negative margin + ascending zIndex) for a stacked
+              // look that is robust to mixed card/ability heights. Tap → full zoom.
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => hasImage && setZoomCard(stackItemToZoomCard(item))}
+                  style={{ marginTop: i === 0 ? 0 : -14, zIndex: i }}
+                  className={`relative block h-[84px] w-full overflow-hidden rounded-xl border-2 text-left shadow-xl transition active:scale-[0.98] ${
+                    isTop ? 'border-orange-400' : 'border-black/70'
+                  }`}
+                >
+                  {hasImage ? (
+                    <img
+                      src={item.source_card_image_url as string}
+                      alt={label}
+                      className="absolute inset-0 h-full w-full object-cover object-top"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-[#15110A]" />
+                  )}
+                  {/* readability gradient + labels */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/35 to-transparent" />
+                  <div className="absolute inset-0 flex flex-col justify-center px-3">
+                    {!hasImage && (
+                      <span className="text-[8px] font-black uppercase tracking-widest text-orange-500/80">Ability</span>
+                    )}
+                    <span className="truncate text-sm font-black text-white drop-shadow">{label}</span>
+                    <span className="truncate text-[10px] font-bold text-slate-300 drop-shadow">
+                      {item.controller_username ?? ''}
+                      {item.target_username ? <span className="text-slate-400"> → {item.target_username}</span> : null}
+                    </span>
+                  </div>
+                  {isTop && (
+                    <span className="absolute right-2 top-2 z-10 rounded-full bg-orange-500 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-black shadow">
+                      Top
+                    </span>
+                  )}
+                  {hasImage && (
+                    <span className="absolute bottom-1.5 right-2 text-[9px] font-bold text-white/70 drop-shadow">⤢</span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </motion.div>
+
+      {zoomCard && <CardZoomOverlay card={zoomCard} onClose={() => setZoomCard(null)} />}
+    </>
   )
 }
 
@@ -2892,12 +3190,15 @@ function StackStrip({ items }: { items: StackItem[] }) {
 function MyZonesSheet({
   graveyard,
   exile,
+  playableFromExileIds,
   initialTab,
   onClose,
   onCardTap,
 }: {
   graveyard: ControllerCard[]
   exile: ControllerCard[]
+  // Exile cards the player may currently cast (mig 230 impulse, adventure faces).
+  playableFromExileIds: Set<string>
   initialTab: MyZoneTab
   onClose: () => void
   // Tapping a graveyard card with an action (e.g. flashback) opens its action
@@ -2905,6 +3206,8 @@ function MyZonesSheet({
   onCardTap: (card: ControllerCard) => void
 }) {
   const [tab, setTab] = useState<MyZoneTab>(initialTab)
+  // Tap any card to zoom it (reuses the same overlay as opponent/own cards).
+  const [zoomCard, setZoomCard] = useState<ControllerCard | null>(null)
 
   const tabs: { key: MyZoneTab; label: string; count: number }[] = [
     { key: 'graveyard', label: 'Graveyard', count: graveyard.length },
@@ -2996,9 +3299,8 @@ function MyZonesSheet({
                         <div key={card.id} className="w-[60px]">
                           <button
                             type="button"
-                            disabled={!hasFlashback}
-                            onClick={() => { onCardTap(card); onClose() }}
-                            className={`relative block w-full ${hasFlashback ? 'active:scale-95' : 'cursor-default'}`}
+                            onClick={() => { if (hasFlashback) { onCardTap(card); onClose() } else { setZoomCard(card) } }}
+                            className="relative block w-full active:scale-95"
                           >
                             <MotionCard
                               card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: false, damage_marked: 0, zone: card.zone }}
@@ -3029,14 +3331,30 @@ function MyZonesSheet({
                   <p className="py-8 text-center text-sm text-slate-700">Nothing in exile</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {exile.map((card) => (
-                      <div key={card.id} className="w-[60px]">
-                        <MotionCard
-                          card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: false, damage_marked: 0, zone: card.zone }}
-                          size="board" useLayoutId={false} className="w-full"
-                        />
-                      </div>
-                    ))}
+                    {exile.map((card) => {
+                      // Castable from exile (impulse / adventure) → tap opens its
+                      // action sheet to play it; otherwise tap just zooms.
+                      const canPlay = playableFromExileIds.has(card.id)
+                      return (
+                        <div key={card.id} className="w-[60px]">
+                          <button
+                            type="button"
+                            onClick={() => { if (canPlay) { onCardTap(card); onClose() } else { setZoomCard(card) } }}
+                            className="relative block w-full active:scale-95"
+                          >
+                            <MotionCard
+                              card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: false, damage_marked: 0, zone: card.zone }}
+                              size="board" useLayoutId={false} className="w-full"
+                            />
+                            {canPlay && (
+                              <span className="absolute -right-1 -top-1 rounded-full bg-amber-400 px-1 text-[8px] font-black text-amber-950">
+                                PLAY
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
               </motion.div>
@@ -3044,6 +3362,11 @@ function MyZonesSheet({
           </AnimatePresence>
         </div>
       </motion.div>
+
+      {/* Tap-to-zoom a card from your zones (z-[55] sits above this sheet's z-40). */}
+      <AnimatePresence>
+        {zoomCard && <CardZoomOverlay card={zoomCard} onClose={() => setZoomCard(null)} />}
+      </AnimatePresence>
     </>
   )
 }
@@ -3067,6 +3390,18 @@ function OpponentBoardOverlay({
 }) {
   const [tab, setTab] = useState<OverlayTab>('board')
   const [zoneData, setZoneData] = useState<OpponentZoneData | null>(null)
+  // Tap any opponent card to zoom it (reuses the same overlay as own cards).
+  const [zoomCard, setZoomCard] = useState<ControllerCard | null>(null)
+  const toZoomCard = (c: {
+    id: string; card_id?: string; name: string; image_url?: string | null
+    type_line?: string | null; power_toughness?: string | null
+    zone: GameZone; is_tapped?: boolean; damage_marked?: number
+  }): ControllerCard => ({
+    id: c.id, card_id: c.card_id ?? c.id, name: c.name,
+    is_tapped: c.is_tapped ?? false, damage_marked: c.damage_marked ?? 0,
+    zone: c.zone, zone_position: 0,
+    cards: { id: c.card_id ?? c.id, name: c.name, image_url: c.image_url ?? null, type_line: c.type_line ?? null, power_toughness: c.power_toughness ?? null },
+  })
 
   useMemo(() => {
     getOpponentZoneData(supabase, sessionId, opponent.player_id)
@@ -3187,10 +3522,17 @@ function OpponentBoardOverlay({
                   <ZoneSection label={`Creatures (${creatures.length})`}>
                     {creatures.map((card) => (
                       <div key={card.id} className="flex w-[60px] flex-col items-center gap-1">
-                        <MotionCard
-                          card={{ id: card.id, name: card.name, image_url: card.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
-                          size="board" useLayoutId={false} className="w-full"
-                        />
+                        <button type="button" onClick={() => setZoomCard(toZoomCard(card))} className="relative block w-full active:scale-95">
+                          <MotionCard
+                            card={{ id: card.id, name: card.name, image_url: card.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
+                            size="board" useLayoutId={false} className="w-full"
+                          />
+                          {copyTokenTag(card) && (
+                            <span className="absolute -top-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-500 px-1 py-0.5 text-[8px] font-black uppercase tracking-wide text-white shadow ring-1 ring-black/40">
+                              {copyTokenTag(card)}
+                            </span>
+                          )}
+                        </button>
                         {card.damage_marked > 0 && (
                           <span className="text-[8px] font-bold text-red-400">{card.damage_marked} dmg</span>
                         )}
@@ -3202,10 +3544,17 @@ function OpponentBoardOverlay({
                   <ZoneSection label={`Other permanents (${other.length})`}>
                     {other.map((card) => (
                       <div key={card.id} className="w-[60px]">
-                        <MotionCard
-                          card={{ id: card.id, name: card.name, image_url: card.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
-                          size="board" useLayoutId={false} className="w-full"
-                        />
+                        <button type="button" onClick={() => setZoomCard(toZoomCard(card))} className="relative block w-full active:scale-95">
+                          <MotionCard
+                            card={{ id: card.id, name: card.name, image_url: card.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
+                            size="board" useLayoutId={false} className="w-full"
+                          />
+                          {copyTokenTag(card) && (
+                            <span className="absolute -top-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-500 px-1 py-0.5 text-[8px] font-black uppercase tracking-wide text-white shadow ring-1 ring-black/40">
+                              {copyTokenTag(card)}
+                            </span>
+                          )}
+                        </button>
                       </div>
                     ))}
                   </ZoneSection>
@@ -3214,10 +3563,17 @@ function OpponentBoardOverlay({
                   <ZoneSection label={`Lands (${lands.length})`}>
                     {lands.map((card) => (
                       <div key={card.id} className="w-[44px]">
-                        <MotionCard
-                          card={{ id: card.id, name: card.name, image_url: card.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
-                          size="board" useLayoutId={false} className="w-full"
-                        />
+                        <button type="button" onClick={() => setZoomCard(toZoomCard(card))} className="relative block w-full active:scale-95">
+                          <MotionCard
+                            card={{ id: card.id, name: card.name, image_url: card.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
+                            size="board" useLayoutId={false} className="w-full"
+                          />
+                          {copyTokenTag(card) && (
+                            <span className="absolute -top-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-500 px-1 py-0.5 text-[8px] font-black uppercase tracking-wide text-white shadow ring-1 ring-black/40">
+                              {copyTokenTag(card)}
+                            </span>
+                          )}
+                        </button>
                       </div>
                     ))}
                   </ZoneSection>
@@ -3241,12 +3597,12 @@ function OpponentBoardOverlay({
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {zoneData!.graveyard.map((card) => (
-                      <div key={card.id} className="w-[60px]">
+                      <button key={card.id} type="button" onClick={() => setZoomCard(toZoomCard(card))} className="block w-[60px] active:scale-95">
                         <MotionCard
                           card={{ id: card.id, name: card.name, image_url: card.image_url, is_tapped: false, damage_marked: 0, zone: card.zone }}
                           size="board" useLayoutId={false} className="w-full"
                         />
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -3274,12 +3630,12 @@ function OpponentBoardOverlay({
                           <span className="text-[8px] text-slate-700">Hidden</span>
                         </div>
                       ) : (
-                        <div key={card.id} className="w-[60px] opacity-80">
+                        <button key={card.id} type="button" onClick={() => setZoomCard(toZoomCard(card))} className="block w-[60px] opacity-80 active:scale-95">
                           <MotionCard
                             card={{ id: card.id, name: card.name, image_url: card.image_url, is_tapped: false, damage_marked: 0, zone: card.zone }}
                             size="board" useLayoutId={false} className="w-full"
                           />
-                        </div>
+                        </button>
                       ),
                     )}
                   </div>
@@ -3289,6 +3645,11 @@ function OpponentBoardOverlay({
           </AnimatePresence>
         </div>
       </motion.div>
+
+      {/* Tap-to-zoom an opponent's card (z-[55] sits above this sheet's z-40). */}
+      <AnimatePresence>
+        {zoomCard && <CardZoomOverlay card={zoomCard} onClose={() => setZoomCard(null)} />}
+      </AnimatePresence>
     </>
   )
 }
@@ -3314,7 +3675,51 @@ function ZoneSection({
 
 // ─── Declare Attackers ────────────────────────────────────────────────────────
 
+// Adapt a battlefield BoardCard to the ControllerCard shape CardZoomOverlay reads
+// (only name + cards.{image_url,type_line,power_toughness}). Used to zoom attacker
+// cards in combat, where we only hold BoardCard rows.
+function boardCardToZoomCard(c: BoardCard): ControllerCard {
+  return {
+    id: c.id,
+    card_id: c.card_id ?? c.id,
+    name: c.name,
+    is_tapped: c.is_tapped ?? false,
+    damage_marked: c.damage_marked ?? 0,
+    zone: c.zone,
+    zone_position: 0,
+    cards: {
+      id: c.card_id ?? c.id,
+      name: c.name,
+      image_url: c.image_url ?? null,
+      type_line: c.type_line ?? null,
+      power_toughness: c.power_toughness ?? null,
+    },
+  }
+}
+
+// A small ⤢ zoom badge for combat cards — stops propagation so it never triggers
+// the card's attack/block toggle or drag-to-attack.
+function ZoomBadge({ onZoom }: { onZoom: () => void }) {
+  // A <span role="button">, not <button> — these sit inside a card <button>, and
+  // nested native buttons are invalid HTML (React hydration warning).
+  return (
+    <span
+      role="button"
+      tabIndex={0}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => { e.stopPropagation(); onZoom() }}
+      className="absolute right-0.5 top-0.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-[10px] font-bold text-white/80 active:scale-90"
+      aria-label="Zoom card"
+    >
+      ⤢
+    </span>
+  )
+}
+
 function DeclareAttackersLayout({
+  supabase,
+  sessionId,
+  boardCards,
   ownCreatures,
   opponentPlayers,
   opponentPlaneswalkers,
@@ -3323,6 +3728,9 @@ function DeclareAttackersLayout({
   onDeclareAttacker,
   onPassPriority,
 }: {
+  supabase: ReturnType<typeof import('@/lib/supabase/client').createClient>
+  sessionId: string
+  boardCards: BoardCard[]
   ownCreatures: ControllerCard[]
   opponentPlayers: GameSessionPlayer[]
   opponentPlaneswalkers: { id: string; name: string; loyalty: number }[]
@@ -3331,6 +3739,10 @@ function DeclareAttackersLayout({
   onDeclareAttacker: (cardId: string, target: { playerId?: string; planeswalkerId?: string }) => Promise<void>
   onPassPriority: () => Promise<void>
 }) {
+  // Tap the 👁 on a player to preview their board before choosing whom to attack;
+  // tap ⤢ on a creature to zoom it.
+  const [previewOpponent, setPreviewOpponent] = useState<GameSessionPlayer | null>(null)
+  const [zoomCard, setZoomCard] = useState<ControllerCard | null>(null)
   const untappedCreatures = ownCreatures.filter((c) => !c.is_tapped)
   // Attackable targets: each opponent player + each opponent planeswalker.
   const targets: { kind: 'player' | 'planeswalker'; id: string; label: string; sub: string }[] = [
@@ -3506,6 +3918,23 @@ function DeclareAttackersLayout({
                   <span className="text-[8px] uppercase tracking-wider text-slate-500">{t.kind === 'planeswalker' ? 'PW' : 'Player'}</span>
                   <span className="text-xs font-black text-white">{t.label}</span>
                   <span className="text-[11px] font-bold text-slate-300">{t.sub}</span>
+                  {t.kind === 'player' && (
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        const opp = opponentPlayers.find((p) => p.player_id === t.id)
+                        if (opp) setPreviewOpponent(opp)
+                      }}
+                      className="ml-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/5 text-xs text-slate-300 active:scale-90"
+                      aria-label={`Preview ${t.label}'s board`}
+                      title="Preview board"
+                    >
+                      👁
+                    </span>
+                  )}
                 </button>
               )
             })}
@@ -3538,17 +3967,18 @@ function DeclareAttackersLayout({
                       : 'border-[#2A2D38] bg-[#131720] hover:border-slate-500'
                 }`}
               >
+                <ZoomBadge onZoom={() => setZoomCard(card)} />
                 {isAttacking && (
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#D4591A] px-1.5 py-0.5">
+                  <div className="absolute -top-2 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#D4591A] px-1.5 py-0.5">
                     <span className="text-[7px] font-black uppercase text-white">→ {targetLabel(assignedTo)}</span>
                   </div>
                 )}
                 {!attackable && (
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-700 px-1.5 py-0.5">
+                  <div className="absolute -top-2 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-700 px-1.5 py-0.5">
                     <span className="text-[7px] font-black uppercase text-slate-400">Sick</span>
                   </div>
                 )}
-                <div className={isAttacking ? 'rotate-90 transition-transform duration-200' : 'transition-transform duration-200'}>
+                <div className={`w-full ${isAttacking ? 'rotate-90 transition-transform duration-200' : 'transition-transform duration-200'}`}>
                   <MotionCard
                     card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: false, damage_marked: card.damage_marked, zone: card.zone }}
                     size="board"
@@ -3612,6 +4042,21 @@ function DeclareAttackersLayout({
           )}
         </button>
       </div>
+
+      {/* Board preview — inspect an opponent's board before choosing whom to attack */}
+      <AnimatePresence>
+        {previewOpponent && (
+          <OpponentBoardOverlay
+            supabase={supabase}
+            sessionId={sessionId}
+            opponent={previewOpponent}
+            cards={boardCards.filter((c) => c.controller_player_id === previewOpponent.player_id)}
+            onClose={() => setPreviewOpponent(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {zoomCard && <CardZoomOverlay card={zoomCard} onClose={() => setZoomCard(null)} />}
     </div>
   )
 }
@@ -3651,6 +4096,7 @@ function DeclareBlockersLayout({
   const [blockAssignments, setBlockAssignments] = useState<Record<string, string>>({})
   const [isPending, setIsPending] = useState(false)
   const [localError, setLocalError] = useState<string | null>(null)
+  const [zoomCard, setZoomCard] = useState<ControllerCard | null>(null)
 
   const assignBlocker = (blockerCardId: string) => {
     if (!selectedAttackerId) return
@@ -3713,6 +4159,24 @@ function DeclareBlockersLayout({
                 isSelected ? 'border-cyan-400 bg-cyan-400/10' : 'border-[#1C2030] bg-[#0A0C14]'
               }`}
             >
+              <ZoomBadge
+                onZoom={() =>
+                  setZoomCard(
+                    attackerCard
+                      ? boardCardToZoomCard(attackerCard)
+                      : {
+                          id: assignment.attacker_card_id,
+                          card_id: assignment.attacker_card_id,
+                          name: assignment.attacker_name ?? 'Attacker',
+                          is_tapped: true,
+                          damage_marked: 0,
+                          zone: 'battlefield',
+                          zone_position: 0,
+                          cards: { id: assignment.attacker_card_id, name: assignment.attacker_name ?? 'Attacker', image_url: null, type_line: null, power_toughness: null },
+                        },
+                  )
+                }
+              />
               <div className="w-full">
                 <MotionCard
                   card={{ id: assignment.attacker_card_id, name: assignment.attacker_name ?? 'Attacker', image_url: attackerCard?.image_url, is_tapped: true, damage_marked: 0, zone: 'battlefield' }}
@@ -3783,7 +4247,7 @@ function DeclareBlockersLayout({
                 onClick={() => { if (!cannotBlock) assignBlocker(card.id) }}
                 whileTap={cannotBlock ? undefined : { scale: 0.94 }}
                 title={cannotBlock ? 'Has protection — can’t be blocked by this creature' : undefined}
-                className={`flex w-16 shrink-0 flex-col items-center gap-1 rounded-xl border-2 p-1.5 transition-colors ${
+                className={`relative flex w-16 shrink-0 flex-col items-center gap-1 rounded-xl border-2 p-1.5 transition-colors ${
                   isBlocking
                     ? 'border-cyan-400 bg-cyan-400/10'
                     : cannotBlock
@@ -3793,6 +4257,7 @@ function DeclareBlockersLayout({
                         : 'border-[#2A2D38] bg-[#0A0C14] opacity-50'
                 }`}
               >
+                <ZoomBadge onZoom={() => setZoomCard(card)} />
                 <MotionCard
                   card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: false, damage_marked: card.damage_marked, zone: card.zone }}
                   size="board"
@@ -3856,6 +4321,8 @@ function DeclareBlockersLayout({
           {localError ?? errorMessage}
         </div>
       )}
+
+      {zoomCard && <CardZoomOverlay card={zoomCard} onClose={() => setZoomCard(null)} />}
     </div>
   )
 }

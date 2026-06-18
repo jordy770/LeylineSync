@@ -2,8 +2,27 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
+import {
+  Check,
+  Copy,
+  Crown,
+  Flag,
+  Gamepad2,
+  Library,
+  LogIn,
+  Monitor,
+  Play,
+  Plus,
+  RefreshCw,
+  Smartphone,
+  Sparkles,
+  Trophy,
+  Users,
+  X,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import {
+  addBotToSession,
   createGameSession,
   finishGameSession,
   getErrorMessage,
@@ -18,7 +37,7 @@ import {
   getPreconDecks,
   getUserDecks,
 } from '@/lib/game/data'
-import type { DeckSummary, GameSession, GameSessionPlayer } from '@/lib/game/types'
+import type { DeckSummary, GameSession, GameSessionPlayer, GameSessionStatus } from '@/lib/game/types'
 
 export default function GameSessionLobby() {
   const supabase = useMemo(() => createClient(), [])
@@ -33,6 +52,7 @@ export default function GameSessionLobby() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [isWorking, setIsWorking] = useState(false)
   const [format, setFormat] = useState<'standard' | 'commander'>('standard')
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const refreshSession = async (sessionId: string) => {
     const [session, sessionPlayers] = await Promise.all([
@@ -160,6 +180,31 @@ export default function GameSessionLobby() {
     }
   }
 
+  const handleAddBot = async () => {
+    if (!activeSession) {
+      return
+    }
+
+    setErrorMessage(null)
+    setStatusMessage(null)
+    setIsWorking(true)
+
+    try {
+      await addBotToSession(supabase, activeSession.id)
+      await refreshSession(activeSession.id)
+      setStatusMessage(
+        'CPU seated. It only takes its turns while the bot driver is running — in a terminal, run ' +
+          '`node scripts/bot-runner.mjs --watch` once and leave it open (local Supabase only).',
+      )
+    } catch (error) {
+      const message = getErrorMessage(error)
+      console.error('Failed to add CPU opponent:', message, error)
+      setErrorMessage(message)
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
   const handleFinishSession = async () => {
     if (!activeSession) {
       return
@@ -232,231 +277,481 @@ export default function GameSessionLobby() {
     }
   }
 
+  // Close the manage modal on Escape.
+  useEffect(() => {
+    if (!activeSession) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveSession(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [activeSession])
+
+  const handleCopyId = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id)
+      setCopiedId(id)
+      setTimeout(() => setCopiedId((current) => (current === id ? null : current)), 1500)
+    } catch {
+      /* clipboard blocked — ignore */
+    }
+  }
+
   const winner = activeSession?.winner_player_id
     ? players.find((player) => player.player_id === activeSession.winner_player_id)
     : null
 
-  return (
-    <section className="w-full rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="flex-1">
-          <label htmlFor="session-id" className="mb-2 block text-sm font-medium text-slate-300">
-            Session ID
-          </label>
-          <input
-            id="session-id"
-            value={sessionIdInput}
-            onChange={(event) => setSessionIdInput(event.target.value)}
-            placeholder="Paste a session id"
-            className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none focus:border-slate-400"
-          />
-        </div>
-        <button
-          type="button"
-          onClick={handleJoinSession}
-          disabled={isWorking}
-          className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Join
-        </button>
-        {/* Format selector — Commander games start at 40 life with a command zone. */}
-        <div className="flex overflow-hidden rounded-md border border-slate-700" role="group" aria-label="Game format">
-          {(['standard', 'commander'] as const).map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => setFormat(f)}
-              disabled={isWorking}
-              aria-pressed={format === f}
-              className={`px-3 py-2 text-sm font-semibold capitalize transition disabled:opacity-50 ${
-                format === f ? 'bg-slate-200 text-slate-950' : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
-              }`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={handleCreateSession}
-          disabled={isWorking}
-          className="rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Create
-        </button>
-      </div>
+  const hasDecks = userDecks.length > 0 || preconDecks.length > 0
 
-      {playerSessions.length > 0 ? (
-        <div className="mb-5 rounded-md border border-slate-800 p-3">
-          <p className="mb-2 text-sm font-medium text-slate-300">Your Sessions</p>
-          <div className="grid gap-2">
-            {playerSessions.map((session) => (
-              <button
-                key={session.id}
-                type="button"
-                onClick={() => handleSelectSession(session.id)}
-                disabled={isWorking}
-                className="flex flex-col gap-1 rounded-md bg-slate-900 p-3 text-left transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-row sm:items-center sm:justify-between"
+  return (
+    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950 p-5 text-white shadow-2xl shadow-black/40 sm:p-6">
+      {/* Arcane glow accents */}
+      <div className="pointer-events-none absolute -left-20 -top-24 h-72 w-72 rounded-full bg-amber-600/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-emerald-600/10 blur-3xl" />
+      <div className="relative space-y-7">
+      {/* ── Create / Join ─────────────────────────────────────────────── */}
+      <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+        {/* New game */}
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-amber-950/50 via-slate-950 to-slate-950 p-6 text-white shadow-xl shadow-black/30">
+          <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-amber-500/20 blur-3xl" />
+          <div className="relative">
+            <div className="flex items-center gap-2 text-amber-300">
+              <Sparkles className="h-4 w-4" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em]">New game</span>
+            </div>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight">Start a table</h2>
+            <p className="mt-1 max-w-md text-sm text-slate-400">
+              Spin up a session, open the board on the big screen, and hand a controller to every phone.
+            </p>
+
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <div
+                className="inline-flex rounded-lg border border-white/10 bg-black/20 p-1"
+                role="group"
+                aria-label="Game format"
               >
-                <span className="break-all font-mono text-xs text-slate-300">{session.id}</span>
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  {session.status}
-                </span>
+                {(['standard', 'commander'] as const).map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setFormat(f)}
+                    disabled={isWorking}
+                    aria-pressed={format === f}
+                    className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold capitalize transition disabled:opacity-50 ${
+                      format === f
+                        ? 'bg-amber-500 text-white shadow'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {f === 'commander' && <Crown className="h-3.5 w-3.5" />}
+                    {f}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCreateSession}
+                disabled={isWorking}
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Plus className="h-4 w-4" />
+                Create game
               </button>
-            ))}
+            </div>
           </div>
         </div>
-      ) : null}
 
+        {/* Join by ID */}
+        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 text-white">
+          <div className="flex items-center gap-2 text-slate-300">
+            <LogIn className="h-4 w-4" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Join a game</span>
+          </div>
+          <p className="mt-2 text-sm text-slate-500">Got a session ID from a friend? Drop in here.</p>
+          <div className="mt-4 flex gap-2">
+            <input
+              id="session-id"
+              value={sessionIdInput}
+              onChange={(event) => setSessionIdInput(event.target.value)}
+              onKeyDown={(event) => event.key === 'Enter' && handleJoinSession()}
+              placeholder="Session ID"
+              className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 font-mono text-sm text-white outline-none transition focus:border-amber-400/60"
+            />
+            <button
+              type="button"
+              onClick={handleJoinSession}
+              disabled={isWorking}
+              className="shrink-0 rounded-lg bg-white px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Join
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Your games overview ───────────────────────────────────────── */}
+      <div>
+        <div className="mb-3 flex items-center gap-2">
+          <Gamepad2 className="h-5 w-5 text-slate-400" />
+          <h2 className="text-lg font-bold text-white">Your games</h2>
+          {playerSessions.length > 0 && (
+            <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-semibold text-slate-300">
+              {playerSessions.length}
+            </span>
+          )}
+        </div>
+
+        {playerSessions.length > 0 ? (
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {playerSessions.map((session) => {
+              const meta = statusMeta(session.status)
+              const isActive = activeSession?.id === session.id
+              const when = relativeTime(session.created_at)
+              return (
+                <div
+                  key={session.id}
+                  className={`group relative flex flex-col gap-3 rounded-xl border bg-slate-900/60 p-4 transition ${
+                    isActive
+                      ? 'border-amber-400/60 ring-1 ring-amber-400/30'
+                      : 'border-white/10 hover:border-white/20 hover:bg-slate-900'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${meta.cls}`}
+                    >
+                      <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
+                      {meta.label}
+                    </span>
+                    {when && <span className="text-[11px] text-slate-500">{when}</span>}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyId(session.id)}
+                    title="Copy session ID"
+                    className="flex items-center gap-2 self-start font-mono text-xs text-slate-400 transition hover:text-slate-200"
+                  >
+                    {copiedId === session.id ? (
+                      <Check className="h-3.5 w-3.5 text-emerald-400" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5 opacity-60" />
+                    )}
+                    {session.id.slice(0, 8)}…{session.id.slice(-4)}
+                  </button>
+
+                  <div className="mt-1 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectSession(session.id)}
+                      disabled={isWorking}
+                      className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                        isActive
+                          ? 'bg-amber-500 text-white'
+                          : 'bg-white/10 text-slate-200 hover:bg-white/15'
+                      }`}
+                    >
+                      {isActive ? 'Managing' : 'Manage'}
+                    </button>
+                    <Link
+                      href={`/controller/${session.id}`}
+                      title="Open controller"
+                      className="rounded-lg bg-white/5 p-2 text-slate-300 transition hover:bg-white/10 hover:text-white"
+                    >
+                      <Smartphone className="h-4 w-4" />
+                    </Link>
+                    <Link
+                      href={`/board/${session.id}`}
+                      title="Open board"
+                      className="rounded-lg bg-white/5 p-2 text-slate-300 transition hover:bg-white/10 hover:text-white"
+                    >
+                      <Monitor className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-6 py-12 text-center">
+            <Gamepad2 className="h-8 w-8 text-slate-600" />
+            <p className="mt-3 text-sm font-medium text-slate-400">No games yet</p>
+            <p className="mt-1 text-xs text-slate-500">Create a table above or join one with a session ID.</p>
+          </div>
+        )}
+      </div>
+
+      {/* ── Manage session — modal so the landing page never has to scroll ── */}
       {activeSession ? (
-        <div className="space-y-4 rounded-md bg-slate-900 p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs text-slate-500">Active Session</p>
-              <p className="break-all font-mono text-sm">{activeSession.id}</p>
-              <p className="mt-1 text-xs text-slate-400">Status: {activeSession.status}</p>
-              {activeSession.status === 'finished' ? (
-                <p className="mt-1 text-xs text-emerald-300">
-                  Winner:{' '}
-                  {winner
+        <div
+          className="fixed inset-0 z-[70] flex justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm"
+          onClick={() => setActiveSession(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="relative mx-auto my-auto w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--frame-gold)]/25 bg-slate-950 shadow-2xl shadow-black/60"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setActiveSession(null)}
+              aria-label="Close"
+              className="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/5 text-slate-400 transition hover:bg-white/10 hover:text-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          {/* Header */}
+          <div className="flex flex-col gap-4 border-b border-white/10 bg-white/[0.02] p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const meta = statusMeta(activeSession.status)
+                  return (
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${meta.cls}`}
+                    >
+                      <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
+                      {meta.label}
+                    </span>
+                  )
+                })()}
+                <span className="text-xs text-slate-500">Active session</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopyId(activeSession.id)}
+                className="mt-2 flex items-center gap-2 font-mono text-sm text-slate-300 transition hover:text-white"
+                title="Copy session ID"
+              >
+                {copiedId === activeSession.id ? (
+                  <Check className="h-4 w-4 text-emerald-400" />
+                ) : (
+                  <Copy className="h-4 w-4 opacity-60" />
+                )}
+                <span className="truncate">{activeSession.id}</span>
+              </button>
+              {activeSession.status === 'finished' && (
+                <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-amber-500/10 px-2 py-1 text-xs font-semibold text-amber-300">
+                  <Trophy className="h-3.5 w-3.5" />
+                  Winner: {winner
                     ? winner.username || `Player ${winner.player_id.slice(0, 8)}`
                     : activeSession.winner_player_id
                       ? activeSession.winner_player_id.slice(0, 8)
                       : 'None'}
                 </p>
-              ) : null}
+              )}
             </div>
+
             <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={handleAddBot}
+                disabled={isWorking || activeSession.status !== 'open'}
+                title="Seat an AI CPU opponent (run the bot-runner --watch to make it play)"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-sky-400/30 bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-300 transition hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <Gamepad2 className="h-4 w-4" />
+                Add CPU
+              </button>
               <button
                 type="button"
                 onClick={handleStartGame}
                 disabled={isWorking || activeSession.status !== 'open'}
-                className="rounded-md bg-slate-700 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Start game
+                <Play className="h-4 w-4" />
+                Start
               </button>
               <button
                 type="button"
                 onClick={handleFinishSession}
                 disabled={isWorking || activeSession.status === 'finished'}
-                className="rounded-md bg-red-500 px-4 py-2 text-sm font-semibold text-red-950 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-40"
               >
+                <Flag className="h-4 w-4" />
                 Finish
               </button>
             </div>
           </div>
 
-          <div>
-            <p className="mb-2 text-xs text-slate-500">Players</p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {players.map((player) => (
-                <div key={player.player_id} className="rounded-md border border-slate-800 p-3">
-                  <p className="text-sm font-semibold">Seat {player.seat_number}</p>
-                  <p className="truncate text-sm text-slate-300">
-                    {player.username || `Player ${player.player_id.slice(0, 8)}`}
-                  </p>
-                  <p className="truncate font-mono text-xs text-slate-500">{player.player_id}</p>
-                  <p className="text-xs text-slate-500">Life {player.life_total}</p>
+          <div className="space-y-5 p-5">
+            {/* Players */}
+            <div>
+              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <Users className="h-3.5 w-3.5" /> Players · {players.length}
+              </p>
+              {players.length > 0 ? (
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {players.map((player) => {
+                    const name = player.username || `Player ${player.player_id.slice(0, 8)}`
+                    const isWinner = activeSession.winner_player_id === player.player_id
+                    return (
+                      <div
+                        key={player.player_id}
+                        className={`flex items-center gap-3 rounded-lg border p-3 ${
+                          isWinner ? 'border-amber-500/40 bg-amber-500/5' : 'border-white/10 bg-white/[0.02]'
+                        }`}
+                      >
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-500/40 to-sky-500/30 text-sm font-bold text-white">
+                          {name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="flex items-center gap-1.5 truncate text-sm font-semibold text-white">
+                            {name}
+                            {isWinner && <Crown className="h-3.5 w-3.5 shrink-0 text-amber-400" />}
+                          </p>
+                          <p className="text-xs text-slate-500">Seat {player.seat_number} · {player.life_total} life</p>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
-              ))}
+              ) : (
+                <p className="rounded-lg border border-dashed border-white/10 px-3 py-4 text-center text-xs text-slate-500">
+                  No players have joined yet.
+                </p>
+              )}
             </div>
-          </div>
 
-          <div className="rounded-md border border-slate-800 p-3">
-            <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <label htmlFor="deck-select" className="text-sm font-medium text-slate-300">
-                Deck
-              </label>
-              <div className="flex flex-wrap gap-2">
+            {/* Deck spawn */}
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+              <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <Library className="h-3.5 w-3.5" /> Your deck
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      refreshUserDecks().catch((error) => {
+                        const message = getErrorMessage(error)
+                        console.error('Failed to refresh decks:', message, error)
+                        setErrorMessage(message)
+                      })
+                    }
+                    disabled={isWorking}
+                    className="inline-flex items-center gap-1.5 rounded-md bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <RefreshCw className="h-3 w-3" /> Refresh
+                  </button>
+                  <Link
+                    href="/decks"
+                    className="rounded-md bg-sky-400 px-3 py-1 text-xs font-semibold text-sky-950 transition hover:bg-sky-300"
+                  >
+                    Manage decks
+                  </Link>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <select
+                  id="deck-select"
+                  value={selectedDeckId}
+                  onChange={(event) => setSelectedDeckId(event.target.value)}
+                  disabled={isWorking || !hasDecks}
+                  className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none transition focus:border-amber-400/60 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {!hasDecks ? (
+                    <option value="">No decks found</option>
+                  ) : (
+                    <>
+                      {userDecks.length > 0 && (
+                        <optgroup label="Your decks">
+                          {userDecks.map((deck) => (
+                            <option key={deck.id} value={deck.id}>
+                              {deck.name || 'Untitled Deck'} ({deck.card_count})
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                      {preconDecks.length > 0 && (
+                        <optgroup label="Precons">
+                          {preconDecks.map((deck) => (
+                            <option key={deck.id} value={deck.id}>
+                              {deck.name || 'Untitled Precon'} ({deck.card_count})
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                    </>
+                  )}
+                </select>
                 <button
                   type="button"
-                  onClick={() =>
-                    refreshUserDecks().catch((error) => {
-                      const message = getErrorMessage(error)
-                      console.error('Failed to refresh decks:', message, error)
-                      setErrorMessage(message)
-                    })
-                  }
-                  disabled={isWorking}
-                  className="rounded-md bg-slate-700 px-3 py-1 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={handleSpawnDeck}
+                  disabled={isWorking || !selectedDeckId}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-bold text-emerald-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Refresh Decks
+                  <Sparkles className="h-4 w-4" /> Spawn
                 </button>
-                <Link
-                  href="/decks"
-                  className="rounded-md bg-sky-400 px-3 py-1 text-xs font-semibold text-sky-950"
-                >
-                  Manage Decks
-                </Link>
               </div>
+              {!hasDecks && (
+                <p className="mt-2 text-xs text-slate-500">Create a deck first, then refresh this list.</p>
+              )}
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <select
-                id="deck-select"
-                value={selectedDeckId}
-                onChange={(event) => setSelectedDeckId(event.target.value)}
-                disabled={isWorking || (userDecks.length === 0 && preconDecks.length === 0)}
-                className="min-w-0 flex-1 rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-50"
+            {/* Open surfaces */}
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/controller/${activeSession.id}`}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-slate-200"
               >
-                {userDecks.length === 0 && preconDecks.length === 0 ? (
-                  <option value="">No decks found</option>
-                ) : (
-                  <>
-                    {userDecks.length > 0 && (
-                      <optgroup label="Your decks">
-                        {userDecks.map((deck) => (
-                          <option key={deck.id} value={deck.id}>
-                            {deck.name || 'Untitled Deck'} ({deck.card_count})
-                          </option>
-                        ))}
-                      </optgroup>
-                    )}
-                    {preconDecks.length > 0 && (
-                      <optgroup label="Precons">
-                        {preconDecks.map((deck) => (
-                          <option key={deck.id} value={deck.id}>
-                            {deck.name || 'Untitled Precon'} ({deck.card_count})
-                          </option>
-                        ))}
-                      </optgroup>
-                    )}
-                  </>
-                )}
-              </select>
-              <button
-                type="button"
-                onClick={handleSpawnDeck}
-                disabled={isWorking || !selectedDeckId}
-                className="rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 disabled:cursor-not-allowed disabled:opacity-50"
+                <Smartphone className="h-4 w-4" /> Open controller
+              </Link>
+              <Link
+                href={`/board/${activeSession.id}`}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/10"
               >
-                Spawn Deck
-              </button>
+                <Monitor className="h-4 w-4" /> Open board
+              </Link>
             </div>
-            {userDecks.length === 0 && preconDecks.length === 0 ? (
-              <p className="mt-2 text-xs text-slate-400">Create a deck first, then refresh this list.</p>
-            ) : null}
           </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/controller/${activeSession.id}`}
-              className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-950"
-            >
-              Controller
-            </Link>
-            <Link
-              href={`/board/${activeSession.id}`}
-              className="rounded-md bg-slate-700 px-4 py-2 text-sm font-semibold text-white"
-            >
-              Board
-            </Link>
           </div>
         </div>
       ) : null}
 
-      {statusMessage ? <p className="mt-3 text-sm text-emerald-300">{statusMessage}</p> : null}
-      {errorMessage ? <p className="mt-3 text-sm text-red-300">{errorMessage}</p> : null}
+      {/* Messages */}
+      {statusMessage && (
+        <p className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300">
+          {statusMessage}
+        </p>
+      )}
+      {errorMessage && (
+        <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+          {errorMessage}
+        </p>
+      )}
+      </div>
     </section>
   )
+}
+
+const STATUS_META: Record<GameSessionStatus, { label: string; cls: string; dot: string }> = {
+  open: { label: 'Lobby', cls: 'border-amber-500/30 bg-amber-500/10 text-amber-300', dot: 'bg-amber-400' },
+  locked: {
+    label: 'Playing',
+    cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
+    dot: 'bg-emerald-400 animate-pulse',
+  },
+  finished: { label: 'Finished', cls: 'border-slate-500/30 bg-slate-500/10 text-slate-400', dot: 'bg-slate-500' },
+}
+
+function statusMeta(status: GameSessionStatus) {
+  return STATUS_META[status] ?? STATUS_META.open
+}
+
+function relativeTime(iso?: string): string | null {
+  if (!iso) return null
+  const then = new Date(iso).getTime()
+  if (Number.isNaN(then)) return null
+  const seconds = Math.floor((Date.now() - then) / 1000)
+  if (seconds < 60) return 'just now'
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
 }

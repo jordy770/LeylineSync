@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 import CardCatalogPicker from '@/components/CardCatalogPicker'
 import CardBehaviorEditor from '@/components/CardBehaviorEditor'
 import DeckInsights from '@/components/DeckInsights'
-import { importDeckFromText, getErrorMessage, setCardScript, setDeckCommander, updateDeckList } from '@/lib/game/actions'
+import { importDeckFromText, getErrorMessage, getDeckLegality, setCardScript, setDeckCommander, updateDeckList, type DeckLegality } from '@/lib/game/actions'
 import { getCardConfigStatus, type CardConfigStatus } from '@/lib/game/card-behavior'
 import { manaValue } from '@/lib/game/deck-insights'
 import { getDeckDetail, getUserDecks } from '@/lib/game/data'
 import { createClient } from '@/lib/supabase/client'
-import type { DeckDetail, DeckSummary, LinkedCard } from '@/lib/game/types'
+import type { DeckCardLine, DeckDetail, DeckSummary, LinkedCard } from '@/lib/game/types'
 
 export default function DeckManager() {
   const supabase = useMemo(() => createClient(), [])
@@ -31,6 +31,17 @@ export default function DeckManager() {
   const [preview, setPreview] = useState<LinkedCard | null>(null)
   const [batch, setBatch] = useState<{ done: number; total: number; ok: number; failed: number } | null>(null)
   const [behaviorCardId, setBehaviorCardId] = useState<string | null>(null)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [legality, setLegality] = useState<DeckLegality | null>(null)
+
+  // Remember the grid/list choice across sessions.
+  useEffect(() => {
+    const saved = typeof window !== 'undefined' ? window.localStorage.getItem('deckViewMode') : null
+    if (saved === 'grid' || saved === 'list') setViewMode(saved)
+  }, [])
+  useEffect(() => {
+    if (typeof window !== 'undefined') window.localStorage.setItem('deckViewMode', viewMode)
+  }, [viewMode])
 
   const refreshDecks = async () => {
     const nextDecks = await getUserDecks(supabase)
@@ -105,6 +116,21 @@ export default function DeckManager() {
       isMounted = false
     }
   }, [selectedDeckId, supabase])
+
+  // Authoritative Commander legality, refreshed whenever the deck changes. Only
+  // for decks with a commander designated (otherwise every standard deck would
+  // read as "illegal: not 100 cards").
+  useEffect(() => {
+    if (!selectedDeck?.commander_card_id) {
+      setLegality(null)
+      return
+    }
+    let alive = true
+    getDeckLegality(supabase, selectedDeck.id)
+      .then((result) => { if (alive) setLegality(result) })
+      .catch(() => { if (alive) setLegality(null) })
+    return () => { alive = false }
+  }, [selectedDeck, supabase])
 
   const handleImportDeck = async () => {
     const deckName = deckNameInput.trim()
@@ -318,7 +344,7 @@ export default function DeckManager() {
     <div className="space-y-6">
       <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)]">
       <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
-        <h2 className="text-lg font-semibold">Create Deck</h2>
+        <h2 className="font-display text-lg tracking-wide text-amber-200/90">Create Deck</h2>
         <p className="mt-1 text-sm text-slate-400">
           Paste a plain text decklist. Lines can use counts such as 4 Lightning Bolt or 4x Counterspell.
         </p>
@@ -341,7 +367,7 @@ export default function DeckManager() {
             type="button"
             onClick={handleImportDeck}
             disabled={isWorking}
-            className="rounded-md bg-sky-400 px-4 py-2 text-sm font-semibold text-sky-950 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-amber-400 px-4 py-2 text-sm font-semibold text-amber-950 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isWorking ? 'Importing...' : 'Import Deck'}
           </button>
@@ -370,7 +396,7 @@ export default function DeckManager() {
 
       <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">Your Decks</h2>
+          <h2 className="font-display text-lg tracking-wide text-amber-200/90">Your Decks</h2>
           <button
             type="button"
             onClick={() => refreshDecks().catch((error) => setErrorMessage(getErrorMessage(error)))}
@@ -393,7 +419,7 @@ export default function DeckManager() {
                 disabled={isWorking}
                 className={`rounded-md border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                   selectedDeckId === deck.id
-                    ? 'border-sky-500 bg-sky-950/40'
+                    ? 'border-amber-500 bg-amber-950/40'
                     : 'border-slate-800 bg-slate-900 hover:border-slate-600'
                 }`}
               >
@@ -409,7 +435,7 @@ export default function DeckManager() {
 
       {selectedDeck ? (
         <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
-            <h3 className="text-sm font-semibold text-slate-200">Edit Deck</h3>
+            <h3 className="font-display text-base tracking-wide text-amber-200/90">Edit Deck</h3>
             <p className="mt-1 text-xs text-slate-400">
               {selectedDeck.name || 'Untitled Deck'} - {selectedDeck.card_count} cards
             </p>
@@ -435,6 +461,24 @@ export default function DeckManager() {
               cards={selectedDeck.cards}
               commanderCard={selectedDeck.cards.find((l) => l.card_id === selectedDeck.commander_card_id)?.card ?? null}
             />
+
+            {/* Commander legality (server-authoritative; only when a commander is set) */}
+            {legality && (
+              legality.legal ? (
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-300">
+                  ✓ Commander-legal ({legality.card_count} cards)
+                </p>
+              ) : (
+                <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+                  <p className="font-semibold text-amber-300">⚠ Not Commander-legal</p>
+                  <ul className="mt-1 list-disc pl-4 text-amber-200/90">
+                    {legality.issues.map((issue, i) => (
+                      <li key={i}>{issue}</li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            )}
 
             {/* Deck-level tools */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -491,7 +535,7 @@ export default function DeckManager() {
                   type="button"
                   onClick={handleAddCard}
                   disabled={isWorking || !selectedCardId}
-                  className="rounded-md bg-sky-400 px-4 py-2 text-sm font-semibold text-sky-950 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md bg-amber-400 px-4 py-2 text-sm font-semibold text-amber-950 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Add to Deck
                 </button>
@@ -500,6 +544,20 @@ export default function DeckManager() {
 
             {/* List controls */}
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <div className="flex overflow-hidden rounded border border-slate-700">
+                {(['grid', 'list'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setViewMode(mode)}
+                    className={`px-2.5 py-1 font-semibold capitalize ${
+                      viewMode === mode ? 'bg-amber-400 text-amber-950' : 'text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
               <label className="flex items-center gap-1.5 text-slate-300">
                 <input
                   type="checkbox"
@@ -508,19 +566,34 @@ export default function DeckManager() {
                 />
                 Needs behavior only
               </label>
-              <span className="ml-auto text-slate-500">Sort</span>
-              <select
-                value={sortKey}
-                onChange={(event) => setSortKey(event.target.value as typeof sortKey)}
-                className="rounded border border-slate-700 bg-slate-950 px-2 py-1 text-slate-200"
-              >
-                <option value="name">Name</option>
-                <option value="cmc">Mana value</option>
-                <option value="type">Type</option>
-                <option value="behavior">Behavior</option>
-              </select>
+              {viewMode === 'list' && (
+                <>
+                  <span className="ml-auto text-slate-500">Sort</span>
+                  <select
+                    value={sortKey}
+                    onChange={(event) => setSortKey(event.target.value as typeof sortKey)}
+                    className="rounded border border-slate-700 bg-slate-950 px-2 py-1 text-slate-200"
+                  >
+                    <option value="name">Name</option>
+                    <option value="cmc">Mana value</option>
+                    <option value="type">Type</option>
+                    <option value="behavior">Behavior</option>
+                  </select>
+                </>
+              )}
             </div>
 
+            {viewMode === 'grid' ? (
+              <DeckGrid
+                deck={selectedDeck}
+                showNeedsOnly={showNeedsOnly}
+                isWorking={isWorking}
+                onSetQuantity={handleSetQuantity}
+                onSetCommander={handleSetCommander}
+                onEditBehavior={setBehaviorCardId}
+                onPreview={setPreview}
+              />
+            ) : (
             <div className="mt-2 grid gap-2 lg:grid-cols-2">
               {[...selectedDeck.cards]
                 .filter((line) => !showNeedsOnly || getCardConfigStatus(line.card ?? {}) === 'needs')
@@ -576,7 +649,7 @@ export default function DeckManager() {
                         type="button"
                         onClick={() => setBehaviorCardId(line.card_id)}
                         title="Edit this card's behavior"
-                        className="rounded bg-sky-700 px-2 py-1 text-xs font-semibold text-sky-100 hover:bg-sky-600"
+                        className="rounded bg-amber-700 px-2 py-1 text-xs font-semibold text-amber-100 hover:bg-amber-600"
                       >
                         Behavior
                       </button>
@@ -604,6 +677,7 @@ export default function DeckManager() {
                 )
               })}
             </div>
+            )}
         </section>
       ) : null}
 
@@ -624,7 +698,7 @@ export default function DeckManager() {
               <button
                 type="button"
                 onClick={() => selectedDeck && setSampleHand(sampleOpeningHand(selectedDeck))}
-                className="flex-1 rounded-md bg-sky-500 px-3 py-2 text-xs font-semibold text-sky-950"
+                className="flex-1 rounded-md bg-amber-500 px-3 py-2 text-xs font-semibold text-amber-950"
               >
                 Redraw
               </button>
@@ -726,4 +800,190 @@ function sampleOpeningHand(deck: DeckDetail): string[] {
 
 function expandDeckCardIds(deck: DeckDetail) {
   return deck.cards.flatMap((line) => Array.from({ length: line.quantity }, () => line.card_id))
+}
+
+// --- visual grid view -------------------------------------------------------
+const GROUP_ORDER = [
+  'Creatures', 'Planeswalkers', 'Instants', 'Sorceries',
+  'Artifacts', 'Enchantments', 'Battles', 'Lands', 'Other',
+] as const
+
+/** Primary deck group for a type line. Order matters: a "Land Creature" is a
+ *  Creature; an "Artifact Land" is a Land. */
+function deckGroup(typeLine: string | null | undefined): string {
+  const t = (typeLine ?? '').toLowerCase()
+  if (t.includes('creature')) return 'Creatures'
+  if (t.includes('planeswalker')) return 'Planeswalkers'
+  if (t.includes('land')) return 'Lands'
+  if (t.includes('artifact')) return 'Artifacts'
+  if (t.includes('enchantment')) return 'Enchantments'
+  if (t.includes('battle')) return 'Battles'
+  if (t.includes('instant')) return 'Instants'
+  if (t.includes('sorcery')) return 'Sorceries'
+  return 'Other'
+}
+
+type TileHandlers = {
+  isWorking: boolean
+  onSetQuantity: (cardId: string, nextQuantity: number) => void
+  onSetCommander: (cardId: string | null) => void
+  onEditBehavior: (cardId: string) => void
+  onPreview: (card: LinkedCard) => void
+}
+
+function DeckGrid({
+  deck,
+  showNeedsOnly,
+  ...handlers
+}: { deck: DeckDetail; showNeedsOnly: boolean } & TileHandlers) {
+  const filtered = deck.cards.filter(
+    (line) => !showNeedsOnly || getCardConfigStatus(line.card ?? {}) === 'needs',
+  )
+  const groups = new Map<string, DeckCardLine[]>()
+  for (const line of filtered) {
+    const g = deckGroup(line.card?.type_line)
+    if (!groups.has(g)) groups.set(g, [])
+    groups.get(g)!.push(line)
+  }
+  for (const arr of groups.values()) {
+    arr.sort(
+      (a, b) =>
+        manaValue(a.card?.mana_cost) - manaValue(b.card?.mana_cost) ||
+        (a.card?.name ?? a.card_id).localeCompare(b.card?.name ?? b.card_id),
+    )
+  }
+  const ordered = GROUP_ORDER.filter((g) => groups.has(g))
+  if (ordered.length === 0) {
+    return <p className="mt-3 text-sm text-slate-500">No cards match.</p>
+  }
+  return (
+    <div className="mt-2 space-y-5">
+      {ordered.map((g) => {
+        const lines = groups.get(g)!
+        const total = lines.reduce((sum, l) => sum + l.quantity, 0)
+        return (
+          <div key={g}>
+            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              {g} <span className="text-slate-600">· {total}</span>
+            </h4>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              {lines.map((line) => (
+                <DeckCardTile
+                  key={line.card_id}
+                  line={line}
+                  isCommander={deck.commander_card_id === line.card_id}
+                  status={getCardConfigStatus(line.card ?? {})}
+                  {...handlers}
+                />
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function DeckCardTile({
+  line,
+  isCommander,
+  status,
+  isWorking,
+  onSetQuantity,
+  onSetCommander,
+  onEditBehavior,
+  onPreview,
+}: { line: DeckCardLine; isCommander: boolean; status: CardConfigStatus } & TileHandlers) {
+  const card = line.card
+  const badge = BEHAVIOR_BADGE[status]
+  return (
+    <div
+      className={`relative overflow-hidden rounded-lg border ${
+        isCommander ? 'border-amber-500 ring-1 ring-amber-500/40' : 'border-slate-800'
+      }`}
+    >
+      <button
+        type="button"
+        onClick={() => card && onPreview(card)}
+        disabled={!card?.image_url}
+        className="block w-full"
+        title={card?.image_url ? 'Preview card' : undefined}
+      >
+        {card?.image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={card.image_url}
+            alt={card?.name ?? ''}
+            loading="lazy"
+            className="aspect-[2/3] w-full bg-slate-900 object-cover"
+          />
+        ) : (
+          <div className="flex aspect-[2/3] w-full items-center justify-center bg-slate-900 p-2 text-center">
+            <span className="line-clamp-4 text-[11px] font-semibold text-slate-300">
+              {card?.name ?? line.card_id}
+            </span>
+          </div>
+        )}
+      </button>
+
+      <span className="pointer-events-none absolute left-1 top-1 rounded bg-black/80 px-1.5 py-0.5 text-[11px] font-black text-white">
+        ×{line.quantity}
+      </span>
+
+      <button
+        type="button"
+        onClick={() => onEditBehavior(line.card_id)}
+        title="Edit behavior"
+        className={`absolute right-1 top-1 rounded px-1 py-0.5 text-[8px] font-bold uppercase ${badge.cls}`}
+      >
+        {status === 'scripted' ? '✓ beh' : status === 'needs' ? 'needs' : 'van'}
+      </button>
+
+      {isCommander && (
+        <span className="pointer-events-none absolute bottom-[30px] left-1 rounded bg-amber-500 px-1 text-[9px] font-black text-amber-950">
+          ★ CMD
+        </span>
+      )}
+
+      <div className="flex items-stretch gap-px bg-slate-950 text-xs">
+        <button
+          type="button"
+          onClick={() => onSetQuantity(line.card_id, line.quantity - 1)}
+          disabled={isWorking}
+          className="flex-1 bg-slate-800 py-1 font-bold text-slate-200 hover:bg-slate-700 disabled:opacity-50"
+        >
+          −
+        </button>
+        <span className="flex-1 py-1 text-center font-semibold text-white">{line.quantity}</span>
+        <button
+          type="button"
+          onClick={() => onSetQuantity(line.card_id, line.quantity + 1)}
+          disabled={isWorking}
+          className="flex-1 bg-slate-800 py-1 font-bold text-slate-200 hover:bg-slate-700 disabled:opacity-50"
+        >
+          ＋
+        </button>
+        <button
+          type="button"
+          onClick={() => onSetCommander(isCommander ? null : line.card_id)}
+          disabled={isWorking}
+          title={isCommander ? 'Clear commander' : 'Set as commander'}
+          className={`flex-1 py-1 font-bold disabled:opacity-50 ${
+            isCommander ? 'bg-amber-500 text-amber-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+          }`}
+        >
+          ★
+        </button>
+        <button
+          type="button"
+          onClick={() => onSetQuantity(line.card_id, 0)}
+          disabled={isWorking}
+          title="Remove"
+          className="flex-1 bg-red-600/80 py-1 font-bold text-white hover:bg-red-600 disabled:opacity-50"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  )
 }

@@ -83,7 +83,7 @@
 
   "Atsushi, the Blazing Sky": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"},{"type":"trample","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"dies","effects":[{"type":"choose_one","prompt":"Choose one","modes":[{"label":"Exile top two; play until end of your next turn","actions":[{"type":"impulse","count":2}]},{"label":"Create three Treasures","actions":[{"type":"create_token","token":"Treasure Token","count":3}]}]}]}]},
 
-  "Fellwar Stone": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+  "Fellwar Stone": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1,"restriction":{"spell_type_line":"Dinosaur","ability_source_type_line":"Dinosaur"}}]}]},
 
   "Exotic Orchard": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
 
@@ -119,7 +119,7 @@
 
   "Temple of the Dragon Queen": {"schema_version":2,"enters_tapped":{"unless":{"control_type":["Dragon"],"hand_has_type":["Dragon"]}},"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
 
-  "Haven of the Spirit Dragon": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]},{"costs":[{"type":"mana","amount":"{2}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"return_from_graveyard","filter":{"type_line":"Dragon"},"to":"hand"}]}]},
+  "Haven of the Spirit Dragon": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1,"restriction":{"spell_type_line":"Dragon"}}]},{"costs":[{"type":"mana","amount":"{2}"},{"type":"tap_self"},{"type":"sacrifice_self"}],"effects":[{"type":"return_from_graveyard","filter":{"type_line":"Dragon"},"to":"hand"}]}]},
 
   "Nesting Dragon": {"schema_version":2,"continuous_effects":[{"type":"flying","affected":"source","source_zone_required":"battlefield"}],"triggered_abilities":[{"event":"land_entered","filter":{"controller":"you"},"effects":[{"type":"create_token","token":"Dragon Egg Token"}]}]},
 
@@ -205,9 +205,9 @@
 
   "Thriving Heath": {"schema_version":2,"enters_tapped":true,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"W","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
 
-  "Secluded Courtyard": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+  "Secluded Courtyard": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1,"restriction":{"spell_type_line":"$chosen"}}]}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"choose_creature_type","effects":[]}]}]},
 
-  "Unclaimed Territory": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1}]}]},
+  "Unclaimed Territory": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]},{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":1,"restriction":{"spell_type_line":"$chosen","ability_source_type_line":"$chosen"}}]}],"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"choose_creature_type","effects":[]}]}]},
 
   "Rogue's Passage": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"C","amount":1}]}]},
 
@@ -403,7 +403,7 @@
 
   "Myr Battlesphere": {"schema_version":2,"triggered_abilities":[{"event":"enters_the_battlefield","effects":[{"type":"create_token","token":"Myr Token","count":4}]}]},
 
-  "Vedalken Engineer": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":2}]}]},
+  "Vedalken Engineer": {"schema_version":2,"activated_abilities":[{"is_mana_ability":true,"costs":[{"type":"tap_self"}],"effects":[{"type":"add_mana","color":"any","amount":2,"restriction":{"spell_type_line":"Artifact","ability_source_type_line":"Artifact"}}]}]},
 
   "Whipflare": {"schema_version":2,"spell_effect":{"actions":[{"type":"deal_damage_all","amount":2,"filter":{"exclude_type":"artifact"}}]}},
 

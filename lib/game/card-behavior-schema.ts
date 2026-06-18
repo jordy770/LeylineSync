@@ -280,6 +280,18 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('add_mana'),
     color: ManaProductionColorSchema,
     amount: z.union([z.number(), CountAmountSchema]),
+    // "Spend this mana only to …" (Haven of the Spirit Dragon, Drover of the
+    // Mighty, Unclaimed Territory, Relic of Legends). The produced mana lands in
+    // game_players.restricted_mana and is spendable only on a matching cast/ability.
+    // `$chosen` (Unclaimed Territory / Secluded Courtyard) is baked into the
+    // permanent's copied_script by the choose_creature_type decision.
+    restriction: z
+      .object({
+        spell_type_line: z.string().optional(),
+        ability_source_type_line: z.string().optional(),
+        commander: z.boolean().optional(),
+      })
+      .optional(),
   }),
   z.object({
     type: z.literal('deal_damage'),

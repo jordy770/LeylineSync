@@ -264,6 +264,14 @@ export function selectFirstManaAbility(
     abilities.find((ability) =>
       ability.effects.some((effect) => effect.type === 'add_mana' && effect.color === preferredColor),
     ) ??
+    // No ability fixed to that exact colour — fall back to an "any"/"commander"
+    // producer that can make it (Haven of the Spirit Dragon: {C} at index 0, any
+    // colour at index 1; tapping for U must pick the "any" ability, not the {C}).
+    abilities.find((ability) =>
+      ability.effects.some(
+        (effect) => effect.type === 'add_mana' && (effect.color === 'any' || effect.color === 'commander'),
+      ),
+    ) ??
     abilities[0] ??
     null
   )

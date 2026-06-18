@@ -80,14 +80,16 @@ Genuine unsurfaced gaps found:
   ≥15 amber / ≥21 red lethal; tooltip per source) on the controller status bar +
   opponent pills and on every board seat.
 - **`set_commander_redirect`** (LOW/MED) — command-zone-vs-graveyard preference, unsurfaced.
-- **`commander_deck_legality`** (LOW/MED) — no legality feedback in the deck editor.
+- **`commander_deck_legality` — DONE 2026-06-17.** The deck editor (`DeckManager.tsx`) now shows server-authoritative Commander legality (`getDeckLegality` → the RPC) for decks with a commander designated: a green "✓ Commander-legal" or an amber issues list (100/singleton/colour-identity/commander). Also fixed an RPC bug (mig 316): the no-commander branch appended a bare string literal to a text[] → "malformed array literal"; cast to ::text.
 - **`cleanup_finished_session`** (LOW) — post-game housekeeping, unsurfaced.
 
 ## Other fresh targets
 
-1. **Attachment naming across owners.** `getControllerCards` is owner-scoped, so
-   an Aura you control on an *opponent's* creature shows 🔗 but can't name the
-   host. A board-level (all-cards) lookup would resolve it.
+1. **Attachment naming across owners — DONE 2026-06-17 (V5).** An Aura/Equipment
+   you control on an *opponent's* creature now names its host: the controller's
+   `cardNameById` lookup (ControllerListV5) is built from board-wide `boardCards`
+   (spans every seat) instead of owner-scoped `battlefieldCards`. The 🔗 badge
+   tooltip resolves cross-owner hosts.
 2. **Onboarding — DONE 2026-06-14 (v1).** `ControllerCoachOverlay` — a short,
    skippable 5-slide first-run intro (controller vs board, playing cards, auto
    mana, auto-flowing priority, layout). Auto-opens once per device

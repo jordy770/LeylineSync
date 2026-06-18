@@ -1180,6 +1180,22 @@ export async function addBotToSession(supabase: SupabaseClient, sessionId: strin
   return data as string
 }
 
+export type DeckLegality = { legal: boolean; card_count: number; issues: string[] }
+
+// Authoritative Commander legality for a SAVED deck (100/singleton/colour identity
+// + commander designated). Mirrors the gate spawn_deck_for_session enforces.
+export async function getDeckLegality(supabase: SupabaseClient, deckId: string) {
+  const { data, error } = await supabase.rpc('commander_deck_legality', {
+    p_deck_id: deckId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as DeckLegality
+}
+
 // Cycling (mig 228): discard a card with a cycling cost from hand, draw one.
 export async function cycleCard(
   supabase: SupabaseClient,

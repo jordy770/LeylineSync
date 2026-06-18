@@ -47,9 +47,17 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
+  // Dev-only: let the HandFan UI lab through without a login. Never public in
+  // production. Remove this line + the `!isPublicLab` clause to delete the lab.
+  const isPublicLab =
+    process.env.NODE_ENV !== "production" &&
+    (request.nextUrl.pathname.startsWith("/controller-style-lab") ||
+      request.nextUrl.pathname.startsWith("/style-guide"));
+
   if (
     request.nextUrl.pathname !== "/" &&
     !user &&
+    !isPublicLab &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth")
   ) {

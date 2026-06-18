@@ -1,7 +1,7 @@
 'use client'
 
 import { parseManaCost } from '@/lib/game/mana'
-import type { ManaColor, ManaPool } from '@/lib/game/types'
+import type { ManaColor, ManaPool, RestrictedManaEntry } from '@/lib/game/types'
 import { KEYWORD_LABELS, manaColors, manaColorStyles } from './shared'
 
 // ─── Mana Display Components ──────────────────────────────────────────────────
@@ -81,6 +81,36 @@ export function ManaPoolDisplay({ manaPool }: { manaPool: ManaPool }) {
           </span>
         )
       })}
+    </div>
+  )
+}
+
+// "Spend only to …" mana, shown apart from the open pool with a short label so
+// the player knows what it can pay for (Haven of the Spirit Dragon, Drover, …).
+function restrictionLabel(e: RestrictedManaEntry): string {
+  if (e.commander) return 'Commander'
+  const t = e.spell_type_line ?? e.ability_source_type_line
+  if (t && t !== '$chosen') return `${t}s only`
+  return 'Restricted'
+}
+
+export function RestrictedManaDisplay({ entries }: { entries: RestrictedManaEntry[] }) {
+  if (!entries || entries.length === 0) return null
+  return (
+    <div className="flex items-center gap-1">
+      {entries.map((e, i) => (
+        <span
+          key={`${e.color}-${i}`}
+          title={restrictionLabel(e)}
+          className="flex items-center gap-0.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-1 py-0.5"
+        >
+          <span className={`h-1.5 w-1.5 rounded-full ${manaColorStyles[e.color as ManaColor]?.dot ?? 'bg-slate-600'}`} />
+          <span className={`text-[9px] font-black leading-none ${manaColorStyles[e.color as ManaColor]?.text ?? 'text-slate-300'}`}>
+            {e.amount}
+          </span>
+          <span className="text-[7px] font-bold uppercase tracking-wide text-amber-300/80">{restrictionLabel(e)}</span>
+        </span>
+      ))}
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { DamageAllocation, TargetController } from '@/lib/game/actions'
 import { isAddManaBehaviorAction, normalizeCardBehaviorToV2 } from '@/lib/game/card-behavior'
 import { getPowerToughnessLabel } from '@/lib/game/controller-selectors'
@@ -36,6 +37,7 @@ import {
 
 export function CardActionSheet({
   card,
+  playableFromExile = false,
   canCastSorceries,
   canCastInstants,
   pendingStackCount,
@@ -53,6 +55,7 @@ export function CardActionSheet({
   onSetPtCreature,
   onAddCountersCreature,
   onCreatureEffect,
+  onTargetedSpellEffect,
   onMultiCreatureEffect,
   onPermanentEffect,
   onDividedDamage,
@@ -70,6 +73,10 @@ export function CardActionSheet({
   onClose,
 }: {
   card: ControllerCard
+  // True when the card sits in EXILE but a play_from_exile permission lets the
+  // player cast it now (mig 230 impulse, adventure faces). The cast UI then
+  // treats it like a hand card; the server re-validates the permission.
+  playableFromExile?: boolean
   canCastSorceries: boolean
   canCastInstants: boolean
   pendingStackCount: number
@@ -87,6 +94,7 @@ export function CardActionSheet({
   onSetPtCreature: (cardId: string, targetCardId: string) => Promise<void>
   onAddCountersCreature: (cardId: string, targetCardId: string) => Promise<void>
   onCreatureEffect: (cardId: string, targetCardId: string) => Promise<void>
+  onTargetedSpellEffect: (cardId: string, targetCardId: string) => Promise<void>
   onMultiCreatureEffect: (cardId: string, targetCardIds: string[]) => Promise<void>
   onPermanentEffect: (cardId: string, targetCardId: string) => Promise<void>
   onDividedDamage: (cardId: string, allocations: DamageAllocation[]) => Promise<void>
@@ -111,7 +119,12 @@ export function CardActionSheet({
     card.copied_script ?? card.cards?.script ?? null,
     card.cards?.type_line,
   )
-  const zone = card.zone
+  // An exiled card the player may cast (impulse / adventure) is treated like a
+  // hand card throughout the cast UI: cast/aura/cycle gates light up and the
+  // spell plan's hand-zone check passes. The cast RPCs receive the real card id
+  // and the server re-validates the exile permission and charges mana.
+  const castableFromExile = card.zone === 'exile' && playableFromExile
+  const zone = castableFromExile ? 'hand' : card.zone
   // Mirrors activate_ability's zone gate (mig 289): a missing
   // source_zone_required means BATTLEFIELD, not anywhere — otherwise a
   // creature's pump ability shows on the card while it's still in hand
@@ -167,14 +180,17 @@ export function CardActionSheet({
   const adventure = script.adventure
   const [adventureMode, setAdventureMode] = useState(false)
 
+  // Base the plan on a hand-zoned clone when casting from exile so the spell
+  // plan's `zone === 'hand'` timing check passes (canCastHandSpell).
+  const planBase = castableFromExile ? ({ ...card, zone: 'hand' } as ControllerCard) : card
   const planCard = adventureMode && adventure
     ? ({
-        ...card,
+        ...planBase,
         copied_script: { schema_version: 2, spell_effect: adventure.spell_effect },
         // Adventures are instant-speed here; force the timing accordingly.
         cards: { ...(card.cards ?? {}), type_line: 'Instant' },
       } as ControllerCard)
-    : card
+    : planBase
   const spellPlan = getSpellPlan(planCard)
   // Controller restriction for the chosen creature target ("an opponent controls"
   // / "you control"), relative to the caster. Defaults to any for untargeted plans.
@@ -184,6 +200,7 @@ export function CardActionSheet({
     spellPlan.kind === 'set_pt' ||
     spellPlan.kind === 'add_counters' ||
     spellPlan.kind === 'creature_effect' ||
+    spellPlan.kind === 'targeted_spell_effect' ||
     spellPlan.kind === 'multi_creature' ||
     spellPlan.kind === 'divided_damage'
       ? spellPlan.targetController
@@ -262,6 +279,7 @@ export function CardActionSheet({
     spellPlan.kind === 'set_pt' ||
     spellPlan.kind === 'add_counters' ||
     spellPlan.kind === 'creature_effect' ||
+    spellPlan.kind === 'targeted_spell_effect' ||
     spellPlan.kind === 'multi_creature' ||
     spellPlan.kind === 'fight' ||
     (spellPlan.kind === 'damage' && spellPlan.canTargetCreature && !spellPlan.canTargetPlayer)
@@ -280,6 +298,7 @@ export function CardActionSheet({
       (spellPlan.kind === 'set_pt' && hasCreatureTargets) ||
       (spellPlan.kind === 'add_counters' && hasCreatureTargets) ||
       (spellPlan.kind === 'creature_effect' && hasCreatureTargets) ||
+      (spellPlan.kind === 'targeted_spell_effect' && hasCreatureTargets) ||
       (spellPlan.kind === 'multi_creature' && hasCreatureTargets) ||
       (spellPlan.kind === 'permanent_effect' && hasPermanentTargets) ||
       (spellPlan.kind === 'divided_damage' && (spellPlan.canTargetPlayer || hasCreatureTargets)) ||
@@ -700,7 +719,7 @@ export function CardActionSheet({
           </div>
         )}
 
-        {picking && spellPlan.kind === 'creature_effect' && (
+        {picking && (spellPlan.kind === 'creature_effect' || spellPlan.kind === 'targeted_spell_effect') && (
           <div className="mb-3 space-y-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
               {spellPlan.label} which creature?
@@ -709,7 +728,11 @@ export function CardActionSheet({
               <button
                 key={c.id}
                 type="button"
-                onClick={() => { void onCreatureEffect(card.id, c.id); onClose() }}
+                onClick={() => {
+                  if (spellPlan.kind === 'targeted_spell_effect') void onTargetedSpellEffect(card.id, c.id)
+                  else void onCreatureEffect(card.id, c.id)
+                  onClose()
+                }}
                 className="flex w-full items-center justify-between rounded-2xl border border-violet-400/40 bg-violet-400/10 px-4 py-2.5 transition active:scale-95"
               >
                 <span className="truncate font-bold text-white">{c.name}</span>
@@ -1229,12 +1252,16 @@ export function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClo
   const oracleText = card.cards?.oracle_text
   const pt = getPowerToughnessLabel(card)
 
-  return (
+  // Portal to <body> with fixed positioning so the overlay centres on the
+  // VIEWPORT — when rendered inside a transformed ancestor (the Your-zones
+  // bottom sheet animates `y`, which makes it the containing block for absolute/
+  // fixed children) it otherwise opened below the fold. (bug: zones zoom offscreen)
+  const overlay = (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-[55] flex items-center justify-center bg-black/85 p-4"
+      className="fixed inset-0 z-[55] flex items-center justify-center bg-black/85 p-4"
       onClick={onClose}
     >
       <motion.div
@@ -1242,15 +1269,17 @@ export function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClo
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-        className="relative flex max-h-[92svh] w-[min(94vw,640px)] items-stretch gap-3 rounded-2xl border border-white/10 bg-[#0D1018] p-3 shadow-2xl"
+        className="relative flex max-h-[92svh] w-[min(94vw,640px)] flex-col items-stretch gap-3 rounded-2xl border border-white/10 bg-[#0D1018] p-3 shadow-2xl sm:flex-row"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Card image — bounded by viewport height, keeps MTG aspect */}
+        {/* Card image — bounded by viewport height, keeps MTG aspect. On narrow
+            (phone) screens it stacks on top and is width-capped so it stays
+            centered; on wider screens it sits beside the text column. */}
         {imageUrl && (
           <img
             src={imageUrl}
             alt={card.name}
-            className="max-h-[84svh] w-auto shrink-0 self-center rounded-lg object-contain"
+            className="mx-auto max-h-[55svh] w-auto max-w-full self-center rounded-lg object-contain sm:mx-0 sm:max-h-[84svh] sm:shrink-0"
           />
         )}
 
@@ -1300,4 +1329,7 @@ export function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClo
       </motion.div>
     </motion.div>
   )
+
+  if (typeof document === 'undefined') return null
+  return createPortal(overlay, document.body)
 }

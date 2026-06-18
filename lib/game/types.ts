@@ -1,5 +1,15 @@
 export type ManaPool = Record<string, number>
 
+// "Spend only to …" mana (Haven of the Spirit Dragon, Drover of the Mighty, …),
+// held separately from the open pool in game_players.restricted_mana.
+export type RestrictedManaEntry = {
+  color: string
+  amount: number
+  spell_type_line?: string
+  ability_source_type_line?: string
+  commander?: boolean
+}
+
 export type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G' | 'C'
 
 export type GameZone = 'library' | 'hand' | 'stack' | 'battlefield' | 'graveyard' | 'exile' | 'command'
@@ -9,6 +19,7 @@ export type GameSessionStatus = 'open' | 'locked' | 'finished'
 export type GameSession = {
   id: string
   status: GameSessionStatus
+  format?: 'standard' | 'commander' | null
   created_by: string
   created_at?: string
   locked_at?: string | null
@@ -159,6 +170,8 @@ export type StackItem = {
   controller_username?: string | null
   source_card_id?: string | null
   source_card_name?: string | null
+  source_card_image_url?: string | null
+  source_card_type_line?: string | null
   target_player_id?: string | null
   target_username?: string | null
   action_type: string
@@ -303,6 +316,10 @@ export type BoardCard = {
   protection_colors?: string[]
   // Host card id this permanent is attached to (Equipment/Aura), else null.
   attached_to?: string | null
+  // Token (created on the battlefield, e.g. a copy token) vs a real card.
+  is_token?: boolean | null
+  // Set when this permanent is a copy of another card (Clone-style / copy tokens).
+  copy_original_card_id?: string | null
 }
 
 export type ControllerCard = {
@@ -327,6 +344,9 @@ export type ControllerCard = {
   command_zone_casts?: number
   // Host card id this permanent is attached to (Equipment/Aura), else null.
   attached_to?: string | null
+  // Token vs real card; copy_original_card_id set when it copies another card.
+  is_token?: boolean | null
+  copy_original_card_id?: string | null
   cards: LinkedCard | null
 }
 
@@ -345,6 +365,8 @@ export type GameCardInstanceRow = {
   entered_battlefield_turn_number?: number | null
   plus_one_counters?: number
   counters?: Record<string, number> | null
+  is_token?: boolean | null
+  copy_original_card_id?: string | null
 }
 
 export type SupabaseErrorLike = {

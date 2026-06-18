@@ -1,64 +1,57 @@
-import Link from 'next/link'
-import { Suspense } from 'react'
-import { AuthButton } from '@/components/auth-button'
 import DeckManager from '@/components/DeckManager'
-import { EnvVarWarning } from '@/components/env-var-warning'
+import SiteNav from '@/components/SiteNav'
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { hasEnvVars } from '@/lib/utils'
 
 export default function DecksPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center">
-      <div className="flex w-full flex-1 flex-col items-center gap-20">
-        <nav className="flex h-16 w-full justify-center border-b border-b-foreground/10">
-          <div className="flex w-full max-w-5xl items-center justify-between p-3 px-5 text-sm">
-            <div className="flex items-center gap-5 font-semibold">
-              <Link href="/">Leyline Sync</Link>
-              <Link href="/decks" className="text-foreground/70 hover:text-foreground">
-                Decks
-              </Link>
-            </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
-        </nav>
+    <main className="landing-void relative min-h-screen overflow-hidden text-[var(--text)]">
+      <div className="ley-grid pointer-events-none absolute inset-0" />
 
-        <div className="flex w-full max-w-5xl flex-1 flex-col gap-8 p-5">
-          <section className="flex flex-1 flex-col gap-6 px-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-normal">Decks</h1>
-              <p className="mt-2 max-w-2xl text-sm text-foreground/70">
-                Create reusable decks from text lists, then select them when spawning into a game session.
-              </p>
-            </div>
+      <div className="relative flex min-h-screen flex-col items-center">
+        <SiteNav active="decks" />
+
+        <div className="w-full max-w-5xl flex-1 px-5 pb-20">
+          {/* Header */}
+          <header className="flex flex-col items-center pt-12 text-center sm:pt-16">
+            <p className="font-display text-[11px] uppercase tracking-[0.42em] text-[var(--frame-gold)]">
+              Your spellbook
+            </p>
+            <h1 className="mt-3 font-display text-4xl tracking-wide text-[var(--text-bright)] sm:text-5xl">
+              Decks
+            </h1>
+            <p className="mt-4 max-w-md font-rules text-[15px] leading-relaxed text-[var(--text-dim)]">
+              Forge a deck from a plain text list, tune each card&apos;s behaviour, then bring it to
+              the table.
+            </p>
+          </header>
+
+          <div className="mt-12">
             {hasEnvVars ? (
               <DeckManager />
             ) : (
-              <div className="rounded-lg border border-red-900 bg-red-950 p-4 text-sm text-red-100">
-                Supabase environment variables are required before decks can be managed.
+              <div className="rounded-xl border border-red-900 bg-red-950/60 p-4 text-sm text-red-100">
+                Add your Supabase environment variables before decks can be managed.
               </div>
             )}
-          </section>
+          </div>
         </div>
 
-        <footer className="mx-auto flex w-full items-center justify-center gap-8 border-t py-16 text-center text-xs">
-          <p>
-            Powered by{' '}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
+        <footer className="w-full border-t border-[var(--frame-gold)]/15 py-10">
+          <div className="mx-auto flex w-full max-w-5xl items-center justify-center gap-6 px-5 text-center text-xs text-[var(--text-faint)]">
+            <p>
+              Powered by{' '}
+              <a
+                href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
+                target="_blank"
+                className="font-semibold text-[var(--text-dim)] hover:underline"
+                rel="noreferrer"
+              >
+                Supabase
+              </a>
+            </p>
+            <ThemeSwitcher />
+          </div>
         </footer>
       </div>
     </main>

@@ -47,6 +47,8 @@ declare
   v_remove_counter_amount integer := 0;
   v_bag_count integer;
   v_mana_cost text := null;
+  v_source_type_line text;
+  v_source_is_commander boolean := false;
   v_energy_cost integer := 0;
   v_player_energy integer;
   v_amount integer;
@@ -85,6 +87,13 @@ begin
   if not found then
     raise exception 'Source card not found or not owned by current user';
   end if;
+
+  -- Restricted-mana pay context (Haven: "activate abilities of Dragon sources";
+  -- Relic of Legends: "an ability of a commander").
+  select c.type_line, coalesce(gc.is_commander, false)
+  into v_source_type_line, v_source_is_commander
+  from public.game_cards gc join public.cards c on c.id = gc.card_id
+  where gc.id = p_source_card_id and gc.session_id = p_session_id;
 
   v_script := public.effective_script(p_session_id, p_source_card_id);
   v_ability := v_script -> 'activated_abilities' -> p_ability_index;
@@ -310,7 +319,11 @@ begin
   end if;
 
   if v_mana_cost is not null then
-    perform public.pay_mana_cost(p_session_id, auth.uid(), v_mana_cost, p_generic_payment);
+    perform public.pay_mana_cost(p_session_id, auth.uid(), v_mana_cost, p_generic_payment,
+      p_pay_context := jsonb_build_object(
+        'kind', 'ability',
+        'type_line', coalesce(v_source_type_line, ''),
+        'is_commander', v_source_is_commander));
   end if;
 
   if v_energy_cost > 0 then
