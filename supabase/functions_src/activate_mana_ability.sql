@@ -29,6 +29,12 @@ declare
   v_color text;
   v_amount integer;
   v_pool jsonb;
+  -- Restricted ("spend only") mana: an add_mana effect may carry a `restriction`
+  -- ({spell_type_line?, ability_source_type_line?, commander?}); such mana goes
+  -- to game_players.restricted_mana instead of the open pool.
+  v_restricted jsonb;
+  v_restriction jsonb;
+  v_produced_restricted boolean := false;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required';
@@ -111,8 +117,9 @@ begin
   values (p_session_id, auth.uid(), jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0))
   on conflict (session_id, player_id) do nothing;
 
-  select coalesce(mana_pool, jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0))
-  into v_pool
+  select coalesce(mana_pool, jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0)),
+         coalesce(restricted_mana, '[]'::jsonb)
+  into v_pool, v_restricted
   from public.game_players
   where session_id = p_session_id and player_id = auth.uid()
   for update;
@@ -131,7 +138,15 @@ begin
         raise exception 'A multi-mana ability must produce fixed colours (got %)', v_color;
       end if;
       v_amount := greatest(1, coalesce((v_effect ->> 'amount')::integer, 1));
-      v_pool := v_pool || jsonb_build_object(v_color, coalesce((v_pool ->> v_color)::integer, 0) + v_amount);
+      v_restriction := v_effect -> 'restriction';
+      if v_restriction is not null and jsonb_typeof(v_restriction) = 'object' then
+        -- "Spend only to cast …": stash as restricted mana, not open mana.
+        v_produced_restricted := true;
+        v_restricted := v_restricted || jsonb_build_array(
+          jsonb_build_object('color', v_color, 'amount', v_amount) || v_restriction);
+      else
+        v_pool := v_pool || jsonb_build_object(v_color, coalesce((v_pool ->> v_color)::integer, 0) + v_amount);
+      end if;
     end if;
   end loop;
 
@@ -141,6 +156,7 @@ begin
   -- produced (no separate colour pick), once per activation.
   if v_color is not null
      and v_has_tap
+     and not v_produced_restricted
      and exists (select 1 from public.game_turn_state ts
                  where ts.session_id = p_session_id and ts.monarch_player_id = auth.uid())
      and exists (select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
@@ -155,7 +171,8 @@ begin
   end if;
 
   update public.game_players
-  set mana_pool = v_pool
+  set mana_pool = v_pool,
+      restricted_mana = v_restricted
   where session_id = p_session_id and player_id = auth.uid();
 
   -- Sacrifice cost (mig 226, Treasure): the source goes to the graveyard after

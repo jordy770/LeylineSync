@@ -163,7 +163,13 @@ export class Scenario {
   async payMana(
     seat: Seat,
     cost: string,
-    opts: { generic?: Record<string, number>; xValue?: number; hybrid?: string[] } = {},
+    opts: {
+      generic?: Record<string, number>
+      xValue?: number
+      hybrid?: string[]
+      // Restricted-mana pay context: { kind:'cast'|'ability', type_line?, is_commander? }.
+      context?: { kind: 'cast' | 'ability'; type_line?: string; is_commander?: boolean }
+    } = {},
   ): Promise<Record<string, number>> {
     return this.run(
       () =>
@@ -174,9 +180,30 @@ export class Scenario {
           p_generic_payment: opts.generic ? JSON.stringify(opts.generic) : null,
           p_x_value: opts.xValue ?? 0,
           p_hybrid_payment: opts.hybrid ? JSON.stringify(opts.hybrid) : null,
+          p_pay_context: opts.context ? JSON.stringify(opts.context) : null,
         }),
       seat,
     )
+  }
+
+  /** Set a seat's restricted ("spend only") mana directly (RLS bypassed). */
+  async setRestrictedMana(seat: Seat, entries: unknown[]): Promise<void> {
+    await this.client.query(
+      `insert into public.game_players (session_id, player_id, mana_pool, restricted_mana)
+       values ($1, $2, jsonb_build_object('W',0,'U',0,'B',0,'R',0,'G',0,'C',0), $3::jsonb)
+       on conflict (session_id, player_id) do update set restricted_mana = excluded.restricted_mana`,
+      [this.sessionId, this.players[seat], JSON.stringify(entries)],
+    )
+  }
+
+  /** Read a seat's restricted ("spend only") mana entries. */
+  async getRestrictedMana(seat: Seat): Promise<Array<{ color: string; amount: number }>> {
+    const res = await this.client.query<{ restricted_mana: Array<{ color: string; amount: number }> }>(
+      `select coalesce(restricted_mana, '[]'::jsonb) as restricted_mana
+       from public.game_players where session_id = $1 and player_id = $2`,
+      [this.sessionId, this.players[seat]],
+    )
+    return res.rows[0]?.restricted_mana ?? []
   }
 
   // --- Actions -------------------------------------------------------------

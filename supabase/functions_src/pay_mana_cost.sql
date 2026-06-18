@@ -9,7 +9,11 @@ create or replace function public.pay_mana_cost(
   p_mana_cost text,
   p_generic_payment jsonb default null,
   p_x_value integer default 0,
-  p_hybrid_payment jsonb default null
+  p_hybrid_payment jsonb default null,
+  -- Pay context (restricted "spend only" mana, e.g. Haven of the Spirit Dragon):
+  -- { "kind": "cast"|"ability", "type_line": text, "is_commander": bool }. When
+  -- null (cycling, manifest face-up, …) restricted mana is NOT usable.
+  p_pay_context jsonb default null
 )
 returns jsonb
 language plpgsql
@@ -20,6 +24,23 @@ declare
   v_empty_pool jsonb := jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0);
   v_current_pool jsonb;
   v_new_pool jsonb;
+  -- Restricted ("spend only") mana reconciliation.
+  v_restricted jsonb;
+  v_restricted_new jsonb := '[]'::jsonb;
+  v_orig_plain jsonb;
+  v_elig jsonb := jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0);
+  v_remove jsonb := jsonb_build_object('W', 0, 'U', 0, 'B', 0, 'R', 0, 'G', 0, 'C', 0);
+  v_final_plain jsonb;
+  v_entry jsonb;
+  v_kind text := p_pay_context ->> 'kind';
+  v_ctx_type text := coalesce(p_pay_context ->> 'type_line', '');
+  v_ctx_cmd boolean := coalesce((p_pay_context ->> 'is_commander')::boolean, false);
+  v_e_color text;
+  v_e_amt integer;
+  v_eligible boolean;
+  v_spent integer;
+  v_from_restricted integer;
+  v_keep integer;
   v_clean_cost text;
   v_symbol text;
   v_generic_cost integer := 0;
@@ -56,14 +77,56 @@ begin
   values (p_session_id, p_player_id, v_empty_pool)
   on conflict (session_id, player_id) do nothing;
 
-  select coalesce(mana_pool, v_empty_pool)
-  into v_current_pool
+  select coalesce(mana_pool, v_empty_pool), coalesce(restricted_mana, '[]'::jsonb)
+  into v_current_pool, v_restricted
   from public.game_players
   where session_id = p_session_id
     and player_id = p_player_id
   for update;
 
+  -- Restricted ("spend only") mana: fold the entries ELIGIBLE for this pay
+  -- context into the working pool so the normal algorithm can spend them; track
+  -- the eligible amount per colour so we can deduct restricted-first afterwards
+  -- (use-it-or-lose-it). Eligibility:
+  --   commander entry      → context.is_commander (commander spell OR ability of a commander)
+  --   kind='cast'          → no spell_type_line, or cast card type_line matches it
+  --   kind='ability'       → ability_source_type_line present and source type_line matches it
+  v_orig_plain := v_current_pool;
+  for v_entry in select * from jsonb_array_elements(v_restricted)
+  loop
+    if p_pay_context is null then
+      v_eligible := false;
+    elsif coalesce((v_entry ->> 'commander')::boolean, false) then
+      v_eligible := v_ctx_cmd;
+    elsif v_kind = 'cast' then
+      v_eligible := (v_entry ->> 'spell_type_line') is null
+        or v_ctx_type ilike '%' || (v_entry ->> 'spell_type_line') || '%';
+    elsif v_kind = 'ability' then
+      v_eligible := (v_entry ->> 'ability_source_type_line') is not null
+        and v_ctx_type ilike '%' || (v_entry ->> 'ability_source_type_line') || '%';
+    else
+      v_eligible := false;
+    end if;
+
+    if v_eligible then
+      v_e_color := upper(coalesce(v_entry ->> 'color', 'C'));
+      v_e_amt := greatest(0, coalesce((v_entry ->> 'amount')::integer, 0));
+      if v_e_color in ('W', 'U', 'B', 'R', 'G', 'C') and v_e_amt > 0 then
+        v_elig := v_elig || jsonb_build_object(
+          v_e_color, coalesce((v_elig ->> v_e_color)::integer, 0) + v_e_amt);
+      end if;
+    end if;
+  end loop;
+
+  -- Working pool = plain pool + eligible restricted mana.
   v_new_pool := v_current_pool;
+  foreach v_e_color in array array['W', 'U', 'B', 'R', 'G', 'C']
+  loop
+    v_new_pool := v_new_pool || jsonb_build_object(
+      v_e_color,
+      coalesce((v_current_pool ->> v_e_color)::integer, 0)
+        + coalesce((v_elig ->> v_e_color)::integer, 0));
+  end loop;
   -- Strip braces + whitespace but KEEP slashes so hybrid symbols stay intact
   -- ({W/U} -> "W/U", {2/W} -> "2/W", {W/P} -> "W/P", {2}{R} -> "2R").
   v_clean_cost := upper(regexp_replace(p_mana_cost, '[{}\s]', '', 'g'));
@@ -248,14 +311,64 @@ begin
       and player_id = p_player_id;
   end if;
 
+  -- Reconcile: split each colour's spend between restricted (first) and plain.
+  v_final_plain := v_orig_plain;
+  foreach v_e_color in array array['W', 'U', 'B', 'R', 'G', 'C']
+  loop
+    v_spent := coalesce((v_orig_plain ->> v_e_color)::integer, 0)
+             + coalesce((v_elig ->> v_e_color)::integer, 0)
+             - coalesce((v_new_pool ->> v_e_color)::integer, 0);
+    if v_spent < 0 then v_spent := 0; end if;
+    v_from_restricted := least(v_spent, coalesce((v_elig ->> v_e_color)::integer, 0));
+    v_remove := v_remove || jsonb_build_object(v_e_color, v_from_restricted);
+    v_final_plain := v_final_plain || jsonb_build_object(
+      v_e_color,
+      coalesce((v_orig_plain ->> v_e_color)::integer, 0) - (v_spent - v_from_restricted));
+  end loop;
+
+  -- Rebuild the restricted array: reduce ELIGIBLE entries by what we spent
+  -- (FIFO per colour); drop emptied entries; keep ineligible entries untouched.
+  for v_entry in select * from jsonb_array_elements(v_restricted)
+  loop
+    if p_pay_context is null then
+      v_eligible := false;
+    elsif coalesce((v_entry ->> 'commander')::boolean, false) then
+      v_eligible := v_ctx_cmd;
+    elsif v_kind = 'cast' then
+      v_eligible := (v_entry ->> 'spell_type_line') is null
+        or v_ctx_type ilike '%' || (v_entry ->> 'spell_type_line') || '%';
+    elsif v_kind = 'ability' then
+      v_eligible := (v_entry ->> 'ability_source_type_line') is not null
+        and v_ctx_type ilike '%' || (v_entry ->> 'ability_source_type_line') || '%';
+    else
+      v_eligible := false;
+    end if;
+
+    v_e_color := upper(coalesce(v_entry ->> 'color', 'C'));
+    v_e_amt := greatest(0, coalesce((v_entry ->> 'amount')::integer, 0));
+    v_keep := v_e_amt;
+    if v_eligible and v_e_color in ('W', 'U', 'B', 'R', 'G', 'C')
+       and coalesce((v_remove ->> v_e_color)::integer, 0) > 0 then
+      v_from_restricted := least(v_e_amt, coalesce((v_remove ->> v_e_color)::integer, 0));
+      v_keep := v_e_amt - v_from_restricted;
+      v_remove := v_remove || jsonb_build_object(
+        v_e_color, coalesce((v_remove ->> v_e_color)::integer, 0) - v_from_restricted);
+    end if;
+    if v_keep > 0 then
+      v_restricted_new := v_restricted_new
+        || jsonb_build_array(v_entry || jsonb_build_object('amount', v_keep));
+    end if;
+  end loop;
+
   update public.game_players
-  set mana_pool = v_new_pool
+  set mana_pool = v_final_plain,
+      restricted_mana = v_restricted_new
   where session_id = p_session_id
     and player_id = p_player_id;
 
-  return v_new_pool;
+  return v_final_plain;
 end;
 $_$;
-grant execute on function public.pay_mana_cost(uuid, uuid, text, jsonb, integer, jsonb) to anon;
-grant execute on function public.pay_mana_cost(uuid, uuid, text, jsonb, integer, jsonb) to authenticated;
-grant execute on function public.pay_mana_cost(uuid, uuid, text, jsonb, integer, jsonb) to service_role;
+grant execute on function public.pay_mana_cost(uuid, uuid, text, jsonb, integer, jsonb, jsonb) to anon;
+grant execute on function public.pay_mana_cost(uuid, uuid, text, jsonb, integer, jsonb, jsonb) to authenticated;
+grant execute on function public.pay_mana_cost(uuid, uuid, text, jsonb, integer, jsonb, jsonb) to service_role;
