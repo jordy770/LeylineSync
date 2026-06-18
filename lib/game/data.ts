@@ -17,6 +17,7 @@ import type {
   LinkedCard,
   ManaPool,
   PendingDecision,
+  RestrictedManaEntry,
   TokenCard,
   StackItem,
   TurnPhase,
@@ -69,7 +70,9 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       controller_player_id,
       plus_one_counters,
       counters,
-      attached_to
+      attached_to,
+      is_token,
+      copy_original_card_id
     `)
     .eq('session_id', sessionId)
     .eq('zone', 'battlefield')
@@ -105,6 +108,8 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
       counters: (item as { counters?: Record<string, number> | null }).counters ?? null,
       attached_to: (item as { attached_to?: string | null }).attached_to ?? null,
+      is_token: (item as { is_token?: boolean | null }).is_token ?? false,
+      copy_original_card_id: (item as { copy_original_card_id?: string | null }).copy_original_card_id ?? null,
     }
   })
 }
@@ -133,6 +138,39 @@ export async function getStatusEffects(supabase: SupabaseClient, sessionId: stri
     }
   }
   return { animatedIds, taxes }
+}
+
+// Active generic-mana cost reductions the player controls (effect_type
+// 'cost_reduction'), mirroring the server's reduced_mana_cost STATIC source so
+// the controller's "playable" hint + auto-pay account for "Dragon spells cost
+// {1} less" etc. The card's OWN cost_reduction script prop is applied separately.
+export type CostReductionEffect = { amount: number; type_line: string | null; from_zone: string | null }
+
+export async function getCostReductions(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+): Promise<CostReductionEffect[]> {
+  const { data, error } = await supabase
+    .from('game_continuous_effects')
+    .select('payload, affected_player_id')
+    .eq('session_id', sessionId)
+    .eq('effect_type', 'cost_reduction')
+    .eq('affected_player_id', playerId)
+
+  if (error) {
+    console.error('Failed to load cost reductions:', error.message)
+    return []
+  }
+
+  return (data ?? []).map((row) => {
+    const p = (row as { payload: Record<string, unknown> | null }).payload ?? {}
+    return {
+      amount: Number(p.amount ?? 0),
+      type_line: typeof p.type_line === 'string' && p.type_line !== '' ? (p.type_line as string) : null,
+      from_zone: typeof p.from_zone === 'string' && p.from_zone !== '' ? (p.from_zone as string) : null,
+    }
+  })
 }
 
 export async function getProtectionColors(supabase: SupabaseClient, sessionId: string) {
@@ -257,7 +295,9 @@ export async function getControllerCards(
       counters,
       is_commander,
       command_zone_casts,
-      attached_to
+      attached_to,
+      is_token,
+      copy_original_card_id
     `)
     .eq('session_id', sessionId)
     .eq('owner_id', playerId)
@@ -296,6 +336,8 @@ export async function getControllerCards(
       is_commander: (card as { is_commander?: boolean }).is_commander ?? false,
       command_zone_casts: (card as { command_zone_casts?: number }).command_zone_casts ?? 0,
       attached_to: (card as { attached_to?: string | null }).attached_to ?? null,
+      is_token: (card as { is_token?: boolean | null }).is_token ?? false,
+      copy_original_card_id: (card as { copy_original_card_id?: string | null }).copy_original_card_id ?? null,
       name: linkedCard?.name ?? `Unknown (${card.card_id})`,
       cards: linkedCard,
     }
@@ -327,6 +369,28 @@ export async function getPlayerManaPool(
   return normalizeManaPool((data?.mana_pool as ManaPool | null) ?? null)
 }
 
+// "Spend only to …" mana held apart from the open pool (Haven of the Spirit
+// Dragon, Drover of the Mighty, …). Returns the raw entries for display.
+export async function getPlayerRestrictedMana(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+): Promise<RestrictedManaEntry[]> {
+  const { data, error } = await supabase
+    .from('game_players')
+    .select('restricted_mana')
+    .eq('session_id', sessionId)
+    .eq('player_id', playerId)
+    .maybeSingle()
+
+  if (error) {
+    throw error
+  }
+
+  const raw = (data?.restricted_mana as RestrictedManaEntry[] | null) ?? []
+  return Array.isArray(raw) ? raw.filter((e) => e && (e.amount ?? 0) > 0) : []
+}
+
 export async function getTurnState(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('get_turn_state', {
     p_session_id: sessionId,
@@ -344,7 +408,7 @@ export async function getTurnState(supabase: SupabaseClient, sessionId: string) 
 export async function getGameSession(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase
     .from('game_sessions')
-    .select('id, status, created_by, created_at, locked_at, finished_at, winner_player_id')
+    .select('id, status, format, created_by, created_at, locked_at, finished_at, winner_player_id')
     .eq('id', sessionId)
     .maybeSingle()
 
@@ -429,6 +493,43 @@ export async function getGameActionLogs(
   }
 
   return (data ?? []) as GameActionLog[]
+}
+
+/**
+ * Game-card ids the player may currently cast from EXILE (mig 230 impulse,
+ * mig 295 adventure faces, …). Reads the player's `play_from_exile` permissions
+ * and flattens their payload.card_ids. The cast path (cast_card_from_hand /
+ * cast_spell_effect / put_action_on_stack) re-validates the permission server-side.
+ * Best-effort: returns an empty set on error.
+ */
+export async function getPlayableFromExileIds(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+): Promise<Set<string>> {
+  const ids = new Set<string>()
+  const { data, error } = await supabase
+    .from('game_continuous_effects')
+    .select('payload')
+    .eq('session_id', sessionId)
+    .eq('effect_type', 'play_from_exile')
+    .eq('affected_player_id', playerId)
+
+  if (error) {
+    console.error('Failed to load play-from-exile permissions:', error.message)
+    return ids
+  }
+
+  for (const row of (data ?? []) as { payload: Record<string, unknown> | null }[]) {
+    const cardIds = row.payload?.card_ids
+    if (Array.isArray(cardIds)) {
+      for (const id of cardIds) {
+        if (typeof id === 'string') ids.add(id)
+      }
+    }
+  }
+
+  return ids
 }
 
 /** Sums active until-end-of-turn pump effects per affected card id. Best-effort: returns {} on error. */
@@ -722,6 +823,7 @@ export function normalizeGameSession(session: Partial<GameSession>): GameSession
   return {
     id: session.id ?? '',
     status: normalizeGameSessionStatus(session.status),
+    format: session.format ?? null,
     created_by: session.created_by ?? '',
     created_at: session.created_at,
     locked_at: session.locked_at ?? null,

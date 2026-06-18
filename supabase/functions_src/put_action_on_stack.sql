@@ -20,6 +20,7 @@ declare
   v_action_timing text;
   v_target_controller text;
   v_source_type_line text;
+  v_source_is_commander boolean := false;
   v_source_zone text;
   v_source_mana_cost text;
   v_generic_payment jsonb;
@@ -77,8 +78,10 @@ begin
   end if;
 
   if p_source_card_id is not null then
-    select cards.type_line, cards.mana_cost, game_cards.zone
-    into v_source_type_line, v_source_mana_cost, v_source_zone
+    select cards.type_line, cards.mana_cost, game_cards.zone,
+           coalesce(game_cards.is_commander, false)
+    into v_source_type_line, v_source_mana_cost, v_source_zone,
+         v_source_is_commander
     from public.game_cards
     join public.cards
       on cards.id = game_cards.card_id
@@ -88,6 +91,21 @@ begin
 
     if not found then
       raise exception 'Source card not found or not owned by current user';
+    end if;
+  end if;
+
+  -- An EXILE source (mig 230 impulse, mig 296 adventure) requires a
+  -- play_from_exile permission listing this card. The card pays its printed cost
+  -- (below) and a non-permanent goes to the graveyard on cast.
+  if p_source_card_id is not null and v_source_zone = 'exile' then
+    if not exists (
+      select 1 from public.game_continuous_effects ce
+      where ce.session_id = p_session_id
+        and ce.effect_type = 'play_from_exile'
+        and ce.affected_player_id = auth.uid()
+        and (ce.payload -> 'card_ids') ? p_source_card_id::text
+    ) then
+      raise exception 'You do not have permission to play that card from exile';
     end if;
   end if;
 
@@ -180,8 +198,11 @@ begin
     raise exception 'Target player has hexproof and can''t be targeted by an opponent';
   end if;
 
-  if p_source_card_id is not null and v_source_zone = 'hand' then
-    perform public.pay_mana_cost(p_session_id, auth.uid(), v_source_mana_cost, v_generic_payment, v_x_value);
+  -- An exile cast (impulse) pays the printed cost too — impulse is not free.
+  if p_source_card_id is not null and v_source_zone in ('hand', 'exile') then
+    perform public.pay_mana_cost(p_session_id, auth.uid(), v_source_mana_cost, v_generic_payment, v_x_value,
+      p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_source_type_line, ''),
+        'is_commander', v_source_is_commander));
   end if;
 
   select coalesce(max(position), -1) + 1
@@ -239,7 +260,7 @@ begin
       jsonb_build_object('card_ids', jsonb_build_array(p_source_card_id), 'permanent', true));
 
   elsif p_source_card_id is not null
-    and v_source_zone = 'hand'
+    and v_source_zone in ('hand', 'exile')
     and (
       v_source_type_line ilike '%instant%'
       or v_source_type_line ilike '%sorcery%'

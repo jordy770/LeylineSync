@@ -10,11 +10,14 @@ import {
   getCombatAssignments,
   getCommanderDamage,
   getControllerCards,
+  getCostReductions,
   getCurrentPlayerId,
   getGameSession,
   getGameSessionPlayers,
   getPendingDecisions,
+  getPlayableFromExileIds,
   getPlayerManaPool,
+  getPlayerRestrictedMana,
   getProtectionColors,
   getStatusEffects,
   getStackItems,
@@ -22,7 +25,7 @@ import {
   normalizeManaPool,
 } from './data'
 import { enableFallbackRefresh, fallbackRefreshIntervalMs } from './dev'
-import type { CommanderDamageEntry } from './data'
+import type { CommanderDamageEntry, CostReductionEffect } from './data'
 import type {
   BoardCard,
   CombatActionState,
@@ -32,6 +35,7 @@ import type {
   GameTurnState,
   ManaPool,
   PendingDecision,
+  RestrictedManaEntry,
   StackItem,
 } from './types'
 
@@ -48,8 +52,12 @@ export function useControllerGameState(sessionId: string) {
   const [stackItems, setStackItems] = useState<StackItem[]>([])
   const [pendingDecisions, setPendingDecisions] = useState<PendingDecision[]>([])
   const [manaPool, setManaPool] = useState<ManaPool>(() => normalizeManaPool(null))
+  const [restrictedMana, setRestrictedMana] = useState<RestrictedManaEntry[]>([])
+  const [costReductions, setCostReductions] = useState<CostReductionEffect[]>([])
+  const [playableFromExileIds, setPlayableFromExileIds] = useState<Set<string>>(() => new Set())
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [isSessionFinished, setIsSessionFinished] = useState(false)
+  const [format, setFormat] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -61,6 +69,7 @@ export function useControllerGameState(sessionId: string) {
         setPlayerId(null)
         setCards([])
         setManaPool(normalizeManaPool(null))
+        setRestrictedMana([])
         setErrorMessage('No signed-in player found')
         setIsLoading(false)
         return
@@ -77,10 +86,13 @@ export function useControllerGameState(sessionId: string) {
         nextStackItems,
         nextPendingDecisions,
         nextManaPool,
+        nextRestrictedMana,
         pumpTotals,
         protectionColors,
         statusEffects,
         nextCommanderDamage,
+        nextPlayableFromExileIds,
+        nextCostReductions,
       ] = await Promise.all([
         getGameSession(supabase, sessionId),
         getControllerCards(supabase, sessionId, currentPlayerId),
@@ -92,10 +104,13 @@ export function useControllerGameState(sessionId: string) {
         getStackItems(supabase, sessionId),
         getPendingDecisions(supabase, sessionId),
         getPlayerManaPool(supabase, sessionId, currentPlayerId),
+        getPlayerRestrictedMana(supabase, sessionId, currentPlayerId),
         getActivePumpTotals(supabase, sessionId),
         getProtectionColors(supabase, sessionId),
         getStatusEffects(supabase, sessionId),
         getCommanderDamage(supabase, sessionId),
+        getPlayableFromExileIds(supabase, sessionId, currentPlayerId),
+        getCostReductions(supabase, sessionId, currentPlayerId),
       ])
 
       // Fold active until-end-of-turn pumps onto each card so effective P/T shows
@@ -115,6 +130,7 @@ export function useControllerGameState(sessionId: string) {
       )
       setAttackTaxes(statusEffects.taxes)
       setCommanderDamage(nextCommanderDamage)
+      setPlayableFromExileIds(nextPlayableFromExileIds)
       setPlayers(sessionPlayers)
       setTurnState(nextTurnState)
       setCombatActionState(nextCombatActionState)
@@ -122,7 +138,10 @@ export function useControllerGameState(sessionId: string) {
       setStackItems(nextStackItems)
       setPendingDecisions(nextPendingDecisions)
       setManaPool(nextManaPool)
+      setRestrictedMana(nextRestrictedMana)
+      setCostReductions(nextCostReductions)
       setIsSessionFinished(session?.status === 'finished')
+      setFormat(session?.format ?? null)
       setErrorMessage(null)
       setIsLoading(false)
     } catch (error) {
@@ -183,8 +202,12 @@ export function useControllerGameState(sessionId: string) {
     stackItems,
     pendingDecisions,
     manaPool,
+    restrictedMana,
+    costReductions,
+    playableFromExileIds,
     playerId,
     isSessionFinished,
+    format,
     isLoading,
     errorMessage,
     setErrorMessage,

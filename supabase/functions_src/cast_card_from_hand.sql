@@ -361,7 +361,9 @@ begin
     -- engine auto-picks (zone order; client refinement). Sacrifices route
     -- through put_in_graveyard so dies triggers fire.
     if nullif(v_alt_cost ->> 'mana', '') is not null then
-      perform public.pay_mana_cost(p_session_id, auth.uid(), v_alt_cost ->> 'mana', p_generic_payment);
+      perform public.pay_mana_cost(p_session_id, auth.uid(), v_alt_cost ->> 'mana', p_generic_payment,
+        p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_card_type_line, ''),
+          'is_commander', coalesce(v_card.is_commander, false)));
     end if;
     v_sac_needed := greatest(0, coalesce((v_alt_cost ->> 'sacrifice_creatures')::integer, 0));
     if v_sac_needed > 0 then
@@ -406,7 +408,9 @@ begin
     perform public.pay_mana_cost(
       p_session_id, auth.uid(),
       public.reduced_mana_cost(p_session_id, auth.uid(), p_game_card_id, v_card_mana_cost),
-      p_generic_payment);
+      p_generic_payment,
+      p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_card_type_line, ''),
+        'is_commander', coalesce(v_card.is_commander, false)));
   end if;
 
   -- Kicker (mig 211, Josu Vess): an OPTIONAL additional cost from the script's
@@ -420,7 +424,9 @@ begin
     end if;
     perform public.pay_mana_cost(
       p_session_id, auth.uid(),
-      public.effective_script(p_session_id, p_game_card_id) ->> 'kicker', null);
+      public.effective_script(p_session_id, p_game_card_id) ->> 'kicker', null,
+      p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_card_type_line, ''),
+        'is_commander', coalesce(v_card.is_commander, false)));
     update public.game_cards
     set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object('kicked', 1)
     where id = p_game_card_id and session_id = p_session_id;

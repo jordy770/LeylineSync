@@ -30,6 +30,14 @@ async function exilePerms(s: Scenario, seat: 'A' | 'B'): Promise<number> {
   return Number(r.rows[0]!.n)
 }
 
+async function manaC(s: Scenario, seat: 'A' | 'B'): Promise<number> {
+  const r = await s.client.query<{ c: number }>(
+    `select coalesce((mana_pool ->> 'C')::int, 0) as c from public.game_players
+     where session_id = $1 and player_id = $2`,
+    [s.sessionId, s.players[seat]])
+  return Number(r.rows[0]?.c ?? 0)
+}
+
 // AT1 — the Treasures mode makes three Treasures.
 test('AT1 Atsushi dies, choosing three Treasures', async () => {
   await withRolledBackTx(async (client) => {
@@ -96,5 +104,51 @@ test('AT3 the impulse play window expires after your next turn', async () => {
     await s.as('A').advanceStep()
 
     assert.equal(await exilePerms(s, 'A'), 0)
+  })
+})
+
+// AT4 — a NON-PERMANENT spell (sorcery) impulse-exiled can be cast from exile:
+//   it pays its printed cost (impulse is not free) and goes to the graveyard.
+//   (mig 321 — cast_spell_effect honours an exile source.)
+test('AT4 a sorcery played from exile pays its cost and goes to the graveyard', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A', turnNumber: 1 })
+    const atsushi = await s.spawnCreature('A', 'Atsushi Test')
+    // Top two of A's library: the sorcery + a filler — both get impulse-exiled.
+    const spell = await s.spawn('A', 'Increasing Insight Test', 'library') // cost {2}
+    await s.spawn('A', 'Red Wall Test', 'library')
+
+    await s.fireTriggers('A', atsushi, ['dies'])
+    await s.as('A').resolveStack()
+    const d = await s.pendingDecision()
+    await s.as('A').submitDecision(d!.id, { chosen: [0] }) // impulse
+    assert.equal(await countZone(s, 'A', 'exile', 'Increasing Insight Test'), 1)
+
+    // Cast it from exile. {2} is paid from the pool — impulse is NOT free.
+    await s.setMana('A', { C: 2 })
+    await s.as('A').castSpellEffect(
+      [{ type: 'create_token', token: 'Treasure Token', count: 1 }], spell)
+    await s.as('A').resolveStack()
+
+    assert.equal(await manaC(s, 'A'), 0, 'the {2} cost was charged from exile')
+    assert.equal(await countZone(s, 'A', 'graveyard', 'Increasing Insight Test'), 1, 'spent spell → graveyard')
+    assert.equal(await countZone(s, 'A', 'exile', 'Increasing Insight Test'), 0, 'left exile')
+    assert.equal(await countZone(s, 'A', 'battlefield', 'Treasure Token'), 1, 'effect resolved')
+  })
+})
+
+// AT5 — without a play_from_exile permission, a card in exile cannot be cast.
+test('AT5 casting from exile is refused without a permission', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A', turnNumber: 1 })
+    const spell = await s.spawn('A', 'Increasing Insight Test', 'exile')
+    await s.setMana('A', { C: 2 })
+
+    await assert.rejects(
+      () => s.as('A').castSpellEffect(
+        [{ type: 'create_token', token: 'Treasure Token', count: 1 }], spell),
+      /permission to play that card from exile/)
   })
 })
