@@ -4962,3 +4962,346 @@
 | 12:14 | Session end: 55 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 15 reads | ~65395 tok |
 | 12:32 | Edited components/GameSessionLobby.tsx | 4→5 lines | ~17 |
 | 12:32 | Edited components/GameSessionLobby.tsx | CSS: e | ~106 |
+| 12:32 | Edited components/GameSessionLobby.tsx | CSS: hover, hover | ~285 |
+| 12:32 | Session end: 58 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 15 reads | ~66145 tok |
+| 12:33 | Edited components/GameSessionLobby.tsx | 6→7 lines | ~47 |
+| 12:33 | Session end: 59 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 15 reads | ~66192 tok |
+| 13:20 | Session end: 59 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 15 reads | ~66192 tok |
+| 13:28 | Session end: 59 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 15 reads | ~66192 tok |
+| 13:35 | Edited components/GameSessionLobby.tsx | 3→6 lines | ~95 |
+| 13:35 | Session end: 60 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 15 reads | ~66608 tok |
+| 14:29 | Session end: 60 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 17 reads | ~66608 tok |
+| 14:49 | Session end: 60 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 17 reads | ~66608 tok |
+| 15:01 | Edited app/page.tsx | added 2 import(s) | ~99 |
+| 15:01 | Edited app/page.tsx | added optional chaining | ~138 |
+| 15:01 | Edited app/page.tsx | 7→9 lines | ~105 |
+| 15:01 | Edited app/page.tsx | CSS: Table, hover, hover | ~369 |
+| 15:02 | Session end: 64 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 17 reads | ~68477 tok |
+| 15:24 | Session end: 64 writes across 20 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 17 reads | ~68477 tok |
+| 15:30 | Created scripts/copy-decks-to-local.mjs | — | ~1069 |
+| 15:32 | Session end: 65 writes across 21 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 17 reads | ~69622 tok |
+| 15:47 | Session end: 65 writes across 21 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 17 reads | ~69622 tok |
+| 15:54 | Session end: 65 writes across 21 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 18 reads | ~70845 tok |
+| 16:07 | Session end: 65 writes across 21 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 18 reads | ~70845 tok |
+| 16:17 | Edited components/ControllerListV5.tsx | modified for() | ~183 |
+| 16:17 | Edited docs/client-coverage-audit.md | level() → lookup() | ~96 |
+| --:-- | Engine<->UI scan (V5): parity confirmed; closed last in-game gap = cross-owner attachment naming (cardNameById now board-wide via boardCards); audit doc updated | components/ControllerListV5.tsx, docs/client-coverage-audit.md | done, tsc+lint clean | ~5k |
+| 16:18 | Session end: 67 writes across 23 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 22 reads | ~142399 tok |
+| 16:22 | Edited lib/game/actions.ts | added 1 condition(s) | ~215 |
+| 16:22 | Edited components/DeckManager.tsx | inline fix | ~45 |
+| 16:22 | Edited components/DeckManager.tsx | added optional chaining | ~199 |
+| 16:22 | Edited components/DeckManager.tsx | 1→2 lines | ~40 |
+| 16:22 | Edited components/DeckManager.tsx | expanded (+18 lines) | ~351 |
+| 16:24 | Edited supabase/functions_src/commander_deck_legality.sql | 3→5 lines | ~72 |
+| 16:25 | Edited docs/client-coverage-audit.md | inline fix | ~119 |
+| --:-- | Commander deck-legality in editor: getDeckLegality wrapper + DeckManager badge (green legal / amber issues, gated on commander set); fixed RPC no-commander array bug (mig 316) | lib/game/actions.ts, components/DeckManager.tsx, supabase/functions_src/commander_deck_legality.sql, supabase/migrations/202605010316_*.sql | done, tsc+lint+precon tests pass | ~7k |
+| 16:26 | Session end: 74 writes across 24 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 24 reads | ~155388 tok |
+| 16:29 | Edited supabase/functions_src/keep_opening_hand.sql | 7→9 lines | ~39 |
+| 16:29 | Edited supabase/functions_src/keep_opening_hand.sql | 4→9 lines | ~136 |
+| 16:30 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~37 |
+| 16:30 | Edited lib/game/use-controller-game-state.ts | added nullish coalescing | ~38 |
+| 16:30 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~10 |
+| 16:30 | Edited components/ControllerListV5.tsx | 8→9 lines | ~49 |
+| 16:30 | Edited components/ControllerListV5.tsx | expanded (+6 lines) | ~146 |
+| 16:31 | Created components/controller/OpeningHandOverlay.tsx | — | ~1845 |
+| 16:35 | Edited components/ControllerListV5.tsx | added optional chaining | ~224 |
+| 16:35 | Edited components/ControllerListV5.tsx | 2→3 lines | ~45 |
+| 16:35 | Edited components/ControllerListV5.tsx | 5→6 lines | ~32 |
+| 16:35 | Edited components/ControllerListV5.tsx | CSS: cardImageById, name, image_url | ~59 |
+| 16:35 | Edited components/ControllerListV5.tsx | 5→6 lines | ~55 |
+| 16:36 | Edited components/ControllerListV5.tsx | modified PendingDecisionPrompt() | ~488 |
+| 16:36 | Edited components/ControllerListV5.tsx | added optional chaining | ~197 |
+| 16:36 | Edited components/ControllerListV5.tsx | modified CardPickBody() | ~144 |
+| 16:37 | Edited components/ControllerListV5.tsx | added optional chaining | ~393 |
+| 16:37 | Edited components/ControllerListV5.tsx | modified ScrySurveilBody() | ~103 |
+| 16:37 | Edited components/ControllerListV5.tsx | added optional chaining | ~203 |
+| --:-- | Mulligan+pickers: commander free first mulligan (keep_opening_hand mig 317, bottom=mulligans-1; hook exposes format -> overlay bottomCount); opening-hand cards tap-to-zoom + explicit bottom toggle; CardPickBody + ScrySurveilBody now show card art (board-wide cardImageById lookup) + tap-to-zoom | supabase/functions_src/keep_opening_hand.sql, supabase/migrations/202605010317_*.sql, lib/game/use-controller-game-state.ts, components/ControllerListV5.tsx, components/controller/OpeningHandOverlay.tsx | done, engine verified + tsc/lint/game-start green | ~12k |
+| 16:39 | Session end: 93 writes across 27 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 28 reads | ~165498 tok |
+| 16:48 | Edited lib/game/auto-pass.ts | 3→6 lines | ~84 |
+| 16:48 | Edited lib/game/auto-pass.ts | 3→3 lines | ~70 |
+| 16:48 | Edited components/ControllerListV5.tsx | added optional chaining | ~58 |
+| 16:48 | Edited components/ControllerListV5.tsx | added optional chaining | ~69 |
+| 16:48 | Edited tests/unit/auto-pass.test.ts | 6→7 lines | ~41 |
+| 16:49 | Edited tests/unit/auto-pass.test.ts | 3→8 lines | ~88 |
+| 16:49 | Edited components/controller/OpeningHandOverlay.tsx | 2→2 lines | ~57 |
+| 16:49 | Edited components/controller/OpeningHandOverlay.tsx | "mt-3 flex max-h-[55vh] fl" → "mt-3 flex min-h-0 flex-1 " | ~32 |
+| 16:49 | Edited components/controller/OpeningHandOverlay.tsx | 2→2 lines | ~25 |
+| 16:49 | Edited components/controller/OpeningHandOverlay.tsx | "mt-4 flex gap-2" → "mt-4 flex shrink-0 gap-2" | ~15 |
+| --:-- | Fix mulligan: (1) overlay now flex-col max-h-90vh w/ scrollable grid + fixed buttons (was unscrollable on short screens); (2) 8-card bug — shouldAutoPass openingHandPending hard-exemption stops auto-pass/draw before keep (solo) | components/controller/OpeningHandOverlay.tsx, lib/game/auto-pass.ts, components/ControllerListV5.tsx, tests/unit/auto-pass.test.ts | done, 39/39 + tsc/lint clean | ~5k |
+| 16:50 | Session end: 103 writes across 29 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 29 reads | ~167463 tok |
+| 16:55 | Edited supabase/functions_src/pass_priority.sql | expanded (+10 lines) | ~194 |
+| --:-- | Engine opening-hand gate (mig 318): pass_priority refuses while any player opening_hand_kept=false -> no turn advance/draw before keep (multiplayer-safe complement to the client guard). Verified: before-keep blocked, after-keep OK, hand=7; full suite 1560/1560 on clean rebuild (also cleared the catalog-import pollution in the test DB) | supabase/functions_src/pass_priority.sql, supabase/migrations/202605010318_opening_hand_gate.sql | done, suite green | ~4k |
+| 17:04 | Session end: 104 writes across 30 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 30 reads | ~169570 tok |
+| 17:07 | Session end: 104 writes across 30 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 30 reads | ~169570 tok |
+| 17:14 | Edited lib/game/types.ts | 9→10 lines | ~72 |
+| 17:14 | Edited lib/game/data.ts | 3→3 lines | ~41 |
+| 17:14 | Edited lib/game/data.ts | 4→5 lines | ~49 |
+| 17:14 | Edited lib/game/use-controller-game-state.ts | inline fix | ~12 |
+| 17:15 | Edited components/controller/OpeningHandOverlay.tsx | modified OpeningHandOverlay() | ~107 |
+| --:-- | Fix: commander free mulligan not showing — getGameSession never selected format (type/select/normalize all missing it); now plumbed type->select->normalize->hook->bottomCount | lib/game/data.ts, lib/game/types.ts, lib/game/use-controller-game-state.ts | done, tsc+lint clean | ~3k |
+| 17:16 | Session end: 109 writes across 32 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 30 reads | ~169851 tok |
+| 17:46 | Edited app/controller/[id]/page.tsx | 8→6 lines | ~130 |
+| 17:46 | Edited app/controller/[id]/page.tsx | 7→5 lines | ~37 |
+| --:-- | V5 cutover: removed V4 fork (ControllerListV4.tsx deleted, ?v=4 route + import dropped from page.tsx); V5 is sole controller (V1 legacy via ?v=1). controller-style-lab left (untracked WIP). tsc+lint clean | app/controller/[id]/page.tsx, components/ControllerListV4.tsx (deleted) | done | ~3k |
+| 17:48 | Session end: 111 writes across 32 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 30 reads | ~170018 tok |
+| 17:51 | Session end: 111 writes across 32 files (GameSessionLobby.tsx, page.tsx, layout.tsx, globals.css, LandingHero.tsx) | 30 reads | ~170018 tok |
+
+## Session: 2026-06-17 18:09
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:10 | Created scripts/create-bot-user.mjs | — | ~779 |
+| 18:10 | Edited scripts/bot-runner.mjs | 2→6 lines | ~111 |
+| 18:10 | Edited scripts/bot-runner.mjs | added 5 condition(s) | ~766 |
+| --:-- | Hosted AI CPU (option 1, external runner): scripts/create-bot-user.mjs provisions a real bot auth user (service role + profile upsert); bot-runner --bot <uid> seatRealBot path (join + vanilla deck + is_bot + autopass) works on hosted (real user passes FKs); connect via DATABASE_URL=<hosted conn string>. Verified locally: provision creates user, seatRealBot seats real user (is_bot, 40-card lib). NOT verified vs prod (writes to prod auth). | scripts/create-bot-user.mjs, scripts/bot-runner.mjs | done, local-verified | ~7k |
+| 18:12 | Session end: 3 writes across 2 files (create-bot-user.mjs, bot-runner.mjs) | 1 reads | ~5020 tok |
+| 22:04 | Session end: 3 writes across 2 files (create-bot-user.mjs, bot-runner.mjs) | 1 reads | ~5020 tok |
+| 22:10 | Session end: 3 writes across 2 files (create-bot-user.mjs, bot-runner.mjs) | 1 reads | ~5020 tok |
+| 22:20 | Session end: 3 writes across 2 files (create-bot-user.mjs, bot-runner.mjs) | 1 reads | ~5020 tok |
+| 22:22 | Session end: 3 writes across 2 files (create-bot-user.mjs, bot-runner.mjs) | 1 reads | ~5020 tok |
+| 22:34 | Created lib/game/bot-brain.ts | — | ~1524 |
+
+## Session: 2026-06-17 22:37
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:37 | Created tests/unit/bot-brain.test.ts | — | ~1204 |
+| 12:00 | bot-brain v1: pure heuristic TS (mulligan/bottom/main-sequencing/attacks/blocks) + 15 unit tests | lib/game/bot-brain.ts, tests/unit/bot-brain.test.ts | 15/15 pass | ~4k |
+| 22:38 | Session end: 1 writes across 1 files (bot-brain.test.ts) | 1 reads | ~3370 tok |
+| 23:36 | Edited scripts/bot-runner.mjs | 11→16 lines | ~231 |
+| 23:36 | Edited scripts/bot-runner.mjs | added 1 condition(s) | ~160 |
+| 23:36 | Edited scripts/bot-runner.mjs | modified playMainPhase() | ~433 |
+| 23:37 | Edited scripts/bot-runner.mjs | added optional chaining | ~1100 |
+| 23:37 | Edited scripts/bot-runner.mjs | added 3 condition(s) | ~140 |
+| 23:37 | Edited scripts/bot-runner.mjs | "Usage: node scripts/bot-r" → "Usage: node --import tsx " | ~26 |
+| 23:37 | Edited scripts/create-bot-user.mjs | "  DATABASE_URL=<hosted di" → "  DATABASE_URL=<hosted di" | ~38 |
+| 23:37 | Edited package.json | 2→3 lines | ~35 |
+| 12:20 | wired bot-brain into runner: decideMainPlays/Attacks/Blocks via card_effective_power/toughness + life_total; added declareBlocks (new); once-per-turn gates; runs via `node --import tsx` (npm run bot) | scripts/bot-runner.mjs, package.json, scripts/create-bot-user.mjs | import resolves, parses clean | ~6k |
+| 23:38 | Session end: 9 writes across 4 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json) | 4 reads | ~11683 tok |
+| 23:40 | Edited scripts/bot-runner.mjs | inline fix | ~32 |
+| 23:40 | Edited scripts/bot-runner.mjs | added optional chaining | ~448 |
+| 12:35 | wired mulligan into runner: resolveMulligan → shouldMulligan/mulligan_hand or chooseBottom/keep_opening_hand (London vs commander free-first count); bounded by engine mulligan increment | scripts/bot-runner.mjs | parses clean | ~2k |
+| 23:40 | Session end: 11 writes across 4 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json) | 5 reads | ~12927 tok |
+| 00:02 | Session end: 11 writes across 4 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json) | 6 reads | ~13996 tok |
+| 00:13 | Session end: 11 writes across 4 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json) | 6 reads | ~13996 tok |
+| 00:23 | Edited scripts/bot-runner.mjs | inline fix | ~18 |
+| 00:24 | Session end: 12 writes across 4 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json) | 6 reads | ~14015 tok |
+| 00:29 | Session end: 12 writes across 4 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json) | 9 reads | ~17238 tok |
+| 00:36 | Created scripts/seed-scripts-local.mjs | — | ~1068 |
+| 13:10 | diagnosed "Haven of the Spirit Dragon missing" locally: real-name catalog rows had empty script (only 339/31802 scripted); built local-only seeder applying card-scripts.json+fixtures by name | scripts/seed-scripts-local.mjs | 577 filled → 916 scripted; Haven now has gedrag | ~4k |
+| 00:38 | Session end: 13 writes across 5 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json, seed-scripts-local.mjs) | 9 reads | ~18382 tok |
+| 00:42 | Edited scripts/seed-scripts-local.mjs | expanded (+15 lines) | ~274 |
+| 13:40 | fixed "basic lands can't tap for mana" locally: basics had empty script; no subtype synthesis anywhere (client selectFirstManaAbility + server activate_mana_ability both read the script). Hosted got basic scripts from archived seed mig 051 (not applied to local). Added basic+snow v2 mana scripts to seed-scripts-local.mjs | scripts/seed-scripts-local.mjs | 12 filled; Island→U etc. verified | ~3k |
+| 00:44 | Session end: 14 writes across 5 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json, seed-scripts-local.mjs) | 13 reads | ~75946 tok |
+| 00:54 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~247 |
+| 00:54 | Edited components/ControllerListV5.tsx | CSS: active | ~140 |
+| 00:55 | Edited components/ControllerListV5.tsx | CSS: active | ~157 |
+| 00:55 | Edited components/ControllerListV5.tsx | CSS: active | ~140 |
+| 00:55 | Edited components/ControllerListV5.tsx | modified ZoneSection() | ~94 |
+| 00:55 | Edited components/ControllerListV5.tsx | 3→4 lines | ~20 |
+| 00:58 | Created supabase/functions_src/add_bot_to_session.sql | — | ~1299 |
+| 00:58 | Edited supabase/migrations/bot_real_deck.sql | modified if() | ~139 |
+| 14:20 | opponent-view: opponent board/GY/exile cards now tap-to-zoom (CardZoomOverlay via BoardCard→ControllerCard adapter, z-[55] over the sheet) | components/ControllerListV5.tsx | tsc clean | ~3k |
+| 14:35 | bot now plays a REAL deck: add_bot_to_session seeds a shared precon (commander→command zone) instead of vanilla, vanilla = fallback, optional p_deck_id; mig 319 (drops old 1-arg overload) applied LOCAL only | supabase/functions_src/add_bot_to_session.sql, migrations/202605010319_bot_real_deck.sql | smoke: 99 lib + commander | ~5k |
+| 01:01 | Session end: 22 writes across 8 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json, seed-scripts-local.mjs) | 19 reads | ~102487 tok |
+| 01:03 | Edited lib/game/card-behavior.ts | expanded (+8 lines) | ~177 |
+| 01:04 | Edited lib/game/bot-brain.ts | added 1 condition(s) | ~504 |
+| 01:05 | Edited tests/unit/bot-brain.test.ts | expanded (+11 lines) | ~236 |
+| 01:05 | Fix Haven 'any colour' mana ability (selectFirstManaAbility 'any'/'commander' fallback) | lib/game/card-behavior.ts | fixed; verified tap C->{C}, U/G/W/R/B->any | ~6k |
+| 01:05 | Edited scripts/bot-runner.mjs | added 1 condition(s) | ~422 |
+| 01:05 | Session end: 26 writes across 10 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json, seed-scripts-local.mjs) | 21 reads | ~125375 tok |
+| 14:55 | bot now casts its commander: decideMainPlays takes optional commander {id, taxed manaValue}, casts it first when affordable; runner reads command zone (mana_value + 2*command_zone_casts) → cast_commander. Confirmed multiple CPUs work (Add CPU repeatable; watch drives all is_bot seats; smoke seated 2 bots each w/ commander) | lib/game/bot-brain.ts, tests/unit/bot-brain.test.ts, scripts/bot-runner.mjs | 17/17 tests | ~3k |
+| 01:06 | Session end: 26 writes across 10 files (bot-brain.test.ts, bot-runner.mjs, create-bot-user.mjs, package.json, seed-scripts-local.mjs) | 21 reads | ~125375 tok |
+
+## Session: 2026-06-17 01:17
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 01:17 | Edited components/ControllerListV5.tsx | 5→7 lines | ~128 |
+| 01:18 | Edited components/ControllerListV5.tsx | CSS: maxHeight | ~133 |
+| 01:18 | Edited components/ControllerListV5.tsx | 4→4 lines | ~94 |
+| 01:18 | Edited components/ControllerListV5.tsx | CSS: maxHeight | ~76 |
+| 01:18 | Edited components/ControllerListV5.tsx | 6→6 lines | ~81 |
+| 15:25 | fixed decision panels covering the board + unreachable confirm: PendingDecisionPrompt now max-h-[55vh] flex-col overflow; CardPickBody (search_library) card grid + ChooseModeBody modes list scroll internally (maxHeight 34/32vh), confirm pinned shrink-0 | components/ControllerListV5.tsx | tsc clean | ~3k |
+| 01:19 | Session end: 5 writes across 1 files (ControllerListV5.tsx) | 19 reads | ~105749 tok |
+| 01:20 | Edited components/ControllerListV5.tsx | 6→8 lines | ~120 |
+| 01:20 | Edited components/ControllerListV5.tsx | 8→7 lines | ~112 |
+| 01:20 | Edited components/ControllerListV5.tsx | CSS: active | ~206 |
+| 01:20 | Edited components/ControllerListV5.tsx | 8→13 lines | ~112 |
+| 01:20 | Edited components/ControllerListV5.tsx | inline fix | ~36 |
+| 01:21 | Created ../../.claude/plans/calm-mapping-clover.md | — | ~2125 |
+| 01:21 | add tap-to-zoom to own GY/exile zones in MyZonesSheet | components/ControllerListV5.tsx | done, typecheck clean | ~6k |
+| 01:21 | Session end: 11 writes across 2 files (ControllerListV5.tsx, calm-mapping-clover.md) | 19 reads | ~108612 tok |
+| 01:22 | Edited components/ControllerListV5.tsx | CSS: maxHeight | ~124 |
+| 01:23 | Edited components/ControllerListV5.tsx | 6→6 lines | ~80 |
+| 15:40 | applied same scroll/pinned-confirm fix to ScrySurveilBody for consistency (list maxHeight 34vh, header+confirm shrink-0) | components/ControllerListV5.tsx | tsc clean | ~1k |
+| 01:23 | Session end: 13 writes across 2 files (ControllerListV5.tsx, calm-mapping-clover.md) | 19 reads | ~108991 tok |
+| 01:25 | Session end: 13 writes across 2 files (ControllerListV5.tsx, calm-mapping-clover.md) | 22 reads | ~122193 tok |
+| 01:25 | Created supabase/functions_src/clear_mana_pool_for_step.sql | — | ~814 |
+| 01:26 | Edited supabase/functions_src/pay_mana_cost.sql | modified public() | ~370 |
+| 01:26 | Edited supabase/functions_src/pay_mana_cost.sql | modified coalesce() | ~590 |
+| 01:26 | Edited supabase/functions_src/pay_mana_cost.sql | modified coalesce() | ~670 |
+| 01:26 | Edited supabase/functions_src/pay_mana_cost.sql | modified public() | ~88 |
+| 01:27 | Edited supabase/functions_src/activate_mana_ability.sql | expanded (+6 lines) | ~99 |
+| 01:27 | Edited supabase/functions_src/activate_mana_ability.sql | modified greatest() | ~431 |
+| 01:27 | Edited supabase/functions_src/activate_mana_ability.sql | 3→4 lines | ~36 |
+| 01:27 | Edited supabase/functions_src/activate_mana_ability.sql | modified cost() | ~63 |
+| 01:28 | Edited supabase/functions_src/activate_ability.sql | 2→4 lines | ~34 |
+| 01:28 | Edited supabase/functions_src/activate_ability.sql | expanded (+7 lines) | ~166 |
+| 01:28 | Edited supabase/functions_src/activate_ability.sql | 3→7 lines | ~83 |
+| 01:28 | Edited supabase/functions_src/cast_card_from_hand.sql | 1→3 lines | ~73 |
+| 01:28 | Edited supabase/functions_src/cast_card_from_hand.sql | 4→6 lines | ~94 |
+| 01:28 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→5 lines | ~84 |
+| 01:29 | Edited supabase/functions_src/cast_spell_effect.sql | 4→5 lines | ~38 |
+| 01:29 | Edited supabase/functions_src/cast_spell_effect.sql | 4→6 lines | ~87 |
+| 01:29 | Edited supabase/functions_src/cast_spell_effect.sql | 6→8 lines | ~120 |
+| 01:29 | Edited supabase/functions_src/cast_spell_effect.sql | 3→5 lines | ~86 |
+| 01:29 | Edited supabase/functions_src/cast_commander.sql | 6→10 lines | ~143 |
+| 01:29 | Edited supabase/functions_src/put_action_on_stack.sql | 3→4 lines | ~32 |
+| 01:29 | Edited supabase/functions_src/put_action_on_stack.sql | 5→7 lines | ~79 |
+| 01:29 | Edited supabase/functions_src/put_action_on_stack.sql | 3→5 lines | ~91 |
+| 01:30 | Edited supabase/migrations/202605010320_restricted_mana.sql | modified if() | ~349 |
+| 01:30 | Edited lib/game/card-behavior-schema.ts | expanded (+12 lines) | ~228 |
+| 01:31 | Edited components/ControllerListV5.tsx | modified activate_mana_ability() | ~290 |
+| 01:31 | Edited components/controller/CardActionSheet.tsx | 11→13 lines | ~204 |
+| 01:32 | Edited lib/game/types.ts | expanded (+10 lines) | ~118 |
+| 01:32 | Edited lib/game/data.ts | added 1 condition(s) | ~239 |
+| 01:33 | Edited lib/game/data.ts | 4→5 lines | ~23 |
+| 01:33 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~27 |
+| 01:33 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~19 |
+| 01:33 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~66 |
+| 01:33 | Edited lib/game/use-controller-game-state.ts | 6→7 lines | ~51 |
+| 01:33 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~53 |
+| 01:33 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~39 |
+| 01:33 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~35 |
+| 01:34 | Edited lib/game/use-controller-game-state.ts | 4→5 lines | ~27 |
+| 01:34 | Session end: 51 writes across 16 files (ControllerListV5.tsx, calm-mapping-clover.md, clear_mana_pool_for_step.sql, pay_mana_cost.sql, activate_mana_ability.sql) | 27 reads | ~150475 tok |
+| 01:34 | Edited components/ControllerListV5.tsx | 10→11 lines | ~61 |
+| 01:34 | Edited components/controller/CardDisplay.tsx | 3→3 lines | ~57 |
+| 01:35 | Edited components/controller/CardDisplay.tsx | added optional chaining | ~439 |
+| 01:35 | Edited components/ControllerListV5.tsx | inline fix | ~28 |
+| 01:35 | Edited components/ControllerListV5.tsx | CSS: restrictedMana | ~121 |
+| 01:35 | Edited components/ControllerListV5.tsx | 2→3 lines | ~50 |
+| 01:35 | Edited components/ControllerListV5.tsx | 5→6 lines | ~66 |
+| 01:36 | Edited components/ControllerListV5.tsx | 5→6 lines | ~33 |
+| 01:40 | Edited lib/game/data.ts | added optional chaining | ~387 |
+| 01:40 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~28 |
+| 01:40 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~46 |
+| 01:40 | Edited lib/game/use-controller-game-state.ts | 4→5 lines | ~41 |
+| 01:40 | Edited tests/harness/scenario.ts | added optional chaining | ~552 |
+| 01:41 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~50 |
+| 01:41 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~41 |
+| 01:41 | Edited lib/game/use-controller-game-state.ts | 4→5 lines | ~28 |
+| 01:41 | Edited components/ControllerListV5.tsx | 10→11 lines | ~62 |
+| 01:41 | Edited components/ControllerListV5.tsx | 3→4 lines | ~55 |
+| 01:41 | Edited components/ControllerListV5.tsx | 4→5 lines | ~63 |
+| 01:42 | Edited components/ControllerListV5.tsx | 16→17 lines | ~84 |
+| 01:42 | Edited components/ControllerListV5.tsx | CSS: playableFromExileIds | ~36 |
+| 01:42 | Edited components/ControllerListV5.tsx | 7→8 lines | ~79 |
+| 01:42 | Edited components/ControllerListV5.tsx | CSS: playableFromExileIds | ~151 |
+| 01:42 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~420 |
+| 01:42 | Created tests/feature/restricted-mana.test.ts | — | ~2113 |
+| 01:42 | Edited components/controller/CardActionSheet.tsx | modified CardActionSheet() | ~26 |
+| 01:42 | Edited components/controller/CardActionSheet.tsx | 3→7 lines | ~90 |
+| 01:43 | Edited components/controller/CardActionSheet.tsx | CSS: UI | ~143 |
+| 01:43 | Edited components/controller/CardActionSheet.tsx | CSS: zone | ~166 |
+| 01:44 | Edited supabase/functions_src/cast_spell_effect.sql | expanded (+15 lines) | ~214 |
+| 01:44 | Edited supabase/functions_src/cast_spell_effect.sql | 5→6 lines | ~124 |
+| 01:45 | Edited supabase/functions_src/cast_spell_effect.sql | 16→16 lines | ~196 |
+| 01:45 | Edited supabase/functions_src/put_action_on_stack.sql | expanded (+15 lines) | ~228 |
+| 01:45 | Edited supabase/functions_src/put_action_on_stack.sql | 5→6 lines | ~115 |
+| 01:45 | Edited supabase/functions_src/put_action_on_stack.sql | 7→7 lines | ~51 |
+| 01:46 | Edited supabase/migrations/202605010321_cast_from_exile.sql | 2→7 lines | ~133 |
+| 01:48 | Edited tests/feature/atsushi.test.ts | added optional chaining | ~192 |
+| 01:48 | Edited tests/feature/atsushi.test.ts | expanded (+46 lines) | ~758 |
+| --:-- | build play-from-exile flow (impulse castable from controller) | data.ts, use-controller-game-state.ts, ControllerListV5.tsx, CardActionSheet.tsx, cast_spell_effect.sql, put_action_on_stack.sql, mig 321, atsushi.test.ts | done, AT4/AT5 pass + 14 regression pass | ~45k |
+| --:-- | center zoom overlay on phones (card stacked on top, no overflow) | CardActionSheet.tsx CardZoomOverlay | done | ~3k |
+| 01:51 | Session end: 89 writes across 21 files (ControllerListV5.tsx, calm-mapping-clover.md, clear_mana_pool_for_step.sql, pay_mana_cost.sql, activate_mana_ability.sql) | 30 reads | ~156063 tok |
+| 01:58 | Model restricted 'spend only' mana (Haven et al.) — server-authoritative | mig 320 + pay_mana_cost/activate_mana_ability/clear_mana_pool_for_step + 5 callers + client display + restricted-mana.test.ts | 1590/1590 green; tsc clean | ~60k |
+| 02:00 | Session end: 89 writes across 21 files (ControllerListV5.tsx, calm-mapping-clover.md, clear_mana_pool_for_step.sql, pay_mana_cost.sql, activate_mana_ability.sql) | 30 reads | ~156063 tok |
+| 08:48 | Session end: 89 writes across 21 files (ControllerListV5.tsx, calm-mapping-clover.md, clear_mana_pool_for_step.sql, pay_mana_cost.sql, activate_mana_ability.sql) | 31 reads | ~156063 tok |
+
+## Session: 2026-06-18 08:49
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 08:50 | Edited scripts/setup-local-test-db.mjs | added 1 condition(s) | ~306 |
+| 08:50 | Edited scripts/setup-local-test-db.mjs | added 2 condition(s) | ~448 |
+| 08:50 | Edited tests/harness/db.ts | modified connectionString() | ~120 |
+| 08:51 | Edited scripts/setup-local-test-db.mjs | modified auth() | ~137 |
+| 08:51 | Edited scripts/setup-local-test-db.mjs | expanded (+6 lines) | ~143 |
+| 08:52 | Edited scripts/setup-local-test-db.mjs | 1→5 lines | ~29 |
+| 08:53 | Edited scripts/setup-local-test-db.mjs | modified auth() | ~187 |
+| 08:55 | Created scripts/seed-local-play.mjs | — | ~644 |
+| 08:55 | Edited package.json | 2→3 lines | ~50 |
+| 16:30 | ROOT CAUSE of "local DB empty": test harness + app shared one DB (:54322/postgres); test:db:setup drops public schema → wipes catalog/decks/games, then tests reseed only 353 fixtures. FIX A: isolate tests onto leyline_test (own DB, auth.uid()+auth.users+supabase_realtime stubs in setup-local-test-db; harness default → leyline_test; footgun guard refuses dropping postgres). FIX B: seed-local-play.mjs orchestrates import:cards → seed-scripts-local → deck:seed-precons to restore the play DB | scripts/setup-local-test-db.mjs, tests/harness/db.ts, scripts/seed-local-play.mjs, package.json | 530 tests pass on leyline_test | ~7k |
+| 08:57 | Session end: 9 writes across 4 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json) | 1 reads | ~2199 tok |
+| 09:05 | Edited scripts/import-scryfall-cards.mjs | 3→7 lines | ~110 |
+| 09:05 | Edited scripts/import-scryfall-cards.mjs | added nullish coalescing | ~93 |
+| 16:55 | investigated 4 skipped precons: GraveDanger.txt = empty template (not a deck); other 3 skipped because 6 paper cards (Wheel of Fortune, Spike Feeder, Plague Myr, Goblin Chirurgeon, Viridian Corrupter, Grafted Exoskeleton) had a DIGITAL (mtgo) oracle-bulk representative → importer dropped all digital:true. Fixed: skip digital only for Alchemy (isDigitalOnlyCard); re-ran seed:local-play | scripts/import-scryfall-cards.mjs | re-import running | ~3k |
+| 09:07 | Session end: 11 writes across 5 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 2 reads | ~2416 tok |
+| 09:07 | Session end: 11 writes across 5 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 2 reads | ~2416 tok |
+| 09:12 | Edited components/controller/CardActionSheet.tsx | added 1 import(s) | ~37 |
+| 09:12 | Edited components/controller/CardActionSheet.tsx | CSS: bug | ~173 |
+| 09:12 | Edited components/controller/CardActionSheet.tsx | added 1 condition(s) | ~41 |
+| 09:14 | Fix card zoom opening offscreen from Your-zones (portal + fixed) | components/controller/CardActionSheet.tsx | tsc clean | ~4k |
+| 09:14 | Session end: 14 writes across 6 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 4 reads | ~21582 tok |
+| 09:24 | Created supabase/functions_src/get_stack_items.sql | — | ~767 |
+| 09:24 | Edited supabase/functions_src/get_stack_items.sql | modified public() | ~20 |
+| 09:25 | Edited supabase/migrations/202605010322_stack_item_image.sql | modified must() | ~150 |
+| 09:25 | Edited lib/game/types.ts | 5→7 lines | ~68 |
+| 09:27 | Edited components/ControllerListV5.tsx | modified prettyStackAction() | ~2136 |
+| 09:28 | Edited components/ControllerListV5.tsx | cards() → shingled() | ~844 |
+| 09:29 | Edited components/ControllerListV5.tsx | 4→5 lines | ~66 |
+| 09:29 | Edited components/ControllerListV5.tsx | 4→9 lines | ~119 |
+| 09:30 | Edited components/ControllerListV5.tsx | 5→4 lines | ~52 |
+| 09:30 | Edited components/ControllerListV5.tsx | 3→4 lines | ~67 |
+| 09:35 | Stack: card images + tap-to-zoom + fan overlay | mig 322 get_stack_items + ControllerListV5 StackStrip/StackOverlay | 1590/1590; tsc clean | ~25k |
+| 09:36 | Session end: 24 writes across 10 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 8 reads | ~81321 tok |
+| 09:57 | Edited components/ControllerListV5.tsx | 9→12 lines | ~142 |
+| 09:58 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~635 |
+| 09:58 | Edited components/ControllerListV5.tsx | CSS: active | ~327 |
+| 09:58 | Edited components/ControllerListV5.tsx | 6→7 lines | ~87 |
+| 09:58 | Session end: 28 writes across 10 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 11 reads | ~82527 tok |
+| 09:59 | Edited components/ControllerListV5.tsx | expanded (+15 lines) | ~205 |
+| 09:59 | Edited components/ControllerListV5.tsx | 5→6 lines | ~95 |
+| 09:59 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~323 |
+| 09:59 | Edited components/ControllerListV5.tsx | 12→13 lines | ~234 |
+| 10:00 | Edited components/ControllerListV5.tsx | 8→10 lines | ~89 |
+| 10:00 | Edited components/ControllerListV5.tsx | modified ZoomBadge() | ~173 |
+| 10:01 | Edited lib/game/bot-brain.ts | added 1 condition(s) | ~330 |
+| 10:02 | Combat: card zoom (attackers+blockers) + opponent board preview on attack-target pill | components/ControllerListV5.tsx | tsc + eslint clean | ~18k |
+| 10:02 | Edited lib/game/bot-brain.ts | modified decideAttacks() | ~93 |
+| 10:02 | Edited tests/unit/bot-brain.test.ts | expanded (+9 lines) | ~288 |
+| 10:02 | Session end: 37 writes across 12 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 13 reads | ~85592 tok |
+| 10:02 | bot attacks more aggressively: swing-all when outnumbering blockers | lib/game/bot-brain.ts, tests/unit/bot-brain.test.ts | 18/18 unit tests pass | ~1.5k |
+| 10:03 | Session end: 37 writes across 12 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 13 reads | ~85592 tok |
+| 10:16 | Edited components/ControllerListV5.tsx | 7→7 lines | ~135 |
+| 10:17 | Fix: declare-attackers creature images invisible (w-full on auto-width wrapper) | components/ControllerListV5.tsx | tsc clean | ~5k |
+| 10:17 | Session end: 38 writes across 12 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 14 reads | ~85803 tok |
+| 10:29 | Edited components/ControllerListV5.tsx | 10→10 lines | ~186 |
+| 10:30 | Fix: Sick/attacking badges behind attacker image (z-20) | components/ControllerListV5.tsx | done | ~2k |
+| 10:30 | Session end: 39 writes across 12 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 14 reads | ~85989 tok |
+| 10:39 | Edited components/ControllerListV5.tsx | 6→7 lines | ~70 |
+| 10:39 | Edited components/ControllerListV5.tsx | CSS: players | ~84 |
+| 10:39 | Edited components/ControllerListV5.tsx | added optional chaining | ~135 |
+| 10:40 | Fix: combat strip showed defender id instead of name (resolve via players, CPU-aware) | components/ControllerListV5.tsx | tsc clean | ~4k |
+| 10:40 | Session end: 42 writes across 12 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 14 reads | ~86284 tok |
+| 10:50 | Created tests/feature/_repro_trade.test.ts | — | ~404 |
+| 10:52 | Edited scripts/bot-runner.mjs | added error handling | ~220 |
+| 10:52 | Edited scripts/bot-runner.mjs | added 2 condition(s) | ~145 |
+| 10:53 | Fix: attacking CPU never resolved combat damage (bot-runner combat_damage branch) | scripts/bot-runner.mjs | engine verified correct; bot now resolves | ~8k |
+| 10:53 | Session end: 45 writes across 14 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 16 reads | ~87078 tok |
+| 11:28 | Edited lib/game/types.ts | 5→9 lines | ~105 |
+| 11:28 | Edited lib/game/types.ts | 23→28 lines | ~244 |
+| 11:28 | Edited lib/game/data.ts | 6→8 lines | ~50 |
+| 11:28 | Edited lib/game/data.ts | 6→8 lines | ~132 |
+| 11:28 | Edited lib/game/data.ts | 6→8 lines | ~51 |
+| 11:29 | Edited lib/game/data.ts | 5→7 lines | ~105 |
+| 11:29 | Edited components/ControllerListV5.tsx | CSS: card | ~151 |
+| 11:30 | Edited components/ControllerListV5.tsx | expanded (+7 lines) | ~246 |
+| 11:30 | Edited components/ControllerListV5.tsx | 16→21 lines | ~322 |
+| 11:30 | Edited components/ControllerListV5.tsx | 6→11 lines | ~251 |
+| 17:30 | mark copy/token permanents on all board views: plumbed game_cards.is_token + copy_original_card_id → BoardCard & ControllerCard (data.ts/types.ts); V5 shows a violet "Token"/"Copy" badge (top-center) on own board (creatures/other/lands) + OpponentBoardOverlay board cards. Engine: create_copy_token sets is_token=true (Littjara), Clone-style sets copy_original_card_id | components/ControllerListV5.tsx, lib/game/data.ts, lib/game/types.ts | tsc clean | ~4k |
+| 11:31 | Session end: 55 writes across 15 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 16 reads | ~99877 tok |
+| 11:44 | Session end: 55 writes across 15 files (setup-local-test-db.mjs, db.ts, seed-local-play.mjs, package.json, import-scryfall-cards.mjs) | 16 reads | ~99877 tok |

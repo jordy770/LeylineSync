@@ -14421,6 +14421,1252 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-17T10:32:29.907Z"
+    },
+    {
+      "id": "bug-886",
+      "timestamp": "2026-06-17T10:32:39.171Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→21 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T10:32:39.171Z"
+    },
+    {
+      "id": "bug-887",
+      "timestamp": "2026-06-17T13:01:15.771Z",
+      "error_message": "Null/undefined access in ",
+      "file": "app/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T13:01:15.771Z"
+    },
+    {
+      "id": "bug-888",
+      "timestamp": "2026-06-17T14:17:38.061Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/client-coverage-audit.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 3→5 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T14:17:38.061Z"
+    },
+    {
+      "id": "bug-889",
+      "timestamp": "2026-06-17T14:22:34.811Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T14:22:34.811Z"
+    },
+    {
+      "id": "bug-commander-legality-no-commander",
+      "timestamp": "2026-06-17T20:00:00.000Z",
+      "error_message": "commander_deck_legality: malformed array literal \"No commander designated\" (deck without commander)",
+      "file": "supabase/functions_src/commander_deck_legality.sql (mig 316)",
+      "root_cause": "The no-commander branch did v_issues := v_issues || 'No commander designated'; a bare string literal is type unknown, so Postgres resolved || to anyarray||anyarray and tried to parse the literal as a text[] -> 22P02 malformed array literal. Only hit when a deck has no commander (other appends use format() which is typed text). Also affects spawn_deck_for_session (commander game + deck without commander -> crash instead of a clean illegal result).",
+      "fix": "mig 316: cast the literal to ::text so || resolves to array||element (append). Verified: no-commander deck now returns {legal:false, issues:[...]} cleanly; precon-decks tests pass.",
+      "tags": [
+        "engine",
+        "commander",
+        "legality",
+        "plpgsql",
+        "array",
+        "deck-editor",
+        "migration"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T20:00:00.000Z"
+    },
+    {
+      "id": "bug-891",
+      "timestamp": "2026-06-17T14:29:23.593Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/keep_opening_hand.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→9 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T14:29:23.593Z"
+    },
+    {
+      "id": "bug-892",
+      "timestamp": "2026-06-17T14:30:12.585Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/use-controller-game-state.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T14:30:12.585Z"
+    },
+    {
+      "id": "bug-893",
+      "timestamp": "2026-06-17T14:35:17.599Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {zoomed && (; <div | Also: const img = cardImageById.get(c.game_card_id)?.image_url ?? ; <div key={c.game_card_id} className=\"w-20 shrink-0\"> | Also: <button; type=\"button\"",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-06-17T14:37:40.896Z"
+    },
+    {
+      "id": "bug-894",
+      "timestamp": "2026-06-17T14:36:11.563Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 32→37 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T14:36:11.563Z"
+    },
+    {
+      "id": "bug-895",
+      "timestamp": "2026-06-17T14:48:20.378Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/game/auto-pass.ts",
+      "root_cause": "Condition was: if (!s.hasPriority || s.isSessionFinished || s.passBlo)",
+      "fix": "Changed to: if (!s.hasPriority || s.isSessionFinished || s.passBlo)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T14:48:20.378Z"
+    },
+    {
+      "id": "bug-896",
+      "timestamp": "2026-06-17T14:48:33.704Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: }, [autoPass, isYielding, playerId, isSessionFinished, passB",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-17T14:48:43.606Z"
+    },
+    {
+      "id": "bug-897",
+      "timestamp": "2026-06-17T14:49:31.735Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/controller/OpeningHandOverlay.tsx",
+      "root_cause": "Had \"w-full max-w-4xl rounded-xl border border-white/1",
+      "fix": "Changed to \"flex max-h-[90vh] w-full max-w-4xl flex-col round",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-06-17T14:49:54.953Z"
+    },
+    {
+      "id": "bug-mulligan-autopass-before-keep",
+      "timestamp": "2026-06-17T22:00:00.000Z",
+      "error_message": "Solo game: mulligan panel shows 8 cards (turn auto-advanced to main before the opening hand was kept)",
+      "file": "lib/game/auto-pass.ts, components/ControllerListV5.tsx",
+      "root_cause": "During the pre-game opening-hand phase the controller auto-pass (own + OWN_SKIP_STEPS incl untap/upkeep/draw) fired before keep_opening_hand, advancing the turn; the draw step drew an 8th card while the mulligan overlay (which renders the live hand) was still open. shouldAutoPass had no notion of opening_hand_kept. In solo the active player is the only passer, so nothing stopped it.",
+      "fix": "Added openingHandPending input to shouldAutoPass as a hard exemption (return false), fed from currentPlayer.opening_hand_kept === false. Controller no longer auto-passes (or draws) until the opening hand is kept. Unit test added (39/39).",
+      "tags": [
+        "mulligan",
+        "auto-pass",
+        "opening-hand",
+        "solo",
+        "controller",
+        "v5"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T22:00:00.000Z"
+    },
+    {
+      "id": "bug-899",
+      "timestamp": "2026-06-17T15:14:09.681Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/data.ts",
+      "root_cause": "Had 'id, status, created_by, created_at, locked_at, fi",
+      "fix": "Changed to 'id, status, format, created_by, created_at, locke",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T15:14:09.681Z"
+    },
+    {
+      "id": "bug-getgamesession-missing-format",
+      "timestamp": "2026-06-18T00:00:00.000Z",
+      "error_message": "Commander free first mulligan not applied in the controller UI",
+      "file": "lib/game/data.ts, lib/game/types.ts",
+      "root_cause": "getGameSession did not select the game_sessions.format column, normalizeGameSession dropped it, and the GameSession type lacked it. The controller hook set format=null, so OpeningHandOverlay bottomCount fell back to mulligans (London) instead of the Commander free-first-mulligan max(0,mulligans-1).",
+      "fix": "Added format to the GameSession type, getGameSession select, and normalizeGameSession; the hook reads session.format. NOTE: the engine free-mulligan (mig 317) must also be DEPLOYED to hosted, else a free keep (bottom 0) is rejected by the old keep_opening_hand on live.",
+      "tags": [
+        "commander",
+        "mulligan",
+        "format",
+        "getGameSession",
+        "controller",
+        "hosted-deploy"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-901",
+      "timestamp": "2026-06-17T15:46:51.968Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/controller/[id]/page.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T15:46:51.968Z"
+    },
+    {
+      "id": "bug-902",
+      "timestamp": "2026-06-17T16:10:48.015Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 13→46 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T16:10:48.015Z"
+    },
+    {
+      "id": "bug-903",
+      "timestamp": "2026-06-17T21:36:30.126Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 11→16 lines (2 removed) | Also: // Last \"turn:step\" each bot developed in, keyed b; // plays each main phase only once (priority bounc | Also: `select gc.id, c.type_line from public.game_cards ; const isLand = (t) => (t.type_line ?? '').toLowerC",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-06-17T21:36:52.936Z"
+    },
+    {
+      "id": "bug-904",
+      "timestamp": "2026-06-17T21:37:14.618Z",
+      "error_message": "Null/undefined access in ",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: // Opening hand: the brain decides keep vs mulligan; on a ke; // cards to bottom (London = one per mulligan; Commander's f",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-17T21:40:21.264Z"
+    },
+    {
+      "id": "bug-905",
+      "timestamp": "2026-06-17T21:37:42.547Z",
+      "error_message": "Incorrect value in code",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "Had 'Usage: node scripts/bot-runner.mjs --watch   (or ",
+      "fix": "Changed to 'Usage: node --import tsx scripts/bot-runner.mjs -",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T21:37:42.547Z"
+    },
+    {
+      "id": "bug-906",
+      "timestamp": "2026-06-17T21:37:47.561Z",
+      "error_message": "Incorrect value in code",
+      "file": "scripts/create-bot-user.mjs",
+      "root_cause": "Had `  DATABASE_URL=<hosted direct connection string> ",
+      "fix": "Changed to `  DATABASE_URL=<hosted direct connection string> ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T21:37:47.561Z"
+    },
+    {
+      "id": "bug-bot-cmc-column",
+      "timestamp": "2026-06-18T00:00:00.000Z",
+      "error_message": "tick <session>: column c.cmc does not exist",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "Brain wiring assumed the cards table had a `cmc` column (the grep that suggested it matched the Scryfall import JSON field, not the DB schema). The cards table stores `mana_cost` text (e.g. '{2}{G}') and has no numeric cmc/mana_value column.",
+      "fix": "Replaced `coalesce(c.cmc, 0) as cmc` with `public.mana_value(c.mana_cost) as cmc` in both hand queries (playMainPhase + resolveMulligan); the engine helper public.mana_value(text) parses a mana_cost string to its converted mana value.",
+      "tags": [
+        "bot",
+        "sql",
+        "cards",
+        "mana-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-local-cards-no-script",
+      "timestamp": "2026-06-18T00:00:00.000Z",
+      "error_message": "Card behaviour missing in a local game (e.g. 'Haven of the Spirit Dragon' is inert)",
+      "file": "scripts/seed-scripts-local.mjs",
+      "root_cause": "After import:cards, the LOCAL catalog has all 31802 card rows but card scripts only reach a catalog via deck:upsert, which defaults to HOSTED. So real-named rows had empty script (only 339 scripted locally). The harness seeds fixture rows named '<Name> Test' (those had scripts), but a real decklist imports the real name '<Name>' whose row had no behaviour. Real-vs-Test naming gotcha.",
+      "fix": "Wrote scripts/seed-scripts-local.mjs (local-only, localhost-guarded): applies card-scripts.json + fixtures (stripped '<Name> Test'->'<Name>') onto matching local cards rows by name, validated. Ran fill-only: 577 filled -> 916 scripted; real 'Haven of the Spirit Dragon' now has its script. EXTENDED: basic + snow-covered lands also had empty scripts and could not be tapped for mana (there is NO subtype synthesis — both client selectFirstManaAbility and server activate_mana_ability/effective_script read the script; hosted basics came from archived seed migration 202605010051 which test:db:setup does not apply, and import:cards leaves script empty). Added v2 basic-land mana scripts (Island->U etc.) to the seeder; verified all basics produce the right colour.",
+      "tags": [
+        "cards",
+        "scripts",
+        "local",
+        "catalog",
+        "deck-upsert",
+        "naming",
+        "basic-lands",
+        "mana"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-909",
+      "timestamp": "2026-06-17T22:54:12.997Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T22:54:12.997Z"
+    },
+    {
+      "id": "bug-910",
+      "timestamp": "2026-06-17T22:58:39.993Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/bot_real_deck.sql",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 6→10 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T22:58:39.993Z"
+    },
+    {
+      "id": "bug-opponent-cards-no-zoom",
+      "timestamp": "2026-06-18T00:00:00.000Z",
+      "error_message": "From the opponent view you cannot zoom in on the opponent's cards",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "OpponentBoardOverlay rendered the opponent's board/graveyard/exile cards as bare MotionCard elements with no tap handler, so there was no way to enlarge them (own cards zoom via CardZoomOverlay, opponent cards had nothing).",
+      "fix": "Wrapped each opponent card in a button -> setZoomCard(toZoomCard(card)); render CardZoomOverlay (z-[55], above the z-40 sheet) on tap. Added a toZoomCard adapter mapping BoardCard/zone-item to the ControllerCard shape CardZoomOverlay reads, and imported GameZone. tsc clean.",
+      "tags": [
+        "ui",
+        "controller-v5",
+        "opponent",
+        "zoom"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-bot-vanilla-deck",
+      "timestamp": "2026-06-18T00:00:00.000Z",
+      "error_message": "The bot doesn't use real cards",
+      "file": "supabase/functions_src/add_bot_to_session.sql",
+      "root_cause": "add_bot_to_session seeded a synthetic vanilla library (22 basic land + 18 of the cheapest script-free creature) so the game could start without solving deck selection.",
+      "fix": "Reworked add_bot_to_session to seed a shared precon (in Commander, one with a commander -> command zone; library excludes it), mirroring spawn_deck_for_session for the bot uuid; vanilla kept as the no-precon fallback. Added optional p_deck_id. Signature (uuid)->(uuid,uuid default null), so mig 319 drops the old 1-arg overload first. Applied LOCAL only; smoke shows 99-card library + commander.",
+      "tags": [
+        "bot",
+        "deck",
+        "precon",
+        "migration",
+        "local"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-913",
+      "timestamp": "2026-06-17T23:04:53.562Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/bot-brain.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 21→37 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:04:53.562Z"
+    },
+    {
+      "id": "bug-913",
+      "timestamp": "2026-06-18",
+      "error_message": "Haven of the Spirit Dragon: tapping its 2nd mana ability ('Add one mana of any color') does nothing / 'No mana ability found' — could only produce {C}",
+      "file": "lib/game/card-behavior.ts",
+      "root_cause": "selectFirstManaAbility(script, type, preferredColor) only matched an ability whose add_mana effect color === the chosen colour. Haven has two mana abilities: idx0 {C}, idx1 'any'. Tapping the 'any -> U/G/W/R/B' button passes preferredColor=that colour, which matches neither (idx1 is 'any', not the literal colour), so it fell back to abilities[0] (the {C} ability). tapForMana's any/commander/generic branches then all failed.",
+      "fix": "In selectFirstManaAbility, after the exact-colour find, added a fallback find that matches an ability with an add_mana effect of color 'any' or 'commander' before defaulting to abilities[0]. Verified: tap C -> {C} ability, tap U/G/W/R/B -> 'any' ability.",
+      "tags": [
+        "mana",
+        "any-color",
+        "haven-of-the-spirit-dragon",
+        "dragon-lands",
+        "controller",
+        "selectFirstManaAbility"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18",
+      "notes": "Mana 'spend only to cast Dragon creature spells / abilities of Dragon sources' restriction is still NOT modelled (deferred) — produced mana is unrestricted/more permissive."
+    },
+    {
+      "id": "bug-915",
+      "timestamp": "2026-06-17T23:17:57.654Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→7 lines (2 removed) | Also: <div className=\"flex flex-col gap-2\">; <p className=\"text-[10px] text-slate-400\"> | Also: <div className=\"flex flex-col gap-2\">; <div className=\"flex flex-col gap-1.5\"> | Also: <div className=\"flex flex-col gap-2\">; <p className=\"text-[10px] text-slate-400\">Top of l",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-06-17T23:22:45.619Z"
+    },
+    {
+      "id": "bug-decision-panel-covers-board",
+      "timestamp": "2026-06-18T00:00:00.000Z",
+      "error_message": "The ability choose panel hides the battlefield; the search-library panel isn't scrollable so you can't reach Confirm",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "PendingDecisionPrompt and its bodies (ChooseModeBody, CardPickBody) had no height bound. They sit ABOVE the board in a flex column where the board is flex-1 min-h-0, so a long option/card list grew the panel and squeezed the board to ~0 and pushed the Confirm button off-screen.",
+      "fix": "Capped the panel at max-h-[55vh] flex-col overflow-y-auto so the board stays visible; made CardPickBody's card grid (maxHeight 34vh) and ChooseModeBody's modes list (32vh) scroll internally with the Confirm button pinned (shrink-0) below the scroll area so it's always reachable. tsc clean.",
+      "tags": [
+        "ui",
+        "controller-v5",
+        "decision",
+        "scroll",
+        "search-library",
+        "choose-mode"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-917",
+      "timestamp": "2026-06-17T23:20:08.526Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:20:08.526Z"
+    },
+    {
+      "id": "bug-918",
+      "timestamp": "2026-06-17T23:20:13.886Z",
+      "error_message": "CSS fix: active",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "active: scale-95' : 'cursor-default' → scale-95\"",
+      "fix": "Changed active: scale-95' : 'cursor-default' → scale-95\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:20:13.886Z"
+    },
+    {
+      "id": "bug-919",
+      "timestamp": "2026-06-17T23:26:28.993Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/pay_mana_cost.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→50 lines (2 removed) | Also: set mana_pool = v_new_pool; return v_new_pool;",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-17T23:26:44.809Z"
+    },
+    {
+      "id": "bug-920",
+      "timestamp": "2026-06-17T23:27:43.494Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/activate_mana_ability.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 23→32 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:27:43.495Z"
+    },
+    {
+      "id": "bug-921",
+      "timestamp": "2026-06-17T23:29:07.625Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/cast_spell_effect.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→6 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:29:07.625Z"
+    },
+    {
+      "id": "bug-922",
+      "timestamp": "2026-06-17T23:29:32.383Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/cast_commander.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→10 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:29:32.383Z"
+    },
+    {
+      "id": "bug-923",
+      "timestamp": "2026-06-17T23:29:47.579Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/put_action_on_stack.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→7 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:29:47.579Z"
+    },
+    {
+      "id": "bug-924",
+      "timestamp": "2026-06-17T23:31:41.174Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:31:41.174Z"
+    },
+    {
+      "id": "bug-925",
+      "timestamp": "2026-06-17T23:31:45.313Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 11→13 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:31:45.313Z"
+    },
+    {
+      "id": "bug-926",
+      "timestamp": "2026-06-17T23:32:32.601Z",
+      "error_message": "Type error",
+      "file": "lib/game/types.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:32:32.601Z"
+    },
+    {
+      "id": "bug-927",
+      "timestamp": "2026-06-17T23:32:47.682Z",
+      "error_message": "Missing await",
+      "file": "lib/game/data.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:32:47.682Z"
+    },
+    {
+      "id": "bug-928",
+      "timestamp": "2026-06-17T23:33:43.470Z",
+      "error_message": "Wrong reference: getActivePumpTotals should be getPlayerRestrictedMana",
+      "file": "lib/game/use-controller-game-state.ts",
+      "root_cause": "Used \"getActivePumpTotals\" instead of \"getPlayerRestrictedMana\"",
+      "fix": "Changed getActivePumpTotals → getPlayerRestrictedMana",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:33:43.470Z"
+    },
+    {
+      "id": "bug-929",
+      "timestamp": "2026-06-18T00:00:00.000Z",
+      "error_message": "Atsushi impulse: kaarten belanden in exile met play_from_exile-permissie, maar de controller biedt geen UI om ze te casten (\"geen mogelijkheid om hem te spelen\").",
+      "file": "lib/game/data.ts, components/ControllerListV5.tsx",
+      "root_cause": "De client laadt game_continuous_effects alleen voor effect_type animated/attack_tax/protection (data.ts getStatusEffects/getProtectionColors). play_from_exile wordt nooit naar de client gestuurd, en de exile-zone in MyZonesSheet is display/zoom-only. Backend (cast_card_from_hand) honoreert play_from_exile wel, maar er is geen knop.",
+      "fix": "FIXED. Client: getPlayableFromExileIds (data.ts) loads play_from_exile perms; useControllerGameState exposes playableFromExileIds; MyZonesSheet exile tab shows a PLAY badge on castable cards and routes them through onCardTap->CardActionSheet; CardActionSheet treats an exile card with permission as a hand card (castableFromExile -> zone/planCard=hand). Backend (mig 321): cast_spell_effect + put_action_on_stack now require the play_from_exile permission for an exile source, charge the printed mana cost (impulse is NOT free), and send spent non-permanents to the graveyard. cast_card_from_hand already handled exile permanents/lands. Verified by tests AT4/AT5 in tests/feature/atsushi.test.ts.",
+      "tags": [
+        "impulse",
+        "play_from_exile",
+        "exile",
+        "controller",
+        "ui-gap",
+        "atsushi"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-930",
+      "timestamp": "2026-06-17T23:35:07.932Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/CardDisplay.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:35:07.932Z"
+    },
+    {
+      "id": "bug-931",
+      "timestamp": "2026-06-17T23:40:41.897Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/data.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:40:41.898Z"
+    },
+    {
+      "id": "bug-932",
+      "timestamp": "2026-06-17T23:40:57.149Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:40:57.150Z"
+    },
+    {
+      "id": "bug-933",
+      "timestamp": "2026-06-17T23:42:30.113Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 16→26 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:42:30.113Z"
+    },
+    {
+      "id": "bug-934",
+      "timestamp": "2026-06-17T23:43:12.489Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→11 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:43:12.489Z"
+    },
+    {
+      "id": "bug-935",
+      "timestamp": "2026-06-17T23:48:26.504Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/atsushi.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:48:26.504Z"
+    },
+    {
+      "id": "bug-936",
+      "timestamp": "2026-06-17T23:48:42.173Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/atsushi.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T23:48:42.174Z"
+    },
+    {
+      "id": "bug-restricted-mana-deferred",
+      "timestamp": "2026-06-18",
+      "error_message": "'Spend this mana only to cast a Dragon creature spell' (Haven of the Spirit Dragon) and other 'spend only' producers were not modelled — produced mana was unrestricted/too permissive (deferred since mig 237).",
+      "file": "supabase/functions_src/pay_mana_cost.sql",
+      "root_cause": "The mana pool tracked only colour×count with no notion of restricted mana, and pay_mana_cost had no context about what was being paid for.",
+      "fix": "mig 320: added game_players.restricted_mana jsonb; activate_mana_ability routes an add_mana effect carrying a restriction object there; pay_mana_cost gained p_pay_context and spends eligible restricted mana restricted-first; all cast/ability call sites pass context; clear_mana_pool_for_step empties it per step. Card-scripts: Haven {spell_type_line:Dragon}, Ixalli's Lorekeeper Dinosaur(+ability), Unclaimed/Secluded $chosen(+ETB choose), Vedalken Engineer Artifact. Client routes restricted taps via activate_mana_ability and shows RestrictedManaDisplay. Tests restricted-mana.test.ts (11) green; full suite 1590/1590.",
+      "tags": [
+        "mana",
+        "restricted-mana",
+        "spend-only",
+        "haven-of-the-spirit-dragon",
+        "pay_mana_cost",
+        "migration-320"
+      ],
+      "related_bugs": [
+        "bug-913"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
+    },
+    {
+      "id": "bug-938",
+      "timestamp": "2026-06-18T06:50:52.007Z",
+      "error_message": "Wrong return value",
+      "file": "tests/harness/db.ts",
+      "root_cause": "Was returning: process.env.TEST_DATABASE_URL ?? process.env.DATAB",
+      "fix": "Now returns: process.env.TEST_DATABASE_URL ?? DEFAULT_URL",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T06:50:52.007Z"
+    },
+    {
+      "id": "bug-939",
+      "timestamp": "2026-06-18T07:05:38.783Z",
+      "error_message": "Wrong condition in logic",
+      "file": "scripts/import-scryfall-cards.mjs",
+      "root_cause": "Condition was: if (!includeDigital && card.digital === true)",
+      "fix": "Changed to: if (!includeDigital && card.digital === true && isDigi)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T07:05:38.783Z"
+    },
+    {
+      "id": "bug-940",
+      "timestamp": "2026-06-18T07:05:46.814Z",
+      "error_message": "Null/undefined access in ",
+      "file": "scripts/import-scryfall-cards.mjs",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T07:05:46.814Z"
+    },
+    {
+      "id": "bug-import-skips-paper-cards-with-digital-printing",
+      "timestamp": "2026-06-18T00:00:00.000Z",
+      "error_message": "Precons skipped: cards 'not in catalog' (Wheel of Fortune, Spike Feeder, Plague Myr, Goblin Chirurgeon, Viridian Corrupter, Grafted Exoskeleton)",
+      "file": "scripts/import-scryfall-cards.mjs",
+      "root_cause": "The oracle-cards bulk has ONE representative printing per oracle id; for some older paper cards that representative is a digital (MTGO) reprint (digital:true, games:[mtgo]). getSkipReason dropped every card with digital===true, so these paper cards never entered the catalog at all — and precons listing them were skipped as catalog-incomplete.",
+      "fix": "Skip digital cards ONLY when they are truly digital-only (Alchemy/rebalanced: set_type 'alchemy' or name starts with 'A-') via new isDigitalOnlyCard(); paper cards represented by a digital printing are now imported. Re-ran seed:local-play.",
+      "tags": [
+        "import",
+        "cards",
+        "digital",
+        "alchemy",
+        "precon",
+        "catalog"
+      ],
+      "related_bugs": [
+        "bug-local-cards-no-script"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-942",
+      "timestamp": "2026-06-18T07:12:36.622Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 10→14 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T07:12:36.622Z"
+    },
+    {
+      "id": "bug-943",
+      "timestamp": "2026-06-18T07:12:43.040Z",
+      "error_message": "Missing guard clause",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "No early return/throw for edge case: typeof document === 'undefined'",
+      "fix": "Added guard clause: if (typeof document === 'undefined')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T07:12:43.040Z"
+    },
+    {
+      "id": "bug-zones-zoom-offscreen",
+      "timestamp": "2026-06-18",
+      "error_message": "Opening a card preview from the 'Your zones' sheet opened the detail overlay below the viewport (offscreen).",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "CardZoomOverlay used 'absolute inset-0'. Rendered inside MyZonesSheet's bottom-sheet motion.div (which animates y -> sets a CSS transform), that transformed ancestor becomes the containing block for absolutely/fixed-positioned descendants, so inset-0 + items-center centered within the tall, bottom-anchored sheet box instead of the viewport, pushing the detail below the fold.",
+      "fix": "CardZoomOverlay now renders via createPortal(overlay, document.body) with 'fixed inset-0' instead of 'absolute inset-0'. The portal escapes any transformed ancestor and fixed centres on the viewport for all three usages (board peek, Your-zones, opponent overlay). tsc clean.",
+      "tags": [
+        "ui",
+        "controller",
+        "card-zoom",
+        "portal",
+        "transform-containing-block",
+        "myzonessheet"
+      ],
+      "related_bugs": [
+        "bug-750"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
+    },
+    {
+      "id": "bug-945",
+      "timestamp": "2026-06-18T07:27:40.739Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T07:27:40.739Z"
+    },
+    {
+      "id": "bug-946",
+      "timestamp": "2026-06-18T07:28:53.684Z",
+      "error_message": "CSS fix: marginTop, active",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "marginTop: i === 0 ? 0 : -212, zIndex: i → i === 0 ? 0 : -14, zIndex: i; active: scale-[0.98]\" → scale-[0.98] ${",
+      "fix": "Changed marginTop: i === 0 ? 0 : -212, zIndex: i → i === 0 ? 0 : -14, zIndex: i; active: scale-[0.98]\" → scale-[0.98] ${",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T07:28:53.684Z"
+    },
+    {
+      "id": "feat-stack-image-zoom",
+      "timestamp": "2026-06-18",
+      "error_message": "Feature request: the controller stack was a text-only strip — no card images, no zoom, no way to inspect spells/abilities on the stack.",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Stack items reference source_card_id, but that card is in zone 'stack' so it was absent from the client image map (hand+battlefield only); get_stack_items did not return the source card image.",
+      "fix": "mig 322: get_stack_items returns source_card_image_url + source_card_type_line (drop+recreate, since adding RETURNS TABLE columns changes the return type). Client: StackStrip is now a button with mini thumbnails opening a full-screen StackOverlay (downward shingled fan, top of stack first, each spell tappable -> CardZoomOverlay; card-less items render as labelled Ability tiles). StackItem type + stackItemToZoomCard adapter added. Full suite 1590/1590; tsc clean.",
+      "tags": [
+        "ui",
+        "controller",
+        "stack",
+        "card-zoom",
+        "get_stack_items",
+        "migration-322"
+      ],
+      "related_bugs": [
+        "bug-zones-zoom-offscreen"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
+    },
+    {
+      "id": "bug-948",
+      "timestamp": "2026-06-18T07:58:19.015Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: <ZoomBadge; onZoom={() =>",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-18T07:59:25.466Z"
+    },
+    {
+      "id": "bug-949",
+      "timestamp": "2026-06-18T08:00:56.063Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 13→16 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T08:00:56.063Z"
+    },
+    {
+      "id": "bug-950",
+      "timestamp": "2026-06-18T08:01:58.767Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/bot-brain.ts",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 14→21 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T08:01:58.767Z"
+    },
+    {
+      "id": "feat-combat-zoom-preview",
+      "timestamp": "2026-06-18",
+      "error_message": "Feature request: declare-attackers/blockers had no card zoom, and you couldn't preview an opponent's board before choosing whom to attack.",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "DeclareAttackersLayout/DeclareBlockersLayout rendered creatures via MotionCard (small, no zoom) and the attack-target pills were text-only (no board preview).",
+      "fix": "Added a module-level ZoomBadge (span role=button, stopPropagation so it doesn't toggle attack/block or drag) on every combat creature -> CardZoomOverlay; a 👁 button on each attack-target player pill opens OpponentBoardOverlay (reused; board + GY/exile tabs, own zoom) filtered to that opponent's boardCards. DeclareAttackersLayout now takes supabase/sessionId/boardCards. boardCardToZoomCard adapter maps a BoardCard to the zoom shape (attacker cards in the blockers view). tsc + eslint clean (only pre-existing img warnings).",
+      "tags": [
+        "ui",
+        "controller",
+        "combat",
+        "declare-attackers",
+        "declare-blockers",
+        "card-zoom",
+        "board-preview"
+      ],
+      "related_bugs": [
+        "feat-stack-image-zoom",
+        "bug-zones-zoom-offscreen"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
+    },
+    {
+      "id": "bug-952",
+      "timestamp": "2026-06-18T08:02:26.753Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/unit/bot-brain.test.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 12→21 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T08:02:26.753Z"
+    },
+    {
+      "id": "bug-attacker-images-zero-width",
+      "timestamp": "2026-06-18",
+      "error_message": "Declare-attackers creature cards showed no images (name fallback only), while the main board and declare-blockers showed images fine.",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "In DeclareAttackersLayout the MotionCard sat inside an extra wrapper div (added for the rotate-90 'attacking' state). That wrapper is a flex item in a `flex-col items-center` container, so its width is auto/shrink-to-fit. MotionCard's `className=\"w-full\"` then resolved to 0, and MotionCard renders its image with next/image `fill` (absolutely positioned), which needs a sized parent — so the image had 0x0 and was invisible. The main board/blockers put MotionCard as a direct child of a width-sized button, so w-full resolved correctly.",
+      "fix": "Added `w-full` to the rotate wrapper div so MotionCard's w-full resolves to the 72px button content width and the fill image renders.",
+      "tags": [
+        "ui",
+        "controller",
+        "combat",
+        "declare-attackers",
+        "images",
+        "motioncard",
+        "flexbox",
+        "next-image-fill"
+      ],
+      "related_bugs": [
+        "feat-combat-zoom-preview"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
+    },
+    {
+      "id": "bug-sick-badge-behind-image",
+      "timestamp": "2026-06-18",
+      "error_message": "After the declare-attackers image fix, the 'Sick' / '→ target' badges rendered BEHIND the creature image.",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Those two badges are rendered BEFORE the MotionCard in DOM order and had no z-index. Once the image actually rendered (now a sized element with its own stacking/paint), the later-painted card covered the earlier badges. (PT/animated/tap-hint badges render AFTER the card, so they were unaffected.)",
+      "fix": "Added z-20 to the isAttacking and !attackable(Sick) badges so they sit above the card image (and the z-10 ZoomBadge).",
+      "tags": [
+        "ui",
+        "controller",
+        "declare-attackers",
+        "z-index",
+        "regression"
+      ],
+      "related_bugs": [
+        "bug-attacker-images-zero-width"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
+    },
+    {
+      "id": "bug-955",
+      "timestamp": "2026-06-18T08:39:30.255Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T08:39:30.255Z"
+    },
+    {
+      "id": "bug-combat-defender-shows-id",
+      "timestamp": "2026-06-18",
+      "error_message": "Combat damage strip showed the defending player's id prefix (e.g. '8145fe01') instead of a name for an unblocked attacker.",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "get_combat_assignments computes defending_username as coalesce(profile.username, left(player_id::text,8)). The CPU bot is a synthetic is_bot player with no profiles row, so it fell back to the id prefix. CombatDamageStrip rendered defending_username directly (its `?? 'opponent'` never fired because the value was the non-null id string).",
+      "fix": "CombatDamageStrip now resolves the defender name from the players list (get_session_players labels is_bot rows 'CPU 🤖'): players.find(defending_player_id)?.username ?? defending_username ?? 'opponent'. Passed opponentPlayers in. No migration; consistent with the rest of the UI which uses the players list for names. (A deeper fix would teach get_combat_assignments to label bots like get_session_players does.)",
+      "tags": [
+        "ui",
+        "controller",
+        "combat",
+        "cpu-bot",
+        "username",
+        "combat-damage-strip"
+      ],
+      "related_bugs": [
+        "bug-bot-vanilla-deck"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
+    },
+    {
+      "id": "bug-957",
+      "timestamp": "2026-06-18T08:52:20.777Z",
+      "error_message": "Missing error handling in function",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T08:52:20.777Z"
+    },
+    {
+      "id": "bug-bot-no-combat-damage",
+      "timestamp": "2026-06-18",
+      "error_message": "When the CPU attacked and the player blocked (e.g. 5/4 vs 4/4), no combat damage was dealt and neither creature died.",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "The bot's tick() loop had no branch for the combat_damage step. When the bot is the active player it holds priority during combat_damage, but it only called pass_priority. advance_step does NOT auto-resolve combat damage (bug-601), and only the active/priority player may call resolve_combat_damage — which is the bot here — so damage was never applied and the lethal-damage SBA never fired. The engine itself is correct (verified: a 5/4 attacker and 4/4 blocker both die when resolve_combat_damage runs).",
+      "fix": "Added a resolveCombatDamage(session, bot) helper (calls resolve_combat_damage, looping up to twice for the first-strike→regular two-pass flow) and a tick() branch: when myTurn && step==='combat_damage', resolve before passing priority. Bot-runner-only (Node script); restart `node scripts/bot-runner.mjs --watch` to pick it up.",
+      "tags": [
+        "cpu-bot",
+        "bot-runner",
+        "combat",
+        "combat-damage",
+        "resolve_combat_damage",
+        "graveyard"
+      ],
+      "related_bugs": [
+        "bug-601"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18"
     }
   ]
 }

@@ -137,9 +137,15 @@ async function flushBatch() {
 
 async function upsertBatchWithRetry(currentBatch) {
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    // Conflict on oracle_id (one row per card) so re-imports can't pile up extra
+    // printings — the cards_oracle_id_key unique index (migration 313) backs
+    // this. ignoreDuplicates = DO NOTHING: existing cards are left as-is rather
+    // than updated (a DO UPDATE would rewrite the primary key to the new
+    // printing's id and break game_cards' FK). To refresh card data, clear the
+    // affected rows and re-import.
     const { error } = await supabase.from('cards').upsert(currentBatch, {
-      onConflict: 'id',
-      ignoreDuplicates: false,
+      onConflict: 'oracle_id',
+      ignoreDuplicates: true,
     })
 
     if (!error) {
@@ -198,7 +204,11 @@ function getSkipReason(card) {
     return 'language'
   }
 
-  if (!includeDigital && card.digital === true) {
+  // Skip DIGITAL-ONLY cards (Alchemy/rebalanced) — but NOT paper cards whose
+  // oracle-bulk representative printing happens to be a digital (MTGO) reprint.
+  // Dropping those loses the card entirely (e.g. Wheel of Fortune, Spike Feeder,
+  // Plague Myr), since the oracle file has one entry per oracle id.
+  if (!includeDigital && card.digital === true && isDigitalOnlyCard(card)) {
     return 'digital'
   }
 
@@ -211,6 +221,13 @@ function getSkipReason(card) {
   }
 
   return null
+}
+
+// A truly digital-only card (Arena Alchemy / rebalanced), as opposed to a paper
+// card represented by a digital printing. Alchemy cards carry an "A-" name prefix
+// and/or the 'alchemy' set type.
+function isDigitalOnlyCard(card) {
+  return card.set_type === 'alchemy' || /^A-/.test(String(card.name ?? ''))
 }
 
 function isExtraCardObject(card) {

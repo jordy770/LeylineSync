@@ -15,10 +15,13 @@
 
 import { Client } from 'pg'
 
-const DEFAULT_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
+// Tests run against their OWN database (`leyline_test`), NOT the play DB
+// (`postgres`, what the Supabase API/app uses) — so running the suite never wipes
+// the catalog/decks/games you play with. Override with TEST_DATABASE_URL only.
+const DEFAULT_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/leyline_test'
 
 export function connectionString(): string {
-  return process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL ?? DEFAULT_URL
+  return process.env.TEST_DATABASE_URL ?? DEFAULT_URL
 }
 
 export async function connect(): Promise<Client> {

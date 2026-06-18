@@ -1,15 +1,12 @@
--- supabase/functions_src/add_bot_to_session.sql
--- CANONICAL current definition. Edit THIS file, then generate a migration with
--- scripts/new-migration.mjs — never re-extract from past migrations.
+-- bot_real_deck
+-- Seat the AI CPU with a REAL deck (a shared precon, commander → command zone)
+-- instead of the vanilla pile; vanilla stays as the no-deck fallback. Adds an
+-- optional p_deck_id. Generated from supabase/functions_src (add_bot_to_session).
 --
--- Seats an AI CPU opponent: a synthetic player flagged is_bot in an OPEN session.
--- It seeds the bot a REAL deck so it plays actual cards: an explicit p_deck_id
--- (owned by the caller or a shared precon), else a shared precon (in Commander,
--- one that has a commander). Only when no deck is available does it fall back to
--- a vanilla pile (a basic land + a cheap script-free creature, shuffled) so the
--- game can still start. Its turns are driven by `scripts/bot-runner.mjs --watch`.
--- LOCAL ONLY: the bot's player_id has no auth.users row, which the relaxed-FK
--- local DB allows but hosted does not.
+-- The signature gains a second (defaulted) arg, so the old single-arg overload
+-- must be dropped first — otherwise a one-arg call is ambiguous.
+drop function if exists public.add_bot_to_session(uuid);
+
 create or replace function public.add_bot_to_session(
   p_session_id uuid,
   p_deck_id uuid default null
