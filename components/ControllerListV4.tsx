@@ -1349,7 +1349,8 @@ function MainArea({
 
   // Equipment/Auras attached to a permanent (game_cards.attached_to), grouped by
   // host id, plus a name lookup so each tile can show what it's wearing / what
-  // it's attached to. Host may be an opponent's card (not in this set) → unnamed.
+  // it's attached to. The host may be an opponent's card; cardNameById (below)
+  // resolves those via the board-wide snapshot.
   const attachmentsByHost = new Map<string, ControllerCard[]>()
   for (const c of battlefieldCards) {
     if (!c.attached_to) continue
@@ -1357,7 +1358,13 @@ function MainArea({
     list.push(c)
     attachmentsByHost.set(c.attached_to, list)
   }
-  const cardNameById = new Map(battlefieldCards.map((c) => [c.id, c.name]))
+  // Host-name lookup spans the WHOLE table (boardCards), not just our own
+  // cards: an Aura/Equipment we control can be attached to an opponent's
+  // creature, whose name lives only in boardCards. Our own cards are merged in
+  // afterwards as a fallback in case a host isn't in the board snapshot yet.
+  const cardNameById = new Map<string, string>()
+  for (const c of boardCards) cardNameById.set(c.id, c.name)
+  for (const c of battlefieldCards) if (!cardNameById.has(c.id)) cardNameById.set(c.id, c.name)
 
   const handleCardTap = (card: ControllerCard) => {
     const autoColor = getAutoTapColor(card)

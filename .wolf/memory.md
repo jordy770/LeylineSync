@@ -4534,3 +4534,17 @@
 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
+
+## Session: 2026-06-21 11:37
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-22 05:35
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 05:37 | Edited components/ControllerListV4.tsx | CSS: cards | ~147 |
+| 05:38 | Edited components/ControllerListV4.tsx | card() → cardNameById() | ~60 |
+| 11:30 | fix(attachments): resolve host name across owners — build cardNameById from boardCards (whole-table snapshot) merging battlefieldCards as fallback, so an Aura/Equipment we control on an opponent's creature names its host in the 🔗 tooltip | components/ControllerListV4.tsx | tsc+eslint clean | ~3k |
+| 05:39 | Edited docs/client-coverage-audit.md | 3→5 lines | ~104 |

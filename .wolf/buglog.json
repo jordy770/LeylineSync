@@ -12753,6 +12753,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-14T23:37:35.626Z"
+    },
+    {
+      "id": "bug-785",
+      "timestamp": "2026-06-22T05:37:58.201Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV4.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T05:37:58.201Z"
+    },
+    {
+      "id": "bug-786",
+      "timestamp": "2026-06-22T05:39:20.220Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/client-coverage-audit.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 3→5 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T05:39:20.220Z"
     }
   ]
 }
