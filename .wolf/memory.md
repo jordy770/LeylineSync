@@ -4529,3 +4529,22 @@
 | 01:37 | Edited components/ControllerListV4.tsx | added optional chaining | ~32 |
 | 01:38 | mulligan overlay shows full card art (MotionCard) instead of name text; widened panel; bottom-selection ring + badge preserved | components/controller/OpeningHandOverlay.tsx, components/ControllerListV4.tsx | tsc+eslint clean | ~6k |
 | 01:38 | Session end: 103 writes across 21 files (ControllerListV4.tsx, use-board-game-state.ts, GameBoard.tsx, client-coverage-audit.md, data.ts) | 16 reads | ~192225 tok |
+
+## Session: 2026-06-21 11:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-21 11:37
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-22 05:35
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 05:37 | Edited components/ControllerListV4.tsx | CSS: cards | ~147 |
+| 05:38 | Edited components/ControllerListV4.tsx | card() → cardNameById() | ~60 |
+| 11:30 | fix(attachments): resolve host name across owners — build cardNameById from boardCards (whole-table snapshot) merging battlefieldCards as fallback, so an Aura/Equipment we control on an opponent's creature names its host in the 🔗 tooltip | components/ControllerListV4.tsx | tsc+eslint clean | ~3k |
+| 05:39 | Edited docs/client-coverage-audit.md | 3→5 lines | ~104 |

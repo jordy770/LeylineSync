@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-14T23:37:35.606Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-22T05:39:20.204Z
 > Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
@@ -113,7 +113,7 @@
 
 ## components/
 
-- `ControllerListV4.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~47404 tok)
+- `ControllerListV4.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~46471 tok)
 - `GameBoard.tsx` — GameBoard (~7148 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~4956 tok)
 
@@ -142,7 +142,7 @@
 
 ## docs/
 
-- `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1365 tok)
+- `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1408 tok)
 
 ## docs/commander-decks/
 
