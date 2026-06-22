@@ -90,6 +90,11 @@ Genuine unsurfaced gaps found:
    `cardNameById` lookup (ControllerListV5) is built from board-wide `boardCards`
    (spans every seat) instead of owner-scoped `battlefieldCards`. The 🔗 badge
    tooltip resolves cross-owner hosts.
+1. **Attachment naming across owners — DONE 2026-06-22.** `getControllerCards`
+   is owner-scoped, so an Aura you control on an *opponent's* creature showed 🔗
+   but couldn't name the host. Fixed: `ControllerListV4`'s `cardNameById` is now
+   built from `boardCards` (the whole-table snapshot) with `battlefieldCards`
+   merged in as a fallback, so the 🔗 tooltip names cross-owner hosts.
 2. **Onboarding — DONE 2026-06-14 (v1).** `ControllerCoachOverlay` — a short,
    skippable 5-slide first-run intro (controller vs board, playing cards, auto
    mana, auto-flowing priority, layout). Auto-opens once per device

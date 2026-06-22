@@ -1,7 +1,8 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T12:31:54.278Z
-> Files: 22 tracked | Anatomy hits: 0 | Misses: 0
+Auto-maintained by OpenWolf. Last scanned: 2026-06-22T05:39:20.204Z
+Files: 256 tracked | Anatomy hits: 0 | Misses: 0
+72c0141126cfce8cd7fe47c4bde1496b4439ee19
 
 ## ../../.claude/plans/
 
@@ -115,6 +116,7 @@
 ## docs/
 
 - `backlog.md` — Backlog (~160 tok)
+- `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1408 tok)
 
 ## docs/commander-decks/
 
