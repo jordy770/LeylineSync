@@ -57,6 +57,7 @@ export function useControllerGameState(sessionId: string) {
   const [playableFromExileIds, setPlayableFromExileIds] = useState<Set<string>>(() => new Set())
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [isSessionFinished, setIsSessionFinished] = useState(false)
+  const [winnerPlayerId, setWinnerPlayerId] = useState<string | null>(null)
   const [format, setFormat] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -141,6 +142,7 @@ export function useControllerGameState(sessionId: string) {
       setRestrictedMana(nextRestrictedMana)
       setCostReductions(nextCostReductions)
       setIsSessionFinished(session?.status === 'finished')
+      setWinnerPlayerId(session?.winner_player_id ?? null)
       setFormat(session?.format ?? null)
       setErrorMessage(null)
       setIsLoading(false)
@@ -207,6 +209,7 @@ export function useControllerGameState(sessionId: string) {
     playableFromExileIds,
     playerId,
     isSessionFinished,
+    winnerPlayerId,
     format,
     isLoading,
     errorMessage,

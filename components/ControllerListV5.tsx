@@ -73,6 +73,7 @@ import type {
   StackItem,
 } from '@/lib/game/types'
 import MotionCard from './MotionCard'
+import GameFinishedOverlay from './board/GameFinishedOverlay'
 import HandFan from './controller/HandFan'
 import { CardActionSheet, CardZoomOverlay } from './controller/CardActionSheet'
 import { OpeningHandOverlay } from './controller/OpeningHandOverlay'
@@ -182,6 +183,45 @@ function getAutoTapMana(card: ControllerCard): { color: ManaColor; amount: numbe
 /** Returns the single mana color to auto-produce when a card has exactly one simple tap ability. */
 function getAutoTapColor(card: ControllerCard): ManaColor | null {
   return getAutoTapMana(card)?.color ?? null
+}
+
+// Combat keyword hints shown on creatures during the combat layouts — short
+// chips so a player declaring attacks/blocks sees evasion/strike/death info at a
+// glance (mirrors how isAttackable reads script.keywords for haste). Granted
+// keywords (continuous effects) aren't surfaced here; printed script keywords are.
+const COMBAT_KEYWORD_HINTS: { key: string; label: string; title: string; cls: string }[] = [
+  { key: 'flying', label: 'FLY', title: 'Flying — only blocked by flying/reach', cls: 'bg-sky-500/20 text-sky-300' },
+  { key: 'reach', label: 'REA', title: 'Reach — can block flyers', cls: 'bg-sky-500/20 text-sky-300' },
+  { key: 'menace', label: 'MEN', title: 'Menace — must be blocked by two or more', cls: 'bg-rose-500/20 text-rose-300' },
+  { key: 'trample', label: 'TRA', title: 'Trample — excess damage tramples through', cls: 'bg-amber-500/20 text-amber-300' },
+  { key: 'deathtouch', label: 'DTH', title: 'Deathtouch — any damage is lethal', cls: 'bg-emerald-500/20 text-emerald-300' },
+  { key: 'first_strike', label: 'FS', title: 'First strike — deals damage first', cls: 'bg-yellow-500/20 text-yellow-200' },
+  { key: 'double_strike', label: 'DS', title: 'Double strike — first-strike and regular damage', cls: 'bg-yellow-500/20 text-yellow-200' },
+  { key: 'vigilance', label: 'VIG', title: "Vigilance — doesn't tap to attack", cls: 'bg-slate-500/25 text-slate-200' },
+  { key: 'lifelink', label: 'LL', title: 'Lifelink — damage gains you life', cls: 'bg-pink-500/20 text-pink-300' },
+  { key: 'defender', label: 'DEF', title: "Defender — can't attack", cls: 'bg-slate-500/25 text-slate-300' },
+]
+
+/** The combat keyword hints printed on a card's script (normalized to snake_case). */
+function combatKeywordHints(card: ControllerCard): typeof COMBAT_KEYWORD_HINTS {
+  const script = normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)
+  const present = new Set((script.keywords ?? []).map((k) => k.toLowerCase().replace(/[ -]/g, '_')))
+  return COMBAT_KEYWORD_HINTS.filter((h) => present.has(h.key))
+}
+
+/** A compact row of combat keyword chips for a creature in the combat layouts. */
+function KeywordHints({ card }: { card: ControllerCard }) {
+  const hints = combatKeywordHints(card)
+  if (hints.length === 0) return null
+  return (
+    <div className="flex flex-wrap justify-center gap-0.5">
+      {hints.map((h) => (
+        <span key={h.key} title={h.title} className={`rounded px-1 text-[7px] font-black uppercase leading-tight ${h.cls}`}>
+          {h.label}
+        </span>
+      ))}
+    </div>
+  )
 }
 
 const BASIC_LAND_COLOR: Record<string, ManaColor> = {
@@ -329,6 +369,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     playableFromExileIds,
     playerId,
     isSessionFinished,
+    winnerPlayerId,
     format,
     isLoading,
     errorMessage,
@@ -1258,6 +1299,16 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
           <span className="shrink-0 text-red-300/70" aria-label="Dismiss">✕</span>
         </button>
       )}
+
+      <AnimatePresence>
+        {isSessionFinished ? (
+          <GameFinishedOverlay
+            winnerPlayerId={winnerPlayerId}
+            players={players}
+            currentPlayerId={playerId}
+          />
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }
@@ -3998,6 +4049,7 @@ function DeclareAttackersLayout({
                     {getEffectivePT(card)}
                   </span>
                 )}
+                <KeywordHints card={card} />
                 {attackable && !isAttacking && (
                   <span className="text-[8px] text-slate-600">Tap / drag ↑</span>
                 )}
@@ -4276,6 +4328,7 @@ function DeclareBlockersLayout({
                     {getEffectivePT(card)}
                   </span>
                 )}
+                <KeywordHints card={card} />
                 {isBlocking && blockingTarget && (
                   <span className="w-full truncate text-center text-[8px] text-cyan-300">
                     ↑ {blockingTarget.attacker_name}

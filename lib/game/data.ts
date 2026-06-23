@@ -431,6 +431,26 @@ export async function getGameSessionPlayers(supabase: SupabaseClient, sessionId:
   return (data ?? []) as GameSessionPlayer[]
 }
 
+// Player ids that have a spawned library in this session — the lobby treats this
+// as "ready" (start_game_session requires every player to have a library). Reads
+// game_cards directly; session members may read fellow members' rows (mig 143).
+export async function getSpawnedDeckOwnerIds(
+  supabase: SupabaseClient,
+  sessionId: string,
+): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from('game_cards')
+    .select('owner_id')
+    .eq('session_id', sessionId)
+    .eq('zone', 'library')
+
+  if (error) {
+    throw error
+  }
+
+  return new Set((data ?? []).map((row) => (row as { owner_id: string }).owner_id))
+}
+
 export type CommanderDamageEntry = { sourceCardId: string; name: string; damage: number }
 
 // Cumulative commander combat damage each player has taken, keyed by defender

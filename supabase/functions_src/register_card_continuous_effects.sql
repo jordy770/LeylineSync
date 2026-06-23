@@ -93,6 +93,8 @@ begin
       'lifelink',
       'intimidate',
       'hexproof',
+      -- Defender (mig 323): "this creature can't attack"; declare_attacker rejects it.
+      'defender',
       -- STATIC cast-from-graveyard permission (mig 207, Gisa and Geralf): a
       -- script-registered row, swept by rebuild when the source leaves — unlike
       -- the until-EOT grant_cast_from_graveyard effect rows (mig 173).
@@ -151,7 +153,8 @@ begin
           'menace',
           'lifelink',
           'intimidate',
-          'hexproof'
+          'hexproof',
+          'defender'
         ) then 'source'
         else 'controller'
       end
@@ -255,6 +258,7 @@ begin
       when 'menace'        then 'menace'
       when 'intimidate'    then 'intimidate'
       when 'hexproof'      then 'hexproof'
+      when 'defender'      then 'defender'
       else null
     end;
 

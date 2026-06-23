@@ -1,8 +1,7 @@
 # anatomy.md
 
-Auto-maintained by OpenWolf. Last scanned: 2026-06-22T05:39:20.204Z
-Files: 256 tracked | Anatomy hits: 0 | Misses: 0
-72c0141126cfce8cd7fe47c4bde1496b4439ee19
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-23T21:57:49.146Z
+> Files: 26 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -12,10 +11,11 @@ Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.cloudflared/
 
+- `config.yml` — Cloudflare Tunnel ingress for the LeylineSync dev server. (~294 tok)
 
 ## ./
 
-- `package.json` — Node.js package manifest (~531 tok)
+- `.gitignore` — Git ignore rules (~370 tok)
 
 ## .claude/
 
@@ -91,15 +91,16 @@ Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~56252 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~57124 tok)
+- `GameBoard.tsx` — GameBoard (~7231 tok)
+- `GameSessionLobby.tsx` — GameSessionLobby (~12039 tok)
 
 ## components/board/
 
+- `GameFinishedOverlay.tsx` — GameFinishedOverlay (~1180 tok)
 
 ## components/controller/
 
-- `CardActionSheet.tsx` — CardActionSheet (~19181 tok)
-- `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~9950 tok)
 
 ## components/judge/
 
@@ -115,8 +116,7 @@ Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## docs/
 
-- `backlog.md` — Backlog (~160 tok)
-- `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1408 tok)
+- `backlog.md` — Backlog (~169 tok)
 
 ## docs/commander-decks/
 
@@ -126,13 +126,16 @@ Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## lib/game/
 
-- `bot-brain.ts` — Raw type line, e.g. "Creature — Goblin" or "Basic Land — Mountain". (~1791 tok)
-- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~8194 tok)
-- `types.ts` — Exports ManaPool, RestrictedManaEntry, ManaColor, GameZone + 30 more (~2991 tok)
-- `use-controller-game-state.ts` — Exports useControllerGameState (~2587 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~12920 tok)
+- `auto-pass.ts` — You are the active (turn) player. (~1362 tok)
+- `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
+- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~8383 tok)
+- `use-board-game-state.ts` — Exports useBoardGameState (~1407 tok)
+- `use-controller-game-state.ts` — Exports useControllerGameState (~2632 tok)
 
 ## lib/supabase/
 
+- `client.ts` — Exports createClient (~66 tok)
 
 ## mockups/
 
@@ -142,10 +145,7 @@ Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## scripts/
 
-- `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~5912 tok)
-- `import-scryfall-cards.mjs` — defaultInputFile: flushBatch, upsertBatchWithRetry, getSupabaseErrorMessage + 16 more (~3514 tok)
-- `seed-local-play.mjs` — Make the LOCAL play database (the `postgres` DB the Supabase API/app uses on (~644 tok)
-- `setup-local-test-db.mjs` — Rebuilds the LOCAL test-harness database from scratch. (~1740 tok)
+- `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~6322 tok)
 
 ## supabase/
 
@@ -155,14 +155,15 @@ Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## supabase/functions_src/
 
-- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~3243 tok)
-- `get_stack_items.sql` — supabase/functions_src/get_stack_items.sql (~748 tok)
-- `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~2812 tok)
+- `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
+- `clear_deck_from_session.sql` — supabase/functions_src/clear_deck_from_session.sql (~471 tok)
+- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3458 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2657 tok)
 
 ## supabase/migrations/
 
-- `202605010321_cast_from_exile.sql` — 202605010321_cast_from_exile (~6096 tok)
-- `202605010322_stack_item_image.sql` — 202605010322_stack_item_image (~691 tok)
+- `202605010323_defender_keyword.sql` — 202605010323_defender_keyword (~6859 tok)
+- `202605010324_clear_deck_from_session.sql` — 202605010324_clear_deck_from_session (~468 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -172,22 +173,23 @@ Files: 256 tracked | Anatomy hits: 0 | Misses: 0
 
 ## tests/feature/
 
-- `_repro_trade.test.ts` — Declares s (~404 tok)
-- `atsushi.test.ts` — Atsushi, the Blazing Sky (mig 230) — a MODAL dies trigger ("choose one"): (~2066 tok)
+- `change-deck.test.ts` — Lobby "change deck" (mig 324) — clear_deck_from_session lets a player undo a (~744 tok)
+- `defender.test.ts` — Defender enforcement (mig 323) — "a creature with defender can't attack." (~549 tok)
 
 ## tests/fixtures/
 
+- `test-cards.json` (~43362 tok)
 
 ## tests/harness/
 
-- `db.ts` — Run `fn` inside a transaction and ALWAYS roll back, so a test leaves no trace. (~1105 tok)
 
 ## tests/regression/
 
 
 ## tests/unit/
 
-- `bot-brain.test.ts` — bot-brain — the AI CPU's pure heuristic decisions (lib/game/bot-brain). Each (~1495 tok)
+- `auto-pass.test.ts` — shouldAutoPass — the controller's pure "should I pass priority right now?" (~2284 tok)
+- `bot-brain.test.ts` — bot-brain — the AI CPU's pure heuristic decisions (lib/game/bot-brain). Each (~2536 tok)
 
 ## vercel/
 

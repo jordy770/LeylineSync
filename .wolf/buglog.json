@@ -12753,6 +12753,550 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-14T23:37:35.626Z"
+    },
+    {
+      "id": "bug-785",
+      "timestamp": "2026-06-22T18:46:32.478Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/bot-brain.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: // A blocker \"free-kills\" an attacker when the attacker dies; // (see freeKills — keyword-aware: deathtouch, first/double ",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-22T18:46:53.701Z"
+    },
+    {
+      "id": "bug-786",
+      "timestamp": "2026-06-22T18:47:09.633Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/bot-brain.ts",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 26→39 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T18:47:09.633Z"
+    },
+    {
+      "id": "bug-787",
+      "timestamp": "2026-06-22T18:47:58.093Z",
+      "error_message": "Null/undefined access in ",
+      "file": "scripts/bot-runner.mjs",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T18:47:58.093Z"
+    },
+    {
+      "id": "bug-788",
+      "timestamp": "2026-06-22T18:48:25.884Z",
+      "error_message": "Type error",
+      "file": "tests/unit/bot-brain.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T18:48:25.884Z"
+    },
+    {
+      "id": "bug-789",
+      "timestamp": "2026-06-22T19:15:26.955Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "Had \"keywords\"",
+      "fix": "Changed to \"continuous_effects\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T19:15:26.955Z"
+    },
+    {
+      "id": "bug-790",
+      "timestamp": "2026-06-22T19:15:56.813Z",
+      "error_message": "Type error",
+      "file": "tests/feature/defender.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T19:15:56.813Z"
+    },
+    {
+      "id": "bug-791",
+      "timestamp": "2026-06-22T19:19:21.463Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "No early return/throw for edge case: hints.length === 0",
+      "fix": "Added guard clause: if (hints.length === 0)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T19:19:21.463Z"
+    },
+    {
+      "id": "bug-defender-keywords-source",
+      "timestamp": "2026-06-22T20:30:00.000Z",
+      "error_message": "Defender test DF1 failed: a creature whose script had keywords:[\"defender\"] was NOT rejected from attacking (card_has_defender returned false).",
+      "file": "supabase/functions_src/register_card_continuous_effects.sql + tests/fixtures/test-cards.json",
+      "root_cause": "register_card_continuous_effects' printed-keyword loop reads v_keywords from the cards.keywords COLUMN (select cards.keywords), NOT from script.keywords. The test seeder (tests/harness/seed.ts) inserts only id/name/type_line/oracle_text/power_toughness/mana_cost/is_token/script and never populates cards.keywords, so a fixture's script.keywords is dead for keyword-registration in tests; existing keyword fixtures (Menace Brute, Air Elemental) use a continuous_effects:[{type,affected:source}] entry instead.",
+      "fix": "Modelled Wall Test's defender as a continuous_effects entry (like Menace Brute Test) and added 'defender' to BOTH register paths: the continuous_effects type whitelist + its source-default list, AND the printed-keyword whitelist (for production cards.keywords from the Scryfall import).",
+      "tags": [
+        "engine",
+        "keywords",
+        "defender",
+        "register_card_continuous_effects",
+        "test-fixtures",
+        "combat"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T20:30:00.000Z"
+    },
+    {
+      "id": "bug-defender-effect-type-check",
+      "timestamp": "2026-06-22T20:35:00.000Z",
+      "error_message": "new row for relation \"game_continuous_effects\" violates check constraint \"game_continuous_effects_effect_type_check\"",
+      "file": "supabase/migrations/202605010323_defender_keyword.sql",
+      "root_cause": "game_continuous_effects.effect_type has a CHECK constraint (latest def in mig 303 pacify) enumerating allowed effect types. A new keyword effect_type ('defender') must be added there too; registering it via register_card_continuous_effects alone is not enough.",
+      "fix": "Hand-added non-function DDL at the top of the migration: drop + re-add game_continuous_effects_effect_type_check with 'defender' appended (new-migration.mjs emits only functions; constraints are hand-added).",
+      "tags": [
+        "engine",
+        "migration",
+        "check-constraint",
+        "defender",
+        "game_continuous_effects"
+      ],
+      "related_bugs": [
+        "bug-defender-keywords-source"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T20:35:00.000Z"
+    },
+    {
+      "id": "bug-bot-runner-wrong-supabase-port-collision",
+      "timestamp": "2026-06-22T21:10:00.000Z",
+      "error_message": "bot-runner: connect ECONNREFUSED 127.0.0.1:54322, then after a restart 'watch error: relation \"public.game_session_players\" does not exist', then supabase start failing with 'Bind for 0.0.0.0:54322 failed: port is already allocated'.",
+      "file": "scripts/bot-runner.mjs (environment, not code)",
+      "root_cause": "A SECOND local Supabase project ('Jordy', containers supabase_*_Jordy) was running on the SAME default ports (54321 kong / 54322 db / 54323 studio). It held 54322, so: (1) supabase start for LeylineSync couldn't bind the port; (2) once LeylineSync's db came up half-mapped / the Jordy db held 54322, the bot connected to the WRONG database (Jordy's postgres, which has no LeylineSync tables) -> 'relation does not exist'. Compounded earlier by a Windows WinNAT excluded-port-range (54250-54349 includes 54322) that blocked binding with 'forbidden by its access permissions' until winnat was restarted + 54322 persistently reserved.",
+      "fix": "Stop the conflicting project's containers (bash: docker stop $(docker ps -q --filter \"name=_Jordy\")) so LeylineSync can claim 54321/54322, then npx supabase start. Permanent options: give each project distinct [api]/[db] ports in supabase/config.toml, or always `supabase stop` one project before starting the other. For the WinNAT half: admin PowerShell `net stop winnat; netsh int ipv4 add excludedportrange protocol=tcp startport=54322 numberofports=1 store=persistent; net start winnat`.",
+      "tags": [
+        "environment",
+        "supabase",
+        "docker",
+        "port-collision",
+        "bot-runner",
+        "winnat",
+        "windows",
+        "54322"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-22T21:10:00.000Z"
+    },
+    {
+      "id": "bug-795",
+      "timestamp": "2026-06-23T15:33:09.644Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: <GameFinishedOverlay winnerPlayerId={session.winner_player_i",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-23T15:37:51.173Z"
+    },
+    {
+      "id": "bug-796",
+      "timestamp": "2026-06-23T15:35:49.426Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/use-controller-game-state.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T15:35:49.426Z"
+    },
+    {
+      "id": "bug-797",
+      "timestamp": "2026-06-23T15:35:57.967Z",
+      "error_message": "Wrong reference: format should be winnerPlayerId",
+      "file": "lib/game/use-controller-game-state.ts",
+      "root_cause": "Used \"format\" instead of \"winnerPlayerId\"",
+      "fix": "Changed format → winnerPlayerId",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T15:35:57.967Z"
+    },
+    {
+      "id": "bug-798",
+      "timestamp": "2026-06-23T15:36:17.056Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/board/GameFinishedOverlay.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 17→23 lines (3 removed) | Also: {winnerName}; is the last leyliner standing.",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-23T15:36:55.846Z"
+    },
+    {
+      "id": "bug-799",
+      "timestamp": "2026-06-23T15:38:15.060Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Had './controller/HandFan'",
+      "fix": "Changed to './board/GameFinishedOverlay'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T15:38:15.060Z"
+    },
+    {
+      "id": "bug-800",
+      "timestamp": "2026-06-23T16:09:25.855Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T16:09:25.855Z"
+    },
+    {
+      "id": "bug-801",
+      "timestamp": "2026-06-23T16:09:48.843Z",
+      "error_message": "Wrong operator: === should be !==",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Used \"===\" instead of \"!==\"",
+      "fix": "Changed operator === → !==",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T16:09:48.843Z"
+    },
+    {
+      "id": "bug-802",
+      "timestamp": "2026-06-23T16:10:44.832Z",
+      "error_message": "CSS fix: hover",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "hover: bg-white/10\" → bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50\"",
+      "fix": "Changed hover: bg-white/10\" → bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T16:10:44.832Z"
+    },
+    {
+      "id": "bug-803",
+      "timestamp": "2026-06-23T16:21:41.440Z",
+      "error_message": "Missing await",
+      "file": "lib/game/data.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T16:21:41.440Z"
+    },
+    {
+      "id": "bug-804",
+      "timestamp": "2026-06-23T16:22:09.811Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T16:22:09.811Z"
+    },
+    {
+      "id": "bug-805",
+      "timestamp": "2026-06-23T16:22:20.124Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T16:22:20.124Z"
+    },
+    {
+      "id": "bug-806",
+      "timestamp": "2026-06-23T16:23:04.613Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 9→16 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T16:23:04.613Z"
+    },
+    {
+      "id": "bug-807",
+      "timestamp": "2026-06-23T16:24:01.121Z",
+      "error_message": "Type error",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T16:24:01.121Z"
+    },
+    {
+      "id": "bug-808",
+      "timestamp": "2026-06-23T16:25:08.465Z",
+      "error_message": "Host pressed Start and got opaque \"N player(s) have no deck spawned yet\"; no visibility into who is ready in multiplayer",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "start_game_session requires every player to have a spawned library, but the lobby showed no per-player readiness and Start was always enabled",
+      "fix": "Derived readiness from spawned library (getSpawnedDeckOwnerIds), added per-player Ready/Choosing badges, realtime lobby subscription, and gated host Start on all other players ready (Waiting(N))",
+      "tags": [
+        "lobby",
+        "game-start",
+        "readiness",
+        "multiplayer",
+        "ux"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T16:25:08.466Z"
+    },
+    {
+      "id": "bug-pwa-login-failed-to-fetch-localhost-supabase",
+      "timestamp": "2026-06-23T20:00:00.000Z",
+      "error_message": "PWA on phone: 'TypeError: Failed to fetch' at supabase.auth.signInWithPassword (login-form.tsx).",
+      "file": ".env.local + ~/.cloudflared/config.yml (environment, not app code)",
+      "root_cause": "Phone PWA loads over the cloudflared https tunnel (app.dweemo.nl) but NEXT_PUBLIC_SUPABASE_URL was http://127.0.0.1:54321 — on the phone 127.0.0.1 is the phone itself, and http from an https page is mixed-content blocked. Server-side was fine (kong 200, key accepted, CORS *). NEXT_PUBLIC_* is baked at npm run dev start, so it must be a publicly reachable https URL.",
+      "fix": "Tunnelled local Supabase too: ingress supabase.dweemo.nl -> http://localhost:54321 in ~/.cloudflared/config.yml, DNS route via cloudflared tunnel route dns, Access BYPASS for that hostname, set NEXT_PUBLIC_SUPABASE_URL=https://supabase.dweemo.nl, restarted cloudflared + npm run dev. Then phone-side cache clear (old bundle had 127.0.0.1; sw.js does not cache, so it was browser/PWA HTTP cache) fixed the rest.",
+      "tags": [
+        "pwa",
+        "cloudflared",
+        "tunnel",
+        "supabase",
+        "mixed-content",
+        "NEXT_PUBLIC",
+        "cache",
+        "mobile",
+        "dweemo"
+      ],
+      "related_bugs": [
+        "bug-pwa-install-blocked-by-access"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T20:00:00.000Z"
+    },
+    {
+      "id": "bug-pwa-install-blocked-by-access",
+      "timestamp": "2026-06-23T20:30:00.000Z",
+      "error_message": "PWA will not (re)install on phone — Chrome offers no install / silently fails.",
+      "file": "Cloudflare Zero Trust Access config (dashboard, not repo)",
+      "root_cause": "manifest.webmanifest, sw.js and the icons sat behind the app.dweemo.nl Access OTP app. The browser fetches those install-critical files WITHOUT the Access cookie, so it got the Access login HTML (200, text/html) instead of JSON/PNG -> invalid manifest, sw registration fails, icons do not load -> no install. Exactly the warning in app/manifest.ts.",
+      "fix": "Added a SECOND path-scoped Access self-hosted application with destinations app.dweemo.nl/manifest.webmanifest, /sw.js, /icon*, /screenshot* (max 5 destinations/app -> wildcards) and one policy Action=Bypass / Everyone. Access matches the most-specific path, so the bypass app wins for those files while the broad app keeps OTP on the rest.",
+      "tags": [
+        "pwa",
+        "cloudflare-access",
+        "zero-trust",
+        "manifest",
+        "service-worker",
+        "install",
+        "bypass",
+        "mobile",
+        "dweemo"
+      ],
+      "related_bugs": [
+        "bug-pwa-login-failed-to-fetch-localhost-supabase"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T20:30:00.000Z"
+    },
+    {
+      "id": "bug-811",
+      "timestamp": "2026-06-23T21:17:32.460Z",
+      "error_message": "Missing await",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T21:17:32.460Z"
+    },
+    {
+      "id": "bug-812",
+      "timestamp": "2026-06-23T21:18:06.876Z",
+      "error_message": "Function not marked async",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T21:18:06.876Z"
+    },
+    {
+      "id": "bug-813",
+      "timestamp": "2026-06-23T21:30:13.630Z",
+      "error_message": "Missing guard clause",
+      "file": "lib/supabase/client.ts",
+      "root_cause": "No early return/throw for edge case: publicUrl && typeof window !== \"undefined\"",
+      "fix": "Added guard clause: if (publicUrl && typeof window !== \"undefine)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T21:30:13.630Z"
+    },
+    {
+      "id": "bug-814",
+      "timestamp": "2026-06-23T21:34:46.592Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/supabase/client.ts",
+      "root_cause": "17 lines replaced/restructured",
+      "fix": "Rewrote 27→8 lines (17 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T21:34:46.592Z"
+    },
+    {
+      "id": "bug-815",
+      "timestamp": "2026-06-23T21:45:08.519Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/auto-pass.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→10 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T21:45:08.519Z"
+    },
+    {
+      "id": "bug-autopass-skips-precombat-main",
+      "timestamp": "2026-06-23T22:00:00.000Z",
+      "error_message": "Auto-pass also passed the player's own first main phase (M1), skipping land drops/develop.",
+      "file": "lib/game/auto-pass.ts",
+      "root_cause": "The mn (main-phase) auto-pass switch applied to BOTH main phases via isMainPhase(step) — so when hasMainPhaseAction was false (approximate affordability/land detection, or a brief stale-state window at the precombat_main transition) it auto-passed the precombat main, the exact phase where you play lands and develop.",
+      "fix": "Restricted the mn clause to s.step === 'postcombat_main' only — precombat main (M1) now always stops for the player; M2 still auto-skips when the stack is empty and nothing is playable. Removed the now-unused isMainPhase helper. Updated tests/unit/auto-pass.test.ts (M1 never skips; M2 cases moved to postcombat).",
+      "tags": [
+        "auto-pass",
+        "controller",
+        "main-phase",
+        "ux",
+        "client"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-23T22:00:00.000Z"
     }
   ]
 }

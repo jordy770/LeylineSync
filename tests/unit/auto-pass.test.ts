@@ -105,26 +105,28 @@ test('atk off → hold declare_attackers even with nothing to attack with', () =
   assert.equal(decide({ step: 'declare_attackers', hasEligibleAttacker: false }, { atk: false }), false)
 })
 
-// ── mn: dead main phase ────────────────────────────────────────────────────────
+// ── mn: dead POSTCOMBAT main phase (precombat M1 always stops) ──────────────────
 
-test('mn on + empty stack + nothing playable → skip precombat_main', () => {
-  assert.equal(decide({ step: 'precombat_main' }), true)
+test('mn NEVER skips precombat main (M1) — your develop phase always stops', () => {
+  assert.equal(decide({ step: 'precombat_main' }), false)
+  // even with nothing playable + empty stack it holds
+  assert.equal(decide({ step: 'precombat_main', hasMainPhaseAction: false, currentStackKey: '' }), false)
 })
 
-test('mn on → skip postcombat_main too', () => {
+test('mn on + empty stack + nothing playable → skip postcombat_main', () => {
   assert.equal(decide({ step: 'postcombat_main' }), true)
 })
 
-test('mn on but something is playable → hold the main phase', () => {
-  assert.equal(decide({ step: 'precombat_main', hasMainPhaseAction: true }), false)
+test('mn on but something is playable → hold postcombat main', () => {
+  assert.equal(decide({ step: 'postcombat_main', hasMainPhaseAction: true }), false)
 })
 
-test('mn on but the stack is not empty → hold the main phase (resolve window)', () => {
-  assert.equal(decide({ step: 'precombat_main', currentStackKey: 'a' }), false)
+test('mn on but the stack is not empty → hold postcombat main (resolve window)', () => {
+  assert.equal(decide({ step: 'postcombat_main', currentStackKey: 'a' }), false)
 })
 
-test('mn off → hold a dead main phase', () => {
-  assert.equal(decide({ step: 'precombat_main' }, { mn: false }), false)
+test('mn off → hold a dead postcombat main phase', () => {
+  assert.equal(decide({ step: 'postcombat_main' }, { mn: false }), false)
 })
 
 // ── blk: declare blockers, no block to make (both sides) ───────────────────────

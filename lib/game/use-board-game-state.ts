@@ -6,6 +6,7 @@ import {
   getBoardCards,
   getCombatAssignments,
   getCommanderDamage,
+  getGameSession,
   getGameSessionPlayers,
   getStackItems,
   getStatusEffects,
@@ -16,6 +17,7 @@ import { enableFallbackRefresh, fallbackRefreshIntervalMs } from './dev'
 import type {
   BoardCard,
   CombatAssignment,
+  GameSession,
   GameSessionPlayer,
   GameTurnState,
   StackItem,
@@ -24,6 +26,7 @@ import type {
 export function useBoardGameState(sessionId: string) {
   const supabase = useMemo(() => createClient(), [])
   const [cards, setCards] = useState<BoardCard[]>([])
+  const [session, setSession] = useState<GameSession | null>(null)
   const [players, setPlayers] = useState<GameSessionPlayer[]>([])
   const [turnState, setTurnState] = useState<GameTurnState | null>(null)
   const [combatAssignments, setCombatAssignments] = useState<CombatAssignment[]>([])
@@ -34,8 +37,9 @@ export function useBoardGameState(sessionId: string) {
 
   const refresh = useCallback(async () => {
     try {
-      const [boardCards, sessionPlayers, nextTurnState, nextCombatAssignments, nextStackItems, status, nextCommanderDamage] =
+      const [nextSession, boardCards, sessionPlayers, nextTurnState, nextCombatAssignments, nextStackItems, status, nextCommanderDamage] =
         await Promise.all([
+          getGameSession(supabase, sessionId),
           getBoardCards(supabase, sessionId),
           getGameSessionPlayers(supabase, sessionId),
           getTurnState(supabase, sessionId),
@@ -46,6 +50,7 @@ export function useBoardGameState(sessionId: string) {
         ])
 
       setErrorMessage(null)
+      setSession(nextSession)
       // Fold the 'animated' status (mig 277) onto each card so the board can
       // badge animated lands without a second lookup.
       setCards(boardCards.map((c) => (status.animatedIds.has(c.id) ? { ...c, animated: true } : c)))
@@ -66,6 +71,7 @@ export function useBoardGameState(sessionId: string) {
 
     const channel = supabase
       .channel(`board:${sessionId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_sessions', filter: `id=eq.${sessionId}` }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_cards', filter: `session_id=eq.${sessionId}` }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'cards' }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_turn_state', filter: `session_id=eq.${sessionId}` }, refresh)
@@ -96,6 +102,7 @@ export function useBoardGameState(sessionId: string) {
 
   return {
     cards,
+    session,
     players,
     turnState,
     combatAssignments,

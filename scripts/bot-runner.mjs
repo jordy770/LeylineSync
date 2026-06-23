@@ -72,6 +72,28 @@ function did(action, session, bot, scope) {
 // Parse the engine's effective power/toughness (numeric/text) to a safe integer.
 const pt = (v) => { const n = Number(v); return Number.isFinite(n) ? n : 0 }
 
+// Combat keyword columns for a game_cards row `gc`, against session $1. Folded
+// into the brain's Creature.keywords so attack/block heuristics see evasion,
+// menace, trample, deathtouch and strike order — not just raw P/T.
+const KEYWORD_COLS = `
+  public.card_has_flying($1, gc.id) as flying,
+  public.card_has_reach($1, gc.id) as reach,
+  public.card_has_trample($1, gc.id) as trample,
+  public.card_has_menace($1, gc.id) as menace,
+  public.card_has_deathtouch($1, gc.id) as deathtouch,
+  public.card_has_first_strike($1, gc.id) as first_strike,
+  public.card_has_double_strike($1, gc.id) as double_strike`
+
+const toCreature = (r) => ({
+  id: r.id,
+  power: pt(r.power),
+  toughness: pt(r.toughness),
+  keywords: {
+    flying: r.flying, reach: r.reach, trample: r.trample, menace: r.menace,
+    deathtouch: r.deathtouch, firstStrike: r.first_strike, doubleStrike: r.double_strike,
+  },
+})
+
 /** Plain read as the postgres session role (RLS bypassed) — used for polling. */
 async function q(sql, params = []) {
   return (await client.query(sql, params)).rows
@@ -201,7 +223,7 @@ async function declareAttacks(session, bot, turn) {
   const eligible = await q(
     `select gc.id,
             public.card_effective_power($1, gc.id) as power,
-            public.card_effective_toughness($1, gc.id) as toughness
+            public.card_effective_toughness($1, gc.id) as toughness,${KEYWORD_COLS}
      from public.game_cards gc join public.cards c on c.id = gc.card_id
      where gc.session_id = $1 and gc.owner_id = $2 and gc.zone = 'battlefield'
        and c.type_line ilike '%creature%' and gc.is_tapped = false
@@ -214,17 +236,20 @@ async function declareAttacks(session, bot, turn) {
   const oppBlockers = await q(
     `select gc.id,
             public.card_effective_power($1, gc.id) as power,
-            public.card_effective_toughness($1, gc.id) as toughness
+            public.card_effective_toughness($1, gc.id) as toughness,${KEYWORD_COLS}
      from public.game_cards gc join public.cards c on c.id = gc.card_id
      where gc.session_id = $1 and coalesce(gc.controller_player_id, gc.owner_id) = $2
        and gc.zone = 'battlefield' and c.type_line ilike '%creature%' and gc.is_tapped = false`,
     [session, opp.player_id],
   )
+  // Our own life — lets the brain hold back defensive reserves against a lethal swing-back.
+  const myLife = pt((await q('select life_total from public.game_session_players where session_id = $1 and player_id = $2', [session, bot]))[0]?.life_total)
 
   const chosen = decideAttacks(
-    eligible.map((c) => ({ id: c.id, power: pt(c.power), toughness: pt(c.toughness) })),
-    oppBlockers.map((c) => ({ id: c.id, power: pt(c.power), toughness: pt(c.toughness) })),
+    eligible.map(toCreature),
+    oppBlockers.map(toCreature),
     pt(opp.life_total),
+    { myLife },
   )
   let declared = 0
   for (const id of chosen) {
@@ -239,7 +264,14 @@ async function declareBlocks(session, bot, turn) {
   const attackers = await q(
     `select ca.attacker_card_id as id,
             public.card_effective_power($1, ca.attacker_card_id) as power,
-            public.card_effective_toughness($1, ca.attacker_card_id) as toughness
+            public.card_effective_toughness($1, ca.attacker_card_id) as toughness,
+            public.card_has_flying($1, ca.attacker_card_id) as flying,
+            public.card_has_reach($1, ca.attacker_card_id) as reach,
+            public.card_has_trample($1, ca.attacker_card_id) as trample,
+            public.card_has_menace($1, ca.attacker_card_id) as menace,
+            public.card_has_deathtouch($1, ca.attacker_card_id) as deathtouch,
+            public.card_has_first_strike($1, ca.attacker_card_id) as first_strike,
+            public.card_has_double_strike($1, ca.attacker_card_id) as double_strike
      from public.game_combat_assignments ca
      where ca.session_id = $1 and ca.turn_number = $2 and ca.defending_player_id = $3`,
     [session, turn.turn_number, bot],
@@ -249,7 +281,7 @@ async function declareBlocks(session, bot, turn) {
   const blockers = await q(
     `select gc.id,
             public.card_effective_power($1, gc.id) as power,
-            public.card_effective_toughness($1, gc.id) as toughness
+            public.card_effective_toughness($1, gc.id) as toughness,${KEYWORD_COLS}
      from public.game_cards gc join public.cards c on c.id = gc.card_id
      where gc.session_id = $1 and coalesce(gc.controller_player_id, gc.owner_id) = $2
        and gc.zone = 'battlefield' and c.type_line ilike '%creature%' and gc.is_tapped = false
@@ -259,8 +291,8 @@ async function declareBlocks(session, bot, turn) {
   const myLife = pt((await q('select life_total from public.game_session_players where session_id = $1 and player_id = $2', [session, bot]))[0]?.life_total)
 
   const assign = decideBlocks(
-    attackers.map((c) => ({ id: c.id, power: pt(c.power), toughness: pt(c.toughness) })),
-    blockers.map((c) => ({ id: c.id, power: pt(c.power), toughness: pt(c.toughness) })),
+    attackers.map(toCreature),
+    blockers.map(toCreature),
     myLife,
   )
   let blocked = 0

@@ -19,12 +19,13 @@ import type {
 import BoardConnectionOverlay from './board/BoardConnectionOverlay'
 import BoardViewChrome from './board/BoardViewChrome'
 import EmptyBoardPanel from './board/EmptyBoardPanel'
+import GameFinishedOverlay from './board/GameFinishedOverlay'
 import StackRail from './board/StackRail'
 import MotionCard from './MotionCard'
 import CombatManager from './CombatManager'
 
 export default function GameBoard({ sessionId }: { sessionId: string }) {
-  const { cards, players, turnState, combatAssignments, stackItems, attackTaxes, commanderDamage, errorMessage } = useBoardGameState(sessionId)
+  const { cards, session, players, turnState, combatAssignments, stackItems, attackTaxes, commanderDamage, errorMessage } = useBoardGameState(sessionId)
   const [focusedPlayerId, setFocusedPlayerId] = useState<string | null>(null)
   const boardRef = useRef<HTMLDivElement | null>(null)
   const [targetElements, setTargetElements] = useState<Map<string, HTMLElement>>(() => new Map())
@@ -156,6 +157,11 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
         boardElement={boardRef.current}
         targetElements={targetElements}
       />
+      <AnimatePresence>
+        {session?.status === 'finished' ? (
+          <GameFinishedOverlay winnerPlayerId={session.winner_player_id ?? null} players={players} />
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }

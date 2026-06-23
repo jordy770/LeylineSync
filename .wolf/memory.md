@@ -5372,3 +5372,112 @@
 | 05:38 | Edited components/ControllerListV4.tsx | card() → cardNameById() | ~60 |
 | 11:30 | fix(attachments): resolve host name across owners — build cardNameById from boardCards (whole-table snapshot) merging battlefieldCards as fallback, so an Aura/Equipment we control on an opponent's creature names its host in the 🔗 tooltip | components/ControllerListV4.tsx | tsc+eslint clean | ~3k |
 | 05:39 | Edited docs/client-coverage-audit.md | 3→5 lines | ~104 |
+| 20:46 | Edited lib/game/bot-brain.ts | added nullish coalescing | ~634 |
+| 20:46 | Edited lib/game/bot-brain.ts | added 4 condition(s) | ~674 |
+| 20:47 | Edited lib/game/bot-brain.ts | added 1 condition(s) | ~575 |
+| 20:47 | Edited scripts/bot-runner.mjs | expanded (+22 lines) | ~259 |
+| 20:47 | Edited scripts/bot-runner.mjs | added optional chaining | ~419 |
+| 20:48 | Edited scripts/bot-runner.mjs | expanded (+7 lines) | ~512 |
+| 20:48 | Edited tests/unit/bot-brain.test.ts | expanded (+22 lines) | ~422 |
+| 20:48 | Edited tests/unit/bot-brain.test.ts | expanded (+37 lines) | ~688 |
+| 20:49 | Edited docs/backlog.md | 9→9 lines | ~155 |
+
+## Session: 2026-06-22 — bot combat keywords
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| now | Audit merge clean-hud-controller→master | git | clean: no conflict markers, tsc 0, 1089/1090 tests (1 fail = missing local oracle dump, gitignored, unrelated) | ~20k |
+| now | Keyword-aware bot combat (evasion/menace/trample/first-strike/deathtouch/reserves) | lib/game/bot-brain.ts, scripts/bot-runner.mjs, tests/unit/bot-brain.test.ts, docs/backlog.md | tsc 0; 30/30 bot-brain tests pass | ~40k |
+| 21:11 | Created supabase/functions_src/card_has_defender.sql | — | ~563 |
+| 21:11 | Edited supabase/functions_src/register_card_continuous_effects.sql | 3→4 lines | ~39 |
+| 21:11 | Edited supabase/functions_src/declare_attacker.sql | modified Defender() | ~128 |
+| 21:12 | Edited supabase/migrations/202605010323_defender_keyword.sql | 4→8 lines | ~181 |
+| 21:12 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~124 |
+| 21:13 | Created tests/feature/defender.test.ts | — | ~546 |
+| 21:15 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified Defender() | ~68 |
+| 21:15 | Edited supabase/functions_src/register_card_continuous_effects.sql | 5→6 lines | ~36 |
+| 21:15 | Edited tests/fixtures/test-cards.json | inline fix | ~72 |
+| 21:15 | Edited supabase/migrations/202605010323_defender_keyword.sql | 4→9 lines | ~209 |
+| 21:15 | Edited tests/feature/defender.test.ts | 4→4 lines | ~94 |
+| 21:16 | Edited supabase/migrations/202605010323_defender_keyword.sql | modified DDL() | ~333 |
+| 21:19 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~800 |
+| 21:19 | Edited components/ControllerListV5.tsx | 12→13 lines | ~156 |
+| 21:19 | Edited components/ControllerListV5.tsx | 14→15 lines | ~182 |
+| now | F2: combat keyword-hint chips on controller (own creatures in attack/block layouts) | components/ControllerListV5.tsx | tsc 0, eslint 0 errors | ~25k |
+| now | F3: Defender keyword in engine (can't attack) | functions_src/{card_has_defender,register_card_continuous_effects,declare_attacker}.sql, mig 202605010323, tests/feature/defender.test.ts, fixtures, buglog | full suite 1103/1104 (1 pre-existing oracle-dump fail) | ~45k |
+
+## Session: 2026-06-23 13:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-23 13:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-23 16:17
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| now | Fixed play-db migration history desync (stuck at 091; schema was fully current from backup). Backfilled supabase_migrations.schema_migrations with all 237 file versions (087-323) via direct local INSERT (avoided `supabase migration repair` to not touch the linked REMOTE). Now 0 files missing; highest=323; baseline rows 0..0/0..1 retained. | play db @54322 | migration up now no-op; db reset replays cleanly | ~15k |
+| 17:30 | Edited lib/game/use-board-game-state.ts | 18→20 lines | ~125 |
+| 17:31 | Edited lib/game/use-board-game-state.ts | 2→3 lines | ~54 |
+| 17:31 | Edited lib/game/use-board-game-state.ts | 12→14 lines | ~180 |
+| 17:31 | Edited lib/game/use-board-game-state.ts | 2→3 lines | ~100 |
+| 17:31 | Edited lib/game/use-board-game-state.ts | 3→4 lines | ~14 |
+| 17:32 | Created components/board/GameFinishedOverlay.tsx | — | ~927 |
+| 17:32 | Edited components/GameBoard.tsx | added 1 import(s) | ~80 |
+| 17:33 | Edited components/GameBoard.tsx | inline fix | ~44 |
+| 17:33 | Edited components/GameBoard.tsx | added optional chaining | ~106 |
+| 17:34 | finished-game victory screen on board | use-board-game-state.ts, GameBoard.tsx, board/GameFinishedOverlay.tsx | tsc+eslint pass | ~6k |
+| 17:35 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~41 |
+| 17:35 | Edited lib/game/use-controller-game-state.ts | added nullish coalescing | ~34 |
+| 17:35 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~16 |
+| 17:36 | Edited components/board/GameFinishedOverlay.tsx | modified GameFinishedOverlay() | ~277 |
+| 17:36 | Edited components/board/GameFinishedOverlay.tsx | expanded (+13 lines) | ~532 |
+| 17:37 | Edited components/ControllerListV5.tsx | 8→9 lines | ~50 |
+| 17:37 | Edited components/board/GameFinishedOverlay.tsx | CSS: winnerPlayerId | ~286 |
+| 17:37 | Edited components/GameBoard.tsx | added nullish coalescing | ~47 |
+| 17:38 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~41 |
+| 17:38 | Edited components/ControllerListV5.tsx | expanded (+10 lines) | ~130 |
+| 17:38 | finished screen also on controller (perspective: you win/defeat/draw) | use-controller-game-state.ts, ControllerListV5.tsx, board/GameFinishedOverlay.tsx | tsc+eslint clean | ~5k |
+| 18:09 | Edited components/GameSessionLobby.tsx | 2→4 lines | ~81 |
+| 18:09 | Edited components/GameSessionLobby.tsx | added optional chaining | ~368 |
+| 18:09 | Edited components/GameSessionLobby.tsx | 9→9 lines | ~141 |
+| 18:09 | Edited components/GameSessionLobby.tsx | added 2 condition(s) | ~177 |
+| 18:10 | Edited components/GameSessionLobby.tsx | expanded (+78 lines) | ~1287 |
+| 18:11 | start flow: Start opens deck-pick step -> spawn (swallow already-spawned) -> start | GameSessionLobby.tsx | tsc+eslint clean | ~4k |
+| 18:21 | Edited lib/game/data.ts | added 1 condition(s) | ~222 |
+| 18:21 | Edited components/GameSessionLobby.tsx | 7→8 lines | ~47 |
+| 18:21 | Edited components/GameSessionLobby.tsx | 2→6 lines | ~129 |
+| 18:22 | Edited components/GameSessionLobby.tsx | 9→11 lines | ~107 |
+| 18:22 | Edited components/GameSessionLobby.tsx | added optional chaining | ~117 |
+| 18:22 | Edited components/GameSessionLobby.tsx | added optional chaining | ~349 |
+| 18:22 | Edited components/GameSessionLobby.tsx | CSS: playerId | ~215 |
+| 18:22 | Edited components/GameSessionLobby.tsx | 2→2 lines | ~46 |
+| 18:23 | Edited components/GameSessionLobby.tsx | CSS: undefined | ~238 |
+| 18:23 | Edited components/GameSessionLobby.tsx | expanded (+12 lines) | ~659 |
+| 18:24 | Edited components/GameSessionLobby.tsx | expanded (+11 lines) | ~230 |
+| 18:24 | Edited components/GameSessionLobby.tsx | 6→7 lines | ~116 |
+| 18:25 | ready system: derive readiness from spawned deck, per-player badges, realtime lobby, gate host Start | GameSessionLobby.tsx, data.ts | tsc+eslint clean | ~7k |
+| 21:46 | Edited ../../.cloudflared/config.yml | expanded (+6 lines) | ~215 |
+| 23:16 | Created supabase/functions_src/clear_deck_from_session.sql | — | ~471 |
+| 23:17 | Edited supabase/migrations/202605010324_clear_deck_from_session.sql | 2→4 lines | ~76 |
+| 23:17 | Edited lib/game/actions.ts | added 1 condition(s) | ~161 |
+| 23:17 | Edited components/GameSessionLobby.tsx | 7→8 lines | ~50 |
+| 23:18 | Edited components/GameSessionLobby.tsx | added 1 condition(s) | ~376 |
+| 23:18 | Edited components/GameSessionLobby.tsx | 5→5 lines | ~72 |
+| 23:18 | Edited components/GameSessionLobby.tsx | 7→7 lines | ~137 |
+| 23:18 | Edited components/GameSessionLobby.tsx | expanded (+12 lines) | ~337 |
+| 23:18 | Edited components/GameSessionLobby.tsx | 3→3 lines | ~50 |
+| 23:20 | Created tests/feature/change-deck.test.ts | — | ~743 |
+| 23:21 | Edited tests/feature/change-deck.test.ts | 8→8 lines | ~98 |
+| now | Lobby deck UX: rename "Spawn" -> "Lock in deck", add "Change deck" (clear + re-pick, lobby-only). New RPC clear_deck_from_session (mig 324), clearDeckFromSession action, GameSessionLobby wiring, tests/feature/change-deck.test.ts | functions_src/clear_deck_from_session.sql, mig 324, lib/game/actions.ts, components/GameSessionLobby.tsx | tsc 0, lint 0, suite 1105/1106 (1 pre-existing oracle-dump fail); mig 324 applied to play db + leyline_test | ~40k |
+| 23:30 | Edited lib/supabase/client.ts | added 2 condition(s) | ~351 |
+| 23:34 | Edited lib/supabase/client.ts | removed 27 lines | ~64 |
+| 23:45 | Edited lib/game/auto-pass.ts | 11→9 lines | ~131 |
+| 23:45 | Edited lib/game/auto-pass.ts | isMainPhase() → first() | ~152 |
+| 23:45 | Edited tests/unit/auto-pass.test.ts | 21→23 lines | ~287 |
+| now | Fix: auto-pass no longer skips precombat main (M1) — mn now only covers postcombat_main; M1 always stops | lib/game/auto-pass.ts, tests/unit/auto-pass.test.ts | tsc 0, 39/39 auto-pass tests, suite 1105/1106 | ~12k |
+| 23:57 | Edited .gitignore | 4→7 lines | ~85 |

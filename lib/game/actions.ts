@@ -1522,6 +1522,23 @@ export async function spawnDeckForSession(
   return data as { library: number; commander_seeded: boolean }
 }
 
+// Inverse of spawnDeckForSession: clears the caller's spawned cards in the lobby
+// (status 'open' only) so they can pick a different deck and lock in again.
+export async function clearDeckFromSession(
+  supabase: SupabaseClient,
+  sessionId: string,
+) {
+  const { data, error } = await supabase.rpc('clear_deck_from_session', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as { cleared: number }
+}
+
 // Designate (or clear, with null) a deck's commander.
 export async function setDeckCommander(
   supabase: SupabaseClient,
