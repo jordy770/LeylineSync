@@ -5740,3 +5740,75 @@
 | 09:08 | Edited components/ControllerListV5.tsx | inline fix | ~38 |
 | 09:08 | Edited components/ControllerListV5.tsx | 3→4 lines | ~79 |
 | now | Auto-resolve stack: new `res` auto-pass switch — on YOUR turn, auto-pass to resolve your spell/trigger on the stack when you hold no response (rsp still stops you). Default on. Pure client (server resolves on all-pass) | lib/game/auto-pass.ts, components/ControllerListV5.tsx, tests/unit/auto-pass.test.ts | suite 1115/1116, 45/45 auto-pass tests, tsc 0, lint 0 | ~15k |
+| 09:54 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→4 lines | ~30 |
+| 09:54 | Edited supabase/functions_src/cast_card_from_hand.sql | modified Checklands() | ~341 |
+| 09:55 | Edited supabase/functions_src/cast_card_from_hand.sql | expanded (+14 lines) | ~212 |
+| 09:55 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→3 lines | ~43 |
+| 09:56 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~327 |
+| 09:57 | Edited components/ControllerListV5.tsx | 3→3 lines | ~63 |
+| 09:57 | Edited scripts/bot-runner.mjs | 2→3 lines | ~58 |
+| 09:59 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~190 |
+| 09:59 | Edited supabase/migrations/202605010327_shock_lands.sql | 2→5 lines | ~97 |
+| 10:00 | Created tests/feature/shock-land.test.ts | — | ~854 |
+| 10:06 | investigated #1 filter lands — already work end-to-end (engine + CardActionSheet); verified vs local DB; no code change | .wolf/cerebrum.md (learning) | Darkwater+Flooded Grove verified | ~6k |
+| 10:09 | Edited lib/game/card-behavior-schema.ts | modified Checklands() | ~140 |
+| now | Shock lands (Overgrown Tomb etc.): new enters_tapped {unless:{pay_life:N}} → land enters tapped + pay_life_untap decision (pay N life to untap, MTG 119.4 affordability). cast_card_from_hand + submit_decision + schema + controller (ConfirmBody) + bot (declines) + 11 shocks scripted (card-scripts.json + live db). mig 327 | many | suite 1117/1118; shock-land.test.ts 2/2 | ~70k |
+| 11:39 | Edited components/ControllerListV5.tsx | 5→9 lines | ~52 |
+| 11:39 | Edited components/ControllerListV5.tsx | 2→2 lines | ~77 |
+| 11:39 | Edited components/ControllerListV5.tsx | 4→5 lines | ~26 |
+| 11:39 | Edited components/ControllerListV5.tsx | added 4 condition(s) | ~406 |
+| 11:40 | Edited components/ControllerListV5.tsx | 1→2 lines | ~28 |
+| 11:40 | Edited components/ControllerListV5.tsx | 4→5 lines | ~66 |
+| 11:40 | Edited components/ControllerListV5.tsx | expanded (+10 lines) | ~146 |
+| 11:40 | Edited components/ControllerListV5.tsx | CSS: onOpenSelf | ~116 |
+| 11:40 | Edited components/ControllerListV5.tsx | CSS: active, hover | ~144 |
+| 11:41 | Edited components/ControllerListV5.tsx | added error handling | ~2619 |
+| 11:41 | Edited components/ControllerListV5.tsx | 3→5 lines | ~137 |
+| 11:42 | Edited components/controller/CardActionSheet.tsx | 4→6 lines | ~23 |
+| 11:42 | Edited components/controller/CardActionSheet.tsx | CSS: onAdjustPlusCounters, delta, onSacrifice | ~124 |
+| 11:42 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~627 |
+| 11:43 | Edited components/controller/CardActionSheet.tsx | 3→7 lines | ~151 |
+| 11:43 | Edited components/controller/CardActionSheet.tsx | 3→2 lines | ~43 |
+| 11:45 | feat: manual table actions on controller (life +/-, player counters, make tokens, sacrifice, +1/+1) — reuse player-scoped RPCs, no migrations | ControllerListV5.tsx, controller/CardActionSheet.tsx | tsc/eslint clean; create_token verified as player | ~14k |
+| 12:10 | Edited components/ControllerListV5.tsx | 6→2 lines | ~10 |
+| 12:11 | Edited components/ControllerListV5.tsx | inline fix | ~36 |
+| 12:11 | Edited components/ControllerListV5.tsx | 5→4 lines | ~22 |
+| 12:11 | Edited components/ControllerListV5.tsx | removed 33 lines | ~30 |
+| 12:11 | Edited components/ControllerListV5.tsx | 2→1 lines | ~14 |
+| 12:11 | Edited components/ControllerListV5.tsx | 5→4 lines | ~51 |
+| 12:11 | Edited components/ControllerListV5.tsx | reduced (-10 lines) | ~38 |
+| 12:11 | Edited components/ControllerListV5.tsx | 6→5 lines | ~26 |
+| 12:11 | Edited components/ControllerListV5.tsx | 5→4 lines | ~23 |
+| 12:11 | Edited components/ControllerListV5.tsx | reduced (-8 lines) | ~49 |
+| 12:12 | Edited components/ControllerListV5.tsx | removed 184 lines | ~24 |
+| 12:12 | Edited components/ControllerListV5.tsx | 5→3 lines | ~73 |
+| 12:12 | Edited components/controller/CardActionSheet.tsx | 6→4 lines | ~12 |
+| 12:12 | Edited components/controller/CardActionSheet.tsx | 8→4 lines | ~47 |
+| 12:12 | Edited components/controller/CardActionSheet.tsx | 7→3 lines | ~76 |
+| 12:13 | Edited components/controller/CardActionSheet.tsx | removed 36 lines | ~20 |
+| 12:14 | REVERTED manual table actions (user: rules engine handles state, not per-player manual) — surgical reverts preserving parallel shock-lands work | ControllerListV5.tsx, controller/CardActionSheet.tsx, cerebrum (do-not-repeat) | tsc clean; no residuals | ~4k |
+| 13:41 | Edited components/ControllerListV5.tsx | added optional chaining | ~120 |
+| 13:41 | Edited components/ControllerListV5.tsx | CSS: stackCount | ~138 |
+| 13:42 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~290 |
+| 13:42 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~77 |
+| 13:43 | Edited components/board/BoardViewChrome.tsx | CSS: null | ~432 |
+| 13:45 | feat(C): priority clarity — controller PriorityPanel names priority holder in Wait state + on-stack hint; board chrome shows Waiting-on-X chip when priority is non-active | ControllerListV5.tsx (PriorityPanel), board/BoardViewChrome.tsx | tsc/eslint clean; get_turn_state priority_username verified | ~7k |
+| 14:10 | Edited tests/feature/deck-smoke.test.ts | 2→2 lines | ~24 |
+| 14:11 | Edited tests/feature/deck-smoke.test.ts | added 1 condition(s) | ~224 |
+| 14:13 | verify-all: full suite 1630/1630 green; fixed deck-smoke brittle oracle filename; renumbered shock_lands 327->333 (dup-version w/ realtime_game_tables) + tracked local | tests/feature/deck-smoke.test.ts, migrations/202605010333_shock_lands.sql | all tests pass; shock-land SL1/SL2 green | ~10k |
+
+## Session: 2026-06-25 22:02
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:15 | Created docs/open-items.md | — | ~1601 |
+
+| 22:16 | Merged + verified all TODO/deferred notes across roadmap-memory/cerebrum/audit/backlog/buglog vs codebase (3 parallel Explore agents, migs→333) into one doc; 1 real bug (draw-floor) + ~13 deferred gaps + 3 frontier, rest already shipped | docs/open-items.md | created | ~30k |
+| 22:16 | Edited docs/client-coverage-audit.md | 1→4 lines | ~55 |
+| 22:16 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 1→6 lines | ~90 |
+| 22:18 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 3→6 lines | ~110 |
+| 22:18 | Edited supabase/migrations/202605010334_draw_floor_fix.sql | 2→5 lines | ~87 |
+| 22:20 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~294 |
+| 22:21 | Created tests/feature/draw-floor.test.ts | — | ~767 |
+| 22:23 | Edited docs/open-items.md | 5→7 lines | ~130 |
+| 22:24 | Fixed draw-floor bug (mig 334): draw branch used 1..greatest(1,amount) → count/dynamic draw of 0 drew 1. Now absent amount=1, present amount draws exactly N. +2 fixtures (Floor/Plain Drummer Test), tests DF1-3 green, 16 related draw-path tests green | functions_src/apply_triggered_ability_effects.sql, migrations/202605010334_draw_floor_fix.sql, tests/feature/draw-floor.test.ts, tests/fixtures/test-cards.json, buglog bug-1483 | ✓ verified | ~12k |

@@ -1355,6 +1355,8 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
               />
               <PriorityPanel
                 hasPriority={hasPriority}
+                priorityUsername={turnState?.priority_username ?? null}
+                stackCount={pendingStackItems.length}
                 isSessionFinished={isSessionFinished}
                 canResolveCombatDamage={canResolveCombatDamage}
                 combatDamageStage={combatDamageStage}
@@ -2475,7 +2477,7 @@ function PendingDecisionPrompt({
         <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
       ) : CARD_PICK_DECISIONS.has(decision.decision_type) ? (
         <CardPickBody decision={decision} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
-      ) : decision.decision_type === 'confirm' ? (
+      ) : decision.decision_type === 'confirm' || decision.decision_type === 'pay_life_untap' ? (
         <ConfirmBody isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'choose_player' ? (
         <ChoosePlayerBody decision={decision} isPending={isPending} onSubmit={submit} />
@@ -3051,6 +3053,8 @@ const AUTOPASS_GROUPS: { title: string; rows: AutoPassRow[] }[] = [
 
 function PriorityPanel({
   hasPriority,
+  priorityUsername,
+  stackCount,
   isSessionFinished,
   canResolveCombatDamage,
   combatDamageStage,
@@ -3063,6 +3067,8 @@ function PriorityPanel({
   onPassPriority,
 }: {
   hasPriority: boolean
+  priorityUsername?: string | null
+  stackCount: number
   isSessionFinished: boolean
   canResolveCombatDamage: boolean
   combatDamageStage: string | null
@@ -3110,11 +3116,21 @@ function PriorityPanel({
           <span className="text-[9px] font-semibold opacity-70">Priority</span>
         </button>
       ) : (
-        <div className="flex h-[72px] w-full flex-col items-center justify-center gap-1 rounded-2xl border border-[#1E2230]">
-          <span className="text-[9px] font-black uppercase tracking-widest text-slate-700">
-            {blockPassReason && blockPassReason !== 'Waiting for a decision' ? 'Act' : 'Wait'}
-          </span>
-          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-800" />
+        <div className="flex h-[72px] w-full flex-col items-center justify-center gap-0.5 rounded-2xl border border-[#1E2230] px-1">
+          {blockPassReason && blockPassReason !== 'Waiting for a decision' ? (
+            <span className="text-[9px] font-black uppercase tracking-widest text-amber-400/80">Act</span>
+          ) : (
+            <>
+              <span className="text-[8px] font-black uppercase tracking-widest text-slate-600">Waiting</span>
+              <span className="max-w-full truncate text-[10px] font-bold leading-tight text-slate-400" title={priorityUsername ? `Waiting for ${priorityUsername}` : undefined}>
+                {priorityUsername ?? '…'}
+              </span>
+              {stackCount > 0 && (
+                <span className="text-[7px] font-black uppercase tracking-wider text-orange-500/70">on the stack</span>
+              )}
+            </>
+          )}
+          <div className="mt-0.5 h-1.5 w-1.5 animate-pulse rounded-full bg-slate-700" />
         </div>
       )}
 
@@ -3193,7 +3209,9 @@ function PriorityPanel({
             hasPriority ? 'bg-amber-300 shadow-[0_0_8px_rgba(252,211,77,0.7)]' : 'bg-slate-800'
           }`}
         />
-        <span className="text-[7px] text-slate-700">{hasPriority ? '→ YOU' : '...'}</span>
+        <span className="max-w-full truncate px-0.5 text-[7px] text-slate-600" title={hasPriority ? 'You have priority' : priorityUsername ? `${priorityUsername} has priority` : undefined}>
+          {hasPriority ? '→ YOU' : (priorityUsername ?? '...')}
+        </span>
       </div>
     </aside>
   )

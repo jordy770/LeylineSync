@@ -138,6 +138,7 @@ function decisionResult(d) {
     case 'choose_color': return { color: options[0]?.color ?? 'W' }
     case 'choose_creature_type': return { type: options[0]?.type ?? 'Human' }
     case 'confirm': return { confirmed: false }
+    case 'pay_life_untap': return { confirmed: false } // bot declines — shock land enters tapped (safe, no life paid)
     default: return { chosen: ids.slice(0, min) }
   }
 }

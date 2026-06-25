@@ -1301,6 +1301,9 @@ export const CardBehaviorScriptV2Schema = z.object({
         // Checklands (mig 225): untapped if you control a battlefield permanent
         // of a listed type ("a Forest or an Island").
         z.object({ control_type: z.array(z.string()).nonempty() }),
+        // Shock lands (mig 327): untapped if you choose to pay N life — a
+        // pay_life_untap decision raised on entry (Overgrown Tomb, …).
+        z.object({ pay_life: z.number().int().positive() }),
       ]),
     }),
   ]).optional(),

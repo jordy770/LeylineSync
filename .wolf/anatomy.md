@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-25T07:08:54.216Z
-> Files: 57 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-25T20:23:15.567Z
+> Files: 70 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -25,6 +25,7 @@
 
 ## .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/
 
+- `project_roadmap.md` — LeylineSync — Combined Roadmap (as of 2026-06-04) (~13609 tok)
 
 ## .claude/rules/
 
@@ -95,18 +96,19 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~69850 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70146 tok)
 - `GameBoard.tsx` — GameBoard (~7302 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~12039 tok)
 
 ## components/board/
 
-- `BoardViewChrome.tsx` — BoardViewChrome (~590 tok)
+- `BoardViewChrome.tsx` — BoardViewChrome (~885 tok)
 - `GameFinishedOverlay.tsx` — GameFinishedOverlay (~1180 tok)
 
 ## components/controller/
 
+- `CardActionSheet.tsx` — CardActionSheet (~19181 tok)
 
 ## components/judge/
 
@@ -123,6 +125,8 @@
 ## docs/
 
 - `backlog.md` — Backlog (~169 tok)
+- `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1657 tok)
+- `open-items.md` — Open items — merged & verified (~1535 tok)
 
 ## docs/commander-decks/
 
@@ -135,6 +139,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~13002 tok)
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~19791 tok)
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~10131 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
@@ -159,7 +164,7 @@
 
 ## scripts/
 
-- `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~8207 tok)
+- `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~8239 tok)
 
 ## supabase/
 
@@ -170,7 +175,9 @@
 ## supabase/functions_src/
 
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~20733 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~12596 tok)
 - `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5990 tok)
 - `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1105 tok)
 - `clear_deck_from_session.sql` — supabase/functions_src/clear_deck_from_session.sql (~471 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3458 tok)
@@ -181,6 +188,7 @@
 - `get_turn_state.sql` — supabase/functions_src/get_turn_state.sql (~785 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2657 tok)
 - `reset_mana.sql` — supabase/functions_src/reset_mana.sql (~512 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~13927 tok)
 
 ## supabase/migrations/
 
@@ -190,9 +198,11 @@
 - `202605010326_optional_trigger_targets.sql` — 202605010326_optional_trigger_targets (~23518 tok)
 - `202605010326_stack_bot_username.sql` — 202605010326_stack_bot_username (~1517 tok)
 - `202605010327_realtime_game_tables.sql` — 202605010327_realtime_game_tables (~302 tok)
+- `202605010327_shock_lands.sql` — 202605010327_shock_lands (~19923 tok)
 - `202605010328_turn_state_bot_name.sql` — 202605010328_turn_state_bot_name (~850 tok)
 - `202605010330_game_log.sql` — 202605010330_game_log (~784 tok)
 - `202605010331_game_log_outcomes.sql` — 202605010331_game_log_outcomes (~876 tok)
+- `202605010334_draw_floor_fix.sql` — 202605010334_draw_floor_fix (~12656 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -204,12 +214,15 @@
 
 - `cast-watcher-self.test.ts` — Cast-watcher self-trigger (mig 325) — a "whenever you cast a creature spell" (~663 tok)
 - `change-deck.test.ts` — Lobby "change deck" (mig 324) — clear_deck_from_session lets a player undo a (~744 tok)
+- `deck-smoke.test.ts` — Deck smoke test: every curated script in docs/commander-decks/card-scripts.json (~2795 tok)
 - `defender.test.ts` — Defender enforcement (mig 323) — "a creature with defender can't attack." (~549 tok)
+- `draw-floor.test.ts` — Draw-floor fix (mig 334). The draw branch of apply_triggered_ability_effects (~767 tok)
 - `optional-trigger-target.test.ts` — Optional ("up to one target …") triggered-ability targets (mig 326). A trigger (~675 tok)
+- `shock-land.test.ts` — Shock lands (mig 327) — "enters tapped UNLESS you pay 2 life". Playing one puts (~854 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~43610 tok)
+- `test-cards.json` (~43873 tok)
 
 ## tests/harness/
 
