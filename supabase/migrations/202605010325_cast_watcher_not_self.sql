@@ -1,7 +1,10 @@
--- supabase/functions_src/fire_watcher_triggers.sql
--- CANONICAL current definition (seeded from 202605010181_watcher_nontoken_filter.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010325_cast_watcher_not_self
+-- fire_watcher_triggers: a cast watcher ("whenever you cast a creature spell") no
+-- longer fires for casting its OWN source. The spell being cast is on the stack,
+-- not the battlefield, so for spell_cast/cast_from_exile the changed card is no
+-- longer included as a watcher of itself (Bygone Bishop / Eshki casting themselves).
+-- Generated from supabase/functions_src (fire_watcher_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.fire_watcher_triggers(
   p_session_id uuid,

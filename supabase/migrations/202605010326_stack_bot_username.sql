@@ -1,14 +1,46 @@
--- supabase/functions_src/get_stack_items.sql
--- CANONICAL current definition (seeded from 202605010077_dies_and_attacks_triggers.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
---
--- Adds source_card_image_url + source_card_type_line so the controller can show
--- a card thumbnail / zoom for each spell on the stack (the source card lives in
--- zone 'stack', so it is not in the client's hand/battlefield image map).
--- NOTE: changing the RETURNS TABLE shape requires dropping the old function
--- first (Postgres won't change an existing function's return type) — the
--- migration hand-adds `drop function if exists public.get_stack_items(uuid);`.
+-- 202605010326_stack_bot_username
+-- Stack/player names for bots. (1) get_session_players + get_stack_items label a
+-- bot 'CPU 🤖 <seat>' (else profile name / short id) so CPU spells aren't shown
+-- as "Unknown player" and multiple CPUs stay distinct. (2) get_stack_items'
+-- target_username is now NULL when the spell has no player target (it used to
+-- fall back to "Unknown player", showing a bogus "→ Unknown player"). RETURNS
+-- TABLE shapes unchanged.
+-- Generated from supabase/functions_src (get_session_players, get_stack_items) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+-- supabase/functions_src/get_session_players.sql
+-- CANONICAL current definition (seeded from 00_baseline.sql; mig 222 added
+-- mulligans + opening_hand_kept for the opening-hand overlay).
+-- Edit THIS file, then generate a migration with scripts/new-migration.mjs.
+-- NOTE: changing the RETURNS TABLE shape needs `drop function if exists
+-- public.get_session_players(uuid);` in the migration prelude.
+
+CREATE OR REPLACE FUNCTION "public"."get_session_players"("p_session_id" "uuid") RETURNS TABLE("session_id" "uuid", "player_id" "uuid", "username" "text", "seat_number" integer, "life_total" integer, "mulligans" integer, "opening_hand_kept" boolean, "joined_at" timestamp with time zone)
+    LANGUAGE "sql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select
+    game_session_players.session_id,
+    game_session_players.player_id,
+    coalesce(
+      nullif(profiles.username, ''),
+      -- Seat-numbered so multiple CPUs in one pod stay distinguishable.
+      case when game_session_players.is_bot then 'CPU 🤖 ' || game_session_players.seat_number
+           else left(game_session_players.player_id::text, 8) end
+    ) as username,
+    game_session_players.seat_number,
+    game_session_players.life_total,
+    game_session_players.mulligans,
+    game_session_players.opening_hand_kept,
+    game_session_players.joined_at
+  from public.game_session_players
+  left join public.profiles
+    on profiles.id = game_session_players.player_id
+  where game_session_players.session_id = p_session_id
+    and public.is_session_player(p_session_id, auth.uid())
+  order by game_session_players.seat_number;
+$$;
+grant execute on function public.get_session_players(uuid) to authenticated;
 
 create or replace function public.get_stack_items(
   p_session_id uuid

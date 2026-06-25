@@ -8,6 +8,7 @@ import {
   getBoardCards,
   getCombatActionState,
   getCombatAssignments,
+  getCastFromLibraryTopPerms,
   getCommanderDamage,
   getControllerCards,
   getCostReductions,
@@ -25,7 +26,7 @@ import {
   normalizeManaPool,
 } from './data'
 import { enableFallbackRefresh, fallbackRefreshIntervalMs } from './dev'
-import type { CommanderDamageEntry, CostReductionEffect } from './data'
+import type { CastFromTopPerm, CommanderDamageEntry, CostReductionEffect } from './data'
 import type {
   BoardCard,
   CombatActionState,
@@ -38,6 +39,11 @@ import type {
   RestrictedManaEntry,
   StackItem,
 } from './types'
+
+// One game action touches several tables, each firing its own realtime event.
+// Coalesce that burst into a single state reload (~one frame) instead of running
+// the full 18-query load once per event.
+const RELOAD_DEBOUNCE_MS = 60
 
 export function useControllerGameState(sessionId: string) {
   const supabase = useMemo(() => createClient(), [])
@@ -55,6 +61,7 @@ export function useControllerGameState(sessionId: string) {
   const [restrictedMana, setRestrictedMana] = useState<RestrictedManaEntry[]>([])
   const [costReductions, setCostReductions] = useState<CostReductionEffect[]>([])
   const [playableFromExileIds, setPlayableFromExileIds] = useState<Set<string>>(() => new Set())
+  const [castFromTopPerms, setCastFromTopPerms] = useState<CastFromTopPerm[]>([])
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [isSessionFinished, setIsSessionFinished] = useState(false)
   const [winnerPlayerId, setWinnerPlayerId] = useState<string | null>(null)
@@ -94,6 +101,7 @@ export function useControllerGameState(sessionId: string) {
         nextCommanderDamage,
         nextPlayableFromExileIds,
         nextCostReductions,
+        nextCastFromTopPerms,
       ] = await Promise.all([
         getGameSession(supabase, sessionId),
         getControllerCards(supabase, sessionId, currentPlayerId),
@@ -112,6 +120,7 @@ export function useControllerGameState(sessionId: string) {
         getCommanderDamage(supabase, sessionId),
         getPlayableFromExileIds(supabase, sessionId, currentPlayerId),
         getCostReductions(supabase, sessionId, currentPlayerId),
+        getCastFromLibraryTopPerms(supabase, sessionId, currentPlayerId),
       ])
 
       // Fold active until-end-of-turn pumps onto each card so effective P/T shows
@@ -132,6 +141,7 @@ export function useControllerGameState(sessionId: string) {
       setAttackTaxes(statusEffects.taxes)
       setCommanderDamage(nextCommanderDamage)
       setPlayableFromExileIds(nextPlayableFromExileIds)
+      setCastFromTopPerms(nextCastFromTopPerms)
       setPlayers(sessionPlayers)
       setTurnState(nextTurnState)
       setCombatActionState(nextCombatActionState)
@@ -158,20 +168,32 @@ export function useControllerGameState(sessionId: string) {
     setIsLoading(true)
     loadControllerState()
 
+    // Coalesce the burst of table-change events a single action produces into one
+    // reload (a cast touches game_cards + game_stack_items + game_turn_state + …).
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
+    let lastRealtimeAt = 0
+    const scheduleReload = () => {
+      lastRealtimeAt = Date.now()
+      if (debounceTimer) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => { debounceTimer = null; loadControllerState() }, RELOAD_DEBOUNCE_MS)
+    }
+
     const channel = supabase
       .channel(`controller-v2:${sessionId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_cards', filter: `session_id=eq.${sessionId}` }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'cards' }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_sessions', filter: `id=eq.${sessionId}` }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `session_id=eq.${sessionId}` }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_session_players', filter: `session_id=eq.${sessionId}` }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_turn_state', filter: `session_id=eq.${sessionId}` }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_stack_items', filter: `session_id=eq.${sessionId}` }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_pending_decisions', filter: `session_id=eq.${sessionId}` }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers' }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, loadControllerState)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_commander_damage', filter: `session_id=eq.${sessionId}` }, loadControllerState)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_cards', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      // The global `cards` catalog has no session_id (can't be filtered) and is
+      // static during play — its data is re-joined on every reload — so we don't
+      // subscribe to it; doing so fired a game-wide reload on every catalog edit/import.
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_sessions', filter: `id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_session_players', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_turn_state', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_stack_items', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_pending_decisions', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_commander_damage', filter: `session_id=eq.${sessionId}` }, scheduleReload)
       .subscribe((status, error) => {
         console.log('Controller v2 realtime status:', status)
         if (error) {
@@ -179,11 +201,18 @@ export function useControllerGameState(sessionId: string) {
         }
       })
 
+    // Fallback poll: reload only when realtime has been SILENT for an interval.
+    // This still skips polling on top of a live, actively-delivering channel, but
+    // recovers a subscribed-but-silent one (e.g. a table missing from the
+    // supabase_realtime publication) instead of waiting for a manual refresh.
     const refreshInterval = enableFallbackRefresh
-      ? window.setInterval(loadControllerState, fallbackRefreshIntervalMs)
+      ? window.setInterval(() => {
+          if (Date.now() - lastRealtimeAt >= fallbackRefreshIntervalMs) loadControllerState()
+        }, fallbackRefreshIntervalMs)
       : null
 
     return () => {
+      if (debounceTimer) clearTimeout(debounceTimer)
       if (refreshInterval) {
         window.clearInterval(refreshInterval)
       }
@@ -207,6 +236,7 @@ export function useControllerGameState(sessionId: string) {
     restrictedMana,
     costReductions,
     playableFromExileIds,
+    castFromTopPerms,
     playerId,
     isSessionFinished,
     winnerPlayerId,

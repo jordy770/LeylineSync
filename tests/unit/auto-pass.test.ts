@@ -6,7 +6,7 @@ import assert from 'node:assert/strict'
 import { shouldAutoPass, type AutoPassDecisionInput, type AutoPassSettings } from '../../lib/game/auto-pass'
 
 // All skips on, stops at their defaults (rsp off) — the fresh-session shape.
-const SETTINGS: AutoPassSettings = { op: true, own: true, stk: true, rsp: false, atk: true, blk: true, mn: true }
+const SETTINGS: AutoPassSettings = { op: true, own: true, stk: true, rsp: false, atk: true, blk: true, mn: true, res: false }
 
 // A neutral "your own empty step, nothing on the stack" input. Override per test.
 function input(over: Partial<AutoPassDecisionInput> = {}, settings: Partial<AutoPassSettings> = {}): AutoPassDecisionInput {
@@ -127,6 +127,31 @@ test('mn on but the stack is not empty → hold postcombat main (resolve window)
 
 test('mn off → hold a dead postcombat main phase', () => {
   assert.equal(decide({ step: 'postcombat_main' }, { mn: false }), false)
+})
+
+// ── res: auto-resolve your own stack ───────────────────────────────────────────
+test('res on + something on your stack + no response → auto-pass to resolve', () => {
+  assert.equal(decide({ step: 'precombat_main', currentStackKey: 'a' }, { res: true }), true)
+})
+
+test('res off → hold a non-empty stack on your turn (manual resolve)', () => {
+  assert.equal(decide({ step: 'precombat_main', currentStackKey: 'a' }, { res: false }), false)
+})
+
+test('res on but empty stack → nothing to resolve (falls through to other switches)', () => {
+  assert.equal(decide({ step: 'precombat_main', currentStackKey: '' }, { res: true }), false)
+})
+
+test('res on + rsp on + you hold a response → stop (let me act)', () => {
+  assert.equal(decide({ step: 'precombat_main', currentStackKey: 'a', iHaveResponse: true }, { res: true, rsp: true }), false)
+})
+
+test('res on + rsp OFF + you hold a response → still auto-resolve', () => {
+  assert.equal(decide({ step: 'precombat_main', currentStackKey: 'a', iHaveResponse: true }, { res: true, rsp: false }), true)
+})
+
+test('res does not act on opponents’ turns (op handles those)', () => {
+  assert.equal(decide({ step: 'precombat_main', currentStackKey: 'a', isActivePlayer: false }, { res: true, op: false }), false)
 })
 
 // ── blk: declare blockers, no block to make (both sides) ───────────────────────

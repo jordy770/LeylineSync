@@ -1,7 +1,10 @@
--- supabase/functions_src/get_turn_state.sql
--- CANONICAL (mig 287): seeded from the archived 202605010042 (the only prior
--- definition — verified per bug-682) and extended with monarch_player_id so
--- the client can crown the monarch (mig 262).
+-- 202605010328_turn_state_bot_name
+-- get_turn_state: a bot's turn showed a short player-id as active/priority
+-- username (bots have no profile). Add the seat-numbered 'CPU 🤖 <seat>' fallback
+-- (like get_session_players / get_stack_items) so the status bar shows whose turn
+-- it is clearly when a CPU is active. RETURNS TABLE unchanged.
+-- Generated from supabase/functions_src (get_turn_state) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.get_turn_state(
   p_session_id uuid

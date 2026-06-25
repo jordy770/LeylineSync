@@ -1240,6 +1240,14 @@ export async function startGameSession(supabase: SupabaseClient, sessionId: stri
   return data as { first_player_id: string; players: number }
 }
 
+// "Undo tap mana": untap your tapped mana sources + empty your floating pool.
+export async function resetMana(supabase: SupabaseClient, sessionId: string) {
+  const { error } = await supabase.rpc('reset_mana', { p_session_id: sessionId })
+  if (error) {
+    throw error
+  }
+}
+
 // London mulligan: your hand shuffles back, you draw seven again.
 export async function mulliganHand(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('mulligan_hand', {

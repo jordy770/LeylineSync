@@ -23,6 +23,10 @@ import type {
   StackItem,
 } from './types'
 
+// One game action touches several tables, each firing its own realtime event.
+// Coalesce that burst into a single board refresh instead of one per event.
+const REFRESH_DEBOUNCE_MS = 60
+
 export function useBoardGameState(sessionId: string) {
   const supabase = useMemo(() => createClient(), [])
   const [cards, setCards] = useState<BoardCard[]>([])
@@ -69,18 +73,30 @@ export function useBoardGameState(sessionId: string) {
   useEffect(() => {
     refresh()
 
+    // Coalesce the burst of table-change events a single action produces into one
+    // board refresh.
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
+    let lastRealtimeAt = 0
+    const scheduleRefresh = () => {
+      lastRealtimeAt = Date.now()
+      if (debounceTimer) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => { debounceTimer = null; refresh() }, REFRESH_DEBOUNCE_MS)
+    }
+
     const channel = supabase
       .channel(`board:${sessionId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_sessions', filter: `id=eq.${sessionId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_cards', filter: `session_id=eq.${sessionId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'cards' }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_turn_state', filter: `session_id=eq.${sessionId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_session_players', filter: `session_id=eq.${sessionId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers' }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_commander_damage', filter: `session_id=eq.${sessionId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_stack_items', filter: `session_id=eq.${sessionId}` }, refresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_sessions', filter: `id=eq.${sessionId}` }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_cards', filter: `session_id=eq.${sessionId}` }, scheduleRefresh)
+      // Global `cards` catalog can't be session-filtered and is static during play
+      // (re-joined every refresh) — not subscribed; it fired board-wide reloads on
+      // every catalog edit/import.
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_turn_state', filter: `session_id=eq.${sessionId}` }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_session_players', filter: `session_id=eq.${sessionId}` }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers', filter: `session_id=eq.${sessionId}` }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_commander_damage', filter: `session_id=eq.${sessionId}` }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_stack_items', filter: `session_id=eq.${sessionId}` }, scheduleRefresh)
       .subscribe((status, error) => {
         console.log('Board realtime status:', status)
         if (error) {
@@ -88,11 +104,17 @@ export function useBoardGameState(sessionId: string) {
         }
       })
 
+    // Fallback poll: refresh only when realtime has been SILENT for an interval —
+    // recovers a subscribed-but-silent channel (e.g. tables missing from the
+    // supabase_realtime publication) without polling on top of live events.
     const refreshInterval = enableFallbackRefresh
-      ? window.setInterval(refresh, fallbackRefreshIntervalMs)
+      ? window.setInterval(() => {
+          if (Date.now() - lastRealtimeAt >= fallbackRefreshIntervalMs) refresh()
+        }, fallbackRefreshIntervalMs)
       : null
 
     return () => {
+      if (debounceTimer) clearTimeout(debounceTimer)
       if (refreshInterval) {
         window.clearInterval(refreshInterval)
       }

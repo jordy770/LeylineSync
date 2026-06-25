@@ -32,6 +32,27 @@ export function parseManaCost(manaCost?: string | null): ParsedManaCost {
   return { generic, colored }
 }
 
+// Colour identity (WUBRG, stable order) derived from a card's mana cost + rules
+// text — the {W/U/B/R/G} symbols it shows. No color_identity column exists, so
+// this mirrors the controller's own commander-identity derivation. Colourless
+// ('C') is never part of identity.
+export function colorIdentityFromCard(card: {
+  mana_cost?: string | null
+  oracle_text?: string | null
+}): ManaColor[] {
+  const found = new Set<ManaColor>()
+  const scan = (text?: string | null) => {
+    for (const match of (text ?? '').toUpperCase().matchAll(/\{([^}]+)\}/g)) {
+      for (const ch of match[1] ?? '') {
+        if ('WUBRG'.includes(ch)) found.add(ch as ManaColor)
+      }
+    }
+  }
+  scan(card.mana_cost)
+  scan(card.oracle_text)
+  return manaColors.filter((color) => found.has(color))
+}
+
 export function getPaymentTotal(payment: ManaPayment) {
   return manaColors.reduce((total, color) => total + (payment[color] ?? 0), 0)
 }

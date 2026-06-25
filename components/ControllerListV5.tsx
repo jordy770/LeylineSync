@@ -1,7 +1,8 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, Reorder } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   activateAbility,
   activateLoyaltyAbility,
@@ -37,6 +38,7 @@ import {
   castPermanentEffect,
   castDividedDamage,
   castModalSpell,
+  resetMana,
   resolveCombatDamage,
   setCombatBlockerOrder,
   submitDecision,
@@ -49,11 +51,12 @@ import {
   selectFirstManaAbility,
 } from '@/lib/game/card-behavior'
 import { getPowerToughnessLabel } from '@/lib/game/controller-selectors'
-import { parseManaCost, type ParsedManaCost } from '@/lib/game/mana'
+import { decrementPaymentColor, getPaymentTotal, incrementPaymentColor, parseManaCost, type ManaPayment, type ParsedManaCost } from '@/lib/game/mana'
 import { planAutoTap, type ManaSource } from '@/lib/game/auto-tap'
+import { emptyManaAvailability, producibleColorsFromScript, type ManaAvailability } from '@/lib/game/mana-sources'
 import { shouldAutoPass, type AutoPassSettings } from '@/lib/game/auto-pass'
-import { getOpponentZoneData } from '@/lib/game/data'
-import type { CommanderDamageEntry, CostReductionEffect, OpponentZoneData } from '@/lib/game/data'
+import { getGameLog, getOpponentManaSources, getOpponentZoneData, getSessionCommanders, getTurnState } from '@/lib/game/data'
+import type { CommanderDamageEntry, CommanderInfo, CostReductionEffect, GameLogEntry, OpponentZoneData } from '@/lib/game/data'
 import { useControllerGameState } from '@/lib/game/use-controller-game-state'
 import { useLongPress } from '@/lib/game/use-long-press'
 import type {
@@ -74,6 +77,7 @@ import type {
 } from '@/lib/game/types'
 import MotionCard from './MotionCard'
 import GameFinishedOverlay from './board/GameFinishedOverlay'
+import { KeywordIconRow } from './controller/KeywordIcon'
 import HandFan from './controller/HandFan'
 import { CardActionSheet, CardZoomOverlay } from './controller/CardActionSheet'
 import { OpeningHandOverlay } from './controller/OpeningHandOverlay'
@@ -118,12 +122,12 @@ const stepGroups: { label: string; steps: GameTurnState['step'][] }[] = [
 
 // Per-session auto-pass controls (persisted to localStorage). The decision logic
 // lives in lib/game/auto-pass (shouldAutoPass); this file owns persistence + UI.
-const AUTOPASS_OFF: AutoPassSettings = { op: false, own: false, stk: false, rsp: false, atk: false, blk: false, mn: false }
+const AUTOPASS_OFF: AutoPassSettings = { op: false, own: false, stk: false, rsp: false, atk: false, blk: false, mn: false, res: false }
 // Fresh sessions start fast: skip opponents' turns AND your own empty/dead steps
 // (empty phases + no-op attacks/blocks/main), but always stop when a new object
 // hits the stack (and for every decision / trigger target / block you can make —
 // those are hard exemptions in the effect). Players who stored explicit prefs keep them.
-const AUTOPASS_DEFAULT: AutoPassSettings = { op: true, own: true, stk: true, rsp: false, atk: true, blk: true, mn: true }
+const AUTOPASS_DEFAULT: AutoPassSettings = { op: true, own: true, stk: true, rsp: false, atk: true, blk: true, mn: true, res: true }
 const autoPassStorageKey = (sessionId: string) => 'leyline-autopass-' + sessionId
 // First-run controller coach (onboarding) — shown once per device, re-openable
 // via the ? in the status bar. Bump the version to re-show after a redesign.
@@ -154,6 +158,10 @@ function loadAutoPassSettings(sessionId: string): AutoPassSettings {
 const AUTOPASS_BEAT_EMPTY_MS = 250
 const AUTOPASS_BEAT_STACK_MS = 700
 
+// Thrown by autoPay when the player dismisses the generic-mana picker — swallowed
+// (no error toast) so cancelling a cast is silent.
+const AUTOPAY_CANCELLED = 'autopay-cancelled'
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /**
@@ -170,6 +178,13 @@ function getAutoTapMana(card: ControllerCard): { color: ManaColor; amount: numbe
   )
   const manaAbilities = script.activated_abilities?.filter((a) => a.is_mana_ability) ?? []
   if (manaAbilities.length !== 1) return null
+  // Another tap-activated ability (e.g. a sacrifice/fetch that also taps) makes the
+  // tap gesture ambiguous — open the action sheet so the player picks, instead of
+  // silently tapping for mana. (Bountiful Landscape: {T}: Add C vs {T},Sac: fetch.)
+  const tapAbilities = (script.activated_abilities ?? []).filter(
+    (a) => (a.costs ?? []).some((cst) => cst.type === 'tap_self'),
+  )
+  if (tapAbilities.length !== 1) return null
   const ability = manaAbilities[0]
   if (ability.costs.length !== 1 || ability.costs[0].type !== 'tap_self') return null
   const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
@@ -224,42 +239,13 @@ function KeywordHints({ card }: { card: ControllerCard }) {
   )
 }
 
-const BASIC_LAND_COLOR: Record<string, ManaColor> = {
-  plains: 'W', island: 'U', swamp: 'B', mountain: 'R', forest: 'G', wastes: 'C',
-}
-
 /**
- * What mana colours an untapped land can make, for the hand "playable" hint:
- *   ManaColor[]  — the fixed colour(s) it taps for (one entry = a single colour)
- *   'flexible'   — any-colour / commander / multi-colour: a wildcard pip
- *   null         — not a recognizable mana source (counted as a wildcard too)
- * Scripted mana abilities take precedence; basics (no script) map from their
- * type-line subtype. This drives colour-correct affordability, not the payment
- * (the server + planAutoTap remain authoritative).
+ * What mana colours an untapped land can make, for the hand "playable" hint.
+ * Delegates to the shared deriver (also used by the opponent mana bar); the
+ * server + planAutoTap remain authoritative for the actual payment.
  */
 function getProducibleColors(card: ControllerCard): ManaColor[] | 'flexible' | null {
-  const script = normalizeCardBehaviorToV2(
-    card.copied_script ?? card.cards?.script ?? null,
-    card.cards?.type_line,
-  )
-  const manaAbilities = script.activated_abilities?.filter((a) => a.is_mana_ability) ?? []
-  if (manaAbilities.length > 0) {
-    const colors = new Set<ManaColor>()
-    for (const ability of manaAbilities) {
-      for (const effect of ability.effects) {
-        if (!isAddManaBehaviorAction(effect)) continue
-        if (effect.color === 'any' || effect.color === 'commander') return 'flexible'
-        colors.add(effect.color as ManaColor)
-      }
-    }
-    if (colors.size > 1) return 'flexible'
-    if (colors.size === 1) return [...colors]
-  }
-  const tl = (card.cards?.type_line ?? '').toLowerCase()
-  const basics = Object.entries(BASIC_LAND_COLOR).filter(([sub]) => tl.includes(sub)).map(([, c]) => c)
-  if (basics.length > 1) return 'flexible'
-  if (basics.length === 1) return basics
-  return null
+  return producibleColorsFromScript(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)
 }
 
 // A copy or token permanent — badged on every board view so players can tell a
@@ -344,6 +330,12 @@ function promptForXValue(): number | null {
 
 export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   const [selectedCard, setSelectedCard] = useState<ControllerCard | null>(null)
+  // The generic-mana picker (auto-pay opens it when {generic} can be paid by more
+  // than one colour). The ref resolves the awaiting autoPay with the allocation
+  // (or null when cancelled). See autoPay + GenericPaySheet.
+  const [genericPrompt, setGenericPrompt] = useState<{ cardName: string; need: number; options: { color: ManaColor; available: number }[] } | null>(null)
+  const genericResolveRef = useRef<((alloc: ManaPayment | null) => void) | null>(null)
+  const [logOpen, setLogOpen] = useState(false)
   // Tracks the last resolved combat damage pass ('first_strike' | 'regular') so the
   // resolve button knows whether a second (regular) pass is still pending.
   const [combatDamageStage, setCombatDamageStage] = useState<string | null>(null)
@@ -367,6 +359,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     restrictedMana,
     costReductions,
     playableFromExileIds,
+    castFromTopPerms,
     playerId,
     isSessionFinished,
     winnerPlayerId,
@@ -399,9 +392,15 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   // a load fires on every realtime DB change — so sharing it would let a routine
   // background refresh wipe a transient action toast out from under the user.
   const [actionError, setActionError] = useState<string | null>(null)
+  // Transient confirmation when YOUR own spells/abilities finish resolving — so a
+  // card that resolved with no visible effect (e.g. a look-top that found nothing)
+  // still gives feedback instead of seeming to do nothing.
+  const [resolutionToast, setResolutionToast] = useState<string | null>(null)
+  const inFlightStackRef = useRef<Map<string, string>>(new Map())
 
   // Surface a failure as the friendly toast AND record it to the console.
   const reportError = (error: unknown, context = 'error') => {
+    if (getErrorMessage(error) === AUTOPAY_CANCELLED) return // player dismissed the mana picker
     console.error(`[controller] ${context}:`, error)
     setActionError(getErrorMessage(error))
   }
@@ -411,6 +410,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   // dev "Issue" overlay). Catch them, show the toast, keep the overlay quiet.
   useEffect(() => {
     const onRejection = (e: PromiseRejectionEvent) => {
+      if (getErrorMessage(e.reason) === AUTOPAY_CANCELLED) { e.preventDefault(); return }
       console.error('[controller] unhandled rejection:', e.reason)
       setActionError(getErrorMessage(e.reason))
       e.preventDefault()
@@ -448,6 +448,36 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     .map((c) => ({ id: c.id, name: c.name, loyalty: Number(c.counters?.loyalty ?? 0) }))
   const pendingStackItems = stackItems.filter((i) => i.status === 'pending')
 
+  // Notice when YOUR own spells/abilities finish resolving. We track the set of
+  // your in-flight items (pending or awaiting a decision); when one leaves that
+  // set it has resolved (or been countered) — surface a brief confirmation so a
+  // no-visible-effect resolution doesn't look like a no-op. Permanents are
+  // skipped (the card entering the battlefield is its own feedback).
+  useEffect(() => {
+    if (!playerId) { inFlightStackRef.current = new Map(); return }
+    const inFlight = new Map<string, string>()
+    for (const it of stackItems) {
+      if (it.controller_player_id !== playerId) continue
+      if (it.action_type === 'cast_permanent' || it.action_type === 'cast_commander') continue
+      if (it.status !== 'pending' && it.status !== 'awaiting_decision') continue
+      const name = it.source_card_name ?? 'Ability'
+      inFlight.set(it.id, it.action_type === 'triggered_ability' ? `${name}'s ability` : name)
+    }
+    const resolved: string[] = []
+    for (const [id, label] of inFlightStackRef.current) {
+      if (!inFlight.has(id)) resolved.push(label)
+    }
+    inFlightStackRef.current = inFlight
+    if (resolved.length > 0) setResolutionToast(`${resolved.join(', ')} resolved`)
+  }, [stackItems, playerId])
+
+  // Auto-dismiss the resolution confirmation.
+  useEffect(() => {
+    if (!resolutionToast) return
+    const t = setTimeout(() => setResolutionToast(null), 2600)
+    return () => clearTimeout(t)
+  }, [resolutionToast])
+
   const hasPriority = Boolean(
     playerId && turnState && (turnState.priority_player_id ?? turnState.active_player_id) === playerId,
   )
@@ -465,6 +495,21 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   const ownGraveyard = cards.filter((c) => c.zone === 'graveyard')
   const ownExile = cards.filter((c) => c.zone === 'exile')
   const ownLibraryCount = cards.filter((c) => c.zone === 'library').length
+  // "Look at / cast from the top of your library" (Thundermane Dragon). The top
+  // card is the lowest zone_position in library; the permission's presence lets
+  // you look, its {creature, min_power} filter gates whether you can cast it.
+  const hasTopLook = castFromTopPerms.length > 0
+  const topLibraryCard = hasTopLook
+    ? cards.filter((c) => c.zone === 'library')
+        .sort((a, b) => (a.zone_position - b.zone_position) || a.id.localeCompare(b.id))[0] ?? null
+    : null
+  const topCardMatchesFilter = Boolean(topLibraryCard) && castFromTopPerms.some((perm) => {
+    const isCreature = topLibraryCard!.cards?.type_line?.toLowerCase().includes('creature') ?? false
+    const power = topLibraryCard!.cards?.power ?? null
+    return (!perm.creature || isCreature) && (perm.minPower == null || (power != null && power >= perm.minPower))
+  })
+  // You may only actually cast it at sorcery speed with priority (creatures).
+  const canCastTopNow = topCardMatchesFilter && canCastSorceries
   const commandZone = cards.filter((c) => c.zone === 'command')
   const ownCreatures = battlefieldCards.filter((c) => c.cards?.type_line?.toLowerCase().includes('creature'))
   const incomingAttackers = combatAssignments.filter((a) => a.defending_player_id === playerId)
@@ -613,10 +658,17 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       setIsYielding(false)
     }
   }, [turnState, isActivePlayer])
-  const yieldRestOfTurn = () => {
+  // Toggle: arm "pass every priority until your next turn", or disarm it again if
+  // you change your mind. Auto-clears on your next turn (the effect above).
+  const toggleYieldRestOfTurn = () => {
     if (!turnState) return
-    yieldUntilTurnRef.current = turnState.turn_number
-    setIsYielding(true)
+    if (isYielding) {
+      yieldUntilTurnRef.current = null
+      setIsYielding(false)
+    } else {
+      yieldUntilTurnRef.current = turnState.turn_number
+      setIsYielding(true)
+    }
   }
 
   // Stack signature the player has already acknowledged (looked at + passed).
@@ -665,15 +717,43 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       hasMainPhaseAction,
       openingHandPending: currentPlayer?.opening_hand_kept === false,
     })
+    // TEMP DIAGNOSTIC (autopass v2) — remove after debugging. If you DON'T see this
+    // line in the browser console on your main phases, the app is running an OLD
+    // cached bundle (the M1 fix isn't live).
+    if (turnState.step === 'precombat_main' || turnState.step === 'postcombat_main') {
+      console.warn('[autopass v2]', {
+        step: turnState.step,
+        willPass,
+        mn: autoPass.mn,
+        hasMainPhaseAction,
+        isActivePlayer: turnState.active_player_id === playerId,
+        hasPriority: turnState.priority_player_id === playerId,
+      })
+    }
     if (!willPass) return
 
+    // The exact step/turn this decision was made for; the timer re-checks it.
+    const decidedStep = turnState.step
+    const decidedTurn = turnState.turn_number
     const beatMs = currentStackKey ? AUTOPASS_BEAT_STACK_MS : AUTOPASS_BEAT_EMPTY_MS
-    const timer = setTimeout(() => {
+    let cancelled = false
+    const timer = setTimeout(async () => {
+      // Re-read the SERVER's turn state right before passing — the local view may
+      // have lagged behind a step advance (esp. if realtime missed an event). Only
+      // pass when the server is still on the exact step/turn we decided to skip and
+      // priority is still ours; otherwise bail so we never skip e.g. your own main
+      // phase by passing a step that already moved on.
+      const fresh = await getTurnState(supabase, sessionId).catch(() => null)
+      if (cancelled || !fresh) return
+      const livePriority = fresh.priority_player_id ?? fresh.active_player_id
+      if (fresh.step !== decidedStep || fresh.turn_number !== decidedTurn || livePriority !== playerId) {
+        return
+      }
       passPriorityAction(supabase, sessionId)
         .then(() => { ackStackKeyRef.current = currentStackKey; return refresh() })
         .catch(() => { /* lost a race to a state change; the next tick re-evaluates */ })
     }, beatMs)
-    return () => clearTimeout(timer)
+    return () => { cancelled = true; clearTimeout(timer) }
   }, [autoPass, isYielding, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState, currentStackKey, iHaveResponse, hasEligibleAttacker, hasBlockDecision, hasMainPhaseAction, currentPlayer?.opening_hand_kept])
 
   // Combat damage is fully resolved once the 'regular' pass has run
@@ -775,28 +855,88 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   // lands first. Skipped for {X} costs (the amount depends on the chosen X) and
   // for anything the safe-greedy planner can't cover unambiguously, leaving
   // those to manual tapping. Already-affordable casts tap nothing.
+  // Tap lands to cover a card's cost before the cast. Coloured pips are tapped
+  // from matching-colour sources automatically; for the GENERIC part, if more than
+  // one colour could pay it the player picks (so auto-tap never spends a colour you
+  // were saving). Falls back to planAutoTap for flexible/any sources.
   const autoPay = async (card: ControllerCard | null) => {
     if (!card || !playerId) return
     const manaCost = card.cards?.mana_cost ?? ''
     if (/x/i.test(manaCost)) return
-    const sources: ManaSource[] = battlefieldCards.flatMap((c) => {
-      const m = getAutoTapMana(c)
-      return m ? [{ id: c.id, color: m.color, amount: m.amount }] : []
-    })
-    // Apply cost reduction (mirrors the server's reduced_mana_cost) so auto-pay
-    // taps for what's actually owed, not the printed generic.
     const parsed = parseManaCost(manaCost)
     const reduction = genericCostReduction(card, costReductions, boardCards, playerId)
     const cost = reduction > 0 ? { ...parsed, generic: Math.max(0, parsed.generic - reduction) } : parsed
-    const plan = planAutoTap(cost, manaPool, sources)
-    if (!plan || plan.length === 0) return
-    for (const tap of plan) {
-      await addManaFromCard({
-        supabase, cardId: tap.id, sessionId, playerId,
-        color: tap.color, amount: tap.amount, shouldTapCard: true,
-      })
+
+    // Untapped SIMPLE single-colour sources, grouped by colour (each gives `amount`).
+    const byColor: Partial<Record<ManaColor, { id: string; amount: number }[]>> = {}
+    for (const c of battlefieldCards) {
+      if (c.is_tapped) continue
+      const m = getAutoTapMana(c)
+      if (m) (byColor[m.color] ??= []).push({ id: c.id, amount: m.amount })
     }
-    await refresh()
+    const pool = manaColors.reduce((a, c) => { a[c] = manaPool[c] ?? 0; return a }, {} as Record<ManaColor, number>)
+    const taps: { id: string; color: ManaColor; amount: number }[] = []
+    const take = (color: ManaColor): boolean => {
+      const arr = byColor[color]
+      if (!arr || arr.length === 0) return false
+      const s = arr.shift()!
+      taps.push({ id: s.id, color, amount: s.amount })
+      pool[color] += s.amount
+      return true
+    }
+
+    // Coloured pips: floating mana first, then tap matching-colour sources.
+    let pipsCovered = true
+    for (const color of manaColors) {
+      while (pool[color] < cost.colored[color]) if (!take(color)) { pipsCovered = false; break }
+      if (!pipsCovered) break
+    }
+    if (!pipsCovered) {
+      // Flexible/any or not enough simple sources — defer to the original planner.
+      const sources: ManaSource[] = battlefieldCards.flatMap((c) => {
+        const m = getAutoTapMana(c)
+        return m ? [{ id: c.id, color: m.color, amount: m.amount }] : []
+      })
+      const plan = planAutoTap(cost, manaPool, sources)
+      if (!plan || plan.length === 0) return
+      for (const tap of plan) {
+        await addManaFromCard({ supabase, cardId: tap.id, sessionId, playerId, color: tap.color, amount: tap.amount, shouldTapCard: true })
+      }
+      await refresh()
+      return
+    }
+
+    // Generic remainder beyond floating spare.
+    const spare = () => manaColors.reduce((s, c) => s + Math.max(0, pool[c] - cost.colored[c]), 0)
+    const genericNeed = Math.max(0, cost.generic - spare())
+    if (genericNeed > 0) {
+      const options = manaColors
+        .map((color) => ({ color, available: (byColor[color] ?? []).reduce((s, x) => s + x.amount, 0) }))
+        .filter((o) => o.available > 0)
+      let alloc: ManaPayment
+      if (options.length <= 1) {
+        alloc = options[0] ? { [options[0].color]: genericNeed } : {}
+      } else {
+        alloc = await new Promise<ManaPayment | null>((resolve) => {
+          genericResolveRef.current = resolve
+          setGenericPrompt({ cardName: card.name, need: genericNeed, options })
+        }).then((res) => {
+          setGenericPrompt(null)
+          genericResolveRef.current = null
+          if (!res) throw new Error(AUTOPAY_CANCELLED)
+          return res
+        })
+      }
+      for (const color of manaColors) {
+        let need = alloc[color] ?? 0
+        while (need > 0 && take(color)) need -= taps[taps.length - 1].amount
+      }
+    }
+
+    for (const tap of taps) {
+      await addManaFromCard({ supabase, cardId: tap.id, sessionId, playerId, color: tap.color, amount: tap.amount, shouldTapCard: true })
+    }
+    if (taps.length) await refresh()
   }
 
   const actions = {
@@ -1061,6 +1201,11 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       await submitDecision(supabase, decisionId, result)
       await refresh()
     },
+    // "Undo tap mana": untap your mana sources + empty your floating pool.
+    resetMana: async () => {
+      await resetMana(supabase, sessionId)
+      await refresh()
+    },
   }
 
   // Drag-up-to-play from the hand fan. Lands go straight to the battlefield, and
@@ -1132,6 +1277,8 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
               isActivePlayer={isActivePlayer}
               libraryCount={ownLibraryCount}
               commanderDamage={playerId ? commanderDamage[playerId] : undefined}
+              onResetMana={() => { void actions.resetMana() }}
+              onOpenLog={() => setLogOpen(true)}
               onOpenHelp={() => setCoachOpen(true)}
             />
             {/* Command zone — cast your commander (sorcery speed) with live tax. */}
@@ -1190,6 +1337,9 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
                 canOrderBlockers={canOrderBlockers}
                 onCardTap={setSelectedCard}
                 onQuickPlay={quickPlay}
+                topLibraryCard={topLibraryCard}
+                canCastTopNow={canCastTopNow}
+                onCastTop={async () => { if (topLibraryCard) await actions.castSpell(topLibraryCard.id) }}
                 onTapForMana={actions.tapForMana}
                 onDiscardCard={actions.discardCard}
                 onSetBlockerOrder={actions.setBlockerOrder}
@@ -1198,6 +1348,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
                 }
                 onChooseTriggerTarget={actions.chooseTriggerTarget}
                 onChooseTriggerTargets={actions.chooseTriggerTargets}
+                onPassPriority={actions.passPriority}
                 pendingDecision={myPendingDecision}
                 cardImageById={cardImageById}
                 onSubmitDecision={actions.submitDecision}
@@ -1211,7 +1362,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
                 autoPass={autoPass}
                 onChangeAutoPass={updateAutoPass}
                 isYielding={isYielding}
-                onYieldTurn={yieldRestOfTurn}
+                onYieldTurn={toggleYieldRestOfTurn}
                 onResolveCombatDamage={actions.resolveCombatDamage}
                 onPassPriority={actions.passPriority}
               />
@@ -1289,6 +1440,26 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
 
       {coachOpen && <ControllerCoachOverlay onClose={closeCoach} />}
 
+      {/* Shared game log — anyone can open it */}
+      <AnimatePresence>
+        {logOpen && (
+          <GameLogSheet supabase={supabase} sessionId={sessionId} players={players} onClose={() => setLogOpen(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* Generic-mana picker (auto-pay awaits this when {generic} has a colour choice) */}
+      <AnimatePresence>
+        {genericPrompt && (
+          <GenericPaySheet
+            cardName={genericPrompt.cardName}
+            need={genericPrompt.need}
+            options={genericPrompt.options}
+            onConfirm={(alloc) => genericResolveRef.current?.(alloc)}
+            onCancel={() => genericResolveRef.current?.(null)}
+          />
+        )}
+      </AnimatePresence>
+
       {(actionError ?? errorMessage) && (
         <button
           type="button"
@@ -1299,6 +1470,18 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
           <span className="shrink-0 text-red-300/70" aria-label="Dismiss">✕</span>
         </button>
       )}
+
+      <AnimatePresence>
+        {resolutionToast && !actionError && !errorMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }}
+            className="pointer-events-none absolute inset-x-3 bottom-4 z-[55] flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-950/85 p-2.5 text-xs text-emerald-100 shadow-lg"
+          >
+            <span className="shrink-0 text-emerald-300">✓</span>
+            <span className="flex-1 truncate">{resolutionToast}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {isSessionFinished ? (
@@ -1341,6 +1524,8 @@ function StatusBar({
   isActivePlayer,
   libraryCount,
   commanderDamage,
+  onResetMana,
+  onOpenLog,
   onOpenHelp,
 }: {
   currentPlayer: GameSessionPlayer | null
@@ -1350,24 +1535,33 @@ function StatusBar({
   isActivePlayer: boolean
   libraryCount: number
   commanderDamage: CommanderDamageEntry[] | undefined
+  onResetMana: () => void
+  onOpenLog: () => void
   onOpenHelp: () => void
 }) {
+  const hasFloatingMana = manaColors.some((c) => (manaPool[c] ?? 0) > 0) || restrictedMana.length > 0
   const currentGroupIdx = stepGroups.findIndex((g) =>
     g.steps.includes(turnState?.step as GameTurnState['step']),
   )
 
   return (
     <header className="flex h-11 shrink-0 items-center gap-2 border-b border-[#1E2230] bg-[#0C0E14] px-4">
-      {/* Left: active-player dot + username + turn */}
+      {/* Left: whose turn it is — the ACTIVE player's name (amber dot, pulsing
+          when it's yours) + a YOU badge, so a CPU/opponent turn is obvious too. */}
       <div className="flex shrink-0 items-center gap-1.5">
         <div
-          className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors ${
-            isActivePlayer ? 'bg-amber-400 shadow-[0_0_5px_rgba(251,191,36,0.7)]' : 'bg-slate-700'
+          className={`h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400 transition-shadow ${
+            isActivePlayer ? 'animate-pulse shadow-[0_0_6px_rgba(251,191,36,0.8)]' : 'opacity-70'
           }`}
         />
-        <span className={`truncate text-sm font-black transition-colors ${isActivePlayer ? 'text-white' : 'text-slate-500'}`}>
-          {currentPlayer?.username ?? '—'}
+        <span className="truncate text-sm font-black text-white">
+          {turnState?.active_username ?? currentPlayer?.username ?? '—'}
         </span>
+        {isActivePlayer && (
+          <span className="shrink-0 rounded bg-amber-400/20 px-1 py-0.5 text-[8px] font-black uppercase tracking-wider text-amber-300">
+            You
+          </span>
+        )}
         <span className="shrink-0 text-[10px] text-slate-600">T{turnState?.turn_number ?? '—'}</span>
       </div>
 
@@ -1401,6 +1595,16 @@ function StatusBar({
 
       {/* Right: mana pool + library count + priority indicator + life */}
       <div className="flex shrink-0 items-center justify-end gap-2">
+        {hasFloatingMana && (
+          <button
+            type="button"
+            onClick={onResetMana}
+            title="Undo tap mana — untap your mana sources and empty your pool"
+            className="flex h-6 items-center gap-1 rounded-lg border border-amber-400/30 bg-amber-500/10 px-2 text-[10px] font-black text-amber-300 active:scale-95"
+          >
+            ↺ <span className="hidden sm:inline">mana</span>
+          </button>
+        )}
         <RestrictedManaDisplay entries={restrictedMana} />
         <ManaPoolDisplay manaPool={manaPool} />
         <div className="flex flex-col items-center">
@@ -1420,10 +1624,19 @@ function StatusBar({
         ))}
         <button
           type="button"
+          onClick={onOpenLog}
+          aria-label="Game log"
+          title="Game log — what's happened"
+          className="ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] transition active:scale-95 hover:bg-white/10"
+        >
+          📜
+        </button>
+        <button
+          type="button"
           onClick={onOpenHelp}
           aria-label="How to play"
           title="How to use your controller"
-          className="ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] font-black text-slate-400 transition active:scale-95 hover:text-slate-200"
+          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] font-black text-slate-400 transition active:scale-95 hover:text-slate-200"
         >
           ?
         </button>
@@ -1435,6 +1648,21 @@ function StatusBar({
 // ─── Main Area ────────────────────────────────────────────────────────────────
 
 type MyZoneTab = 'graveyard' | 'exile'
+
+// Per-device, per-session manual battlefield order (cosmetic — like the hand
+// reorder, never synced). An ordered list of game_card ids; cards missing from it
+// fall back to the auto-grouped order, removed cards are pruned on load.
+const boardOrderKey = (sessionId: string) => 'leyline-board-order-' + sessionId
+function loadBoardOrder(sessionId: string): string[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(boardOrderKey(sessionId))
+    const parsed = raw ? (JSON.parse(raw) as unknown) : []
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
 
 function MainArea({
   supabase,
@@ -1464,12 +1692,16 @@ function MainArea({
   canOrderBlockers,
   onCardTap,
   onQuickPlay,
+  topLibraryCard,
+  canCastTopNow,
+  onCastTop,
   onTapForMana,
   onDiscardCard,
   onSetBlockerOrder,
   onSetDamageAssignment,
   onChooseTriggerTarget,
   onChooseTriggerTargets,
+  onPassPriority,
   pendingDecision,
   cardImageById,
   onSubmitDecision,
@@ -1491,6 +1723,11 @@ function MainArea({
   availableByColor: Record<ManaColor, number>
   flexibleMana: number
   costReductions: CostReductionEffect[]
+  // Top-of-library peek/cast (Thundermane Dragon). Null when the player has no
+  // such permission active.
+  topLibraryCard: ControllerCard | null
+  canCastTopNow: boolean
+  onCastTop: () => Promise<void>
   canPlayLand: boolean
   mustDiscard: boolean
   discardCount: number
@@ -1510,17 +1747,31 @@ function MainArea({
   ) => void
   onChooseTriggerTarget: (stackItemId: string, targetCardId: string) => Promise<void>
   onChooseTriggerTargets: (stackItemId: string, targetCardIds: string[]) => Promise<void>
+  onPassPriority: () => Promise<void>
   pendingDecision: PendingDecision | null
   cardImageById: Map<string, { name: string; image_url: string | null }>
   onSubmitDecision: (decisionId: string, result: Record<string, unknown>) => Promise<void>
 }) {
   const [focusedOpponentId, setFocusedOpponentId] = useState<string | null>(null)
+  // The opponents row (L1): opened from the pills, drills into a full-screen opponent.
+  const [opponentsRowOpen, setOpponentsRowOpen] = useState(false)
+  // Top-of-library peek (Thundermane): show the top card + an optional cast.
+  const [topPeekOpen, setTopPeekOpen] = useState(false)
   const [myZoneTab, setMyZoneTab] = useState<MyZoneTab>('graveyard')
   const [myZoneOpen, setMyZoneOpen] = useState(false)
   const [orderingAssignment, setOrderingAssignment] = useState<CombatAssignment | null>(null)
   // Hold-to-peek: press & hold any card to read its full-size oracle text.
   const [peekCard, setPeekCard] = useState<ControllerCard | null>(null)
   const [showStack, setShowStack] = useState(false)
+  // Arrange mode: drag battlefield permanents into a manual per-device order.
+  const [arrangeMode, setArrangeMode] = useState(false)
+  const [boardOrder, setBoardOrder] = useState<string[]>(() => loadBoardOrder(sessionId))
+  const setBoardOrderPersisted = (ids: string[]) => {
+    setBoardOrder(ids)
+    if (typeof window !== 'undefined') {
+      try { localStorage.setItem(boardOrderKey(sessionId), JSON.stringify(ids)) } catch { /* ignore quota */ }
+    }
+  }
   const bindPeek = useLongPress()
 
   // Keep the ordering sheet's assignment fresh as combat data refreshes
@@ -1555,13 +1806,55 @@ function MainArea({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, opponentPlayers.length, boardSignature])
 
-  const lands = battlefieldCards.filter((c) => c.cards?.type_line?.toLowerCase().includes('land'))
-  const creatures = battlefieldCards.filter((c) => c.cards?.type_line?.toLowerCase().includes('creature'))
-  const other = battlefieldCards.filter(
-    (c) =>
-      !c.cards?.type_line?.toLowerCase().includes('land') &&
-      !c.cards?.type_line?.toLowerCase().includes('creature'),
-  )
+  // Each player's commander(s), keyed by player id. One query; refetched as the
+  // board changes so a commander moving zones (cast, back to command zone) shows.
+  const [commandersByPlayer, setCommandersByPlayer] = useState<Record<string, CommanderInfo[]>>({})
+  useEffect(() => {
+    let cancelled = false
+    getSessionCommanders(supabase, sessionId)
+      .then((map) => { if (!cancelled) setCommandersByPlayer(map) })
+      .catch(() => { if (!cancelled) setCommandersByPlayer({}) })
+    return () => { cancelled = true }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, boardSignature])
+
+  // Auto-grouping: within each type group (lands / creatures / other) keep the
+  // stable zone_position+id order from the query, but float UNTAPPED cards ahead of
+  // tapped ones so what's still available to use is grouped together. Array.sort is
+  // stable, so equal-tapped cards keep their existing order. (Manual per-device
+  // reorder — an Arrange mode — can layer on top of this later.)
+  const byUntappedFirst = (a: ControllerCard, b: ControllerCard) => Number(a.is_tapped) - Number(b.is_tapped)
+  const lands = battlefieldCards
+    .filter((c) => c.cards?.type_line?.toLowerCase().includes('land'))
+    .sort(byUntappedFirst)
+  const creatures = battlefieldCards
+    .filter((c) => c.cards?.type_line?.toLowerCase().includes('creature'))
+    .sort(byUntappedFirst)
+  const other = battlefieldCards
+    .filter(
+      (c) =>
+        !c.cards?.type_line?.toLowerCase().includes('land') &&
+        !c.cards?.type_line?.toLowerCase().includes('creature'),
+    )
+    .sort(byUntappedFirst)
+
+  // The creatures+other row, reordered by the player's manual per-device order
+  // (boardOrder) when set; cards not in it keep their auto-grouped position
+  // (appended), so newly-entered permanents slot in sensibly without resetting the
+  // arrangement. When boardOrder is empty this is just the auto-grouped order.
+  const perms = [...creatures, ...other]
+  const orderedPerms = (() => {
+    if (boardOrder.length === 0) return perms
+    const byId = new Map(perms.map((c) => [c.id, c]))
+    const seen = new Set<string>()
+    const out: ControllerCard[] = []
+    for (const id of boardOrder) {
+      const c = byId.get(id)
+      if (c) { out.push(c); seen.add(id) }
+    }
+    for (const c of perms) if (!seen.has(c.id)) out.push(c)
+    return out
+  })()
 
   // Equipment/Auras attached to a permanent (game_cards.attached_to), grouped by
   // host id, plus a name lookup so each tile can show what it's wearing / what
@@ -1592,6 +1885,45 @@ function MainArea({
     else onCardTap(card)
   }
 
+  // The visual content of a battlefield permanent tile (card image + badges),
+  // shared by the normal tap/peek button and the Arrange-mode drag item.
+  const permTileInner = (card: ControllerCard) => (
+    <>
+      <MotionCard
+        card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
+        size="board"
+        useLayoutId={false}
+        className="touch-auto"
+      />
+      {getEffectivePT(card) && getEffectivePT(card) !== getPowerToughnessLabel(card) && (
+        <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow ring-1 ring-black/40">
+          {getEffectivePT(card)}
+        </span>
+      )}
+      {copyTokenTag(card) && (
+        <span className="absolute -top-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-500 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-white shadow ring-1 ring-black/40">
+          {copyTokenTag(card)}
+        </span>
+      )}
+      {attachmentsByHost.has(card.id) && (
+        <span
+          className="absolute -top-1 -left-1 rounded-full bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-amber-950 shadow ring-1 ring-black/40"
+          title={`Attached: ${attachmentsByHost.get(card.id)!.map((a) => a.name).join(', ')}`}
+        >
+          📎{attachmentsByHost.get(card.id)!.length}
+        </span>
+      )}
+      {card.attached_to && (
+        <span
+          className="absolute -top-1 -left-1 rounded-full bg-sky-500 px-1.5 py-0.5 text-[9px] font-black text-sky-950 shadow ring-1 ring-black/40"
+          title={`Attached to ${cardNameById.get(card.attached_to) ?? 'a permanent'}`}
+        >
+          🔗
+        </span>
+      )}
+    </>
+  )
+
   return (
     <main className="flex min-w-0 flex-1 flex-col">
       {/* Hold-to-peek full-size card + oracle text (reuses the sheet's zoom). */}
@@ -1608,9 +1940,12 @@ function MainArea({
             <button
               key={p.player_id}
               type="button"
-              onClick={() => setFocusedOpponentId(p.player_id)}
+              onClick={() => setOpponentsRowOpen(true)}
               className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 transition-colors active:scale-95 hover:bg-white/10"
             >
+              {commandersByPlayer[p.player_id]?.[0] && (
+                <CommanderAvatar commander={commandersByPlayer[p.player_id][0]} size={16} />
+              )}
               <span className="text-[9px] font-bold text-slate-300">
                 {p.username ?? `P${p.seat_number}`}
               </span>
@@ -1658,6 +1993,7 @@ function MainArea({
         playerId={playerId}
         onChooseTarget={onChooseTriggerTarget}
         onChooseTargets={onChooseTriggerTargets}
+        onSkip={onPassPriority}
       />
 
       {pendingDecision && (
@@ -1684,64 +2020,60 @@ function MainArea({
       {/* ── My board + opponent overlay ───────────────────────────────── */}
       <div className="relative flex min-h-0 flex-1 flex-col">
 
-      {/* My battlefield — creatures & other permanents */}
-      <div className="flex min-h-0 flex-1 items-center gap-2 overflow-x-auto overflow-y-hidden bg-[#0C0F16] px-3 py-2">
-        {[...creatures, ...other].map((card) => (
-          <button
-            key={card.id}
-            type="button"
-            onClick={() => handleCardTap(card)}
-            {...bindPeek(() => setPeekCard(card))}
-            style={{ maxHeight: permMaxH }}
-            className="relative h-full aspect-[2/3] shrink-0 transition-transform active:scale-95"
-          >
-            <MotionCard
-              card={{ id: card.id, name: card.name, image_url: card.cards?.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
-              size="board"
-              useLayoutId={false}
-              // Allow swipe-to-scroll on the strip. MotionCard defaults to touch-none
-              // (for draggable hand cards); we override with touch-auto. NB: must be
-              // touch-auto, not touch-pan-x — tailwind-merge keeps those in different
-              // groups, so touch-pan-x would NOT replace touch-none (both would apply
-              // and touch-none would win, blocking the scroll).
-              className="touch-auto"
-            />
-            {getEffectivePT(card) && getEffectivePT(card) !== getPowerToughnessLabel(card) && (
-              <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow ring-1 ring-black/40">
-                {getEffectivePT(card)}
-              </span>
-            )}
-            {/* Copy/token marker — top-center, clear of the attachment (top-left)
-                and P/T (bottom-right) badges. */}
-            {copyTokenTag(card) && (
-              <span className="absolute -top-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-500 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-white shadow ring-1 ring-black/40">
-                {copyTokenTag(card)}
-              </span>
-            )}
-            {/* Host: this permanent has Equipment/Auras attached to it. */}
-            {attachmentsByHost.has(card.id) && (
-              <span
-                className="absolute -top-1 -left-1 rounded-full bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-amber-950 shadow ring-1 ring-black/40"
-                title={`Attached: ${attachmentsByHost.get(card.id)!.map((a) => a.name).join(', ')}`}
-              >
-                📎{attachmentsByHost.get(card.id)!.length}
-              </span>
-            )}
-            {/* Attachment: this Equipment/Aura is attached to a host. */}
-            {card.attached_to && (
-              <span
-                className="absolute -top-1 -left-1 rounded-full bg-sky-500 px-1.5 py-0.5 text-[9px] font-black text-sky-950 shadow ring-1 ring-black/40"
-                title={`Attached to ${cardNameById.get(card.attached_to) ?? 'a permanent'}`}
-              >
-                🔗
-              </span>
-            )}
-          </button>
-        ))}
-        {creatures.length === 0 && other.length === 0 && (
-          <p className="text-[10px] text-slate-800">Empty battlefield</p>
-        )}
-      </div>
+      {/* Arrange toggle — drag your permanents into a manual per-device order. */}
+      {orderedPerms.length > 1 && (
+        <button
+          type="button"
+          onClick={() => setArrangeMode((v) => !v)}
+          title={arrangeMode ? 'Done arranging' : 'Drag your permanents into your own order (this device only)'}
+          className={`absolute right-2 top-1 z-20 rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest transition active:scale-95 ${
+            arrangeMode ? 'border-sky-300/60 bg-sky-400/20 text-sky-300' : 'border-white/10 bg-white/5 text-slate-400'
+          }`}
+        >
+          {arrangeMode ? 'Done' : '⇄ Arrange'}
+        </button>
+      )}
+
+      {/* My battlefield — creatures & other permanents. In Arrange mode the tiles
+          become drag-to-reorder items (tap/peek suspended); the order is saved
+          locally per device. */}
+      {arrangeMode ? (
+        <Reorder.Group
+          axis="x"
+          values={orderedPerms}
+          onReorder={(next) => setBoardOrderPersisted(next.map((c) => c.id))}
+          className="flex min-h-0 flex-1 items-center gap-2 overflow-x-auto overflow-y-hidden bg-sky-950/30 px-3 py-2 ring-1 ring-inset ring-sky-400/30"
+        >
+          {orderedPerms.map((card) => (
+            <Reorder.Item
+              key={card.id}
+              value={card}
+              style={{ maxHeight: permMaxH }}
+              className="relative h-full aspect-[2/3] shrink-0 cursor-grab touch-none active:cursor-grabbing"
+            >
+              {permTileInner(card)}
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+      ) : (
+        <div className="flex min-h-0 flex-1 items-center gap-2 overflow-x-auto overflow-y-hidden bg-[#0C0F16] px-3 py-2">
+          {orderedPerms.map((card) => (
+            <button
+              key={card.id}
+              type="button"
+              onClick={() => handleCardTap(card)}
+              {...bindPeek(() => setPeekCard(card))}
+              style={{ maxHeight: permMaxH }}
+              className="relative h-full aspect-[2/3] shrink-0 transition-transform active:scale-95"
+            >
+              {permTileInner(card)}
+            </button>
+          ))}
+          {orderedPerms.length === 0 && (
+            <p className="text-[10px] text-slate-800">Empty battlefield</p>
+          )}
+        </div>
+      )}
 
       {/* Lands strip */}
       {lands.length > 0 && (
@@ -1832,6 +2164,24 @@ function MainArea({
 
         {/* Fixed zone buttons — z-40 keeps them above the fixed HandFan overlay */}
         <div className="relative z-40 ml-auto flex shrink-0 flex-row items-center gap-2 border-l border-[#1E2230] bg-[#0C0E14] px-2.5">
+          {/* Top-of-library indicator (Thundermane): only present when you may
+              look at your top card. Glows green when the top card is castable now. */}
+          {topLibraryCard && (
+            <button
+              type="button"
+              onClick={() => setTopPeekOpen(true)}
+              title={canCastTopNow ? 'You may cast the top card of your library' : 'You may look at the top card of your library'}
+              className={`flex items-center gap-1.5 rounded-lg border px-2 py-1 active:scale-95 ${
+                canCastTopNow
+                  ? 'border-emerald-400/60 bg-emerald-500/15 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.35)]'
+                  : 'border-violet-400/40 bg-violet-500/10 text-violet-300'
+              }`}
+            >
+              <span className="text-[11px]">👁</span>
+              <span className="text-[9px] font-black uppercase tracking-wide">Top</span>
+              {canCastTopNow && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />}
+            </button>
+          )}
           {([
             { tab: 'graveyard' as MyZoneTab, label: 'GY', count: ownGraveyard.length, countCls: 'text-slate-400' },
             { tab: 'exile' as MyZoneTab,     label: 'EX', count: ownExile.length,     countCls: 'text-amber-500' },
@@ -1863,6 +2213,36 @@ function MainArea({
         )}
       </AnimatePresence>
 
+      {/* Top-of-library peek (Thundermane) */}
+      <AnimatePresence>
+        {topPeekOpen && topLibraryCard && (
+          <TopOfLibraryPeek
+            card={topLibraryCard}
+            canCast={canCastTopNow}
+            onCast={onCastTop}
+            onClose={() => setTopPeekOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Opponents row (L1) — drill into a full-screen opponent */}
+      <AnimatePresence>
+        {opponentsRowOpen && !focusedOpponent && (
+          <OpponentRowOverlay
+            supabase={supabase}
+            sessionId={sessionId}
+            opponents={opponentPlayers}
+            boardCards={boardCards}
+            commandersByPlayer={commandersByPlayer}
+            opponentCounts={opponentCounts}
+            commanderDamage={commanderDamage}
+            turnState={turnState}
+            onPick={(id) => { setFocusedOpponentId(id); setOpponentsRowOpen(false) }}
+            onClose={() => setOpponentsRowOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Opponent board overlay */}
       <AnimatePresence>
         {focusedOpponent && (
@@ -1870,7 +2250,10 @@ function MainArea({
             supabase={supabase}
             sessionId={sessionId}
             opponent={focusedOpponent}
+            commanders={commandersByPlayer[focusedOpponent.player_id] ?? []}
             cards={focusedOpponentCards}
+            allOpponents={opponentPlayers}
+            onSwitch={(id) => setFocusedOpponentId(id)}
             onClose={() => setFocusedOpponentId(null)}
           />
         )}
@@ -1904,12 +2287,14 @@ function TargetedTriggerPrompt({
   playerId,
   onChooseTarget,
   onChooseTargets,
+  onSkip,
 }: {
   pendingStackItems: StackItem[]
   boardCards: BoardCard[]
   playerId: string | null
   onChooseTarget: (stackItemId: string, targetCardId: string) => Promise<void>
   onChooseTargets: (stackItemId: string, targetCardIds: string[]) => Promise<void>
+  onSkip: () => Promise<void>
 }) {
   const [isPending, setIsPending] = useState(false)
   const [picked, setPicked] = useState<string[]>([])
@@ -1918,11 +2303,13 @@ function TargetedTriggerPrompt({
   const alreadyChosen =
     Boolean(topItem?.payload?.target_card_id) ||
     (Array.isArray(topItem?.payload?.target_card_ids) && (topItem!.payload!.target_card_ids as unknown[]).length > 0)
+  // "up to one target …": optional triggers offer the picker too, but with a Skip.
+  const isOptional = topItem?.payload?.target_optional === true
   const needsMyTarget = Boolean(
     playerId &&
     topItem?.action_type === 'triggered_ability' &&
     topItem.controller_player_id === playerId &&
-    topItem.payload?.target_required === true &&
+    (topItem.payload?.target_required === true || isOptional) &&
     !alreadyChosen,
   )
 
@@ -1968,16 +2355,36 @@ function TargetedTriggerPrompt({
       setIsPending(false)
     }
   }
+  const skip = async () => {
+    setIsPending(true)
+    try {
+      await onSkip()
+    } finally {
+      setIsPending(false)
+    }
+  }
 
   return (
     <div className="border-b border-emerald-500/20 bg-emerald-950/30 px-3 py-2">
-      <div className="mb-2 min-w-0">
-        <p className="truncate text-[11px] font-black uppercase tracking-widest text-emerald-300">
-          {multi ? `Choose up to ${targetCount} targets (${picked.length})` : 'Choose trigger target'}
-        </p>
-        <p className="truncate text-[10px] text-slate-400">
-          {topItem.source_card_name ?? 'Triggered ability'}
-        </p>
+      <div className="mb-2 flex items-start justify-between gap-2 min-w-0">
+        <div className="min-w-0">
+          <p className="truncate text-[11px] font-black uppercase tracking-widest text-emerald-300">
+            {multi ? `Choose up to ${targetCount} targets (${picked.length})` : isOptional ? 'Choose target (optional)' : 'Choose trigger target'}
+          </p>
+          <p className="truncate text-[10px] text-slate-400">
+            {topItem.source_card_name ?? 'Triggered ability'}
+          </p>
+        </div>
+        {isOptional && (
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={() => { void skip() }}
+            className="shrink-0 rounded-lg border border-slate-500/40 bg-white/5 px-3 py-1 text-[11px] font-bold text-slate-200 transition active:scale-95 disabled:opacity-50"
+          >
+            Skip
+          </button>
+        )}
       </div>
       {targetableCreatures.length > 0 ? (
         <div className="flex gap-2 overflow-x-auto">
@@ -2629,6 +3036,7 @@ const AUTOPASS_GROUPS: { title: string; rows: AutoPassRow[] }[] = [
       { key: 'atk', label: 'Skip empty attacks', hint: 'Skip Declare Attackers when no creature can legally attack' },
       { key: 'blk', label: 'Skip empty blocks', hint: 'Skip Declare Blockers when you have no block to make' },
       { key: 'mn', label: 'Skip dead main', hint: 'Skip a main phase when the stack is empty and nothing is playable' },
+      { key: 'res', label: 'Auto-resolve stack', hint: 'On your turn, auto-pass to resolve your spells/triggers when you hold no response' },
     ],
   },
   {
@@ -2730,7 +3138,10 @@ function PriorityPanel({
           <>
             {/* click-away */}
             <div className="fixed inset-0 z-40" onClick={() => setAutoOpen(false)} />
-            <div className="absolute right-full top-0 z-50 mr-2 max-h-[80vh] w-44 overflow-y-auto rounded-2xl border border-[#1E2230] bg-[#0C0E14] p-2 shadow-xl">
+            {/* Viewport-anchored (not relative to the button) so it always fits — the
+                short mobile-landscape height was clipping the lower options. dvh +
+                bottom anchor + scroll keeps every option reachable on any viewport. */}
+            <div className="fixed bottom-2 right-24 z-50 max-h-[calc(100dvh-1rem)] w-48 overflow-y-auto overscroll-contain rounded-2xl border border-[#1E2230] bg-[#0C0E14] p-2 shadow-xl">
               <p className="px-1 pb-1 text-[8px] font-black uppercase tracking-widest text-slate-500">Auto-pass</p>
               {AUTOPASS_GROUPS.map((group) => (
                 <div key={group.title} className="mb-1">
@@ -2743,7 +3154,7 @@ function PriorityPanel({
                         type="button"
                         onClick={() => onChangeAutoPass({ [row.key]: !on })}
                         title={row.hint}
-                        className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left transition active:scale-95 hover:bg-white/5"
+                        className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1 text-left transition active:scale-95 hover:bg-white/5"
                       >
                         <span className={`text-[10px] font-semibold ${on ? 'text-amber-300' : 'text-slate-400'}`}>{row.label}</span>
                         <span
@@ -2758,13 +3169,18 @@ function PriorityPanel({
               ))}
               <button
                 type="button"
-                onClick={() => { onYieldTurn(); setAutoOpen(false) }}
-                title="Pass every priority until your next turn"
-                className={`mt-1 w-full rounded-lg border px-2 py-1.5 text-[9px] font-black uppercase tracking-widest transition active:scale-95 ${
+                onClick={() => onYieldTurn()}
+                title="Toggle: pass every priority until your next turn"
+                className={`mt-1 flex w-full items-center justify-between gap-2 rounded-lg border px-2 py-1.5 text-[9px] font-black uppercase tracking-widest transition active:scale-95 ${
                   isYielding ? 'border-sky-300/60 bg-sky-400/20 text-sky-300' : 'border-[#1E2230] text-slate-400 hover:bg-white/5'
                 }`}
               >
-                {isYielding ? 'Yielding…' : 'Yield rest of turn'}
+                <span>{isYielding ? 'Yielding rest of turn' : 'Yield rest of turn'}</span>
+                <span
+                  className={`flex h-4 w-7 shrink-0 items-center rounded-full px-0.5 transition-colors ${isYielding ? 'bg-sky-400/80' : 'bg-slate-700'}`}
+                >
+                  <span className={`h-3 w-3 rounded-full bg-white transition-transform ${isYielding ? 'translate-x-3' : ''}`} />
+                </span>
               </button>
             </div>
           </>
@@ -3135,8 +3551,11 @@ function StackStrip({ items, onOpen }: { items: StackItem[]; onOpen: () => void 
               <span className="truncate text-[10px] font-bold">
                 {item.source_card_name ?? prettyStackAction(item.action_type)}
               </span>
-              {item.target_username && (
-                <span className="truncate text-[8px] text-slate-600">→ {item.target_username}</span>
+              {(item.controller_username || item.target_username) && (
+                <span className="truncate text-[8px] text-slate-500">
+                  {item.controller_username}
+                  {item.target_username ? <span className="text-slate-600"> → {item.target_username}</span> : null}
+                </span>
               )}
             </div>
           </div>
@@ -3422,6 +3841,341 @@ function MyZonesSheet({
   )
 }
 
+// ─── Game log ─────────────────────────────────────────────────────────────────
+// A shared, openable feed of what happened (casts + resolutions, written by the
+// mig 330 trigger). Newest first; updates live via realtime. Any player can open it.
+function logTimeAgo(iso: string): string {
+  const then = new Date(iso).getTime()
+  if (Number.isNaN(then)) return ''
+  const s = Math.max(0, Math.floor((Date.now() - then) / 1000))
+  if (s < 60) return `${s}s`
+  const m = Math.floor(s / 60)
+  if (m < 60) return `${m}m`
+  return `${Math.floor(m / 60)}h`
+}
+function GameLogSheet({
+  supabase,
+  sessionId,
+  players,
+  onClose,
+}: {
+  supabase: ReturnType<typeof import('@/lib/supabase/client').createClient>
+  sessionId: string
+  players: GameSessionPlayer[]
+  onClose: () => void
+}) {
+  const [entries, setEntries] = useState<GameLogEntry[]>([])
+  useEffect(() => {
+    let cancelled = false
+    const load = () => getGameLog(supabase, sessionId).then((e) => { if (!cancelled) setEntries(e) }).catch(() => {})
+    load()
+    const ch = supabase
+      .channel(`log:${sessionId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'game_action_log', filter: `session_id=eq.${sessionId}` }, load)
+      .subscribe()
+    return () => { cancelled = true; supabase.removeChannel(ch) }
+  }, [supabase, sessionId])
+  const nameOf = (id: string) => players.find((p) => p.player_id === id)?.username ?? 'Player'
+  return (
+    <ScreenPortal>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-[2px]" onClick={onClose}
+      />
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 32, stiffness: 320 }}
+        className="fixed inset-0 z-[61] flex flex-col bg-[#0C0F16]"
+      >
+        <div className="flex shrink-0 items-center justify-between border-b border-[#1E2230] px-4 py-3">
+          <p className="text-sm font-black text-white">📜 Game log</p>
+          <button type="button" onClick={onClose} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300 active:scale-95">
+            Close
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-3">
+          {entries.length === 0 ? (
+            <p className="py-10 text-center text-sm text-slate-600">Nothing has happened yet.</p>
+          ) : (
+            <div className="flex flex-col gap-1">
+              {entries.map((e) => (
+                <div key={e.id} className="flex items-baseline gap-2 rounded-lg px-2 py-1.5 text-sm odd:bg-white/[0.02]">
+                  <span className="shrink-0 font-bold text-cyan-200">{nameOf(e.actor_player_id)}</span>
+                  <span className={`flex-1 ${e.action_type === 'life' ? 'text-rose-300' : e.action_type === 'poison' ? 'text-lime-300' : e.action_type === 'counter' ? 'text-amber-200' : 'text-slate-200'}`}>{e.description}</span>
+                  <span className="shrink-0 font-mono text-[10px] text-slate-600">{logTimeAgo(e.created_at)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </ScreenPortal>
+  )
+}
+
+// ─── Generic mana picker ──────────────────────────────────────────────────────
+// Choose which colours pay a spell's {generic} cost (coloured pips are already
+// auto-tapped). Tap a colour to add, Reset to clear; Cast enables when the chosen
+// total matches the generic amount.
+function GenericPaySheet({
+  cardName,
+  need,
+  options,
+  onConfirm,
+  onCancel,
+}: {
+  cardName: string
+  need: number
+  options: { color: ManaColor; available: number }[]
+  onConfirm: (alloc: ManaPayment) => void
+  onCancel: () => void
+}) {
+  const [alloc, setAlloc] = useState<ManaPayment>({})
+  const remaining = need - getPaymentTotal(alloc)
+  return (
+    <ScreenPortal>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-5 backdrop-blur-sm"
+        onClick={onCancel}
+      >
+        <motion.div
+          initial={{ scale: 0.92, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, opacity: 0 }}
+          onClick={(e) => e.stopPropagation()}
+          className="w-full max-w-xs rounded-2xl border border-amber-400/30 bg-[#0D1018] p-5"
+        >
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-300">Pay generic mana</p>
+          <p className="mt-1 truncate text-sm font-bold text-white">{cardName}</p>
+          <p className="mt-2 text-xs text-slate-400">
+            Choose what pays the <b className="text-white">{need}</b> generic ·{' '}
+            <span className={remaining === 0 ? 'text-emerald-300' : 'text-amber-300'}>{remaining} left</span>
+          </p>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {options.map((o) => {
+              const used = alloc[o.color] ?? 0
+              const full = used >= o.available
+              return (
+                <button
+                  key={o.color}
+                  type="button"
+                  onClick={() => { if (remaining > 0 && !full) setAlloc(incrementPaymentColor(alloc, o.color, need)) }}
+                  onContextMenu={(e) => { e.preventDefault(); if (used > 0) setAlloc(decrementPaymentColor(alloc, o.color)) }}
+                  className={`flex flex-col items-center gap-1 rounded-xl border p-2 active:scale-95 ${
+                    used > 0 ? 'border-amber-400 bg-amber-500/10' : 'border-white/10 bg-white/5'
+                  } ${remaining <= 0 && !full ? 'opacity-50' : ''}`}
+                >
+                  <i className={`ms ms-${o.color.toLowerCase()} ms-cost ms-shadow text-[18px]`} style={{ marginLeft: 0 }} />
+                  <span className="font-mono text-[10px] font-bold text-slate-300">{used}/{o.available}</span>
+                </button>
+              )
+            })}
+          </div>
+          <div className="mt-4 flex items-center gap-2">
+            <button type="button" onClick={onCancel} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs font-bold text-slate-300 active:scale-95">
+              Cancel
+            </button>
+            <button type="button" onClick={() => setAlloc({})} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs font-bold text-slate-400 active:scale-95">
+              Reset
+            </button>
+            <button
+              type="button"
+              disabled={remaining !== 0}
+              onClick={() => onConfirm(alloc)}
+              className="flex-1 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-black text-amber-950 active:scale-95 disabled:opacity-50"
+            >
+              Cast
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </ScreenPortal>
+  )
+}
+
+// ─── Top of Library peek (Thundermane) ───────────────────────────────────────
+// "You may look at the top card of your library any time." Shows the top card
+// full-size with an optional cast (creature power ≥ 4, sorcery speed).
+function TopOfLibraryPeek({
+  card,
+  canCast,
+  onCast,
+  onClose,
+}: {
+  card: ControllerCard
+  canCast: boolean
+  onCast: () => Promise<void>
+  onClose: () => void
+}) {
+  const [busy, setBusy] = useState(false)
+  return (
+    <ScreenPortal>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-5"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ scale: 0.9, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0 }}
+          onClick={(e) => e.stopPropagation()}
+          className="flex w-full max-w-[16rem] flex-col items-center gap-3"
+        >
+          <p className="text-[11px] font-black uppercase tracking-[0.2em] text-violet-300">👁 Top of your library</p>
+          {card.cards?.image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={card.cards.image_url} alt={card.name} className="w-full rounded-xl border border-white/15 shadow-2xl" />
+          ) : (
+            <div className="flex aspect-[5/7] w-full items-center justify-center rounded-xl border border-white/15 bg-slate-900 p-3 text-center text-sm font-bold text-slate-200">
+              {card.name}
+            </div>
+          )}
+          {canCast ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={async () => { setBusy(true); try { await onCast() } finally { onClose() } }}
+              className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-black text-emerald-950 transition active:scale-95 disabled:opacity-50"
+            >
+              {busy ? 'Casting…' : `Cast ${card.name} (haste)`}
+            </button>
+          ) : (
+            <p className="px-2 text-center text-[11px] text-slate-400">
+              Not castable now — needs your main phase, an empty stack, and a creature with enough power.
+            </p>
+          )}
+          <button type="button" onClick={onClose} className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-slate-300 active:scale-95">
+            Close
+          </button>
+        </motion.div>
+      </motion.div>
+    </ScreenPortal>
+  )
+}
+
+// ─── Opponents Row (L1) ───────────────────────────────────────────────────────
+// Opened from the pills: every opponent as a card (commander, creatures with
+// keyword icons, available mana). Tap a card → that opponent full-screen.
+function OpponentRowOverlay({
+  supabase,
+  sessionId,
+  opponents,
+  boardCards,
+  commandersByPlayer,
+  opponentCounts,
+  commanderDamage,
+  turnState,
+  onPick,
+  onClose,
+}: {
+  supabase: ReturnType<typeof import('@/lib/supabase/client').createClient>
+  sessionId: string
+  opponents: GameSessionPlayer[]
+  boardCards: BoardCard[]
+  commandersByPlayer: Record<string, CommanderInfo[]>
+  opponentCounts: Record<string, OpponentZoneData>
+  commanderDamage: Record<string, CommanderDamageEntry[]>
+  turnState: GameTurnState | null
+  onPick: (playerId: string) => void
+  onClose: () => void
+}) {
+  const [manaByPlayer, setManaByPlayer] = useState<Record<string, ManaAvailability>>({})
+  useEffect(() => {
+    let cancelled = false
+    Promise.all(
+      opponents.map(async (p) => {
+        try {
+          return [p.player_id, await getOpponentManaSources(supabase, sessionId, p.player_id)] as const
+        } catch {
+          return [p.player_id, emptyManaAvailability] as const
+        }
+      }),
+    ).then((entries) => { if (!cancelled) setManaByPlayer(Object.fromEntries(entries)) })
+    return () => { cancelled = true }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opponents.length, sessionId])
+
+  return (
+    <ScreenPortal>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-[2px]" onClick={onClose}
+      />
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 32, stiffness: 320 }}
+        className="fixed inset-0 z-[61] flex flex-col bg-[#0C0F16]"
+      >
+        <div className="flex shrink-0 items-center justify-between border-b border-[#1E2230] px-4 py-3">
+          <p className="text-sm font-black text-white">Opponents · {opponents.length}</p>
+          <button type="button" onClick={onClose} className="rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-3 py-2 text-xs font-bold text-cyan-200 active:scale-95">
+            🏠 My Board
+          </button>
+        </div>
+        <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
+          {opponents.map((p) => {
+            const cmd = commandersByPlayer[p.player_id]?.[0]
+            const creatures = boardCards.filter(
+              (c) => c.controller_player_id === p.player_id && (c.type_line?.toLowerCase().includes('creature') ?? false),
+            )
+            const counts = opponentCounts[p.player_id]
+            const isMonarch = turnState?.monarch_player_id === p.player_id
+            return (
+              <button
+                key={p.player_id}
+                type="button"
+                onClick={() => onPick(p.player_id)}
+                className="flex flex-col gap-2 rounded-xl border border-white/10 bg-[#11141c] p-3 text-left transition-colors active:scale-[0.99] hover:border-cyan-300/40"
+              >
+                <div className="flex items-center gap-2.5">
+                  {cmd && <CommanderAvatar commander={cmd} size={32} />}
+                  <div className="min-w-0 flex-1">
+                    <p className="flex items-center gap-1.5 truncate text-sm font-bold text-white">
+                      {p.username ?? `Player ${p.seat_number}`}
+                      {isMonarch && <span title="The monarch">👑</span>}
+                    </p>
+                    <div className="flex items-center gap-1.5">
+                      {cmd && <span className="truncate text-[10px] text-amber-200/80">{cmd.name}</span>}
+                      {cmd && <ColorIdentityPips colors={cmd.colors} />}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-mono text-xl font-black leading-none text-emerald-300">{p.life_total}</p>
+                    <CommanderDamageBadge entries={commanderDamage[p.player_id]} />
+                  </div>
+                </div>
+
+                {creatures.length > 0 ? (
+                  <div className="flex gap-1.5 overflow-x-auto pb-1">
+                    {creatures.slice(0, 8).map((card) => (
+                      <div key={card.id} className="flex w-[42px] shrink-0 flex-col items-center gap-0.5">
+                        <MotionCard
+                          card={{ id: card.id, name: card.name, image_url: card.image_url, is_tapped: card.is_tapped, damage_marked: card.damage_marked, zone: card.zone }}
+                          size="board" useLayoutId={false} className="w-full"
+                        />
+                        <KeywordIconRow keywords={card.keywords} size={10} max={2} />
+                      </div>
+                    ))}
+                    {creatures.length > 8 && <span className="self-center px-1 text-[10px] font-bold text-slate-500">+{creatures.length - 8}</span>}
+                  </div>
+                ) : (
+                  <p className="text-[10px] text-slate-600">No creatures</p>
+                )}
+
+                <div className="flex items-center justify-between gap-2">
+                  <ManaAvailabilityBar mana={manaByPlayer[p.player_id] ?? null} />
+                  <span className="flex shrink-0 items-center gap-2 text-[10px] text-slate-500">
+                    <span title="Hand">✋{counts?.handCount ?? '·'}</span>
+                    <span title="Graveyard">⚰{counts?.graveyard.length ?? '·'}</span>
+                  </span>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </motion.div>
+    </ScreenPortal>
+  )
+}
+
 // ─── Opponent Board Overlay ───────────────────────────────────────────────────
 
 type OverlayTab = 'board' | 'graveyard' | 'exile'
@@ -3430,17 +4184,25 @@ function OpponentBoardOverlay({
   supabase,
   sessionId,
   opponent,
+  commanders = [],
   cards,
+  allOpponents = [],
+  onSwitch,
   onClose,
 }: {
   supabase: ReturnType<typeof import('@/lib/supabase/client').createClient>
   sessionId: string
   opponent: GameSessionPlayer
+  commanders?: CommanderInfo[]
   cards: BoardCard[]
+  // All seated opponents (seat order) — drives the full-screen switcher tabs.
+  allOpponents?: GameSessionPlayer[]
+  onSwitch?: (playerId: string) => void
   onClose: () => void
 }) {
   const [tab, setTab] = useState<OverlayTab>('board')
   const [zoneData, setZoneData] = useState<OpponentZoneData | null>(null)
+  const [mana, setMana] = useState<ManaAvailability | null>(null)
   // Tap any opponent card to zoom it (reuses the same overlay as own cards).
   const [zoomCard, setZoomCard] = useState<ControllerCard | null>(null)
   const toZoomCard = (c: {
@@ -3458,6 +4220,9 @@ function OpponentBoardOverlay({
     getOpponentZoneData(supabase, sessionId, opponent.player_id)
       .then(setZoneData)
       .catch(() => setZoneData({ graveyard: [], exile: [], handCount: 0, libraryCount: 0 }))
+    getOpponentManaSources(supabase, sessionId, opponent.player_id)
+      .then(setMana)
+      .catch(() => setMana(emptyManaAvailability))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opponent.player_id])
 
@@ -3476,12 +4241,12 @@ function OpponentBoardOverlay({
   ]
 
   return (
-    <>
+    <ScreenPortal>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 z-30 bg-black/70 backdrop-blur-[2px]"
+        className="fixed inset-0 z-[50] bg-black/70 backdrop-blur-[2px]"
         onClick={onClose}
       />
       <motion.div
@@ -3489,15 +4254,81 @@ function OpponentBoardOverlay({
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 32, stiffness: 320 }}
-        className="absolute inset-x-0 bottom-0 z-40 flex max-h-full flex-col rounded-t-2xl border-t border-white/10 bg-[#0D1018]"
+        className="fixed inset-0 z-[51] flex flex-col bg-[#0D1018]"
       >
+        {/* Switcher — jump back to your own board or between opponents */}
+        {onSwitch && (
+          <div className="flex shrink-0 items-center gap-1.5 overflow-x-auto border-b border-[#1E2230] bg-[#09090D] px-3 py-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-cyan-400/30 bg-cyan-500/10 px-3 py-1.5 text-[11px] font-bold text-cyan-200 active:scale-95"
+            >
+              🏠 My Board
+            </button>
+            <span className="text-[#2a3040]">|</span>
+            {allOpponents.map((p) => {
+              const active = p.player_id === opponent.player_id
+              return (
+                <button
+                  key={p.player_id}
+                  type="button"
+                  onClick={() => !active && onSwitch(p.player_id)}
+                  className={`flex shrink-0 items-center gap-1 rounded-lg border px-3 py-1.5 text-[11px] font-bold active:scale-95 ${
+                    active
+                      ? 'border-amber-400 bg-amber-500/15 text-amber-200'
+                      : 'border-white/10 bg-white/5 text-slate-300'
+                  }`}
+                >
+                  {p.username ?? `P${p.seat_number}`}
+                  <span className="font-mono text-[10px] text-slate-400">♥{p.life_total}</span>
+                </button>
+              )
+            })}
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-[#1E2230] px-4 py-3">
-          <div>
-            <p className="text-sm font-black text-white">
-              {opponent.username ?? `Player ${opponent.seat_number}`}
-            </p>
-            <p className="text-[10px] text-slate-500">Life {opponent.life_total}</p>
+          <div className="flex min-w-0 items-center gap-3">
+            {commanders.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setZoomCard(toZoomCard({
+                  id: commanders[0].id,
+                  card_id: commanders[0].card_id,
+                  name: commanders[0].name,
+                  image_url: commanders[0].image_url,
+                  type_line: commanders[0].type_line,
+                  power_toughness: commanders[0].power_toughness,
+                  zone: commanders[0].zone,
+                }))}
+                className="relative block shrink-0 overflow-hidden rounded-md border border-amber-400/40 active:scale-95"
+                title={`Commander: ${commanders[0].name}`}
+              >
+                {commanders[0].image_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={commanders[0].image_url} alt={commanders[0].name} className="h-14 w-10 object-cover" />
+                ) : (
+                  <span className="flex h-14 w-10 items-center justify-center bg-amber-950/60 px-1 text-center text-[8px] font-bold text-amber-200">
+                    {commanders[0].name}
+                  </span>
+                )}
+                <span className="absolute left-0 top-0 bg-amber-400 px-1 text-[7px] font-black text-amber-950">👑</span>
+              </button>
+            )}
+            <div className="min-w-0">
+              <p className="truncate text-sm font-black text-white">
+                {opponent.username ?? `Player ${opponent.seat_number}`}
+              </p>
+              <p className="text-[10px] text-slate-500">Life {opponent.life_total}</p>
+              {commanders.length > 0 && (
+                <div className="mt-1 flex items-center gap-1.5">
+                  <span className="truncate text-[10px] font-semibold text-amber-200/90">{commanders.map((c) => c.name).join(' & ')}</span>
+                  <ColorIdentityPips colors={[...new Set(commanders.flatMap((c) => c.colors))]} />
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {/* Hand + library counters (always visible) */}
@@ -3520,6 +4351,12 @@ function OpponentBoardOverlay({
               Close
             </button>
           </div>
+        </div>
+
+        {/* Available-mana bar (untapped sources by colour) */}
+        <div className="flex shrink-0 items-center gap-2 border-b border-[#1E2230] px-4 py-2">
+          <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Mana</span>
+          <ManaAvailabilityBar mana={mana} />
         </div>
 
         {/* Tab bar */}
@@ -3584,6 +4421,7 @@ function OpponentBoardOverlay({
                             </span>
                           )}
                         </button>
+                        <KeywordIconRow keywords={card.keywords} />
                         {card.damage_marked > 0 && (
                           <span className="text-[8px] font-bold text-red-400">{card.damage_marked} dmg</span>
                         )}
@@ -3697,11 +4535,94 @@ function OpponentBoardOverlay({
         </div>
       </motion.div>
 
-      {/* Tap-to-zoom an opponent's card (z-[55] sits above this sheet's z-40). */}
+      {/* Tap-to-zoom an opponent's card (z-[55] sits above this sheet's z-[51]). */}
       <AnimatePresence>
         {zoomCard && <CardZoomOverlay card={zoomCard} onClose={() => setZoomCard(null)} />}
       </AnimatePresence>
-    </>
+    </ScreenPortal>
+  )
+}
+
+// Portal opponent overlays to <body> so they cover the FULL controller screen.
+// Rendered inside the board region they'd be clipped to that sub-area — when the
+// stack strip is showing, the region is too short and the cards get cut off.
+function ScreenPortal({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  if (!mounted || typeof document === 'undefined') return null
+  return createPortal(children, document.body)
+}
+
+// A player's commander as a small gold-framed thumbnail (image or name fallback).
+// Used in the pills, the opponents row, and the full-screen header.
+function CommanderAvatar({ commander, size = 20, onClick }: { commander: CommanderInfo; size?: number; onClick?: () => void }) {
+  const box = (
+    <span
+      className="relative block shrink-0 overflow-hidden rounded border border-amber-400/50 bg-amber-950/60"
+      style={{ width: size, height: Math.round(size * 1.4) }}
+    >
+      {commander.image_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={commander.image_url} alt={commander.name} className="h-full w-full object-cover" />
+      ) : (
+        <span className="flex h-full w-full items-center justify-center px-0.5 text-center text-[6px] font-bold leading-tight text-amber-200">
+          {commander.name}
+        </span>
+      )}
+    </span>
+  )
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} title={`Commander: ${commander.name}`} className="block shrink-0 active:scale-95">
+        {box}
+      </button>
+    )
+  }
+  return <span title={`Commander: ${commander.name}`}>{box}</span>
+}
+
+// Small WUBRG colour-identity dots (Commander identity). Colourless commanders
+// render nothing.
+const IDENTITY_PIP_COLORS: Record<string, string> = {
+  W: 'bg-[#fbf7d8]', U: 'bg-[#a8d4ef]', B: 'bg-[#b3a8a2]', R: 'bg-[#f3a78d]', G: 'bg-[#98d2a4]',
+}
+function ColorIdentityPips({ colors }: { colors: ManaColor[] }) {
+  const pips = colors.filter((c) => c in IDENTITY_PIP_COLORS)
+  if (pips.length === 0) return null
+  return (
+    <span className="flex items-center gap-0.5">
+      {pips.map((c) => (
+        <span key={c} className={`h-2.5 w-2.5 rounded-full ring-1 ring-black/40 ${IDENTITY_PIP_COLORS[c]}`} title={c} />
+      ))}
+    </span>
+  )
+}
+
+// Opponent available-mana bar: a real MTG mana symbol (Mana font) per untapped
+// colour source with a count, a gold multicolor symbol for any-colour sources,
+// and the total "open". Hidden when nothing.
+function ManaAvailabilityBar({ mana }: { mana: ManaAvailability | null }) {
+  if (!mana) return null
+  const present = (['W', 'U', 'B', 'R', 'G', 'C'] as ManaColor[]).filter((c) => (mana.byColor[c] ?? 0) > 0)
+  const pairs = Object.entries(mana.pairs).filter(([, n]) => (n ?? 0) > 0)
+  if (present.length === 0 && pairs.length === 0 && mana.flexible === 0) {
+    return <span className="text-[10px] font-semibold text-slate-600">No untapped mana</span>
+  }
+  const pip = (key: string, msClass: string, count: number, title: string) => (
+    <span key={key} className="inline-flex items-center gap-0.5" title={title}>
+      {/* ms-cost ships a negative left-margin (for overlapping cost strings) —
+          zero it out so each standalone pip stays centred. */}
+      <i className={`ms ${msClass} ms-cost ms-shadow text-[15px]`} style={{ marginLeft: 0 }} />
+      <span className="font-mono text-[10px] font-bold text-slate-300">×{count}</span>
+    </span>
+  )
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {present.map((c) => pip(c, `ms-${c.toLowerCase()}`, mana.byColor[c] ?? 0, `${mana.byColor[c]} untapped ${c} source(s)`))}
+      {pairs.map(([key, n]) => pip(key, `ms-${key}`, n ?? 0, `${n} untapped ${key.toUpperCase()} dual source(s)`))}
+      {mana.flexible > 0 && pip('flex', 'ms-multicolor', mana.flexible, `${mana.flexible} any-colour source(s)`)}
+      <span className="rounded bg-amber-500/15 px-1.5 py-0.5 font-mono text-[10px] font-black text-amber-300">{mana.total} open</span>
+    </div>
   )
 }
 

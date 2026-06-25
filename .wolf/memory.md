@@ -5481,3 +5481,262 @@
 | 23:45 | Edited tests/unit/auto-pass.test.ts | 21→23 lines | ~287 |
 | now | Fix: auto-pass no longer skips precombat main (M1) — mn now only covers postcombat_main; M1 always stops | lib/game/auto-pass.ts, tests/unit/auto-pass.test.ts | tsc 0, 39/39 auto-pass tests, suite 1105/1106 | ~12k |
 | 23:57 | Edited .gitignore | 4→7 lines | ~85 |
+| 00:03 | Created mockups/opponent-view-concepts.html | — | ~5478 |
+| 00:03 | opponent-view redesign: 3 layout concepts (Lane Sheet/Threat Rail/Pod Grid) | mockups/opponent-view-concepts.html | preview built | ~5k |
+| 00:14 | Created mockups/opponent-view-threat-rail.html | — | ~6139 |
+| 00:14 | threat-rail refined: landscape bovenbalk + portrait + detail, available-mana pips (+multi), keyword icons | mockups/opponent-view-threat-rail.html | preview built | ~6k |
+| 00:27 | Created mockups/opponent-view-threat-rail.html | — | ~6757 |
+| 00:27 | threat-rail v2: Mana-font duo pips + FA keyword icons + fast My-Board/Opponents nav | mockups/opponent-view-threat-rail.html | preview updated | ~5k |
+| 00:39 | Created mockups/opponent-view-flow.html | — | ~7374 |
+| 00:39 | opponent flow preview: own-board primary -> opp row -> full-screen+switcher, commander per player, game-icons keywords | mockups/opponent-view-flow.html | preview built, icons verified | ~7k |
+| 00:45 | Created mockups/opponent-keyword-icons.html | — | ~1738 |
+| 00:45 | keyword icon chooser: game-icons options per effect (verified names) | mockups/opponent-keyword-icons.html | preview built | ~3k |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~10 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~7 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~7 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~9 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~7 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~8 |
+| 00:54 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | — | ~533 |
+| 00:55 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~110 |
+| 00:55 | final keyword icon mapping locked; flow mockup updated; saved opponent-view-design memory | mockups/opponent-view-flow.html, memory/opponent-view-design.md | done | ~2k |
+| 00:58 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | modified scoping() | ~358 |
+| 01:02 | Edited lib/game/mana.ts | added nullish coalescing | ~240 |
+| 01:02 | Edited lib/game/data.ts | added 2 import(s) | ~50 |
+| 01:02 | Edited lib/game/data.ts | added optional chaining | ~606 |
+| 01:03 | Edited components/ControllerListV5.tsx | 2→2 lines | ~54 |
+| 01:03 | Edited components/ControllerListV5.tsx | added 2 condition(s) | ~241 |
+| 01:03 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~92 |
+| 01:03 | Edited components/ControllerListV5.tsx | CSS: commanders | ~89 |
+| 01:03 | Edited components/ControllerListV5.tsx | expanded (+26 lines) | ~564 |
+| 01:03 | Edited components/ControllerListV5.tsx | expanded (+8 lines) | ~123 |
+| 01:04 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~228 |
+| 01:04 | Edited components/ControllerListV5.tsx | modified OpponentBoardOverlay() | ~91 |
+| 01:05 | commander piece: getSessionCommanders + colorIdentityFromCard, commander card+identity pips in OpponentBoardOverlay header | data.ts, mana.ts, ControllerListV5.tsx | tsc clean, eslint 0 errors | ~6k |
+| 01:14 | Edited supabase/functions_src/fire_watcher_triggers.sql | expanded (+8 lines) | ~186 |
+| 01:14 | Edited lib/game/data.ts | 22→23 lines | ~247 |
+| 01:14 | Edited lib/game/types.ts | 6→8 lines | ~86 |
+| 01:16 | Created tests/feature/cast-watcher-self.test.ts | — | ~663 |
+| 01:16 | Edited supabase/migrations/202605010325_cast_watcher_not_self.sql | 2→5 lines | ~99 |
+| 01:16 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~58 |
+| 01:16 | Edited components/ControllerListV5.tsx | 9→10 lines | ~125 |
+| 01:17 | keywords piece: getBoardCards loads keywords, offline KeywordIcon (15 game-icons inline), icon row on opponent creatures | data.ts, types.ts, controller/KeywordIcon.tsx, ControllerListV5.tsx | tsc clean, eslint 0 err | ~5k |
+| 01:17 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | 1→2 lines | ~135 |
+| now | Fix: cast watcher no longer triggers for casting its own source (Bygone Bishop/Eshki). fire_watcher_triggers excludes the changed card from self-watching on spell_cast/cast_from_exile (mig 325) | supabase/functions_src/fire_watcher_triggers.sql, mig 325, tests/feature/cast-watcher-self.test.ts | suite 1107/1108; applied to play db + leyline_test | ~18k |
+| 11:59 | Created lib/game/mana-sources.ts | — | ~826 |
+| 11:59 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~52 |
+| 11:59 | Edited components/ControllerListV5.tsx | modified getProducibleColors() | ~123 |
+| 12:00 | Edited lib/game/data.ts | added 1 import(s) | ~76 |
+| 12:00 | Edited lib/game/data.ts | added optional chaining | ~381 |
+| 12:00 | Edited components/ControllerListV5.tsx | inline fix | ~29 |
+| 12:00 | Edited components/ControllerListV5.tsx | 1→2 lines | ~40 |
+| 12:00 | Edited components/ControllerListV5.tsx | CSS: byColor, flexible, total | ~127 |
+| 12:01 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~534 |
+| 12:01 | Edited components/ControllerListV5.tsx | expanded (+6 lines) | ~121 |
+| 12:02 | Edited components/ControllerListV5.tsx | inline fix | ~26 |
+| 12:04 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | inline fix | ~190 |
+| 12:04 | mana piece: shared mana-sources.ts (producibleColorsFromScript+aggregate), getOpponentManaSources, ManaAvailabilityBar in overlay; controller delegates | mana-sources.ts, data.ts, ControllerListV5.tsx | tsc+eslint clean, logic sanity-checked | ~6k |
+| 12:18 | Edited components/ControllerListV5.tsx | CSS: playerId | ~140 |
+| 12:18 | Edited components/ControllerListV5.tsx | 15→15 lines | ~120 |
+| 12:19 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~523 |
+| 12:19 | Edited components/ControllerListV5.tsx | 8→10 lines | ~121 |
+| 12:20 | Edited components/ControllerListV5.tsx | modified row() | ~68 |
+| 12:20 | Edited components/ControllerListV5.tsx | added optional chaining | ~181 |
+| 12:20 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~363 |
+| 12:21 | Edited components/ControllerListV5.tsx | added error handling | ~1704 |
+| 12:21 | Edited components/ControllerListV5.tsx | expanded (+18 lines) | ~260 |
+| 12:22 | opponent flow rebuild: pills->row(L1)->full-screen+switcher(L2); CommanderAvatar in pills, OpponentRowOverlay, switcher tabs (My Board/opponents) in overlay | ControllerListV5.tsx | tsc+eslint clean | ~9k |
+| 12:22 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | inline fix | ~175 |
+| 12:27 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~45 |
+| 12:27 | Edited components/ControllerListV5.tsx | CSS: children | ~170 |
+| 12:28 | Edited components/ControllerListV5.tsx | 13→13 lines | ~188 |
+| 12:28 | Edited components/ControllerListV5.tsx | 6→6 lines | ~31 |
+| 12:28 | Edited components/ControllerListV5.tsx | 16→16 lines | ~162 |
+| 12:29 | Edited components/ControllerListV5.tsx | 7→7 lines | ~72 |
+| 12:30 | fix: opponent overlays clipped by stack strip -> ScreenPortal to body (fixed inset-0), full-screen | ControllerListV5.tsx | tsc+eslint clean | ~3k |
+| 13:31 | Edited components/ControllerListV5.tsx | 3→3 lines | ~42 |
+| 13:31 | Edited components/ControllerListV5.tsx | 6→6 lines | ~116 |
+| 13:31 | Edited components/ControllerListV5.tsx | 2→2 lines | ~22 |
+| 13:32 | follow-up: opponent L2 sheet made full-screen (fixed inset-0) so tab content scrolls; reverted accidental Your-zones edit | ControllerListV5.tsx | tsc+eslint clean | ~1k |
+| 13:55 | Edited app/globals.css | 3→6 lines | ~48 |
+| 13:56 | Edited components/ControllerListV5.tsx | CSS: msClass | ~392 |
+| 13:56 | mana bar now uses real MTG symbols: installed mana-font, @import in globals.css, ManaAvailabilityBar uses ms ms-x ms-cost (+ms-multicolor for any) | package.json, globals.css, ControllerListV5.tsx | tsc+eslint clean, classes verified | ~3k |
+| 14:03 | Edited lib/game/mana-sources.ts | added 2 condition(s) | ~679 |
+| 14:03 | Edited lib/game/mana-sources.ts | added 3 condition(s) | ~427 |
+| 14:04 | Edited lib/game/data.ts | inline fix | ~29 |
+| 14:04 | Edited lib/game/data.ts | modified if() | ~49 |
+| 14:04 | Edited components/ControllerListV5.tsx | inline fix | ~33 |
+| 14:04 | Edited components/ControllerListV5.tsx | inline fix | ~18 |
+| 14:04 | Edited components/ControllerListV5.tsx | inline fix | ~15 |
+| 14:04 | Edited components/ControllerListV5.tsx | modified ManaAvailabilityBar() | ~394 |
+| 14:05 | duo-colour mana as hybrid symbols: manaSourceColors+guildHybridKey, ManaAvailability.pairs bucket, ms-bg/ms-wu etc in bar | mana-sources.ts, data.ts, ControllerListV5.tsx | tsc+eslint clean, logic verified | ~3k |
+| 14:13 | Edited components/ControllerListV5.tsx | CSS: marginLeft | ~144 |
+| 14:30 | Edited lib/game/data.ts | added nullish coalescing | ~373 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~27 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | inline fix | ~26 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~35 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~63 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~70 |
+| 14:31 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~39 |
+| 14:31 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~24 |
+| 14:31 | Edited components/ControllerListV5.tsx | 5→6 lines | ~36 |
+| 14:31 | Edited components/ControllerListV5.tsx | added optional chaining | ~265 |
+| 14:31 | Edited components/ControllerListV5.tsx | 2→4 lines | ~75 |
+| 14:32 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~96 |
+| 14:32 | Edited components/ControllerListV5.tsx | 4→7 lines | ~31 |
+| 14:32 | Edited components/ControllerListV5.tsx | CSS: topLibraryCard, canCastTopNow, onCastTop | ~84 |
+| 14:32 | Edited components/ControllerListV5.tsx | modified row() | ~82 |
+| 14:32 | Edited components/ControllerListV5.tsx | CSS: active | ~456 |
+| 14:33 | Edited components/ControllerListV5.tsx | added optional chaining | ~740 |
+| 14:33 | Edited components/ControllerListV5.tsx | expanded (+12 lines) | ~210 |
+| 14:34 | top-of-library feature: look-at-top indicator + peek + cast (Thundermane); getCastFromLibraryTopPerms, hook+BoardArea wiring | data.ts, use-controller-game-state.ts, ControllerListV5.tsx | tsc+eslint clean | ~8k |
+| 14:41 | Edited lib/game/use-controller-game-state.ts | modified useControllerGameState() | ~93 |
+| 14:41 | Edited lib/game/use-controller-game-state.ts | added 3 condition(s) | ~944 |
+| now | Controller realtime perf: debounce loadControllerState (60ms, coalesce burst events into 1 reload), fallback poll only when realtime disconnected, dropped unfilterable global `cards` sub + added session_id filter to game_combat_blockers sub | lib/game/use-controller-game-state.ts | tsc 0, lint ok; client-only | ~15k |
+| 14:51 | Edited lib/game/use-board-game-state.ts | modified useBoardGameState() | ~78 |
+| 14:51 | Edited lib/game/use-board-game-state.ts | added 3 condition(s) | ~779 |
+| now | Board hook same 3 realtime perf fixes (debounce 60ms, poll only when realtime disconnected, drop global cards sub + filter game_combat_blockers) | lib/game/use-board-game-state.ts | tsc 0, lint ok | ~8k |
+| 15:23 | Edited lib/game/mana-sources.ts | 3→4 lines | ~91 |
+| 15:24 | Edited lib/game/mana-sources.ts | added 1 condition(s) | ~234 |
+| 15:24 | Edited scripts/bot-runner.mjs | added 2 import(s) | ~73 |
+| 15:24 | Edited scripts/bot-runner.mjs | added optional chaining | ~844 |
+| 15:24 | Edited scripts/bot-runner.mjs | 9→10 lines | ~158 |
+| 15:24 | Edited scripts/bot-runner.mjs | 7→9 lines | ~113 |
+| 15:25 | Edited scripts/bot-runner.mjs | added nullish coalescing | ~255 |
+| 15:27 | bot real mana: payFor taps real lands colour-correct via add_mana_from_card (no more topUpMana cheat); manaSourceColors+amount | bot-runner.mjs, mana-sources.ts | tsc clean, logic verified offline | ~6k |
+| 15:28 | Edited components/ControllerListV5.tsx | expanded (+6 lines) | ~141 |
+| 15:28 | Edited components/ControllerListV5.tsx | CSS: Guard | ~284 |
+| 15:29 | auto-pass M1 race guard: timed pass re-checks live step/turn/priority before firing | ControllerListV5.tsx | tsc+eslint clean | ~2k |
+| 15:36 | Edited supabase/functions_src/get_stack_items.sql | added 1 condition(s) | ~119 |
+| 15:36 | Edited supabase/functions_src/get_stack_items.sql | added 1 condition(s) | ~91 |
+| 15:37 | Edited supabase/functions_src/get_stack_items.sql | added 1 condition(s) | ~226 |
+| 15:37 | Edited supabase/migrations/202605010326_stack_bot_username.sql | 2→6 lines | ~107 |
+| 15:38 | stack shows CPU name not Unknown player: get_stack_items bot fallback (CPU/short-id) | functions_src/get_stack_items.sql, migrations/202605010326 | migration generated | ~2k |
+| 15:39 | Edited supabase/functions_src/get_session_players.sql | 5→6 lines | ~81 |
+| 15:39 | Edited supabase/functions_src/get_stack_items.sql | 6→6 lines | ~72 |
+| 15:39 | Edited supabase/functions_src/get_stack_items.sql | modified nullif() | ~75 |
+| 15:40 | Edited supabase/migrations/202605010326_stack_bot_username.sql | 2→5 lines | ~97 |
+| 15:40 | multiple bots distinguishable: CPU label now seat-numbered (CPU 🤖 <seat>) in get_session_players + get_stack_items | functions_src/*, migrations/202605010326 | migration regenerated (2 fns) | ~1k |
+| 15:45 | Edited supabase/functions_src/get_stack_items.sql | added 1 condition(s) | ~172 |
+| 15:45 | Edited supabase/migrations/202605010326_stack_bot_username.sql | 2→7 lines | ~123 |
+| 15:47 | Edited components/ControllerListV5.tsx | 6→9 lines | ~145 |
+| 15:47 | show controller (CPU) name on collapsed StackStrip; target null when no target | ControllerListV5.tsx, get_stack_items.sql, migrations/202605010326 | tsc+eslint clean | ~2k |
+| 16:02 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/local-migrations.md | — | ~430 |
+| 16:02 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~110 |
+| 16:14 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~204 |
+| 16:34 | Edited lib/game/use-controller-game-state.ts | 9→10 lines | ~116 |
+| 16:34 | Edited lib/game/use-controller-game-state.ts | modified if() | ~215 |
+| 16:34 | Edited lib/game/use-board-game-state.ts | 9→10 lines | ~111 |
+| 16:35 | Edited lib/game/use-board-game-state.ts | modified if() | ~184 |
+| 16:35 | Created supabase/migrations/202605010327_realtime_game_tables.sql | — | ~302 |
+| 16:37 | Edited components/ControllerListV5.tsx | expanded (+6 lines) | ~266 |
+| 16:38 | Edited supabase/functions_src/get_turn_state.sql | modified left() | ~214 |
+| 16:38 | Edited supabase/functions_src/get_turn_state.sql | expanded (+6 lines) | ~175 |
+| 16:38 | Edited supabase/migrations/202605010328_turn_state_bot_name.sql | 2→5 lines | ~91 |
+| 16:39 | reload fix (realtime publication 327 + silent-poll fallback) + status bar shows active player (You badge) + get_turn_state bot name (328) | use-*-game-state.ts, ControllerListV5.tsx, get_turn_state.sql, migrations 327/328 | tsc+eslint clean, applied local | ~6k |
+| 17:00 | Edited components/ControllerListV5.tsx | CSS: Landscape, Sac | ~198 |
+| now | Fix: getAutoTapMana no longer auto-taps a source that has a second tap ability (e.g. Bountiful Landscape {T}:Add C vs {T},Sac:fetch) — opens the action sheet to choose | components/ControllerListV5.tsx | tsc 0, lint ok | ~10k |
+| 17:29 | Edited scripts/bot-runner.mjs | added optional chaining | ~647 |
+| 17:30 | Edited scripts/bot-runner.mjs | modified if() | ~136 |
+| now | Bot: handle triggered abilities on the stack that require a target (resolveTriggerTargets → choose_triggered_ability_creature_target), respecting target_type/target_controller. Fixes Obuun landfall "+1/+1 on target creature" stalling | scripts/bot-runner.mjs | node --check ok; payload keys verified vs enqueue_triggered_ability | ~18k |
+| now | Unstuck live game: bot's Obuun animate trigger had no target → P0001 soft-lock. Set target via RPC; recurrence handled by bot resolveTriggerTargets (needs runner restart). Follow-up: make "up to one" triggers optional (engine has no optional-target support) | scripts/bot-runner.mjs, live db | game resolved | ~20k |
+| 18:07 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 5→6 lines | ~42 |
+| 18:07 | Edited supabase/functions_src/enqueue_triggered_ability.sql | modified coalesce() | ~387 |
+| 18:08 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 5→6 lines | ~134 |
+| 18:08 | Edited components/ControllerListV5.tsx | inline fix | ~33 |
+| 18:08 | Edited supabase/functions_src/apply_trigger_effects.sql | modified select() | ~234 |
+| 18:09 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~332 |
+| 18:09 | Edited components/ControllerListV5.tsx | reduced (-6 lines) | ~36 |
+| 18:10 | auto-pass M1 robust fix: re-fetch server turn-state before passing, bail on step mismatch | ControllerListV5.tsx | tsc+eslint clean | ~2k |
+| 18:11 | Edited supabase/migrations/202605010326_optional_trigger_targets.sql | 2→7 lines | ~147 |
+| 18:13 | Edited scripts/bot-runner.mjs | modified q() | ~119 |
+| 18:13 | Edited supabase/functions_src/choose_triggered_ability_creature_target.sql | modified or() | ~87 |
+| 18:14 | Edited supabase/migrations/202605010326_optional_trigger_targets.sql | expanded (+7 lines) | ~184 |
+| 18:15 | Edited components/ControllerListV5.tsx | CSS: onSkip | ~118 |
+| 18:15 | Edited components/ControllerListV5.tsx | 9→11 lines | ~124 |
+| 18:15 | Edited components/ControllerListV5.tsx | expanded (+8 lines) | ~103 |
+| 18:16 | Edited components/ControllerListV5.tsx | CSS: active, disabled | ~264 |
+| 18:17 | Edited components/ControllerListV5.tsx | 6→7 lines | ~104 |
+| 18:17 | Edited components/ControllerListV5.tsx | 6→7 lines | ~37 |
+| 18:17 | Edited components/ControllerListV5.tsx | CSS: onPassPriority | ~122 |
+| 18:17 | Edited components/ControllerListV5.tsx | 3→4 lines | ~39 |
+| 18:19 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~319 |
+| 18:19 | Created tests/feature/optional-trigger-target.test.ts | — | ~675 |
+| now | Built optional ("up to one target") triggered-ability target support (mig 326): enqueue optional→target_required=false+target_optional; apply_trigger_effects no-ops a targeted effect with null target; choose RPC accepts optional; controller picker+Skip; bot targets optional too. Obuun animate marked optional | functions_src/{enqueue_triggered_ability,apply_trigger_effects,choose_triggered_ability_creature_target}.sql, mig 326, ControllerListV5.tsx, bot-runner.mjs, card-scripts.json+live db, tests/feature/optional-trigger-target.test.ts | suite 1109/1110, tsc 0, lint 0; applied to play db + leyline_test | ~80k |
+| 23:15 | Edited components/ControllerListV5.tsx | CSS: Toggle | ~120 |
+| 23:15 | Edited components/ControllerListV5.tsx | 2→2 lines | ~26 |
+| 23:15 | Edited components/ControllerListV5.tsx | CSS: Toggle | ~282 |
+| now | "Yield rest of turn" is now a real toggle (arm/disarm) in the auto-pass popover with a switch UI; popover stays open on toggle. Was one-shot arm-only | components/ControllerListV5.tsx (toggleYieldRestOfTurn) | tsc 0, lint 0 | ~6k |
+| 23:35 | Edited components/ControllerListV5.tsx | inline fix | ~43 |
+| 23:35 | Edited components/ControllerListV5.tsx | 2→6 lines | ~72 |
+| 23:35 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~74 |
+| 23:36 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~84 |
+| 23:36 | Edited components/ControllerListV5.tsx | 2→7 lines | ~181 |
+| 23:36 | Edited components/ControllerListV5.tsx | added 10 condition(s) | ~1082 |
+| 23:37 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~1078 |
+| 23:38 | Edited components/ControllerListV5.tsx | added optional chaining | ~158 |
+| 23:39 | generic-mana picker per cast: autoPay taps coloured pips, opens GenericPaySheet for {generic} when >1 colour available, awaits choice; cancel sentinel | ControllerListV5.tsx | tsc+eslint clean | ~7k |
+| 23:46 | Edited components/ControllerListV5.tsx | 3→6 lines | ~162 |
+| 23:46 | Edited components/ControllerListV5.tsx | 3→3 lines | ~79 |
+| now | Fix auto-pass popover clipping on mobile landscape: was absolute top-0 + max-h-[80vh] (vh unreliable on mobile, overflowed bottom). Now fixed bottom-right anchor + max-h-[calc(100dvh-1rem)] + overflow scroll + compacter rows | components/ControllerListV5.tsx (PriorityPanel popover) | tsc 0, lint 0 | ~7k |
+| 23:47 | Created mockups/damage-display-concepts.html | — | ~2795 |
+| 23:47 | damage display proposal: poison=10 pips (corrupted@3), cmdr damage=per-source bars; compact pills for strips | mockups/damage-display-concepts.html | preview built | ~2k |
+| 00:11 | Created supabase/functions_src/reset_mana.sql | — | ~512 |
+| 00:11 | Edited lib/game/actions.ts | added 1 condition(s) | ~162 |
+| 00:11 | Edited components/ControllerListV5.tsx | 6→7 lines | ~43 |
+| 00:11 | Edited components/ControllerListV5.tsx | CSS: resetMana | ~122 |
+| 00:12 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~139 |
+| 00:12 | Edited components/ControllerListV5.tsx | CSS: active, sm | ~181 |
+| 00:12 | Edited components/ControllerListV5.tsx | 3→4 lines | ~60 |
+| 00:14 | undo-tap-mana: reset_mana RPC (untap mana sources + empty pool) + ↺ button in StatusBar when floating mana | functions_src/reset_mana.sql, migrations/329, actions.ts, ControllerListV5.tsx | tsc+eslint clean, applied local | ~3k |
+| 00:39 | Edited components/ControllerListV5.tsx | 1→6 lines | ~126 |
+| 00:40 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~442 |
+| 00:40 | Edited components/ControllerListV5.tsx | expanded (+12 lines) | ~334 |
+| 00:41 | resolution feedback toast: confirms when your own spells/abilities resolve (client tracks in-flight stack items), so a no-effect resolution gives feedback | ControllerListV5.tsx | tsc+eslint clean | ~3k |
+| 00:57 | Created supabase/migrations/202605010330_game_log.sql | — | ~784 |
+| 00:58 | Edited lib/game/data.ts | added nullish coalescing | ~248 |
+| 00:58 | Edited components/ControllerListV5.tsx | inline fix | ~36 |
+| 00:58 | Edited components/ControllerListV5.tsx | inline fix | ~37 |
+| 00:59 | Edited components/ControllerListV5.tsx | 2→3 lines | ~83 |
+| 00:59 | Edited components/ControllerListV5.tsx | added error handling | ~919 |
+| 00:59 | Edited components/ControllerListV5.tsx | expanded (+7 lines) | ~119 |
+| 00:59 | Edited components/ControllerListV5.tsx | expanded (+9 lines) | ~217 |
+| 01:00 | Edited components/ControllerListV5.tsx | CSS: onOpenLog | ~110 |
+| 01:00 | Edited components/ControllerListV5.tsx | 3→4 lines | ~51 |
+| 01:00 | shared game log: trigger logs casts+resolutions to game_action_log (mig 330) + realtime; getGameLog + GameLogSheet + 📜 button | migrations/330, data.ts, ControllerListV5.tsx | tsc+eslint clean, trigger tested, applied local | ~6k |
+| 01:01 | Edited lib/game/data.ts | modified if() | ~174 |
+| 01:02 | Edited lib/game/data.ts | modified reloads() | ~134 |
+| now | Fix battlefield cards shuffling on refresh: getBoardCards/getControllerCards had no ORDER BY → arbitrary PostgREST order. Added .order(zone_position).order(id) (stable; game_cards has no created_at) | lib/game/data.ts | tsc 0, lint 0 | ~10k |
+| 01:11 | Created supabase/migrations/202605010331_game_log_outcomes.sql | — | ~876 |
+
+## Session: 2026-06-24 01:13
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 01:15 | Created components/GameLogPanel.tsx | — | ~1215 |
+| 01:15 | Edited components/board/BoardViewChrome.tsx | CSS: onOpenLog | ~499 |
+| 01:15 | Edited components/GameBoard.tsx | added 1 import(s) | ~43 |
+| 01:15 | Edited components/GameBoard.tsx | 1→2 lines | ~36 |
+| 01:16 | Edited components/GameBoard.tsx | 5→7 lines | ~109 |
+| 01:16 | Edited components/ControllerListV5.tsx | 2→2 lines | ~95 |
+| 01:17 | game log outcomes (life/poison/+1+1 triggers) + shared GameLogPanel on board | mig 202605010331, components/GameLogPanel.tsx, GameBoard.tsx, BoardViewChrome.tsx, ControllerListV5.tsx | applied+tested locally; tsc/eslint clean | ~9k |
+| 01:33 | Edited components/ControllerListV5.tsx | CSS: Auto-grouping, a, b | ~285 |
+| now | Battlefield auto-grouping: within lands/creatures/other rows, untapped cards float ahead of tapped (stable sort over the zone_position+id query order). Part 1 of reorder feature; manual drag (Arrange mode) still to build | components/ControllerListV5.tsx (MainArea) | tsc 0 | ~10k |
+| 08:48 | Edited components/ControllerListV5.tsx | inline fix | ~19 |
+| 08:48 | Edited components/ControllerListV5.tsx | added error handling | ~212 |
+| 08:49 | Edited components/ControllerListV5.tsx | added error handling | ~168 |
+| 08:49 | Edited components/ControllerListV5.tsx | CSS: out | ~281 |
+| 08:49 | Edited scripts/bot-runner.mjs | modified declareAttacks() | ~328 |
+| 08:49 | Edited scripts/bot-runner.mjs | "  ↳ attacking with ${decl" → "  ↳ attacking seat ${opp." | ~35 |
+| 08:50 | Edited components/ControllerListV5.tsx | added optional chaining | ~568 |
+| 08:50 | fix: bots attacked only the human; now fair target choice over all living opponents | scripts/bot-runner.mjs | syntax OK; logged bug-1481 | ~2k |
+| 08:51 | Edited components/ControllerListV5.tsx | 58→54 lines | ~678 |
+| now | Battlefield manual reorder: "⇄ Arrange" toggle in MainArea → perm row becomes framer-motion Reorder.Group/Item (drag-to-reorder, tap/peek suspended). Order saved per-device in localStorage (boardOrderKey), reconciled with auto-group default (new cards appended, removed pruned). permTileInner extracted to share tile JSX. Reorder import added | components/ControllerListV5.tsx | tsc 0, lint 0 — DRAG NEEDS ON-DEVICE TESTING | ~30k |
+| 09:07 | Edited lib/game/auto-pass.ts | 4→5 lines | ~123 |
+| 09:07 | Edited lib/game/auto-pass.ts | added 1 condition(s) | ~256 |
+| 09:08 | Edited tests/unit/auto-pass.test.ts | inline fix | ~36 |
+| 09:08 | Edited tests/unit/auto-pass.test.ts | expanded (+25 lines) | ~398 |
+| 09:08 | Edited components/ControllerListV5.tsx | inline fix | ~39 |
+| 09:08 | Edited components/ControllerListV5.tsx | inline fix | ~38 |
+| 09:08 | Edited components/ControllerListV5.tsx | 3→4 lines | ~79 |
+| now | Auto-resolve stack: new `res` auto-pass switch — on YOUR turn, auto-pass to resolve your spell/trigger on the stack when you hold no response (rsp still stops you). Default on. Pure client (server resolves on all-pass) | lib/game/auto-pass.ts, components/ControllerListV5.tsx, tests/unit/auto-pass.test.ts | suite 1115/1116, 45/45 auto-pass tests, tsc 0, lint 0 | ~15k |

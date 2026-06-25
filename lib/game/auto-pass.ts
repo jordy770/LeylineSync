@@ -16,6 +16,7 @@ export type AutoPassSettings = {
   atk: boolean  // auto-skip Declare Attackers when no creature can legally attack
   blk: boolean  // auto-skip Declare Blockers when you have no block to make (and no held response)
   mn: boolean   // auto-skip your POSTCOMBAT main phase when the stack is empty and nothing is playable
+  res: boolean  // on YOUR turn, auto-pass to resolve the stack (your cast spell / trigger) when you hold no response (rsp still stops you)
 }
 
 // Your own steps with nothing to decide — auto-passed when `own` is on. Both main
@@ -81,6 +82,12 @@ export function shouldAutoPass(s: AutoPassDecisionInput): boolean {
   // POSTCOMBAT main phase: your first (precombat) main is where you play lands and
   // develop, so it always stops for you — never auto-passed.
   if (s.isActivePlayer) {
+    // Auto-resolve the stack: once you've put something on the stack (a spell /
+    // trigger) and hold no response you want to use, pass to let it resolve instead
+    // of clicking Pass for each item. `rsp` still stops you when you can act.
+    if (s.autoPass.res && s.currentStackKey !== '' && !(s.autoPass.rsp && s.iHaveResponse)) {
+      return true
+    }
     return (
       (s.autoPass.own && OWN_SKIP_STEPS.includes(s.step)) ||
       (s.autoPass.atk && s.step === 'declare_attackers' && !s.hasEligibleAttacker) ||
