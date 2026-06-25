@@ -1,7 +1,10 @@
--- supabase/functions_src/apply_triggered_ability_effects.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010334_draw_floor_fix
+-- Fix the draw-floor bug: the draw branch looped 1..greatest(1, amount), so a
+-- dynamic/count draw of 0 ("draw a card for each X" with X=0) still drew 1.
+-- Now an absent `amount` key keeps the "draw a card" default of 1, while a
+-- present amount draws exactly that many (0 → draws nothing).
+-- Generated from supabase/functions_src (apply_triggered_ability_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_triggered_ability_effects(
   p_session_id uuid,
