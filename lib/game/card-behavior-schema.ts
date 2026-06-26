@@ -835,6 +835,8 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('copy_permanent'),
     target: z.literal('triggering_creature').optional(),
+    // Number of copies to create (Orthion: "create five tokens", mig 348).
+    count: z.number().int().positive().optional(),
     target_filter: z.object({
       controller: z.enum(['any', 'opponent', 'you']).optional(),
       type_line: z.string().optional(),
@@ -845,6 +847,8 @@ const CardBehaviorActionSchema = z.union([
       keywords: z.array(z.string()).optional(),
       // "Sacrifice/exile it at the next end step" (Electroduplicate, mig 347).
       cleanup_at_end_step: z.boolean().optional(),
+      // "It gains 'When this token dies, <effects>'" (Jaxis, mig 349).
+      dies_effect: z.array(z.record(z.string(), z.unknown())).optional(),
     }).strict().optional(),
   }),
   // An EXISTING card becomes a copy (mig 240). target:'triggering_creature'

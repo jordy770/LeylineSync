@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T13:14:21.712Z
-> Files: 113 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T13:23:51.296Z
+> Files: 115 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -147,7 +147,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~13002 tok)
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~20698 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~20777 tok)
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~10131 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
@@ -183,12 +183,12 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9211 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9216 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~3828 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~6349 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1815 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1067 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~21327 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~21335 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~13151 tok)
 - `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
 - `card_has_fear.sql` — supabase/functions_src/card_has_fear.sql (~502 tok)
@@ -198,7 +198,7 @@
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5990 tok)
 - `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1105 tok)
 - `clear_deck_from_session.sql` — supabase/functions_src/clear_deck_from_session.sql (~471 tok)
-- `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~1113 tok)
+- `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~1258 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3458 tok)
 - `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1908 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1699 tok)
@@ -209,11 +209,11 @@
 - `get_turn_state.sql` — supabase/functions_src/get_turn_state.sql (~785 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1902 tok)
 - `library_top_is_color.sql` — supabase/functions_src/library_top_is_color.sql (~260 tok)
-- `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1471 tok)
+- `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1542 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2715 tok)
 - `reset_mana.sql` — supabase/functions_src/reset_mana.sql (~512 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3832 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~14851 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~14898 tok)
 - `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~403 tok)
 
 ## supabase/migrations/
@@ -253,9 +253,11 @@
 - `defender.test.ts` — Defender enforcement (mig 323) — "a creature with defender can't attack." (~549 tok)
 - `draw-floor.test.ts` — Draw-floor fix (mig 334). The draw branch of apply_triggered_ability_effects (~767 tok)
 - `fear.test.ts` — Fear keyword (mig 338). Cover of Darkness: "As this enters, choose a creature (~1062 tok)
+- `jaxis.test.ts` — Jaxis, the Troublemaker (mig 349). Activated copy (reusing Orthion's path) where (~733 tok)
 - `lifegain-event.test.ts` — you_gain_life triggered event (mig 336). Marauding Blight-Priest: "Whenever (~695 tok)
 - `mayhem-devil.test.ts` — Mayhem Devil — already engine-supported once mig 341 added the (~528 tok)
 - `optional-trigger-target.test.ts` — Optional ("up to one target …") triggered-ability targets (mig 326). A trigger (~675 tok)
+- `orthion.test.ts` — Orthion, Hero of Lavabrink (mig 348). Copy a creature you control from an (~710 tok)
 - `patriarchs-bidding.test.ts` — Patriarch's Bidding (mig 343). "Each player chooses a creature type. Each (~794 tok)
 - `reanimate.test.ts` — Reanimate / Animate Dead (mig 346). The reanimation is return_from_graveyard (~798 tok)
 - `reflexive-may-program.test.ts` — Reflexive "when you do" via may + program (mig 339). Ruthless Lawbringer: (~1062 tok)

@@ -620,7 +620,7 @@ begin
         insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
         values (p_session_id, v_controller, p_stack_item_id, 'copy_permanent',
           'Choose a permanent to copy', v_options, 1, 1,
-          jsonb_build_object('except', v_effect -> 'except'))
+          jsonb_build_object('except', v_effect -> 'except', 'count', v_effect -> 'count'))
         returning id into v_decision_id;
         update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
         return v_decision_id;

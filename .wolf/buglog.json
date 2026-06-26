@@ -14879,6 +14879,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-26T11:09:06.955Z"
+    },
+    {
+      "id": "bug-912",
+      "timestamp": "2026-06-26T13:16:58.407Z",
+      "error_message": "Wrong reference: then should be copy_permanent",
+      "file": "supabase/functions_src/activate_ability.sql",
+      "root_cause": "Used \"then\" instead of \"copy_permanent\"",
+      "fix": "Changed then → copy_permanent",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T13:16:58.407Z"
+    },
+    {
+      "id": "bug-913",
+      "timestamp": "2026-06-26T13:20:20.881Z",
+      "error_message": "Wrong reference: costCardIds should be targetCardId",
+      "file": "tests/feature/jaxis.test.ts",
+      "root_cause": "Used \"costCardIds\" instead of \"targetCardId\"",
+      "fix": "Changed costCardIds → targetCardId",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T13:20:20.881Z"
+    },
+    {
+      "id": "bug-914",
+      "timestamp": "2026-06-26T13:22:17.631Z",
+      "error_message": "Type error",
+      "file": "tests/feature/jaxis.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T13:22:17.631Z"
     }
   ]
 }

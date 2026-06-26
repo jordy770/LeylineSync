@@ -584,9 +584,11 @@ begin
     -- keyword grants), then resume the program.
     foreach v_card in array v_chosen_ids
     loop
+      -- count>1 (mig 348, Orthion: "create five tokens that are copies").
       perform public.create_copy_token(
         v_decision.session_id, v_decision.deciding_player_id, v_card,
-        v_decision.params -> 'except');
+        v_decision.params -> 'except')
+      from generate_series(1, greatest(1, coalesce((v_decision.params ->> 'count')::integer, 1)));
     end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 

@@ -5912,3 +5912,16 @@
 | 13:08 | Created tests/feature/copy-token-cleanup.test.ts | — | ~841 |
 | 13:09 | Edited tests/feature/copy-token-cleanup.test.ts | "end" → "ending" | ~24 |
 | 15:14 | Edited scripts/triage-decklist.mjs | inline fix | ~28 |
+| 15:16 | Edited supabase/functions_src/submit_decision.sql | added 1 import(s) | ~129 |
+| 15:16 | Edited supabase/functions_src/apply_trigger_effects.sql | 4→4 lines | ~72 |
+| 15:16 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~79 |
+| 15:17 | Edited lib/game/card-behavior-schema.ts | 6→8 lines | ~110 |
+| 15:17 | Created tests/feature/orthion.test.ts | — | ~710 |
+| 15:18 | Edited supabase/functions_src/create_copy_token.sql | modified coalesce() | ~290 |
+| 15:18 | Edited lib/game/card-behavior-schema.ts | 6→8 lines | ~116 |
+| 15:19 | Created tests/feature/jaxis.test.ts | — | ~618 |
+| 15:19 | Edited tests/feature/jaxis.test.ts | 6→6 lines | ~98 |
+| 15:20 | Edited tests/feature/jaxis.test.ts | inline fix | ~30 |
+| 15:22 | Edited tests/feature/jaxis.test.ts | modified count() | ~130 |
+| 15:23 | Edited supabase/functions_src/put_in_graveyard.sql | 4→5 lines | ~34 |
+| 15:23 | Edited supabase/functions_src/put_in_graveyard.sql | modified trigger() | ~411 |

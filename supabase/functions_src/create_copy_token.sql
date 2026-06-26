@@ -93,6 +93,16 @@ begin
     where id = v_new and session_id = p_session_id;
   end if;
 
+  -- "It gains 'When this token dies, <effects>'" (Jaxis, mig 349): grant the copy
+  -- a dies-trigger via a granted_dies_effect on itself (put_in_graveyard fires it).
+  if jsonb_typeof(p_except -> 'dies_effect') = 'array' then
+    insert into public.game_continuous_effects (
+      session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+    ) values (
+      p_session_id, v_new, v_new, 'granted_dies_effect',
+      jsonb_build_object('effects', p_except -> 'dies_effect'), 'battlefield');
+  end if;
+
   return v_new;
 end;
 $$;

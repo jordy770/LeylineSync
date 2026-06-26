@@ -16859,5 +16859,104 @@
         }
       ]
     }
+  },
+  "Orthion, Hero of Lavabrink": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}{R}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "copy_permanent",
+            "target_filter": {
+              "controller": "you",
+              "type_line": "Creature"
+            },
+            "except": {
+              "keywords": [
+                "haste"
+              ],
+              "cleanup_at_end_step": true
+            }
+          }
+        ]
+      },
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{6}{R}{R}{R}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "copy_permanent",
+            "target_filter": {
+              "controller": "you",
+              "type_line": "Creature"
+            },
+            "except": {
+              "keywords": [
+                "haste"
+              ],
+              "cleanup_at_end_step": true
+            },
+            "count": 5
+          }
+        ]
+      }
+    ]
+  },
+  "Jaxis, the Troublemaker": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{R}"
+          },
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "discard",
+            "amount": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "copy_permanent",
+            "target_filter": {
+              "controller": "you",
+              "type_line": "Creature"
+            },
+            "except": {
+              "keywords": [
+                "haste"
+              ],
+              "cleanup_at_end_step": true,
+              "dies_effect": [
+                {
+                  "type": "draw",
+                  "amount": 1
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
   }
 }
