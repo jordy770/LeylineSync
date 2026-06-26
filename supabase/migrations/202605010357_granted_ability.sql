@@ -1,7 +1,70 @@
--- supabase/functions_src/register_card_continuous_effects.sql
--- CANONICAL current definition (seeded from 202605010195_intimidate_hexproof.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010357_granted_ability
+-- granted_ability mechanism (Blade of Selves / Splinter Twin / Mirage Phalanx):
+-- a continuous effect whose payload {kind, ability} is merged onto the affected
+-- card by effective_script, so fire_card_triggers / activate_ability see the
+-- granted triggered/activated ability. Whitelisted in register_card_continuous_effects.
+-- Generated from supabase/functions_src (effective_script, register_card_continuous_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+-- Non-function DDL: allow the 'granted_ability' effect_type on game_continuous_effects.
+alter table public.game_continuous_effects
+  drop constraint if exists game_continuous_effects_effect_type_check;
+alter table public.game_continuous_effects
+  add constraint game_continuous_effects_effect_type_check
+  check (effect_type = any (array[
+    'mana_does_not_empty', 'additional_land_plays', 'haste', 'vigilance',
+    'indestructible', 'trample', 'first_strike', 'double_strike', 'flying',
+    'reach', 'deathtouch', 'pump', 'control', 'set_pt', 'protection', 'switch_pt',
+    'infect', 'wither', 'toxic', 'cast_from_graveyard', 'menace',
+    'intimidate', 'hexproof', 'curse_attacked', 'play_from_exile', 'cost_reduction',
+    'cast_from_library_top', 'goaded', 'creatures_enter_tapped', 'damage_cap',
+    'exiled_until_leaves', 'attack_tax', 'animated', 'lifelink',
+    'cant_attack', 'cant_block', 'defender', 'fear', 'granted_dies_effect', 'granted_ability'
+  ]));
+
+create or replace function public.effective_script(p_session_id uuid, p_game_card_id uuid)
+returns jsonb
+language plpgsql stable security definer set search_path = public
+as $$
+declare
+  v_script jsonb;
+  v_granted record;
+  v_ability jsonb;
+begin
+  select coalesce(game_cards.copied_script, cards.script)
+  into v_script
+  from public.game_cards
+  join public.cards on cards.id = game_cards.card_id
+  where game_cards.id = p_game_card_id
+    and game_cards.session_id = p_session_id;
+
+  -- Merge granted abilities (one continuous-effect row per grant).
+  if exists (select 1 from public.game_continuous_effects
+             where session_id = p_session_id and effect_type = 'granted_ability'
+               and affected_card_id = p_game_card_id) then
+    v_script := coalesce(v_script, '{"schema_version":2}'::jsonb);
+    for v_granted in
+      select payload from public.game_continuous_effects
+      where session_id = p_session_id and effect_type = 'granted_ability'
+        and affected_card_id = p_game_card_id
+      order by id
+    loop
+      v_ability := v_granted.payload -> 'ability';
+      if v_ability is null then continue; end if;
+      if lower(coalesce(v_granted.payload ->> 'kind', 'triggered')) = 'activated' then
+        v_script := jsonb_set(v_script, '{activated_abilities}',
+          coalesce(v_script -> 'activated_abilities', '[]'::jsonb) || jsonb_build_array(v_ability));
+      else
+        v_script := jsonb_set(v_script, '{triggered_abilities}',
+          coalesce(v_script -> 'triggered_abilities', '[]'::jsonb) || jsonb_build_array(v_ability));
+      end if;
+    end loop;
+  end if;
+
+  return v_script;
+end;
+$$;
+grant execute on function public.effective_script(uuid, uuid) to anon, authenticated, service_role;
 
 create or replace function public.register_card_continuous_effects(
   p_session_id uuid, p_source_card_id uuid

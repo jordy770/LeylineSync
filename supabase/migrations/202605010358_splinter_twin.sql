@@ -1,7 +1,9 @@
--- supabase/functions_src/activate_ability.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010358_splinter_twin
+-- Splinter Twin: route copy_self through activate_ability's single-effect
+-- spell_effect path, so a granted '{T}: create a token copy of this creature'
+-- activated ability (mig 357 granted_ability) resolves.
+-- Generated from supabase/functions_src (activate_ability) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.activate_ability(
   p_session_id uuid,

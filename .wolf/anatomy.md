@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:20:36.726Z
-> Files: 123 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:27:35.581Z
+> Files: 126 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -183,7 +183,7 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9216 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9219 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~3941 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7227 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1815 tok)
@@ -201,6 +201,7 @@
 - `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~1650 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3458 tok)
 - `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1908 tok)
+- `effective_script.sql` — supabase/functions_src/effective_script.sql (~624 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1699 tok)
 - `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~495 tok)
 - `fire_lifegain_triggers.sql` — supabase/functions_src/fire_lifegain_triggers.sql (~658 tok)
@@ -211,7 +212,7 @@
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1902 tok)
 - `library_top_is_color.sql` — supabase/functions_src/library_top_is_color.sql (~260 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1542 tok)
-- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2715 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2768 tok)
 - `reset_mana.sql` — supabase/functions_src/reset_mana.sql (~512 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3832 tok)
 - `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~14917 tok)
@@ -244,6 +245,7 @@
 
 ## tests/feature/
 
+- `blade-of-selves.test.ts` — Blade of Selves (mig 357). "Equipped creature has myriad." Built on the new (~598 tok)
 - `carmen.test.ts` — Carmen, Cruel Skymarcher (mig 341). Two new pieces: (~914 tok)
 - `cast-watcher-self.test.ts` — Cast-watcher self-trigger (mig 325) — a "whenever you cast a creature spell" (~663 tok)
 - `change-deck.test.ts` — Lobby "change deck" (mig 324) — clear_deck_from_session lets a player undo a (~744 tok)
@@ -272,6 +274,7 @@
 - `saw-in-half.test.ts` — Saw in Half (mig 356). "Destroy target creature. If that creature dies this way, (~566 tok)
 - `shared-animosity.test.ts` — Shared Animosity (mig 340). "Whenever a creature you control attacks, it gets (~953 tok)
 - `shock-land.test.ts` — Shock lands (mig 327) — "enters tapped UNLESS you pay 2 life". Playing one puts (~854 tok)
+- `splinter-twin.test.ts` — Splinter Twin (mig 358). "Enchant creature. Enchanted creature has '{T}: create a (~578 tok)
 - `tap-self.test.ts` — tap_self effect action (mig 335). "Tap it" taps the SOURCE permanent — the (~779 tok)
 - `vampire-nocturnus.test.ts` — Vampire Nocturnus (mig 342). Conditional tribal anthem: "as long as the top (~851 tok)
 

@@ -5959,3 +5959,9 @@
 | 17:19 | Edited supabase/functions_src/apply_creature_effect.sql | modified Half() | ~377 |
 | 17:20 | Edited supabase/functions_src/trigger_effect_target_type.sql | inline fix | ~24 |
 | 17:20 | Created tests/feature/saw-in-half.test.ts | — | ~566 |
+| 17:23 | Created supabase/functions_src/effective_script.sql | — | ~624 |
+| 17:23 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified Fear() | ~99 |
+| 17:25 | Created tests/feature/blade-of-selves.test.ts | — | ~572 |
+| 17:26 | Edited tests/feature/blade-of-selves.test.ts | 2→3 lines | ~62 |
+| 17:26 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~82 |
+| 17:27 | Created tests/feature/splinter-twin.test.ts | — | ~578 |

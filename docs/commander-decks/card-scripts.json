@@ -16050,7 +16050,24 @@
   },
   "Blade of Selves": {
     "schema_version": 2,
-    "equip_cost": "{4}"
+    "equip_cost": "{4}",
+    "continuous_effects": [
+      {
+        "type": "granted_ability",
+        "affected": "equipped",
+        "payload": {
+          "kind": "triggered",
+          "ability": {
+            "event": "attacks",
+            "effects": [
+              {
+                "type": "myriad"
+              }
+            ]
+          }
+        }
+      }
+    ]
   },
   "Blasphemous Edict": {
     "schema_version": 2,
@@ -17087,6 +17104,37 @@
             "type": "myriad"
           }
         ]
+      }
+    ]
+  },
+  "Splinter Twin": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "granted_ability",
+        "affected": "enchanted",
+        "payload": {
+          "kind": "activated",
+          "ability": {
+            "costs": [
+              {
+                "type": "tap_self"
+              }
+            ],
+            "effects": [
+              {
+                "type": "copy_self",
+                "count": 1,
+                "except": {
+                  "keywords": [
+                    "haste"
+                  ],
+                  "cleanup_at_end_step": true
+                }
+              }
+            ]
+          }
+        }
       }
     ]
   }
