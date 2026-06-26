@@ -1,7 +1,10 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010359_echoing_assault
+-- Echoing Assault: copy_permanent target:'triggering_creature' bakes '$defender'
+-- in except.attacking_defender to the attacks event's defending player (1/1 tapped
+-- attacking copy). fire_attack_triggers now passes event_player_id to the
+-- creature_attacks watcher too. Approximated as a per-attacker watcher.
+-- Generated from supabase/functions_src (apply_trigger_effects, fire_attack_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,
@@ -668,21 +671,6 @@ begin
           jsonb_build_object('tapped', true, 'attacking_defender', (v_pe.player_id)::text,
                              'cleanup_at_end_combat', true));
       end loop;
-
-    elsif v_type = 'delina_d20' then
-      -- Delina, Wild Mage (mig 360): roll a d20, create a tapped attacking copy of
-      -- the target (exiled at end of combat); on 15-20 you may roll again — modelled
-      -- as always rolling again. Both ranges make one copy, so at least one. "Not
-      -- legendary" is not modelled. Safety-capped to avoid a runaway loop.
-      if v_target is not null then
-        for v_copy_n in 1..25 loop
-          perform public.create_copy_token(
-            p_session_id, v_controller, v_target,
-            jsonb_build_object('tapped', true, 'attacking_defender', v_item.payload ->> 'event_player_id',
-                               'cleanup_at_end_combat', true));
-          exit when (1 + floor(random() * 20)::integer) < 15;
-        end loop;
-      end if;
 
     elsif v_type = 'become_copy' then
       -- An existing card becomes a copy (mig 240). Options are either the
@@ -1359,3 +1347,52 @@ begin
 end;
 $$;
 grant execute on function public.apply_trigger_effects(uuid, uuid, integer) to authenticated;
+
+-- supabase/functions_src/fire_attack_triggers.sql
+-- CANONICAL current definition (seeded from 00_baseline.sql).
+-- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
+-- never re-extract from past migrations.
+
+CREATE OR REPLACE FUNCTION "public"."fire_attack_triggers"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+declare
+  v_attacker_controller uuid;
+begin
+  -- Myriad / Delina tokens (mig 355) are PUT INTO combat already attacking, not
+  -- declared as attackers, so "whenever this attacks" must NOT fire for them
+  -- (else a myriad copy's own myriad re-triggers forever). They carry a
+  -- no_attack_trigger marker stamped before their combat assignment is inserted.
+  if exists (select 1 from public.game_cards
+             where id = NEW.attacker_card_id and session_id = NEW.session_id
+               and counters ? 'no_attack_trigger') then
+    return null;
+  end if;
+
+  -- The defender rides as event context (mig 250: dethrone's "attacks the
+  -- player with the most life").
+  perform public.fire_card_triggers(
+    NEW.session_id,
+    NEW.attacker_card_id,
+    array['attacks', 'declares_attack', 'attack'],
+    jsonb_build_object('event_player_id', NEW.defending_player_id)
+  );
+
+  -- Watcher broadcast (mig 227): "whenever a creature you control attacks"
+  -- (Atarka, World Render). The attacking creature is the event subject, so a
+  -- reflexive "it gains double strike" lands on it.
+  select coalesce(controller_player_id, owner_id) into v_attacker_controller
+  from public.game_cards
+  where id = NEW.attacker_card_id and session_id = NEW.session_id;
+
+  perform public.fire_watcher_triggers(
+    NEW.session_id, NEW.attacker_card_id, v_attacker_controller, 'creature_attacks',
+    -- The defended player rides as event context (Echoing Assault, mig 359: the
+    -- copy is "attacking that player").
+    jsonb_build_object('event_player_id', NEW.defending_player_id)
+  );
+
+  return null;
+end;
+$$;

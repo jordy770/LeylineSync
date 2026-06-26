@@ -16166,6 +16166,28 @@
           "token_only": true
         }
       }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "creature_attacks",
+        "filter": {
+          "controller": "you",
+          "nontoken": true
+        },
+        "effects": [
+          {
+            "type": "copy_permanent",
+            "target": "triggering_creature",
+            "except": {
+              "power": 1,
+              "toughness": 1,
+              "tapped": true,
+              "attacking_defender": "$defender",
+              "cleanup_at_end_step": true
+            }
+          }
+        ]
+      }
     ]
   },
   "Electroduplicate": {
@@ -17135,6 +17157,21 @@
             ]
           }
         }
+      }
+    ]
+  },
+  "Delina, Wild Mage": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "delina_d20",
+            "target_type": "creature",
+            "target_controller": "you"
+          }
+        ]
       }
     ]
   }

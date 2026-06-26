@@ -182,7 +182,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type', 'tap_self',
-  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'myriad', 'saw_in_half', 'fight', 'gain_control',
+  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'myriad', 'saw_in_half', 'delina_d20', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
@@ -851,6 +851,11 @@ const CardBehaviorActionSchema = z.union([
       cleanup_at_end_step: z.boolean().optional(),
       // "It gains 'When this token dies, <effects>'" (Jaxis, mig 349).
       dies_effect: z.array(z.record(z.string(), z.unknown())).optional(),
+      // Tapped + attacking + end-of-combat exile (Echoing Assault, mig 359):
+      // attacking_defender is a player id, or '$defender' = the trigger's defender.
+      tapped: z.boolean().optional(),
+      attacking_defender: z.string().optional(),
+      cleanup_at_end_combat: z.boolean().optional(),
     }).strict().optional(),
   }),
   // An EXISTING card becomes a copy (mig 240). target:'triggering_creature'
@@ -1106,6 +1111,14 @@ const CardBehaviorActionSchema = z.union([
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
     optional: z.boolean().optional(),
+  }),
+  // Delina, Wild Mage (mig 360): roll a d20, make tapped attacking copies of the
+  // target creature you control (with roll-again on 15-20). target_type creature.
+  z.object({
+    type: z.literal('delina_d20'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
   }),
   // Myriad (The Master / Dalek Squadron, mig 355): on attack, a tapped attacking
   // token copy of the source for each opponent other than the defender; exiled at

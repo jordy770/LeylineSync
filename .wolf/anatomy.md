@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:27:35.581Z
-> Files: 126 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:39:53.197Z
+> Files: 128 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -147,7 +147,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~13002 tok)
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21023 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21298 tok)
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~10131 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
@@ -188,7 +188,7 @@
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7227 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1815 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1067 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~21900 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~22233 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~13308 tok)
 - `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
 - `card_has_fear.sql` — supabase/functions_src/card_has_fear.sql (~502 tok)
@@ -203,7 +203,7 @@
 - `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1908 tok)
 - `effective_script.sql` — supabase/functions_src/effective_script.sql (~624 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1699 tok)
-- `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~495 tok)
+- `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~547 tok)
 - `fire_lifegain_triggers.sql` — supabase/functions_src/fire_lifegain_triggers.sql (~658 tok)
 - `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~3449 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~464 tok)
@@ -255,7 +255,9 @@
 - `copy-token-cleanup.test.ts` — Copy-token end-step cleanup (mig 347). The copy_permanent action already makes (~842 tok)
 - `deck-smoke.test.ts` — Deck smoke test: every curated script in docs/commander-decks/card-scripts.json (~2795 tok)
 - `defender.test.ts` — Defender enforcement (mig 323) — "a creature with defender can't attack." (~549 tok)
+- `delina.test.ts` — Delina, Wild Mage (mig 360). "Whenever Delina attacks, choose target creature you (~680 tok)
 - `draw-floor.test.ts` — Draw-floor fix (mig 334). The draw branch of apply_triggered_ability_effects (~767 tok)
+- `echoing-assault.test.ts` — Echoing Assault (mig 359). "Whenever you attack a player, choose target nontoken (~622 tok)
 - `fear.test.ts` — Fear keyword (mig 338). Cover of Darkness: "As this enters, choose a creature (~1062 tok)
 - `flameshadow.test.ts` — Flameshadow Conjuring (mig 352). "Whenever a nontoken creature you control (~737 tok)
 - `harmless-offering.test.ts` — Harmless Offering (mig 353). "Target opponent gains control of target permanent (~380 tok)

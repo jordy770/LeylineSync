@@ -5965,3 +5965,10 @@
 | 17:26 | Edited tests/feature/blade-of-selves.test.ts | 2→3 lines | ~62 |
 | 17:26 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~82 |
 | 17:27 | Created tests/feature/splinter-twin.test.ts | — | ~578 |
+| 17:31 | Edited supabase/functions_src/apply_trigger_effects.sql | modified create_copy_token() | ~179 |
+| 17:32 | Edited lib/game/card-behavior-schema.ts | modified exile() | ~138 |
+| 17:32 | Created tests/feature/echoing-assault.test.ts | — | ~622 |
+| 17:37 | Edited supabase/functions_src/fire_attack_triggers.sql | 3→6 lines | ~85 |
+| 17:37 | Edited supabase/functions_src/apply_trigger_effects.sql | 4→4 lines | ~81 |
+| 17:38 | Edited supabase/functions_src/apply_trigger_effects.sql | modified jsonb_build_object() | ~268 |
+| 17:39 | Created tests/feature/delina.test.ts | — | ~680 |

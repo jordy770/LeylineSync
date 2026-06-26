@@ -1,7 +1,9 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010360_delina
+-- Delina, Wild Mage: new delina_d20 targeted effect — roll a d20 and create tapped
+-- attacking copies of the target creature you control (exiled at end of combat),
+-- rolling again on 15-20 (modelled as always; safety-capped). "Not legendary" omitted.
+-- Generated from supabase/functions_src (apply_trigger_effects, trigger_effect_target_type) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,
@@ -1359,3 +1361,22 @@ begin
 end;
 $$;
 grant execute on function public.apply_trigger_effects(uuid, uuid, integer) to authenticated;
+
+create or replace function public.trigger_effect_target_type(p_effect jsonb)
+returns jsonb language sql immutable as $$
+  select case
+    when lower(coalesce(p_effect ->> 'type', '')) in
+         ('deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap',
+          'add_counters', 'grant_keyword', 'grant_dies_effect', 'fight', 'gain_control', 'set_pt', 'pump', 'goad',
+          'exile_and_manifest', 'ignition', 'exile_until_leaves', 'blink', 'saw_in_half', 'delina_d20')
+         and public.behavior_target_type_is_creature_only(p_effect -> 'target_type')
+      then '"creature"'::jsonb
+    when lower(coalesce(p_effect ->> 'type', '')) in
+         ('destroy', 'exile', 'bounce', 'tap', 'untap', 'shuffle_into_library', 'gain_control',
+          'exile_until_leaves', 'animate', 'add_counters')
+         and public.behavior_target_type_is_permanent_only(p_effect -> 'target_type')
+      then p_effect -> 'target_type'
+    else null
+  end;
+$$;
+grant all on function public.trigger_effect_target_type(jsonb) to anon, authenticated, service_role;
