@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T14:09:35.764Z
-> Files: 119 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:06:37.311Z
+> Files: 122 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -147,7 +147,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~13002 tok)
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~20988 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21023 tok)
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~10131 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
@@ -184,11 +184,11 @@
 ## supabase/functions_src/
 
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9216 tok)
-- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3828 tok)
+- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3941 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~6878 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1815 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1067 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~21514 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~21900 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~13151 tok)
 - `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
 - `card_has_fear.sql` — supabase/functions_src/card_has_fear.sql (~502 tok)
@@ -198,10 +198,11 @@
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5990 tok)
 - `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1105 tok)
 - `clear_deck_from_session.sql` — supabase/functions_src/clear_deck_from_session.sql (~471 tok)
-- `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~1258 tok)
+- `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~1650 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3458 tok)
 - `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1908 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1699 tok)
+- `fire_attack_triggers.sql` — supabase/functions_src/fire_attack_triggers.sql (~495 tok)
 - `fire_lifegain_triggers.sql` — supabase/functions_src/fire_lifegain_triggers.sql (~658 tok)
 - `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~3449 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~464 tok)
@@ -260,6 +261,8 @@
 - `jaxis.test.ts` — Jaxis, the Troublemaker (mig 349). Activated copy (reusing Orthion's path) where (~733 tok)
 - `lifegain-event.test.ts` — you_gain_life triggered event (mig 336). Marauding Blight-Priest: "Whenever (~695 tok)
 - `mayhem-devil.test.ts` — Mayhem Devil — already engine-supported once mig 341 added the (~528 tok)
+- `mirror-march.test.ts` — Mirror March (mig 354). "Whenever a nontoken creature you control enters, flip a (~797 tok)
+- `myriad.test.ts` — Myriad (mig 355). "Whenever this attacks, for each opponent other than the (~826 tok)
 - `optional-trigger-target.test.ts` — Optional ("up to one target …") triggered-ability targets (mig 326). A trigger (~675 tok)
 - `orthion.test.ts` — Orthion, Hero of Lavabrink (mig 348). Copy a creature you control from an (~710 tok)
 - `patriarchs-bidding.test.ts` — Patriarch's Bidding (mig 343). "Each player chooses a creature type. Each (~794 tok)

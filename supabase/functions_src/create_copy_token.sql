@@ -103,6 +103,30 @@ begin
       jsonb_build_object('effects', p_except -> 'dies_effect'), 'battlefield');
   end if;
 
+  -- "Tapped and attacking that player" (Myriad / Delina / Echoing Assault, mig 355):
+  -- the copy enters tapped, with a combat assignment against the named defender.
+  if coalesce((p_except ->> 'tapped')::boolean, false) then
+    update public.game_cards set is_tapped = true where id = v_new and session_id = p_session_id;
+  end if;
+  if nullif(p_except ->> 'attacking_defender', '') is not null then
+    -- Mark BEFORE the assignment insert so fire_attack_triggers (an INSERT trigger
+    -- on game_combat_assignments) skips this put-into-combat token — a myriad copy
+    -- must not re-trigger its own myriad.
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object('no_attack_trigger', 'true')
+    where id = v_new and session_id = p_session_id;
+    insert into public.game_combat_assignments (
+      session_id, turn_number, attacker_card_id, attacking_player_id, defending_player_id)
+    values (p_session_id, coalesce(v_turn, 0), v_new, p_recipient,
+            (p_except ->> 'attacking_defender')::uuid);
+  end if;
+  -- "Exile it at end of combat" — marked, removed by advance_step's end_of_combat.
+  if coalesce((p_except ->> 'cleanup_at_end_combat')::boolean, false) then
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object('cleanup_at_end_combat', coalesce(v_turn, 0)::text)
+    where id = v_new and session_id = p_session_id;
+  end if;
+
   return v_new;
 end;
 $$;

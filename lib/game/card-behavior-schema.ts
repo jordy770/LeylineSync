@@ -182,7 +182,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type', 'tap_self',
-  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'fight', 'gain_control',
+  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'myriad', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
@@ -836,8 +836,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('copy_permanent'),
     // 'attached' = copy the source's equipped/enchanted host (Helm of the Host).
     target: z.enum(['triggering_creature', 'attached']).optional(),
-    // Number of copies to create (Orthion: "create five tokens", mig 348).
-    count: z.number().int().positive().optional(),
+    // Number of copies to create (Orthion: "create five tokens", mig 348), or
+    // 'coin_flip' (Mirror March: flip until you lose, one copy per win, mig 354).
+    count: z.union([z.number().int().positive(), z.literal('coin_flip')]).optional(),
     target_filter: z.object({
       controller: z.enum(['any', 'opponent', 'you']).optional(),
       type_line: z.string().optional(),
@@ -1098,6 +1099,10 @@ const CardBehaviorActionSchema = z.union([
     target_controller: TargetControllerSchema,
     optional: z.boolean().optional(),
   }),
+  // Myriad (The Master / Dalek Squadron, mig 355): on attack, a tapped attacking
+  // token copy of the source for each opponent other than the defender; exiled at
+  // end of combat. No fields.
+  z.object({ type: z.literal('myriad') }),
   // Grant a target creature a "when this dies, <effects>" ability (Clavileño,
   // mig 344): stored as a granted_dies_effect continuous effect on the creature;
   // put_in_graveyard fires `effects` on its death. effects kept loose (see may).

@@ -5942,3 +5942,16 @@
 | 16:08 | Edited supabase/functions_src/apply_creature_effect.sql | modified Donate() | ~224 |
 | 16:09 | Edited lib/game/card-behavior-schema.ts | 2→5 lines | ~78 |
 | 16:09 | Created tests/feature/harmless-offering.test.ts | — | ~380 |
+| 16:48 | Edited supabase/functions_src/apply_trigger_effects.sql | 2→3 lines | ~14 |
+| 16:48 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~220 |
+| 16:48 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~71 |
+| 16:49 | Created tests/feature/mirror-march.test.ts | — | ~791 |
+| 16:51 | Edited tests/feature/mirror-march.test.ts | copies() → flip() | ~215 |
+| 16:51 | Edited tests/feature/mirror-march.test.ts | 6→6 lines | ~81 |
+| 16:52 | Edited supabase/functions_src/create_copy_token.sql | added 1 condition(s) | ~428 |
+| 16:52 | Edited supabase/functions_src/advance_step.sql | expanded (+8 lines) | ~143 |
+| 16:53 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~310 |
+| 16:54 | Edited supabase/functions_src/apply_trigger_effects.sql | 3→4 lines | ~18 |
+| 16:55 | Created tests/feature/myriad.test.ts | — | ~826 |
+| 17:06 | Edited supabase/functions_src/fire_attack_triggers.sql | expanded (+10 lines) | ~190 |
+| 17:06 | Edited supabase/functions_src/create_copy_token.sql | expanded (+6 lines) | ~196 |

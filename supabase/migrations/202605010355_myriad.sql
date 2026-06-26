@@ -1,7 +1,509 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010355_myriad
+-- Myriad (The Master, Dalek Squadron). New `myriad` attack-trigger effect: a tapped
+-- attacking token copy for each opponent other than the defender. create_copy_token
+-- gains except.tapped / attacking_defender / cleanup_at_end_combat and stamps a
+-- no_attack_trigger marker so fire_attack_triggers skips the put-into-combat copy
+-- (preventing a myriad copy from re-triggering its own myriad). advance_step's
+-- end_of_combat step removes the marked tokens.
+-- Generated from supabase/functions_src (create_copy_token, advance_step, apply_trigger_effects, fire_attack_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+create or replace function public.create_copy_token(
+  p_session_id uuid,
+  p_recipient uuid,
+  p_copied_game_card_id uuid,
+  p_except jsonb default null
+) returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_src public.game_cards;
+  v_turn integer;
+  v_pos integer;
+  v_new uuid;
+  v_kw text;
+begin
+  select * into v_src
+  from public.game_cards
+  where id = p_copied_game_card_id and session_id = p_session_id;
+  if not found or p_recipient is null then
+    return null;
+  end if;
+
+  select turn_number into v_turn
+  from public.game_turn_state where session_id = p_session_id;
+
+  select coalesce(max(zone_position), -1) + 1 into v_pos
+  from public.game_cards
+  where session_id = p_session_id and owner_id = p_recipient and zone = 'battlefield';
+
+  insert into public.game_cards (
+    session_id, card_id, owner_id, controller_player_id,
+    zone, zone_position, is_tapped, damage_marked,
+    position_x, position_y, entered_battlefield_turn_number,
+    copied_script, is_token
+  )
+  values (
+    p_session_id, v_src.card_id, p_recipient, p_recipient,
+    'battlefield', v_pos, false, 0, 0, 0, coalesce(v_turn, 0),
+    v_src.copied_script, true
+  )
+  returning id into v_new;
+
+  perform public.register_card_continuous_effects(p_session_id, v_new);
+
+  if p_except ? 'power' or p_except ? 'toughness' then
+    insert into public.game_continuous_effects (
+      session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required)
+    values (
+      p_session_id, v_new, v_new, 'set_pt',
+      jsonb_build_object(
+        'power', coalesce((p_except ->> 'power')::integer, 0),
+        'toughness', coalesce((p_except ->> 'toughness')::integer, 0)),
+      'battlefield');
+  end if;
+
+  for v_kw in
+    select lower(value) from jsonb_array_elements_text(coalesce(p_except -> 'keywords', '[]'::jsonb))
+  loop
+    if v_kw in ('flying', 'haste', 'trample', 'vigilance', 'first_strike',
+                'double_strike', 'reach', 'deathtouch', 'indestructible') then
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required)
+      values (p_session_id, v_new, v_new, v_kw, '{}'::jsonb, 'battlefield');
+    end if;
+  end loop;
+
+  -- "Sacrifice/exile it at the beginning of the next end step" (Electroduplicate /
+  -- Flameshadow Conjuring, mig 347): mark the copy for end-step cleanup; advance_step
+  -- removes it. A token leaving the battlefield ceases to exist either way.
+  if coalesce((p_except ->> 'cleanup_at_end_step')::boolean, false) then
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object('cleanup_at_end_step', coalesce(v_turn, 0)::text)
+    where id = v_new and session_id = p_session_id;
+  end if;
+
+  -- "It gains 'When this token dies, <effects>'" (Jaxis, mig 349): grant the copy
+  -- a dies-trigger via a granted_dies_effect on itself (put_in_graveyard fires it).
+  if jsonb_typeof(p_except -> 'dies_effect') = 'array' then
+    insert into public.game_continuous_effects (
+      session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+    ) values (
+      p_session_id, v_new, v_new, 'granted_dies_effect',
+      jsonb_build_object('effects', p_except -> 'dies_effect'), 'battlefield');
+  end if;
+
+  -- "Tapped and attacking that player" (Myriad / Delina / Echoing Assault, mig 355):
+  -- the copy enters tapped, with a combat assignment against the named defender.
+  if coalesce((p_except ->> 'tapped')::boolean, false) then
+    update public.game_cards set is_tapped = true where id = v_new and session_id = p_session_id;
+  end if;
+  if nullif(p_except ->> 'attacking_defender', '') is not null then
+    -- Mark BEFORE the assignment insert so fire_attack_triggers (an INSERT trigger
+    -- on game_combat_assignments) skips this put-into-combat token — a myriad copy
+    -- must not re-trigger its own myriad.
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object('no_attack_trigger', 'true')
+    where id = v_new and session_id = p_session_id;
+    insert into public.game_combat_assignments (
+      session_id, turn_number, attacker_card_id, attacking_player_id, defending_player_id)
+    values (p_session_id, coalesce(v_turn, 0), v_new, p_recipient,
+            (p_except ->> 'attacking_defender')::uuid);
+  end if;
+  -- "Exile it at end of combat" — marked, removed by advance_step's end_of_combat.
+  if coalesce((p_except ->> 'cleanup_at_end_combat')::boolean, false) then
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object('cleanup_at_end_combat', coalesce(v_turn, 0)::text)
+    where id = v_new and session_id = p_session_id;
+  end if;
+
+  return v_new;
+end;
+$$;
+grant execute on function public.create_copy_token(uuid, uuid, uuid, jsonb) to authenticated;
+grant execute on function public.create_copy_token(uuid, uuid, uuid, jsonb) to service_role;
+
+create or replace function public.advance_step(p_session_id uuid)
+returns public.game_turn_state
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_current_state public.game_turn_state;
+  v_session_status text;
+  v_required_player_id uuid;
+  v_next_active_player_id uuid;
+  v_next_priority_player_id uuid;
+  v_next_phase text;
+  v_next_step text;
+  v_next_turn_number integer;
+  v_cleanup record;
+  v_next_lands_played_this_turn integer;
+  v_drawn_card_id uuid;
+  v_next_hand_position integer;
+  v_revert uuid;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select status
+  into v_session_status
+  from public.game_sessions
+  where id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Game session not found';
+  end if;
+
+  if v_session_status = 'finished' then
+    raise exception 'Cannot advance a finished game session';
+  end if;
+
+  select *
+  into v_current_state
+  from public.game_turn_state
+  where session_id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Turn state not found';
+  end if;
+
+  v_required_player_id := coalesce(v_current_state.priority_player_id, v_current_state.active_player_id);
+
+  if v_required_player_id <> auth.uid() then
+    raise exception 'Only the priority player can advance the step';
+  end if;
+
+  perform public.clear_mana_pool_for_step(
+    p_session_id,
+    v_current_state.phase,
+    v_current_state.step
+  );
+
+  perform public.expire_continuous_effects_for_step(
+    p_session_id,
+    v_current_state.turn_number,
+    v_current_state.phase,
+    v_current_state.step
+  );
+
+  -- Impulse play windows (mig 230, Atsushi: "until the end of your next turn").
+  -- A play_from_exile permission survives the turn it was created in and expires
+  -- when its owner leaves the end step of a LATER turn (their next turn).
+  if v_current_state.step = 'end' then
+    delete from public.game_continuous_effects ce
+    where ce.session_id = p_session_id
+      and ce.effect_type = 'play_from_exile'
+      and ce.affected_player_id = v_current_state.active_player_id
+      -- Adventure permissions (mig 295) never expire — the creature face can be
+      -- cast from exile at any later time.
+      and coalesce((ce.payload ->> 'permanent')::boolean, false) = false
+      and coalesce((ce.payload ->> 'created_turn')::integer, 0) < v_current_state.turn_number;
+
+    -- Territorial Hellkite (mig 249): an unconsumed must_attack pin lapses
+    -- when the combat is over (end step).
+    update public.game_cards
+    set counters = counters - 'must_attack'
+    where session_id = p_session_id and counters ? 'must_attack';
+
+    -- "Sacrifice/exile it at the beginning of the next end step" (Electroduplicate
+    -- / Flameshadow Conjuring, mig 347): remove copy tokens marked for cleanup.
+    for v_cleanup in
+      select id from public.game_cards
+      where session_id = p_session_id and zone = 'battlefield' and counters ? 'cleanup_at_end_step'
+    loop
+      perform public.put_in_graveyard(p_session_id, v_cleanup.id);
+    end loop;
+
+    -- Hellkite Courser (mig 248): "return it to the command zone at the
+    -- beginning of the next end step" — processed when the end step is left.
+    for v_revert in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and gc.counters ? 'return_to_command'
+    loop
+      update public.game_cards gc
+      set zone = 'command', is_tapped = false, damage_marked = 0,
+          controller_player_id = gc.owner_id,
+          counters = gc.counters - 'return_to_command',
+          zone_position = (select coalesce(max(zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = p_session_id and x.owner_id = gc.owner_id
+                             and x.zone = 'command')
+      where gc.id = v_revert;
+    end loop;
+
+    -- Become-copy "until end of turn" (mig 240, Sarkhan, Soul Aflame): revert
+    -- when the end step is left. Every effect row the copy sources is dropped
+    -- (incl. the except-keyword grants), card_id flips back to the original,
+    -- and the re-register restores the original's script effects.
+    for v_revert in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and gc.copy_revert_at_turn is not null
+        and gc.copy_revert_at_turn <= v_current_state.turn_number
+    loop
+      delete from public.game_continuous_effects
+      where session_id = p_session_id and source_card_id = v_revert;
+      update public.game_cards
+      set card_id = copy_original_card_id,
+          copied_script = null,
+          copy_original_card_id = null,
+          copy_revert_at_turn = null
+      where id = v_revert;
+      perform public.register_card_continuous_effects(p_session_id, v_revert);
+    end loop;
+  end if;
+
+  v_next_active_player_id := v_current_state.active_player_id;
+  v_next_priority_player_id := v_current_state.active_player_id;
+  v_next_turn_number := v_current_state.turn_number;
+  v_next_lands_played_this_turn := coalesce(v_current_state.lands_played_this_turn, 0);
+  v_next_phase := v_current_state.phase;
+  v_next_step := v_current_state.step;
+
+  case v_current_state.step
+    when 'untap' then
+      delete from public.game_combat_assignments
+      where session_id = p_session_id;
+
+      -- Exert (mig 236, Glorybringer): an exerted creature "won't untap during
+      -- your next untap step." Skip untapping it this once, then clear the marker
+      -- so it untaps normally next time.
+      update public.game_cards
+      set is_tapped = false
+      where session_id = p_session_id
+        and owner_id = v_current_state.active_player_id
+        and zone = 'battlefield'
+        and is_tapped = true
+        and coalesce((counters ->> 'exerted')::integer, 0) = 0;
+
+      update public.game_cards
+      set counters = counters - 'exerted'
+      where session_id = p_session_id
+        and owner_id = v_current_state.active_player_id
+        and zone = 'battlefield'
+        and counters ? 'exerted';
+
+      v_next_phase := 'beginning';
+      v_next_step := 'upkeep';
+    when 'upkeep' then
+      v_next_phase := 'beginning';
+      v_next_step := 'draw';
+    when 'draw' then
+      if coalesce(v_current_state.skip_next_draw, false) then
+        -- CR 103.8a (mig 221): in a TWO-player game the starting player skips
+        -- the draw step of their first turn. start_game_session sets the flag;
+        -- consume it instead of drawing.
+        update public.game_turn_state
+        set skip_next_draw = false
+        where session_id = p_session_id;
+      else
+        select coalesce(max(zone_position), -1) + 1
+        into v_next_hand_position
+        from public.game_cards
+        where session_id = p_session_id
+          and owner_id = v_current_state.active_player_id
+          and zone = 'hand';
+
+        select id
+        into v_drawn_card_id
+        from public.game_cards
+        where session_id = p_session_id
+          and owner_id = v_current_state.active_player_id
+          and zone = 'library'
+        order by zone_position asc, id asc
+        limit 1
+        for update skip locked;
+
+        if v_drawn_card_id is null then
+          raise exception 'Library is empty';
+        end if;
+
+        update public.game_cards
+        set
+          zone = 'hand',
+          zone_position = v_next_hand_position,
+          is_tapped = false,
+          damage_marked = 0
+        where id = v_drawn_card_id;
+      end if;
+
+      v_next_phase := 'main_1';
+      v_next_step := 'precombat_main';
+    when 'precombat_main' then
+      v_next_phase := 'combat';
+      v_next_step := 'beginning_of_combat';
+    when 'beginning_of_combat' then
+      v_next_phase := 'combat';
+      v_next_step := 'declare_attackers';
+    when 'declare_attackers' then
+      v_next_phase := 'combat';
+      v_next_step := 'declare_blockers';
+
+      select defending_player_id
+      into v_next_priority_player_id
+      from public.game_combat_assignments
+      where session_id = p_session_id
+        and turn_number = v_current_state.turn_number
+        and blocker_card_id is null
+      order by created_at
+      limit 1;
+
+      v_next_priority_player_id := coalesce(v_next_priority_player_id, v_current_state.active_player_id);
+    when 'declare_blockers' then
+      -- Menace: a blocked attacker with menace must have two or more blockers.
+      -- Checked here (block declaration is finished) — a lone blocker is illegal.
+      -- Blockers live one-row-per-blocker in game_combat_blockers.
+      if exists (
+        select 1
+        from public.game_combat_blockers cb
+        where cb.session_id = p_session_id
+          and cb.turn_number = v_current_state.turn_number
+          and public.card_has_menace(p_session_id, cb.attacker_card_id)
+        group by cb.attacker_card_id
+        having count(*) = 1
+      ) then
+        raise exception 'A creature with menace must be blocked by two or more creatures';
+      end if;
+
+      v_next_priority_player_id := v_current_state.active_player_id;
+      v_next_phase := 'combat';
+      v_next_step := 'combat_damage';
+    when 'combat_damage' then
+      v_next_phase := 'combat';
+      v_next_step := 'end_of_combat';
+    when 'end_of_combat' then
+      -- "Exile the tokens at end of combat" (Myriad / Delina / Echoing Assault,
+      -- mig 355): remove copy tokens marked for end-of-combat cleanup.
+      for v_cleanup in
+        select id from public.game_cards
+        where session_id = p_session_id and zone = 'battlefield' and counters ? 'cleanup_at_end_combat'
+      loop
+        perform public.put_in_graveyard(p_session_id, v_cleanup.id);
+      end loop;
+      delete from public.game_combat_assignments
+      where session_id = p_session_id;
+
+      -- Extra combat phase (mig 250, Scourge of the Throne): consume one
+      -- pending extra combat and loop back instead of moving to main 2.
+      if coalesce(v_current_state.extra_combats, 0) > 0 then
+        update public.game_turn_state
+        set extra_combats = extra_combats - 1
+        where session_id = p_session_id;
+        v_next_phase := 'combat';
+        v_next_step := 'beginning_of_combat';
+      else
+        v_next_phase := 'main_2';
+        v_next_step := 'postcombat_main';
+      end if;
+    when 'postcombat_main' then
+      v_next_phase := 'ending';
+      v_next_step := 'end';
+      -- Monarch draw (mig 262, Regal Behemoth): "at the beginning of the
+      -- monarch's end step, that player draws a card." Best-effort: an empty
+      -- library skips the draw instead of erroring.
+      if v_current_state.monarch_player_id = v_current_state.active_player_id then
+        select id into v_drawn_card_id
+        from public.game_cards
+        where session_id = p_session_id
+          and owner_id = v_current_state.active_player_id and zone = 'library'
+        order by zone_position asc, id asc
+        limit 1;
+        if v_drawn_card_id is not null then
+          select coalesce(max(zone_position), -1) + 1 into v_next_hand_position
+          from public.game_cards
+          where session_id = p_session_id
+            and owner_id = v_current_state.active_player_id and zone = 'hand';
+          update public.game_cards
+          set zone = 'hand', zone_position = v_next_hand_position, is_tapped = false
+          where id = v_drawn_card_id;
+        end if;
+      end if;
+    when 'end' then
+      v_next_phase := 'ending';
+      v_next_step := 'cleanup';
+    when 'cleanup' then
+      delete from public.game_combat_assignments
+      where session_id = p_session_id;
+
+      update public.game_cards
+      set damage_marked = 0
+      where session_id = p_session_id
+        and damage_marked <> 0;
+
+      -- Hand the turn to the next LIVING player by seat order (skip eliminated).
+      select next_player.player_id
+      into v_next_active_player_id
+      from public.game_session_players current_player
+      join public.game_session_players next_player
+        on next_player.session_id = current_player.session_id
+       and next_player.seat_number > current_player.seat_number
+       and next_player.life_total > 0
+      where current_player.session_id = p_session_id
+        and current_player.player_id = v_current_state.active_player_id
+      order by next_player.seat_number
+      limit 1;
+
+      if v_next_active_player_id is null then
+        select player_id
+        into v_next_active_player_id
+        from public.game_session_players
+        where session_id = p_session_id
+          and life_total > 0
+        order by seat_number
+        limit 1;
+      end if;
+
+      if v_next_active_player_id is null then
+        raise exception 'No players found for game session';
+      end if;
+
+      v_next_priority_player_id := v_next_active_player_id;
+      v_next_turn_number := v_current_state.turn_number + 1;
+      v_next_lands_played_this_turn := 0;
+      v_next_phase := 'beginning';
+      v_next_step := 'untap';
+    else
+      raise exception 'Unsupported turn step: %', v_current_state.step;
+  end case;
+
+  update public.game_turn_state
+  set
+    active_player_id = v_next_active_player_id,
+    priority_player_id = v_next_priority_player_id,
+    priority_cycle_started_by = null,
+    priority_pass_count = 0,
+    lands_played_this_turn = v_next_lands_played_this_turn,
+    turn_number = v_next_turn_number,
+    phase = v_next_phase,
+    step = v_next_step
+  where session_id = p_session_id
+  returning * into v_current_state;
+
+  -- Reset per-turn life-loss tracking at the start of each new turn (mig 294).
+  -- 'untap' is reached only on the end -> next-turn transition, so this fires
+  -- once per turn AFTER the end-step triggers (Y'shtola) have read the tally.
+  if v_next_step = 'untap' then
+    update public.game_session_players
+    set life_lost_this_turn = 0
+    where session_id = p_session_id;
+  end if;
+
+  return v_current_state;
+end;
+$$;
+grant execute on function public.advance_step(uuid) to authenticated;
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,
@@ -1339,3 +1841,49 @@ begin
 end;
 $$;
 grant execute on function public.apply_trigger_effects(uuid, uuid, integer) to authenticated;
+
+-- supabase/functions_src/fire_attack_triggers.sql
+-- CANONICAL current definition (seeded from 00_baseline.sql).
+-- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
+-- never re-extract from past migrations.
+
+CREATE OR REPLACE FUNCTION "public"."fire_attack_triggers"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+declare
+  v_attacker_controller uuid;
+begin
+  -- Myriad / Delina tokens (mig 355) are PUT INTO combat already attacking, not
+  -- declared as attackers, so "whenever this attacks" must NOT fire for them
+  -- (else a myriad copy's own myriad re-triggers forever). They carry a
+  -- no_attack_trigger marker stamped before their combat assignment is inserted.
+  if exists (select 1 from public.game_cards
+             where id = NEW.attacker_card_id and session_id = NEW.session_id
+               and counters ? 'no_attack_trigger') then
+    return null;
+  end if;
+
+  -- The defender rides as event context (mig 250: dethrone's "attacks the
+  -- player with the most life").
+  perform public.fire_card_triggers(
+    NEW.session_id,
+    NEW.attacker_card_id,
+    array['attacks', 'declares_attack', 'attack'],
+    jsonb_build_object('event_player_id', NEW.defending_player_id)
+  );
+
+  -- Watcher broadcast (mig 227): "whenever a creature you control attacks"
+  -- (Atarka, World Render). The attacking creature is the event subject, so a
+  -- reflexive "it gains double strike" lands on it.
+  select coalesce(controller_player_id, owner_id) into v_attacker_controller
+  from public.game_cards
+  where id = NEW.attacker_card_id and session_id = NEW.session_id;
+
+  perform public.fire_watcher_triggers(
+    NEW.session_id, NEW.attacker_card_id, v_attacker_controller, 'creature_attacks'
+  );
+
+  return null;
+end;
+$$;

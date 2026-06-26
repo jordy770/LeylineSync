@@ -16104,6 +16104,16 @@
     "schema_version": 2,
     "keywords": [
       "menace"
+    ],
+    "triggered_abilities": [
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "myriad"
+          }
+        ]
+      }
     ]
   },
   "Dark Ritual": {
@@ -17038,5 +17048,46 @@
         }
       ]
     }
+  },
+  "Mirror Gallery": {
+    "schema_version": 2
+  },
+  "Mirror March": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "nontoken": true
+        },
+        "effects": [
+          {
+            "type": "copy_permanent",
+            "target": "triggering_creature",
+            "count": "coin_flip",
+            "except": {
+              "keywords": [
+                "haste"
+              ],
+              "cleanup_at_end_step": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "The Master, Multiplied": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "myriad"
+          }
+        ]
+      }
+    ]
   }
 }

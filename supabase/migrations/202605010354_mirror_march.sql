@@ -1,7 +1,9 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010354_mirror_march
+-- Mirror March: copy_permanent count:'coin_flip' for a triggering-creature copy —
+-- loop random() until a loss, one copy per win. Mirror Gallery is a no-op (the
+-- engine does not enforce the legend rule).
+-- Generated from supabase/functions_src (apply_trigger_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,
@@ -23,7 +25,6 @@ declare
   v_count integer;
   v_i integer;
   v_copy_n integer;
-  v_pe record;
   v_effect jsonb;
   v_type text;
   v_amount integer;
@@ -646,23 +647,6 @@ begin
         update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
         return v_decision_id;
       end if;
-
-    elsif v_type = 'myriad' then
-      -- Myriad (mig 355): "whenever this attacks, for each opponent other than the
-      -- defending player, create a tapped token copy attacking that opponent;
-      -- exile them at end of combat." The defender rides the attacks event payload.
-      -- "you may" is approximated as always creating the copies.
-      for v_pe in
-        select sp.player_id from public.game_session_players sp
-        where sp.session_id = p_session_id
-          and sp.player_id is distinct from v_controller
-          and sp.player_id is distinct from nullif(v_item.payload ->> 'event_player_id', '')::uuid
-      loop
-        perform public.create_copy_token(
-          p_session_id, v_controller, v_item.source_card_id,
-          jsonb_build_object('tapped', true, 'attacking_defender', (v_pe.player_id)::text,
-                             'cleanup_at_end_combat', true));
-      end loop;
 
     elsif v_type = 'become_copy' then
       -- An existing card becomes a copy (mig 240). Options are either the

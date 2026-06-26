@@ -262,6 +262,14 @@ begin
       v_next_phase := 'combat';
       v_next_step := 'end_of_combat';
     when 'end_of_combat' then
+      -- "Exile the tokens at end of combat" (Myriad / Delina / Echoing Assault,
+      -- mig 355): remove copy tokens marked for end-of-combat cleanup.
+      for v_cleanup in
+        select id from public.game_cards
+        where session_id = p_session_id and zone = 'battlefield' and counters ? 'cleanup_at_end_combat'
+      loop
+        perform public.put_in_graveyard(p_session_id, v_cleanup.id);
+      end loop;
       delete from public.game_combat_assignments
       where session_id = p_session_id;
 
