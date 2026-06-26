@@ -8,8 +8,18 @@
       "file": "docs/commander-decks/card-scripts.json",
       "root_cause": "The triggered_ability `event` is a free-form z.string() in the schema, so 'fire_etb' validates but matches no fired event. The scions-spellcraft-build workflow's cheat-sheet used 'fire_etb' (an unrelated become_copy parameter name) instead of the real ETB event.",
       "fix": "Replaced all event:'fire_etb' with 'enters_the_battlefield' in card-scripts.json + test-cards.json (9 cards). Edgar cards Champion of Dusk / Dusk Legion Zealot / Cavern of Souls need a re-run of deck:upsert --apply since they were already pushed with the broken event.",
-      "tags": ["card-scripts", "etb", "fire_etb", "silent-no-op", "scions-spellcraft-build", "edgar-markov", "deadpool"],
-      "related_bugs": ["bug-1484"],
+      "tags": [
+        "card-scripts",
+        "etb",
+        "fire_etb",
+        "silent-no-op",
+        "scions-spellcraft-build",
+        "edgar-markov",
+        "deadpool"
+      ],
+      "related_bugs": [
+        "bug-1484"
+      ],
       "occurrences": 1,
       "last_seen": "2026-06-26"
     },
@@ -15051,6 +15061,195 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-26T15:48:53.029Z"
+    },
+    {
+      "id": "bug-923",
+      "timestamp": "2026-06-26T22:28:47.208Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/shared.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→7 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T22:28:47.208Z"
+    },
+    {
+      "id": "bug-1486",
+      "timestamp": "2026-06-27",
+      "error_message": "Cast-planner gap: saw_in_half (Saw in Half) and grant_dies_effect (Feign Death, Not Dead After All, Supernatural Stamina) were engine-supported but UNCASTABLE in the controller — getSpellPlan returned kind:\"normal\" (no target picker), so casting them did nothing.",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Both action types need a creature target and resolve via the cast_spell_effect program path (apply_trigger_effects -> apply_creature_effect), exactly like the working exile_and_manifest. But TARGETED_SPELL_EFFECT_TYPES only listed exile_and_manifest, so getSpellPlan fell through to kind:normal for the other types.",
+      "fix": "Added saw_in_half and grant_dies_effect to TARGETED_SPELL_EFFECT_TYPES (+ picker labels). They now return kind:targeted_spell_effect -> castSpellEffect(targetCardId). Verified the engine resolves both via apply_creature_effect with p_target_card_id. tsc clean.",
+      "tags": [
+        "cast-planner",
+        "getSpellPlan",
+        "saw_in_half",
+        "grant_dies_effect",
+        "targeted_spell_effect",
+        "controller"
+      ],
+      "related_bugs": [
+        "bug-1485"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-27"
+    },
+    {
+      "id": "bug-1487",
+      "timestamp": "2026-06-27",
+      "error_message": "RESOLVED. Two new spells were uncastable via the controller after the first cast-planner sweep: Harmless Offering (gain_control to:opponent) and Dark Ritual (add_mana).",
+      "file": "components/controller/shared.ts (+ engine)",
+      "root_cause": "Harmless Offering: getSpellPlan catches gain_control as creature_effect/gain_control_creature (creature-only picker, donate direction lost); a permanent-target program cast UI does not exist, and the engine gain_control handler never interprets to:opponent (acting_controller is caller-set). Dark Ritual: add_mana is not dispatched by the program resolver apply_trigger_effects at all (only activate_mana_ability / add_mana_from_card / apply_triggered_ability_effects handle it), so a cast spell_effect add_mana no-ops regardless of getSpellPlan.",
+      "fix": "BOTH FIXED. Dark Ritual: was PURELY a client gap — the program resolver delegates untargeted effects to apply_triggered_ability_effects which already handles add_mana (adds to caster pool). Added add_mana to UNTARGETED_SPELL_ACTION_TYPES so getSpellPlan returns kind:spell_effect. Harmless Offering: the ENGINE donate already existed (apply_creature_effect.gain_control honors to:opponent, mig 353) but the CAST path was unwired. mig 362 (handle_permanent_effect + build_stack_payload_permanent_simple): builder now accepts kind=gain_control and threads `to`; handle_permanent_effect injects acting_controller=caster for gain_control. Front-end: getSpellPlan routes gain_control to:opponent -> permanent_effect (effectKind gain_control, donate:true, targetController:you) reusing the existing your-permanents picker; castPermanentEffect threads `to`. Tests DR1/HO1/HO2 in tests/feature/donate-and-mana-spell.test.ts. Full suite 1812 pass. NOTE the engine donate picks the lowest-seat opponent of the caster (mig 353); multiplayer caster does not choose which opponent (documented approximation). FOLLOW-UP (mig 363): the multiplayer opponent-choice approximation was removed — donate now parks a choose_player decision (>1 living opponent) so the caster picks the recipient; 1v1 still applies directly. Reusable via params.apply_permanent_effect in submit_decision. Tests HO1/HO2 updated.",
+      "tags": [
+        "cast-planner",
+        "getSpellPlan",
+        "gain_control",
+        "donate",
+        "add_mana",
+        "harmless-offering",
+        "dark-ritual",
+        "engine-gap",
+        "resolved"
+      ],
+      "related_bugs": [
+        "bug-1486"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-27"
+    },
+    {
+      "id": "bug-926",
+      "timestamp": "2026-06-26T22:39:56.089Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/handle_permanent_effect.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 17→47 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T22:39:56.089Z"
+    },
+    {
+      "id": "bug-927",
+      "timestamp": "2026-06-26T22:40:42.435Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T22:40:42.435Z"
+    },
+    {
+      "id": "bug-928",
+      "timestamp": "2026-06-26T22:40:47.690Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Had 'instant'",
+      "fix": "Changed to 'gain_control'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T22:40:47.690Z"
+    },
+    {
+      "id": "bug-929",
+      "timestamp": "2026-06-26T22:41:13.329Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T22:41:13.329Z"
+    },
+    {
+      "id": "bug-930",
+      "timestamp": "2026-06-26T22:41:19.393Z",
+      "error_message": "Type error",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T22:41:19.393Z"
+    },
+    {
+      "id": "bug-931",
+      "timestamp": "2026-06-26T22:46:34.406Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/handle_permanent_effect.sql",
+      "root_cause": "22 lines replaced/restructured",
+      "fix": "Rewrote 43→25 lines (22 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T22:46:34.406Z"
+    },
+    {
+      "id": "bug-932",
+      "timestamp": "2026-06-26T23:19:32.922Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/handle_permanent_effect.sql",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 9→43 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T23:19:32.923Z"
+    },
+    {
+      "id": "bug-933",
+      "timestamp": "2026-06-26T23:21:29.461Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/donate-and-mana-spell.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T23:21:29.461Z"
     }
   ]
 }

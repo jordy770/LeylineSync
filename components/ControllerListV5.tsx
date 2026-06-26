@@ -1058,7 +1058,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'permanent_effect') return
       await autoPay(card)
-      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then, plan.controllerSearchesBasicLand)
+      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then, plan.controllerSearchesBasicLand, plan.donate ? 'opponent' : null)
       await refresh()
     },
     // Divided damage — allocate the total across the chosen creature/player targets.

@@ -5980,3 +5980,34 @@
 | 23:25 | Created tests/feature/quick-wins.test.ts | — | ~867 |
 | 23:29 | Created tests/feature/sorin.test.ts | — | ~593 |
 | 23:30 | Created tests/feature/splinter-twin-cast.test.ts | — | ~656 |
+
+## Session: 2026-06-26 00:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:28 | Edited components/controller/shared.ts | 4→7 lines | ~161 |
+| 00:28 | Edited components/controller/shared.ts | 1→5 lines | ~70 |
+| 00:29 | cast-planner-check: route saw_in_half + grant_dies_effect through TARGETED_SPELL_EFFECT_TYPES (5 cards castable) | components/controller/shared.ts | OK, tsc clean | ~6k |
+| 00:39 | Edited supabase/functions_src/handle_permanent_effect.sql | modified nullif() | ~564 |
+| 00:40 | Edited supabase/migrations/202605010362_harmless_offering.sql | 4→8 lines | ~152 |
+| 00:40 | Edited components/controller/shared.ts | added nullish coalescing | ~323 |
+| 00:40 | Edited components/controller/shared.ts | inline fix | ~77 |
+| 00:41 | Edited lib/game/actions.ts | modified castPermanentEffect() | ~321 |
+| 00:41 | Edited components/ControllerListV5.tsx | inline fix | ~67 |
+| 00:41 | Edited components/controller/shared.ts | modified spells() | ~111 |
+| 00:42 | Created tests/feature/donate-and-mana-spell.test.ts | — | ~948 |
+| 00:43 | Edited supabase/functions_src/build_stack_payload_permanent_simple.sql | 4→8 lines | ~126 |
+| 00:43 | Edited supabase/functions_src/build_stack_payload_permanent_simple.sql | 5→7 lines | ~107 |
+| 00:44 | Edited supabase/migrations/202605010362_harmless_offering.sql | 4→9 lines | ~180 |
+| 00:46 | Edited supabase/functions_src/handle_permanent_effect.sql | reduced (-18 lines) | ~287 |
+| 00:47 | Edited supabase/migrations/202605010362_harmless_offering_cast.sql | 4→9 lines | ~192 |
+| 00:47 | Edited tests/feature/donate-and-mana-spell.test.ts | 3→4 lines | ~85 |
+| 00:47 | Edited tests/feature/donate-and-mana-spell.test.ts | 3→4 lines | ~84 |
+| 00:51 | cast-planner gaps fixed: Dark Ritual (add_mana untargeted) + Harmless Offering donate (mig 362, reuse permanent_effect picker + existing mig 353 engine donate) | shared.ts, actions.ts, ControllerListV5.tsx, handle_permanent_effect.sql, build_stack_payload_permanent_simple.sql | 1812 tests pass | ~30k |
+| 01:19 | Edited supabase/functions_src/handle_permanent_effect.sql | 3→4 lines | ~41 |
+| 01:19 | Edited supabase/functions_src/handle_permanent_effect.sql | expanded (+34 lines) | ~579 |
+| 01:19 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~363 |
+| 01:20 | Edited supabase/migrations/202605010363_donate_choose_opponent.sql | expanded (+7 lines) | ~224 |
+| 01:21 | Edited tests/feature/donate-and-mana-spell.test.ts | added optional chaining | ~636 |
+| 01:21 | Edited tests/feature/donate-and-mana-spell.test.ts | 4→4 lines | ~86 |
+| 01:22 | donate opponent-choice: reusable choose_player hook (mig 363) — 1v1 direct, multiplayer caster picks recipient | handle_permanent_effect.sql, submit_decision.sql | HO2 picks C not default B | ~14k |

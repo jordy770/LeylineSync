@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T21:30:50.799Z
-> Files: 133 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T23:21:36.652Z
+> Files: 139 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -104,7 +104,7 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70146 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70156 tok)
 - `GameBoard.tsx` — GameBoard (~7302 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~12039 tok)
@@ -117,6 +117,7 @@
 ## components/controller/
 
 - `CardActionSheet.tsx` — CardActionSheet (~19181 tok)
+- `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~10516 tok)
 
 ## components/judge/
 
@@ -144,7 +145,7 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~13002 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~13067 tok)
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21298 tok)
@@ -190,6 +191,7 @@
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1067 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~22233 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~13568 tok)
+- `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~784 tok)
 - `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
 - `card_has_fear.sql` — supabase/functions_src/card_has_fear.sql (~502 tok)
 - `card_has_flying.sql` — supabase/functions_src/card_has_flying.sql (~639 tok)
@@ -209,13 +211,13 @@
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~464 tok)
 - `get_stack_items.sql` — supabase/functions_src/get_stack_items.sql (~1080 tok)
 - `get_turn_state.sql` — supabase/functions_src/get_turn_state.sql (~785 tok)
-- `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1902 tok)
+- `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~2519 tok)
 - `library_top_is_color.sql` — supabase/functions_src/library_top_is_color.sql (~260 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1542 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2768 tok)
 - `reset_mana.sql` — supabase/functions_src/reset_mana.sql (~512 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3832 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~14917 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~15100 tok)
 - `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~410 tok)
 
 ## supabase/migrations/
@@ -236,6 +238,9 @@
 - `202605010337_choose_type_anthem.sql` — 202605010337_choose_type_anthem (~14178 tok)
 - `202605010338_fear.sql` — 202605010338_fear (~5325 tok)
 - `202605010339_reflexive_may_program.sql` — 202605010339_reflexive_may_program (~35175 tok)
+- `202605010362_harmless_offering_cast.sql` — 202605010362_harmless_offering_cast (~2896 tok)
+- `202605010362_harmless_offering.sql` — 202605010362_harmless_offering (~3121 tok)
+- `202605010363_donate_choose_opponent.sql` — 202605010363_donate_choose_opponent (~17709 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -256,6 +261,7 @@
 - `deck-smoke.test.ts` — Deck smoke test: every curated script in docs/commander-decks/card-scripts.json (~2795 tok)
 - `defender.test.ts` — Defender enforcement (mig 323) — "a creature with defender can't attack." (~549 tok)
 - `delina.test.ts` — Delina, Wild Mage (mig 360). "Whenever Delina attacks, choose target creature you (~680 tok)
+- `donate-and-mana-spell.test.ts` — Cast-planner round-2 fixes — two spells that were engine-supported in principle (~1084 tok)
 - `draw-floor.test.ts` — Draw-floor fix (mig 334). The draw branch of apply_triggered_ability_effects (~767 tok)
 - `echoing-assault.test.ts` — Echoing Assault (mig 359). "Whenever you attack a player, choose target nontoken (~622 tok)
 - `fear.test.ts` — Fear keyword (mig 338). Cover of Darkness: "As this enters, choose a creature (~1062 tok)
