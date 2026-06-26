@@ -182,7 +182,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type', 'tap_self',
-  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'myriad', 'fight', 'gain_control',
+  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'myriad', 'saw_in_half', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
@@ -1088,6 +1088,14 @@ const CardBehaviorActionSchema = z.union([
     // the entering/attacking creature that fired the watcher (Atarka, Dragon
     // Tempest), no target pick.
     target: z.literal('triggering_creature').optional(),
+  }),
+  // Saw in Half (mig 356): destroy a target creature; on its death its controller
+  // makes two half-P/T copies. target_type creature.
+  z.object({
+    type: z.literal('saw_in_half'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
   }),
   // Blink/flicker a target creature: exile it and return it to the battlefield
   // under your control, re-firing its ETB (Conjurer's Closet, mig 351). optional

@@ -16473,7 +16473,7 @@
     "spell_effect": {
       "actions": [
         {
-          "type": "destroy",
+          "type": "saw_in_half",
           "target_type": "creature"
         }
       ]

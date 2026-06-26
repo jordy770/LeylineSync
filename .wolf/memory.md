@@ -5955,3 +5955,7 @@
 | 16:55 | Created tests/feature/myriad.test.ts | — | ~826 |
 | 17:06 | Edited supabase/functions_src/fire_attack_triggers.sql | expanded (+10 lines) | ~190 |
 | 17:06 | Edited supabase/functions_src/create_copy_token.sql | expanded (+6 lines) | ~196 |
+| 17:19 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified generate_series() | ~235 |
+| 17:19 | Edited supabase/functions_src/apply_creature_effect.sql | modified Half() | ~377 |
+| 17:20 | Edited supabase/functions_src/trigger_effect_target_type.sql | inline fix | ~24 |
+| 17:20 | Created tests/feature/saw-in-half.test.ts | — | ~566 |

@@ -164,6 +164,26 @@ begin
       perform public.rebuild_scripted_continuous_effects(p_session_id);
     end if;
 
+  elsif p_kind = 'saw_in_half' then
+    -- Saw in Half (mig 356): "Destroy target creature. If it dies, its controller
+    -- creates two tokens that are copies of it with half its power/toughness,
+    -- rounded up." Grant a dies-trigger (copy_self ×2 with the half P/T baked from
+    -- the creature's CURRENT effective P/T) then destroy it, so the copies appear
+    -- only on an actual death.
+    if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+      ) values (
+        p_session_id, p_target_card_id, p_target_card_id, 'granted_dies_effect',
+        jsonb_build_object('effects', jsonb_build_array(jsonb_build_object(
+          'type', 'copy_self', 'count', 2,
+          'except', jsonb_build_object(
+            'power', ceil(coalesce(public.card_effective_power(p_session_id, p_target_card_id), 0) / 2.0)::integer,
+            'toughness', ceil(coalesce(public.card_effective_toughness(p_session_id, p_target_card_id), 0) / 2.0)::integer)))),
+        'battlefield');
+      perform public.put_in_graveyard(p_session_id, p_target_card_id);
+    end if;
+
   elsif p_kind = 'shuffle_into_library' then
     -- Chaos Warp (mig 242): the OWNER shuffles the target into their library
     -- (modelled as inserting at a random position), then reveals the top card

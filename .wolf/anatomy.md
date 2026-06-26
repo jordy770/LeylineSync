@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:06:37.311Z
-> Files: 122 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:20:36.726Z
+> Files: 123 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -185,11 +185,11 @@
 
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9216 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~3941 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~6878 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7227 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1815 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1067 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~21900 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~13151 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~13308 tok)
 - `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
 - `card_has_fear.sql` — supabase/functions_src/card_has_fear.sql (~502 tok)
 - `card_has_flying.sql` — supabase/functions_src/card_has_flying.sql (~639 tok)
@@ -215,7 +215,7 @@
 - `reset_mana.sql` — supabase/functions_src/reset_mana.sql (~512 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3832 tok)
 - `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~14917 tok)
-- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~406 tok)
+- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~410 tok)
 
 ## supabase/migrations/
 
@@ -269,6 +269,7 @@
 - `reanimate.test.ts` — Reanimate / Animate Dead (mig 346). The reanimation is return_from_graveyard (~798 tok)
 - `reflexive-may-program.test.ts` — Reflexive "when you do" via may + program (mig 339). Ruthless Lawbringer: (~1062 tok)
 - `return-on-death.test.ts` — Return-on-death (mig 345). Feign Death / Not Dead After All / Supernatural (~819 tok)
+- `saw-in-half.test.ts` — Saw in Half (mig 356). "Destroy target creature. If that creature dies this way, (~566 tok)
 - `shared-animosity.test.ts` — Shared Animosity (mig 340). "Whenever a creature you control attacks, it gets (~953 tok)
 - `shock-land.test.ts` — Shock lands (mig 327) — "enters tapped UNLESS you pay 2 life". Playing one puts (~854 tok)
 - `tap-self.test.ts` — tap_self effect action (mig 335). "Tap it" taps the SOURCE permanent — the (~779 tok)
