@@ -341,6 +341,7 @@ begin
   -- Sacrifice the source as a cost (after the other costs are paid).
   if v_has_sac then
     perform public.put_in_graveyard(p_session_id, p_source_card_id);
+    perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'permanent_sacrificed');
   end if;
 
   -- Pay the graveyard-exile cost: exile the chosen card (controller := owner).
@@ -356,6 +357,7 @@ begin
   -- Pay the sacrifice-a-creature cost.
   if v_has_sac_creature then
     perform public.put_in_graveyard(p_session_id, p_target_card_id);
+    perform public.fire_watcher_triggers(p_session_id, p_target_card_id, auth.uid(), 'permanent_sacrificed');
   end if;
 
   -- Pay the sacrifice-N-artifacts cost (mig 264): cheapest MV first, source
@@ -396,6 +398,7 @@ begin
         raise exception 'You must sacrifice % artifact(s) you control', v_sac_artifacts_count;
       end if;
       perform public.put_in_graveyard(p_session_id, v_sac_artifact);
+      perform public.fire_watcher_triggers(p_session_id, v_sac_artifact, auth.uid(), 'permanent_sacrificed');
     end loop;
   end if;
 

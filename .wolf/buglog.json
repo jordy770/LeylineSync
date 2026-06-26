@@ -14715,6 +14715,138 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-25"
+    },
+    {
+      "id": "bug-1484",
+      "timestamp": "2026-06-26",
+      "error_message": "scions-spellcraft-build workflow produced card scripts that were schema-invalid or had fields silently stripped: 6 hard-failed validateCardScript (mana amount as number/`mana:` key, enters_tapped count shape, triggered `actions` vs `effects`, pump_all negate) and 6 more had silently-dropped fields (wrong `counter`/`filter`/`target` keys, unsupported `token`/`max_power` trigger filters).",
+      "file": "docs/commander-decks/card-scripts.json",
+      "root_cause": "The workflow's embedded engine cheat-sheet vocabulary diverges from the real Zod schema in lib/game/card-behavior-schema.ts. Action/filter schemas are non-strict z.object, so wrong field names are stripped at parse time — a script can validate yet do the wrong thing (e.g. add_counters_all without target_controller counters ALL creatures; Baron's `token:true` filter stripped fires on every creature).",
+      "fix": "Wrote all 54 scriptable entries, then validated each with validateCardScript AND deep-diffed input vs CardBehaviorScriptV2Schema.safeParse().data to surface stripped fields. Corrected 8 (mana amount strings, counter_type enum, flat type_line/target_controller, effects array, recipient:controller, enters_tapped basic_lands_you_control/at_least, dropped Baron's unfilterable token trigger). Downgraded 4 to needs_engine (Olivia's Wrath -X/-X negate, Carmen both triggers, Welcoming Vampire max_power, Immersturm Predator grant/tap self). Added 4 token fixtures (Vampire/Flying Vampire/Eldrazi/Shapeshifter Token) to tests/fixtures/test-cards.json so deck:upsert can create catalog rows.",
+      "tags": [
+        "card-scripts",
+        "card-behavior-schema",
+        "validation",
+        "silent-field-strip",
+        "scions-spellcraft-build",
+        "workflow",
+        "edgar-markov"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26"
+    },
+    {
+      "id": "bug-903",
+      "timestamp": "2026-06-26T09:36:18.051Z",
+      "error_message": "Incorrect value in code",
+      "file": "supabase/functions_src/declare_blocker.sql",
+      "root_cause": "Had ' = any(public.game_card_color_set(p_session_id, p",
+      "fix": "Changed to 'black'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T09:36:18.051Z"
+    },
+    {
+      "id": "bug-904",
+      "timestamp": "2026-06-26T09:36:23.648Z",
+      "error_message": "Incorrect value in code",
+      "file": "supabase/migrations/202605010338_fear.sql",
+      "root_cause": "Had ' = any(public.game_card_color_set(p_session_id, p",
+      "fix": "Changed to 'black'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T09:36:23.648Z"
+    },
+    {
+      "id": "bug-905",
+      "timestamp": "2026-06-26T09:41:53.743Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T09:41:53.743Z"
+    },
+    {
+      "id": "bug-906",
+      "timestamp": "2026-06-26T09:56:41.603Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/apply_trigger_effects.sql",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 4→13 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T09:56:41.603Z"
+    },
+    {
+      "id": "bug-907",
+      "timestamp": "2026-06-26T10:06:03.563Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/apply_trigger_effects.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→25 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T10:06:03.563Z"
+    },
+    {
+      "id": "bug-908",
+      "timestamp": "2026-06-26T10:11:42.691Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T10:11:42.691Z"
+    },
+    {
+      "id": "bug-909",
+      "timestamp": "2026-06-26T10:11:48.138Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Had 'fight'",
+      "fix": "Changed to 'grant_dies_effect'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T10:11:48.138Z"
     }
   ]
 }

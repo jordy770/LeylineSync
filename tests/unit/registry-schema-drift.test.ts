@@ -27,6 +27,8 @@ const JSON_ONLY: Record<string, string> = {
   add_mana: 'mana abilities are authored via the dedicated mana-variant form path, not the effect registry',
   counter: 'counterspells are JSON/AI-authored; the cast path (counter_spell stack action) has no form surface (mig 190)',
   set_pt: '"becomes X/Y" is engine-complete (migs 128-130) but was never given a registry entry — JSON-only by precedent',
+  tap_self: '"tap it" taps the source permanent (Immersturm Predator, mig 335); JSON/AI-authored, no guided-form surface',
+  grant_dies_effect: 'grant a creature a "when this dies, …" ability (Clavileño, mig 344); JSON/AI-authored, no guided-form surface',
   sacrifice: 'edict decisions (who/count/filter) predate the registry; form support is an open follow-up (mig 108/110)',
   return_from_graveyard: 'pick-from-graveyard decision effect; form support is an open follow-up (mig 108)',
   prevent_damage: 'Fog-style shields (mig 126) are JSON-only; no form demand yet',

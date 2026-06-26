@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-25T20:23:15.567Z
-> Files: 70 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T10:12:38.699Z
+> Files: 104 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -16,8 +16,15 @@
 
 - `config.yml` — Cloudflare Tunnel ingress for the LeylineSync dev server. (~294 tok)
 
+## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/
+
+- `fix.mjs` — Declares p (~853 tok)
+- `tier1.mjs` — Declares root (~536 tok)
+- `tokens.mjs` — Declares root (~501 tok)
+
 ## ./
 
+- `_verify_tmp.mts` — file: diff (~406 tok)
 - `.gitignore` — Git ignore rules (~370 tok)
 
 ## .claude/
@@ -139,7 +146,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~13002 tok)
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~19791 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~20568 tok)
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~10131 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
@@ -174,21 +181,35 @@
 
 ## supabase/functions_src/
 
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~20733 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~12596 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9211 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~6349 tok)
+- `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1815 tok)
+- `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1067 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~21244 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~12795 tok)
 - `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
+- `card_has_fear.sql` — supabase/functions_src/card_has_fear.sql (~502 tok)
+- `card_has_flying.sql` — supabase/functions_src/card_has_flying.sql (~639 tok)
+- `card_layered_power.sql` — supabase/functions_src/card_layered_power.sql (~1547 tok)
+- `card_layered_toughness.sql` — supabase/functions_src/card_layered_toughness.sql (~1559 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5990 tok)
 - `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1105 tok)
 - `clear_deck_from_session.sql` — supabase/functions_src/clear_deck_from_session.sql (~471 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3458 tok)
+- `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1908 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1699 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~3404 tok)
+- `fire_lifegain_triggers.sql` — supabase/functions_src/fire_lifegain_triggers.sql (~658 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~3449 tok)
 - `get_session_players.sql` — supabase/functions_src/get_session_players.sql (~464 tok)
 - `get_stack_items.sql` — supabase/functions_src/get_stack_items.sql (~1080 tok)
 - `get_turn_state.sql` — supabase/functions_src/get_turn_state.sql (~785 tok)
-- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2657 tok)
+- `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1902 tok)
+- `library_top_is_color.sql` — supabase/functions_src/library_top_is_color.sql (~260 tok)
+- `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1394 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2715 tok)
 - `reset_mana.sql` — supabase/functions_src/reset_mana.sql (~512 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~13927 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3832 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~14668 tok)
 
 ## supabase/migrations/
 
@@ -203,6 +224,11 @@
 - `202605010330_game_log.sql` — 202605010330_game_log (~784 tok)
 - `202605010331_game_log_outcomes.sql` — 202605010331_game_log_outcomes (~876 tok)
 - `202605010334_draw_floor_fix.sql` — 202605010334_draw_floor_fix (~12656 tok)
+- `202605010335_tap_self.sql` — 202605010335_tap_self (~12774 tok)
+- `202605010336_lifegain_event.sql` — 202605010336_lifegain_event (~31899 tok)
+- `202605010337_choose_type_anthem.sql` — 202605010337_choose_type_anthem (~14178 tok)
+- `202605010338_fear.sql` — 202605010338_fear (~5325 tok)
+- `202605010339_reflexive_may_program.sql` — 202605010339_reflexive_may_program (~35175 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -212,13 +238,23 @@
 
 ## tests/feature/
 
+- `carmen.test.ts` — Carmen, Cruel Skymarcher (mig 341). Two new pieces: (~914 tok)
 - `cast-watcher-self.test.ts` — Cast-watcher self-trigger (mig 325) — a "whenever you cast a creature spell" (~663 tok)
 - `change-deck.test.ts` — Lobby "change deck" (mig 324) — clear_deck_from_session lets a player undo a (~744 tok)
+- `choose-type-anthem.test.ts` — choose_creature_type → persistent anthem (mig 337). A "choose a creature type" (~998 tok)
+- `clavileno.test.ts` — Clavileño, First of the Blessed (mig 344). "Whenever you attack, target (~1066 tok)
 - `deck-smoke.test.ts` — Deck smoke test: every curated script in docs/commander-decks/card-scripts.json (~2795 tok)
 - `defender.test.ts` — Defender enforcement (mig 323) — "a creature with defender can't attack." (~549 tok)
 - `draw-floor.test.ts` — Draw-floor fix (mig 334). The draw branch of apply_triggered_ability_effects (~767 tok)
+- `fear.test.ts` — Fear keyword (mig 338). Cover of Darkness: "As this enters, choose a creature (~1062 tok)
+- `lifegain-event.test.ts` — you_gain_life triggered event (mig 336). Marauding Blight-Priest: "Whenever (~695 tok)
 - `optional-trigger-target.test.ts` — Optional ("up to one target …") triggered-ability targets (mig 326). A trigger (~675 tok)
+- `patriarchs-bidding.test.ts` — Patriarch's Bidding (mig 343). "Each player chooses a creature type. Each (~794 tok)
+- `reflexive-may-program.test.ts` — Reflexive "when you do" via may + program (mig 339). Ruthless Lawbringer: (~1062 tok)
+- `shared-animosity.test.ts` — Shared Animosity (mig 340). "Whenever a creature you control attacks, it gets (~953 tok)
 - `shock-land.test.ts` — Shock lands (mig 327) — "enters tapped UNLESS you pay 2 life". Playing one puts (~854 tok)
+- `tap-self.test.ts` — tap_self effect action (mig 335). "Tap it" taps the SOURCE permanent — the (~779 tok)
+- `vampire-nocturnus.test.ts` — Vampire Nocturnus (mig 342). Conditional tribal anthem: "as long as the top (~851 tok)
 
 ## tests/fixtures/
 
@@ -234,6 +270,7 @@
 
 - `auto-pass.test.ts` — shouldAutoPass — the controller's pure "should I pass priority right now?" (~2653 tok)
 - `bot-brain.test.ts` — bot-brain — the AI CPU's pure heuristic decisions (lib/game/bot-brain). Each (~2536 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3042 tok)
 
 ## vercel/
 

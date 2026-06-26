@@ -5812,3 +5812,84 @@
 | 22:21 | Created tests/feature/draw-floor.test.ts | — | ~767 |
 | 22:23 | Edited docs/open-items.md | 5→7 lines | ~130 |
 | 22:24 | Fixed draw-floor bug (mig 334): draw branch used 1..greatest(1,amount) → count/dynamic draw of 0 drew 1. Now absent amount=1, present amount draws exactly N. +2 fixtures (Floor/Plain Drummer Test), tests DF1-3 green, 16 related draw-path tests green | functions_src/apply_triggered_ability_effects.sql, migrations/202605010334_draw_floor_fix.sql, tests/feature/draw-floor.test.ts, tests/fixtures/test-cards.json, buglog bug-1483 | ✓ verified | ~12k |
+
+## Session: 2026-06-26 10:03
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:32 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/fix.mjs | — | ~853 |
+| 10:33 | Created _verify_tmp.mts | — | ~406 |
+| 10:35 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/tokens.mjs | — | ~501 |
+| 10:56 | Edited lib/game/card-behavior-schema.ts | 4→8 lines | ~125 |
+| 10:56 | Edited lib/game/card-behavior-schema.ts | 3→7 lines | ~125 |
+| 10:56 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/tier1.mjs | — | ~536 |
+| 11:05 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+10 lines) | ~203 |
+| 11:05 | Edited lib/game/card-behavior-schema.ts | 3→6 lines | ~77 |
+| 11:05 | Edited lib/game/card-behavior-schema.ts | inline fix | ~40 |
+| 11:06 | Edited supabase/migrations/202605010335_tap_self.sql | 2→4 lines | ~72 |
+| 11:08 | Created tests/feature/tap-self.test.ts | — | ~779 |
+| 11:15 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~70 |
+| 11:18 | Created supabase/functions_src/fire_lifegain_triggers.sql | — | ~658 |
+| 11:18 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 6→7 lines | ~87 |
+| 11:18 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified fire_lifegain_triggers() | ~120 |
+| 11:19 | Edited supabase/functions_src/apply_damage_to_creature.sql | 7→11 lines | ~161 |
+| 11:19 | Edited supabase/functions_src/apply_damage_to_player.sql | 9→13 lines | ~162 |
+| 11:19 | Edited supabase/functions_src/handle_permanent_effect.sql | 5→6 lines | ~74 |
+| 11:19 | Edited supabase/functions_src/submit_decision.sql | modified coalesce() | ~127 |
+| 11:20 | Edited supabase/migrations/202605010336_lifegain_event.sql | 2→6 lines | ~115 |
+| 11:21 | Created tests/feature/lifegain-event.test.ts | — | ~722 |
+| 11:21 | Edited tests/feature/lifegain-event.test.ts | drained() → fire() | ~261 |
+| 11:22 | Edited tests/feature/lifegain-event.test.ts | 5→4 lines | ~66 |
+| 11:27 | Edited supabase/functions_src/submit_decision.sql | modified replace() | ~191 |
+| 11:28 | Created tests/feature/choose-type-anthem.test.ts | — | ~998 |
+| 11:29 | Edited supabase/migrations/202605010337_choose_type_anthem.sql | 2→6 lines | ~122 |
+| 11:30 | Created supabase/functions_src/card_has_fear.sql | — | ~502 |
+| 11:31 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified Fear() | ~86 |
+| 11:31 | Edited supabase/functions_src/register_card_continuous_effects.sql | 5→6 lines | ~61 |
+| 11:32 | Edited supabase/functions_src/declare_blocker.sql | modified Fear() | ~222 |
+| 11:33 | Created tests/feature/fear.test.ts | — | ~1062 |
+| 11:34 | Edited supabase/migrations/202605010338_fear.sql | 2→7 lines | ~132 |
+| 11:35 | Edited supabase/migrations/202605010338_fear.sql | modified DDL() | ~331 |
+| 11:36 | Edited supabase/functions_src/declare_blocker.sql | 3→3 lines | ~55 |
+| 11:36 | Edited supabase/migrations/202605010338_fear.sql | 3→3 lines | ~55 |
+| 11:41 | Edited lib/game/card-behavior-schema.ts | 9→11 lines | ~147 |
+| 11:41 | Edited lib/game/card-behavior-schema.ts | modified true() | ~222 |
+| 11:42 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~141 |
+| 11:42 | Edited supabase/functions_src/apply_trigger_effects.sql | modified and() | ~205 |
+| 11:42 | Edited supabase/functions_src/submit_decision.sql | modified nullif() | ~350 |
+| 11:44 | Created tests/feature/reflexive-may-program.test.ts | — | ~1062 |
+| 11:44 | Edited supabase/migrations/202605010339_reflexive_may_program.sql | expanded (+7 lines) | ~177 |
+| 11:52 | Edited supabase/functions_src/resolve_count_amount.sql | modified count() | ~396 |
+| 11:52 | Edited lib/game/card-behavior-schema.ts | modified watcher() | ~162 |
+| 11:53 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~84 |
+| 11:54 | Created tests/feature/shared-animosity.test.ts | — | ~953 |
+| 11:56 | Edited supabase/functions_src/apply_trigger_effects.sql | modified and() | ~256 |
+| 11:57 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified coalesce() | ~130 |
+| 11:57 | Edited supabase/functions_src/activate_ability.sql | 4→5 lines | ~75 |
+| 11:57 | Edited supabase/functions_src/activate_ability.sql | 4→5 lines | ~69 |
+| 11:57 | Edited supabase/functions_src/submit_decision.sql | modified select() | ~134 |
+| 11:58 | Edited supabase/functions_src/activate_ability.sql | 3→4 lines | ~54 |
+| 11:58 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~183 |
+| 11:59 | Created tests/feature/carmen.test.ts | — | ~914 |
+| 12:01 | Created supabase/functions_src/library_top_is_color.sql | — | ~260 |
+
+## Session: 2026-06-26 12:01
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:01 | Created supabase/functions_src/card_has_flying.sql | — | ~639 |
+| 12:02 | Edited supabase/functions_src/card_layered_power.sql | modified coalesce() | ~277 |
+| 12:02 | Edited supabase/functions_src/card_layered_toughness.sql | modified coalesce() | ~274 |
+| 12:04 | Created tests/feature/vampire-nocturnus.test.ts | — | ~851 |
+| 12:06 | Edited supabase/functions_src/apply_trigger_effects.sql | expanded (+18 lines) | ~420 |
+| 12:06 | Edited supabase/functions_src/submit_decision.sql | 5→9 lines | ~143 |
+| 12:07 | Edited supabase/functions_src/submit_decision.sql | modified values() | ~331 |
+| 12:07 | Edited lib/game/card-behavior-schema.ts | 3→6 lines | ~95 |
+| 12:08 | Created tests/feature/patriarchs-bidding.test.ts | — | ~794 |
+| 12:11 | Edited supabase/functions_src/apply_creature_effect.sql | modified o() | ~270 |
+| 12:11 | Edited supabase/functions_src/put_in_graveyard.sql | modified trigger() | ~276 |
+| 12:11 | Edited supabase/functions_src/put_in_graveyard.sql | 3→4 lines | ~23 |
+| 12:11 | Edited lib/game/card-behavior-schema.ts | modified ability() | ~215 |
+| 12:11 | Edited lib/game/card-behavior-schema.ts | inline fix | ~31 |
+| 12:11 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~74 |
+| 12:12 | Created tests/feature/clavileno.test.ts | — | ~1066 |

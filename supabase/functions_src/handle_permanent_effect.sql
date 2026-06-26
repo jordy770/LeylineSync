@@ -61,6 +61,7 @@ begin
       update public.game_session_players
       set life_total = life_total + v_ramount
       where session_id = p_session_id and player_id = v_controller;
+      perform public.fire_lifegain_triggers(p_session_id, v_controller, v_ramount);
 
     elsif v_rtype = 'draw' then
       for i in 1..greatest(0, v_ramount) loop

@@ -1,7 +1,10 @@
--- supabase/functions_src/resolve_count_amount.sql
--- CANONICAL current definition (seeded from 202605010193_creatures_died_this_turn.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010340_shared_animosity
+-- Shared Animosity: new `shared_type_attackers` count in resolve_count_amount —
+-- the number of OTHER declared attackers that share a creature subtype with the
+-- source. Feeds a reflexive +X/+0 pump on the triggering attacker (creature_attacks
+-- watcher). Resolves at trigger resolution, after all attackers are declared.
+-- Generated from supabase/functions_src (resolve_count_amount) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.resolve_count_amount(
   p_session_id uuid,

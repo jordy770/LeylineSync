@@ -19,6 +19,7 @@ declare
   v_had_counters integer;
   v_undying boolean := false;
   v_next_bf_position integer;
+  v_rider record;
 begin
   select g.owner_id, coalesce(g.controller_player_id, g.owner_id), (c.type_line ilike '%creature%'),
          -- Token at either level: catalog tokens (cards.is_token) or copy
@@ -60,6 +61,22 @@ begin
     dealt_deathtouch_damage = false,
     plus_one_counters = 0
   where id = p_game_card_id;
+
+  -- Granted dies-trigger (Clavileño, mig 344): a creature that was given "when
+  -- this dies, <effects>" carries a granted_dies_effect continuous effect. Its
+  -- row still exists here (rebuild has not swept it yet); fire its payload for the
+  -- creature's last controller. Reads BEFORE the rebuild a caller runs afterwards.
+  if v_is_creature then
+    for v_rider in
+      select payload from public.game_continuous_effects
+      where session_id = p_session_id and effect_type = 'granted_dies_effect'
+        and affected_card_id = p_game_card_id
+    loop
+      perform public.apply_triggered_ability_effects(
+        p_session_id, v_controller_id, p_game_card_id,
+        coalesce(v_rider.payload -> 'effects', '[]'::jsonb));
+    end loop;
+  end if;
 
   -- Tally "creatures that died under your control this turn" (turn-stamped: the
   -- count belongs to the stored turn, so it reads as 0 once the turn changes).

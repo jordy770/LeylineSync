@@ -1,7 +1,9 @@
--- supabase/functions_src/apply_triggered_ability_effects.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010335_tap_self
+-- Add a `tap_self` effect action: tap the SOURCE permanent (Immersturm Predator's
+-- "Tap it" after its sacrifice ability). Untargeted, mirrors the grant_keyword
+-- self path; the AFTER-UPDATE is_tapped trigger fires becomes_tapped from here.
+-- Generated from supabase/functions_src (apply_triggered_ability_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_triggered_ability_effects(
   p_session_id uuid,
@@ -103,7 +105,6 @@ begin
             update public.game_session_players
             set life_total = life_total + v_eff_amount
             where session_id = p_session_id and player_id = v_rid;
-            perform public.fire_lifegain_triggers(p_session_id, v_rid, v_eff_amount);
           end if;
         end loop;
       end if;
@@ -432,8 +433,6 @@ begin
             update public.game_session_players
             set life_total = life_total + v_token_count * (v_effect ->> 'gain_per_destroyed')::integer
             where session_id = p_session_id and player_id = p_controller_id;
-            perform public.fire_lifegain_triggers(p_session_id, p_controller_id,
-              v_token_count * (v_effect ->> 'gain_per_destroyed')::integer);
           else
             perform public.apply_triggered_ability_effects(
               p_session_id, p_controller_id, p_source_card_id,

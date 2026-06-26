@@ -69,6 +69,12 @@ as $$
                     jsonb_build_object('count', effects.payload ->> 'condition_count'),
                     effects.source_card_id)
                   >= coalesce((effects.payload ->> 'condition_at_least')::integer, 1))
+          -- Conditional anthem on the source controller's library top card colour
+          -- (Vampire Nocturnus, mig 342: "as long as the top card is black").
+          and (effects.payload ->> 'condition_top_card_color' is null
+               or public.library_top_is_color(p_session_id,
+                    coalesce(source_card.controller_player_id, source_card.owner_id),
+                    effects.payload ->> 'condition_top_card_color'))
           and (effects.payload ->> 'color' is null
                or public.card_color_set(cards.mana_cost) @> array[lower(effects.payload ->> 'color')])
       ), 0)

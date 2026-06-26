@@ -133,6 +133,10 @@ begin
         and player_id = (select coalesce(gc.controller_player_id, gc.owner_id)
                          from public.game_cards gc
                          where gc.id = p_source_card_id and gc.session_id = p_session_id);
+      perform public.fire_lifegain_triggers(p_session_id,
+        (select coalesce(gc.controller_player_id, gc.owner_id) from public.game_cards gc
+         where gc.id = p_source_card_id and gc.session_id = p_session_id),
+        v_remaining);
     end if;
 
     -- Watcher broadcast (mig 260, Wrathful Raptors: "whenever a Dinosaur you

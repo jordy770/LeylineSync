@@ -93,6 +93,9 @@ begin
       'lifelink',
       'intimidate',
       'hexproof',
+      -- Fear (mig 338, Cover of Darkness): "can't be blocked except by artifact
+      -- and/or black creatures"; declare_blocker enforces it via card_has_fear.
+      'fear',
       -- Defender (mig 323): "this creature can't attack"; declare_attacker rejects it.
       'defender',
       -- STATIC cast-from-graveyard permission (mig 207, Gisa and Geralf): a
@@ -257,6 +260,7 @@ begin
       when 'wither'        then 'wither'
       when 'menace'        then 'menace'
       when 'intimidate'    then 'intimidate'
+      when 'fear'          then 'fear'
       when 'hexproof'      then 'hexproof'
       when 'defender'      then 'defender'
       else null

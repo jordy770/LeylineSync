@@ -163,7 +163,10 @@ begin
       if v_changed_type not ilike '%' || coalesce(v_f_type,
            case p_event when 'spell_cast' then '' when 'cast_from_exile' then ''
                         when 'land_entered' then 'land'
-                        when 'ability_activated' then '' else 'creature' end) || '%' then
+                        when 'ability_activated' then ''
+                        -- permanent_sacrificed (mig 341, Carmen): any permanent.
+                        when 'permanent_sacrificed' then ''
+                        else 'creature' end) || '%' then
         continue;
       end if;
 

@@ -1,7 +1,11 @@
--- supabase/functions_src/submit_decision.sql
--- CANONICAL current definition (seeded from 202605010197_may_cost_condition.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010337_choose_type_anthem
+-- choose_creature_type → persistent anthem. After baking the chosen type into the
+-- source's copied_script, submit_decision now calls rebuild_scripted_continuous_effects
+-- so a "choose a type" STATIC effect (Radiant Destiny: chosen type gets +1/+1;
+-- Cover of Darkness: chosen type has fear) re-registers with the concrete type.
+-- (Pre-choice the continuous effect carried the literal "$chosen" and matched nothing.)
+-- Generated from supabase/functions_src (submit_decision) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.submit_decision(
   p_decision_id uuid,
@@ -308,8 +312,6 @@ begin
     for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
     loop
       perform public.put_in_graveyard(v_decision.session_id, v_card);
-      -- "whenever a player sacrifices a permanent" (mig 341, Carmen).
-      perform public.fire_watcher_triggers(v_decision.session_id, v_card, v_decision.deciding_player_id, 'permanent_sacrificed');
     end loop;
     perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
 
@@ -550,21 +552,10 @@ begin
       select nullif(payload ->> 'controller_player_id', '')::uuid, source_card_id, nullif(payload ->> 'target_card_id', '')::uuid
         into v_ctrl, v_src_card, v_tgt
       from public.game_stack_items where id = v_decision.source_stack_item_id;
-      if coalesce((v_decision.params ->> 'program')::boolean, false) then
-        -- program:true (Ruthless Lawbringer, mig 339): run the inner effects as a
-        -- fresh triggered-ability PROGRAM — "when you do, destroy target nonland
-        -- permanent." Each effect parks its own decision (the sacrifice edict,
-        -- then the destroy_up_to pick), so the destroy target is chosen AFTER the
-        -- sacrifice rather than needing a pre-supplied target.
-        perform public.enqueue_triggered_ability(
-          v_decision.session_id, coalesce(v_ctrl, v_decision.deciding_player_id), v_src_card,
-          'reflexive', coalesce(v_decision.params -> 'effects', '[]'::jsonb));
-      else
-        perform public.apply_targeted_triggered_ability_effects(
-          v_decision.session_id, coalesce(v_ctrl, v_decision.deciding_player_id), v_src_card,
-          coalesce(v_decision.params -> 'effects', '[]'::jsonb), v_tgt
-        );
-      end if;
+      perform public.apply_targeted_triggered_ability_effects(
+        v_decision.session_id, coalesce(v_ctrl, v_decision.deciding_player_id), v_src_card,
+        coalesce(v_decision.params -> 'effects', '[]'::jsonb), v_tgt
+      );
     end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
@@ -875,10 +866,6 @@ begin
           then jsonb_set(e.value, '{amount,type_line}', to_jsonb(v_chosen_type))
         when lower(coalesce(e.value ->> 'type', '')) = 'pump_all'
           then jsonb_set(e.value, '{creature_type}', to_jsonb(v_chosen_type))
-        -- return_all_from_graveyard (mig 343, Patriarch's Bidding: each player
-        -- returns their own graveyard's creatures of the type they chose).
-        when lower(coalesce(e.value ->> 'type', '')) = 'return_all_from_graveyard'
-          then jsonb_set(e.value, '{creature_type}', to_jsonb(v_chosen_type))
         else e.value end
     ), '[]'::jsonb)
       into v_effects_rewritten
@@ -894,19 +881,7 @@ begin
     if jsonb_array_length(v_effects_rewritten) > 0 then
       perform public.apply_triggered_ability_effects(v_decision.session_id, v_decision.deciding_player_id, v_src_card, v_effects_rewritten);
     end if;
-    -- who:'each_player' (mig 343, Patriarch's Bidding): raise the next queued
-    -- player's type choice, or finalize when every player has chosen.
-    if jsonb_array_length(coalesce(v_decision.params -> 'player_queue', '[]'::jsonb)) > 0 then
-      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
-      values (v_decision.session_id, (v_decision.params -> 'player_queue' ->> 0)::uuid,
-        v_decision.source_stack_item_id, 'choose_creature_type', 'Choose a creature type',
-        coalesce(v_decision.params -> 'options', '[]'::jsonb), 1, 1,
-        jsonb_build_object('effects', coalesce(v_decision.params -> 'effects', '[]'::jsonb),
-          'player_queue', (v_decision.params -> 'player_queue') - 0,
-          'options', coalesce(v_decision.params -> 'options', '[]'::jsonb)));
-    else
-      perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
-    end if;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
   end if;
 
   return v_decision;
