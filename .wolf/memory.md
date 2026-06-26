@@ -5893,3 +5893,22 @@
 | 12:11 | Edited lib/game/card-behavior-schema.ts | inline fix | ~31 |
 | 12:11 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~74 |
 | 12:12 | Created tests/feature/clavileno.test.ts | — | ~1066 |
+| 12:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/dpfix.mjs | — | ~507 |
+| 12:53 | Created tests/feature/mayhem-devil.test.ts | — | ~484 |
+| 12:54 | Edited tests/feature/mayhem-devil.test.ts | added 1 condition(s) | ~199 |
+| 12:56 | Edited supabase/functions_src/trigger_effect_target_type.sql | 6→6 lines | ~112 |
+| 12:57 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified coalesce() | ~482 |
+| 12:57 | Edited supabase/functions_src/put_in_graveyard.sql | 11→15 lines | ~191 |
+| 12:58 | Created tests/feature/return-on-death.test.ts | — | ~819 |
+| 13:01 | Edited supabase/functions_src/submit_decision.sql | modified coalesce() | ~265 |
+| 13:01 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~208 |
+| 13:01 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~158 |
+| 13:02 | Created tests/feature/reanimate.test.ts | — | ~798 |
+| 13:06 | Edited supabase/functions_src/create_copy_token.sql | modified coalesce() | ~214 |
+| 13:06 | Edited supabase/functions_src/advance_step.sql | modified Hellkite() | ~179 |
+| 13:07 | Edited supabase/functions_src/advance_step.sql | 6→6 lines | ~67 |
+| 13:07 | Edited supabase/functions_src/advance_step.sql | 3→4 lines | ~24 |
+| 13:07 | Edited lib/game/card-behavior-schema.ts | 7→9 lines | ~106 |
+| 13:08 | Created tests/feature/copy-token-cleanup.test.ts | — | ~841 |
+| 13:09 | Edited tests/feature/copy-token-cleanup.test.ts | "end" → "ending" | ~24 |
+| 15:14 | Edited scripts/triage-decklist.mjs | inline fix | ~28 |

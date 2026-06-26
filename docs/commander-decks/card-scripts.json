@@ -15909,5 +15909,955 @@
         ]
       }
     ]
+  },
+  "Deadpool, Trading Card": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "upkeep",
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 3,
+            "recipient": "controller"
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "3"
+          },
+          {
+            "type": "sacrifice_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1,
+            "recipient": "each_opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Abrade": {
+    "schema_version": 2,
+    "spell_effect": {
+      "choose": 1,
+      "modes": [
+        {
+          "label": "Abrade deals 3 damage to target creature.",
+          "actions": [
+            {
+              "type": "deal_damage",
+              "amount": 3,
+              "target_type": "creature"
+            }
+          ]
+        },
+        {
+          "label": "Destroy target artifact.",
+          "actions": [
+            {
+              "type": "destroy",
+              "target_type": "artifact"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Akoum Refuge": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "triggered_abilities": [
+      {
+        "event": "fire_etb",
+        "effects": [
+          {
+            "type": "gain_life",
+            "amount": 1,
+            "recipient": "controller"
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Animate Dead": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "return_from_graveyard",
+          "to": "battlefield",
+          "count": 1,
+          "from": "all_graveyards",
+          "control": "decider",
+          "filter": {
+            "type_line": "creature"
+          }
+        }
+      ]
+    }
+  },
+  "Bedevil": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "permanent"
+        }
+      ]
+    }
+  },
+  "Blade of Selves": {
+    "schema_version": 2,
+    "equip_cost": "{4}"
+  },
+  "Blasphemous Edict": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "sacrifice",
+          "who": "each_player",
+          "count": 13
+        }
+      ]
+    }
+  },
+  "Canyon Slough": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Dalek Squadron": {
+    "schema_version": 2,
+    "keywords": [
+      "menace"
+    ]
+  },
+  "Dark Ritual": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "add_mana",
+          "color": "B",
+          "amount": 3
+        }
+      ]
+    }
+  },
+  "Deadly Rollick": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "exile",
+          "target_type": "creature"
+        }
+      ]
+    }
+  },
+  "Echoing Assault": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "menace",
+        "affected": "controller",
+        "payload": {
+          "token_only": true
+        }
+      }
+    ]
+  },
+  "Electroduplicate": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "copy_permanent",
+          "target_filter": {
+            "controller": "you",
+            "type_line": "Creature"
+          },
+          "except": {
+            "keywords": [
+              "haste"
+            ],
+            "cleanup_at_end_step": true
+          }
+        }
+      ]
+    },
+    "flashback": "{2}{R}{R}"
+  },
+  "Elturel Survivors": {
+    "schema_version": 2,
+    "keywords": [
+      "trample"
+    ]
+  },
+  "Goldlust Triad": {
+    "schema_version": 2,
+    "keywords": [
+      "Flying"
+    ]
+  },
+  "Impact Tremors": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "deal_damage",
+            "recipient": "each_opponent",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Labyrinth of Skophos": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Languish": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "pump_all",
+          "power": -4,
+          "toughness": -4
+        }
+      ]
+    }
+  },
+  "Lightning Greaves": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "haste",
+        "affected": "equipped"
+      },
+      {
+        "type": "hexproof",
+        "affected": "equipped"
+      }
+    ],
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{0}"
+          }
+        ],
+        "effects": [
+          {
+            "type": "equip",
+            "target_type": "creature",
+            "target_controller": "you"
+          }
+        ]
+      }
+    ]
+  },
+  "Mind Stone": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "sacrifice_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Mirkwood Bats": {
+    "schema_version": 2,
+    "keywords": [
+      "flying"
+    ]
+  },
+  "Mirror Box": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Legendary"
+        }
+      }
+    ]
+  },
+  "Morbid Opportunist": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "controller": "any",
+          "exclude_self": true
+        },
+        "once_per_turn": true,
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1,
+            "recipient": "controller"
+          }
+        ]
+      }
+    ]
+  },
+  "Phyrexian Arena": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "upkeep",
+        "effects": [
+          {
+            "type": "draw",
+            "recipient": "controller",
+            "amount": 1
+          },
+          {
+            "type": "lose_life",
+            "recipient": "controller",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Pitiless Plunderer": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "controller": "you",
+          "exclude_self": true
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Treasure Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Professional Face-Breaker": {
+    "schema_version": 2,
+    "keywords": [
+      "menace"
+    ]
+  },
+  "Rakdos Charm": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "choose_one",
+          "prompt": "Choose one",
+          "modes": [
+            {
+              "label": "Exile target player's graveyard",
+              "actions": [
+                {
+                  "type": "exile_graveyard"
+                }
+              ]
+            },
+            {
+              "label": "Destroy target artifact",
+              "actions": [
+                {
+                  "type": "destroy",
+                  "target_type": "artifact"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Rakdos Signet": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          },
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Read the Bones": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "scry",
+          "amount": 2
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "lose_life",
+          "amount": 2,
+          "recipient": "controller"
+        }
+      ]
+    }
+  },
+  "Saw in Half": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "creature"
+        }
+      ]
+    }
+  },
+  "Shadowblood Ridge": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          },
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Soul-Guide Lantern": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "fire_etb",
+        "effects": [
+          {
+            "type": "exile_from_any_graveyard"
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "sacrifice_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "exile_graveyard"
+          }
+        ]
+      },
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "sacrifice_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Supernatural Stamina": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "grant_dies_effect",
+          "target_type": "creature",
+          "effects": [
+            {
+              "type": "return_self_to_battlefield",
+              "tapped": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Tainted Peak": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Talisman of Indulgence": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          },
+          {
+            "type": "deal_damage",
+            "amount": 1,
+            "recipient": "controller"
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          },
+          {
+            "type": "deal_damage",
+            "amount": 1,
+            "recipient": "controller"
+          }
+        ]
+      }
+    ]
+  },
+  "Temple of Malice": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "triggered_abilities": [
+      {
+        "event": "fire_etb",
+        "effects": [
+          {
+            "type": "scry",
+            "amount": 1
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "The Fire Crystal": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "haste",
+        "affected": "controller"
+      }
+    ],
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{4}{R}{R}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "copy_permanent",
+            "target_filter": {
+              "controller": "you",
+              "type_line": "Creature"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Vandalblast": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "artifact",
+          "target_controller": "opponent"
+        }
+      ]
+    }
+  },
+  "Zulaport Cutthroat": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "controller": "you",
+          "type_line": "Creature"
+        },
+        "effects": [
+          {
+            "type": "lose_life",
+            "recipient": "each_opponent",
+            "amount": 1
+          },
+          {
+            "type": "gain_life",
+            "recipient": "controller",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Mayhem Devil": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "permanent_sacrificed",
+        "filter": {
+          "controller": "any"
+        },
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 1,
+            "target_type": "creature"
+          }
+        ]
+      }
+    ]
+  },
+  "Feign Death": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "grant_dies_effect",
+          "target_type": "creature",
+          "effects": [
+            {
+              "type": "return_self_to_battlefield",
+              "tapped": true,
+              "plus_one_counters": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Not Dead After All": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "grant_dies_effect",
+          "target_type": "creature",
+          "effects": [
+            {
+              "type": "return_self_to_battlefield",
+              "tapped": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Reanimate": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "return_from_graveyard",
+          "to": "battlefield",
+          "count": 1,
+          "from": "all_graveyards",
+          "control": "decider",
+          "filter": {
+            "type_line": "creature"
+          },
+          "lose_life_mana_value": true
+        }
+      ]
+    }
   }
 }

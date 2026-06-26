@@ -84,6 +84,15 @@ begin
     end if;
   end loop;
 
+  -- "Sacrifice/exile it at the beginning of the next end step" (Electroduplicate /
+  -- Flameshadow Conjuring, mig 347): mark the copy for end-step cleanup; advance_step
+  -- removes it. A token leaving the battlefield ceases to exist either way.
+  if coalesce((p_except ->> 'cleanup_at_end_step')::boolean, false) then
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object('cleanup_at_end_step', coalesce(v_turn, 0)::text)
+    where id = v_new and session_id = p_session_id;
+  end if;
+
   return v_new;
 end;
 $$;

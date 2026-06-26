@@ -14847,6 +14847,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-26T10:11:48.138Z"
+    },
+    {
+      "id": "bug-910",
+      "timestamp": "2026-06-26T10:54:12.097Z",
+      "error_message": "Type error",
+      "file": "tests/feature/mayhem-devil.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T10:54:12.097Z"
+    },
+    {
+      "id": "bug-911",
+      "timestamp": "2026-06-26T11:09:06.955Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/feature/copy-token-cleanup.test.ts",
+      "root_cause": "Had 'end'",
+      "fix": "Changed to 'ending'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T11:09:06.955Z"
     }
   ]
 }

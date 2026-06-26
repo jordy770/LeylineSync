@@ -63,7 +63,7 @@ if (cards.length === 0) {
 
 // ── Load oracle ground truth + the implemented-fixture set ──────────────────
 const libDir = path.join(root, 'lib')
-const oracleFile = readdirSync(libDir).filter((f) => /^oracle-cards-.*\.json$/.test(f)).sort().pop()
+const oracleFile = readdirSync(libDir).filter((f) => /^oracle-cards(-.*)?\.json$/.test(f)).sort().pop()
 if (!oracleFile) {
   console.error('No lib/oracle-cards-*.json found — download the Scryfall "Oracle Cards" bulk file (see .gitignore note).')
   process.exit(1)

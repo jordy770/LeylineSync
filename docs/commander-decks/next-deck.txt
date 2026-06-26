@@ -14,86 +14,77 @@
 
 
 Commander
-1 Edgar Markov
+1 Deadpool, Trading Card
 
+1 Abrade
+1 Akoum Refuge
+1 Animate Dead
 1 Arcane Signet
-1 Baron Bertram Graywater
-1 Bartolomé del Presidio
-1 Battlefield Forge
+1 Bedevil
+1 Blade of Selves
+1 Blasphemous Act
+1 Blasphemous Edict
 1 Blood Artist
-1 Bloodline Keeper
-1 Bloodline Necromancer
-1 Boros Signet
-1 Captivating Vampire
-1 Carmen, Cruel Skymarcher
-1 Cathars' Crusade
-1 Cavern of Souls
-1 Caves of Koilos
-1 Champion of Dusk
+1 Canyon Slough
 1 Chaos Warp
-1 Clavileño, First of the Blessed
 1 Command Tower
-1 Concealed Courtyard
-1 Cordial Vampire
-1 Cover of Darkness
-1 Crib Swap
-1 Dragonskull Summit
-1 Drana and Linvala
-1 Drana, Liberator of Malakir
-1 Dusk Legion Sergeant
-1 Dusk Legion Zealot
-1 Edgar, Charmed Groom
-1 Elenda, the Dusk Rose
-1 Etchings of the Chosen
-1 Exotic Orchard
-1 Falkenrath Noble
+1 Commander's Sphere
+1 Conjurer's Closet
+1 Dalek Squadron
+1 Dark Ritual
+1 Deadly Rollick
+1 Delina, Wild Mage
+1 Echoing Assault
+1 Electroduplicate
+1 Elturel Survivors
+1 Feed the Swarm
+1 Feign Death
 1 Fellwar Stone
-1 Fiery Confluence
-1 Foreboding Ruins
-1 Generous Gift
-1 Idol of Oblivion
-1 Immersturm Predator
-1 Indulgent Aristocrat
-1 Isolated Chapel
-1 Kalitas, Traitor of Ghet
-1 Kindred Dominance
-1 Legion Lieutenant
-1 Lethal Scheme
-1 Luxury Suite
-1 Malakir Bloodwitch
-1 Marauding Blight-Priest
-1 Markov Baron
-1 Mavren Fein, Dusk Apostle
-4 Mountain
-1 New Blood
-1 Olivia's Wrath
-1 Path of Ancestry
-1 Patriarch's Bidding
-7 Plains
-1 Progenitor's Icon
-1 Radiant Destiny
-1 Reflecting Pool
-1 Ruinous Ultimatum
-1 Ruthless Lawbringer
-1 Sanctum Seeker
-1 Shared Animosity
-1 Skullclamp
+1 Flameshadow Conjuring
+1 Goldlust Triad
+1 Harmless Offering
+1 Helm of the Host
+1 Impact Tremors
+1 Jaxis, the Troublemaker
+1 Labyrinth of Skophos
+1 Languish
+1 Lightning Greaves
+1 Mayhem Devil
+1 Mind Stone
+1 Mirage Phalanx
+1 Mirkwood Bats
+1 Mirror Box
+1 Mirror Gallery
+1 Mirror March
+1 Morbid Opportunist
+14 Mountain
+1 Not Dead After All
+1 Orthion, Hero of Lavabrink
+1 Phyrexian Arena
+1 Pitiless Plunderer
+1 Professional Face-Breaker
+1 Rakdos Carnarium
+1 Rakdos Charm
+1 Rakdos Signet
+1 Read the Bones
+1 Reanimate
+1 Saw in Half
+1 Shadowblood Ridge
 1 Smoldering Marsh
 1 Sol Ring
-1 Sorin, Imperious Bloodlord
-1 Spectator Seating
-1 Stromkirk Captain
-1 Sulfurous Springs
-10 Swamp
-1 Swords to Plowshares
-1 Talisman of Conviction
-1 Talisman of Hierarchy
+1 Solemn Simulacrum
+1 Soul-Guide Lantern
+1 Splinter Twin
+1 Supernatural Stamina
+15 Swamp
+1 Swiftfoot Boots
+1 Tainted Peak
+1 Talisman of Indulgence
+1 Temple of Malice
 1 Terminate
-1 Twilight Prophet
-1 Vampire Nocturnus
-1 Vanquisher's Banner
-1 Vault of Champions
-1 Vein Ripper
-1 Viscera Seer
-1 Welcoming Vampire
-1 Yahenni, Undying Partisan
+1 The Fire Crystal
+1 The Master, Multiplied
+1 Vandalblast
+1 Wayfarer's Bauble
+1 Xantcha, Sleeper Agent
+1 Zulaport Cutthroat

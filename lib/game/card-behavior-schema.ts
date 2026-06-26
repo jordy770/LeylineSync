@@ -474,6 +474,12 @@ const CardBehaviorActionSchema = z.union([
     }).optional(),
     // Battlefield returns enter tapped (mig 218, Victimize).
     tapped: z.boolean().optional(),
+    // Reanimation riders (mig 270 Beacon of Unrest / mig 346 Reanimate).
+    from: z.literal('all_graveyards').optional(),
+    control: z.enum(['decider']).optional(),
+    haste: z.boolean().optional(),
+    // "you lose life equal to its mana value" (Reanimate).
+    lose_life_mana_value: z.boolean().optional(),
   }),
   // Surveil N — Tier-B: look at the top N of your library, put any number into
   // your graveyard, the rest back on top. Untargeted.
@@ -837,6 +843,8 @@ const CardBehaviorActionSchema = z.union([
       power: z.number().int().optional(),
       toughness: z.number().int().optional(),
       keywords: z.array(z.string()).optional(),
+      // "Sacrifice/exile it at the next end step" (Electroduplicate, mig 347).
+      cleanup_at_end_step: z.boolean().optional(),
     }).strict().optional(),
   }),
   // An EXISTING card becomes a copy (mig 240). target:'triggering_creature'

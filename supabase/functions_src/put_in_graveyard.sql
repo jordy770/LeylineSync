@@ -68,10 +68,14 @@ begin
   -- creature's last controller. Reads BEFORE the rebuild a caller runs afterwards.
   if v_is_creature then
     for v_rider in
-      select payload from public.game_continuous_effects
+      select id, payload from public.game_continuous_effects
       where session_id = p_session_id and effect_type = 'granted_dies_effect'
         and affected_card_id = p_game_card_id
     loop
+      -- Consume the grant BEFORE applying so a return-to-battlefield effect (which
+      -- re-fields the source and would otherwise re-satisfy source_zone_required)
+      -- does not re-fire the dies-trigger.
+      delete from public.game_continuous_effects where id = v_rider.id;
       perform public.apply_triggered_ability_effects(
         p_session_id, v_controller_id, p_game_card_id,
         coalesce(v_rider.payload -> 'effects', '[]'::jsonb));

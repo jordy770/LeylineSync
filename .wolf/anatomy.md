@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T10:12:38.699Z
-> Files: 104 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T13:14:21.712Z
+> Files: 113 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -18,6 +18,7 @@
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/
 
+- `dpfix.mjs` — Declares p (~507 tok)
 - `fix.mjs` — Declares p (~853 tok)
 - `tier1.mjs` — Declares root (~536 tok)
 - `tokens.mjs` — Declares root (~501 tok)
@@ -146,7 +147,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~13002 tok)
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~20568 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~20698 tok)
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~10131 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
@@ -172,6 +173,7 @@
 ## scripts/
 
 - `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~8239 tok)
+- `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3696 tok)
 
 ## supabase/
 
@@ -182,11 +184,12 @@
 ## supabase/functions_src/
 
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9211 tok)
+- `advance_step.sql` — supabase/functions_src/advance_step.sql (~3828 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~6349 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1815 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1067 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~21244 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~12795 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~21327 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~13151 tok)
 - `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
 - `card_has_fear.sql` — supabase/functions_src/card_has_fear.sql (~502 tok)
 - `card_has_flying.sql` — supabase/functions_src/card_has_flying.sql (~639 tok)
@@ -195,6 +198,7 @@
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~5990 tok)
 - `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1105 tok)
 - `clear_deck_from_session.sql` — supabase/functions_src/clear_deck_from_session.sql (~471 tok)
+- `create_copy_token.sql` — supabase/functions_src/create_copy_token.sql (~1113 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3458 tok)
 - `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~1908 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1699 tok)
@@ -205,11 +209,12 @@
 - `get_turn_state.sql` — supabase/functions_src/get_turn_state.sql (~785 tok)
 - `handle_permanent_effect.sql` — supabase/functions_src/handle_permanent_effect.sql (~1902 tok)
 - `library_top_is_color.sql` — supabase/functions_src/library_top_is_color.sql (~260 tok)
-- `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1394 tok)
+- `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~1471 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2715 tok)
 - `reset_mana.sql` — supabase/functions_src/reset_mana.sql (~512 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~3832 tok)
-- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~14668 tok)
+- `submit_decision.sql` — supabase/functions_src/submit_decision.sql (~14851 tok)
+- `trigger_effect_target_type.sql` — supabase/functions_src/trigger_effect_target_type.sql (~403 tok)
 
 ## supabase/migrations/
 
@@ -243,14 +248,18 @@
 - `change-deck.test.ts` — Lobby "change deck" (mig 324) — clear_deck_from_session lets a player undo a (~744 tok)
 - `choose-type-anthem.test.ts` — choose_creature_type → persistent anthem (mig 337). A "choose a creature type" (~998 tok)
 - `clavileno.test.ts` — Clavileño, First of the Blessed (mig 344). "Whenever you attack, target (~1066 tok)
+- `copy-token-cleanup.test.ts` — Copy-token end-step cleanup (mig 347). The copy_permanent action already makes (~842 tok)
 - `deck-smoke.test.ts` — Deck smoke test: every curated script in docs/commander-decks/card-scripts.json (~2795 tok)
 - `defender.test.ts` — Defender enforcement (mig 323) — "a creature with defender can't attack." (~549 tok)
 - `draw-floor.test.ts` — Draw-floor fix (mig 334). The draw branch of apply_triggered_ability_effects (~767 tok)
 - `fear.test.ts` — Fear keyword (mig 338). Cover of Darkness: "As this enters, choose a creature (~1062 tok)
 - `lifegain-event.test.ts` — you_gain_life triggered event (mig 336). Marauding Blight-Priest: "Whenever (~695 tok)
+- `mayhem-devil.test.ts` — Mayhem Devil — already engine-supported once mig 341 added the (~528 tok)
 - `optional-trigger-target.test.ts` — Optional ("up to one target …") triggered-ability targets (mig 326). A trigger (~675 tok)
 - `patriarchs-bidding.test.ts` — Patriarch's Bidding (mig 343). "Each player chooses a creature type. Each (~794 tok)
+- `reanimate.test.ts` — Reanimate / Animate Dead (mig 346). The reanimation is return_from_graveyard (~798 tok)
 - `reflexive-may-program.test.ts` — Reflexive "when you do" via may + program (mig 339). Ruthless Lawbringer: (~1062 tok)
+- `return-on-death.test.ts` — Return-on-death (mig 345). Feign Death / Not Dead After All / Supernatural (~819 tok)
 - `shared-animosity.test.ts` — Shared Animosity (mig 340). "Whenever a creature you control attacks, it gets (~953 tok)
 - `shock-land.test.ts` — Shock lands (mig 327) — "enters tapped UNLESS you pay 2 life". Playing one puts (~854 tok)
 - `tap-self.test.ts` — tap_self effect action (mig 335). "Tap it" taps the SOURCE permanent — the (~779 tok)

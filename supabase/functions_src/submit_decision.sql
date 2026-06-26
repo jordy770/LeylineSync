@@ -356,6 +356,16 @@ begin
         update public.game_cards set zone = 'hand', zone_position = v_pos, is_tapped = false where id = v_card;
       end if;
     end loop;
+    -- lose_life_mana_value (mig 346, Reanimate: "you lose life equal to its mana
+    -- value") — the decider loses life equal to the summed MV of the cards returned.
+    if coalesce((v_decision.params ->> 'lose_life_mana_value')::boolean, false) then
+      update public.game_session_players sp
+      set life_total = life_total - (
+        select coalesce(sum(public.mana_value(c.mana_cost)), 0)::integer
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.id = any(v_chosen_ids) and gc.session_id = v_decision.session_id)
+      where sp.session_id = v_decision.session_id and sp.player_id = v_decision.deciding_player_id;
+    end if;
     perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
