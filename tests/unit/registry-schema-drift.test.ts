@@ -28,6 +28,7 @@ const JSON_ONLY: Record<string, string> = {
   counter: 'counterspells are JSON/AI-authored; the cast path (counter_spell stack action) has no form surface (mig 190)',
   set_pt: '"becomes X/Y" is engine-complete (migs 128-130) but was never given a registry entry — JSON-only by precedent',
   tap_self: '"tap it" taps the source permanent (Immersturm Predator, mig 335); JSON/AI-authored, no guided-form surface',
+  blink: 'exile a target creature and return it (Conjurer\'s Closet, mig 351); JSON/AI-authored, no guided-form surface',
   grant_dies_effect: 'grant a creature a "when this dies, …" ability (Clavileño, mig 344); JSON/AI-authored, no guided-form surface',
   sacrifice: 'edict decisions (who/count/filter) predate the registry; form support is an open follow-up (mig 108/110)',
   return_from_graveyard: 'pick-from-graveyard decision effect; form support is an open follow-up (mig 108)',

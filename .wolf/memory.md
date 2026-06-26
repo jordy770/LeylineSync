@@ -5925,3 +5925,20 @@
 | 15:22 | Edited tests/feature/jaxis.test.ts | modified count() | ~130 |
 | 15:23 | Edited supabase/functions_src/put_in_graveyard.sql | 4→5 lines | ~34 |
 | 15:23 | Edited supabase/functions_src/put_in_graveyard.sql | modified trigger() | ~411 |
+| 15:56 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~206 |
+| 15:56 | Edited lib/game/card-behavior-schema.ts | 4→5 lines | ~90 |
+| 15:57 | Created tests/feature/helm-of-the-host.test.ts | — | ~537 |
+| 15:58 | Edited supabase/functions_src/apply_creature_effect.sql | added 1 condition(s) | ~392 |
+| 15:59 | Edited supabase/functions_src/trigger_effect_target_type.sql | 3→3 lines | ~70 |
+| 15:59 | Edited lib/game/card-behavior-schema.ts | expanded (+10 lines) | ~159 |
+| 15:59 | Edited tests/unit/registry-schema-drift.test.ts | "exile a target creature a" → "exile a target creature a" | ~35 |
+| 16:00 | Created tests/feature/conjurers-closet.test.ts | — | ~486 |
+| 16:03 | Edited tests/feature/conjurers-closet.test.ts | 3→4 lines | ~79 |
+| 16:04 | Edited tests/feature/conjurers-closet.test.ts | 3→5 lines | ~107 |
+| 16:06 | Edited tests/feature/conjurers-closet.test.ts | added optional chaining | ~101 |
+| 16:06 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~115 |
+| 16:07 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~79 |
+| 16:07 | Created tests/feature/flameshadow.test.ts | — | ~737 |
+| 16:08 | Edited supabase/functions_src/apply_creature_effect.sql | modified Donate() | ~224 |
+| 16:09 | Edited lib/game/card-behavior-schema.ts | 2→5 lines | ~78 |
+| 16:09 | Created tests/feature/harmless-offering.test.ts | — | ~380 |

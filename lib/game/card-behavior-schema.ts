@@ -182,7 +182,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type', 'tap_self',
-  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'fight', 'gain_control',
+  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
@@ -834,7 +834,8 @@ const CardBehaviorActionSchema = z.union([
   // P/T (set_pt) and grants keywords; added TYPES are not modelled.
   z.object({
     type: z.literal('copy_permanent'),
-    target: z.literal('triggering_creature').optional(),
+    // 'attached' = copy the source's equipped/enchanted host (Helm of the Host).
+    target: z.enum(['triggering_creature', 'attached']).optional(),
     // Number of copies to create (Orthion: "create five tokens", mig 348).
     count: z.number().int().positive().optional(),
     target_filter: z.object({
@@ -1087,6 +1088,16 @@ const CardBehaviorActionSchema = z.union([
     // Tempest), no target pick.
     target: z.literal('triggering_creature').optional(),
   }),
+  // Blink/flicker a target creature: exile it and return it to the battlefield
+  // under your control, re-firing its ETB (Conjurer's Closet, mig 351). optional
+  // = "you may"; a token cannot return.
+  z.object({
+    type: z.literal('blink'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+    optional: z.boolean().optional(),
+  }),
   // Grant a target creature a "when this dies, <effects>" ability (Clavileño,
   // mig 344): stored as a granted_dies_effect continuous effect on the creature;
   // put_in_graveyard fires `effects` on its death. effects kept loose (see may).
@@ -1120,6 +1131,9 @@ const CardBehaviorActionSchema = z.union([
     // the stolen permanent's script and blocks attacking (block restriction
     // not modelled).
     duration: z.enum(['permanent', 'end_of_turn', 'while_source']).optional(),
+    // Donate: hand the permanent to an opponent instead of the caster
+    // (Harmless Offering, mig 353).
+    to: z.enum(['opponent']).optional(),
     lose_abilities: z.boolean().optional(),
     // Threaten extras: untap the creature and give it haste (so it can attack the
     // turn you take it). JSON/AI-authored; the guided form models duration only.

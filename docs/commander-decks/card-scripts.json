@@ -16958,5 +16958,85 @@
         ]
       }
     ]
+  },
+  "Helm of the Host": {
+    "schema_version": 2,
+    "equip_cost": "{5}",
+    "triggered_abilities": [
+      {
+        "event": "begin_combat",
+        "effects": [
+          {
+            "type": "copy_permanent",
+            "target": "attached",
+            "except": {
+              "keywords": [
+                "haste"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Conjurer's Closet": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "end_step",
+        "effects": [
+          {
+            "type": "blink",
+            "target_type": "creature",
+            "target_controller": "you"
+          }
+        ]
+      }
+    ]
+  },
+  "Flameshadow Conjuring": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "nontoken": true
+        },
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Pay {R} to copy it?",
+            "cost": "{R}",
+            "program": true,
+            "effects": [
+              {
+                "type": "copy_permanent",
+                "target": "triggering_creature",
+                "except": {
+                  "keywords": [
+                    "haste"
+                  ],
+                  "cleanup_at_end_step": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Harmless Offering": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "gain_control",
+          "target_type": "permanent",
+          "target_controller": "you",
+          "to": "opponent"
+        }
+      ]
+    }
   }
 }

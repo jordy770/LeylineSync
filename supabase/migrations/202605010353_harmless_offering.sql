@@ -1,7 +1,8 @@
--- supabase/functions_src/apply_creature_effect.sql
--- CANONICAL current definition (seeded from 202605010172_dynamic_pump_loyalty_target.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010353_harmless_offering
+-- Harmless Offering: gain_control gains a to:'opponent' direction (donate the
+-- targeted permanent to an opponent of the caster instead of the caster gaining it).
+-- Generated from supabase/functions_src (apply_creature_effect) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_creature_effect(
   p_session_id uuid,

@@ -1,7 +1,8 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010350_helm_copy
+-- Helm of the Host: copy_permanent target:'attached' copies the source's equipped
+-- host (begin_combat event already exists). Non-legendary clause not modelled.
+-- Generated from supabase/functions_src (apply_trigger_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,
@@ -307,10 +308,7 @@ begin
       insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
       values (p_session_id, v_controller, p_stack_item_id, 'confirm', coalesce(v_effect ->> 'prompt', 'You may'), '[]'::jsonb, 0, 0,
         jsonb_build_object('effects', coalesce(v_effect -> 'effects', '[]'::jsonb), 'cost', v_effect ->> 'cost',
-          'program', coalesce((v_effect ->> 'program')::boolean, false),
-          -- Preserve the event subject so a program copy_permanent target:'triggering_creature'
-          -- still has it after the may (Flameshadow Conjuring, mig 352).
-          'triggering_card_id', v_item.payload ->> 'triggering_card_id'))
+          'program', coalesce((v_effect ->> 'program')::boolean, false)))
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;

@@ -568,7 +568,8 @@ begin
         -- sacrifice rather than needing a pre-supplied target.
         perform public.enqueue_triggered_ability(
           v_decision.session_id, coalesce(v_ctrl, v_decision.deciding_player_id), v_src_card,
-          'reflexive', coalesce(v_decision.params -> 'effects', '[]'::jsonb));
+          'reflexive', coalesce(v_decision.params -> 'effects', '[]'::jsonb),
+          nullif(v_decision.params ->> 'triggering_card_id', '')::uuid);
       else
         perform public.apply_targeted_triggered_ability_effects(
           v_decision.session_id, coalesce(v_ctrl, v_decision.deciding_player_id), v_src_card,

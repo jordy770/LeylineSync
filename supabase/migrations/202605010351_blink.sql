@@ -1,7 +1,9 @@
--- supabase/functions_src/apply_creature_effect.sql
--- CANONICAL current definition (seeded from 202605010172_dynamic_pump_loyalty_target.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010351_blink
+-- Conjurer's Closet: new blink effect (apply_creature_effect) exiles a target
+-- creature and returns it under the acting controller, re-firing its ETB; added to
+-- trigger_effect_target_type's creature-targeted family. Tokens cease on exile.
+-- Generated from supabase/functions_src (apply_creature_effect, trigger_effect_target_type) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_creature_effect(
   p_session_id uuid,
@@ -424,18 +426,6 @@ begin
     if v_duration not in ('permanent', 'end_of_turn', 'while_source') then
       raise exception 'Unsupported gain_control duration: %', v_duration;
     end if;
-    -- Donate (Harmless Offering, mig 353): "target OPPONENT gains control" — hand
-    -- the permanent to an opponent of the caster (1v1: the only one) instead of
-    -- the caster gaining it.
-    if lower(coalesce(p_params ->> 'to', '')) = 'opponent' then
-      select sp.player_id into v_acting_controller
-      from public.game_session_players sp
-      where sp.session_id = p_session_id and sp.player_id is distinct from v_acting_controller
-      order by sp.seat_number limit 1;
-      if v_acting_controller is null then
-        raise exception 'No opponent to donate to';
-      end if;
-    end if;
     select controller_player_id into v_prev_controller
     from public.game_cards
     where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield';
@@ -497,3 +487,22 @@ begin
 end;
 $$;
 grant execute on function public.apply_creature_effect(uuid, text, uuid, jsonb) to authenticated;
+
+create or replace function public.trigger_effect_target_type(p_effect jsonb)
+returns jsonb language sql immutable as $$
+  select case
+    when lower(coalesce(p_effect ->> 'type', '')) in
+         ('deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap',
+          'add_counters', 'grant_keyword', 'grant_dies_effect', 'fight', 'gain_control', 'set_pt', 'pump', 'goad',
+          'exile_and_manifest', 'ignition', 'exile_until_leaves', 'blink')
+         and public.behavior_target_type_is_creature_only(p_effect -> 'target_type')
+      then '"creature"'::jsonb
+    when lower(coalesce(p_effect ->> 'type', '')) in
+         ('destroy', 'exile', 'bounce', 'tap', 'untap', 'shuffle_into_library', 'gain_control',
+          'exile_until_leaves', 'animate', 'add_counters')
+         and public.behavior_target_type_is_permanent_only(p_effect -> 'target_type')
+      then p_effect -> 'target_type'
+    else null
+  end;
+$$;
+grant all on function public.trigger_effect_target_type(jsonb) to anon, authenticated, service_role;

@@ -14927,6 +14927,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-26T13:22:17.631Z"
+    },
+    {
+      "id": "bug-915",
+      "timestamp": "2026-06-26T13:59:21.118Z",
+      "error_message": "Type error",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T13:59:21.118Z"
+    },
+    {
+      "id": "bug-916",
+      "timestamp": "2026-06-26T13:59:52.640Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/unit/registry-schema-drift.test.ts",
+      "root_cause": "Had 'exile a target creature and return it (Conjurer'",
+      "fix": "Changed to 'exile a target creature and return it (Conjurer\\'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T13:59:52.640Z"
+    },
+    {
+      "id": "bug-917",
+      "timestamp": "2026-06-26T14:06:16.620Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/conjurers-closet.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T14:06:16.620Z"
     }
   ]
 }
