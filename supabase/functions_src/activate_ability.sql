@@ -77,15 +77,19 @@ begin
     raise exception 'Only the priority player can activate abilities';
   end if;
 
+  -- You activate the abilities of permanents you CONTROL (not necessarily own):
+  -- a donated/stolen permanent's abilities belong to its controller (mig 361,
+  -- Xantcha). For non-battlefield zones (graveyard/hand abilities) fall back to
+  -- ownership since control only exists on the battlefield.
   select game_cards.zone
   into v_zone
   from public.game_cards
   where game_cards.id = p_source_card_id
     and game_cards.session_id = p_session_id
-    and game_cards.owner_id = auth.uid();
+    and coalesce(game_cards.controller_player_id, game_cards.owner_id) = auth.uid();
 
   if not found then
-    raise exception 'Source card not found or not owned by current user';
+    raise exception 'Source card not found or not controlled by current user';
   end if;
 
   -- Restricted-mana pay context (Haven: "activate abilities of Dragon sources";

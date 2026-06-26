@@ -29,6 +29,7 @@ const JSON_ONLY: Record<string, string> = {
   set_pt: '"becomes X/Y" is engine-complete (migs 128-130) but was never given a registry entry — JSON-only by precedent',
   tap_self: '"tap it" taps the source permanent (Immersturm Predator, mig 335); JSON/AI-authored, no guided-form surface',
   blink: 'exile a target creature and return it (Conjurer\'s Closet, mig 351); JSON/AI-authored, no guided-form surface',
+  donate_self: 'the source enters under an opponent control (Xantcha, mig 361); JSON/AI-authored',
   saw_in_half: 'destroy a creature; on death its controller makes two half-P/T copies (Saw in Half, mig 356); JSON/AI-authored',
   delina_d20: 'roll a d20, make tapped attacking copies of a target creature with roll-again (Delina, mig 360); JSON/AI-authored',
   myriad: 'attack-trigger per-opponent tapped attacking token copies, exiled at end of combat (The Master / Dalek, mig 355); JSON/AI-authored',

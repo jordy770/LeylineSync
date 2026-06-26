@@ -2197,7 +2197,7 @@
           {
             "type": "become_copy",
             "optional": true,
-            "fire_etb": true,
+            "enters_the_battlefield": true,
             "target_filter": {
               "controller": "you",
               "min_power": 4
@@ -13379,7 +13379,7 @@
     "schema_version": 2,
     "triggered_abilities": [
       {
-        "event": "fire_etb",
+        "event": "enters_the_battlefield",
         "effects": [
           {
             "type": "draw",
@@ -14445,7 +14445,7 @@
     "schema_version": 2,
     "triggered_abilities": [
       {
-        "event": "fire_etb",
+        "event": "enters_the_battlefield",
         "effects": [
           {
             "type": "choose_creature_type"
@@ -14550,7 +14550,7 @@
     "schema_version": 2,
     "triggered_abilities": [
       {
-        "event": "fire_etb",
+        "event": "enters_the_battlefield",
         "effects": [
           {
             "type": "draw",
@@ -14714,7 +14714,7 @@
     "schema_version": 2,
     "triggered_abilities": [
       {
-        "event": "fire_etb",
+        "event": "enters_the_battlefield",
         "effects": [
           {
             "type": "draw",
@@ -15977,7 +15977,7 @@
     "enters_tapped": true,
     "triggered_abilities": [
       {
-        "event": "fire_etb",
+        "event": "enters_the_battlefield",
         "effects": [
           {
             "type": "gain_life",
@@ -16551,7 +16551,7 @@
     "schema_version": 2,
     "triggered_abilities": [
       {
-        "event": "fire_etb",
+        "event": "enters_the_battlefield",
         "effects": [
           {
             "type": "exile_from_any_graveyard"
@@ -16729,7 +16729,7 @@
     "enters_tapped": true,
     "triggered_abilities": [
       {
-        "event": "fire_etb",
+        "event": "enters_the_battlefield",
         "effects": [
           {
             "type": "scry",
@@ -17170,6 +17170,60 @@
             "type": "delina_d20",
             "target_type": "creature",
             "target_controller": "you"
+          }
+        ]
+      }
+    ]
+  },
+  "Mirage Phalanx": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "begin_combat",
+        "effects": [
+          {
+            "type": "copy_self",
+            "count": 1,
+            "except": {
+              "keywords": [
+                "haste"
+              ],
+              "cleanup_at_end_combat": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Xantcha, Sleeper Agent": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "donate_self"
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{3}"
+          }
+        ],
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 2,
+            "recipient": "controller"
+          },
+          {
+            "type": "draw",
+            "amount": 1
           }
         ]
       }

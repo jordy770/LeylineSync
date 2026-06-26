@@ -182,7 +182,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type', 'tap_self',
-  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'myriad', 'saw_in_half', 'delina_d20', 'fight', 'gain_control',
+  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'myriad', 'saw_in_half', 'delina_d20', 'donate_self', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
@@ -1124,6 +1124,8 @@ const CardBehaviorActionSchema = z.union([
   // token copy of the source for each opponent other than the defender; exiled at
   // end of combat. No fields.
   z.object({ type: z.literal('myriad') }),
+  // Donate self (Xantcha, mig 361): the source enters under an opponent's control.
+  z.object({ type: z.literal('donate_self') }),
   // Grant a target creature a "when this dies, <effects>" ability (Clavileño,
   // mig 344): stored as a granted_dies_effect continuous effect on the creature;
   // put_in_graveyard fires `effects` on its death. effects kept loose (see may).

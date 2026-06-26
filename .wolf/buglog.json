@@ -2,6 +2,18 @@
   "version": 1,
   "bugs": [
     {
+      "id": "bug-1485",
+      "timestamp": "2026-06-26",
+      "error_message": "ETB triggered abilities authored with event:'fire_etb' are silent no-ops — the engine fires 'enters_the_battlefield'/'etb'/'enters' (fire_zone_change_triggers), never 'fire_etb'. Affected 9 cards across decks incl. already-pushed Edgar cards Champion of Dusk, Dusk Legion Zealot, Cavern of Souls (their ETB effects did nothing on hosted).",
+      "file": "docs/commander-decks/card-scripts.json",
+      "root_cause": "The triggered_ability `event` is a free-form z.string() in the schema, so 'fire_etb' validates but matches no fired event. The scions-spellcraft-build workflow's cheat-sheet used 'fire_etb' (an unrelated become_copy parameter name) instead of the real ETB event.",
+      "fix": "Replaced all event:'fire_etb' with 'enters_the_battlefield' in card-scripts.json + test-cards.json (9 cards). Edgar cards Champion of Dusk / Dusk Legion Zealot / Cavern of Souls need a re-run of deck:upsert --apply since they were already pushed with the broken event.",
+      "tags": ["card-scripts", "etb", "fire_etb", "silent-no-op", "scions-spellcraft-build", "edgar-markov", "deadpool"],
+      "related_bugs": ["bug-1484"],
+      "occurrences": 1,
+      "last_seen": "2026-06-26"
+    },
+    {
       "id": "bug-001",
       "timestamp": "2026-05-28T09:33:08.014Z",
       "error_message": "Wrong reference: errors should be issues",
@@ -15007,6 +15019,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-26T15:26:55.302Z"
+    },
+    {
+      "id": "bug-920",
+      "timestamp": "2026-06-26T15:45:09.336Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/activate_ability.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 10→14 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T15:45:09.336Z"
+    },
+    {
+      "id": "bug-921",
+      "timestamp": "2026-06-26T15:48:53.029Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/unit/registry-schema-drift.test.ts",
+      "root_cause": "Had 'the source enters under an opponent'",
+      "fix": "Changed to 'the source enters under an opponent control (Xant",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-26T15:48:53.029Z"
     }
   ]
 }

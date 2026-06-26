@@ -5972,3 +5972,8 @@
 | 17:37 | Edited supabase/functions_src/apply_trigger_effects.sql | 4→4 lines | ~81 |
 | 17:38 | Edited supabase/functions_src/apply_trigger_effects.sql | modified jsonb_build_object() | ~268 |
 | 17:39 | Created tests/feature/delina.test.ts | — | ~680 |
+| 17:41 | Created tests/feature/mirage-phalanx.test.ts | — | ~574 |
+| 17:42 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified Xantcha() | ~267 |
+| 17:42 | Created tests/feature/xantcha.test.ts | — | ~654 |
+| 17:45 | Edited supabase/functions_src/activate_ability.sql | modified CONTROL() | ~173 |
+| 17:48 | Edited tests/unit/registry-schema-drift.test.ts | "the source enters under a" → "the source enters under a" | ~28 |

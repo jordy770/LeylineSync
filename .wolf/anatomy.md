@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:39:53.197Z
-> Files: 128 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:48:53.006Z
+> Files: 130 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -183,13 +183,13 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9219 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9314 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~3941 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7227 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~1815 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1067 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~22233 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~13308 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~13568 tok)
 - `card_has_defender.sql` — supabase/functions_src/card_has_defender.sql (~563 tok)
 - `card_has_fear.sql` — supabase/functions_src/card_has_fear.sql (~502 tok)
 - `card_has_flying.sql` — supabase/functions_src/card_has_flying.sql (~639 tok)
@@ -265,6 +265,7 @@
 - `jaxis.test.ts` — Jaxis, the Troublemaker (mig 349). Activated copy (reusing Orthion's path) where (~733 tok)
 - `lifegain-event.test.ts` — you_gain_life triggered event (mig 336). Marauding Blight-Priest: "Whenever (~695 tok)
 - `mayhem-devil.test.ts` — Mayhem Devil — already engine-supported once mig 341 added the (~528 tok)
+- `mirage-phalanx.test.ts` — Mirage Phalanx (no migration — reuses copy_self + begin_combat + cleanup_at_end_ (~574 tok)
 - `mirror-march.test.ts` — Mirror March (mig 354). "Whenever a nontoken creature you control enters, flip a (~797 tok)
 - `myriad.test.ts` — Myriad (mig 355). "Whenever this attacks, for each opponent other than the (~826 tok)
 - `optional-trigger-target.test.ts` — Optional ("up to one target …") triggered-ability targets (mig 326). A trigger (~675 tok)
@@ -279,6 +280,7 @@
 - `splinter-twin.test.ts` — Splinter Twin (mig 358). "Enchant creature. Enchanted creature has '{T}: create a (~578 tok)
 - `tap-self.test.ts` — tap_self effect action (mig 335). "Tap it" taps the SOURCE permanent — the (~779 tok)
 - `vampire-nocturnus.test.ts` — Vampire Nocturnus (mig 342). Conditional tribal anthem: "as long as the top (~851 tok)
+- `xantcha.test.ts` — Xantcha, Sleeper Agent (mig 361). "Xantcha enters under the control of an (~654 tok)
 
 ## tests/fixtures/
 
@@ -294,7 +296,7 @@
 
 - `auto-pass.test.ts` — shouldAutoPass — the controller's pure "should I pass priority right now?" (~2653 tok)
 - `bot-brain.test.ts` — bot-brain — the AI CPU's pure heuristic decisions (lib/game/bot-brain). Each (~2536 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3078 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3222 tok)
 
 ## vercel/
 
