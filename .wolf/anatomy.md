@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T15:48:53.006Z
-> Files: 130 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T21:30:50.799Z
+> Files: 133 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -271,12 +271,15 @@
 - `optional-trigger-target.test.ts` — Optional ("up to one target …") triggered-ability targets (mig 326). A trigger (~675 tok)
 - `orthion.test.ts` — Orthion, Hero of Lavabrink (mig 348). Copy a creature you control from an (~710 tok)
 - `patriarchs-bidding.test.ts` — Patriarch's Bidding (mig 343). "Each player chooses a creature type. Each (~794 tok)
+- `quick-wins.test.ts` — Quick-win re-scripts (no migration — reuse already-built engine features): (~867 tok)
 - `reanimate.test.ts` — Reanimate / Animate Dead (mig 346). The reanimation is return_from_graveyard (~798 tok)
 - `reflexive-may-program.test.ts` — Reflexive "when you do" via may + program (mig 339). Ruthless Lawbringer: (~1062 tok)
 - `return-on-death.test.ts` — Return-on-death (mig 345). Feign Death / Not Dead After All / Supernatural (~819 tok)
 - `saw-in-half.test.ts` — Saw in Half (mig 356). "Destroy target creature. If that creature dies this way, (~566 tok)
 - `shared-animosity.test.ts` — Shared Animosity (mig 340). "Whenever a creature you control attacks, it gets (~953 tok)
 - `shock-land.test.ts` — Shock lands (mig 327) — "enters tapped UNLESS you pay 2 life". Playing one puts (~854 tok)
+- `sorin.test.ts` — Sorin, Imperious Bloodlord — quick-win re-script (no migration). Its +1 (~593 tok)
+- `splinter-twin-cast.test.ts` — Splinter Twin — Aura-cast-attach verification. Confirms the FULL path (not the (~656 tok)
 - `splinter-twin.test.ts` — Splinter Twin (mig 358). "Enchant creature. Enchanted creature has '{T}: create a (~578 tok)
 - `tap-self.test.ts` — tap_self effect action (mig 335). "Tap it" taps the SOURCE permanent — the (~779 tok)
 - `vampire-nocturnus.test.ts` — Vampire Nocturnus (mig 342). Conditional tribal anthem: "as long as the top (~851 tok)

@@ -14754,6 +14754,27 @@
   },
   "Etchings of the Chosen": {
     "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "$chosen"
+        }
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "choose_creature_type"
+          }
+        ]
+      }
+    ],
     "activated_abilities": [
       {
         "costs": [
@@ -15111,7 +15132,11 @@
     "schema_version": 2,
     "triggered_abilities": [
       {
-        "event": "attacks",
+        "event": "creature_attacks",
+        "filter": {
+          "controller": "you",
+          "type_line": "Vampire"
+        },
         "effects": [
           {
             "type": "lose_life",
@@ -15120,7 +15145,8 @@
           },
           {
             "type": "gain_life",
-            "amount": 1
+            "amount": 1,
+            "recipient": "controller"
           }
         ]
       }
@@ -15191,14 +15217,20 @@
       },
       {
         "cost": 1,
-        "label": "You may sacrifice a Vampire; if you do, deal 3 damage to any target and gain 3 life",
+        "label": "You may sacrifice a Vampire; if you do, Sorin deals 3 damage to each opponent and you gain 3 life",
         "effects": [
           {
             "type": "may",
-            "prompt": "Sacrifice a Vampire to deal 3 damage and gain 3 life?",
+            "prompt": "Sacrifice a Vampire to deal 3 and gain 3?",
+            "program": true,
+            "condition": {
+              "count": "creatures_you_control",
+              "at_least": 1
+            },
             "effects": [
               {
                 "type": "sacrifice",
+                "who": "you",
                 "count": 1,
                 "filter": {
                   "type_line": "Vampire"
@@ -15207,11 +15239,12 @@
               {
                 "type": "deal_damage",
                 "amount": 3,
-                "target_type": "any"
+                "recipient": "each_opponent"
               },
               {
                 "type": "gain_life",
-                "amount": 3
+                "amount": 3,
+                "recipient": "controller"
               }
             ]
           }
@@ -15437,13 +15470,23 @@
   },
   "Vanquisher's Banner": {
     "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "$chosen"
+        }
+      }
+    ],
     "triggered_abilities": [
       {
         "event": "enters_the_battlefield",
         "effects": [
           {
-            "type": "choose_creature_type",
-            "prompt": "Choose a creature type"
+            "type": "choose_creature_type"
           }
         ]
       },
@@ -16215,12 +16258,32 @@
     "schema_version": 2,
     "keywords": [
       "trample"
+    ],
+    "triggered_abilities": [
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "myriad"
+          }
+        ]
+      }
     ]
   },
   "Goldlust Triad": {
     "schema_version": 2,
     "keywords": [
-      "Flying"
+      "flying"
+    ],
+    "triggered_abilities": [
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "myriad"
+          }
+        ]
+      }
     ]
   },
   "Impact Tremors": {

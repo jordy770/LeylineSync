@@ -5977,3 +5977,6 @@
 | 17:42 | Created tests/feature/xantcha.test.ts | — | ~654 |
 | 17:45 | Edited supabase/functions_src/activate_ability.sql | modified CONTROL() | ~173 |
 | 17:48 | Edited tests/unit/registry-schema-drift.test.ts | "the source enters under a" → "the source enters under a" | ~28 |
+| 23:25 | Created tests/feature/quick-wins.test.ts | — | ~867 |
+| 23:29 | Created tests/feature/sorin.test.ts | — | ~593 |
+| 23:30 | Created tests/feature/splinter-twin-cast.test.ts | — | ~656 |
