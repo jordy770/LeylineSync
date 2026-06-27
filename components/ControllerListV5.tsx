@@ -4128,7 +4128,15 @@ function OpponentRowOverlay({
             🏠 My Board
           </button>
         </div>
-        <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
+        {/* Landscape-only app: lay opponents out in a width-scaled grid so the whole
+            table is visible at a glance instead of a full-width scrolling column.
+            Heads-up (1 opponent) stays full width; a 2–3 opponent pod goes 2-up on
+            small landscape phones → 3-up on wide screens (all in one row). */}
+        <div
+          className={`grid flex-1 content-start gap-3 overflow-y-auto p-3 ${
+            opponents.length === 1 ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'
+          }`}
+        >
           {opponents.map((p) => {
             const cmd = commandersByPlayer[p.player_id]?.[0]
             const creatures = boardCards.filter(
