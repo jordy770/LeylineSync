@@ -15,6 +15,7 @@ import {
   getCurrentPlayerId,
   getGameSession,
   getGameSessionPlayers,
+  getGrantedKeywords,
   getPendingDecisions,
   getPlayableFromExileIds,
   getPlayerManaPool,
@@ -102,6 +103,7 @@ export function useControllerGameState(sessionId: string) {
         nextPlayableFromExileIds,
         nextCostReductions,
         nextCastFromTopPerms,
+        grantedKeywords,
       ] = await Promise.all([
         getGameSession(supabase, sessionId),
         getControllerCards(supabase, sessionId, currentPlayerId),
@@ -121,6 +123,7 @@ export function useControllerGameState(sessionId: string) {
         getPlayableFromExileIds(supabase, sessionId, currentPlayerId),
         getCostReductions(supabase, sessionId, currentPlayerId),
         getCastFromLibraryTopPerms(supabase, sessionId, currentPlayerId),
+        getGrantedKeywords(supabase, sessionId),
       ])
 
       // Fold active until-end-of-turn pumps onto each card so effective P/T shows
@@ -130,10 +133,18 @@ export function useControllerGameState(sessionId: string) {
         return pump ? { ...card, pump_power: pump.power, pump_toughness: pump.toughness } : card
       }
 
+      // Merge dynamically-granted keywords (auras/equipment/combat tricks) onto the
+      // card's keyword list so the opponent view shows them — normalizeKeywords
+      // dedupes against the printed line.
+      const withGrantedKeywords = (card: BoardCard): BoardCard => {
+        const granted = grantedKeywords[card.id]
+        return granted ? { ...card, keywords: [...(card.keywords ?? []), ...granted] } : card
+      }
+
       setPlayerId(currentPlayerId)
       setCards(controllerResult.cards.map(withPump))
       setBoardCards(
-        allBoardCards.map(withPump).map((card) => ({
+        allBoardCards.map(withPump).map(withGrantedKeywords).map((card) => ({
           ...(protectionColors[card.id] ? { ...card, protection_colors: protectionColors[card.id] } : card),
           ...(statusEffects.animatedIds.has(card.id) ? { animated: true } : {}),
         })),

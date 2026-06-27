@@ -15250,6 +15250,102 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-26T23:21:29.461Z"
+    },
+    {
+      "id": "bug-934",
+      "timestamp": "2026-06-27T18:44:02.556Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-27T18:44:02.556Z"
+    },
+    {
+      "id": "bug-935",
+      "timestamp": "2026-06-27T18:46:11.794Z",
+      "error_message": "CSS fix: lg",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "lg: grid-cols-3\"> → grid-cols-3'",
+      "fix": "Changed lg: grid-cols-3\"> → grid-cols-3'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-27T18:46:11.794Z"
+    },
+    {
+      "id": "bug-936",
+      "timestamp": "2026-06-27T19:32:23.456Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/data.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-27T19:32:23.456Z"
+    },
+    {
+      "id": "bug-937",
+      "timestamp": "2026-06-27T19:32:29.557Z",
+      "error_message": "Type error",
+      "file": "components/controller/KeywordIcon.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-27T19:32:29.557Z"
+    },
+    {
+      "id": "bug-938",
+      "timestamp": "2026-06-27T19:33:05.367Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/use-controller-game-state.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-27T19:33:05.367Z"
+    },
+    {
+      "id": "bug-939",
+      "timestamp": "2026-06-27T19:33:44.102Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/use-board-game-state.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-27T19:33:44.102Z"
     }
   ]
 }

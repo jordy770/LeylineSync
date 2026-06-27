@@ -207,6 +207,48 @@ export async function getProtectionColors(supabase: SupabaseClient, sessionId: s
   return colorsByCard
 }
 
+// Keyword continuous-effect types the UI renders as icons (mirrors KeywordIcon's
+// set). Printed keywords AND dynamic grants both live in game_continuous_effects:
+// a printed flyer registers a self-row (affected_card_id = own id), and an aura /
+// equipment / combat-trick grant registers a row pointing at the GRANTED creature.
+// So a per-card query gives the effective keyword set including grants — the
+// opponent view otherwise showed only the catalog (printed) line and missed e.g.
+// equipment-granted trample, leading to combat misreads. Anthem grants
+// (affected_card_id null + creature_type/controller predicates) are intentionally
+// NOT resolved here — that needs the server's predicate logic (see card_has_*).
+const KEYWORD_EFFECT_TYPES = [
+  'flying', 'reach', 'deathtouch', 'lifelink', 'trample', 'vigilance', 'menace',
+  'first_strike', 'double_strike', 'haste', 'hexproof', 'indestructible',
+  'defender', 'ward', 'infect', 'toxic', 'wither',
+] as const
+
+// game_card id → keyword effect_types granted to that specific card.
+export async function getGrantedKeywords(
+  supabase: SupabaseClient,
+  sessionId: string,
+): Promise<Record<string, string[]>> {
+  const byCard: Record<string, string[]> = {}
+
+  const { data, error } = await supabase
+    .from('game_continuous_effects')
+    .select('effect_type, affected_card_id')
+    .eq('session_id', sessionId)
+    .in('effect_type', KEYWORD_EFFECT_TYPES as unknown as string[])
+    .not('affected_card_id', 'is', null)
+
+  if (error) {
+    console.error('Failed to load granted keywords:', error.message)
+    return byCard
+  }
+
+  for (const row of (data ?? []) as { effect_type: string; affected_card_id: string | null }[]) {
+    if (!row.affected_card_id) continue
+    ;(byCard[row.affected_card_id] ??= []).push(row.effect_type)
+  }
+
+  return byCard
+}
+
 export type OpponentZoneData = {
   graveyard: BoardCard[]
   exile: BoardCard[]

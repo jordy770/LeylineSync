@@ -1,16 +1,17 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-26T23:21:36.652Z
-> Files: 139 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-27T19:36:39.433Z
+> Files: 142 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
+- `decisive-over-clarifying.md` (~269 tok)
 - `local-migrations.md` — Declares migrations (~422 tok)
-- `MEMORY.md` (~191 tok)
-- `opponent-view-design.md` (~1115 tok)
+- `MEMORY.md` (~223 tok)
+- `opponent-view-design.md` — Declares form (~1368 tok)
 
 ## ../../.cloudflared/
 
@@ -104,7 +105,7 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70156 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70288 tok)
 - `GameBoard.tsx` — GameBoard (~7302 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~12039 tok)
@@ -117,6 +118,7 @@
 ## components/controller/
 
 - `CardActionSheet.tsx` — CardActionSheet (~19181 tok)
+- `KeywordIcon.tsx` — AUTO-GENERATED keyword icon set (game-icons.net, CC-BY 3.0, via Iconify). (~6101 tok)
 - `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~10516 tok)
 
 ## components/judge/
@@ -149,12 +151,12 @@
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21298 tok)
-- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~10131 tok)
+- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 11 more (~10664 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
 - `types.ts` — Exports ManaPool, RestrictedManaEntry, ManaColor, GameZone + 30 more (~3023 tok)
 - `use-board-game-state.ts` — Exports useBoardGameState (~1762 tok)
-- `use-controller-game-state.ts` — Exports useControllerGameState (~3108 tok)
+- `use-controller-game-state.ts` — Exports useControllerGameState (~3268 tok)
 
 ## lib/supabase/
 
@@ -305,6 +307,7 @@
 
 - `auto-pass.test.ts` — shouldAutoPass — the controller's pure "should I pass priority right now?" (~2653 tok)
 - `bot-brain.test.ts` — bot-brain — the AI CPU's pure heuristic decisions (lib/game/bot-brain). Each (~2536 tok)
+- `keyword-icons.test.ts` — normalizeKeywords — the pure mapper that turns a card's keyword strings into the (~510 tok)
 - `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3222 tok)
 
 ## vercel/

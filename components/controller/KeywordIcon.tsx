@@ -53,7 +53,9 @@ export function normalizeKeywords(raw?: string[] | null): KeywordKey[] {
   if (!raw) return []
   const seen = new Set<KeywordKey>()
   for (const entry of raw) {
-    const key = ALIASES[String(entry).trim().toLowerCase()]
+    // Accept both catalog form ("First strike") and continuous-effect form
+    // ("first_strike") — granted keywords arrive as the underscored effect_type.
+    const key = ALIASES[String(entry).trim().toLowerCase().replace(/_/g, ' ')]
     if (key) seen.add(key)
   }
   return PRIORITY.filter((k) => seen.has(k))

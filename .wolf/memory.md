@@ -6011,3 +6011,31 @@
 | 01:21 | Edited tests/feature/donate-and-mana-spell.test.ts | added optional chaining | ~636 |
 | 01:21 | Edited tests/feature/donate-and-mana-spell.test.ts | 4→4 lines | ~86 |
 | 01:22 | donate opponent-choice: reusable choose_player hook (mig 363) — 1v1 direct, multiplayer caster picks recipient | handle_permanent_effect.sql, submit_decision.sql | HO2 picks C not default B | ~14k |
+
+## Session: 2026-06-27 19:48
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 20:26 | designqc: captured 0 screenshots (0KB, ~0 tok) | C:/Program Files/Git/ | ready for eval | ~0 |
+| 20:27 | designqc: captured 4 screenshots (142KB, ~10000 tok) | / | ready for eval | ~0 |
+| 20:44 | Edited components/ControllerListV5.tsx | CSS: Portrait, max-height, max-height | ~117 |
+| 20:45 | Edited components/ControllerListV5.tsx | CSS: app, lg | ~126 |
+| 20:46 | Edited components/ControllerListV5.tsx | 6→10 lines | ~161 |
+
+| 20:47 | Landscape opponent-row grid (couch-play polish): OpponentRowOverlay full-width column → width-scaled grid (1 col heads-up / 2 / lg:3). Caught+fixed an initial height-gated version that violated the landscape-only pref. | components/ControllerListV5.tsx | tsc 0 err, lint clean | ~1500 |
+| 20:47 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/decisive-over-clarifying.md | — | ~267 |
+| 20:47 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~54 |
+| 21:32 | Edited lib/game/data.ts | added nullish coalescing | ~538 |
+| 21:32 | Edited components/controller/KeywordIcon.tsx | modified for() | ~85 |
+| 21:32 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~25 |
+| 21:32 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~32 |
+| 21:32 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~56 |
+| 21:33 | Edited lib/game/use-controller-game-state.ts | added nullish coalescing | ~236 |
+| 21:33 | Edited lib/game/use-board-game-state.ts | 6→7 lines | ~38 |
+| 21:33 | Edited lib/game/use-board-game-state.ts | added nullish coalescing | ~347 |
+| 21:34 | Edited lib/game/use-board-game-state.ts | reduced (-6 lines) | ~246 |
+| 21:34 | Edited lib/game/use-board-game-state.ts | 4→3 lines | ~17 |
+| 21:35 | Created tests/unit/keyword-icons.test.ts | — | ~510 |
+
+| 21:36 | Dynamic-granted keywords on opponent view: getGrantedKeywords (data.ts) merges direct keyword grants onto BoardCard.keywords in use-controller-game-state; normalizeKeywords accepts underscored effect_types. Board-hook merge reverted (no keyword UI there). | lib/game/data.ts, use-controller-game-state.ts, controller/KeywordIcon.tsx, tests/unit/keyword-icons.test.ts | tsc 0 err, lint clean, 7/7 unit | ~6000 |
+| 21:36 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | 1→3 lines | ~296 |
