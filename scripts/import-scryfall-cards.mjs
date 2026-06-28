@@ -2,7 +2,7 @@ import { createReadStream, existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { createClient } from '@supabase/supabase-js'
 
-const defaultInputFile = 'lib/oracle-cards-20260531210653.json'
+const defaultInputFile = 'lib/oracle-cards.json'
 const defaultBatchSize = 100
 const maxAttempts = 4
 

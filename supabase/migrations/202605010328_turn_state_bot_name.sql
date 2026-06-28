@@ -1,0 +1,74 @@
+-- 202605010328_turn_state_bot_name
+-- get_turn_state: a bot's turn showed a short player-id as active/priority
+-- username (bots have no profile). Add the seat-numbered 'CPU 🤖 <seat>' fallback
+-- (like get_session_players / get_stack_items) so the status bar shows whose turn
+-- it is clearly when a CPU is active. RETURNS TABLE unchanged.
+-- Generated from supabase/functions_src (get_turn_state) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+create or replace function public.get_turn_state(
+  p_session_id uuid
+)
+returns table (
+  session_id uuid,
+  active_player_id uuid,
+  active_username text,
+  priority_player_id uuid,
+  priority_username text,
+  priority_cycle_started_by uuid,
+  priority_pass_count integer,
+  lands_played_this_turn integer,
+  land_play_limit integer,
+  turn_number integer,
+  phase text,
+  step text,
+  monarch_player_id uuid,
+  created_at timestamptz,
+  updated_at timestamptz
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select
+    turn_state.session_id,
+    turn_state.active_player_id,
+    -- Seat-numbered CPU label for bots (no profile), like get_session_players.
+    coalesce(
+      nullif(active_profiles.username, ''),
+      case when active_sp.is_bot then 'CPU 🤖 ' || active_sp.seat_number end,
+      left(turn_state.active_player_id::text, 8)
+    ) as active_username,
+    coalesce(turn_state.priority_player_id, turn_state.active_player_id) as priority_player_id,
+    coalesce(
+      nullif(priority_profiles.username, ''),
+      case when priority_sp.is_bot then 'CPU 🤖 ' || priority_sp.seat_number end,
+      nullif(active_profiles.username, ''),
+      case when active_sp.is_bot then 'CPU 🤖 ' || active_sp.seat_number end,
+      left(coalesce(turn_state.priority_player_id, turn_state.active_player_id)::text, 8)
+    ) as priority_username,
+    turn_state.priority_cycle_started_by,
+    coalesce(turn_state.priority_pass_count, 0) as priority_pass_count,
+    coalesce(turn_state.lands_played_this_turn, 0) as lands_played_this_turn,
+    public.get_land_play_limit(p_session_id, auth.uid()) as land_play_limit,
+    turn_state.turn_number,
+    turn_state.phase,
+    turn_state.step,
+    turn_state.monarch_player_id,
+    turn_state.created_at,
+    turn_state.updated_at
+  from public.game_turn_state turn_state
+  left join public.profiles active_profiles
+    on active_profiles.id = turn_state.active_player_id
+  left join public.game_session_players active_sp
+    on active_sp.session_id = turn_state.session_id
+   and active_sp.player_id = turn_state.active_player_id
+  left join public.profiles priority_profiles
+    on priority_profiles.id = coalesce(turn_state.priority_player_id, turn_state.active_player_id)
+  left join public.game_session_players priority_sp
+    on priority_sp.session_id = turn_state.session_id
+   and priority_sp.player_id = coalesce(turn_state.priority_player_id, turn_state.active_player_id)
+  where turn_state.session_id = p_session_id
+    and public.is_session_player(p_session_id, auth.uid());
+$$;
+grant execute on function public.get_turn_state(uuid) to authenticated;

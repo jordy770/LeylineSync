@@ -1,4 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { colorIdentityFromCard } from './mana'
+import { aggregateUntappedMana, emptyManaAvailability, type ManaAvailability } from './mana-sources'
+import type { CardScript, ManaColor } from './types'
 import type {
   BoardCard,
   CombatActionState,
@@ -76,6 +79,10 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
     `)
     .eq('session_id', sessionId)
     .eq('zone', 'battlefield')
+    // Stable, deterministic order so cards keep their place across reloads — without
+    // it PostgREST returns rows in an arbitrary order that shifts every refresh.
+    .order('zone_position', { ascending: true })
+    .order('id', { ascending: true })
 
   if (error) {
     throw error
@@ -85,7 +92,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
   const linkedCardsById = await getLinkedCardsById(
     supabase,
     gameCardRows.map((card) => card.card_id),
-    'id, name, image_url, type_line, mana_cost, power_toughness',
+    'id, name, image_url, type_line, mana_cost, power_toughness, keywords',
   )
 
   return gameCardRows.map<BoardCard>((item) => {
@@ -104,6 +111,7 @@ export async function getBoardCards(supabase: SupabaseClient, sessionId: string)
       type_line: linkedCard?.type_line ?? null,
       mana_cost: linkedCard?.mana_cost ?? null,
       power_toughness: linkedCard?.power_toughness ?? null,
+      keywords: linkedCard?.keywords ?? null,
       controller_player_id: item.controller_player_id ?? null,
       plus_one_counters: (item as { plus_one_counters?: number }).plus_one_counters ?? 0,
       counters: (item as { counters?: Record<string, number> | null }).counters ?? null,
@@ -199,6 +207,48 @@ export async function getProtectionColors(supabase: SupabaseClient, sessionId: s
   return colorsByCard
 }
 
+// Keyword continuous-effect types the UI renders as icons (mirrors KeywordIcon's
+// set). Printed keywords AND dynamic grants both live in game_continuous_effects:
+// a printed flyer registers a self-row (affected_card_id = own id), and an aura /
+// equipment / combat-trick grant registers a row pointing at the GRANTED creature.
+// So a per-card query gives the effective keyword set including grants — the
+// opponent view otherwise showed only the catalog (printed) line and missed e.g.
+// equipment-granted trample, leading to combat misreads. Anthem grants
+// (affected_card_id null + creature_type/controller predicates) are intentionally
+// NOT resolved here — that needs the server's predicate logic (see card_has_*).
+const KEYWORD_EFFECT_TYPES = [
+  'flying', 'reach', 'deathtouch', 'lifelink', 'trample', 'vigilance', 'menace',
+  'first_strike', 'double_strike', 'haste', 'hexproof', 'indestructible',
+  'defender', 'ward', 'infect', 'toxic', 'wither',
+] as const
+
+// game_card id → keyword effect_types granted to that specific card.
+export async function getGrantedKeywords(
+  supabase: SupabaseClient,
+  sessionId: string,
+): Promise<Record<string, string[]>> {
+  const byCard: Record<string, string[]> = {}
+
+  const { data, error } = await supabase
+    .from('game_continuous_effects')
+    .select('effect_type, affected_card_id')
+    .eq('session_id', sessionId)
+    .in('effect_type', KEYWORD_EFFECT_TYPES as unknown as string[])
+    .not('affected_card_id', 'is', null)
+
+  if (error) {
+    console.error('Failed to load granted keywords:', error.message)
+    return byCard
+  }
+
+  for (const row of (data ?? []) as { effect_type: string; affected_card_id: string | null }[]) {
+    if (!row.affected_card_id) continue
+    ;(byCard[row.affected_card_id] ??= []).push(row.effect_type)
+  }
+
+  return byCard
+}
+
 export type OpponentZoneData = {
   graveyard: BoardCard[]
   exile: BoardCard[]
@@ -273,6 +323,167 @@ export async function getOpponentZoneData(
   }
 }
 
+// One player's commander(s) — Commander format seats one (or two, with partners).
+export type CommanderInfo = {
+  id: string
+  card_id: string
+  player_id: string
+  name: string
+  image_url: string | null
+  mana_cost: string | null
+  type_line: string | null
+  power_toughness: string | null
+  zone: GameZone
+  // Colour identity (WUBRG) derived from the card; drives the identity pips.
+  colors: ManaColor[]
+}
+
+// Every player's commander(s) in a session, keyed by owner player id. Reads the
+// is_commander instances regardless of zone (command zone, battlefield, …) so the
+// opponent view can always show who each player is piloting. One query for all.
+export async function getSessionCommanders(
+  supabase: SupabaseClient,
+  sessionId: string,
+): Promise<Record<string, CommanderInfo[]>> {
+  const { data, error } = await supabase
+    .from('game_cards')
+    .select('id, card_id, owner_id, zone')
+    .eq('session_id', sessionId)
+    .eq('is_commander', true)
+
+  if (error) {
+    throw error
+  }
+
+  const rows = (data ?? []) as { id: string; card_id: string; owner_id: string; zone: string }[]
+  if (rows.length === 0) {
+    return {}
+  }
+
+  const linked = await getLinkedCardsById(
+    supabase,
+    rows.map((r) => r.card_id),
+    'id, name, image_url, mana_cost, oracle_text, type_line, power_toughness',
+  )
+
+  const byPlayer: Record<string, CommanderInfo[]> = {}
+  for (const row of rows) {
+    const card = linked.get(row.card_id) ?? null
+    const info: CommanderInfo = {
+      id: row.id,
+      card_id: row.card_id,
+      player_id: row.owner_id,
+      name: card?.name ?? 'Commander',
+      image_url: card?.image_url ?? null,
+      mana_cost: card?.mana_cost ?? null,
+      type_line: card?.type_line ?? null,
+      power_toughness: card?.power_toughness ?? null,
+      zone: normalizeGameZone(row.zone),
+      colors: colorIdentityFromCard({ mana_cost: card?.mana_cost, oracle_text: card?.oracle_text }),
+    }
+    ;(byPlayer[row.owner_id] ??= []).push(info)
+  }
+
+  return byPlayer
+}
+
+// The shared game log (casts + resolutions, written by the log trigger, mig 330).
+// Newest first. Any session member may read it (RLS).
+export type GameLogEntry = {
+  id: string
+  actor_player_id: string
+  description: string | null
+  action_type: string
+  created_at: string
+}
+export async function getGameLog(
+  supabase: SupabaseClient,
+  sessionId: string,
+  limit = 200,
+): Promise<GameLogEntry[]> {
+  const { data, error } = await supabase
+    .from('game_action_log')
+    .select('id, actor_player_id, description, action_type, created_at')
+    .eq('session_id', sessionId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    console.error('Failed to load game log:', error.message)
+    return []
+  }
+
+  return (data ?? []) as GameLogEntry[]
+}
+
+// An opponent's available (untapped) mana, by colour, for the opponent view's
+// mana bar. Reads their battlefield permanents' scripts and aggregates client-
+// side (v1 approximation — simple tap-for-mana sources; see mana-sources.ts).
+export async function getOpponentManaSources(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+): Promise<ManaAvailability> {
+  const { data, error } = await supabase
+    .from('game_cards')
+    .select('card_id, is_tapped, copied_script')
+    .eq('session_id', sessionId)
+    .eq('controller_player_id', playerId)
+    .eq('zone', 'battlefield')
+
+  if (error) {
+    throw error
+  }
+
+  const rows = (data ?? []) as { card_id: string; is_tapped: boolean; copied_script: CardScript | null }[]
+  if (rows.length === 0) {
+    return emptyManaAvailability
+  }
+
+  const linked = await getLinkedCardsById(supabase, rows.map((r) => r.card_id), 'id, script, type_line')
+  return aggregateUntappedMana(
+    rows.map((row) => {
+      const card = linked.get(row.card_id) ?? null
+      return {
+        is_tapped: row.is_tapped,
+        script: row.copied_script ?? card?.script ?? null,
+        type_line: card?.type_line ?? null,
+      }
+    }),
+  )
+}
+
+// Active "cast from the top of your library" permissions for a player (mig 244,
+// Thundermane Dragon). Their presence ALSO means the player may look at their top
+// card. Each entry's filter ({creature, min_power}) gates which top card is castable.
+export type CastFromTopPerm = { creature: boolean; minPower: number | null }
+export async function getCastFromLibraryTopPerms(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+): Promise<CastFromTopPerm[]> {
+  const { data, error } = await supabase
+    .from('game_continuous_effects')
+    .select('payload, affected_player_id')
+    .eq('session_id', sessionId)
+    .eq('effect_type', 'cast_from_library_top')
+
+  if (error) {
+    console.error('Failed to load cast-from-top permissions:', error.message)
+    return []
+  }
+
+  return ((data ?? []) as { payload: Record<string, unknown> | null; affected_player_id: string | null }[])
+    .filter((row) => row.affected_player_id === playerId || row.affected_player_id === null)
+    .map((row) => {
+      const p = row.payload ?? {}
+      return {
+        creature: Boolean(p.creature),
+        minPower: p.min_power != null ? Number(p.min_power) : null,
+      }
+    })
+}
+
 export async function getControllerCards(
   supabase: SupabaseClient,
   sessionId: string,
@@ -301,6 +512,10 @@ export async function getControllerCards(
     `)
     .eq('session_id', sessionId)
     .eq('owner_id', playerId)
+    // Stable order across reloads (per zone): zone_position drives hand/library
+    // order; id is a deterministic tiebreaker so battlefield cards stop shuffling.
+    .order('zone_position', { ascending: true })
+    .order('id', { ascending: true })
 
   if (error) {
     throw error
@@ -429,6 +644,26 @@ export async function getGameSessionPlayers(supabase: SupabaseClient, sessionId:
   }
 
   return (data ?? []) as GameSessionPlayer[]
+}
+
+// Player ids that have a spawned library in this session — the lobby treats this
+// as "ready" (start_game_session requires every player to have a library). Reads
+// game_cards directly; session members may read fellow members' rows (mig 143).
+export async function getSpawnedDeckOwnerIds(
+  supabase: SupabaseClient,
+  sessionId: string,
+): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from('game_cards')
+    .select('owner_id')
+    .eq('session_id', sessionId)
+    .eq('zone', 'library')
+
+  if (error) {
+    throw error
+  }
+
+  return new Set((data ?? []).map((row) => (row as { owner_id: string }).owner_id))
 }
 
 export type CommanderDamageEntry = { sourceCardId: string; name: string; damage: number }

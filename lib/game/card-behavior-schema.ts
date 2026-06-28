@@ -181,8 +181,8 @@ const CardBehaviorCostSchema = z.union([
 export const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
-  'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type',
-  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'fight', 'gain_control',
+  'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type', 'tap_self',
+  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'myriad', 'saw_in_half', 'delina_d20', 'donate_self', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
@@ -243,13 +243,17 @@ const CountAmountSchema = z.object({
   exclude_self: z.boolean().optional(),
   // Invert the type filter (Return of the Wildspeaker: NON-Human, mig 257).
   exclude_type: z.boolean().optional(),
+  // Negate the resolved count (Olivia's Wrath: each non-Vampire gets -X/-X where
+  // X = Vampires you control). apply_mass_pump_until_eot reads `negate` off the
+  // power/toughness amount object and flips the sign.
+  negate: z.boolean().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
 }).strict()
 
 // A pump power/toughness driven by a count, optionally negated (Liliana −2: -X/-X
 // where X = Zombies you control → { count, type_line, negate: true }).
 const PumpValueSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion', 'artifacts_you_control', 'opponent_poison_counters']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion', 'artifacts_you_control', 'opponent_poison_counters', 'shared_type_attackers']),
   type_line: z.string().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
   negate: z.boolean().optional(),
@@ -385,6 +389,12 @@ const CardBehaviorActionSchema = z.union([
     }).optional(),
     // Optional mana cost paid on confirm before the effects run ("you may pay {1}{B}").
     cost: z.string().optional(),
+    // program:true (Ruthless Lawbringer, mig 339): on confirm the inner effects
+    // run as a fresh triggered-ability PROGRAM (each parks its own decision) —
+    // "you may sacrifice another creature. When you do, destroy target nonland
+    // permanent." Pair with `condition` so the may is only offered when a
+    // sacrifice is possible. Default (false) keeps the at-confirm apply path.
+    program: z.boolean().optional(),
     // Inner effects kept loose to avoid a self-referential schema; the engine
     // applies them (untargeted / creature-target) at confirm time.
     effects: z.array(z.record(z.string(), z.unknown())).optional(),
@@ -428,6 +438,9 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('choose_creature_type'),
     prompt: z.string().optional(),
     options: z.array(z.string()).optional(),
+    // who:'each_player' (Patriarch's Bidding, mig 343): every player chooses a
+    // type in seat order; the inner effects run for each chooser in turn.
+    who: z.enum(['you', 'each_player']).optional(),
     // Optional since mig 282: From the Rubble has no inline effects — the
     // pick only bakes the  placeholder into copied_script.
     effects: z.array(z.record(z.string(), z.unknown())).optional(),
@@ -452,9 +465,21 @@ const CardBehaviorActionSchema = z.union([
       type_line: z.string().optional(),
       types: z.array(z.string()).optional(),
       exclude_self: z.boolean().optional(),
+      // "permanent card with mana value N or less" (Sun Titan).
+      max_mana_value: z.number().int().optional(),
+      // Dynamic cap "mana value <= source's power" (Carmen, mig 341).
+      max_mana_value_of: z.literal('source_power').optional(),
+      // "permanent card" — exclude instants/sorceries (Carmen, mig 341).
+      permanent: z.boolean().optional(),
     }).optional(),
     // Battlefield returns enter tapped (mig 218, Victimize).
     tapped: z.boolean().optional(),
+    // Reanimation riders (mig 270 Beacon of Unrest / mig 346 Reanimate).
+    from: z.literal('all_graveyards').optional(),
+    control: z.enum(['decider']).optional(),
+    haste: z.boolean().optional(),
+    // "you lose life equal to its mana value" (Reanimate).
+    lose_life_mana_value: z.boolean().optional(),
   }),
   // Surveil N — Tier-B: look at the top N of your library, put any number into
   // your graveyard, the rest back on top. Untargeted.
@@ -649,6 +674,8 @@ const CardBehaviorActionSchema = z.union([
       type_line: z.string().optional(),
       // "artifact or enchantment" (Scion of Calamity, mig 261): any match wins.
       types: z.array(z.string()).optional(),
+      // "destroy target NONLAND permanent" (Ruthless Lawbringer, mig 339): exclude lands.
+      nonland: z.boolean().optional(),
     }).strict().optional(),
   }),
   // The program's target ("target creature you control") fights a SECOND
@@ -807,7 +834,11 @@ const CardBehaviorActionSchema = z.union([
   // P/T (set_pt) and grants keywords; added TYPES are not modelled.
   z.object({
     type: z.literal('copy_permanent'),
-    target: z.literal('triggering_creature').optional(),
+    // 'attached' = copy the source's equipped/enchanted host (Helm of the Host).
+    target: z.enum(['triggering_creature', 'attached']).optional(),
+    // Number of copies to create (Orthion: "create five tokens", mig 348), or
+    // 'coin_flip' (Mirror March: flip until you lose, one copy per win, mig 354).
+    count: z.union([z.number().int().positive(), z.literal('coin_flip')]).optional(),
     target_filter: z.object({
       controller: z.enum(['any', 'opponent', 'you']).optional(),
       type_line: z.string().optional(),
@@ -816,6 +847,15 @@ const CardBehaviorActionSchema = z.union([
       power: z.number().int().optional(),
       toughness: z.number().int().optional(),
       keywords: z.array(z.string()).optional(),
+      // "Sacrifice/exile it at the next end step" (Electroduplicate, mig 347).
+      cleanup_at_end_step: z.boolean().optional(),
+      // "It gains 'When this token dies, <effects>'" (Jaxis, mig 349).
+      dies_effect: z.array(z.record(z.string(), z.unknown())).optional(),
+      // Tapped + attacking + end-of-combat exile (Echoing Assault, mig 359):
+      // attacking_defender is a player id, or '$defender' = the trigger's defender.
+      tapped: z.boolean().optional(),
+      attacking_defender: z.string().optional(),
+      cleanup_at_end_combat: z.boolean().optional(),
     }).strict().optional(),
   }),
   // An EXISTING card becomes a copy (mig 240). target:'triggering_creature'
@@ -890,6 +930,9 @@ const CardBehaviorActionSchema = z.union([
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+    // Reflexive watcher (Shared Animosity, mig 340): pump the EVENT SUBJECT (the
+    // attacking creature), no target pick.
+    target: z.literal('triggering_creature').optional(),
   }),
   // Mass, until-end-of-turn P/T pump applied to every creature matching the filter
   // (Crippling Fear). scope 'all' (default) = any controller; 'controller' = yours.
@@ -1030,6 +1073,9 @@ const CardBehaviorActionSchema = z.union([
     }).optional(),
   }),
   // Grant a keyword to a target creature until end of turn (trigger-only today).
+  // "Tap it" — tap the SOURCE permanent (Immersturm Predator's sacrifice
+  // ability). Untargeted; fires the becomes_tapped event like any other tap.
+  z.object({ type: z.literal('tap_self') }),
   z.object({
     type: z.literal('grant_keyword'),
     keyword: z.enum([
@@ -1047,6 +1093,49 @@ const CardBehaviorActionSchema = z.union([
     // the entering/attacking creature that fired the watcher (Atarka, Dragon
     // Tempest), no target pick.
     target: z.literal('triggering_creature').optional(),
+  }),
+  // Saw in Half (mig 356): destroy a target creature; on its death its controller
+  // makes two half-P/T copies. target_type creature.
+  z.object({
+    type: z.literal('saw_in_half'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Blink/flicker a target creature: exile it and return it to the battlefield
+  // under your control, re-firing its ETB (Conjurer's Closet, mig 351). optional
+  // = "you may"; a token cannot return.
+  z.object({
+    type: z.literal('blink'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+    optional: z.boolean().optional(),
+  }),
+  // Delina, Wild Mage (mig 360): roll a d20, make tapped attacking copies of the
+  // target creature you control (with roll-again on 15-20). target_type creature.
+  z.object({
+    type: z.literal('delina_d20'),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Myriad (The Master / Dalek Squadron, mig 355): on attack, a tapped attacking
+  // token copy of the source for each opponent other than the defender; exiled at
+  // end of combat. No fields.
+  z.object({ type: z.literal('myriad') }),
+  // Donate self (Xantcha, mig 361): the source enters under an opponent's control.
+  z.object({ type: z.literal('donate_self') }),
+  // Grant a target creature a "when this dies, <effects>" ability (Clavileño,
+  // mig 344): stored as a granted_dies_effect continuous effect on the creature;
+  // put_in_graveyard fires `effects` on its death. effects kept loose (see may).
+  z.object({
+    type: z.literal('grant_dies_effect'),
+    target: z.literal('triggering_creature').optional(),
+    target_ref: z.string().optional(),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+    effects: z.array(z.record(z.string(), z.unknown())).optional(),
   }),
   // Fight: a creature you control fights a target creature. target_type/
   // target_controller describe the FOUGHT creature (the fighter is implicitly
@@ -1070,6 +1159,9 @@ const CardBehaviorActionSchema = z.union([
     // the stolen permanent's script and blocks attacking (block restriction
     // not modelled).
     duration: z.enum(['permanent', 'end_of_turn', 'while_source']).optional(),
+    // Donate: hand the permanent to an opponent instead of the caster
+    // (Harmless Offering, mig 353).
+    to: z.enum(['opponent']).optional(),
     lose_abilities: z.boolean().optional(),
     // Threaten extras: untap the creature and give it haste (so it can attack the
     // turn you take it). JSON/AI-authored; the guided form models duration only.
@@ -1205,6 +1297,10 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     // "a creature with power N or greater …" (mig 225 — Elemental Bond, Temur
     // Ascendancy). Fires only when the entering creature's power is >= N.
     min_power: z.number().int().optional(),
+    // "a creature with power N or less …" (Welcoming Vampire, Mentor of the
+    // Meek). fire_watcher_triggers (mig 280) already honors this; the schema just
+    // needs to stop stripping it.
+    max_power: z.number().int().optional(),
     // "a creature you control WITH FLYING …" (mig 227 — Dragon Tempest).
     has_keyword: z.literal('flying').optional(),
     // "whenever a GOADED creature attacks" (mig 249 — Vengeful Ancestor).
@@ -1301,6 +1397,9 @@ export const CardBehaviorScriptV2Schema = z.object({
         // Checklands (mig 225): untapped if you control a battlefield permanent
         // of a listed type ("a Forest or an Island").
         z.object({ control_type: z.array(z.string()).nonempty() }),
+        // Shock lands (mig 327): untapped if you choose to pay N life — a
+        // pay_life_untap decision raised on entry (Overgrown Tomb, …).
+        z.object({ pay_life: z.number().int().positive() }),
       ]),
     }),
   ]).optional(),

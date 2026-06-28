@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LeylineSync · Keyword icon-opties (game-icons)</title>
+<style>
+  :root{
+    --bg:#0C0F16; --panel:#11141c; --line:#1E2230; --line2:#2a3040;
+    --ink:#e8edf5; --mut:#586379; --mut2:#8b95a7; --amber2:#fbbf24;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"Cascadia Code","Consolas",monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(circle at 50% -10%,#13161f,#06070a 60%);color:var(--ink);
+    font-family:var(--sans);min-height:100vh;padding:34px 18px 90px;}
+  h1{font-size:22px;margin:0 0 4px;text-align:center;}
+  .sub{color:var(--mut2);text-align:center;font-size:13px;max-width:760px;margin:0 auto 26px;line-height:1.55;}
+  .grid{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:10px;}
+  .krow{display:flex;align-items:center;gap:16px;background:#0b0e15;border:1px solid var(--line);border-radius:13px;padding:11px 15px;}
+  .kname{width:118px;flex-shrink:0;}
+  .kname .t{font-size:13px;font-weight:800;}
+  .kname .s{font-size:10px;color:var(--mut);font-family:var(--mono);}
+  .opts{display:flex;gap:14px;flex-wrap:wrap;}
+  .opt{display:flex;flex-direction:column;align-items:center;gap:5px;width:74px;cursor:pointer;}
+  .swatch{position:relative;}
+  /* chip = how it appears on a card */
+  .kw{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;}
+  .kw img{width:14px;height:14px;display:block;}
+  /* bigger plain glyph for clarity */
+  .big{width:30px;height:30px;}
+  .big img{width:30px;height:30px;display:block;}
+  .opt .iname{font-family:var(--mono);font-size:8.5px;color:var(--mut2);text-align:center;line-height:1.25;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:74px;}
+  .opt.rec .swatch::after{content:"★";position:absolute;top:-9px;right:-9px;font-size:11px;color:var(--amber2);}
+  .opt.rec{outline:1px solid #4a3a12;background:#15120a;border-radius:10px;padding:8px 4px;margin:-8px -4px;}
+  .opt.rec .iname{color:var(--amber2);}
+  .stack{display:flex;align-items:center;gap:7px;}
+
+  .note{max-width:760px;margin:28px auto 0;padding:16px 18px;border:1px solid var(--line);border-radius:14px;
+    background:#0b0e15;color:var(--mut2);font-size:12.5px;line-height:1.65;}
+  .note b{color:var(--ink);}
+  .legendline{max-width:760px;margin:14px auto 0;text-align:center;color:var(--mut);font-size:11px;}
+</style>
+</head>
+<body>
+  <h1>Keyword-icons — opties uit game-icons</h1>
+  <p class="sub">Per effect een paar geldige <b>game-icons</b> naast elkaar, zoals ze op een kaart zouden staan (gekleurd chipje) + groter ter referentie. ★ = mijn huidige keuze. Laat weten welke je per effect wilt.</p>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="legendline">Klein chipje = weergave op de creature-tegel · grote glyph = het kale icoon</p>
+  <div class="note">
+    <b>Allemaal echte game-icons</b> (hier via Iconify gerenderd, voor productie installeren we de set lokaal — CC-BY 3.0, naamsvermelding volstaat). Noem per rij je voorkeur (of zeg “★ is goed”), dan zet ik de definitieve mapping vast. Mis je nog een keyword (reach, defender, ward, flash, prowess, infect/toxic, protection)? Ik heb er een paar extra onderaan gezet.
+  </div>
+
+<script>
+  const ICON = (name, color) => `https://api.iconify.design/game-icons:${name}.svg?color=${encodeURIComponent(color)}`;
+  // tone = chip bg colour; ink = icon colour on the chip
+  const ROWS = [
+    { key:'Flying',        tone:'#9ad0f0', ink:'#07090d', opts:[['feathered-wing',1],['angel-wings'],['curly-wing'],['raven'],['eagle-emblem'],['dove']] },
+    { key:'Reach',         tone:'#a7d3a0', ink:'#07090d', opts:[['high-grass',1],['vine-whip'],['spear-hook'],['fishing-hook']] },
+    { key:'Deathtouch',    tone:'#7fc08a', ink:'#07090d', opts:[['death-skull',1],['skull-crossed-bones'],['scorpion'],['poison-bottle'],['spotted-mushroom']] },
+    { key:'Lifelink',      tone:'#f3a78d', ink:'#07090d', opts:[['health-normal',1],['heart-plus'],['life-bar'],['hospital-cross'],['vampire-cape']] },
+    { key:'Trample',       tone:'#f5b942', ink:'#07090d', opts:[['trample',1],['boot-stomp'],['charging-bull'],['elephant'],['footprint']] },
+    { key:'Vigilance',     tone:'#fde68a', ink:'#07090d', opts:[['eye-target',1],['all-seeing-eye'],['eye-shield'],['watchtower'],['sentry-gun']] },
+    { key:'Menace',        tone:'#e8826c', ink:'#ffffff', opts:[['crossed-swords',1],['spiked-mace'],['executioner-hood'],['sword-clash']] },
+    { key:'First strike',  tone:'#e8edf5', ink:'#07090d', opts:[['fast-arrow',1],['saber-slash'],['thrust'],['lightning-arc'],['sprint']] },
+    { key:'Double strike', tone:'#cbd5e1', ink:'#07090d', opts:[['crossed-swords',1],['saber-slash'],['thrust']] },
+    { key:'Haste',         tone:'#fca5a5', ink:'#07090d', opts:[['wingfoot',1],['run'],['sprint'],['clockwork']] },
+    { key:'Hexproof',      tone:'#c4b5fd', ink:'#07090d', opts:[['sight-disabled',1],['eye-shield'],['magic-shield'],['bubble-field']] },
+    { key:'Indestructible',tone:'#b8c0cc', ink:'#07090d', opts:[['checked-shield',1],['shield'],['edged-shield'],['round-shield']] },
+    { key:'Defender',      tone:'#cbd5e1', ink:'#07090d', opts:[['brick-wall',1],['stone-wall'],['round-shield']] },
+    { key:'Ward',          tone:'#a5b4fc', ink:'#07090d', opts:[['magic-shield',1],['energy-shield'],['bubble-field']] },
+    { key:'Infect / Toxic',tone:'#a3e635', ink:'#07090d', opts:[['poison-gas',1],['biohazard'],['scorpion'],['poison-bottle']] },
+  ];
+  const grid = document.getElementById('grid');
+  for (const row of ROWS){
+    const el = document.createElement('div'); el.className='krow';
+    el.innerHTML = `<div class="kname"><div class="t">${row.key}</div><div class="s">${row.opts.length} opties</div></div>`;
+    const opts = document.createElement('div'); opts.className='opts';
+    for (const [name, rec] of row.opts){
+      const o = document.createElement('div'); o.className='opt'+(rec?' rec':'');
+      o.innerHTML = `
+        <div class="stack">
+          <span class="swatch"><span class="kw" style="background:${row.tone}"><img src="${ICON(name,row.ink)}" alt=""></span></span>
+          <span class="big"><img src="${ICON(name,'#cfd6e2')}" alt=""></span>
+        </div>
+        <span class="iname">${name}</span>`;
+      opts.appendChild(o);
+    }
+    el.appendChild(opts); grid.appendChild(el);
+  }
+</script>
+</body>
+</html>

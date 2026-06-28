@@ -22,6 +22,8 @@ declare
   v_controller uuid;
   v_count integer;
   v_i integer;
+  v_copy_n integer;
+  v_pe record;
   v_effect jsonb;
   v_type text;
   v_amount integer;
@@ -306,7 +308,11 @@ begin
       -- paid at confirm time before the inner effects run.
       insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
       values (p_session_id, v_controller, p_stack_item_id, 'confirm', coalesce(v_effect ->> 'prompt', 'You may'), '[]'::jsonb, 0, 0,
-        jsonb_build_object('effects', coalesce(v_effect -> 'effects', '[]'::jsonb), 'cost', v_effect ->> 'cost'))
+        jsonb_build_object('effects', coalesce(v_effect -> 'effects', '[]'::jsonb), 'cost', v_effect ->> 'cost',
+          'program', coalesce((v_effect ->> 'program')::boolean, false),
+          -- Preserve the event subject so a program copy_permanent target:'triggering_creature'
+          -- still has it after the may (Flameshadow Conjuring, mig 352).
+          'triggering_card_id', v_item.payload ->> 'triggering_card_id'))
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
@@ -343,10 +349,28 @@ begin
       else
         v_options := '[{"type":"Zombie"},{"type":"Human"},{"type":"Elf"},{"type":"Goblin"},{"type":"Soldier"},{"type":"Wizard"},{"type":"Vampire"},{"type":"Spirit"},{"type":"Beast"},{"type":"Dragon"},{"type":"Merfolk"},{"type":"Knight"},{"type":"Cleric"},{"type":"Warrior"},{"type":"Angel"},{"type":"Demon"},{"type":"Elemental"},{"type":"Snake"},{"type":"Insect"}]'::jsonb;
       end if;
+      -- who:'each_player' (mig 343, Patriarch's Bidding): every player chooses a
+      -- type and returns their own graveyard's creatures of it. Queue the players
+      -- in seat order; the first decides now, the rest ride params.player_queue
+      -- and are raised one-by-one as each decision is submitted.
+      v_who := lower(coalesce(v_effect ->> 'who', 'you'));
+      if v_who = 'each_player' then
+        select coalesce(jsonb_agg(to_jsonb(sp.player_id::text) order by sp.seat_number), '[]'::jsonb)
+          into v_queue
+        from public.game_session_players sp
+        where sp.session_id = p_session_id;
+        if jsonb_array_length(v_queue) = 0 then v_i := v_i + 1; continue; end if;
+        v_decider := (v_queue ->> 0)::uuid;
+        v_queue := v_queue - 0;
+      else
+        v_decider := v_controller;
+        v_queue := '[]'::jsonb;
+      end if;
       insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
-      values (p_session_id, v_controller, p_stack_item_id, 'choose_creature_type',
+      values (p_session_id, v_decider, p_stack_item_id, 'choose_creature_type',
         coalesce(v_effect ->> 'prompt', 'Choose a creature type'), v_options, 1, 1,
-        jsonb_build_object('effects', coalesce(v_effect -> 'effects', '[]'::jsonb)))
+        jsonb_build_object('effects', coalesce(v_effect -> 'effects', '[]'::jsonb),
+          'player_queue', v_queue, 'options', v_options))
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
@@ -458,9 +482,18 @@ begin
         and (not coalesce((v_effect -> 'filter' ->> 'exclude_self')::boolean, false)
              or gy.id is distinct from v_item.source_card_id)
         -- max_mana_value (mig 276, Sun Titan: "permanent card with mana
-        -- value 3 or less").
-        and (nullif(v_effect -> 'filter' ->> 'max_mana_value', '') is null
-             or public.mana_value(c.mana_cost) <= (v_effect -> 'filter' ->> 'max_mana_value')::integer);
+        -- value 3 or less"); max_mana_value_of:'source_power' (mig 341, Carmen:
+        -- "mana value <= Carmen's power") reads the source's effective power now.
+        and (case
+               when nullif(v_effect -> 'filter' ->> 'max_mana_value', '') is not null
+                 then public.mana_value(c.mana_cost) <= (v_effect -> 'filter' ->> 'max_mana_value')::integer
+               when (v_effect -> 'filter' ->> 'max_mana_value_of') = 'source_power'
+                 then public.mana_value(c.mana_cost) <= coalesce(public.card_effective_power(p_session_id, v_item.source_card_id), 0)
+               else true
+             end)
+        -- "permanent card" (mig 341, Carmen): exclude instants/sorceries.
+        and (not coalesce((v_effect -> 'filter' ->> 'permanent')::boolean, false)
+             or (c.type_line not ilike '%instant%' and c.type_line not ilike '%sorcery%'));
 
       if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
 
@@ -474,7 +507,10 @@ begin
                            -- control:'decider' + haste (mig 270, Beacon of
                            -- Unrest / Grave Upheaval reanimation riders).
                            'control', coalesce(v_effect ->> 'control', ''),
-                           'haste', coalesce((v_effect ->> 'haste')::boolean, false)))
+                           'haste', coalesce((v_effect ->> 'haste')::boolean, false),
+                           -- lose_life_mana_value (mig 346, Reanimate).
+                           'lose_life_mana_value', coalesce((v_effect -> 'filter' ->> 'lose_life_mana_value')::boolean,
+                                                            (v_effect ->> 'lose_life_mana_value')::boolean, false)))
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
@@ -569,11 +605,32 @@ begin
       -- modelled.
       if (v_effect ->> 'target') = 'triggering_creature' then
         if nullif(v_item.payload ->> 'triggering_card_id', '')::uuid is not null then
+          -- count: a fixed number, or 'coin_flip' (Mirror March, mig 354: flip a
+          -- coin until you lose, one copy per win → a geometric count).
+          if (v_effect ->> 'count') = 'coin_flip' then
+            v_copy_n := 0;
+            while random() < 0.5 loop v_copy_n := v_copy_n + 1; end loop;
+          else
+            v_copy_n := greatest(1, coalesce((v_effect ->> 'count')::integer, 1));
+          end if;
           perform public.create_copy_token(
             p_session_id, v_controller,
             nullif(v_item.payload ->> 'triggering_card_id', '')::uuid,
-            v_effect -> 'except');
+            -- '$defender' in except.attacking_defender = the player this attack is
+            -- against (Echoing Assault, mig 359): bake in the event's defender.
+            case when (v_effect -> 'except' ->> 'attacking_defender') = '$defender'
+                 then jsonb_set(v_effect -> 'except', '{attacking_defender}',
+                                to_jsonb(coalesce(v_item.payload ->> 'event_player_id', '')))
+                 else v_effect -> 'except' end)
+          from generate_series(1, v_copy_n);
         end if;
+      elsif (v_effect ->> 'target') = 'attached' then
+        -- Copy of the equipped/enchanted creature (Helm of the Host, mig 350):
+        -- the source's attached_to host. No pick.
+        perform public.create_copy_token(
+          p_session_id, v_controller,
+          (select attached_to from public.game_cards where id = v_item.source_card_id and session_id = p_session_id),
+          v_effect -> 'except');
       else
         select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
           into v_options
@@ -589,10 +646,42 @@ begin
         insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
         values (p_session_id, v_controller, p_stack_item_id, 'copy_permanent',
           'Choose a permanent to copy', v_options, 1, 1,
-          jsonb_build_object('except', v_effect -> 'except'))
+          jsonb_build_object('except', v_effect -> 'except', 'count', v_effect -> 'count'))
         returning id into v_decision_id;
         update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
         return v_decision_id;
+      end if;
+
+    elsif v_type = 'myriad' then
+      -- Myriad (mig 355): "whenever this attacks, for each opponent other than the
+      -- defending player, create a tapped token copy attacking that opponent;
+      -- exile them at end of combat." The defender rides the attacks event payload.
+      -- "you may" is approximated as always creating the copies.
+      for v_pe in
+        select sp.player_id from public.game_session_players sp
+        where sp.session_id = p_session_id
+          and sp.player_id is distinct from v_controller
+          and sp.player_id is distinct from nullif(v_item.payload ->> 'event_player_id', '')::uuid
+      loop
+        perform public.create_copy_token(
+          p_session_id, v_controller, v_item.source_card_id,
+          jsonb_build_object('tapped', true, 'attacking_defender', (v_pe.player_id)::text,
+                             'cleanup_at_end_combat', true));
+      end loop;
+
+    elsif v_type = 'delina_d20' then
+      -- Delina, Wild Mage (mig 360): roll a d20, create a tapped attacking copy of
+      -- the target (exiled at end of combat); on 15-20 you may roll again — modelled
+      -- as always rolling again. Both ranges make one copy, so at least one. "Not
+      -- legendary" is not modelled. Safety-capped to avoid a runaway loop.
+      if v_target is not null then
+        for v_copy_n in 1..25 loop
+          perform public.create_copy_token(
+            p_session_id, v_controller, v_target,
+            jsonb_build_object('tapped', true, 'attacking_defender', v_item.payload ->> 'event_player_id',
+                               'cleanup_at_end_combat', true));
+          exit when (1 + floor(random() * 20)::integer) < 15;
+        end loop;
       end if;
 
     elsif v_type = 'become_copy' then
@@ -898,7 +987,10 @@ begin
                when coalesce(v_effect -> 'target_filter' ->> 'type_line', '') <> '' then
                  c.type_line ilike '%' || (v_effect -> 'target_filter' ->> 'type_line') || '%'
                else true
-             end);
+             end)
+        -- "destroy target NONLAND permanent" (Ruthless Lawbringer, mig 339).
+        and (not coalesce((v_effect -> 'target_filter' ->> 'nonland')::boolean, false)
+             or c.type_line not ilike '%land%');
       if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
       insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
       values (p_session_id, v_controller, p_stack_item_id, 'destroy_pick',
@@ -1241,6 +1333,12 @@ begin
             p_session_id, v_controller, v_item.source_card_id, jsonb_build_array(v_effect), v_tid
           );
         end loop;
+      elsif public.trigger_effect_target_type(v_effect) is not null and v_target is null then
+        -- A targeted effect with no chosen target: an OPTIONAL "up to one target"
+        -- that was declined, or a required target that fizzled (no legal target).
+        -- Either way the effect simply does nothing — never apply it with a null
+        -- target (which would error / mis-target).
+        null;
       else
         -- fighter:'triggering_creature' (mig 245, Frontier Siege Dragons
         -- mode): the EVENT SUBJECT fights the picked target, not the watcher.

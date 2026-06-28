@@ -18,6 +18,7 @@ declare
   v_next_phase text;
   v_next_step text;
   v_next_turn_number integer;
+  v_cleanup record;
   v_next_lands_played_this_turn integer;
   v_drawn_card_id uuid;
   v_next_hand_position integer;
@@ -92,6 +93,15 @@ begin
     update public.game_cards
     set counters = counters - 'must_attack'
     where session_id = p_session_id and counters ? 'must_attack';
+
+    -- "Sacrifice/exile it at the beginning of the next end step" (Electroduplicate
+    -- / Flameshadow Conjuring, mig 347): remove copy tokens marked for cleanup.
+    for v_cleanup in
+      select id from public.game_cards
+      where session_id = p_session_id and zone = 'battlefield' and counters ? 'cleanup_at_end_step'
+    loop
+      perform public.put_in_graveyard(p_session_id, v_cleanup.id);
+    end loop;
 
     -- Hellkite Courser (mig 248): "return it to the command zone at the
     -- beginning of the next end step" — processed when the end step is left.
@@ -252,6 +262,14 @@ begin
       v_next_phase := 'combat';
       v_next_step := 'end_of_combat';
     when 'end_of_combat' then
+      -- "Exile the tokens at end of combat" (Myriad / Delina / Echoing Assault,
+      -- mig 355): remove copy tokens marked for end-of-combat cleanup.
+      for v_cleanup in
+        select id from public.game_cards
+        where session_id = p_session_id and zone = 'battlefield' and counters ? 'cleanup_at_end_combat'
+      loop
+        perform public.put_in_graveyard(p_session_id, v_cleanup.id);
+      end loop;
       delete from public.game_combat_assignments
       where session_id = p_session_id;
 

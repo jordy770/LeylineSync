@@ -144,6 +144,46 @@ begin
       where id = p_target_card_id;
     end if;
 
+  elsif p_kind = 'blink' then
+    -- Flicker (Conjurer's Closet, mig 351): exile the target, then return it to
+    -- the battlefield under the acting controller — re-entering re-fires its ETB.
+    -- A token ceases on exile and cannot return.
+    if exists (select 1 from public.game_cards
+               where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield'
+                 and not coalesce(is_token, false)) then
+      update public.game_cards set zone = 'exile', controller_player_id = owner_id,
+        is_tapped = false, damage_marked = 0, plus_one_counters = 0
+      where id = p_target_card_id and session_id = p_session_id;
+      update public.game_cards gc set zone = 'battlefield',
+        zone_position = (select coalesce(max(x.zone_position), -1) + 1 from public.game_cards x
+                         where x.session_id = p_session_id and x.owner_id = gc.owner_id and x.zone = 'battlefield'),
+        controller_player_id = coalesce(nullif(p_params ->> 'acting_controller', '')::uuid, gc.owner_id),
+        is_tapped = false,
+        entered_battlefield_turn_number = (select turn_number from public.game_turn_state where session_id = p_session_id)
+      where gc.id = p_target_card_id and gc.session_id = p_session_id;
+      perform public.rebuild_scripted_continuous_effects(p_session_id);
+    end if;
+
+  elsif p_kind = 'saw_in_half' then
+    -- Saw in Half (mig 356): "Destroy target creature. If it dies, its controller
+    -- creates two tokens that are copies of it with half its power/toughness,
+    -- rounded up." Grant a dies-trigger (copy_self ×2 with the half P/T baked from
+    -- the creature's CURRENT effective P/T) then destroy it, so the copies appear
+    -- only on an actual death.
+    if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+      ) values (
+        p_session_id, p_target_card_id, p_target_card_id, 'granted_dies_effect',
+        jsonb_build_object('effects', jsonb_build_array(jsonb_build_object(
+          'type', 'copy_self', 'count', 2,
+          'except', jsonb_build_object(
+            'power', ceil(coalesce(public.card_effective_power(p_session_id, p_target_card_id), 0) / 2.0)::integer,
+            'toughness', ceil(coalesce(public.card_effective_toughness(p_session_id, p_target_card_id), 0) / 2.0)::integer)))),
+        'battlefield');
+      perform public.put_in_graveyard(p_session_id, p_target_card_id);
+    end if;
+
   elsif p_kind = 'shuffle_into_library' then
     -- Chaos Warp (mig 242): the OWNER shuffles the target into their library
     -- (modelled as inserting at a random position), then reveals the top card
@@ -288,6 +328,21 @@ begin
       );
     end if;
 
+  elsif p_kind = 'grant_dies_effect' then
+    -- Clavileño (mig 344): grant the target creature a "when this dies, <effects>"
+    -- ability, stored as a granted_dies_effect continuous effect ON the creature
+    -- (source = the creature, so it is swept when the creature leaves and SURVIVES
+    -- the granter leaving). put_in_graveyard fires payload.effects on its death.
+    if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+      ) values (
+        p_session_id, p_target_card_id, p_target_card_id, 'granted_dies_effect',
+        jsonb_build_object('effects', coalesce(p_params -> 'effects', '[]'::jsonb)),
+        'battlefield'
+      );
+    end if;
+
   elsif p_kind = 'ignition' then
     -- Chandra's Ignition (mig 257): target creature deals damage equal to its
     -- power to each other creature and each opponent of the caster.
@@ -388,6 +443,18 @@ begin
     v_duration := lower(coalesce(p_params ->> 'duration', 'permanent'));
     if v_duration not in ('permanent', 'end_of_turn', 'while_source') then
       raise exception 'Unsupported gain_control duration: %', v_duration;
+    end if;
+    -- Donate (Harmless Offering, mig 353): "target OPPONENT gains control" — hand
+    -- the permanent to an opponent of the caster (1v1: the only one) instead of
+    -- the caster gaining it.
+    if lower(coalesce(p_params ->> 'to', '')) = 'opponent' then
+      select sp.player_id into v_acting_controller
+      from public.game_session_players sp
+      where sp.session_id = p_session_id and sp.player_id is distinct from v_acting_controller
+      order by sp.seat_number limit 1;
+      if v_acting_controller is null then
+        raise exception 'No opponent to donate to';
+      end if;
     end if;
     select controller_player_id into v_prev_controller
     from public.game_cards

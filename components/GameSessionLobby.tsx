@@ -23,6 +23,7 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import {
   addBotToSession,
+  clearDeckFromSession,
   createGameSession,
   finishGameSession,
   getErrorMessage,
@@ -35,6 +36,7 @@ import {
   getGameSession,
   getGameSessionPlayers,
   getPreconDecks,
+  getSpawnedDeckOwnerIds,
   getUserDecks,
 } from '@/lib/game/data'
 import type { DeckSummary, GameSession, GameSessionPlayer, GameSessionStatus } from '@/lib/game/types'
@@ -48,20 +50,28 @@ export default function GameSessionLobby() {
   const [playerSessions, setPlayerSessions] = useState<GameSession[]>([])
   const [activeSession, setActiveSession] = useState<GameSession | null>(null)
   const [players, setPlayers] = useState<GameSessionPlayer[]>([])
+  // Players that have spawned a deck = "ready" (derived, no DB column). Set on
+  // every refreshSession + kept live by the realtime subscription below.
+  const [readyPlayerIds, setReadyPlayerIds] = useState<Set<string>>(() => new Set())
+  const [myPlayerId, setMyPlayerId] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [isWorking, setIsWorking] = useState(false)
   const [format, setFormat] = useState<'standard' | 'commander'>('standard')
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  // When set, the "pick your deck" step is shown before the game actually starts.
+  const [isPickingDeck, setIsPickingDeck] = useState(false)
 
   const refreshSession = async (sessionId: string) => {
-    const [session, sessionPlayers] = await Promise.all([
+    const [session, sessionPlayers, readyIds] = await Promise.all([
       getGameSession(supabase, sessionId),
       getGameSessionPlayers(supabase, sessionId),
+      getSpawnedDeckOwnerIds(supabase, sessionId),
     ])
 
     setActiveSession(session)
     setPlayers(sessionPlayers)
+    setReadyPlayerIds(readyIds)
   }
 
   const refreshPlayerSessions = async () => {
@@ -81,13 +91,15 @@ export default function GameSessionLobby() {
 
     const loadPlayerSessions = async () => {
       try {
-        const [sessions, decks, precons] = await Promise.all([
+        const [{ data: auth }, sessions, decks, precons] = await Promise.all([
+          supabase.auth.getUser(),
           getCurrentPlayerSessions(supabase),
           getUserDecks(supabase),
           getPreconDecks(supabase),
         ])
 
         if (isMounted) {
+          setMyPlayerId(auth.user?.id ?? null)
           setPlayerSessions(sessions)
           setUserDecks(decks)
           setPreconDecks(precons)
@@ -156,7 +168,10 @@ export default function GameSessionLobby() {
     }
   }
 
-  const handleStartGame = async () => {
+  // Run the actual game start. Optionally spawn the picked deck first, so the
+  // host can go from "Start" → pick deck → playing in one step. Re-spawning is
+  // harmless: if this player already seeded a library we just start.
+  const handleStartGame = async (spawnDeckId?: string) => {
     if (!activeSession) {
       return
     }
@@ -166,8 +181,21 @@ export default function GameSessionLobby() {
     setIsWorking(true)
 
     try {
+      const deckId = spawnDeckId?.trim()
+      if (deckId) {
+        try {
+          const isPrecon = preconDecks.some((deck) => deck.id === deckId)
+          await spawnDeckForSession(supabase, activeSession.id, deckId, !isPrecon)
+        } catch (error) {
+          if (!/already have a deck/i.test(getErrorMessage(error))) {
+            throw error
+          }
+        }
+      }
+
       const result = await startGameSession(supabase, activeSession.id)
       await refreshSession(activeSession.id)
+      setIsPickingDeck(false)
       setStatusMessage(
         `Game started — ${result.players} players, first player chosen at random`,
       )
@@ -264,28 +292,88 @@ export default function GameSessionLobby() {
     try {
       const isPrecon = preconDecks.some((deck) => deck.id === deckId)
       const result = await spawnDeckForSession(supabase, activeSession.id, deckId, !isPrecon)
+      await refreshSession(activeSession.id)
       setStatusMessage(
-        `${result.library} card(s) spawned into your library` +
+        `Deck locked in (${result.library} card(s)) · you're ready` +
           (result.commander_seeded ? ' · commander placed in the command zone' : ''),
       )
     } catch (error) {
       const message = getErrorMessage(error)
-      console.error('Failed to spawn deck:', message, error)
+      console.error('Failed to lock in deck:', message, error)
       setErrorMessage(message)
     } finally {
       setIsWorking(false)
     }
   }
 
-  // Close the manage modal on Escape.
+  // Undo a lock-in (lobby only): clears the spawned cards so a different deck can
+  // be picked. The server refuses once the game has started.
+  const handleChangeDeck = async () => {
+    if (!activeSession) {
+      return
+    }
+
+    setErrorMessage(null)
+    setStatusMessage(null)
+    setIsWorking(true)
+
+    try {
+      await clearDeckFromSession(supabase, activeSession.id)
+      await refreshSession(activeSession.id)
+      setStatusMessage('Deck cleared — pick another and lock in.')
+    } catch (error) {
+      const message = getErrorMessage(error)
+      console.error('Failed to change deck:', message, error)
+      setErrorMessage(message)
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
+  // Close the deck-pick step (if open) or the manage modal on Escape.
   useEffect(() => {
     if (!activeSession) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setActiveSession(null)
+      if (e.key !== 'Escape') return
+      if (isPickingDeck) {
+        setIsPickingDeck(false)
+      } else {
+        setActiveSession(null)
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
+  }, [activeSession, isPickingDeck])
+
+  // Reset the deck-pick step whenever the manage modal closes.
+  useEffect(() => {
+    if (!activeSession) setIsPickingDeck(false)
   }, [activeSession])
+
+  // While managing a session, keep players + readiness live so the host sees
+  // others ready up (spawn a deck) and the game start without a manual refresh.
+  useEffect(() => {
+    const sessionId = activeSession?.id
+    if (!sessionId) return
+
+    const channel = supabase
+      .channel(`lobby:${sessionId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_cards', filter: `session_id=eq.${sessionId}` }, () => {
+        refreshSession(sessionId).catch(() => {})
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_session_players', filter: `session_id=eq.${sessionId}` }, () => {
+        refreshSession(sessionId).catch(() => {})
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_sessions', filter: `id=eq.${sessionId}` }, () => {
+        refreshSession(sessionId).catch(() => {})
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSession?.id, supabase])
 
   const handleCopyId = async (id: string) => {
     try {
@@ -302,6 +390,14 @@ export default function GameSessionLobby() {
     : null
 
   const hasDecks = userDecks.length > 0 || preconDecks.length > 0
+
+  // Readiness (derived from a spawned library). The host can start once every
+  // OTHER player is ready — the host readies themselves through the deck-pick
+  // step's spawn. We surface who we're still waiting on.
+  const isPlayerReady = (playerId: string) => readyPlayerIds.has(playerId)
+  const iAmReady = myPlayerId ? isPlayerReady(myPlayerId) : false
+  const waitingOnOthers = players.filter((p) => p.player_id !== myPlayerId && !isPlayerReady(p.player_id))
+  const canHostStart = waitingOnOthers.length === 0
 
   return (
     <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950 p-5 text-white shadow-2xl shadow-black/40 sm:p-6">
@@ -557,12 +653,19 @@ export default function GameSessionLobby() {
               </button>
               <button
                 type="button"
-                onClick={handleStartGame}
-                disabled={isWorking || activeSession.status !== 'open'}
+                onClick={() => setIsPickingDeck(true)}
+                disabled={isWorking || activeSession.status !== 'open' || !canHostStart}
+                title={
+                  canHostStart
+                    ? undefined
+                    : `Waiting for ${waitingOnOthers.length} player(s) to pick a deck`
+                }
                 className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Play className="h-4 w-4" />
-                Start
+                {activeSession.status === 'open' && !canHostStart
+                  ? `Waiting (${waitingOnOthers.length})`
+                  : 'Start'}
               </button>
               <button
                 type="button"
@@ -587,6 +690,7 @@ export default function GameSessionLobby() {
                   {players.map((player) => {
                     const name = player.username || `Player ${player.player_id.slice(0, 8)}`
                     const isWinner = activeSession.winner_player_id === player.player_id
+                    const ready = isPlayerReady(player.player_id)
                     return (
                       <div
                         key={player.player_id}
@@ -604,6 +708,17 @@ export default function GameSessionLobby() {
                           </p>
                           <p className="text-xs text-slate-500">Seat {player.seat_number} · {player.life_total} life</p>
                         </div>
+                        {activeSession.status === 'open' && (
+                          ready ? (
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-300">
+                              <Check className="h-3 w-3" /> Ready
+                            </span>
+                          ) : (
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
+                              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" /> Choosing…
+                            </span>
+                          )
+                        )}
                       </div>
                     )
                   })}
@@ -620,6 +735,17 @@ export default function GameSessionLobby() {
               <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <Library className="h-3.5 w-3.5" /> Your deck
+                  {activeSession.status === 'open' && (
+                    iAmReady ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                        <Check className="h-3 w-3" /> Ready
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                        Lock in a deck to ready up
+                      </span>
+                    )
+                  )}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <button
@@ -650,7 +776,7 @@ export default function GameSessionLobby() {
                   id="deck-select"
                   value={selectedDeckId}
                   onChange={(event) => setSelectedDeckId(event.target.value)}
-                  disabled={isWorking || !hasDecks}
+                  disabled={isWorking || !hasDecks || iAmReady}
                   className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none transition focus:border-amber-400/60 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {!hasDecks ? (
@@ -678,14 +804,26 @@ export default function GameSessionLobby() {
                     </>
                   )}
                 </select>
-                <button
-                  type="button"
-                  onClick={handleSpawnDeck}
-                  disabled={isWorking || !selectedDeckId}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-bold text-emerald-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <Sparkles className="h-4 w-4" /> Spawn
-                </button>
+                {iAmReady ? (
+                  <button
+                    type="button"
+                    onClick={handleChangeDeck}
+                    disabled={isWorking}
+                    title="Clear your locked-in deck so you can pick a different one"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <RefreshCw className="h-4 w-4" /> Change deck
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSpawnDeck}
+                    disabled={isWorking || !selectedDeckId}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-bold text-emerald-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Sparkles className="h-4 w-4" /> Lock in deck
+                  </button>
+                )}
               </div>
               {!hasDecks && (
                 <p className="mt-2 text-xs text-slate-500">Create a deck first, then refresh this list.</p>
@@ -708,6 +846,84 @@ export default function GameSessionLobby() {
               </Link>
             </div>
           </div>
+
+          {/* Deck-pick step — shown after pressing Start, before the game begins. */}
+          {isPickingDeck ? (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/85 p-5 backdrop-blur-sm">
+              <div className="w-full max-w-md rounded-2xl border border-amber-400/20 bg-slate-900 p-5 shadow-2xl">
+                <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-300">
+                  <Library className="h-3.5 w-3.5" /> Choose your deck
+                </p>
+                <p className="mt-1 text-sm text-slate-400">
+                  Pick the deck you&apos;ll play. We&apos;ll lock it in and start the game.
+                </p>
+
+                <select
+                  value={selectedDeckId}
+                  onChange={(event) => setSelectedDeckId(event.target.value)}
+                  disabled={isWorking || !hasDecks}
+                  className="mt-4 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none transition focus:border-amber-400/60 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {!hasDecks ? (
+                    <option value="">No decks found</option>
+                  ) : (
+                    <>
+                      {userDecks.length > 0 && (
+                        <optgroup label="Your decks">
+                          {userDecks.map((deck) => (
+                            <option key={deck.id} value={deck.id}>
+                              {deck.name || 'Untitled Deck'} ({deck.card_count})
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                      {preconDecks.length > 0 && (
+                        <optgroup label="Precons">
+                          {preconDecks.map((deck) => (
+                            <option key={deck.id} value={deck.id}>
+                              {deck.name || 'Untitled Precon'} ({deck.card_count})
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                    </>
+                  )}
+                </select>
+                {!hasDecks && (
+                  <p className="mt-2 text-xs text-slate-500">Create a deck first, then refresh this list.</p>
+                )}
+
+                <div className="mt-5 flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleStartGame()}
+                    disabled={isWorking}
+                    className="text-xs font-semibold text-slate-400 underline-offset-2 transition hover:text-slate-200 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Skip — decks already spawned
+                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsPickingDeck(false)}
+                      disabled={isWorking}
+                      className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleStartGame(selectedDeckId)}
+                      disabled={isWorking || !selectedDeckId}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Play className="h-4 w-4" /> Spawn &amp; start
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
           </div>
         </div>
       ) : null}

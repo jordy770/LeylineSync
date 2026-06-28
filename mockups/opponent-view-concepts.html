@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LeylineSync · Opponent View — concepts</title>
+<style>
+  :root{
+    --bg:#0C0F16; --bg2:#09090D; --sheet:#0D1018; --panel:#11141c; --panel2:#161a24;
+    --line:#1E2230; --line2:#2a3040; --ink:#e8edf5; --mut:#586379; --mut2:#8b95a7;
+    --amber:#f5b942; --amber2:#fbbf24; --cyan:#5cc9f5; --green:#7fc08a; --red:#e8826c; --violet:#a78bfa;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"Cascadia Code","Consolas",monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(circle at 50% -10%,#13161f,#06070a 60%);color:var(--ink);
+    font-family:var(--sans);min-height:100vh;padding:34px 18px 80px;}
+  h1{font-size:22px;margin:0 0 4px;text-align:center;letter-spacing:.2px;}
+  .sub{color:var(--mut2);text-align:center;font-size:13px;max-width:760px;margin:0 auto 30px;line-height:1.55;}
+  .row{display:flex;gap:34px;justify-content:center;align-items:flex-start;flex-wrap:wrap;max-width:1400px;margin:0 auto;}
+  .concept{width:340px;max-width:94vw;}
+  .concept > h2{font-size:15px;margin:0 0 4px;display:flex;align-items:center;gap:8px;}
+  .concept > h2 .tag{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:#07090d;background:var(--amber);border-radius:5px;padding:2px 7px;}
+  .concept > p{color:var(--mut2);font-size:12px;line-height:1.5;margin:0 0 14px;min-height:48px;}
+  .concept ul{margin:12px 0 0;padding-left:16px;color:var(--mut2);font-size:11.5px;line-height:1.6;}
+  .concept ul b{color:#c3cbd9;}
+
+  /* phone frame */
+  .phone{width:100%;aspect-ratio:340/660;background:linear-gradient(160deg,#1a1d27,#0a0c11);
+    border-radius:30px;padding:9px;box-shadow:0 24px 60px rgba(0,0,0,.55);position:relative;}
+  .phone::after{content:"";position:absolute;left:50%;top:14px;width:7px;height:7px;border-radius:50%;
+    background:#05060a;transform:translateX(-50%);}
+  .screen{width:100%;height:100%;border-radius:21px;overflow:hidden;background:var(--bg);
+    display:flex;flex-direction:column;position:relative;}
+
+  /* shared bits */
+  .heart{color:var(--green);font-weight:800;}
+  .chip{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10px;
+    background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:3px 7px;color:var(--mut2);}
+  .chip b{color:var(--ink);}
+  .zlabel{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--mut);}
+
+  /* a battlefield card tile (CSS art, no images needed) */
+  .card{position:relative;border-radius:5px;background:linear-gradient(150deg,var(--panel2),#0e111a);
+    border:1px solid var(--line2);border-top:3px solid var(--green);display:flex;flex-direction:column;
+    justify-content:flex-end;padding:4px;overflow:hidden;flex-shrink:0;cursor:pointer;}
+  .card .nm{font-size:7.5px;line-height:1.15;font-weight:700;color:#d7deea;
+    text-shadow:0 1px 2px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .card .pt{position:absolute;right:2px;bottom:2px;font-family:var(--mono);font-size:8.5px;font-weight:800;
+    color:#fff;background:rgba(7,9,13,.85);border-radius:3px;padding:0 3px;border:1px solid var(--line2);}
+  .card.creature{border-top-color:var(--green);}
+  .card.art{border-top-color:var(--cyan);}
+  .card.ench{border-top-color:var(--violet);}
+  .card.land{border-top-color:var(--amber);}
+  .card.tapped{transform:rotate(8deg);opacity:.78;}
+  .card .badge{position:absolute;top:2px;left:2px;font-size:7px;font-weight:800;border-radius:3px;padding:0 3px;
+    background:var(--violet);color:#fff;}
+  .card .summon{position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(92,201,245,.10) 5px,rgba(92,201,245,.10) 8px);}
+
+  /* mana pip strip (lands compressed) */
+  .pips{display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
+  .pip{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-weight:800;font-size:9px;position:relative;}
+  .pip .ct{position:absolute;-bottom:0;right:-3px;bottom:-3px;font-size:8px;background:#07090d;border-radius:4px;
+    padding:0 2px;color:var(--ink);border:1px solid var(--line2);}
+  .pip.w{background:#fbf7d8;color:#5b5226}.pip.u{background:#a8d4ef;color:#0e3a52}
+  .pip.b{background:#b3a8a2;color:#1a1212}.pip.r{background:#f3a78d;color:#5a1c0c}
+  .pip.g{background:#98d2a4;color:#123a1e}.pip.c{background:#ccc5bf;color:#2a2620}
+
+  /* ===== Concept 1: Lane Sheet ===== */
+  .grabber{width:34px;height:4px;border-radius:3px;background:#2c3344;margin:7px auto 6px;}
+  .oppseg{display:flex;gap:6px;padding:0 10px 8px;overflow-x:auto;}
+  .seg{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px;border-radius:9px;
+    padding:5px 11px;background:var(--panel);border:1px solid var(--line);min-width:58px;}
+  .seg.active{background:#1a1407;border-color:var(--amber);box-shadow:0 0 0 1px var(--amber);}
+  .seg .nm{font-size:10px;font-weight:800;color:#cfd6e2;}
+  .seg .lf{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--green);}
+  .seg.active .nm{color:var(--amber2);}
+  .seg .crown{position:absolute;}
+  .statline{display:flex;gap:6px;padding:0 10px 8px;flex-wrap:wrap;align-items:center;}
+  .threat{background:#2a1410;border-color:#5a2a20;color:var(--red);}
+  .lane{padding:7px 10px 0;}
+  .lane .lh{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+  .lane .cards{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
+  .lane.creatures .card{width:52px;height:72px;}
+  .lane.noncreature .card{width:40px;height:56px;}
+  .landbar{margin:8px 10px 0;padding:8px;border-radius:10px;background:var(--bg2);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .landbar .meta{font-family:var(--mono);font-size:10px;color:var(--mut2);}
+  .zfoot{display:flex;gap:7px;padding:9px 10px;margin-top:auto;border-top:1px solid var(--line);}
+  .zbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px;border-radius:9px;
+    background:var(--panel);border:1px solid var(--line);}
+  .zbtn b{font-family:var(--mono);font-size:14px;color:var(--ink);}
+  .zbtn span{font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);}
+
+  /* ===== Concept 2: Threat Rail ===== */
+  .railtop{height:34px;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid var(--line);
+    font-size:11px;color:var(--mut2);justify-content:space-between;}
+  .railtop b{color:var(--ink);font-family:var(--mono);}
+  .rail{display:flex;flex-direction:column;gap:8px;padding:10px;overflow-y:auto;}
+  .opp{border-radius:12px;background:var(--panel);border:1px solid var(--line);padding:9px 10px;border-left:3px solid var(--mut);}
+  .opp.threatful{border-left-color:var(--red);}
+  .opp .oh{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+  .opp .av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:12px;color:#fff;background:linear-gradient(150deg,#f5b94288,#5cc9f566);}
+  .opp .who{flex:1;min-width:0;}
+  .opp .who .n{font-size:12px;font-weight:800;}
+  .opp .who .s{font-size:9px;color:var(--mut);font-family:var(--mono);}
+  .opp .lf{font-family:var(--mono);font-weight:800;font-size:18px;color:var(--green);}
+  .opp .mini{display:flex;gap:4px;overflow-x:auto;}
+  .opp .mini .card{width:30px;height:42px;}
+  .opp .mini .card .nm{display:none;}
+  .opp .mini .card .pt{font-size:7px;right:1px;bottom:1px;}
+  .opp .landrow{display:flex;align-items:center;gap:5px;margin-top:6px;}
+
+  /* ===== Concept 3: Pod Grid ===== */
+  .gridtop{height:34px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);
+    font-size:11px;color:var(--mut2);}
+  .pod{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:8px;min-height:0;}
+  .cell{border-radius:11px;background:var(--panel);border:1px solid var(--line);padding:7px;display:flex;
+    flex-direction:column;gap:5px;overflow:hidden;}
+  .cell.you{border-color:#3a4760;background:#0e1420;}
+  .cell .ch{display:flex;align-items:center;justify-content:space-between;}
+  .cell .ch .n{font-size:10px;font-weight:800;}
+  .cell .ch .lf{font-family:var(--mono);font-weight:800;font-size:13px;color:var(--green);}
+  .cell .mboard{display:flex;flex-wrap:wrap;gap:3px;flex:1;align-content:flex-start;}
+  .cell .mboard .card{width:24px;height:33px;}
+  .cell .mboard .card .nm{display:none;}
+  .cell .mboard .card .pt{font-size:6px;right:1px;bottom:1px;padding:0 2px;}
+  .cell .cf{display:flex;gap:5px;font-family:var(--mono);font-size:9px;color:var(--mut2);}
+
+  .note{max-width:760px;margin:34px auto 0;padding:16px 18px;border:1px solid var(--line);border-radius:14px;
+    background:#0b0e15;color:var(--mut2);font-size:12.5px;line-height:1.65;}
+  .note b{color:var(--ink);}
+  .legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:14px auto 0;font-size:11px;color:var(--mut2);}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .swatch{width:11px;height:11px;border-radius:2px;border-top:3px solid;}
+</style>
+</head>
+<body>
+  <h1>Opponent view — nieuwe concepten</h1>
+  <p class="sub">Drie verse layouts voor de tegenstander-weergave op de controller. Focus: <b>indeling</b> — dreigingen prominent, lands gecomprimeerd tot mana, en meerdere tegenstanders zonder steeds te sluiten/heropenen. Dummydata; CSS-tegels i.p.v. echte card-art.</p>
+
+  <div class="legend">
+    <span><span class="swatch" style="border-top-color:var(--green)"></span>Creature</span>
+    <span><span class="swatch" style="border-top-color:var(--cyan)"></span>Artifact</span>
+    <span><span class="swatch" style="border-top-color:var(--violet)"></span>Enchantment</span>
+    <span><span class="swatch" style="border-top-color:var(--amber)"></span>Land</span>
+  </div>
+
+  <div class="row" style="margin-top:24px;">
+
+    <!-- ============ CONCEPT 1 ============ -->
+    <div class="concept">
+      <h2><span class="tag">1</span> Lane Sheet</h2>
+      <p>Redesign van de bottom-sheet. Wissel bovenaan tussen tegenstanders zonder te sluiten. Creatures als brede dreigingslane, lands ingeklapt tot een mana-balk.</p>
+      <div class="phone"><div class="screen">
+        <div class="grabber"></div>
+        <!-- opponent switcher -->
+        <div class="oppseg">
+          <div class="seg active"><span class="nm">Mara 👑</span><span class="lf">34</span></div>
+          <div class="seg"><span class="nm">Tibor</span><span class="lf">22</span></div>
+          <div class="seg"><span class="nm">Vex</span><span class="lf">40</span></div>
+        </div>
+        <!-- active opp stats + threats -->
+        <div class="statline">
+          <span class="chip"><b>3</b> hand</span>
+          <span class="chip"><b>53</b> lib</span>
+          <span class="chip threat">⚔ 12/21 cmd</span>
+          <span class="chip threat">☠ 4</span>
+        </div>
+        <!-- creatures lane -->
+        <div class="lane creatures">
+          <div class="lh"><span class="zlabel">Creatures · 4</span></div>
+          <div class="cards">
+            <div class="card creature"><span class="nm">Sheoldred</span><span class="pt">4/5</span></div>
+            <div class="card creature tapped"><span class="nm">Llanowar Elf</span><span class="pt">1/1</span></div>
+            <div class="card creature"><span class="summon"></span><span class="nm">Craterhoof</span><span class="pt">5/5</span></div>
+            <div class="card creature"><span class="badge">CPY</span><span class="nm">Phantasm</span><span class="pt">2/2</span></div>
+          </div>
+        </div>
+        <!-- noncreature lane -->
+        <div class="lane noncreature">
+          <div class="lh"><span class="zlabel">Artifacts &amp; Enchantments · 3</span></div>
+          <div class="cards">
+            <div class="card art"><span class="nm">Sol Ring</span></div>
+            <div class="card art tapped"><span class="nm">Signet</span></div>
+            <div class="card ench"><span class="nm">Rhystic</span></div>
+          </div>
+        </div>
+        <!-- lands compressed to mana bar -->
+        <div class="landbar">
+          <div class="pips">
+            <span class="pip g">G<span class="ct">4</span></span>
+            <span class="pip b">B<span class="ct">3</span></span>
+            <span class="pip c">◇<span class="ct">2</span></span>
+          </div>
+          <span class="meta">9 lands · 2 tapped</span>
+        </div>
+        <!-- graveyard / exile foot -->
+        <div class="zfoot">
+          <div class="zbtn"><b>6</b><span>Graveyard</span></div>
+          <div class="zbtn"><b>1</b><span>Exile</span></div>
+          <div class="zbtn"><b>9</b><span>Lands</span></div>
+        </div>
+      </div></div>
+      <ul>
+        <li><b>Segment switcher</b> — tik P2/P3/P4, geen sluiten/heropenen.</li>
+        <li><b>Creatures groot</b> met P/T, tapped &amp; summoning-sick zichtbaar.</li>
+        <li><b>Lands → mana-balk</b>: kleur + aantal i.p.v. 9 volle kaarten.</li>
+        <li>GY/Exile als tel-knoppen onderaan (tik = volle zone).</li>
+      </ul>
+    </div>
+
+    <!-- ============ CONCEPT 2 ============ -->
+    <div class="concept">
+      <h2><span class="tag">2</span> Threat Rail</h2>
+      <p>Geen verborgen sheet — alle tegenstanders altijd zichtbaar als compacte rijen met hun dreigingen. Eén blik = volledig overzicht. Tik een rij om uit te klappen.</p>
+      <div class="phone"><div class="screen">
+        <div class="railtop"><span>Opponents</span><span><b>3</b> seated</span></div>
+        <div class="rail">
+          <div class="opp threatful">
+            <div class="oh">
+              <div class="av">M</div>
+              <div class="who"><div class="n">Mara 👑</div><div class="s">P2 · ✋3 ⚰6 ⚔12</div></div>
+              <div class="lf">34</div>
+            </div>
+            <div class="mini">
+              <div class="card creature"><span class="pt">4/5</span></div>
+              <div class="card creature tapped"><span class="pt">1/1</span></div>
+              <div class="card creature"><span class="pt">5/5</span></div>
+              <div class="card art"></div>
+              <div class="card art"></div>
+            </div>
+            <div class="landrow">
+              <span class="pip g" style="width:14px;height:14px;font-size:7px;">G<span class="ct">4</span></span>
+              <span class="pip b" style="width:14px;height:14px;font-size:7px;">B<span class="ct">3</span></span>
+              <span class="chip" style="font-size:8px;padding:2px 5px;">9 lands</span>
+            </div>
+          </div>
+          <div class="opp">
+            <div class="oh">
+              <div class="av">T</div>
+              <div class="who"><div class="n">Tibor</div><div class="s">P3 · ✋1 ⚰2</div></div>
+              <div class="lf" style="color:var(--amber)">22</div>
+            </div>
+            <div class="mini">
+              <div class="card creature"><span class="pt">2/2</span></div>
+              <div class="card creature"><span class="pt">3/1</span></div>
+              <div class="card ench"></div>
+            </div>
+            <div class="landrow">
+              <span class="pip r" style="width:14px;height:14px;font-size:7px;">R<span class="ct">5</span></span>
+              <span class="chip" style="font-size:8px;padding:2px 5px;">5 lands</span>
+            </div>
+          </div>
+          <div class="opp">
+            <div class="oh">
+              <div class="av">V</div>
+              <div class="who"><div class="n">Vex</div><div class="s">P4 · ✋5 ⚰0</div></div>
+              <div class="lf">40</div>
+            </div>
+            <div class="mini">
+              <div class="card creature"><span class="pt">0/4</span></div>
+              <div class="card art"></div>
+            </div>
+            <div class="landrow">
+              <span class="pip u" style="width:14px;height:14px;font-size:7px;">U<span class="ct">3</span></span>
+              <span class="pip w" style="width:14px;height:14px;font-size:7px;">W<span class="ct">3</span></span>
+              <span class="chip" style="font-size:8px;padding:2px 5px;">6 lands</span>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <ul>
+        <li><b>Altijd alle tegenstanders</b> — top voor pods van 3-4.</li>
+        <li>Rode rand = dreiging (groot bord / cmd-damage).</li>
+        <li>Mini-creatures met P/T + mana-pips per speler.</li>
+        <li>Tik rij → klapt uit tot volle Lane-sheet (concept 1).</li>
+      </ul>
+    </div>
+
+    <!-- ============ CONCEPT 3 ============ -->
+    <div class="concept">
+      <h2><span class="tag">3</span> Pod Grid</h2>
+      <p>De hele tafel in één 2×2-raster: jij + tegenstanders als mini-borden naast elkaar. Ruimtelijk net als de echte speeltafel. Tik een cel om in te zoomen.</p>
+      <div class="phone"><div class="screen">
+        <div class="gridtop">Tafel-overzicht · tik voor detail</div>
+        <div class="pod">
+          <div class="cell you">
+            <div class="ch"><span class="n">You</span><span class="lf">31</span></div>
+            <div class="mboard">
+              <div class="card creature"><span class="pt">3/3</span></div>
+              <div class="card creature"><span class="pt">2/2</span></div>
+              <div class="card art"></div>
+              <div class="card land"></div><div class="card land"></div><div class="card land"></div>
+            </div>
+            <div class="cf"><span>✋4</span><span>⚰3</span><span>7 land</span></div>
+          </div>
+          <div class="cell">
+            <div class="ch"><span class="n">Mara 👑</span><span class="lf">34</span></div>
+            <div class="mboard">
+              <div class="card creature"><span class="pt">4/5</span></div>
+              <div class="card creature tapped"><span class="pt">1/1</span></div>
+              <div class="card creature"><span class="pt">5/5</span></div>
+              <div class="card art"></div><div class="card art"></div>
+              <div class="card land"></div><div class="card land"></div>
+            </div>
+            <div class="cf"><span>✋3</span><span>⚰6</span><span>9 land</span></div>
+          </div>
+          <div class="cell">
+            <div class="ch"><span class="n">Tibor</span><span class="lf" style="color:var(--amber)">22</span></div>
+            <div class="mboard">
+              <div class="card creature"><span class="pt">2/2</span></div>
+              <div class="card creature"><span class="pt">3/1</span></div>
+              <div class="card ench"></div>
+              <div class="card land"></div><div class="card land"></div>
+            </div>
+            <div class="cf"><span>✋1</span><span>⚰2</span><span>5 land</span></div>
+          </div>
+          <div class="cell">
+            <div class="ch"><span class="n">Vex</span><span class="lf">40</span></div>
+            <div class="mboard">
+              <div class="card creature"><span class="pt">0/4</span></div>
+              <div class="card art"></div>
+              <div class="card land"></div><div class="card land"></div><div class="card land"></div>
+            </div>
+            <div class="cf"><span>✋5</span><span>⚰0</span><span>6 land</span></div>
+          </div>
+        </div>
+      </div></div>
+      <ul>
+        <li><b>Hele pod in beeld</b> — ruimtelijke match met de tafel.</li>
+        <li>Jouw cel meegenomen als ankerpunt (optioneel).</li>
+        <li>Compacte tegels; tik cel → Lane-sheet voor detail.</li>
+        <li>Sterk op tablet/landscape; krap bij 4 spelers op klein scherm.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <b>Aanbeveling:</b> <b>Concept 1 (Lane Sheet)</b> als basis — het lost de grootste layout-pijn op (lands → mana-balk, creatures prominent) en past in de bestaande bottom-sheet. <b>Concept 2 (Threat Rail)</b> als optionele “altijd zichtbaar”-modus erbovenop: de pills van nu worden dan een rijker, altijd-aanwezig overzicht, en tikken opent de Lane Sheet. Concept 3 is het mooist op een groot scherm maar krap op een telefoon — eerder iets voor later/tablet.
+    <br><br>
+    Hoort de <b>land-balk</b> per kleur (zoals nu getekend) of liever totaal + “tapped/untapped” mana beschikbaar? En wil je in de creature-lane ook keywords (flying/deathtouch) als mini-icoontjes, of houden we het bij P/T?
+  </div>
+</body>
+</html>

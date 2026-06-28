@@ -30,11 +30,18 @@ as $$
   select
     turn_state.session_id,
     turn_state.active_player_id,
-    coalesce(nullif(active_profiles.username, ''), left(turn_state.active_player_id::text, 8)) as active_username,
+    -- Seat-numbered CPU label for bots (no profile), like get_session_players.
+    coalesce(
+      nullif(active_profiles.username, ''),
+      case when active_sp.is_bot then 'CPU 🤖 ' || active_sp.seat_number end,
+      left(turn_state.active_player_id::text, 8)
+    ) as active_username,
     coalesce(turn_state.priority_player_id, turn_state.active_player_id) as priority_player_id,
     coalesce(
       nullif(priority_profiles.username, ''),
+      case when priority_sp.is_bot then 'CPU 🤖 ' || priority_sp.seat_number end,
       nullif(active_profiles.username, ''),
+      case when active_sp.is_bot then 'CPU 🤖 ' || active_sp.seat_number end,
       left(coalesce(turn_state.priority_player_id, turn_state.active_player_id)::text, 8)
     ) as priority_username,
     turn_state.priority_cycle_started_by,
@@ -50,8 +57,14 @@ as $$
   from public.game_turn_state turn_state
   left join public.profiles active_profiles
     on active_profiles.id = turn_state.active_player_id
+  left join public.game_session_players active_sp
+    on active_sp.session_id = turn_state.session_id
+   and active_sp.player_id = turn_state.active_player_id
   left join public.profiles priority_profiles
     on priority_profiles.id = coalesce(turn_state.priority_player_id, turn_state.active_player_id)
+  left join public.game_session_players priority_sp
+    on priority_sp.session_id = turn_state.session_id
+   and priority_sp.player_id = coalesce(turn_state.priority_player_id, turn_state.active_player_id)
   where turn_state.session_id = p_session_id
     and public.is_session_player(p_session_id, auth.uid());
 $$;

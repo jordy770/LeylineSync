@@ -18,14 +18,17 @@ import type {
 } from '@/lib/game/types'
 import BoardConnectionOverlay from './board/BoardConnectionOverlay'
 import BoardViewChrome from './board/BoardViewChrome'
+import GameLogPanel from './GameLogPanel'
 import EmptyBoardPanel from './board/EmptyBoardPanel'
+import GameFinishedOverlay from './board/GameFinishedOverlay'
 import StackRail from './board/StackRail'
 import MotionCard from './MotionCard'
 import CombatManager from './CombatManager'
 
 export default function GameBoard({ sessionId }: { sessionId: string }) {
-  const { cards, players, turnState, combatAssignments, stackItems, attackTaxes, commanderDamage, errorMessage } = useBoardGameState(sessionId)
+  const { cards, session, players, turnState, combatAssignments, stackItems, attackTaxes, commanderDamage, errorMessage } = useBoardGameState(sessionId)
   const [focusedPlayerId, setFocusedPlayerId] = useState<string | null>(null)
+  const [logOpen, setLogOpen] = useState(false)
   const boardRef = useRef<HTMLDivElement | null>(null)
   const [targetElements, setTargetElements] = useState<Map<string, HTMLElement>>(() => new Map())
 
@@ -93,7 +96,9 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
         turnState={turnState}
         isFocusMode={Boolean(focusedPlayerId)}
         onToggleFocus={() => setFocusedPlayerId((current) => (current ? null : focusSeat.player?.player_id ?? null))}
+        onOpenLog={() => setLogOpen(true)}
       />
+      <GameLogPanel sessionId={sessionId} players={players} open={logOpen} onClose={() => setLogOpen(false)} />
       <AnimatePresence mode="wait">
         {focusedPlayerId ? (
           <motion.div
@@ -156,6 +161,11 @@ export default function GameBoard({ sessionId }: { sessionId: string }) {
         boardElement={boardRef.current}
         targetElements={targetElements}
       />
+      <AnimatePresence>
+        {session?.status === 'finished' ? (
+          <GameFinishedOverlay winnerPlayerId={session.winner_player_id ?? null} players={players} />
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }

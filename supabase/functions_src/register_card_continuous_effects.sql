@@ -93,6 +93,14 @@ begin
       'lifelink',
       'intimidate',
       'hexproof',
+      -- Fear (mig 338, Cover of Darkness): "can't be blocked except by artifact
+      -- and/or black creatures"; declare_blocker enforces it via card_has_fear.
+      'fear',
+      -- Granted ability (mig 357, Blade of Selves / Splinter Twin / Mirage Phalanx):
+      -- payload {kind, ability}; effective_script merges it onto the affected card.
+      'granted_ability',
+      -- Defender (mig 323): "this creature can't attack"; declare_attacker rejects it.
+      'defender',
       -- STATIC cast-from-graveyard permission (mig 207, Gisa and Geralf): a
       -- script-registered row, swept by rebuild when the source leaves — unlike
       -- the until-EOT grant_cast_from_graveyard effect rows (mig 173).
@@ -151,7 +159,8 @@ begin
           'menace',
           'lifelink',
           'intimidate',
-          'hexproof'
+          'hexproof',
+          'defender'
         ) then 'source'
         else 'controller'
       end
@@ -254,7 +263,9 @@ begin
       when 'wither'        then 'wither'
       when 'menace'        then 'menace'
       when 'intimidate'    then 'intimidate'
+      when 'fear'          then 'fear'
       when 'hexproof'      then 'hexproof'
+      when 'defender'      then 'defender'
       else null
     end;
 

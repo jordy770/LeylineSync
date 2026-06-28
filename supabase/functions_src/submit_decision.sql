@@ -308,6 +308,8 @@ begin
     for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
     loop
       perform public.put_in_graveyard(v_decision.session_id, v_card);
+      -- "whenever a player sacrifices a permanent" (mig 341, Carmen).
+      perform public.fire_watcher_triggers(v_decision.session_id, v_card, v_decision.deciding_player_id, 'permanent_sacrificed');
     end loop;
     perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
 
@@ -354,6 +356,16 @@ begin
         update public.game_cards set zone = 'hand', zone_position = v_pos, is_tapped = false where id = v_card;
       end if;
     end loop;
+    -- lose_life_mana_value (mig 346, Reanimate: "you lose life equal to its mana
+    -- value") — the decider loses life equal to the summed MV of the cards returned.
+    if coalesce((v_decision.params ->> 'lose_life_mana_value')::boolean, false) then
+      update public.game_session_players sp
+      set life_total = life_total - (
+        select coalesce(sum(public.mana_value(c.mana_cost)), 0)::integer
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.id = any(v_chosen_ids) and gc.session_id = v_decision.session_id)
+      where sp.session_id = v_decision.session_id and sp.player_id = v_decision.deciding_player_id;
+    end if;
     perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
@@ -427,6 +439,8 @@ begin
         update public.game_session_players
         set life_total = life_total + coalesce((v_decision.params ->> 'gain_if_creature')::integer, 2)
         where session_id = v_decision.session_id and player_id = v_decision.deciding_player_id;
+        perform public.fire_lifegain_triggers(v_decision.session_id, v_decision.deciding_player_id,
+          coalesce((v_decision.params ->> 'gain_if_creature')::integer, 2));
       else
         select source_card_id into v_src_card
         from public.game_stack_items where id = v_decision.source_stack_item_id;
@@ -516,6 +530,24 @@ begin
     perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
+  elsif v_decision.decision_type = 'pay_life_untap' then
+    -- Shock land (Overgrown Tomb, …): the land is already on the battlefield tapped.
+    -- If the player chose to pay AND can afford it (MTG 119.4: only if life >= cost),
+    -- deduct the life and untap it; otherwise it stays tapped.
+    if coalesce((v_decision.result ->> 'confirmed')::boolean, false)
+       and (select life_total from public.game_session_players
+            where session_id = v_decision.session_id and player_id = v_decision.deciding_player_id)
+           >= coalesce((v_decision.params ->> 'life')::integer, 2)
+    then
+      update public.game_session_players
+      set life_total = life_total - coalesce((v_decision.params ->> 'life')::integer, 2)
+      where session_id = v_decision.session_id and player_id = v_decision.deciding_player_id;
+      update public.game_cards
+      set is_tapped = false
+      where id = nullif(v_decision.params ->> 'card_id', '')::uuid and session_id = v_decision.session_id;
+    end if;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
   elsif v_decision.decision_type = 'confirm' then
     if coalesce((v_decision.result ->> 'confirmed')::boolean, false) then
       -- Optional "you may pay {cost}" — pay it before applying the effects (raises
@@ -528,10 +560,22 @@ begin
       select nullif(payload ->> 'controller_player_id', '')::uuid, source_card_id, nullif(payload ->> 'target_card_id', '')::uuid
         into v_ctrl, v_src_card, v_tgt
       from public.game_stack_items where id = v_decision.source_stack_item_id;
-      perform public.apply_targeted_triggered_ability_effects(
-        v_decision.session_id, coalesce(v_ctrl, v_decision.deciding_player_id), v_src_card,
-        coalesce(v_decision.params -> 'effects', '[]'::jsonb), v_tgt
-      );
+      if coalesce((v_decision.params ->> 'program')::boolean, false) then
+        -- program:true (Ruthless Lawbringer, mig 339): run the inner effects as a
+        -- fresh triggered-ability PROGRAM — "when you do, destroy target nonland
+        -- permanent." Each effect parks its own decision (the sacrifice edict,
+        -- then the destroy_up_to pick), so the destroy target is chosen AFTER the
+        -- sacrifice rather than needing a pre-supplied target.
+        perform public.enqueue_triggered_ability(
+          v_decision.session_id, coalesce(v_ctrl, v_decision.deciding_player_id), v_src_card,
+          'reflexive', coalesce(v_decision.params -> 'effects', '[]'::jsonb),
+          nullif(v_decision.params ->> 'triggering_card_id', '')::uuid);
+      else
+        perform public.apply_targeted_triggered_ability_effects(
+          v_decision.session_id, coalesce(v_ctrl, v_decision.deciding_player_id), v_src_card,
+          coalesce(v_decision.params -> 'effects', '[]'::jsonb), v_tgt
+        );
+      end if;
     end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
@@ -541,9 +585,11 @@ begin
     -- keyword grants), then resume the program.
     foreach v_card in array v_chosen_ids
     loop
+      -- count>1 (mig 348, Orthion: "create five tokens that are copies").
       perform public.create_copy_token(
         v_decision.session_id, v_decision.deciding_player_id, v_card,
-        v_decision.params -> 'except');
+        v_decision.params -> 'except')
+      from generate_series(1, greatest(1, coalesce((v_decision.params ->> 'count')::integer, 1)));
     end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
@@ -783,11 +829,23 @@ begin
 
   elsif v_decision.decision_type = 'choose_player' then
     v_chosen_player := nullif(v_decision.result ->> 'player_id', '')::uuid;
-    select source_card_id into v_src_card from public.game_stack_items where id = v_decision.source_stack_item_id;
-    select coalesce(jsonb_agg(e.value || jsonb_build_object('recipient', 'controller')), '[]'::jsonb)
-      into v_effects_rewritten
-    from jsonb_array_elements(coalesce(v_decision.params -> 'effects', '[]'::jsonb)) e;
-    perform public.apply_triggered_ability_effects(v_decision.session_id, v_chosen_player, v_src_card, v_effects_rewritten);
+    if v_decision.params ? 'apply_permanent_effect' then
+      -- "Target PLAYER gains control of target permanent you control" (Harmless
+      -- Offering donate): apply the parked permanent_effect to the cast's stored
+      -- target with the CHOSEN player as acting_controller. Reusable for any
+      -- "choose an opponent, then hand them a permanent" cast.
+      v_pe := v_decision.params -> 'apply_permanent_effect';
+      perform public.apply_creature_effect(
+        v_decision.session_id, v_pe ->> 'kind',
+        nullif(v_pe ->> 'target_card_id', '')::uuid,
+        v_pe || jsonb_build_object('acting_controller', v_chosen_player));
+    else
+      select source_card_id into v_src_card from public.game_stack_items where id = v_decision.source_stack_item_id;
+      select coalesce(jsonb_agg(e.value || jsonb_build_object('recipient', 'controller')), '[]'::jsonb)
+        into v_effects_rewritten
+      from jsonb_array_elements(coalesce(v_decision.params -> 'effects', '[]'::jsonb)) e;
+      perform public.apply_triggered_ability_effects(v_decision.session_id, v_chosen_player, v_src_card, v_effects_rewritten);
+    end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
   elsif v_decision.decision_type = 'choose_color' then
@@ -826,6 +884,11 @@ begin
         update public.game_cards
         set copied_script = replace(v_eff_script::text, '"$chosen"', to_jsonb(v_chosen_type)::text)::jsonb
         where id = v_src_card and session_id = v_decision.session_id;
+        -- Re-register continuous effects so a "choose a type" STATIC anthem
+        -- (Radiant Destiny: chosen type gets +1/+1; Cover of Darkness: chosen
+        -- type has fear) registers with the now-concrete creature_type. The
+        -- pre-choice registration carried the literal "$chosen" (matched nothing).
+        perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
       end if;
     end if;
     -- Inject the chosen type into any count-based amount's type_line (Distant Melody)
@@ -836,6 +899,10 @@ begin
         when jsonb_typeof(e.value -> 'amount') = 'object' and (e.value -> 'amount') ? 'count'
           then jsonb_set(e.value, '{amount,type_line}', to_jsonb(v_chosen_type))
         when lower(coalesce(e.value ->> 'type', '')) = 'pump_all'
+          then jsonb_set(e.value, '{creature_type}', to_jsonb(v_chosen_type))
+        -- return_all_from_graveyard (mig 343, Patriarch's Bidding: each player
+        -- returns their own graveyard's creatures of the type they chose).
+        when lower(coalesce(e.value ->> 'type', '')) = 'return_all_from_graveyard'
           then jsonb_set(e.value, '{creature_type}', to_jsonb(v_chosen_type))
         else e.value end
     ), '[]'::jsonb)
@@ -852,7 +919,19 @@ begin
     if jsonb_array_length(v_effects_rewritten) > 0 then
       perform public.apply_triggered_ability_effects(v_decision.session_id, v_decision.deciding_player_id, v_src_card, v_effects_rewritten);
     end if;
-    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+    -- who:'each_player' (mig 343, Patriarch's Bidding): raise the next queued
+    -- player's type choice, or finalize when every player has chosen.
+    if jsonb_array_length(coalesce(v_decision.params -> 'player_queue', '[]'::jsonb)) > 0 then
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (v_decision.session_id, (v_decision.params -> 'player_queue' ->> 0)::uuid,
+        v_decision.source_stack_item_id, 'choose_creature_type', 'Choose a creature type',
+        coalesce(v_decision.params -> 'options', '[]'::jsonb), 1, 1,
+        jsonb_build_object('effects', coalesce(v_decision.params -> 'effects', '[]'::jsonb),
+          'player_queue', (v_decision.params -> 'player_queue') - 0,
+          'options', coalesce(v_decision.params -> 'options', '[]'::jsonb)));
+    else
+      perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+    end if;
   end if;
 
   return v_decision;

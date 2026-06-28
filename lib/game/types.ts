@@ -303,6 +303,8 @@ export type BoardCard = {
   type_line?: string | null
   mana_cost?: string | null
   power_toughness?: string | null
+  // Catalog keywords (base printing) — drives the opponent-view keyword icons.
+  keywords?: string[] | null
   controller_player_id?: string | null
   is_face_down?: boolean | null
   plus_one_counters?: number

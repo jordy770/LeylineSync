@@ -127,6 +127,11 @@ begin
     raise exception 'Creature has summoning sickness';
   end if;
 
+  -- Defender (mig 323): a creature with defender (printed or granted) can't attack.
+  if public.card_has_defender(p_session_id, p_attacker_card_id) then
+    raise exception 'A creature with defender cannot attack';
+  end if;
+
   -- Attack taxes (mig 275, Ghostly Prison / Windborn Muse / Norn's Annex):
   -- 'attack_tax' rows protecting the DEFENDER are auto-paid per attacker —
   -- payload {mana:N} deducts N generic from the attacker's pool (greedy,

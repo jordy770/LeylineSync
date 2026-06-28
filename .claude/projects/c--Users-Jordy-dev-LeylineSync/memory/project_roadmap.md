@@ -7,6 +7,11 @@ metadata:
 
 # LeylineSync — Combined Roadmap (as of 2026-06-04)
 
+> ⚠️ **STALE for "what's left".** This froze ~mig 172; the engine is now at mig 333
+> and most "deferred/remaining" notes below have shipped. For the current
+> merged + verified open-items list see **`docs/open-items.md`** (2026-06-25).
+> Keep this only as the shipped-history record.
+
 > Single source of truth. Consolidates the old `project_roadmap.md` (2026-05-27),
 > the README "Effect roadmap" (Tier 1/2/3) and "## Roadmap"/Phased plan, and the
 > cerebrum Decision Log "next item" notes. Status reconciled against the engine

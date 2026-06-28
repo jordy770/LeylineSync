@@ -14,7 +14,11 @@ declare
   v_target_type jsonb;
 begin
   v_kind := lower(coalesce(p_payload ->> 'kind', ''));
-  if v_kind not in ('destroy', 'exile', 'bounce', 'tap', 'untap') then
+  -- gain_control: a cast permanent-targeted control change. `to:opponent`
+  -- DONATES the target (one you control) to an opponent (Harmless Offering);
+  -- otherwise the caster gains control. handle_permanent_effect picks the
+  -- acting controller.
+  if v_kind not in ('destroy', 'exile', 'bounce', 'tap', 'untap', 'gain_control') then
     raise exception 'Unsupported permanent effect kind: %', v_kind;
   end if;
 
@@ -49,6 +53,8 @@ begin
     'then', coalesce(p_payload -> 'then', '[]'::jsonb),
     'controller_searches_basic_land', coalesce((p_payload ->> 'controller_searches_basic_land')::boolean, false),
     'exclude_type_line', p_payload ->> 'exclude_type_line',
+    -- Donate direction for kind=gain_control (Harmless Offering).
+    'to', p_payload ->> 'to',
     -- Cruel Revival's second half: the CASTER picks a matching card from their
     -- graveyard after the removal resolves (handled in handle_permanent_effect).
     'then_return_from_graveyard', p_payload -> 'then_return_from_graveyard'

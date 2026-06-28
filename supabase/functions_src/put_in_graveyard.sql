@@ -19,6 +19,8 @@ declare
   v_had_counters integer;
   v_undying boolean := false;
   v_next_bf_position integer;
+  v_rider record;
+  v_rider_payloads jsonb := '[]'::jsonb;
 begin
   select g.owner_id, coalesce(g.controller_player_id, g.owner_id), (c.type_line ilike '%creature%'),
          -- Token at either level: catalog tokens (cards.is_token) or copy
@@ -50,6 +52,20 @@ begin
     and owner_id = v_owner_id
     and zone = 'graveyard';
 
+  -- Granted dies-trigger (Clavileño / Jaxis / Feign Death, migs 344-349): a
+  -- creature given "when this dies, <effects>" carries a granted_dies_effect.
+  -- CAPTURE the payloads BEFORE the zone move — a TOKEN's cease trigger fires on
+  -- that move and would delete the rows (and the token) first. Consume them too.
+  if v_is_creature then
+    select coalesce(jsonb_agg(payload), '[]'::jsonb) into v_rider_payloads
+    from public.game_continuous_effects
+    where session_id = p_session_id and effect_type = 'granted_dies_effect'
+      and affected_card_id = p_game_card_id;
+    delete from public.game_continuous_effects
+    where session_id = p_session_id and effect_type = 'granted_dies_effect'
+      and affected_card_id = p_game_card_id;
+  end if;
+
   update public.game_cards
   set
     zone = 'graveyard',
@@ -60,6 +76,16 @@ begin
     dealt_deathtouch_damage = false,
     plus_one_counters = 0
   where id = p_game_card_id;
+
+  -- Fire the captured dies-triggers AFTER the move so a return_self_to_battlefield
+  -- effect finds the card in its graveyard. (For tokens the card has already
+  -- ceased, but the effects — draw, make a token — are player-level.)
+  for v_rider in select value as payload from jsonb_array_elements(v_rider_payloads)
+  loop
+    perform public.apply_triggered_ability_effects(
+      p_session_id, v_controller_id, p_game_card_id,
+      coalesce(v_rider.payload -> 'effects', '[]'::jsonb));
+  end loop;
 
   -- Tally "creatures that died under your control this turn" (turn-stamped: the
   -- count belongs to the stored turn, so it reads as 0 once the turn changes).

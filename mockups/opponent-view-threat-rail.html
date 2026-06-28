@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LeylineSync · Threat Rail — icons</title>
+<!-- Real MTG mana symbols (incl. hybrid/duo + any) — Mana font, MIT licensed -->
+<link href="https://cdn.jsdelivr.net/npm/mana-font@1.15.7/css/mana.min.css" rel="stylesheet" />
+<!-- Keyword icons (placeholder pack; game-icons.net is the thematic prod choice) -->
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0C0F16; --bg2:#09090D; --panel:#11141c; --panel2:#161a24;
+    --line:#1E2230; --line2:#2a3040; --ink:#e8edf5; --mut:#586379; --mut2:#8b95a7;
+    --amber:#f5b942; --amber2:#fbbf24; --cyan:#5cc9f5; --green:#7fc08a; --red:#e8826c; --violet:#a78bfa;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"Cascadia Code","Consolas",monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(circle at 50% -10%,#13161f,#06070a 60%);color:var(--ink);
+    font-family:var(--sans);min-height:100vh;padding:34px 18px 90px;}
+  h1{font-size:22px;margin:0 0 4px;text-align:center;}
+  .sub{color:var(--mut2);text-align:center;font-size:13px;max-width:840px;margin:0 auto 8px;line-height:1.55;}
+  h2.section{font-size:14px;text-align:center;color:var(--amber2);letter-spacing:.06em;text-transform:uppercase;margin:34px 0 4px;}
+  .caption{color:var(--mut2);text-align:center;font-size:12px;max-width:740px;margin:0 auto 18px;line-height:1.5;}
+  .frameRow{display:flex;justify-content:center;gap:30px;flex-wrap:wrap;align-items:flex-start;}
+
+  .phone-p{width:330px;max-width:94vw;aspect-ratio:330/680;}
+  .phone-l{width:760px;max-width:96vw;aspect-ratio:760/392;}
+  .frame{background:linear-gradient(160deg,#1a1d27,#0a0c11);border-radius:30px;padding:9px;
+    box-shadow:0 24px 60px rgba(0,0,0,.55);position:relative;}
+  .screen{width:100%;height:100%;border-radius:20px;overflow:hidden;background:var(--bg);
+    display:flex;flex-direction:column;position:relative;}
+
+  /* ---------- mana symbols (Mana font) ---------- */
+  .mana{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .msrc{position:relative;display:inline-flex;align-items:center;}
+  .msrc .ms{font-size:15px;}
+  .msrc .ms.ms-cost{box-shadow:0 1px 2px rgba(0,0,0,.5);}
+  .msrc .x{font-family:var(--mono);font-size:9px;font-weight:800;color:var(--ink);margin-left:1px;}
+  .msrc.dim{opacity:.28;}
+  .openchip{font-family:var(--mono);font-size:9.5px;font-weight:800;color:var(--amber2);background:#1a1407;
+    border:1px solid #4a3a12;border-radius:6px;padding:2px 6px;}
+
+  /* ---------- keyword icons ---------- */
+  .kws{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;margin-top:2px;}
+  .kw{width:12px;height:12px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:7px;color:#07090d;}
+  .kw.fly{background:#9ad0f0}.kw.dt{background:#7fc08a}.kw.tr{background:#f5b942}
+  .kw.ll{background:#f3a78d}.kw.vig{background:#fde68a}.kw.mn{background:#e8826c;color:#fff}
+  .kw.fs{background:#e8edf5}.kw.hx{background:#c4b5fd}.kw.ind{background:#b8c0cc}
+  .kw.more{background:#2a3040;color:#9fb0c8;font-family:var(--mono);font-weight:800;}
+
+  /* ---------- card tiles ---------- */
+  .card{position:relative;border-radius:5px;background:linear-gradient(150deg,var(--panel2),#0e111a);
+    border:1px solid var(--line2);border-top:3px solid var(--green);display:flex;flex-direction:column;
+    justify-content:flex-end;padding:3px;overflow:hidden;flex-shrink:0;}
+  .card .nm{font-size:7px;font-weight:700;color:#d7deea;text-shadow:0 1px 2px #000;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .card .pt{position:absolute;right:2px;bottom:2px;font-family:var(--mono);font-size:8px;font-weight:800;
+    color:#fff;background:rgba(7,9,13,.85);border-radius:3px;padding:0 3px;border:1px solid var(--line2);}
+  .card.creature{border-top-color:var(--green);}.card.art{border-top-color:var(--cyan);}.card.ench{border-top-color:var(--violet);}
+  .card.tapped{transform:rotate(8deg);opacity:.72;}
+  .card .summon{position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(92,201,245,.12) 5px,rgba(92,201,245,.12) 8px);}
+  .card .cpy{position:absolute;top:2px;left:2px;font-size:6px;font-weight:800;border-radius:2px;padding:0 2px;background:var(--violet);color:#fff;}
+
+  .chip{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:9px;
+    background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:2px 6px;color:var(--mut2);}
+  .chip.threat{background:#2a1410;border-color:#5a2a20;color:var(--red);}
+
+  /* ---------- opponent tile ---------- */
+  .opp{border-radius:12px;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--mut);
+    padding:8px 9px;display:flex;flex-direction:column;gap:6px;}
+  .opp.threatful{border-top-color:var(--red);}
+  .opp .oh{display:flex;align-items:center;gap:7px;}
+  .opp .av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:11px;color:#fff;background:linear-gradient(150deg,#f5b94288,#5cc9f566);flex-shrink:0;}
+  .opp .who{flex:1;min-width:0;}
+  .opp .who .n{font-size:11.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .opp .who .s{font-size:8.5px;color:var(--mut);font-family:var(--mono);}
+  .opp .lf{font-family:var(--mono);font-weight:800;font-size:17px;color:var(--green);}
+  .opp .lf.low{color:var(--amber);}
+  .opp .creatures{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;}
+  .opp .cwrap{display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;}
+  .opp .cwrap .card{width:38px;height:52px;}
+
+  /* ---------- fast nav bar (key: one tap back to own board) ---------- */
+  .navbar{height:42px;flex-shrink:0;display:flex;gap:6px;padding:5px 8px;border-top:1px solid var(--line);
+    background:var(--bg2);margin-top:auto;}
+  .navbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:10px;
+    font-size:11px;font-weight:800;border:1px solid var(--line);background:var(--panel);color:var(--mut2);}
+  .navbtn.active{background:#1a1407;border-color:var(--amber);color:var(--amber2);box-shadow:0 0 0 1px var(--amber);}
+  .navbtn i{font-size:12px;}
+
+  /* ---------- portrait rail ---------- */
+  .railtop{height:30px;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid var(--line);
+    font-size:10.5px;color:var(--mut2);justify-content:space-between;flex-shrink:0;}
+  .railtop b{color:var(--ink);font-family:var(--mono);}
+  .rail{display:flex;flex-direction:column;gap:9px;padding:10px;overflow-y:auto;flex:1;}
+
+  /* ---------- landscape ---------- */
+  .l .topbar{height:26px;display:flex;align-items:center;background:var(--panel);border-bottom:2px solid var(--cyan);
+    flex-shrink:0;font-family:var(--mono);font-size:10px;}
+  .l .topbar>div{padding:0 11px;height:100%;display:flex;align-items:center;gap:5px;}
+  .l .topbar>div+div{border-left:1px solid var(--line);}
+  .l .topbar .you{margin-left:auto;color:var(--green);font-weight:800;}
+  .l .threatbar{display:flex;gap:8px;padding:9px;flex:1;min-height:0;}
+  .l .threatbar .opp{flex:1;min-width:0;}
+  .l .selfstrip{height:50px;flex-shrink:0;border-top:1px solid var(--line);background:var(--bg2);
+    display:flex;align-items:center;gap:6px;padding:0 10px;overflow-x:auto;}
+  .l .selfstrip .lbl{font-family:var(--mono);font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;flex-shrink:0;}
+  .l .selfstrip .card{width:28px;height:40px;opacity:.85;}
+  .l .selfstrip .focusme{margin-left:auto;flex-shrink:0;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;
+    color:var(--amber2);background:#1a1407;border:1px solid var(--amber);border-radius:9px;padding:6px 11px;}
+
+  /* ---------- expanded detail ---------- */
+  .detail{width:330px;max-width:94vw;border-radius:18px;border:1px solid var(--line);background:#0D1018;overflow:hidden;}
+  .detail .dh{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-bottom:1px solid var(--line);}
+  .detail .dh .n{font-size:14px;font-weight:900;}
+  .detail .dh .meta{display:flex;gap:7px;}
+  .detail .body{padding:11px 13px;display:flex;flex-direction:column;gap:13px;}
+  .detail .lane .lh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .detail .zlabel{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.13em;color:var(--mut);}
+  .detail .lane .cards{display:flex;gap:8px;overflow-x:auto;padding-bottom:3px;}
+  .detail .lane.creatures .cwrap{width:54px;display:flex;flex-direction:column;align-items:center;}
+  .detail .lane.creatures .card{width:54px;height:74px;}
+  .detail .lane.nonc .card{width:40px;height:56px;}
+  .detail .manabox{border-radius:11px;background:var(--bg2);border:1px solid var(--line);padding:10px;}
+  .detail .manabox .mt{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;}
+  .detail .zfoot{display:flex;gap:8px;}
+  .detail .zbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px;border-radius:9px;
+    background:var(--panel);border:1px solid var(--line);}
+  .detail .zbtn b{font-family:var(--mono);font-size:15px;}
+  .detail .zbtn span{font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);}
+
+  .legends{max-width:900px;margin:30px auto 0;display:flex;gap:24px;flex-wrap:wrap;justify-content:center;}
+  .legend{background:#0b0e15;border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:11.5px;color:var(--mut2);min-width:230px;}
+  .legend h3{margin:0 0 9px;font-size:11px;color:var(--ink);text-transform:uppercase;letter-spacing:.08em;}
+  .legend .item{display:flex;align-items:center;gap:8px;margin:6px 0;}
+  .note{max-width:860px;margin:26px auto 0;padding:16px 18px;border:1px solid var(--line);border-radius:14px;
+    background:#0b0e15;color:var(--mut2);font-size:12.5px;line-height:1.65;}
+  .note b{color:var(--ink);}
+</style>
+</head>
+<body>
+  <h1>Threat Rail — met echte icon-fonts</h1>
+  <p class="sub">Mana als <b>Mana-font</b>-symbolen (incl. <b>duo-kleur</b> hybrids + any-color), keywords als <b>icons</b>, en een vaste <b>onderbalk</b> om met één tik tussen je eigen bord en de tegenstanders te springen.</p>
+
+  <!-- ============ LANDSCAPE ============ -->
+  <h2 class="section">▸ Landscape — opponents bovenaan, snel terug naar eigen bord</h2>
+  <p class="caption">Tegenstanders altijd in beeld; jouw bord als strip onderaan + “Focus my board”. Tik een tegenstander → detail (onder).</p>
+  <div class="frameRow">
+    <div class="frame phone-l"><div class="screen l">
+      <div class="topbar">
+        <div><span style="width:7px;height:7px;border-radius:2px;background:var(--cyan);display:inline-block;"></span> Turn 7 · Main 2</div>
+        <div>Priority: <b style="color:var(--amber2)">Mara</b></div>
+        <div class="you">You ♥31</div>
+      </div>
+      <div class="threatbar">
+        <!-- opp 1 — Golgari -->
+        <div class="opp threatful">
+          <div class="oh"><div class="av">M</div>
+            <div class="who"><div class="n">Mara 👑</div><div class="s">P2 · ✋3 ⚰6</div></div>
+            <div class="lf">34</div></div>
+          <div class="creatures">
+            <div class="cwrap"><div class="card creature"><span class="nm">Sheoldred</span><span class="pt">4/5</span></div>
+              <div class="kws"><span class="kw dt"><i class="fa-solid fa-skull"></i></span><span class="kw ll"><i class="fa-solid fa-heart"></i></span></div></div>
+            <div class="cwrap"><div class="card creature tapped"><span class="nm">Elf</span><span class="pt">1/1</span></div><div class="kws"></div></div>
+            <div class="cwrap"><div class="card creature"><span class="summon"></span><span class="nm">Hoof</span><span class="pt">5/5</span></div>
+              <div class="kws"><span class="kw tr"><i class="fa-solid fa-shoe-prints"></i></span><span class="kw vig"><i class="fa-solid fa-eye"></i></span></div></div>
+            <div class="cwrap"><div class="card creature"><span class="cpy">CPY</span><span class="nm">Phantasm</span><span class="pt">2/2</span></div>
+              <div class="kws"><span class="kw fly"><i class="fa-solid fa-feather"></i></span></div></div>
+          </div>
+          <div class="mana">
+            <span class="msrc"><i class="ms ms-g ms-cost"></i><span class="x">×3</span></span>
+            <span class="msrc"><i class="ms ms-b ms-cost"></i><span class="x">×2</span></span>
+            <span class="msrc"><i class="ms ms-bg ms-cost"></i><span class="x">×2</span></span>
+            <span class="openchip">7 open</span>
+            <span class="chip threat" style="margin-left:auto;">⚔12/21</span>
+          </div>
+        </div>
+        <!-- opp 2 — mono red -->
+        <div class="opp">
+          <div class="oh"><div class="av">T</div>
+            <div class="who"><div class="n">Tibor</div><div class="s">P3 · ✋1 ⚰2</div></div>
+            <div class="lf low">22</div></div>
+          <div class="creatures">
+            <div class="cwrap"><div class="card creature"><span class="nm">Goblin</span><span class="pt">2/2</span></div>
+              <div class="kws"><span class="kw mn"><i class="fa-solid fa-users"></i></span></div></div>
+            <div class="cwrap"><div class="card creature"><span class="nm">Raptor</span><span class="pt">3/1</span></div>
+              <div class="kws"><span class="kw fs"><i class="fa-solid fa-bolt"></i></span><span class="kw tr"><i class="fa-solid fa-shoe-prints"></i></span></div></div>
+            <div class="cwrap"><div class="card ench"><span class="nm">Curse</span></div><div class="kws"></div></div>
+          </div>
+          <div class="mana">
+            <span class="msrc"><i class="ms ms-r ms-cost"></i><span class="x">×4</span></span>
+            <span class="msrc"><i class="ms ms-c ms-cost"></i><span class="x">×1</span></span>
+            <span class="openchip">5 open</span>
+          </div>
+        </div>
+        <!-- opp 3 — Azorius + any -->
+        <div class="opp">
+          <div class="oh"><div class="av">V</div>
+            <div class="who"><div class="n">Vex</div><div class="s">P4 · ✋5 ⚰0</div></div>
+            <div class="lf">40</div></div>
+          <div class="creatures">
+            <div class="cwrap"><div class="card creature"><span class="nm">Wall</span><span class="pt">0/4</span></div>
+              <div class="kws"><span class="kw vig"><i class="fa-solid fa-eye"></i></span></div></div>
+            <div class="cwrap"><div class="card art"><span class="nm">Sol Ring</span></div><div class="kws"></div></div>
+          </div>
+          <div class="mana">
+            <span class="msrc"><i class="ms ms-wu ms-cost"></i><span class="x">×2</span></span>
+            <span class="msrc"><i class="ms ms-multicolor ms-cost"></i><span class="x">×1</span></span>
+            <span class="msrc dim"><i class="ms ms-w ms-cost"></i><span class="x">×2</span></span>
+            <span class="openchip">5 open</span>
+          </div>
+        </div>
+      </div>
+      <div class="selfstrip">
+        <span class="lbl">Your board</span>
+        <div class="card creature"><span class="pt">3/3</span></div>
+        <div class="card creature"><span class="pt">2/2</span></div>
+        <div class="card art"></div>
+        <div class="card creature tapped"><span class="pt">4/4</span></div>
+        <button class="focusme"><i class="fa-solid fa-house"></i> Focus my board</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ============ PORTRAIT + DETAIL ============ -->
+  <h2 class="section">▸ Portrait rail &amp; uitgeklapt detail</h2>
+  <p class="caption">Onderbalk met <b>My Board ⇄ Opponents</b> = altijd één tik terug. Tik een rij → detailpaneel met grotere creatures + volledige keyword/mana-info.</p>
+  <div class="frameRow">
+    <!-- portrait -->
+    <div class="frame phone-p"><div class="screen">
+      <div class="railtop"><span>Opponents</span><span><b>3</b> seated · tik voor detail</span></div>
+      <div class="rail">
+        <div class="opp threatful">
+          <div class="oh"><div class="av">M</div>
+            <div class="who"><div class="n">Mara 👑</div><div class="s">P2 · ✋3 ⚰6 ⚔12</div></div><div class="lf">34</div></div>
+          <div class="creatures">
+            <div class="cwrap"><div class="card creature"><span class="pt">4/5</span></div><div class="kws"><span class="kw dt"><i class="fa-solid fa-skull"></i></span><span class="kw ll"><i class="fa-solid fa-heart"></i></span></div></div>
+            <div class="cwrap"><div class="card creature tapped"><span class="pt">1/1</span></div><div class="kws"></div></div>
+            <div class="cwrap"><div class="card creature"><span class="summon"></span><span class="pt">5/5</span></div><div class="kws"><span class="kw tr"><i class="fa-solid fa-shoe-prints"></i></span></div></div>
+            <div class="cwrap"><div class="card creature"><span class="pt">2/2</span></div><div class="kws"><span class="kw fly"><i class="fa-solid fa-feather"></i></span></div></div>
+          </div>
+          <div class="mana">
+            <span class="msrc"><i class="ms ms-g ms-cost"></i><span class="x">×3</span></span>
+            <span class="msrc"><i class="ms ms-b ms-cost"></i><span class="x">×2</span></span>
+            <span class="msrc"><i class="ms ms-bg ms-cost"></i><span class="x">×2</span></span>
+            <span class="openchip">7 open</span>
+          </div>
+        </div>
+        <div class="opp">
+          <div class="oh"><div class="av">T</div>
+            <div class="who"><div class="n">Tibor</div><div class="s">P3 · ✋1 ⚰2</div></div><div class="lf low">22</div></div>
+          <div class="creatures">
+            <div class="cwrap"><div class="card creature"><span class="pt">2/2</span></div><div class="kws"><span class="kw mn"><i class="fa-solid fa-users"></i></span></div></div>
+            <div class="cwrap"><div class="card creature"><span class="pt">3/1</span></div><div class="kws"><span class="kw fs"><i class="fa-solid fa-bolt"></i></span></div></div>
+          </div>
+          <div class="mana">
+            <span class="msrc"><i class="ms ms-r ms-cost"></i><span class="x">×4</span></span>
+            <span class="msrc"><i class="ms ms-c ms-cost"></i><span class="x">×1</span></span><span class="openchip">5 open</span>
+          </div>
+        </div>
+        <div class="opp">
+          <div class="oh"><div class="av">V</div>
+            <div class="who"><div class="n">Vex</div><div class="s">P4 · ✋5 ⚰0</div></div><div class="lf">40</div></div>
+          <div class="creatures">
+            <div class="cwrap"><div class="card creature"><span class="pt">0/4</span></div><div class="kws"><span class="kw vig"><i class="fa-solid fa-eye"></i></span></div></div>
+          </div>
+          <div class="mana">
+            <span class="msrc"><i class="ms ms-wu ms-cost"></i><span class="x">×2</span></span>
+            <span class="msrc"><i class="ms ms-multicolor ms-cost"></i><span class="x">×1</span></span><span class="openchip">5 open</span>
+          </div>
+        </div>
+      </div>
+      <!-- fast nav -->
+      <div class="navbar">
+        <button class="navbtn"><i class="fa-solid fa-house"></i> My Board</button>
+        <button class="navbtn active"><i class="fa-solid fa-skull-crossbones"></i> Opponents</button>
+      </div>
+    </div></div>
+
+    <!-- expanded detail -->
+    <div class="detail">
+      <div class="dh">
+        <div><div class="n">Mara 👑</div><div class="zlabel" style="margin-top:2px;">Life 34 · Hand 3 · Lib 53</div></div>
+        <div class="meta"><span class="chip threat">⚔ 12/21</span><span class="chip threat">☠ 4</span></div>
+      </div>
+      <div class="body">
+        <div class="lane creatures">
+          <div class="lh"><span class="zlabel">Creatures · 4</span><span class="zlabel">tik kaart = zoom</span></div>
+          <div class="cards">
+            <div class="cwrap"><div class="card creature"><span class="nm">Sheoldred</span><span class="pt">4/5</span></div>
+              <div class="kws"><span class="kw dt"><i class="fa-solid fa-skull"></i></span><span class="kw ll"><i class="fa-solid fa-heart"></i></span></div></div>
+            <div class="cwrap"><div class="card creature tapped"><span class="nm">Llanowar</span><span class="pt">1/1</span></div><div class="kws"></div></div>
+            <div class="cwrap"><div class="card creature"><span class="summon"></span><span class="nm">Hoof</span><span class="pt">5/5</span></div>
+              <div class="kws"><span class="kw tr"><i class="fa-solid fa-shoe-prints"></i></span><span class="kw vig"><i class="fa-solid fa-eye"></i></span><span class="kw more">+1</span></div></div>
+            <div class="cwrap"><div class="card creature"><span class="cpy">CPY</span><span class="nm">Phantasm</span><span class="pt">2/2</span></div>
+              <div class="kws"><span class="kw fly"><i class="fa-solid fa-feather"></i></span><span class="kw hx"><i class="fa-solid fa-shield-halved"></i></span></div></div>
+          </div>
+        </div>
+        <div class="lane nonc">
+          <div class="lh"><span class="zlabel">Artifacts &amp; Enchantments · 3</span></div>
+          <div class="cards">
+            <div class="card art"><span class="nm">Sol Ring</span></div>
+            <div class="card art tapped"><span class="nm">Signet</span></div>
+            <div class="card ench"><span class="nm">Rhystic</span></div>
+          </div>
+        </div>
+        <div class="manabox">
+          <div class="mt"><span class="zlabel">Beschikbare mana</span><span class="openchip">7 open · 2 tapped</span></div>
+          <div class="mana">
+            <span class="msrc"><i class="ms ms-g ms-cost"></i><span class="x">×3</span></span>
+            <span class="msrc"><i class="ms ms-b ms-cost"></i><span class="x">×2</span></span>
+            <span class="msrc"><i class="ms ms-bg ms-cost"></i><span class="x">×2</span></span>
+            <span class="msrc dim"><i class="ms ms-b ms-cost"></i><span class="x">×2</span></span>
+          </div>
+        </div>
+        <div class="zfoot">
+          <div class="zbtn"><b>6</b><span>Graveyard</span></div>
+          <div class="zbtn"><b>1</b><span>Exile</span></div>
+          <div class="zbtn"><b>9</b><span>Lands</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LEGENDS ============ -->
+  <div class="legends">
+    <div class="legend">
+      <h3>Keyword-icons (placeholder pack)</h3>
+      <div class="item"><span class="kw fly"><i class="fa-solid fa-feather"></i></span> Flying</div>
+      <div class="item"><span class="kw dt"><i class="fa-solid fa-skull"></i></span> Deathtouch</div>
+      <div class="item"><span class="kw tr"><i class="fa-solid fa-shoe-prints"></i></span> Trample</div>
+      <div class="item"><span class="kw ll"><i class="fa-solid fa-heart"></i></span> Lifelink</div>
+      <div class="item"><span class="kw vig"><i class="fa-solid fa-eye"></i></span> Vigilance</div>
+      <div class="item"><span class="kw mn"><i class="fa-solid fa-users"></i></span> Menace</div>
+      <div class="item"><span class="kw fs"><i class="fa-solid fa-bolt"></i></span> First strike</div>
+      <div class="item"><span class="kw hx"><i class="fa-solid fa-shield-halved"></i></span> Hexproof</div>
+      <div class="item"><span class="kw more">+1</span> meer (tik kaart)</div>
+    </div>
+    <div class="legend">
+      <h3>Mana — Mana-font (untapped)</h3>
+      <div class="item"><i class="ms ms-w ms-cost"></i><i class="ms ms-u ms-cost"></i><i class="ms ms-b ms-cost"></i><i class="ms ms-r ms-cost"></i><i class="ms ms-g ms-cost"></i> mono-kleuren</div>
+      <div class="item"><i class="ms ms-wu ms-cost"></i><i class="ms ms-bg ms-cost"></i><i class="ms ms-rg ms-cost"></i> <b>duo-kleur</b> (dual lands)</div>
+      <div class="item"><i class="ms ms-multicolor ms-cost"></i> any-color / rainbow bron</div>
+      <div class="item"><i class="ms ms-c ms-cost"></i> colorless · <span class="openchip">N open</span> totaal</div>
+      <div class="item"><span class="msrc dim"><i class="ms ms-b ms-cost"></i></span> gedimd = getapt (telt niet mee)</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Icon-packs:</b> mana komt uit de <b>Mana font</b> (Andrew Gioia, MIT) — die heeft alle <b>duo-kleur/hybride</b> symbolen (<code>ms-bg</code>, <code>ms-wu</code>…), <code>ms-multicolor</code> voor any-color, plus Treasure/Phyrexian. Keywords zijn hier met <b>Font Awesome</b> als snelle placeholder; voor productie raad ik <b>game-icons.net</b> (CC-BY) aan — daar zitten thematisch betere glyphs (echte vleugel, schedel-met-tand, voetstap) en kunnen we een vaste mapping + prioriteitsvolgorde (evasion → deathtouch → rest, dan “+n”) op bouwen.
+    <br><br>
+    <b>Data die de backend straks moet leveren</b> (de layout is af, dit is het echte werk): per opponent-creature de <b>keywords</b>, en per opponent de <b>untapped mana-bronnen per kleur</b> incl. welke duo/any zijn. Zal ik uitzoeken wat <code>getOpponentZoneData</code> al teruggeeft en wat er bij moet, zodra je de iconen-richting goedkeurt?
+  </div>
+</body>
+</html>

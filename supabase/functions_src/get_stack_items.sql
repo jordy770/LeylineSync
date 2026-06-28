@@ -39,13 +39,30 @@ as $$
     stack_items.id,
     stack_items.session_id,
     stack_items.controller_player_id,
-    coalesce(nullif(controller_profiles.username, ''), 'Unknown player') as controller_username,
+    -- Fall back to a CPU label / short id (like get_session_players) so bot
+    -- spells on the stack aren't shown as "Unknown player".
+    coalesce(
+      nullif(controller_profiles.username, ''),
+      case when controller_sp.is_bot then 'CPU 🤖 ' || controller_sp.seat_number end,
+      nullif(left(stack_items.controller_player_id::text, 8), ''),
+      'Unknown player'
+    ) as controller_username,
     stack_items.source_card_id,
     coalesce(source_card.name, nullif(stack_items.payload ->> 'label', '')) as source_card_name,
     source_card.image_url as source_card_image_url,
     source_card.type_line as source_card_type_line,
     nullif(stack_items.payload ->> 'target_player_id', '')::uuid as target_player_id,
-    coalesce(nullif(target_profiles.username, ''), 'Unknown player') as target_username,
+    -- NULL when the spell has no player target (so the UI shows no "→ name"); a
+    -- bot target gets the seat-numbered CPU label, like the controller above.
+    case
+      when nullif(stack_items.payload ->> 'target_player_id', '') is null then null
+      else coalesce(
+        nullif(target_profiles.username, ''),
+        case when target_sp.is_bot then 'CPU 🤖 ' || target_sp.seat_number end,
+        nullif(left((nullif(stack_items.payload ->> 'target_player_id', '')::uuid)::text, 8), ''),
+        'Unknown player'
+      )
+    end as target_username,
     stack_items.action_type,
     stack_items.payload,
     stack_items.position,
@@ -55,12 +72,18 @@ as $$
   from public.game_stack_items stack_items
   left join public.profiles controller_profiles
     on controller_profiles.id = stack_items.controller_player_id
+  left join public.game_session_players controller_sp
+    on controller_sp.session_id = stack_items.session_id
+   and controller_sp.player_id = stack_items.controller_player_id
   left join public.game_cards source_instance
     on source_instance.id = stack_items.source_card_id
   left join public.cards source_card
     on source_card.id = source_instance.card_id
   left join public.profiles target_profiles
     on target_profiles.id = nullif(stack_items.payload ->> 'target_player_id', '')::uuid
+  left join public.game_session_players target_sp
+    on target_sp.session_id = stack_items.session_id
+   and target_sp.player_id = nullif(stack_items.payload ->> 'target_player_id', '')::uuid
   where stack_items.session_id = p_session_id
     and public.is_session_player(p_session_id, auth.uid())
   order by

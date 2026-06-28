@@ -611,7 +611,7 @@ export async function castDividedDamage(
 export async function castPermanentEffect(
   supabase: SupabaseClient,
   sessionId: string,
-  kind: MultiCreatureKind,
+  kind: MultiCreatureKind | 'gain_control',
   targetCardId: string,
   targetType: string | string[],
   timing: 'instant' | 'sorcery',
@@ -620,6 +620,9 @@ export async function castPermanentEffect(
   targetController?: TargetController | null,
   then?: unknown[],
   controllerSearchesBasicLand?: boolean,
+  // Donate direction for kind=gain_control: 'opponent' gives the target permanent
+  // (one you control) to an opponent (Harmless Offering); otherwise you gain it.
+  to?: string | null,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -633,6 +636,7 @@ export async function castPermanentEffect(
       generic_payment: genericPayment ?? null,
       then: then ?? [],
       controller_searches_basic_land: controllerSearchesBasicLand ?? false,
+      to: to ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
   })
@@ -1240,6 +1244,14 @@ export async function startGameSession(supabase: SupabaseClient, sessionId: stri
   return data as { first_player_id: string; players: number }
 }
 
+// "Undo tap mana": untap your tapped mana sources + empty your floating pool.
+export async function resetMana(supabase: SupabaseClient, sessionId: string) {
+  const { error } = await supabase.rpc('reset_mana', { p_session_id: sessionId })
+  if (error) {
+    throw error
+  }
+}
+
 // London mulligan: your hand shuffles back, you draw seven again.
 export async function mulliganHand(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase.rpc('mulligan_hand', {
@@ -1520,6 +1532,23 @@ export async function spawnDeckForSession(
   }
 
   return data as { library: number; commander_seeded: boolean }
+}
+
+// Inverse of spawnDeckForSession: clears the caller's spawned cards in the lobby
+// (status 'open' only) so they can pick a different deck and lock in again.
+export async function clearDeckFromSession(
+  supabase: SupabaseClient,
+  sessionId: string,
+) {
+  const { data, error } = await supabase.rpc('clear_deck_from_session', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as { cleared: number }
 }
 
 // Designate (or clear, with null) a deck's commander.

@@ -153,6 +153,20 @@ begin
     end if;
   end if;
 
+  -- Fear (mig 338, Cover of Darkness): only artifact and/or black creatures can
+  -- block a creature with fear.
+  if public.card_has_fear(p_session_id, p_attacker_card_id) then
+    if not (
+      exists (
+        select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.id = p_blocker_card_id and gc.session_id = p_session_id and c.type_line ilike '%artifact%'
+      )
+      or 'black' = any(public.game_card_color_set(p_session_id, p_blocker_card_id))
+    ) then
+      raise exception 'A creature with fear can only be blocked by artifact creatures and/or black creatures';
+    end if;
+  end if;
+
   insert into public.game_combat_blockers (
     assignment_id,
     session_id,
