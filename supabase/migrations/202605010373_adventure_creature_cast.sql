@@ -1,7 +1,11 @@
--- supabase/functions_src/cast_card_from_hand.sql
--- CANONICAL current definition (seeded from 202605010173_cast_from_graveyard.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010373_adventure_creature_cast
+-- Adventure creatures were uncastable from hand: the instant/sorcery rejection
+-- matched the FULL type_line, and "Creature — X // Instant — Adventure"
+-- contains "Instant". Only the front face decides how a card leaves the hand
+-- (split_part on ' // '); the Adventure half still goes through
+-- cast_spell_effect(p_adventure). Found by the first Scions bot playtest.
+-- Generated from supabase/functions_src (cast_card_from_hand) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.cast_card_from_hand(
   p_session_id uuid,

@@ -97,3 +97,22 @@ test('ADV4 counter adventure exiles the source', async () => {
     assert.equal((await s.cardState(counterer)).zone, 'exile') // exiled via the adventure path, not graveyard
   })
 })
+
+// ADV5 — regression (mig 373): the CREATURE half casts from HAND. Real catalog
+// rows carry the full dual type_line ("Creature — X // Instant — Adventure");
+// the instant/sorcery rejection in cast_card_from_hand must only look at the
+// front face, or every Adventure creature is uncastable as a creature.
+test('ADV5 the creature half of a real dual-type_line card casts from hand', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    const card = await s.spawn('A', 'Adventurer DFC Test', 'hand')
+
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    await s.setMana('A', { C: 2 })
+
+    await s.as('A').castPermanent(card)
+    await s.as('A').resolveStack()
+
+    assert.equal((await s.cardState(card)).zone, 'battlefield')
+  })
+})
