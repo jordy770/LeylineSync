@@ -6039,3 +6039,367 @@
 
 | 21:36 | Dynamic-granted keywords on opponent view: getGrantedKeywords (data.ts) merges direct keyword grants onto BoardCard.keywords in use-controller-game-state; normalizeKeywords accepts underscored effect_types. Board-hook merge reverted (no keyword UI there). | lib/game/data.ts, use-controller-game-state.ts, controller/KeywordIcon.tsx, tests/unit/keyword-icons.test.ts | tsc 0 err, lint clean, 7/7 unit | ~6000 |
 | 21:36 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | 1→3 lines | ~296 |
+
+## Session: 2026-06-27 21:51
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:57 | Created docs/collection-optimizer/ARCHITECTURE.md | — | ~4554 |
+| 21:59 | Designed Collection Optimizer module; persisted architecture doc (native Next+Supabase stack) | docs/collection-optimizer/ARCHITECTURE.md | created | ~6k |
+| 22:00 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | — | ~430 |
+| 22:00 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~70 |
+| 22:11 | Edited docs/collection-optimizer/ARCHITECTURE.md | modified boundary() | ~485 |
+| 22:11 | Edited docs/collection-optimizer/ARCHITECTURE.md | modified recreate() | ~380 |
+| 22:12 | Edited docs/collection-optimizer/ARCHITECTURE.md | 3→5 lines | ~74 |
+| 22:12 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified placement() | ~232 |
+| 22:12 | Updated optimizer design: reuse existing cards table read-only, added isolation boundary (collection schema, dont touch game engine) | docs/collection-optimizer/ARCHITECTURE.md | edited | ~1k |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | expanded (+18 lines) | ~678 |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | 2→2 lines | ~51 |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | 2→2 lines | ~33 |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | 2→2 lines | ~42 |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | 2→2 lines | ~43 |
+| 22:27 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified placement() | ~394 |
+| 22:27 | Verified live cards schema: thin game catalog (no colors/cmc/prices/sets, oracle_id=text). Revised design to optimizer-owned card_printings layer (option B) | docs/collection-optimizer/ARCHITECTURE.md | verified+edited | ~2k |
+| 10:42 | Created supabase/migrations/202605010364_collection_optimizer.sql | — | ~2753 |
+| 10:43 | Created scripts/import-card-printings.mjs | — | ~2856 |
+| 10:43 | Edited package.json | 1→2 lines | ~37 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/b3467b9f-c3ab-4823-9620-fb93c878b451/scratchpad/validate-mig.mjs | — | ~326 |
+| 10:45 | Created _co_apply_tmp.mjs | — | ~228 |
+| 10:46 | Created _co_check_tmp.mjs | — | ~175 |
+| 10:46 | Edited docs/collection-optimizer/ARCHITECTURE.md | namespace() → schema() | ~173 |
+| 10:47 | Edited docs/collection-optimizer/ARCHITECTURE.md | modified BUILT() | ~289 |
+| 10:47 | Built+applied Collection Optimizer migration (public.co_* tables, views, RLS) + import-card-printings.mjs; verified end-to-end on local DB (20 printings, colors/cmc/prices/tsv OK) | supabase/migrations/202605010364_collection_optimizer.sql, scripts/import-card-printings.mjs, package.json | applied+verified | ~9k |
+| 10:47 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified reversal() | ~402 |
+| 11:26 | Created lib/collection/types.ts | — | ~438 |
+| 11:27 | Created lib/collection/parsers/manabox.ts | — | ~1533 |
+| 11:27 | Created lib/collection/import-collection.ts | — | ~1895 |
+| 11:27 | Created app/api/collection/import/route.ts | — | ~576 |
+| 11:28 | Created tests/unit/manabox-parser.test.ts | — | ~1255 |
+| 11:28 | Created _co_e2e_tmp.mjs | — | ~669 |
+| 11:29 | Created _co_e2e_tmp.mjs | — | ~804 |
+| 11:30 | Created _co_e2e_tmp.mjs | — | ~829 |
+| 11:31 | Built ManaBox CSV importer: pure parser+resolver, orchestrator (replace-snapshot), POST /api/collection/import; 11 unit tests pass + e2e verified on local (6/1 match, finishes split, availability owned/free/committed correct) | lib/collection/{types,import-collection,parsers/manabox}.ts, app/api/collection/import/route.ts, tests/unit/manabox-parser.test.ts | done+verified | ~10k |
+| 11:31 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~425 |
+| 12:18 | Created lib/collection/resolve.ts | — | ~841 |
+| 12:19 | Edited lib/collection/types.ts | expanded (+30 lines) | ~272 |
+| 12:19 | Edited lib/collection/import-collection.ts | reduced (-16 lines) | ~78 |
+| 12:19 | Edited lib/collection/import-collection.ts | inline fix | ~22 |
+| 12:19 | Edited lib/collection/import-collection.ts | removed 43 lines | ~12 |
+| 12:19 | Edited tests/unit/manabox-parser.test.ts | "../../lib/collection/impo" → "../../lib/collection/reso" | ~18 |
+| 12:19 | Edited tests/unit/manabox-parser.test.ts | 6→7 lines | ~44 |
+| 12:20 | Created lib/collection/parsers/decklist.ts | — | ~1193 |
+| 12:20 | Created lib/collection/import-deck.ts | — | ~1450 |
+| 12:20 | Created app/api/decks/import/route.ts | — | ~727 |
+| 12:21 | Created tests/unit/decklist-parser.test.ts | — | ~813 |
+| 12:21 | Created _co_deck_e2e_tmp.mjs | — | ~636 |
+| 12:22 | Built deck importer (Moxfield/Archidekt/txt): decklist parser, extracted shared resolve.ts (DRY across both importers), import-deck orchestrator, POST /api/decks/import; 8 new tests, 421 unit pass, e2e verified (commander+colorIdentity+sideboard-skip) | lib/collection/{resolve,import-deck,parsers/decklist}.ts, app/api/decks/import/route.ts, tests/unit/decklist-parser.test.ts | done+verified | ~12k |
+| 12:22 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~418 |
+| 12:32 | Created lib/collection/synergy/tagger.ts | — | ~1738 |
+| 12:32 | Created tests/unit/synergy-tagger.test.ts | — | ~1038 |
+| 12:33 | Created scripts/tag-backfill.mjs | — | ~1075 |
+| 12:33 | Edited package.json | 1→2 lines | ~38 |
+| 12:34 | Created lib/collection/power-score.ts | — | ~1386 |
+| 12:34 | Created tests/unit/power-score.test.ts | — | ~804 |
+| 12:36 | Created lib/collection/upgrade-scanner.ts | — | ~3531 |
+| 12:37 | Created tests/unit/upgrade-scanner.test.ts | — | ~928 |
+| 12:37 | Created app/api/decks/[id]/upgrades/route.ts | — | ~363 |
+| 12:38 | Created lib/collection/deck-loader.ts | — | ~876 |
+| 12:38 | Edited lib/collection/upgrade-scanner.ts | added 1 import(s) | ~86 |
+| 12:38 | Edited lib/collection/upgrade-scanner.ts | removed 40 lines | ~89 |
+| 12:38 | Edited lib/collection/upgrade-scanner.ts | removed 16 lines | ~8 |
+| 12:39 | Edited lib/collection/upgrade-scanner.ts | reduced (-6 lines) | ~20 |
+| 12:39 | Created lib/collection/analyze-deck.ts | — | ~339 |
+| 12:39 | Created app/api/decks/[id]/analysis/route.ts | — | ~310 |
+| 12:40 | Created _co_scan_e2e_tmp.mjs | — | ~1135 |
+| 12:40 | Edited lib/collection/deck-loader.ts | modified for() | ~313 |
+| 12:41 | Edited lib/collection/deck-loader.ts | added optional chaining | ~333 |
+| 12:41 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~25 |
+| 12:41 | Edited lib/collection/upgrade-scanner.ts | removed 29 lines | ~8 |
+| 12:41 | Created _co_scan_e2e_tmp.mjs | — | ~959 |
+| 12:42 | Created _co_scan_e2e_tmp.mjs | — | ~888 |
+| 12:44 | Edited lib/collection/synergy/tagger.ts | modified target() | ~71 |
+| 12:44 | Edited lib/collection/synergy/tagger.ts | added 1 condition(s) | ~104 |
+| 12:44 | Edited tests/unit/synergy-tagger.test.ts | expanded (+11 lines) | ~208 |
+| 12:45 | Created _co_scan_e2e_tmp.mjs | — | ~838 |
+| 12:46 | Built synergy tagger + tag-backfill (33k cards tagged), power-score, upgrade engine (free/occupied) + analysis. Routes GET decks/:id/{analysis,upgrades}. 447 unit pass; e2e verified (power 3.1, swaps+additions+occupied). Fixed 2 tagger bugs (lands=ramp, removal adjective) | lib/collection/{synergy/tagger,power-score,upgrade-scanner,deck-loader,analyze-deck}.ts, scripts/tag-backfill.mjs, app/api/decks/[id]/{analysis,upgrades}/route.ts, 3 tests | done+verified | ~20k |
+| 12:46 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~534 |
+| 14:10 | Created components/collection/Shell.tsx | — | ~881 |
+| 14:11 | Created app/collection/page.tsx | — | ~1565 |
+| 14:11 | Created components/collection/ImportWizard.tsx | — | ~1446 |
+| 14:11 | Created app/collection/import/page.tsx | — | ~185 |
+| 14:11 | Created components/collection/DeckImportForm.tsx | — | ~891 |
+| 14:11 | Created app/collection/decks/import/page.tsx | — | ~184 |
+| 14:12 | Created components/collection/DeckDetail.tsx | — | ~2552 |
+| 14:12 | Created app/collection/decks/[id]/page.tsx | — | ~342 |
+| 14:14 | Built Collection Optimizer UI (Leyline theme): /collection overview, /collection/import wizard, /collection/decks/import, /collection/decks/[id] detail (power gauge + free/occupied scanner). tsc+eslint clean; all routes 307 (compile+run OK, no 500s) | app/collection/**, components/collection/{Shell,ImportWizard,DeckImportForm,DeckDetail}.tsx | done+verified | ~14k |
+| 14:14 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~464 |
+| 14:39 | Created lib/collection/deck-mutations.ts | — | ~622 |
+| 14:39 | Created lib/collection/apply-swap.ts | — | ~585 |
+| 14:39 | Created lib/collection/move-card.ts | — | ~540 |
+| 14:39 | Created app/api/decks/[id]/swaps/route.ts | — | ~413 |
+| 14:40 | Created app/api/collection/move-card/route.ts | — | ~403 |
+| 14:40 | Edited lib/collection/upgrade-scanner.ts | 4→9 lines | ~36 |
+| 14:40 | Edited lib/collection/upgrade-scanner.ts | 6→6 lines | ~28 |
+| 14:40 | Edited lib/collection/upgrade-scanner.ts | 3→3 lines | ~58 |
+| 14:40 | Edited lib/collection/upgrade-scanner.ts | modified for() | ~232 |
+| 14:40 | Edited tests/unit/upgrade-scanner.test.ts | expanded (+8 lines) | ~211 |
+| 14:41 | Edited components/collection/DeckDetail.tsx | CSS: id | ~46 |
+| 14:41 | Edited components/collection/DeckDetail.tsx | 5→5 lines | ~33 |
+
+## Session: 2026-06-28 14:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:41 | Edited components/collection/DeckDetail.tsx | added optional chaining | ~637 |
+
+## Session: 2026-06-28 14:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:41 | Edited components/collection/DeckDetail.tsx | CSS: disabled, background | ~322 |
+| 14:41 | Edited components/collection/DeckDetail.tsx | CSS: disabled | ~242 |
+| 14:41 | Edited components/collection/DeckDetail.tsx | CSS: color | ~89 |
+| 14:42 | Created _co_actions_e2e_tmp.mjs | — | ~771 |
+| 14:43 | Built Apply-swap + Move-card actions: deck-mutations helpers, apply-swap/move-card orchestrators (ownership+color-identity validated), POST /api/decks/[id]/swaps + /api/collection/move-card, wired Apply/Move buttons in DeckDetail. Scanner usedBy now {id,name}[]. e2e verified swap+move+negative; full unit suite pass; routes 307 | lib/collection/{deck-mutations,apply-swap,move-card}.ts, app/api/decks/[id]/swaps, app/api/collection/move-card, components/collection/DeckDetail.tsx, lib/collection/upgrade-scanner.ts | done+verified | ~12k |
+| 14:43 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~432 |
+| 14:56 | Edited components/SiteNav.tsx | inline fix | ~26 |
+| 14:56 | Edited components/SiteNav.tsx | expanded (+10 lines) | ~172 |
+| 14:56 | Edited lib/collection/apply-swap.ts | added 1 import(s) | ~46 |
+| 14:56 | Edited lib/collection/apply-swap.ts | modified catch() | ~99 |
+| 14:56 | Edited lib/collection/move-card.ts | added 1 import(s) | ~46 |
+| 14:56 | Edited lib/collection/move-card.ts | modified catch() | ~126 |
+| 14:57 | Created lib/collection/ai-recommend.ts | — | ~2049 |
+| 14:58 | Created app/api/decks/[id]/recommend/route.ts | — | ~469 |
+| 14:58 | Created tests/unit/ai-recommend.test.ts | — | ~743 |
+| 14:58 | Edited components/collection/DeckDetail.tsx | CSS: summary, picks | ~113 |
+| 14:59 | Edited components/collection/DeckDetail.tsx | expanded (+8 lines) | ~72 |
+| 14:59 | Edited components/collection/DeckDetail.tsx | added 1 condition(s) | ~233 |
+| 14:59 | Edited components/collection/DeckDetail.tsx | expanded (+69 lines) | ~850 |
+| 14:59 | Edited components/collection/DeckDetail.tsx | CSS: verdict, color, border | ~129 |
+| 15:01 | Created _co_ai_e2e_tmp.mjs | — | ~744 |
+| 15:01 | Added AI deck-doctor (RAG over scan, grounded, theme-aware, budget) + route /api/decks/[id]/recommend + UI panel; power-score cache refresh on Apply/Move; Collection nav entry in SiteNav. 3 AI unit tests, full suite pass, tsc+lint clean, LIVE Opus e2e verified grounded output | lib/collection/ai-recommend.ts, app/api/decks/[id]/recommend, components/collection/DeckDetail.tsx, components/SiteNav.tsx, apply-swap/move-card cache | done+verified | ~16k |
+| 15:02 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~442 |
+| 15:57 | Created lib/collection/fetch-decklist.ts | — | ~1541 |
+| 15:57 | Edited app/api/decks/import/route.ts | added 1 import(s) | ~192 |
+| 15:58 | Edited app/api/decks/import/route.ts | added 1 condition(s) | ~188 |
+| 15:58 | Edited components/collection/DeckImportForm.tsx | CSS: url, null | ~365 |
+| 15:58 | Edited components/collection/DeckImportForm.tsx | CSS: https, https | ~586 |
+| 15:58 | Edited components/collection/DeckImportForm.tsx | modified ModeTab() | ~254 |
+| 15:59 | Created tests/unit/fetch-decklist.test.ts | — | ~1159 |
+| 16:00 | Added deck-import URL support (Moxfield/Archidekt): fetch-decklist.ts (parseDeckUrl + JSON→text mappers, fixed-host fetch = no SSRF), wired into /api/decks/import {url}, URL/Paste toggle in DeckImportForm. 7 unit tests + LIVE Archidekt fetch verified (real deck mapped, commander flagged). Full suite pass; tsc+lint clean | lib/collection/fetch-decklist.ts, app/api/decks/import/route.ts, components/collection/DeckImportForm.tsx, tests/unit/fetch-decklist.test.ts | done+verified | ~7k |
+| 16:00 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~257 |
+| 16:19 | Created supabase/migrations/202605010365_buy_candidates.sql | — | ~534 |
+| 16:19 | Created lib/collection/buy-suggestions.ts | — | ~716 |
+| 16:20 | Created app/api/decks/[id]/buy/route.ts | — | ~366 |
+| 16:20 | Created lib/collection/conflicts.ts | — | ~814 |
+| 16:20 | Created app/api/conflicts/route.ts | — | ~232 |
+| 16:20 | Created app/collection/conflicts/page.tsx | — | ~793 |
+| 16:20 | Edited app/collection/page.tsx | 7→12 lines | ~155 |
+| 16:21 | Edited components/collection/DeckDetail.tsx | 3→7 lines | ~125 |
+| 16:21 | Edited components/collection/DeckDetail.tsx | CSS: oracleId, scryfallUrl | ~84 |
+| 16:21 | Edited components/collection/DeckDetail.tsx | added nullish coalescing | ~222 |
+| 16:21 | Edited components/collection/DeckDetail.tsx | 4→7 lines | ~73 |
+| 16:22 | Edited components/collection/DeckDetail.tsx | 5→6 lines | ~67 |
+| 16:22 | Edited components/collection/DeckDetail.tsx | modified BuyTab() | ~753 |
+| 16:22 | Created tests/unit/conflicts-buy.test.ts | — | ~631 |
+| 16:23 | Created _co_bc_e2e_tmp.mjs | — | ~789 |
+| 16:27 | Edited lib/collection/conflicts.ts | added 1 condition(s) | ~98 |
+| 16:28 | Added Buy suggestions (co_buy_candidates SQL fn mig 365 + suggestBuys + /api/decks/[id]/buy + Buy tab w/ budget chips + Scryfall links) and Deck Conflicts (computeConflicts + listConflicts + /api/conflicts + /collection/conflicts page + overview link). 4 unit tests, e2e verified both; basic-land conflict noise fixed (bug-1502). Full suite pass, routes 307 | lib/collection/{buy-suggestions,conflicts}.ts, supabase/migrations/202605010365, app/api/decks/[id]/buy, app/api/conflicts, app/collection/conflicts, components/collection/DeckDetail.tsx | done+verified | ~18k |
+| 16:29 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~363 |
+| 16:41 | Edited lib/collection/synergy/tagger.ts | wipes() → wipe() | ~92 |
+| 16:41 | Edited lib/collection/synergy/tagger.ts | added 1 condition(s) | ~216 |
+| 16:41 | Edited lib/collection/synergy/tagger.ts | 1→4 lines | ~74 |
+| 16:42 | Edited tests/unit/synergy-tagger.test.ts | expanded (+15 lines) | ~402 |
+| 16:42 | Created supabase/migrations/202605010366_buy_ranking.sql | — | ~498 |
+| 16:43 | Edited lib/collection/buy-suggestions.ts | added 3 condition(s) | ~483 |
+| 16:44 | Edited lib/collection/ai-recommend.ts | added 1 import(s) | ~106 |
+| 16:45 | Edited lib/collection/ai-recommend.ts | 18→20 lines | ~118 |
+| 16:45 | Edited lib/collection/ai-recommend.ts | added optional chaining | ~278 |
+| 16:45 | Edited lib/collection/ai-recommend.ts | owns() → cards() | ~389 |
+| 16:45 | Edited components/collection/DeckDetail.tsx | CSS: border | ~204 |
+| 16:47 | Improved buy suggestions x3: (1) tagger CMC-efficiency weighting + board_wipe hard/soft split (re-backfilled 33k); (2) buy ranking mig 366 (weight>=2, best-in-budget) + round-robin diversify across need-tags; (3) AI deck-doctor now ranks owned+buy candidates, prefers owned, budget-aware. 22 tests pass; live Opus e2e verified (free includes + buy considers/skips with purchase reasoning) | lib/collection/{synergy/tagger,buy-suggestions,ai-recommend}.ts, supabase/migrations/202605010366, components/collection/DeckDetail.tsx | done+verified | ~15k |
+| 16:47 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified EDHREC() | ~334 |
+| 20:21 | Created lib/collection/scoring.ts | — | ~1481 |
+| 20:22 | Edited lib/collection/upgrade-scanner.ts | expanded (+12 lines) | ~211 |
+| 20:22 | Edited lib/collection/upgrade-scanner.ts | expanded (+6 lines) | ~163 |
+| 20:23 | Edited lib/collection/upgrade-scanner.ts | added 4 condition(s) | ~1637 |
+| 20:23 | Edited lib/collection/upgrade-scanner.ts | modified if() | ~81 |
+| 20:23 | Edited lib/collection/upgrade-scanner.ts | 2→2 lines | ~40 |
+| 20:23 | Edited tests/unit/upgrade-scanner.test.ts | 3→3 lines | ~36 |
+| 20:23 | Edited tests/unit/upgrade-scanner.test.ts | 3→3 lines | ~50 |
+| 20:24 | Created tests/unit/scoring.test.ts | — | ~1107 |
+| 20:24 | Edited lib/collection/power-score.ts | added 1 import(s) | ~37 |
+| 20:25 | Edited lib/collection/power-score.ts | expanded (+7 lines) | ~95 |
+| 20:25 | Edited lib/collection/power-score.ts | added nullish coalescing | ~774 |
+| 20:25 | Edited lib/collection/buy-suggestions.ts | 14→19 lines | ~163 |
+| 20:26 | Edited lib/collection/buy-suggestions.ts | added optional chaining | ~667 |
+| 20:26 | Edited lib/collection/buy-suggestions.ts | 2→2 lines | ~42 |
+| 20:26 | Edited lib/collection/ai-recommend.ts | 18→23 lines | ~133 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | added optional chaining | ~218 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | 3→6 lines | ~93 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | 14→18 lines | ~263 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | expanded (+13 lines) | ~261 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | 7→11 lines | ~389 |
+| 20:28 | Edited tests/unit/ai-recommend.test.ts | 9→9 lines | ~238 |
+| 20:28 | Edited components/collection/DeckDetail.tsx | expanded (+6 lines) | ~222 |
+| 20:28 | Edited components/collection/DeckDetail.tsx | CSS: confidence, themeImpact | ~54 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | added 2 condition(s) | ~650 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | 5→7 lines | ~81 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | 10→12 lines | ~180 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | 10→12 lines | ~166 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | 5→7 lines | ~100 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | CSS: confidence, themeImpact | ~58 |
+| 20:30 | Edited components/collection/DeckDetail.tsx | 4→6 lines | ~83 |
+| 20:31 | Edited lib/collection/power-score.ts | modified for() | ~50 |
+| 20:33 | Recommendation quality pass: new scoring.ts (commander synergy from commander tags, theme Keeps/Neutral/Weakens, curve fit, 0-100 confidence renormalized). Wired into scanner free/occupied (additive confidence/themeImpact/commanderSynergy fields, confidence-sorted, richer reasons) + buy + AI (signals+replaces in context, prefer-owned prompt). Deck Health axes on PowerScore. UI badges+health panel. 9 scoring tests; live AI verified concrete explanations | lib/collection/{scoring,power-score,upgrade-scanner,buy-suggestions,ai-recommend}.ts, components/collection/DeckDetail.tsx, tests | done+verified | ~24k |
+| 20:33 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | expanded (+9 lines) | ~541 |
+| 22:42 | Created lib/collection/dashboard.ts | — | ~1316 |
+| 22:42 | Edited lib/collection/import-deck.ts | added nullish coalescing | ~189 |
+| 22:42 | Created tests/unit/dashboard.test.ts | — | ~517 |
+| 22:43 | Created app/collection/page.tsx | — | ~2409 |
+
+## Session: 2026-06-28 22:44
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:45 | Edited lib/collection/dashboard.ts | 7→12 lines | ~142 |
+| 22:47 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/never-purge-user-data.md | — | ~318 |
+| 22:47 | Built Dashboard (collection value, free staples, deck health list, import history) + getDashboard helper + deck-import co_imports logging; 4 tests, 476 suite pass. MISTAKE: purged test-user co_* rows incl the user-created Yshtola deck (logged do-not-repeat) | lib/collection/dashboard.ts, app/collection/page.tsx, lib/collection/import-deck.ts | done; data-loss incident | ~12k |
+| 22:54 | Created lib/collection/insights.ts | — | ~1613 |
+| 22:54 | Created tests/unit/insights.test.ts | — | ~786 |
+| 22:54 | Created app/collection/insights/page.tsx | — | ~1390 |
+| 22:55 | Edited app/collection/page.tsx | 8→11 lines | ~163 |
+| 22:56 | Built Collection Insights: getCollectionInsights + pure rankDeckFits (perfect-fit per deck via reused scoring; unused staples collection-wide); /collection/insights page + dashboard link. 4 tests, 480 suite pass. E2e on THROWAWAY user, deleted only created ids (per never-purge lesson) | lib/collection/insights.ts, app/collection/insights/page.tsx, app/collection/page.tsx | done+verified | ~10k |
+| 22:56 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~282 |
+
+## Session: 2026-06-29 10:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-29 10:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:30 | Created supabase/migrations/202605010367_binder_name.sql | — | ~188 |
+| 10:31 | Edited lib/collection/types.ts | 4→5 lines | ~32 |
+| 10:31 | Edited lib/collection/parsers/manabox.ts | 16→18 lines | ~118 |
+| 10:31 | Edited lib/collection/parsers/manabox.ts | 3→4 lines | ~55 |
+| 10:31 | Edited lib/collection/parsers/manabox.ts | 2→3 lines | ~42 |
+| 10:31 | Edited lib/collection/import-collection.ts | 8→9 lines | ~58 |
+| 10:31 | Edited lib/collection/import-collection.ts | 5→6 lines | ~47 |
+| 10:32 | Edited lib/collection/deck-loader.ts | added optional chaining | ~318 |
+| 10:32 | Edited lib/collection/upgrade-scanner.ts | 7→8 lines | ~44 |
+| 10:32 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~30 |
+| 10:32 | Edited lib/collection/upgrade-scanner.ts | 1→4 lines | ~74 |
+| 10:32 | Edited lib/collection/upgrade-scanner.ts | added nullish coalescing | ~68 |
+| 10:32 | Edited lib/collection/dashboard.ts | 10→11 lines | ~78 |
+| 10:32 | Edited lib/collection/dashboard.ts | 14→15 lines | ~198 |
+| 10:33 | Edited lib/collection/insights.ts | inline fix | ~27 |
+| 10:33 | Edited lib/collection/insights.ts | 5→6 lines | ~39 |
+| 10:33 | Edited lib/collection/insights.ts | 1→5 lines | ~55 |
+| 10:33 | Edited lib/collection/insights.ts | 6→7 lines | ~74 |
+| 10:33 | Edited lib/collection/insights.ts | added nullish coalescing | ~50 |
+| 10:33 | Edited components/collection/DeckDetail.tsx | 9→10 lines | ~75 |
+| 10:34 | Edited components/collection/DeckDetail.tsx | 5→6 lines | ~87 |
+| 10:34 | Edited components/collection/DeckDetail.tsx | CSS: color | ~85 |
+| 10:34 | Edited app/collection/page.tsx | 7→12 lines | ~204 |
+| 10:34 | Edited app/collection/insights/page.tsx | CSS: color | ~156 |
+| 10:34 | Edited app/collection/insights/page.tsx | 8→13 lines | ~192 |
+| 10:35 | Edited tests/unit/manabox-parser.test.ts | 11→12 lines | ~84 |
+| 10:35 | Edited tests/unit/manabox-parser.test.ts | expanded (+7 lines) | ~117 |
+| 10:36 | Edited tests/unit/manabox-parser.test.ts | 6→7 lines | ~33 |
+| 10:37 | Added Binder Name support: mig 367 (binder_name col + uniq index incl binder_name), parser captures Binder Name, import stores it, loadBinderNames helper, surfaced in scanner free / dashboard staples / insights (perfect fits + unused). e2e verified store+surface on throwaway user. 482 suite pass | mig 367, manabox.ts, types.ts, import-collection.ts, deck-loader.ts, upgrade-scanner.ts, dashboard.ts, insights.ts, 3 UI files | done+verified | ~9k |
+| 10:38 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~277 |
+| 11:32 | Edited lib/collection/deck-loader.ts | 3→8 lines | ~120 |
+| 11:32 | Edited lib/collection/resolve.ts | 1→2 lines | ~32 |
+| 11:33 | Edited lib/collection/upgrade-scanner.ts | modified for() | ~69 |
+| 11:33 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~33 |
+| 11:35 | Fixed URI-too-long: lowered .in() chunk 300→100 (shared IN_CHUNK in deck-loader, resolve, scanner). Surfaced by real large collection on dashboard. Verified 500 ids load clean; 481 suite pass | lib/collection/{deck-loader,resolve,upgrade-scanner}.ts | fixed+verified | ~3k |
+
+## Session: 2026-06-29 22:51
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 23:03 | Created image-loader.ts | — | ~226 |
+| 23:03 | Edited next.config.ts | expanded (+6 lines) | ~128 |
+| 23:27 | Fixed: most Scryfall card images 400 via /_next/image â Scryfall CDN now blocks default-UA fetch (subcode generic_user_agent); added custom image-loader.ts to bypass optimizer for cards.scryfall.io | next.config.ts, image-loader.ts | resolved (confirmed by user) | ~6k |
+| 23:34 | Edited supabase/functions_src/card_layered_power.sql | modified and() | ~205 |
+| 23:34 | Edited supabase/functions_src/card_layered_toughness.sql | modified and() | ~205 |
+| 23:34 | Edited supabase/functions_src/card_has_lifelink.sql | modified and() | ~125 |
+| 23:34 | Edited docs/commander-decks/card-scripts.json | expanded (+18 lines) | ~167 |
+| 23:35 | Edited supabase/migrations/202605010368_commander_anthem.sql | 2→7 lines | ~135 |
+| 23:41 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified anthem() | ~142 |
+| 23:41 | Edited supabase/migrations/202605010368_commander_anthem.sql | expanded (+9 lines) | ~211 |
+| 23:42 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~331 |
+| 23:43 | Created tests/feature/dancers-chakrams.test.ts | — | ~1411 |
+| 23:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/log-bugs.cjs | — | ~778 |
+| 23:48 | Dancer's Chakrams: scripted the missing "other commanders +2/+2 & lifelink" clause (commander_only anthem predicate, gated on attachment) + verified | functions_src accessors, card-scripts.json, mig 368, dancers-chakrams.test.ts | 3 tests green, dev DB patched | ~40k |
+| 00:01 | Edited lib/game/use-controller-game-state.ts | expanded (+8 lines) | ~289 |
+| 00:01 | Edited lib/game/use-controller-game-state.ts | added 3 condition(s) | ~369 |
+| 00:01 | Edited lib/game/use-board-game-state.ts | expanded (+6 lines) | ~226 |
+| 00:01 | Edited lib/game/use-board-game-state.ts | added 3 condition(s) | ~358 |
+| 00:03 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/log-perf.cjs | — | ~487 |
+| 00:03 | Perf: killed 2s idle-poll storm — gated controller+board fallback poll on channel health (SUBSCRIBED→no poll) instead of silence; healthy channel = zero idle reloads | use-controller-game-state.ts, use-board-game-state.ts | tsc+eslint clean | ~55k |
+| 00:14 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/rt-test.mjs | — | ~498 |
+| 00:16 | Created _rt_test2_tmp.mjs | — | ~674 |
+| 00:17 | Created _rt_test3_tmp.mjs | — | ~672 |
+| 00:18 | Created _rt_test4_tmp.mjs | — | ~484 |
+| 00:21 | Edited lib/game/use-controller-game-state.ts | expanded (+6 lines) | ~361 |
+| 00:21 | Edited lib/game/use-controller-game-state.ts | 9→12 lines | ~208 |
+| 00:22 | Edited lib/game/use-board-game-state.ts | expanded (+6 lines) | ~307 |
+| 00:22 | Edited lib/game/use-board-game-state.ts | the() → event() | ~189 |
+| 00:24 | Diagnosed bot-no-update: anon board realtime gets 0 events (RLS); fixed poll to gate on event-delivery not just SUBSCRIBED — authed clients stop idle-polling, anon board keeps fallback | use-controller/use-board-game-state.ts | tsc+eslint clean; realtime delivery proven empirically | ~70k |
+| 00:29 | Created _rt_race_tmp.mjs | — | ~531 |
+| 00:32 | Created lib/supabase/client.ts | — | ~342 |
+| 00:33 | ROOT CAUSE of fetch storm: supabase-js skips realtime.setAuth on INITIAL_SESSION → ssr cookie-restored sessions run realtime as anon → 0 postgres_changes → poll never stops. Fix: setAuth(session token) once in lib/supabase/client.ts | lib/supabase/client.ts | tsc+eslint clean; setAuth delivery proven | ~85k |
+| 12:32 | Created supabase/functions_src/note_spell_cast.sql | — | ~332 |
+| 12:32 | Edited supabase/functions_src/fire_watcher_triggers.sql | expanded (+7 lines) | ~137 |
+| 12:33 | Edited supabase/functions_src/resolve_count_amount.sql | expanded (+9 lines) | ~270 |
+| 12:33 | Edited supabase/functions_src/reduced_mana_cost.sql | 5→6 lines | ~27 |
+| 12:33 | Edited supabase/functions_src/reduced_mana_cost.sql | modified coalesce() | ~398 |
+| 12:33 | Edited docs/commander-decks/card-scripts.json | expanded (+11 lines) | ~191 |
+| 12:33 | Edited supabase/migrations/202605010369_dualcast.sql | expanded (+10 lines) | ~242 |
+| 12:34 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~150 |
+| 12:35 | Created tests/feature/dualcast.test.ts | — | ~877 |
+| 12:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/log-dualcast.cjs | — | ~490 |
+| 12:38 | Implemented Alisaie Dualcast: per-turn spell counter (note_spell_cast via spell_cast watcher) + nth_spell cost-reduction condition in reduced_mana_cost; scripted + tested + dev DB patched | functions_src x4, mig 369, card-scripts.json, dualcast.test.ts | AL1/AL2 + 33 regression green | ~60k |
+| 12:48 | Edited tests/feature/dualcast.test.ts | added optional chaining | ~190 |
+| 12:48 | Edited tests/feature/dualcast.test.ts | expanded (+26 lines) | ~441 |
+| 15:10 | Created supabase/functions_src/get_controller_state.sql | — | ~1659 |
+| 15:11 | Edited supabase/migrations/202605010370_controller_state.sql | modified get_controller_state() | ~98 |
+| 15:12 | Created _verify_cs_tmp.mjs | — | ~832 |
+| 15:13 | Edited lib/game/data.ts | added optional chaining | ~2455 |
+| 15:13 | Edited lib/game/use-controller-game-state.ts | removed 23 lines | ~24 |
+| 15:14 | Edited lib/game/use-controller-game-state.ts | reduced (-18 lines) | ~213 |
+| 15:15 | Created tests/feature/controller-state.test.ts | — | ~776 |
+| 15:18 | Perf: built get_controller_state RPC (mig 370) — bundles ~19 controller reads + the per-reload catalog re-fetch into ONE jsonb round-trip; verified byte-equal vs legacy on live session; rewired hook | get_controller_state.sql, data.ts, use-controller-game-state.ts, controller-state.test.ts | CS1 green, tsc+eslint clean | ~120k |
+| 21:35 | Created supabase/functions_src/get_board_state.sql | — | ~1014 |
+| 21:36 | Edited supabase/migrations/202605010371_board_state.sql | modified get_board_state() | ~94 |
+| 21:36 | Created _verify_bs_tmp.mjs | — | ~605 |
+| 21:37 | Edited lib/game/data.ts | reduced (-27 lines) | ~106 |
+| 21:37 | Edited lib/game/data.ts | added optional chaining | ~1048 |
+| 21:37 | Edited lib/game/use-board-game-state.ts | reduced (-9 lines) | ~11 |
+| 21:37 | Edited lib/game/use-board-game-state.ts | reduced (-8 lines) | ~78 |
+| 21:38 | Created tests/feature/board-state.test.ts | — | ~553 |
+| 21:40 | Perf: built get_board_state RPC (mig 371) — board counterpart of get_controller_state; ~8 reads → 1; shared mappers; verified byte-equal on live; board hook rewired | get_board_state.sql, data.ts, use-board-game-state.ts, board-state.test.ts | BS1+CS1 green, tsc+eslint clean | ~45k |
+| 22:08 | Edited lib/game/card-behavior-schema.ts | 5→7 lines | ~86 |
+| 22:10 | Fixed kapotte plain-drummer scripts: draw.amount was required in the validator but engine defaults missing→1 (DF3 guards this); made draw.amount optional | lib/game/card-behavior-schema.ts | seeder no longer aborts; fixtures 366/0, DF1-3 green | ~12k |
+| 22:30 | Edited app/board/[id]/page.tsx | added optional chaining | ~347 |
+| 22:31 | Board route now server-side login-gated (getClaims → redirect /auth/login?next=/board/:id) so it can no longer run anon → realtime delivers → fallback poll stops entirely | app/board/[id]/page.tsx | tsc+eslint clean; GameBoard only reachable via this route | ~15k |
+| 22:33 | Created _scan_ff_tmp.mjs | — | ~554 |
+| 22:36 | Edited lib/game/card-behavior-schema.ts | 5→10 lines | ~150 |
+| 22:36 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified filter() | ~185 |
+| 22:36 | Edited docs/commander-decks/card-scripts.json | expanded (+13 lines) | ~190 |
+| 22:37 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~215 |
+| 22:37 | Edited supabase/migrations/202605010372_second_spell_trigger.sql | 2→6 lines | ~120 |
+| 22:38 | Created tests/feature/second-spell-trigger.test.ts | — | ~530 |
+| 22:40 | Edited tests/feature/second-spell-trigger.test.ts | modified async() | ~302 |
+| 22:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/log-alphinaud.cjs | — | ~466 |
+| 22:41 | FF deck scan for "Nde spell": found Alphinaud Eukrasia missing → built spell_number filter (spell_cast trigger gated on spells_cast_this_turn==N) + scripted+tested. Reported Lyse Hext (noncreature count) + Hraesvelgr/Mog (per-cast) as separate gaps | fire_watcher_triggers.sql, card-behavior-schema.ts, card-scripts.json, mig 372, second-spell-trigger.test.ts | SS1 + 19 regression + 367 fixtures green | ~75k |
+
+## Session: 2026-07-03 14:01
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:10 | Edited tests/unit/scoring.test.ts | inline fix | ~25 |
