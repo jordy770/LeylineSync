@@ -1,7 +1,11 @@
--- supabase/functions_src/fire_watcher_triggers.sql
--- CANONICAL current definition (seeded from 202605010181_watcher_nontoken_filter.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010372_second_spell_trigger
+-- Alphinaud Leveilleur — Eukrasia: "Whenever you cast your SECOND spell each turn,
+-- draw a card." Adds a `spell_number` filter to fire_watcher_triggers: a spell_cast
+-- trigger fires only when the cast is exactly the Nth spell the controller cast
+-- this turn (reuses the spells_cast_this_turn counter from mig 369; note_spell_cast
+-- runs at the top of fire_watcher_triggers so THIS cast is already counted).
+-- Generated from supabase/functions_src (fire_watcher_triggers) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.fire_watcher_triggers(
   p_session_id uuid,

@@ -331,7 +331,9 @@ const CardBehaviorActionSchema = z.union([
   }),
   z.object({
     type: z.literal('draw'),
-    amount: AmountSchema,
+    // Optional: the engine defaults a missing amount to 1 ("draw a card"); the
+    // draw-floor DF3 regression guard relies on `{type:'draw'}` drawing exactly 1.
+    amount: AmountSchema.optional(),
     recipient: BehaviorRecipientSchema.optional(),
   }),
   z.object({
@@ -1309,6 +1311,11 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     // Beyond). Counts the attacking player's declared attackers this combat;
     // pair with once_per_turn so it fires a single time once the threshold is met.
     attackers_at_least: z.number().int().positive().optional(),
+    // "whenever you cast your SECOND spell each turn" (mig 372 — Alphinaud's
+    // Eukrasia). Fires only when the cast spell is exactly the Nth the watcher's
+    // controller has cast this turn; pairs with the spells_cast_this_turn counter
+    // (mig 369, note_spell_cast).
+    spell_number: z.number().int().positive().optional(),
   }).optional(),
   targets: z.array(CardBehaviorTargetSchema).optional(),
   effects: z.array(CardBehaviorActionSchema),

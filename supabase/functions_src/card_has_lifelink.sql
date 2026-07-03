@@ -25,6 +25,11 @@ returns boolean language sql security definer set search_path = public as $$
                or p_game_card_id is distinct from effects.source_card_id)
           and (not coalesce((effects.payload ->> 'token_only')::boolean, false)
                or coalesce(tcard.is_token, false))
+          -- Commander-only anthem (Dancer's Chakrams: "other commanders you
+          -- control ... have lifelink"); excludes the equipped creature ("other").
+          and (effects.payload ->> 'commander_only' is null
+               or (tc.is_commander
+                   and tc.id is distinct from source_card.attached_to))
         )
       )
       and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)

@@ -236,6 +236,15 @@ begin
     join public.game_turn_state ts on ts.session_id = sp.session_id
     where sp.session_id = p_session_id and sp.player_id = p_controller_id;
 
+  elsif v_count = 'spells_cast_this_turn' then
+    -- Spells you have ALREADY cast this turn (mig 369, Alisaie's Dualcast). The
+    -- spell being cast now is index (this + 1). Turn-stamped via note_spell_cast.
+    select case when sp.turn_spells_cast_turn = ts.turn_number then sp.turn_spells_cast else 0 end
+    into v_n
+    from public.game_session_players sp
+    join public.game_turn_state ts on ts.session_id = sp.session_id
+    where sp.session_id = p_session_id and sp.player_id = p_controller_id;
+
   elsif v_count = 'devotion' and v_color <> '' then
     select coalesce(sum(
       (length(c.mana_cost) - length(replace(c.mana_cost, '{' || v_color || '}', ''))) / 3

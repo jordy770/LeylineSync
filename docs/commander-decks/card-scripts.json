@@ -12282,6 +12282,17 @@
           }
         ]
       }
+    ],
+    "continuous_effects": [
+      {
+        "type": "cost_reduction",
+        "affected": "controller",
+        "payload": {
+          "amount": 2,
+          "nth_spell": 2
+        },
+        "source_zone_required": "battlefield"
+      }
     ]
   },
   "Alphinaud Leveilleur": {
@@ -12300,6 +12311,19 @@
             "filter": {
               "name": "Alisaie Leveilleur"
             }
+          }
+        ]
+      },
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "spell_number": 2
+        },
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
           }
         ]
       }
@@ -12604,6 +12628,24 @@
       {
         "type": "lifelink",
         "affected": "equipped",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 2,
+          "toughness": 2,
+          "commander_only": true
+        },
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "lifelink",
+        "affected": "controller",
+        "payload": {
+          "commander_only": true
+        },
         "source_zone_required": "battlefield"
       }
     ]

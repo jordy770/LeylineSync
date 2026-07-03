@@ -33,6 +33,7 @@ declare
   v_zone text;
   v_generic text;
   v_new integer;
+  v_spells_cast integer;
 begin
   if btrim(v_cost) = '' or p_caster is null then
     return v_cost;
@@ -56,6 +57,11 @@ begin
     end if;
   end if;
 
+  -- The number of spells already cast by this player this turn — the spell being
+  -- cast now is index (v_spells_cast + 1). Powers nth_spell reductions below.
+  v_spells_cast := public.resolve_count_amount(
+    p_session_id, p_caster, '{"count":"spells_cast_this_turn"}'::jsonb);
+
   -- Static reductions from the caster's battlefield permanents.
   select v_reduction + coalesce(sum(coalesce((ce.payload ->> 'amount')::integer, 0)), 0)
   into v_reduction
@@ -73,6 +79,13 @@ begin
     and (
       coalesce(ce.payload ->> 'from_zone', '') = ''
       or coalesce(v_zone, '') = (ce.payload ->> 'from_zone')
+    )
+    -- nth_spell (mig 369, Alisaie's Dualcast): "the SECOND spell you cast each turn
+    -- costs {2} less" — apply only to exactly the Kth spell, i.e. when this player
+    -- has already cast K-1 spells this turn.
+    and (
+      coalesce(ce.payload ->> 'nth_spell', '') = ''
+      or v_spells_cast = (ce.payload ->> 'nth_spell')::integer - 1
     );
 
   if v_reduction <= 0 then

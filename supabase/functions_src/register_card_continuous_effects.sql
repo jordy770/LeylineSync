@@ -139,6 +139,14 @@ begin
       raise exception 'Unsupported continuous effect type: %', v_effect_type;
     end if;
 
+    -- commander_only anthem (Dancer's Chakrams): the "other commanders you
+    -- control" buff is an ability GRANTED to the equipped creature, so it exists
+    -- only while a creature is equipped. Skip it when this Equipment is unattached.
+    if coalesce((v_effect -> 'payload' ->> 'commander_only')::boolean, false)
+       and v_source_card.attached_to is null then
+      continue;
+    end if;
+
     v_affected := coalesce(
       v_effect ->> 'affected',
       case

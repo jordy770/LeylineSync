@@ -58,6 +58,12 @@ as $$
                   end)
           and (coalesce((effects.payload ->> 'exclude_source')::boolean, false) = false
                or game_cards.id <> effects.source_card_id)
+          -- Commander-only anthem (Dancer's Chakrams: "other commanders you
+          -- control get +2/+2"). Limits the pump to commanders the source's
+          -- controller controls, excluding the equipped creature ("other").
+          and (effects.payload ->> 'commander_only' is null
+               or (game_cards.is_commander
+                   and game_cards.id is distinct from source_card.attached_to))
           -- Colour-filtered anthem (mig 209, Heraldic Banner): only creatures
           -- of the payload colour get the pump.
           -- Conditional anthem (mig 269, Jor Kadeen metalcraft: '+3/+0 as long
