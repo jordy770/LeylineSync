@@ -4767,7 +4767,7 @@
       "error_message": "npm run validate:scripts crashes: Transform failed â Top-level await is currently not supported with the cjs output format (scripts/validate-card-scripts.ts:31)",
       "file": "scripts/validate-card-scripts.ts",
       "root_cause": "PRE-EXISTING tooling breakage (not card-related): the script uses top-level await, but tsx/esbuild transforms it as CJS where top-level await is unsupported. Discovered while adding the prevent_damage fixture; unrelated to any card script.",
-      "fix": "Not fixed (out of scope). To repair: run the script as ESM (add a local package.json {\"type\":\"module\"} for scripts, or rename to .mts, or wrap the body in an async main() instead of top-level await). Zod validity of fixtures is currently covered indirectly by the engine tests that cast them.",
+      "fix": "FIXED 2026-07-03: renamed scripts/validate-card-scripts.ts -> .mts (tsx runs .mts as ESM, top-level await OK) + package.json script updated. Script expects Supabase env in the shell (it does not read .env.local itself).",
       "tags": [
         "tooling",
         "validate-scripts",
@@ -4777,8 +4777,8 @@
         "pre-existing"
       ],
       "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-06-05T00:00:00.000Z"
+      "occurrences": 2,
+      "last_seen": "2026-07-03"
     },
     {
       "id": "bug-289",
@@ -16562,6 +16562,72 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-03T12:10:24.990Z"
+    },
+    {
+      "id": "bug-1012",
+      "timestamp": "2026-07-03T14:10:00",
+      "error_message": "TS2322: Type '\"anything\"' is not assignable to type 'SynergyTag'",
+      "file": "tests/unit/scoring.test.ts",
+      "root_cause": "as-never cast was placed on ct() result but the type error occurs inside the argument array literal",
+      "fix": "cast the element itself: ct(['anything' as SynergyTag])",
+      "tags": [
+        "typescript",
+        "tests",
+        "collection-optimizer"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-03"
+    },
+    {
+      "id": "bug-1013",
+      "timestamp": "2026-07-03T12:22:30.706Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/triage-decklist.mjs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→11 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-03T12:22:30.706Z"
+    },
+    {
+      "id": "bug-1014",
+      "timestamp": "2026-07-03T12:24:27.946Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"npx tsx scripts/validate-card-scripts.ts\"",
+      "fix": "Changed to \"npx tsx scripts/validate-card-scripts.mts\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-03T12:24:27.946Z"
+    },
+    {
+      "id": "bug-1015",
+      "timestamp": "2026-07-03T16:30:00",
+      "error_message": "deck:triage reported Hypnotic Sprite/Murderous Rider/Hildibrand as NEEDS BUILD and deck:upsert silently skipped them (hosted script stayed {}) although curated card-scripts.json entries existed",
+      "file": "scripts/triage-decklist.mjs, scripts/upsert-deck-scripts.mjs",
+      "root_cause": "Adventure/DFC decklist+catalog names are the full \"Front // Back\" string, but card-scripts.json keys Adventure cards by FRONT face name only - the exact-name lookup missed them",
+      "fix": "both scripts now also try the front-face key (name.split(\" // \")[0]) when the name contains \" // \"",
+      "tags": [
+        "triage",
+        "upsert",
+        "adventure",
+        "dfc",
+        "name-matching"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-03"
     }
   ]
 }

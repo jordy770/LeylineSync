@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-03T12:10:24.968Z
-> Files: 246 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-03T12:26:41.710Z
+> Files: 247 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -246,7 +246,7 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` (~99138 tok)
+- `card-scripts.json` (~99253 tok)
 
 ## lib/
 
@@ -314,7 +314,8 @@
 - `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~8239 tok)
 - `import-card-printings.mjs` — Import Scryfall bulk card data into public.co_card_printings (Collection Optimizer). (~2856 tok)
 - `tag-backfill.mjs` — Backfill co_card_tags by running the synergy tagger over every oracle card. (~1075 tok)
-- `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3696 tok)
+- `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3815 tok)
+- `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2440 tok)
 
 ## supabase/
 

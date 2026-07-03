@@ -6403,3 +6403,12 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 14:10 | Edited tests/unit/scoring.test.ts | inline fix | ~25 |
+| 14:0X | Split uncommitted tree into 4 commits (perf RPCs, engine features, Collection Optimizer, wolf docs); fixed SynergyTag cast in scoring.test.ts | git, tests/unit/scoring.test.ts | tsc clean, tree clean | ~8k |
+| 14:22 | Edited scripts/triage-decklist.mjs | modified if() | ~152 |
+| 14:22 | Edited scripts/triage-decklist.mjs | 4→7 lines | ~80 |
+| 14:22 | Edited docs/commander-decks/card-scripts.json | expanded (+11 lines) | ~85 |
+| 14:22 | Edited docs/commander-decks/card-scripts.json | expanded (+10 lines) | ~115 |
+| 14:24 | Edited package.json | inline fix | ~20 |
+| 14:26 | Edited scripts/upsert-deck-scripts.mjs | 3→8 lines | ~118 |
+| 16:20 | Scions build: triage regenerated (next-deck = ScionsSpellcraft) — 71-card backlog was stale, only 3 Adventure DFCs left; workflow (6 agents) authored+verified them | next-deck.triage.md | 90 implemented / 0 needs-build | ~210k |
+| 16:30 | Integrated: Hildibrand +token-anthem, Murderous Rider +dies-trigger (Sprite already current); fixed front-face key matching in triage+upsert; validate-card-scripts .ts->.mts (bug-282); Soldier Token fixture+catalog row | card-scripts.json, triage/upsert scripts, test-cards.json | upsert applied (3 cards + token), validate 985/1000 (15 pre-existing v1-null rows), tsc+fixtures green | ~40k |
