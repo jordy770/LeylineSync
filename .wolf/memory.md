@@ -6413,3 +6413,9 @@
 | 16:20 | Scions build: triage regenerated (next-deck = ScionsSpellcraft) — 71-card backlog was stale, only 3 Adventure DFCs left; workflow (6 agents) authored+verified them | next-deck.triage.md | 90 implemented / 0 needs-build | ~210k |
 | 16:30 | Integrated: Hildibrand +token-anthem, Murderous Rider +dies-trigger (Sprite already current); fixed front-face key matching in triage+upsert; validate-card-scripts .ts->.mts (bug-282); Soldier Token fixture+catalog row | card-scripts.json, triage/upsert scripts, test-cards.json | upsert applied (3 cards + token), validate 985/1000 (15 pre-existing v1-null rows), tsc+fixtures green | ~40k |
 | 16:50 | Restored compact fixture format (my null,2 rewrite blew up the diff); net change = 1 line Soldier Token | tests/fixtures/test-cards.json | fixtures 367/0 green, committed cd53c04 | ~6k |
+| 15:06 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/971f2cb2-5c83-4a13-a3f7-06c23300f646/scratchpad/setup-playtest.mjs | — | ~630 |
+| 15:07 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/971f2cb2-5c83-4a13-a3f7-06c23300f646/scratchpad/setup-playtest.mjs | 1→2 lines | ~37 |
+| 15:16 | Edited supabase/functions_src/cast_card_from_hand.sql | 5→9 lines | ~148 |
+| 15:17 | Edited supabase/migrations/202605010373_adventure_creature_cast.sql | 2→6 lines | ~110 |
+| 15:19 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~202 |
+| 17:30 | Playtest: 2 bot-vs-bot games (Krenko vs Y'shtola) to completion; found+fixed adventure-creature-cast engine bug (mig 373, front-face type check); ADV5 regression + DFC fixture; suite 1908/1908 | cast_card_from_hand.sql, mig 373, adventures.test.ts, test-cards.json | both games finished, no stalls | ~90k |

@@ -16644,6 +16644,58 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-03"
+    },
+    {
+      "id": "bug-1017",
+      "timestamp": "2026-07-03T13:07:19.361Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/971f2cb2-5c83-4a13-a3f7-06c23300f646/scratchpad/setup-playtest.mjs",
+      "root_cause": "Had 'pg'",
+      "fix": "Changed to 'node:module'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-03T13:07:19.361Z"
+    },
+    {
+      "id": "bug-1018",
+      "timestamp": "2026-07-03T13:16:31.472Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/cast_card_from_hand.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→9 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-03T13:16:31.472Z"
+    },
+    {
+      "id": "bug-1019",
+      "timestamp": "2026-07-03T17:40:00",
+      "error_message": "Use this spell action to cast instant and sorcery cards — Adventure creatures uncastable from hand",
+      "file": "supabase/functions_src/cast_card_from_hand.sql",
+      "root_cause": "the instant/sorcery rejection matched the FULL type_line; Adventure catalog rows are \"Creature — X // Instant — Adventure\" which contains Instant. Test fixtures used simplified single-face type_lines so ADV1-4 never caught it; deck-smoke spawns permanents instead of casting them.",
+      "fix": "mig 202605010373: check only the front face (split_part(type_line, ' // ', 1)); fixture Adventurer DFC Test with the real dual type_line + regression test ADV5",
+      "tags": [
+        "adventure",
+        "dfc",
+        "type_line",
+        "cast",
+        "engine"
+      ],
+      "related_bugs": [
+        "bug-1015"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-03"
     }
   ]
 }
