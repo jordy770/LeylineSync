@@ -6412,3 +6412,4 @@
 | 14:26 | Edited scripts/upsert-deck-scripts.mjs | 3→8 lines | ~118 |
 | 16:20 | Scions build: triage regenerated (next-deck = ScionsSpellcraft) — 71-card backlog was stale, only 3 Adventure DFCs left; workflow (6 agents) authored+verified them | next-deck.triage.md | 90 implemented / 0 needs-build | ~210k |
 | 16:30 | Integrated: Hildibrand +token-anthem, Murderous Rider +dies-trigger (Sprite already current); fixed front-face key matching in triage+upsert; validate-card-scripts .ts->.mts (bug-282); Soldier Token fixture+catalog row | card-scripts.json, triage/upsert scripts, test-cards.json | upsert applied (3 cards + token), validate 985/1000 (15 pre-existing v1-null rows), tsc+fixtures green | ~40k |
+| 16:50 | Restored compact fixture format (my null,2 rewrite blew up the diff); net change = 1 line Soldier Token | tests/fixtures/test-cards.json | fixtures 367/0 green, committed cd53c04 | ~6k |

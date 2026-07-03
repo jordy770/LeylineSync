@@ -16628,6 +16628,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-03"
+    },
+    {
+      "id": "bug-1016",
+      "timestamp": "2026-07-03T16:50:00",
+      "error_message": "test-cards.json committed with an 11k-line diff after adding one fixture",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "programmatic insert used JSON.stringify(all,null,2), re-serializing the whole compact one-line-per-fixture file as pretty-printed JSON",
+      "fix": "restored the compact format ([\n  {..one line..},\n]); when editing this file programmatically, re-emit with the one-object-per-line writer, never null,2",
+      "tags": [
+        "fixtures",
+        "formatting",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-03"
     }
   ]
 }
