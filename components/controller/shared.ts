@@ -143,7 +143,7 @@ export type SpellPlan =
   // Multi-target removal: pick up to `count` creatures, apply `effectKind` to each.
   | { kind: 'multi_creature'; effectKind: MultiCreatureKind; label: string; count: number; timing: 'instant' | 'sorcery'; targetController: TargetController }
   // Non-creature permanent removal: destroy/exile/… a target of `targetType`.
-  | { kind: 'permanent_effect'; effectKind: MultiCreatureKind; label: string; targetType: string | string[]; timing: 'instant' | 'sorcery'; targetController: TargetController; then?: unknown[]; controllerSearchesBasicLand?: boolean }
+  | { kind: 'permanent_effect'; effectKind: MultiCreatureKind | 'gain_control'; label: string; targetType: string | string[]; timing: 'instant' | 'sorcery'; targetController: TargetController; then?: unknown[]; controllerSearchesBasicLand?: boolean; donate?: boolean }
   | { kind: 'fight'; timing: 'instant' | 'sorcery'; foughtController: TargetController }
   | { kind: 'draw'; amount: number; timing: 'instant' | 'sorcery'; xRequired?: boolean }
   | { kind: 'spell_effect'; actions: unknown[]; timing: 'instant' | 'sorcery'; xRequired?: boolean }
@@ -201,6 +201,9 @@ export const UNTARGETED_SPELL_ACTION_TYPES = [
   'look_top', 'impulse', 'put_from_hand', 'destroy_up_to', 'bounce_up_to', 'vote_wild_free',
   'graveyard_to_library_top', 'exile_from_any_graveyard', 'mass_destroy_reanimate_one',
   'damage_each_opponent_by_hand', 'gain_control_all', 'exile_tops_cast', 'conditional', 'choose_creature_type', 'choose_color',
+  // Mana spells (Dark Ritual): add_mana resolves to the caster's pool via the
+  // spell_effect program path (apply_triggered_ability_effects), no target.
+  'add_mana',
 ]
 // Effects that open a resolution-time choice — a spell containing one must run as a
 // program (single dedicated cast kinds can't surface the prompt).
@@ -212,8 +215,11 @@ export const DECISION_SPELL_ACTION_TYPES = [
 
 // Spell-effect action types that need a CREATURE target but resolve via the
 // cast_spell_effect program path (no dedicated stack creature-action), so they
-// can't go through CREATURE_EFFECT_MAP. Reality Shift = exile_and_manifest.
-export const TARGETED_SPELL_EFFECT_TYPES = ['exile_and_manifest']
+// can't go through CREATURE_EFFECT_MAP. Reality Shift = exile_and_manifest;
+// Saw in Half = saw_in_half; Feign Death / Not Dead After All / Supernatural
+// Stamina = grant_dies_effect. All resolve via apply_creature_effect with the
+// chosen creature target (program resolver: apply_trigger_effects).
+export const TARGETED_SPELL_EFFECT_TYPES = ['exile_and_manifest', 'saw_in_half', 'grant_dies_effect']
 
 // Maps a spell_effect action type to a targeted-creature stack action + a picker label.
 export const CREATURE_EFFECT_MAP: Record<string, { effect: TargetedCreatureActionType; label: string }> = {
@@ -422,8 +428,23 @@ export function getSpellPlan(card: ControllerCard): SpellPlan {
   // target is chosen; duration + the threaten extras are fixed by the card and
   // ride along in the plan, like grant_keyword's keyword.
   const gainControl = actions.find((a) => a.type === 'gain_control') as
-    | (CardBehaviorAction & { duration?: string; untap?: boolean; haste?: boolean; target_controller?: unknown })
+    | (CardBehaviorAction & { duration?: string; untap?: boolean; haste?: boolean; to?: string; target_type?: unknown; target_controller?: unknown })
     | undefined
+  // DONATE (Harmless Offering): `to:opponent` gives a permanent YOU control to an
+  // opponent. You pick one of your own permanents (any type), so it rides the
+  // permanent picker — not the creature picker the normal "you gain control" uses.
+  // The engine (handle_permanent_effect) routes the donate to a living opponent.
+  if (gainControl && gainControl.to === 'opponent') {
+    return {
+      kind: 'permanent_effect',
+      effectKind: 'gain_control',
+      donate: true,
+      label: 'Donate',
+      targetType: (gainControl.target_type as string | string[]) ?? 'permanent',
+      timing,
+      targetController: 'you',
+    }
+  }
   if (gainControl) {
     return {
       kind: 'creature_effect',
@@ -487,7 +508,11 @@ export function getSpellPlan(card: ControllerCard): SpellPlan {
     | (CardBehaviorAction & { target_controller?: unknown; target_type?: unknown })
     | undefined
   if (targetedProgram && isCreatureOnlyTargetType(targetedProgram.target_type)) {
-    const label = targetedProgram.type === 'exile_and_manifest' ? 'Exile (manifest)' : 'Target'
+    const label =
+      targetedProgram.type === 'exile_and_manifest' ? 'Exile (manifest)'
+      : targetedProgram.type === 'saw_in_half' ? 'Saw in half'
+      : targetedProgram.type === 'grant_dies_effect' ? 'Target creature'
+      : 'Target'
     return { kind: 'targeted_spell_effect', actions, label, timing, targetController: readTargetController(targetedProgram) }
   }
 

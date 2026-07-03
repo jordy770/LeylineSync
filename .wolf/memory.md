@@ -5372,3 +5372,1044 @@
 | 05:38 | Edited components/ControllerListV4.tsx | card() → cardNameById() | ~60 |
 | 11:30 | fix(attachments): resolve host name across owners — build cardNameById from boardCards (whole-table snapshot) merging battlefieldCards as fallback, so an Aura/Equipment we control on an opponent's creature names its host in the 🔗 tooltip | components/ControllerListV4.tsx | tsc+eslint clean | ~3k |
 | 05:39 | Edited docs/client-coverage-audit.md | 3→5 lines | ~104 |
+| 20:46 | Edited lib/game/bot-brain.ts | added nullish coalescing | ~634 |
+| 20:46 | Edited lib/game/bot-brain.ts | added 4 condition(s) | ~674 |
+| 20:47 | Edited lib/game/bot-brain.ts | added 1 condition(s) | ~575 |
+| 20:47 | Edited scripts/bot-runner.mjs | expanded (+22 lines) | ~259 |
+| 20:47 | Edited scripts/bot-runner.mjs | added optional chaining | ~419 |
+| 20:48 | Edited scripts/bot-runner.mjs | expanded (+7 lines) | ~512 |
+| 20:48 | Edited tests/unit/bot-brain.test.ts | expanded (+22 lines) | ~422 |
+| 20:48 | Edited tests/unit/bot-brain.test.ts | expanded (+37 lines) | ~688 |
+| 20:49 | Edited docs/backlog.md | 9→9 lines | ~155 |
+
+## Session: 2026-06-22 — bot combat keywords
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| now | Audit merge clean-hud-controller→master | git | clean: no conflict markers, tsc 0, 1089/1090 tests (1 fail = missing local oracle dump, gitignored, unrelated) | ~20k |
+| now | Keyword-aware bot combat (evasion/menace/trample/first-strike/deathtouch/reserves) | lib/game/bot-brain.ts, scripts/bot-runner.mjs, tests/unit/bot-brain.test.ts, docs/backlog.md | tsc 0; 30/30 bot-brain tests pass | ~40k |
+| 21:11 | Created supabase/functions_src/card_has_defender.sql | — | ~563 |
+| 21:11 | Edited supabase/functions_src/register_card_continuous_effects.sql | 3→4 lines | ~39 |
+| 21:11 | Edited supabase/functions_src/declare_attacker.sql | modified Defender() | ~128 |
+| 21:12 | Edited supabase/migrations/202605010323_defender_keyword.sql | 4→8 lines | ~181 |
+| 21:12 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~124 |
+| 21:13 | Created tests/feature/defender.test.ts | — | ~546 |
+| 21:15 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified Defender() | ~68 |
+| 21:15 | Edited supabase/functions_src/register_card_continuous_effects.sql | 5→6 lines | ~36 |
+| 21:15 | Edited tests/fixtures/test-cards.json | inline fix | ~72 |
+| 21:15 | Edited supabase/migrations/202605010323_defender_keyword.sql | 4→9 lines | ~209 |
+| 21:15 | Edited tests/feature/defender.test.ts | 4→4 lines | ~94 |
+| 21:16 | Edited supabase/migrations/202605010323_defender_keyword.sql | modified DDL() | ~333 |
+| 21:19 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~800 |
+| 21:19 | Edited components/ControllerListV5.tsx | 12→13 lines | ~156 |
+| 21:19 | Edited components/ControllerListV5.tsx | 14→15 lines | ~182 |
+| now | F2: combat keyword-hint chips on controller (own creatures in attack/block layouts) | components/ControllerListV5.tsx | tsc 0, eslint 0 errors | ~25k |
+| now | F3: Defender keyword in engine (can't attack) | functions_src/{card_has_defender,register_card_continuous_effects,declare_attacker}.sql, mig 202605010323, tests/feature/defender.test.ts, fixtures, buglog | full suite 1103/1104 (1 pre-existing oracle-dump fail) | ~45k |
+
+## Session: 2026-06-23 13:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-23 13:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-23 16:17
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| now | Fixed play-db migration history desync (stuck at 091; schema was fully current from backup). Backfilled supabase_migrations.schema_migrations with all 237 file versions (087-323) via direct local INSERT (avoided `supabase migration repair` to not touch the linked REMOTE). Now 0 files missing; highest=323; baseline rows 0..0/0..1 retained. | play db @54322 | migration up now no-op; db reset replays cleanly | ~15k |
+| 17:30 | Edited lib/game/use-board-game-state.ts | 18→20 lines | ~125 |
+| 17:31 | Edited lib/game/use-board-game-state.ts | 2→3 lines | ~54 |
+| 17:31 | Edited lib/game/use-board-game-state.ts | 12→14 lines | ~180 |
+| 17:31 | Edited lib/game/use-board-game-state.ts | 2→3 lines | ~100 |
+| 17:31 | Edited lib/game/use-board-game-state.ts | 3→4 lines | ~14 |
+| 17:32 | Created components/board/GameFinishedOverlay.tsx | — | ~927 |
+| 17:32 | Edited components/GameBoard.tsx | added 1 import(s) | ~80 |
+| 17:33 | Edited components/GameBoard.tsx | inline fix | ~44 |
+| 17:33 | Edited components/GameBoard.tsx | added optional chaining | ~106 |
+| 17:34 | finished-game victory screen on board | use-board-game-state.ts, GameBoard.tsx, board/GameFinishedOverlay.tsx | tsc+eslint pass | ~6k |
+| 17:35 | Edited lib/game/use-controller-game-state.ts | 1→2 lines | ~41 |
+| 17:35 | Edited lib/game/use-controller-game-state.ts | added nullish coalescing | ~34 |
+| 17:35 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~16 |
+| 17:36 | Edited components/board/GameFinishedOverlay.tsx | modified GameFinishedOverlay() | ~277 |
+| 17:36 | Edited components/board/GameFinishedOverlay.tsx | expanded (+13 lines) | ~532 |
+| 17:37 | Edited components/ControllerListV5.tsx | 8→9 lines | ~50 |
+| 17:37 | Edited components/board/GameFinishedOverlay.tsx | CSS: winnerPlayerId | ~286 |
+| 17:37 | Edited components/GameBoard.tsx | added nullish coalescing | ~47 |
+| 17:38 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~41 |
+| 17:38 | Edited components/ControllerListV5.tsx | expanded (+10 lines) | ~130 |
+| 17:38 | finished screen also on controller (perspective: you win/defeat/draw) | use-controller-game-state.ts, ControllerListV5.tsx, board/GameFinishedOverlay.tsx | tsc+eslint clean | ~5k |
+| 18:09 | Edited components/GameSessionLobby.tsx | 2→4 lines | ~81 |
+| 18:09 | Edited components/GameSessionLobby.tsx | added optional chaining | ~368 |
+| 18:09 | Edited components/GameSessionLobby.tsx | 9→9 lines | ~141 |
+| 18:09 | Edited components/GameSessionLobby.tsx | added 2 condition(s) | ~177 |
+| 18:10 | Edited components/GameSessionLobby.tsx | expanded (+78 lines) | ~1287 |
+| 18:11 | start flow: Start opens deck-pick step -> spawn (swallow already-spawned) -> start | GameSessionLobby.tsx | tsc+eslint clean | ~4k |
+| 18:21 | Edited lib/game/data.ts | added 1 condition(s) | ~222 |
+| 18:21 | Edited components/GameSessionLobby.tsx | 7→8 lines | ~47 |
+| 18:21 | Edited components/GameSessionLobby.tsx | 2→6 lines | ~129 |
+| 18:22 | Edited components/GameSessionLobby.tsx | 9→11 lines | ~107 |
+| 18:22 | Edited components/GameSessionLobby.tsx | added optional chaining | ~117 |
+| 18:22 | Edited components/GameSessionLobby.tsx | added optional chaining | ~349 |
+| 18:22 | Edited components/GameSessionLobby.tsx | CSS: playerId | ~215 |
+| 18:22 | Edited components/GameSessionLobby.tsx | 2→2 lines | ~46 |
+| 18:23 | Edited components/GameSessionLobby.tsx | CSS: undefined | ~238 |
+| 18:23 | Edited components/GameSessionLobby.tsx | expanded (+12 lines) | ~659 |
+| 18:24 | Edited components/GameSessionLobby.tsx | expanded (+11 lines) | ~230 |
+| 18:24 | Edited components/GameSessionLobby.tsx | 6→7 lines | ~116 |
+| 18:25 | ready system: derive readiness from spawned deck, per-player badges, realtime lobby, gate host Start | GameSessionLobby.tsx, data.ts | tsc+eslint clean | ~7k |
+| 21:46 | Edited ../../.cloudflared/config.yml | expanded (+6 lines) | ~215 |
+| 23:16 | Created supabase/functions_src/clear_deck_from_session.sql | — | ~471 |
+| 23:17 | Edited supabase/migrations/202605010324_clear_deck_from_session.sql | 2→4 lines | ~76 |
+| 23:17 | Edited lib/game/actions.ts | added 1 condition(s) | ~161 |
+| 23:17 | Edited components/GameSessionLobby.tsx | 7→8 lines | ~50 |
+| 23:18 | Edited components/GameSessionLobby.tsx | added 1 condition(s) | ~376 |
+| 23:18 | Edited components/GameSessionLobby.tsx | 5→5 lines | ~72 |
+| 23:18 | Edited components/GameSessionLobby.tsx | 7→7 lines | ~137 |
+| 23:18 | Edited components/GameSessionLobby.tsx | expanded (+12 lines) | ~337 |
+| 23:18 | Edited components/GameSessionLobby.tsx | 3→3 lines | ~50 |
+| 23:20 | Created tests/feature/change-deck.test.ts | — | ~743 |
+| 23:21 | Edited tests/feature/change-deck.test.ts | 8→8 lines | ~98 |
+| now | Lobby deck UX: rename "Spawn" -> "Lock in deck", add "Change deck" (clear + re-pick, lobby-only). New RPC clear_deck_from_session (mig 324), clearDeckFromSession action, GameSessionLobby wiring, tests/feature/change-deck.test.ts | functions_src/clear_deck_from_session.sql, mig 324, lib/game/actions.ts, components/GameSessionLobby.tsx | tsc 0, lint 0, suite 1105/1106 (1 pre-existing oracle-dump fail); mig 324 applied to play db + leyline_test | ~40k |
+| 23:30 | Edited lib/supabase/client.ts | added 2 condition(s) | ~351 |
+| 23:34 | Edited lib/supabase/client.ts | removed 27 lines | ~64 |
+| 23:45 | Edited lib/game/auto-pass.ts | 11→9 lines | ~131 |
+| 23:45 | Edited lib/game/auto-pass.ts | isMainPhase() → first() | ~152 |
+| 23:45 | Edited tests/unit/auto-pass.test.ts | 21→23 lines | ~287 |
+| now | Fix: auto-pass no longer skips precombat main (M1) — mn now only covers postcombat_main; M1 always stops | lib/game/auto-pass.ts, tests/unit/auto-pass.test.ts | tsc 0, 39/39 auto-pass tests, suite 1105/1106 | ~12k |
+| 23:57 | Edited .gitignore | 4→7 lines | ~85 |
+| 00:03 | Created mockups/opponent-view-concepts.html | — | ~5478 |
+| 00:03 | opponent-view redesign: 3 layout concepts (Lane Sheet/Threat Rail/Pod Grid) | mockups/opponent-view-concepts.html | preview built | ~5k |
+| 00:14 | Created mockups/opponent-view-threat-rail.html | — | ~6139 |
+| 00:14 | threat-rail refined: landscape bovenbalk + portrait + detail, available-mana pips (+multi), keyword icons | mockups/opponent-view-threat-rail.html | preview built | ~6k |
+| 00:27 | Created mockups/opponent-view-threat-rail.html | — | ~6757 |
+| 00:27 | threat-rail v2: Mana-font duo pips + FA keyword icons + fast My-Board/Opponents nav | mockups/opponent-view-threat-rail.html | preview updated | ~5k |
+| 00:39 | Created mockups/opponent-view-flow.html | — | ~7374 |
+| 00:39 | opponent flow preview: own-board primary -> opp row -> full-screen+switcher, commander per player, game-icons keywords | mockups/opponent-view-flow.html | preview built, icons verified | ~7k |
+| 00:45 | Created mockups/opponent-keyword-icons.html | — | ~1738 |
+| 00:45 | keyword icon chooser: game-icons options per effect (verified names) | mockups/opponent-keyword-icons.html | preview built | ~3k |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~10 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~7 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~7 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~9 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~7 |
+| 00:54 | Edited mockups/opponent-view-flow.html | inline fix | ~8 |
+| 00:54 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | — | ~533 |
+| 00:55 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~110 |
+| 00:55 | final keyword icon mapping locked; flow mockup updated; saved opponent-view-design memory | mockups/opponent-view-flow.html, memory/opponent-view-design.md | done | ~2k |
+| 00:58 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | modified scoping() | ~358 |
+| 01:02 | Edited lib/game/mana.ts | added nullish coalescing | ~240 |
+| 01:02 | Edited lib/game/data.ts | added 2 import(s) | ~50 |
+| 01:02 | Edited lib/game/data.ts | added optional chaining | ~606 |
+| 01:03 | Edited components/ControllerListV5.tsx | 2→2 lines | ~54 |
+| 01:03 | Edited components/ControllerListV5.tsx | added 2 condition(s) | ~241 |
+| 01:03 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~92 |
+| 01:03 | Edited components/ControllerListV5.tsx | CSS: commanders | ~89 |
+| 01:03 | Edited components/ControllerListV5.tsx | expanded (+26 lines) | ~564 |
+| 01:03 | Edited components/ControllerListV5.tsx | expanded (+8 lines) | ~123 |
+| 01:04 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~228 |
+| 01:04 | Edited components/ControllerListV5.tsx | modified OpponentBoardOverlay() | ~91 |
+| 01:05 | commander piece: getSessionCommanders + colorIdentityFromCard, commander card+identity pips in OpponentBoardOverlay header | data.ts, mana.ts, ControllerListV5.tsx | tsc clean, eslint 0 errors | ~6k |
+| 01:14 | Edited supabase/functions_src/fire_watcher_triggers.sql | expanded (+8 lines) | ~186 |
+| 01:14 | Edited lib/game/data.ts | 22→23 lines | ~247 |
+| 01:14 | Edited lib/game/types.ts | 6→8 lines | ~86 |
+| 01:16 | Created tests/feature/cast-watcher-self.test.ts | — | ~663 |
+| 01:16 | Edited supabase/migrations/202605010325_cast_watcher_not_self.sql | 2→5 lines | ~99 |
+| 01:16 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~58 |
+| 01:16 | Edited components/ControllerListV5.tsx | 9→10 lines | ~125 |
+| 01:17 | keywords piece: getBoardCards loads keywords, offline KeywordIcon (15 game-icons inline), icon row on opponent creatures | data.ts, types.ts, controller/KeywordIcon.tsx, ControllerListV5.tsx | tsc clean, eslint 0 err | ~5k |
+| 01:17 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | 1→2 lines | ~135 |
+| now | Fix: cast watcher no longer triggers for casting its own source (Bygone Bishop/Eshki). fire_watcher_triggers excludes the changed card from self-watching on spell_cast/cast_from_exile (mig 325) | supabase/functions_src/fire_watcher_triggers.sql, mig 325, tests/feature/cast-watcher-self.test.ts | suite 1107/1108; applied to play db + leyline_test | ~18k |
+| 11:59 | Created lib/game/mana-sources.ts | — | ~826 |
+| 11:59 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~52 |
+| 11:59 | Edited components/ControllerListV5.tsx | modified getProducibleColors() | ~123 |
+| 12:00 | Edited lib/game/data.ts | added 1 import(s) | ~76 |
+| 12:00 | Edited lib/game/data.ts | added optional chaining | ~381 |
+| 12:00 | Edited components/ControllerListV5.tsx | inline fix | ~29 |
+| 12:00 | Edited components/ControllerListV5.tsx | 1→2 lines | ~40 |
+| 12:00 | Edited components/ControllerListV5.tsx | CSS: byColor, flexible, total | ~127 |
+| 12:01 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~534 |
+| 12:01 | Edited components/ControllerListV5.tsx | expanded (+6 lines) | ~121 |
+| 12:02 | Edited components/ControllerListV5.tsx | inline fix | ~26 |
+| 12:04 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | inline fix | ~190 |
+| 12:04 | mana piece: shared mana-sources.ts (producibleColorsFromScript+aggregate), getOpponentManaSources, ManaAvailabilityBar in overlay; controller delegates | mana-sources.ts, data.ts, ControllerListV5.tsx | tsc+eslint clean, logic sanity-checked | ~6k |
+| 12:18 | Edited components/ControllerListV5.tsx | CSS: playerId | ~140 |
+| 12:18 | Edited components/ControllerListV5.tsx | 15→15 lines | ~120 |
+| 12:19 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~523 |
+| 12:19 | Edited components/ControllerListV5.tsx | 8→10 lines | ~121 |
+| 12:20 | Edited components/ControllerListV5.tsx | modified row() | ~68 |
+| 12:20 | Edited components/ControllerListV5.tsx | added optional chaining | ~181 |
+| 12:20 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~363 |
+| 12:21 | Edited components/ControllerListV5.tsx | added error handling | ~1704 |
+| 12:21 | Edited components/ControllerListV5.tsx | expanded (+18 lines) | ~260 |
+| 12:22 | opponent flow rebuild: pills->row(L1)->full-screen+switcher(L2); CommanderAvatar in pills, OpponentRowOverlay, switcher tabs (My Board/opponents) in overlay | ControllerListV5.tsx | tsc+eslint clean | ~9k |
+| 12:22 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | inline fix | ~175 |
+| 12:27 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~45 |
+| 12:27 | Edited components/ControllerListV5.tsx | CSS: children | ~170 |
+| 12:28 | Edited components/ControllerListV5.tsx | 13→13 lines | ~188 |
+| 12:28 | Edited components/ControllerListV5.tsx | 6→6 lines | ~31 |
+| 12:28 | Edited components/ControllerListV5.tsx | 16→16 lines | ~162 |
+| 12:29 | Edited components/ControllerListV5.tsx | 7→7 lines | ~72 |
+| 12:30 | fix: opponent overlays clipped by stack strip -> ScreenPortal to body (fixed inset-0), full-screen | ControllerListV5.tsx | tsc+eslint clean | ~3k |
+| 13:31 | Edited components/ControllerListV5.tsx | 3→3 lines | ~42 |
+| 13:31 | Edited components/ControllerListV5.tsx | 6→6 lines | ~116 |
+| 13:31 | Edited components/ControllerListV5.tsx | 2→2 lines | ~22 |
+| 13:32 | follow-up: opponent L2 sheet made full-screen (fixed inset-0) so tab content scrolls; reverted accidental Your-zones edit | ControllerListV5.tsx | tsc+eslint clean | ~1k |
+| 13:55 | Edited app/globals.css | 3→6 lines | ~48 |
+| 13:56 | Edited components/ControllerListV5.tsx | CSS: msClass | ~392 |
+| 13:56 | mana bar now uses real MTG symbols: installed mana-font, @import in globals.css, ManaAvailabilityBar uses ms ms-x ms-cost (+ms-multicolor for any) | package.json, globals.css, ControllerListV5.tsx | tsc+eslint clean, classes verified | ~3k |
+| 14:03 | Edited lib/game/mana-sources.ts | added 2 condition(s) | ~679 |
+| 14:03 | Edited lib/game/mana-sources.ts | added 3 condition(s) | ~427 |
+| 14:04 | Edited lib/game/data.ts | inline fix | ~29 |
+| 14:04 | Edited lib/game/data.ts | modified if() | ~49 |
+| 14:04 | Edited components/ControllerListV5.tsx | inline fix | ~33 |
+| 14:04 | Edited components/ControllerListV5.tsx | inline fix | ~18 |
+| 14:04 | Edited components/ControllerListV5.tsx | inline fix | ~15 |
+| 14:04 | Edited components/ControllerListV5.tsx | modified ManaAvailabilityBar() | ~394 |
+| 14:05 | duo-colour mana as hybrid symbols: manaSourceColors+guildHybridKey, ManaAvailability.pairs bucket, ms-bg/ms-wu etc in bar | mana-sources.ts, data.ts, ControllerListV5.tsx | tsc+eslint clean, logic verified | ~3k |
+| 14:13 | Edited components/ControllerListV5.tsx | CSS: marginLeft | ~144 |
+| 14:30 | Edited lib/game/data.ts | added nullish coalescing | ~373 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~27 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | inline fix | ~26 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~35 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~63 |
+| 14:30 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~70 |
+| 14:31 | Edited lib/game/use-controller-game-state.ts | 2→3 lines | ~39 |
+| 14:31 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~24 |
+| 14:31 | Edited components/ControllerListV5.tsx | 5→6 lines | ~36 |
+| 14:31 | Edited components/ControllerListV5.tsx | added optional chaining | ~265 |
+| 14:31 | Edited components/ControllerListV5.tsx | 2→4 lines | ~75 |
+| 14:32 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~96 |
+| 14:32 | Edited components/ControllerListV5.tsx | 4→7 lines | ~31 |
+| 14:32 | Edited components/ControllerListV5.tsx | CSS: topLibraryCard, canCastTopNow, onCastTop | ~84 |
+| 14:32 | Edited components/ControllerListV5.tsx | modified row() | ~82 |
+| 14:32 | Edited components/ControllerListV5.tsx | CSS: active | ~456 |
+| 14:33 | Edited components/ControllerListV5.tsx | added optional chaining | ~740 |
+| 14:33 | Edited components/ControllerListV5.tsx | expanded (+12 lines) | ~210 |
+| 14:34 | top-of-library feature: look-at-top indicator + peek + cast (Thundermane); getCastFromLibraryTopPerms, hook+BoardArea wiring | data.ts, use-controller-game-state.ts, ControllerListV5.tsx | tsc+eslint clean | ~8k |
+| 14:41 | Edited lib/game/use-controller-game-state.ts | modified useControllerGameState() | ~93 |
+| 14:41 | Edited lib/game/use-controller-game-state.ts | added 3 condition(s) | ~944 |
+| now | Controller realtime perf: debounce loadControllerState (60ms, coalesce burst events into 1 reload), fallback poll only when realtime disconnected, dropped unfilterable global `cards` sub + added session_id filter to game_combat_blockers sub | lib/game/use-controller-game-state.ts | tsc 0, lint ok; client-only | ~15k |
+| 14:51 | Edited lib/game/use-board-game-state.ts | modified useBoardGameState() | ~78 |
+| 14:51 | Edited lib/game/use-board-game-state.ts | added 3 condition(s) | ~779 |
+| now | Board hook same 3 realtime perf fixes (debounce 60ms, poll only when realtime disconnected, drop global cards sub + filter game_combat_blockers) | lib/game/use-board-game-state.ts | tsc 0, lint ok | ~8k |
+| 15:23 | Edited lib/game/mana-sources.ts | 3→4 lines | ~91 |
+| 15:24 | Edited lib/game/mana-sources.ts | added 1 condition(s) | ~234 |
+| 15:24 | Edited scripts/bot-runner.mjs | added 2 import(s) | ~73 |
+| 15:24 | Edited scripts/bot-runner.mjs | added optional chaining | ~844 |
+| 15:24 | Edited scripts/bot-runner.mjs | 9→10 lines | ~158 |
+| 15:24 | Edited scripts/bot-runner.mjs | 7→9 lines | ~113 |
+| 15:25 | Edited scripts/bot-runner.mjs | added nullish coalescing | ~255 |
+| 15:27 | bot real mana: payFor taps real lands colour-correct via add_mana_from_card (no more topUpMana cheat); manaSourceColors+amount | bot-runner.mjs, mana-sources.ts | tsc clean, logic verified offline | ~6k |
+| 15:28 | Edited components/ControllerListV5.tsx | expanded (+6 lines) | ~141 |
+| 15:28 | Edited components/ControllerListV5.tsx | CSS: Guard | ~284 |
+| 15:29 | auto-pass M1 race guard: timed pass re-checks live step/turn/priority before firing | ControllerListV5.tsx | tsc+eslint clean | ~2k |
+| 15:36 | Edited supabase/functions_src/get_stack_items.sql | added 1 condition(s) | ~119 |
+| 15:36 | Edited supabase/functions_src/get_stack_items.sql | added 1 condition(s) | ~91 |
+| 15:37 | Edited supabase/functions_src/get_stack_items.sql | added 1 condition(s) | ~226 |
+| 15:37 | Edited supabase/migrations/202605010326_stack_bot_username.sql | 2→6 lines | ~107 |
+| 15:38 | stack shows CPU name not Unknown player: get_stack_items bot fallback (CPU/short-id) | functions_src/get_stack_items.sql, migrations/202605010326 | migration generated | ~2k |
+| 15:39 | Edited supabase/functions_src/get_session_players.sql | 5→6 lines | ~81 |
+| 15:39 | Edited supabase/functions_src/get_stack_items.sql | 6→6 lines | ~72 |
+| 15:39 | Edited supabase/functions_src/get_stack_items.sql | modified nullif() | ~75 |
+| 15:40 | Edited supabase/migrations/202605010326_stack_bot_username.sql | 2→5 lines | ~97 |
+| 15:40 | multiple bots distinguishable: CPU label now seat-numbered (CPU 🤖 <seat>) in get_session_players + get_stack_items | functions_src/*, migrations/202605010326 | migration regenerated (2 fns) | ~1k |
+| 15:45 | Edited supabase/functions_src/get_stack_items.sql | added 1 condition(s) | ~172 |
+| 15:45 | Edited supabase/migrations/202605010326_stack_bot_username.sql | 2→7 lines | ~123 |
+| 15:47 | Edited components/ControllerListV5.tsx | 6→9 lines | ~145 |
+| 15:47 | show controller (CPU) name on collapsed StackStrip; target null when no target | ControllerListV5.tsx, get_stack_items.sql, migrations/202605010326 | tsc+eslint clean | ~2k |
+| 16:02 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/local-migrations.md | — | ~430 |
+| 16:02 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~110 |
+| 16:14 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~204 |
+| 16:34 | Edited lib/game/use-controller-game-state.ts | 9→10 lines | ~116 |
+| 16:34 | Edited lib/game/use-controller-game-state.ts | modified if() | ~215 |
+| 16:34 | Edited lib/game/use-board-game-state.ts | 9→10 lines | ~111 |
+| 16:35 | Edited lib/game/use-board-game-state.ts | modified if() | ~184 |
+| 16:35 | Created supabase/migrations/202605010327_realtime_game_tables.sql | — | ~302 |
+| 16:37 | Edited components/ControllerListV5.tsx | expanded (+6 lines) | ~266 |
+| 16:38 | Edited supabase/functions_src/get_turn_state.sql | modified left() | ~214 |
+| 16:38 | Edited supabase/functions_src/get_turn_state.sql | expanded (+6 lines) | ~175 |
+| 16:38 | Edited supabase/migrations/202605010328_turn_state_bot_name.sql | 2→5 lines | ~91 |
+| 16:39 | reload fix (realtime publication 327 + silent-poll fallback) + status bar shows active player (You badge) + get_turn_state bot name (328) | use-*-game-state.ts, ControllerListV5.tsx, get_turn_state.sql, migrations 327/328 | tsc+eslint clean, applied local | ~6k |
+| 17:00 | Edited components/ControllerListV5.tsx | CSS: Landscape, Sac | ~198 |
+| now | Fix: getAutoTapMana no longer auto-taps a source that has a second tap ability (e.g. Bountiful Landscape {T}:Add C vs {T},Sac:fetch) — opens the action sheet to choose | components/ControllerListV5.tsx | tsc 0, lint ok | ~10k |
+| 17:29 | Edited scripts/bot-runner.mjs | added optional chaining | ~647 |
+| 17:30 | Edited scripts/bot-runner.mjs | modified if() | ~136 |
+| now | Bot: handle triggered abilities on the stack that require a target (resolveTriggerTargets → choose_triggered_ability_creature_target), respecting target_type/target_controller. Fixes Obuun landfall "+1/+1 on target creature" stalling | scripts/bot-runner.mjs | node --check ok; payload keys verified vs enqueue_triggered_ability | ~18k |
+| now | Unstuck live game: bot's Obuun animate trigger had no target → P0001 soft-lock. Set target via RPC; recurrence handled by bot resolveTriggerTargets (needs runner restart). Follow-up: make "up to one" triggers optional (engine has no optional-target support) | scripts/bot-runner.mjs, live db | game resolved | ~20k |
+| 18:07 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 5→6 lines | ~42 |
+| 18:07 | Edited supabase/functions_src/enqueue_triggered_ability.sql | modified coalesce() | ~387 |
+| 18:08 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 5→6 lines | ~134 |
+| 18:08 | Edited components/ControllerListV5.tsx | inline fix | ~33 |
+| 18:08 | Edited supabase/functions_src/apply_trigger_effects.sql | modified select() | ~234 |
+| 18:09 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~332 |
+| 18:09 | Edited components/ControllerListV5.tsx | reduced (-6 lines) | ~36 |
+| 18:10 | auto-pass M1 robust fix: re-fetch server turn-state before passing, bail on step mismatch | ControllerListV5.tsx | tsc+eslint clean | ~2k |
+| 18:11 | Edited supabase/migrations/202605010326_optional_trigger_targets.sql | 2→7 lines | ~147 |
+| 18:13 | Edited scripts/bot-runner.mjs | modified q() | ~119 |
+| 18:13 | Edited supabase/functions_src/choose_triggered_ability_creature_target.sql | modified or() | ~87 |
+| 18:14 | Edited supabase/migrations/202605010326_optional_trigger_targets.sql | expanded (+7 lines) | ~184 |
+| 18:15 | Edited components/ControllerListV5.tsx | CSS: onSkip | ~118 |
+| 18:15 | Edited components/ControllerListV5.tsx | 9→11 lines | ~124 |
+| 18:15 | Edited components/ControllerListV5.tsx | expanded (+8 lines) | ~103 |
+| 18:16 | Edited components/ControllerListV5.tsx | CSS: active, disabled | ~264 |
+| 18:17 | Edited components/ControllerListV5.tsx | 6→7 lines | ~104 |
+| 18:17 | Edited components/ControllerListV5.tsx | 6→7 lines | ~37 |
+| 18:17 | Edited components/ControllerListV5.tsx | CSS: onPassPriority | ~122 |
+| 18:17 | Edited components/ControllerListV5.tsx | 3→4 lines | ~39 |
+| 18:19 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~319 |
+| 18:19 | Created tests/feature/optional-trigger-target.test.ts | — | ~675 |
+| now | Built optional ("up to one target") triggered-ability target support (mig 326): enqueue optional→target_required=false+target_optional; apply_trigger_effects no-ops a targeted effect with null target; choose RPC accepts optional; controller picker+Skip; bot targets optional too. Obuun animate marked optional | functions_src/{enqueue_triggered_ability,apply_trigger_effects,choose_triggered_ability_creature_target}.sql, mig 326, ControllerListV5.tsx, bot-runner.mjs, card-scripts.json+live db, tests/feature/optional-trigger-target.test.ts | suite 1109/1110, tsc 0, lint 0; applied to play db + leyline_test | ~80k |
+| 23:15 | Edited components/ControllerListV5.tsx | CSS: Toggle | ~120 |
+| 23:15 | Edited components/ControllerListV5.tsx | 2→2 lines | ~26 |
+| 23:15 | Edited components/ControllerListV5.tsx | CSS: Toggle | ~282 |
+| now | "Yield rest of turn" is now a real toggle (arm/disarm) in the auto-pass popover with a switch UI; popover stays open on toggle. Was one-shot arm-only | components/ControllerListV5.tsx (toggleYieldRestOfTurn) | tsc 0, lint 0 | ~6k |
+| 23:35 | Edited components/ControllerListV5.tsx | inline fix | ~43 |
+| 23:35 | Edited components/ControllerListV5.tsx | 2→6 lines | ~72 |
+| 23:35 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~74 |
+| 23:36 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~84 |
+| 23:36 | Edited components/ControllerListV5.tsx | 2→7 lines | ~181 |
+| 23:36 | Edited components/ControllerListV5.tsx | added 10 condition(s) | ~1082 |
+| 23:37 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~1078 |
+| 23:38 | Edited components/ControllerListV5.tsx | added optional chaining | ~158 |
+| 23:39 | generic-mana picker per cast: autoPay taps coloured pips, opens GenericPaySheet for {generic} when >1 colour available, awaits choice; cancel sentinel | ControllerListV5.tsx | tsc+eslint clean | ~7k |
+| 23:46 | Edited components/ControllerListV5.tsx | 3→6 lines | ~162 |
+| 23:46 | Edited components/ControllerListV5.tsx | 3→3 lines | ~79 |
+| now | Fix auto-pass popover clipping on mobile landscape: was absolute top-0 + max-h-[80vh] (vh unreliable on mobile, overflowed bottom). Now fixed bottom-right anchor + max-h-[calc(100dvh-1rem)] + overflow scroll + compacter rows | components/ControllerListV5.tsx (PriorityPanel popover) | tsc 0, lint 0 | ~7k |
+| 23:47 | Created mockups/damage-display-concepts.html | — | ~2795 |
+| 23:47 | damage display proposal: poison=10 pips (corrupted@3), cmdr damage=per-source bars; compact pills for strips | mockups/damage-display-concepts.html | preview built | ~2k |
+| 00:11 | Created supabase/functions_src/reset_mana.sql | — | ~512 |
+| 00:11 | Edited lib/game/actions.ts | added 1 condition(s) | ~162 |
+| 00:11 | Edited components/ControllerListV5.tsx | 6→7 lines | ~43 |
+| 00:11 | Edited components/ControllerListV5.tsx | CSS: resetMana | ~122 |
+| 00:12 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~139 |
+| 00:12 | Edited components/ControllerListV5.tsx | CSS: active, sm | ~181 |
+| 00:12 | Edited components/ControllerListV5.tsx | 3→4 lines | ~60 |
+| 00:14 | undo-tap-mana: reset_mana RPC (untap mana sources + empty pool) + ↺ button in StatusBar when floating mana | functions_src/reset_mana.sql, migrations/329, actions.ts, ControllerListV5.tsx | tsc+eslint clean, applied local | ~3k |
+| 00:39 | Edited components/ControllerListV5.tsx | 1→6 lines | ~126 |
+| 00:40 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~442 |
+| 00:40 | Edited components/ControllerListV5.tsx | expanded (+12 lines) | ~334 |
+| 00:41 | resolution feedback toast: confirms when your own spells/abilities resolve (client tracks in-flight stack items), so a no-effect resolution gives feedback | ControllerListV5.tsx | tsc+eslint clean | ~3k |
+| 00:57 | Created supabase/migrations/202605010330_game_log.sql | — | ~784 |
+| 00:58 | Edited lib/game/data.ts | added nullish coalescing | ~248 |
+| 00:58 | Edited components/ControllerListV5.tsx | inline fix | ~36 |
+| 00:58 | Edited components/ControllerListV5.tsx | inline fix | ~37 |
+| 00:59 | Edited components/ControllerListV5.tsx | 2→3 lines | ~83 |
+| 00:59 | Edited components/ControllerListV5.tsx | added error handling | ~919 |
+| 00:59 | Edited components/ControllerListV5.tsx | expanded (+7 lines) | ~119 |
+| 00:59 | Edited components/ControllerListV5.tsx | expanded (+9 lines) | ~217 |
+| 01:00 | Edited components/ControllerListV5.tsx | CSS: onOpenLog | ~110 |
+| 01:00 | Edited components/ControllerListV5.tsx | 3→4 lines | ~51 |
+| 01:00 | shared game log: trigger logs casts+resolutions to game_action_log (mig 330) + realtime; getGameLog + GameLogSheet + 📜 button | migrations/330, data.ts, ControllerListV5.tsx | tsc+eslint clean, trigger tested, applied local | ~6k |
+| 01:01 | Edited lib/game/data.ts | modified if() | ~174 |
+| 01:02 | Edited lib/game/data.ts | modified reloads() | ~134 |
+| now | Fix battlefield cards shuffling on refresh: getBoardCards/getControllerCards had no ORDER BY → arbitrary PostgREST order. Added .order(zone_position).order(id) (stable; game_cards has no created_at) | lib/game/data.ts | tsc 0, lint 0 | ~10k |
+| 01:11 | Created supabase/migrations/202605010331_game_log_outcomes.sql | — | ~876 |
+
+## Session: 2026-06-24 01:13
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 01:15 | Created components/GameLogPanel.tsx | — | ~1215 |
+| 01:15 | Edited components/board/BoardViewChrome.tsx | CSS: onOpenLog | ~499 |
+| 01:15 | Edited components/GameBoard.tsx | added 1 import(s) | ~43 |
+| 01:15 | Edited components/GameBoard.tsx | 1→2 lines | ~36 |
+| 01:16 | Edited components/GameBoard.tsx | 5→7 lines | ~109 |
+| 01:16 | Edited components/ControllerListV5.tsx | 2→2 lines | ~95 |
+| 01:17 | game log outcomes (life/poison/+1+1 triggers) + shared GameLogPanel on board | mig 202605010331, components/GameLogPanel.tsx, GameBoard.tsx, BoardViewChrome.tsx, ControllerListV5.tsx | applied+tested locally; tsc/eslint clean | ~9k |
+| 01:33 | Edited components/ControllerListV5.tsx | CSS: Auto-grouping, a, b | ~285 |
+| now | Battlefield auto-grouping: within lands/creatures/other rows, untapped cards float ahead of tapped (stable sort over the zone_position+id query order). Part 1 of reorder feature; manual drag (Arrange mode) still to build | components/ControllerListV5.tsx (MainArea) | tsc 0 | ~10k |
+| 08:48 | Edited components/ControllerListV5.tsx | inline fix | ~19 |
+| 08:48 | Edited components/ControllerListV5.tsx | added error handling | ~212 |
+| 08:49 | Edited components/ControllerListV5.tsx | added error handling | ~168 |
+| 08:49 | Edited components/ControllerListV5.tsx | CSS: out | ~281 |
+| 08:49 | Edited scripts/bot-runner.mjs | modified declareAttacks() | ~328 |
+| 08:49 | Edited scripts/bot-runner.mjs | "  ↳ attacking with ${decl" → "  ↳ attacking seat ${opp." | ~35 |
+| 08:50 | Edited components/ControllerListV5.tsx | added optional chaining | ~568 |
+| 08:50 | fix: bots attacked only the human; now fair target choice over all living opponents | scripts/bot-runner.mjs | syntax OK; logged bug-1481 | ~2k |
+| 08:51 | Edited components/ControllerListV5.tsx | 58→54 lines | ~678 |
+| now | Battlefield manual reorder: "⇄ Arrange" toggle in MainArea → perm row becomes framer-motion Reorder.Group/Item (drag-to-reorder, tap/peek suspended). Order saved per-device in localStorage (boardOrderKey), reconciled with auto-group default (new cards appended, removed pruned). permTileInner extracted to share tile JSX. Reorder import added | components/ControllerListV5.tsx | tsc 0, lint 0 — DRAG NEEDS ON-DEVICE TESTING | ~30k |
+| 09:07 | Edited lib/game/auto-pass.ts | 4→5 lines | ~123 |
+| 09:07 | Edited lib/game/auto-pass.ts | added 1 condition(s) | ~256 |
+| 09:08 | Edited tests/unit/auto-pass.test.ts | inline fix | ~36 |
+| 09:08 | Edited tests/unit/auto-pass.test.ts | expanded (+25 lines) | ~398 |
+| 09:08 | Edited components/ControllerListV5.tsx | inline fix | ~39 |
+| 09:08 | Edited components/ControllerListV5.tsx | inline fix | ~38 |
+| 09:08 | Edited components/ControllerListV5.tsx | 3→4 lines | ~79 |
+| now | Auto-resolve stack: new `res` auto-pass switch — on YOUR turn, auto-pass to resolve your spell/trigger on the stack when you hold no response (rsp still stops you). Default on. Pure client (server resolves on all-pass) | lib/game/auto-pass.ts, components/ControllerListV5.tsx, tests/unit/auto-pass.test.ts | suite 1115/1116, 45/45 auto-pass tests, tsc 0, lint 0 | ~15k |
+| 09:54 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→4 lines | ~30 |
+| 09:54 | Edited supabase/functions_src/cast_card_from_hand.sql | modified Checklands() | ~341 |
+| 09:55 | Edited supabase/functions_src/cast_card_from_hand.sql | expanded (+14 lines) | ~212 |
+| 09:55 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→3 lines | ~43 |
+| 09:56 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~327 |
+| 09:57 | Edited components/ControllerListV5.tsx | 3→3 lines | ~63 |
+| 09:57 | Edited scripts/bot-runner.mjs | 2→3 lines | ~58 |
+| 09:59 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~190 |
+| 09:59 | Edited supabase/migrations/202605010327_shock_lands.sql | 2→5 lines | ~97 |
+| 10:00 | Created tests/feature/shock-land.test.ts | — | ~854 |
+| 10:06 | investigated #1 filter lands — already work end-to-end (engine + CardActionSheet); verified vs local DB; no code change | .wolf/cerebrum.md (learning) | Darkwater+Flooded Grove verified | ~6k |
+| 10:09 | Edited lib/game/card-behavior-schema.ts | modified Checklands() | ~140 |
+| now | Shock lands (Overgrown Tomb etc.): new enters_tapped {unless:{pay_life:N}} → land enters tapped + pay_life_untap decision (pay N life to untap, MTG 119.4 affordability). cast_card_from_hand + submit_decision + schema + controller (ConfirmBody) + bot (declines) + 11 shocks scripted (card-scripts.json + live db). mig 327 | many | suite 1117/1118; shock-land.test.ts 2/2 | ~70k |
+| 11:39 | Edited components/ControllerListV5.tsx | 5→9 lines | ~52 |
+| 11:39 | Edited components/ControllerListV5.tsx | 2→2 lines | ~77 |
+| 11:39 | Edited components/ControllerListV5.tsx | 4→5 lines | ~26 |
+| 11:39 | Edited components/ControllerListV5.tsx | added 4 condition(s) | ~406 |
+| 11:40 | Edited components/ControllerListV5.tsx | 1→2 lines | ~28 |
+| 11:40 | Edited components/ControllerListV5.tsx | 4→5 lines | ~66 |
+| 11:40 | Edited components/ControllerListV5.tsx | expanded (+10 lines) | ~146 |
+| 11:40 | Edited components/ControllerListV5.tsx | CSS: onOpenSelf | ~116 |
+| 11:40 | Edited components/ControllerListV5.tsx | CSS: active, hover | ~144 |
+| 11:41 | Edited components/ControllerListV5.tsx | added error handling | ~2619 |
+| 11:41 | Edited components/ControllerListV5.tsx | 3→5 lines | ~137 |
+| 11:42 | Edited components/controller/CardActionSheet.tsx | 4→6 lines | ~23 |
+| 11:42 | Edited components/controller/CardActionSheet.tsx | CSS: onAdjustPlusCounters, delta, onSacrifice | ~124 |
+| 11:42 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~627 |
+| 11:43 | Edited components/controller/CardActionSheet.tsx | 3→7 lines | ~151 |
+| 11:43 | Edited components/controller/CardActionSheet.tsx | 3→2 lines | ~43 |
+| 11:45 | feat: manual table actions on controller (life +/-, player counters, make tokens, sacrifice, +1/+1) — reuse player-scoped RPCs, no migrations | ControllerListV5.tsx, controller/CardActionSheet.tsx | tsc/eslint clean; create_token verified as player | ~14k |
+| 12:10 | Edited components/ControllerListV5.tsx | 6→2 lines | ~10 |
+| 12:11 | Edited components/ControllerListV5.tsx | inline fix | ~36 |
+| 12:11 | Edited components/ControllerListV5.tsx | 5→4 lines | ~22 |
+| 12:11 | Edited components/ControllerListV5.tsx | removed 33 lines | ~30 |
+| 12:11 | Edited components/ControllerListV5.tsx | 2→1 lines | ~14 |
+| 12:11 | Edited components/ControllerListV5.tsx | 5→4 lines | ~51 |
+| 12:11 | Edited components/ControllerListV5.tsx | reduced (-10 lines) | ~38 |
+| 12:11 | Edited components/ControllerListV5.tsx | 6→5 lines | ~26 |
+| 12:11 | Edited components/ControllerListV5.tsx | 5→4 lines | ~23 |
+| 12:11 | Edited components/ControllerListV5.tsx | reduced (-8 lines) | ~49 |
+| 12:12 | Edited components/ControllerListV5.tsx | removed 184 lines | ~24 |
+| 12:12 | Edited components/ControllerListV5.tsx | 5→3 lines | ~73 |
+| 12:12 | Edited components/controller/CardActionSheet.tsx | 6→4 lines | ~12 |
+| 12:12 | Edited components/controller/CardActionSheet.tsx | 8→4 lines | ~47 |
+| 12:12 | Edited components/controller/CardActionSheet.tsx | 7→3 lines | ~76 |
+| 12:13 | Edited components/controller/CardActionSheet.tsx | removed 36 lines | ~20 |
+| 12:14 | REVERTED manual table actions (user: rules engine handles state, not per-player manual) — surgical reverts preserving parallel shock-lands work | ControllerListV5.tsx, controller/CardActionSheet.tsx, cerebrum (do-not-repeat) | tsc clean; no residuals | ~4k |
+| 13:41 | Edited components/ControllerListV5.tsx | added optional chaining | ~120 |
+| 13:41 | Edited components/ControllerListV5.tsx | CSS: stackCount | ~138 |
+| 13:42 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~290 |
+| 13:42 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~77 |
+| 13:43 | Edited components/board/BoardViewChrome.tsx | CSS: null | ~432 |
+| 13:45 | feat(C): priority clarity — controller PriorityPanel names priority holder in Wait state + on-stack hint; board chrome shows Waiting-on-X chip when priority is non-active | ControllerListV5.tsx (PriorityPanel), board/BoardViewChrome.tsx | tsc/eslint clean; get_turn_state priority_username verified | ~7k |
+| 14:10 | Edited tests/feature/deck-smoke.test.ts | 2→2 lines | ~24 |
+| 14:11 | Edited tests/feature/deck-smoke.test.ts | added 1 condition(s) | ~224 |
+| 14:13 | verify-all: full suite 1630/1630 green; fixed deck-smoke brittle oracle filename; renumbered shock_lands 327->333 (dup-version w/ realtime_game_tables) + tracked local | tests/feature/deck-smoke.test.ts, migrations/202605010333_shock_lands.sql | all tests pass; shock-land SL1/SL2 green | ~10k |
+
+## Session: 2026-06-25 22:02
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:15 | Created docs/open-items.md | — | ~1601 |
+
+| 22:16 | Merged + verified all TODO/deferred notes across roadmap-memory/cerebrum/audit/backlog/buglog vs codebase (3 parallel Explore agents, migs→333) into one doc; 1 real bug (draw-floor) + ~13 deferred gaps + 3 frontier, rest already shipped | docs/open-items.md | created | ~30k |
+| 22:16 | Edited docs/client-coverage-audit.md | 1→4 lines | ~55 |
+| 22:16 | Edited .claude/projects/c--Users-Jordy-dev-LeylineSync/memory/project_roadmap.md | 1→6 lines | ~90 |
+| 22:18 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 3→6 lines | ~110 |
+| 22:18 | Edited supabase/migrations/202605010334_draw_floor_fix.sql | 2→5 lines | ~87 |
+| 22:20 | Edited tests/fixtures/test-cards.json | 1→3 lines | ~294 |
+| 22:21 | Created tests/feature/draw-floor.test.ts | — | ~767 |
+| 22:23 | Edited docs/open-items.md | 5→7 lines | ~130 |
+| 22:24 | Fixed draw-floor bug (mig 334): draw branch used 1..greatest(1,amount) → count/dynamic draw of 0 drew 1. Now absent amount=1, present amount draws exactly N. +2 fixtures (Floor/Plain Drummer Test), tests DF1-3 green, 16 related draw-path tests green | functions_src/apply_triggered_ability_effects.sql, migrations/202605010334_draw_floor_fix.sql, tests/feature/draw-floor.test.ts, tests/fixtures/test-cards.json, buglog bug-1483 | ✓ verified | ~12k |
+
+## Session: 2026-06-26 10:03
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:32 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/fix.mjs | — | ~853 |
+| 10:33 | Created _verify_tmp.mts | — | ~406 |
+| 10:35 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/tokens.mjs | — | ~501 |
+| 10:56 | Edited lib/game/card-behavior-schema.ts | 4→8 lines | ~125 |
+| 10:56 | Edited lib/game/card-behavior-schema.ts | 3→7 lines | ~125 |
+| 10:56 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/tier1.mjs | — | ~536 |
+| 11:05 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+10 lines) | ~203 |
+| 11:05 | Edited lib/game/card-behavior-schema.ts | 3→6 lines | ~77 |
+| 11:05 | Edited lib/game/card-behavior-schema.ts | inline fix | ~40 |
+| 11:06 | Edited supabase/migrations/202605010335_tap_self.sql | 2→4 lines | ~72 |
+| 11:08 | Created tests/feature/tap-self.test.ts | — | ~779 |
+| 11:15 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~70 |
+| 11:18 | Created supabase/functions_src/fire_lifegain_triggers.sql | — | ~658 |
+| 11:18 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 6→7 lines | ~87 |
+| 11:18 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified fire_lifegain_triggers() | ~120 |
+| 11:19 | Edited supabase/functions_src/apply_damage_to_creature.sql | 7→11 lines | ~161 |
+| 11:19 | Edited supabase/functions_src/apply_damage_to_player.sql | 9→13 lines | ~162 |
+| 11:19 | Edited supabase/functions_src/handle_permanent_effect.sql | 5→6 lines | ~74 |
+| 11:19 | Edited supabase/functions_src/submit_decision.sql | modified coalesce() | ~127 |
+| 11:20 | Edited supabase/migrations/202605010336_lifegain_event.sql | 2→6 lines | ~115 |
+| 11:21 | Created tests/feature/lifegain-event.test.ts | — | ~722 |
+| 11:21 | Edited tests/feature/lifegain-event.test.ts | drained() → fire() | ~261 |
+| 11:22 | Edited tests/feature/lifegain-event.test.ts | 5→4 lines | ~66 |
+| 11:27 | Edited supabase/functions_src/submit_decision.sql | modified replace() | ~191 |
+| 11:28 | Created tests/feature/choose-type-anthem.test.ts | — | ~998 |
+| 11:29 | Edited supabase/migrations/202605010337_choose_type_anthem.sql | 2→6 lines | ~122 |
+| 11:30 | Created supabase/functions_src/card_has_fear.sql | — | ~502 |
+| 11:31 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified Fear() | ~86 |
+| 11:31 | Edited supabase/functions_src/register_card_continuous_effects.sql | 5→6 lines | ~61 |
+| 11:32 | Edited supabase/functions_src/declare_blocker.sql | modified Fear() | ~222 |
+| 11:33 | Created tests/feature/fear.test.ts | — | ~1062 |
+| 11:34 | Edited supabase/migrations/202605010338_fear.sql | 2→7 lines | ~132 |
+| 11:35 | Edited supabase/migrations/202605010338_fear.sql | modified DDL() | ~331 |
+| 11:36 | Edited supabase/functions_src/declare_blocker.sql | 3→3 lines | ~55 |
+| 11:36 | Edited supabase/migrations/202605010338_fear.sql | 3→3 lines | ~55 |
+| 11:41 | Edited lib/game/card-behavior-schema.ts | 9→11 lines | ~147 |
+| 11:41 | Edited lib/game/card-behavior-schema.ts | modified true() | ~222 |
+| 11:42 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~141 |
+| 11:42 | Edited supabase/functions_src/apply_trigger_effects.sql | modified and() | ~205 |
+| 11:42 | Edited supabase/functions_src/submit_decision.sql | modified nullif() | ~350 |
+| 11:44 | Created tests/feature/reflexive-may-program.test.ts | — | ~1062 |
+| 11:44 | Edited supabase/migrations/202605010339_reflexive_may_program.sql | expanded (+7 lines) | ~177 |
+| 11:52 | Edited supabase/functions_src/resolve_count_amount.sql | modified count() | ~396 |
+| 11:52 | Edited lib/game/card-behavior-schema.ts | modified watcher() | ~162 |
+| 11:53 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~84 |
+| 11:54 | Created tests/feature/shared-animosity.test.ts | — | ~953 |
+| 11:56 | Edited supabase/functions_src/apply_trigger_effects.sql | modified and() | ~256 |
+| 11:57 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified coalesce() | ~130 |
+| 11:57 | Edited supabase/functions_src/activate_ability.sql | 4→5 lines | ~75 |
+| 11:57 | Edited supabase/functions_src/activate_ability.sql | 4→5 lines | ~69 |
+| 11:57 | Edited supabase/functions_src/submit_decision.sql | modified select() | ~134 |
+| 11:58 | Edited supabase/functions_src/activate_ability.sql | 3→4 lines | ~54 |
+| 11:58 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~183 |
+| 11:59 | Created tests/feature/carmen.test.ts | — | ~914 |
+| 12:01 | Created supabase/functions_src/library_top_is_color.sql | — | ~260 |
+
+## Session: 2026-06-26 12:01
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:01 | Created supabase/functions_src/card_has_flying.sql | — | ~639 |
+| 12:02 | Edited supabase/functions_src/card_layered_power.sql | modified coalesce() | ~277 |
+| 12:02 | Edited supabase/functions_src/card_layered_toughness.sql | modified coalesce() | ~274 |
+| 12:04 | Created tests/feature/vampire-nocturnus.test.ts | — | ~851 |
+| 12:06 | Edited supabase/functions_src/apply_trigger_effects.sql | expanded (+18 lines) | ~420 |
+| 12:06 | Edited supabase/functions_src/submit_decision.sql | 5→9 lines | ~143 |
+| 12:07 | Edited supabase/functions_src/submit_decision.sql | modified values() | ~331 |
+| 12:07 | Edited lib/game/card-behavior-schema.ts | 3→6 lines | ~95 |
+| 12:08 | Created tests/feature/patriarchs-bidding.test.ts | — | ~794 |
+| 12:11 | Edited supabase/functions_src/apply_creature_effect.sql | modified o() | ~270 |
+| 12:11 | Edited supabase/functions_src/put_in_graveyard.sql | modified trigger() | ~276 |
+| 12:11 | Edited supabase/functions_src/put_in_graveyard.sql | 3→4 lines | ~23 |
+| 12:11 | Edited lib/game/card-behavior-schema.ts | modified ability() | ~215 |
+| 12:11 | Edited lib/game/card-behavior-schema.ts | inline fix | ~31 |
+| 12:11 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~74 |
+| 12:12 | Created tests/feature/clavileno.test.ts | — | ~1066 |
+| 12:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/29ade7df-e915-4e92-91d0-74481e09da2e/scratchpad/dpfix.mjs | — | ~507 |
+| 12:53 | Created tests/feature/mayhem-devil.test.ts | — | ~484 |
+| 12:54 | Edited tests/feature/mayhem-devil.test.ts | added 1 condition(s) | ~199 |
+| 12:56 | Edited supabase/functions_src/trigger_effect_target_type.sql | 6→6 lines | ~112 |
+| 12:57 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified coalesce() | ~482 |
+| 12:57 | Edited supabase/functions_src/put_in_graveyard.sql | 11→15 lines | ~191 |
+| 12:58 | Created tests/feature/return-on-death.test.ts | — | ~819 |
+| 13:01 | Edited supabase/functions_src/submit_decision.sql | modified coalesce() | ~265 |
+| 13:01 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~208 |
+| 13:01 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~158 |
+| 13:02 | Created tests/feature/reanimate.test.ts | — | ~798 |
+| 13:06 | Edited supabase/functions_src/create_copy_token.sql | modified coalesce() | ~214 |
+| 13:06 | Edited supabase/functions_src/advance_step.sql | modified Hellkite() | ~179 |
+| 13:07 | Edited supabase/functions_src/advance_step.sql | 6→6 lines | ~67 |
+| 13:07 | Edited supabase/functions_src/advance_step.sql | 3→4 lines | ~24 |
+| 13:07 | Edited lib/game/card-behavior-schema.ts | 7→9 lines | ~106 |
+| 13:08 | Created tests/feature/copy-token-cleanup.test.ts | — | ~841 |
+| 13:09 | Edited tests/feature/copy-token-cleanup.test.ts | "end" → "ending" | ~24 |
+| 15:14 | Edited scripts/triage-decklist.mjs | inline fix | ~28 |
+| 15:16 | Edited supabase/functions_src/submit_decision.sql | added 1 import(s) | ~129 |
+| 15:16 | Edited supabase/functions_src/apply_trigger_effects.sql | 4→4 lines | ~72 |
+| 15:16 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~79 |
+| 15:17 | Edited lib/game/card-behavior-schema.ts | 6→8 lines | ~110 |
+| 15:17 | Created tests/feature/orthion.test.ts | — | ~710 |
+| 15:18 | Edited supabase/functions_src/create_copy_token.sql | modified coalesce() | ~290 |
+| 15:18 | Edited lib/game/card-behavior-schema.ts | 6→8 lines | ~116 |
+| 15:19 | Created tests/feature/jaxis.test.ts | — | ~618 |
+| 15:19 | Edited tests/feature/jaxis.test.ts | 6→6 lines | ~98 |
+| 15:20 | Edited tests/feature/jaxis.test.ts | inline fix | ~30 |
+| 15:22 | Edited tests/feature/jaxis.test.ts | modified count() | ~130 |
+| 15:23 | Edited supabase/functions_src/put_in_graveyard.sql | 4→5 lines | ~34 |
+| 15:23 | Edited supabase/functions_src/put_in_graveyard.sql | modified trigger() | ~411 |
+| 15:56 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~206 |
+| 15:56 | Edited lib/game/card-behavior-schema.ts | 4→5 lines | ~90 |
+| 15:57 | Created tests/feature/helm-of-the-host.test.ts | — | ~537 |
+| 15:58 | Edited supabase/functions_src/apply_creature_effect.sql | added 1 condition(s) | ~392 |
+| 15:59 | Edited supabase/functions_src/trigger_effect_target_type.sql | 3→3 lines | ~70 |
+| 15:59 | Edited lib/game/card-behavior-schema.ts | expanded (+10 lines) | ~159 |
+| 15:59 | Edited tests/unit/registry-schema-drift.test.ts | "exile a target creature a" → "exile a target creature a" | ~35 |
+| 16:00 | Created tests/feature/conjurers-closet.test.ts | — | ~486 |
+| 16:03 | Edited tests/feature/conjurers-closet.test.ts | 3→4 lines | ~79 |
+| 16:04 | Edited tests/feature/conjurers-closet.test.ts | 3→5 lines | ~107 |
+| 16:06 | Edited tests/feature/conjurers-closet.test.ts | added optional chaining | ~101 |
+| 16:06 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~115 |
+| 16:07 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~79 |
+| 16:07 | Created tests/feature/flameshadow.test.ts | — | ~737 |
+| 16:08 | Edited supabase/functions_src/apply_creature_effect.sql | modified Donate() | ~224 |
+| 16:09 | Edited lib/game/card-behavior-schema.ts | 2→5 lines | ~78 |
+| 16:09 | Created tests/feature/harmless-offering.test.ts | — | ~380 |
+| 16:48 | Edited supabase/functions_src/apply_trigger_effects.sql | 2→3 lines | ~14 |
+| 16:48 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~220 |
+| 16:48 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~71 |
+| 16:49 | Created tests/feature/mirror-march.test.ts | — | ~791 |
+| 16:51 | Edited tests/feature/mirror-march.test.ts | copies() → flip() | ~215 |
+| 16:51 | Edited tests/feature/mirror-march.test.ts | 6→6 lines | ~81 |
+| 16:52 | Edited supabase/functions_src/create_copy_token.sql | added 1 condition(s) | ~428 |
+| 16:52 | Edited supabase/functions_src/advance_step.sql | expanded (+8 lines) | ~143 |
+| 16:53 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~310 |
+| 16:54 | Edited supabase/functions_src/apply_trigger_effects.sql | 3→4 lines | ~18 |
+| 16:55 | Created tests/feature/myriad.test.ts | — | ~826 |
+| 17:06 | Edited supabase/functions_src/fire_attack_triggers.sql | expanded (+10 lines) | ~190 |
+| 17:06 | Edited supabase/functions_src/create_copy_token.sql | expanded (+6 lines) | ~196 |
+| 17:19 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified generate_series() | ~235 |
+| 17:19 | Edited supabase/functions_src/apply_creature_effect.sql | modified Half() | ~377 |
+| 17:20 | Edited supabase/functions_src/trigger_effect_target_type.sql | inline fix | ~24 |
+| 17:20 | Created tests/feature/saw-in-half.test.ts | — | ~566 |
+| 17:23 | Created supabase/functions_src/effective_script.sql | — | ~624 |
+| 17:23 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified Fear() | ~99 |
+| 17:25 | Created tests/feature/blade-of-selves.test.ts | — | ~572 |
+| 17:26 | Edited tests/feature/blade-of-selves.test.ts | 2→3 lines | ~62 |
+| 17:26 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~82 |
+| 17:27 | Created tests/feature/splinter-twin.test.ts | — | ~578 |
+| 17:31 | Edited supabase/functions_src/apply_trigger_effects.sql | modified create_copy_token() | ~179 |
+| 17:32 | Edited lib/game/card-behavior-schema.ts | modified exile() | ~138 |
+| 17:32 | Created tests/feature/echoing-assault.test.ts | — | ~622 |
+| 17:37 | Edited supabase/functions_src/fire_attack_triggers.sql | 3→6 lines | ~85 |
+| 17:37 | Edited supabase/functions_src/apply_trigger_effects.sql | 4→4 lines | ~81 |
+| 17:38 | Edited supabase/functions_src/apply_trigger_effects.sql | modified jsonb_build_object() | ~268 |
+| 17:39 | Created tests/feature/delina.test.ts | — | ~680 |
+| 17:41 | Created tests/feature/mirage-phalanx.test.ts | — | ~574 |
+| 17:42 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified Xantcha() | ~267 |
+| 17:42 | Created tests/feature/xantcha.test.ts | — | ~654 |
+| 17:45 | Edited supabase/functions_src/activate_ability.sql | modified CONTROL() | ~173 |
+| 17:48 | Edited tests/unit/registry-schema-drift.test.ts | "the source enters under a" → "the source enters under a" | ~28 |
+| 23:25 | Created tests/feature/quick-wins.test.ts | — | ~867 |
+| 23:29 | Created tests/feature/sorin.test.ts | — | ~593 |
+| 23:30 | Created tests/feature/splinter-twin-cast.test.ts | — | ~656 |
+
+## Session: 2026-06-26 00:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:28 | Edited components/controller/shared.ts | 4→7 lines | ~161 |
+| 00:28 | Edited components/controller/shared.ts | 1→5 lines | ~70 |
+| 00:29 | cast-planner-check: route saw_in_half + grant_dies_effect through TARGETED_SPELL_EFFECT_TYPES (5 cards castable) | components/controller/shared.ts | OK, tsc clean | ~6k |
+| 00:39 | Edited supabase/functions_src/handle_permanent_effect.sql | modified nullif() | ~564 |
+| 00:40 | Edited supabase/migrations/202605010362_harmless_offering.sql | 4→8 lines | ~152 |
+| 00:40 | Edited components/controller/shared.ts | added nullish coalescing | ~323 |
+| 00:40 | Edited components/controller/shared.ts | inline fix | ~77 |
+| 00:41 | Edited lib/game/actions.ts | modified castPermanentEffect() | ~321 |
+| 00:41 | Edited components/ControllerListV5.tsx | inline fix | ~67 |
+| 00:41 | Edited components/controller/shared.ts | modified spells() | ~111 |
+| 00:42 | Created tests/feature/donate-and-mana-spell.test.ts | — | ~948 |
+| 00:43 | Edited supabase/functions_src/build_stack_payload_permanent_simple.sql | 4→8 lines | ~126 |
+| 00:43 | Edited supabase/functions_src/build_stack_payload_permanent_simple.sql | 5→7 lines | ~107 |
+| 00:44 | Edited supabase/migrations/202605010362_harmless_offering.sql | 4→9 lines | ~180 |
+| 00:46 | Edited supabase/functions_src/handle_permanent_effect.sql | reduced (-18 lines) | ~287 |
+| 00:47 | Edited supabase/migrations/202605010362_harmless_offering_cast.sql | 4→9 lines | ~192 |
+| 00:47 | Edited tests/feature/donate-and-mana-spell.test.ts | 3→4 lines | ~85 |
+| 00:47 | Edited tests/feature/donate-and-mana-spell.test.ts | 3→4 lines | ~84 |
+| 00:51 | cast-planner gaps fixed: Dark Ritual (add_mana untargeted) + Harmless Offering donate (mig 362, reuse permanent_effect picker + existing mig 353 engine donate) | shared.ts, actions.ts, ControllerListV5.tsx, handle_permanent_effect.sql, build_stack_payload_permanent_simple.sql | 1812 tests pass | ~30k |
+| 01:19 | Edited supabase/functions_src/handle_permanent_effect.sql | 3→4 lines | ~41 |
+| 01:19 | Edited supabase/functions_src/handle_permanent_effect.sql | expanded (+34 lines) | ~579 |
+| 01:19 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~363 |
+| 01:20 | Edited supabase/migrations/202605010363_donate_choose_opponent.sql | expanded (+7 lines) | ~224 |
+| 01:21 | Edited tests/feature/donate-and-mana-spell.test.ts | added optional chaining | ~636 |
+| 01:21 | Edited tests/feature/donate-and-mana-spell.test.ts | 4→4 lines | ~86 |
+| 01:22 | donate opponent-choice: reusable choose_player hook (mig 363) — 1v1 direct, multiplayer caster picks recipient | handle_permanent_effect.sql, submit_decision.sql | HO2 picks C not default B | ~14k |
+
+## Session: 2026-06-27 19:48
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 20:26 | designqc: captured 0 screenshots (0KB, ~0 tok) | C:/Program Files/Git/ | ready for eval | ~0 |
+| 20:27 | designqc: captured 4 screenshots (142KB, ~10000 tok) | / | ready for eval | ~0 |
+| 20:44 | Edited components/ControllerListV5.tsx | CSS: Portrait, max-height, max-height | ~117 |
+| 20:45 | Edited components/ControllerListV5.tsx | CSS: app, lg | ~126 |
+| 20:46 | Edited components/ControllerListV5.tsx | 6→10 lines | ~161 |
+
+| 20:47 | Landscape opponent-row grid (couch-play polish): OpponentRowOverlay full-width column → width-scaled grid (1 col heads-up / 2 / lg:3). Caught+fixed an initial height-gated version that violated the landscape-only pref. | components/ControllerListV5.tsx | tsc 0 err, lint clean | ~1500 |
+| 20:47 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/decisive-over-clarifying.md | — | ~267 |
+| 20:47 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~54 |
+| 21:32 | Edited lib/game/data.ts | added nullish coalescing | ~538 |
+| 21:32 | Edited components/controller/KeywordIcon.tsx | modified for() | ~85 |
+| 21:32 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~25 |
+| 21:32 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~32 |
+| 21:32 | Edited lib/game/use-controller-game-state.ts | 3→4 lines | ~56 |
+| 21:33 | Edited lib/game/use-controller-game-state.ts | added nullish coalescing | ~236 |
+| 21:33 | Edited lib/game/use-board-game-state.ts | 6→7 lines | ~38 |
+| 21:33 | Edited lib/game/use-board-game-state.ts | added nullish coalescing | ~347 |
+| 21:34 | Edited lib/game/use-board-game-state.ts | reduced (-6 lines) | ~246 |
+| 21:34 | Edited lib/game/use-board-game-state.ts | 4→3 lines | ~17 |
+| 21:35 | Created tests/unit/keyword-icons.test.ts | — | ~510 |
+
+| 21:36 | Dynamic-granted keywords on opponent view: getGrantedKeywords (data.ts) merges direct keyword grants onto BoardCard.keywords in use-controller-game-state; normalizeKeywords accepts underscored effect_types. Board-hook merge reverted (no keyword UI there). | lib/game/data.ts, use-controller-game-state.ts, controller/KeywordIcon.tsx, tests/unit/keyword-icons.test.ts | tsc 0 err, lint clean, 7/7 unit | ~6000 |
+| 21:36 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/opponent-view-design.md | 1→3 lines | ~296 |
+
+## Session: 2026-06-27 21:51
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:57 | Created docs/collection-optimizer/ARCHITECTURE.md | — | ~4554 |
+| 21:59 | Designed Collection Optimizer module; persisted architecture doc (native Next+Supabase stack) | docs/collection-optimizer/ARCHITECTURE.md | created | ~6k |
+| 22:00 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | — | ~430 |
+| 22:00 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~70 |
+| 22:11 | Edited docs/collection-optimizer/ARCHITECTURE.md | modified boundary() | ~485 |
+| 22:11 | Edited docs/collection-optimizer/ARCHITECTURE.md | modified recreate() | ~380 |
+| 22:12 | Edited docs/collection-optimizer/ARCHITECTURE.md | 3→5 lines | ~74 |
+| 22:12 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified placement() | ~232 |
+| 22:12 | Updated optimizer design: reuse existing cards table read-only, added isolation boundary (collection schema, dont touch game engine) | docs/collection-optimizer/ARCHITECTURE.md | edited | ~1k |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | expanded (+18 lines) | ~678 |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | 2→2 lines | ~51 |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | 2→2 lines | ~33 |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | 2→2 lines | ~42 |
+| 22:27 | Edited docs/collection-optimizer/ARCHITECTURE.md | 2→2 lines | ~43 |
+| 22:27 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified placement() | ~394 |
+| 22:27 | Verified live cards schema: thin game catalog (no colors/cmc/prices/sets, oracle_id=text). Revised design to optimizer-owned card_printings layer (option B) | docs/collection-optimizer/ARCHITECTURE.md | verified+edited | ~2k |
+| 10:42 | Created supabase/migrations/202605010364_collection_optimizer.sql | — | ~2753 |
+| 10:43 | Created scripts/import-card-printings.mjs | — | ~2856 |
+| 10:43 | Edited package.json | 1→2 lines | ~37 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/b3467b9f-c3ab-4823-9620-fb93c878b451/scratchpad/validate-mig.mjs | — | ~326 |
+| 10:45 | Created _co_apply_tmp.mjs | — | ~228 |
+| 10:46 | Created _co_check_tmp.mjs | — | ~175 |
+| 10:46 | Edited docs/collection-optimizer/ARCHITECTURE.md | namespace() → schema() | ~173 |
+| 10:47 | Edited docs/collection-optimizer/ARCHITECTURE.md | modified BUILT() | ~289 |
+| 10:47 | Built+applied Collection Optimizer migration (public.co_* tables, views, RLS) + import-card-printings.mjs; verified end-to-end on local DB (20 printings, colors/cmc/prices/tsv OK) | supabase/migrations/202605010364_collection_optimizer.sql, scripts/import-card-printings.mjs, package.json | applied+verified | ~9k |
+| 10:47 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified reversal() | ~402 |
+| 11:26 | Created lib/collection/types.ts | — | ~438 |
+| 11:27 | Created lib/collection/parsers/manabox.ts | — | ~1533 |
+| 11:27 | Created lib/collection/import-collection.ts | — | ~1895 |
+| 11:27 | Created app/api/collection/import/route.ts | — | ~576 |
+| 11:28 | Created tests/unit/manabox-parser.test.ts | — | ~1255 |
+| 11:28 | Created _co_e2e_tmp.mjs | — | ~669 |
+| 11:29 | Created _co_e2e_tmp.mjs | — | ~804 |
+| 11:30 | Created _co_e2e_tmp.mjs | — | ~829 |
+| 11:31 | Built ManaBox CSV importer: pure parser+resolver, orchestrator (replace-snapshot), POST /api/collection/import; 11 unit tests pass + e2e verified on local (6/1 match, finishes split, availability owned/free/committed correct) | lib/collection/{types,import-collection,parsers/manabox}.ts, app/api/collection/import/route.ts, tests/unit/manabox-parser.test.ts | done+verified | ~10k |
+| 11:31 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~425 |
+| 12:18 | Created lib/collection/resolve.ts | — | ~841 |
+| 12:19 | Edited lib/collection/types.ts | expanded (+30 lines) | ~272 |
+| 12:19 | Edited lib/collection/import-collection.ts | reduced (-16 lines) | ~78 |
+| 12:19 | Edited lib/collection/import-collection.ts | inline fix | ~22 |
+| 12:19 | Edited lib/collection/import-collection.ts | removed 43 lines | ~12 |
+| 12:19 | Edited tests/unit/manabox-parser.test.ts | "../../lib/collection/impo" → "../../lib/collection/reso" | ~18 |
+| 12:19 | Edited tests/unit/manabox-parser.test.ts | 6→7 lines | ~44 |
+| 12:20 | Created lib/collection/parsers/decklist.ts | — | ~1193 |
+| 12:20 | Created lib/collection/import-deck.ts | — | ~1450 |
+| 12:20 | Created app/api/decks/import/route.ts | — | ~727 |
+| 12:21 | Created tests/unit/decklist-parser.test.ts | — | ~813 |
+| 12:21 | Created _co_deck_e2e_tmp.mjs | — | ~636 |
+| 12:22 | Built deck importer (Moxfield/Archidekt/txt): decklist parser, extracted shared resolve.ts (DRY across both importers), import-deck orchestrator, POST /api/decks/import; 8 new tests, 421 unit pass, e2e verified (commander+colorIdentity+sideboard-skip) | lib/collection/{resolve,import-deck,parsers/decklist}.ts, app/api/decks/import/route.ts, tests/unit/decklist-parser.test.ts | done+verified | ~12k |
+| 12:22 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~418 |
+| 12:32 | Created lib/collection/synergy/tagger.ts | — | ~1738 |
+| 12:32 | Created tests/unit/synergy-tagger.test.ts | — | ~1038 |
+| 12:33 | Created scripts/tag-backfill.mjs | — | ~1075 |
+| 12:33 | Edited package.json | 1→2 lines | ~38 |
+| 12:34 | Created lib/collection/power-score.ts | — | ~1386 |
+| 12:34 | Created tests/unit/power-score.test.ts | — | ~804 |
+| 12:36 | Created lib/collection/upgrade-scanner.ts | — | ~3531 |
+| 12:37 | Created tests/unit/upgrade-scanner.test.ts | — | ~928 |
+| 12:37 | Created app/api/decks/[id]/upgrades/route.ts | — | ~363 |
+| 12:38 | Created lib/collection/deck-loader.ts | — | ~876 |
+| 12:38 | Edited lib/collection/upgrade-scanner.ts | added 1 import(s) | ~86 |
+| 12:38 | Edited lib/collection/upgrade-scanner.ts | removed 40 lines | ~89 |
+| 12:38 | Edited lib/collection/upgrade-scanner.ts | removed 16 lines | ~8 |
+| 12:39 | Edited lib/collection/upgrade-scanner.ts | reduced (-6 lines) | ~20 |
+| 12:39 | Created lib/collection/analyze-deck.ts | — | ~339 |
+| 12:39 | Created app/api/decks/[id]/analysis/route.ts | — | ~310 |
+| 12:40 | Created _co_scan_e2e_tmp.mjs | — | ~1135 |
+| 12:40 | Edited lib/collection/deck-loader.ts | modified for() | ~313 |
+| 12:41 | Edited lib/collection/deck-loader.ts | added optional chaining | ~333 |
+| 12:41 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~25 |
+| 12:41 | Edited lib/collection/upgrade-scanner.ts | removed 29 lines | ~8 |
+| 12:41 | Created _co_scan_e2e_tmp.mjs | — | ~959 |
+| 12:42 | Created _co_scan_e2e_tmp.mjs | — | ~888 |
+| 12:44 | Edited lib/collection/synergy/tagger.ts | modified target() | ~71 |
+| 12:44 | Edited lib/collection/synergy/tagger.ts | added 1 condition(s) | ~104 |
+| 12:44 | Edited tests/unit/synergy-tagger.test.ts | expanded (+11 lines) | ~208 |
+| 12:45 | Created _co_scan_e2e_tmp.mjs | — | ~838 |
+| 12:46 | Built synergy tagger + tag-backfill (33k cards tagged), power-score, upgrade engine (free/occupied) + analysis. Routes GET decks/:id/{analysis,upgrades}. 447 unit pass; e2e verified (power 3.1, swaps+additions+occupied). Fixed 2 tagger bugs (lands=ramp, removal adjective) | lib/collection/{synergy/tagger,power-score,upgrade-scanner,deck-loader,analyze-deck}.ts, scripts/tag-backfill.mjs, app/api/decks/[id]/{analysis,upgrades}/route.ts, 3 tests | done+verified | ~20k |
+| 12:46 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~534 |
+| 14:10 | Created components/collection/Shell.tsx | — | ~881 |
+| 14:11 | Created app/collection/page.tsx | — | ~1565 |
+| 14:11 | Created components/collection/ImportWizard.tsx | — | ~1446 |
+| 14:11 | Created app/collection/import/page.tsx | — | ~185 |
+| 14:11 | Created components/collection/DeckImportForm.tsx | — | ~891 |
+| 14:11 | Created app/collection/decks/import/page.tsx | — | ~184 |
+| 14:12 | Created components/collection/DeckDetail.tsx | — | ~2552 |
+| 14:12 | Created app/collection/decks/[id]/page.tsx | — | ~342 |
+| 14:14 | Built Collection Optimizer UI (Leyline theme): /collection overview, /collection/import wizard, /collection/decks/import, /collection/decks/[id] detail (power gauge + free/occupied scanner). tsc+eslint clean; all routes 307 (compile+run OK, no 500s) | app/collection/**, components/collection/{Shell,ImportWizard,DeckImportForm,DeckDetail}.tsx | done+verified | ~14k |
+| 14:14 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~464 |
+| 14:39 | Created lib/collection/deck-mutations.ts | — | ~622 |
+| 14:39 | Created lib/collection/apply-swap.ts | — | ~585 |
+| 14:39 | Created lib/collection/move-card.ts | — | ~540 |
+| 14:39 | Created app/api/decks/[id]/swaps/route.ts | — | ~413 |
+| 14:40 | Created app/api/collection/move-card/route.ts | — | ~403 |
+| 14:40 | Edited lib/collection/upgrade-scanner.ts | 4→9 lines | ~36 |
+| 14:40 | Edited lib/collection/upgrade-scanner.ts | 6→6 lines | ~28 |
+| 14:40 | Edited lib/collection/upgrade-scanner.ts | 3→3 lines | ~58 |
+| 14:40 | Edited lib/collection/upgrade-scanner.ts | modified for() | ~232 |
+| 14:40 | Edited tests/unit/upgrade-scanner.test.ts | expanded (+8 lines) | ~211 |
+| 14:41 | Edited components/collection/DeckDetail.tsx | CSS: id | ~46 |
+| 14:41 | Edited components/collection/DeckDetail.tsx | 5→5 lines | ~33 |
+
+## Session: 2026-06-28 14:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:41 | Edited components/collection/DeckDetail.tsx | added optional chaining | ~637 |
+
+## Session: 2026-06-28 14:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:41 | Edited components/collection/DeckDetail.tsx | CSS: disabled, background | ~322 |
+| 14:41 | Edited components/collection/DeckDetail.tsx | CSS: disabled | ~242 |
+| 14:41 | Edited components/collection/DeckDetail.tsx | CSS: color | ~89 |
+| 14:42 | Created _co_actions_e2e_tmp.mjs | — | ~771 |
+| 14:43 | Built Apply-swap + Move-card actions: deck-mutations helpers, apply-swap/move-card orchestrators (ownership+color-identity validated), POST /api/decks/[id]/swaps + /api/collection/move-card, wired Apply/Move buttons in DeckDetail. Scanner usedBy now {id,name}[]. e2e verified swap+move+negative; full unit suite pass; routes 307 | lib/collection/{deck-mutations,apply-swap,move-card}.ts, app/api/decks/[id]/swaps, app/api/collection/move-card, components/collection/DeckDetail.tsx, lib/collection/upgrade-scanner.ts | done+verified | ~12k |
+| 14:43 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~432 |
+| 14:56 | Edited components/SiteNav.tsx | inline fix | ~26 |
+| 14:56 | Edited components/SiteNav.tsx | expanded (+10 lines) | ~172 |
+| 14:56 | Edited lib/collection/apply-swap.ts | added 1 import(s) | ~46 |
+| 14:56 | Edited lib/collection/apply-swap.ts | modified catch() | ~99 |
+| 14:56 | Edited lib/collection/move-card.ts | added 1 import(s) | ~46 |
+| 14:56 | Edited lib/collection/move-card.ts | modified catch() | ~126 |
+| 14:57 | Created lib/collection/ai-recommend.ts | — | ~2049 |
+| 14:58 | Created app/api/decks/[id]/recommend/route.ts | — | ~469 |
+| 14:58 | Created tests/unit/ai-recommend.test.ts | — | ~743 |
+| 14:58 | Edited components/collection/DeckDetail.tsx | CSS: summary, picks | ~113 |
+| 14:59 | Edited components/collection/DeckDetail.tsx | expanded (+8 lines) | ~72 |
+| 14:59 | Edited components/collection/DeckDetail.tsx | added 1 condition(s) | ~233 |
+| 14:59 | Edited components/collection/DeckDetail.tsx | expanded (+69 lines) | ~850 |
+| 14:59 | Edited components/collection/DeckDetail.tsx | CSS: verdict, color, border | ~129 |
+| 15:01 | Created _co_ai_e2e_tmp.mjs | — | ~744 |
+| 15:01 | Added AI deck-doctor (RAG over scan, grounded, theme-aware, budget) + route /api/decks/[id]/recommend + UI panel; power-score cache refresh on Apply/Move; Collection nav entry in SiteNav. 3 AI unit tests, full suite pass, tsc+lint clean, LIVE Opus e2e verified grounded output | lib/collection/ai-recommend.ts, app/api/decks/[id]/recommend, components/collection/DeckDetail.tsx, components/SiteNav.tsx, apply-swap/move-card cache | done+verified | ~16k |
+| 15:02 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~442 |
+| 15:57 | Created lib/collection/fetch-decklist.ts | — | ~1541 |
+| 15:57 | Edited app/api/decks/import/route.ts | added 1 import(s) | ~192 |
+| 15:58 | Edited app/api/decks/import/route.ts | added 1 condition(s) | ~188 |
+| 15:58 | Edited components/collection/DeckImportForm.tsx | CSS: url, null | ~365 |
+| 15:58 | Edited components/collection/DeckImportForm.tsx | CSS: https, https | ~586 |
+| 15:58 | Edited components/collection/DeckImportForm.tsx | modified ModeTab() | ~254 |
+| 15:59 | Created tests/unit/fetch-decklist.test.ts | — | ~1159 |
+| 16:00 | Added deck-import URL support (Moxfield/Archidekt): fetch-decklist.ts (parseDeckUrl + JSON→text mappers, fixed-host fetch = no SSRF), wired into /api/decks/import {url}, URL/Paste toggle in DeckImportForm. 7 unit tests + LIVE Archidekt fetch verified (real deck mapped, commander flagged). Full suite pass; tsc+lint clean | lib/collection/fetch-decklist.ts, app/api/decks/import/route.ts, components/collection/DeckImportForm.tsx, tests/unit/fetch-decklist.test.ts | done+verified | ~7k |
+| 16:00 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~257 |
+| 16:19 | Created supabase/migrations/202605010365_buy_candidates.sql | — | ~534 |
+| 16:19 | Created lib/collection/buy-suggestions.ts | — | ~716 |
+| 16:20 | Created app/api/decks/[id]/buy/route.ts | — | ~366 |
+| 16:20 | Created lib/collection/conflicts.ts | — | ~814 |
+| 16:20 | Created app/api/conflicts/route.ts | — | ~232 |
+| 16:20 | Created app/collection/conflicts/page.tsx | — | ~793 |
+| 16:20 | Edited app/collection/page.tsx | 7→12 lines | ~155 |
+| 16:21 | Edited components/collection/DeckDetail.tsx | 3→7 lines | ~125 |
+| 16:21 | Edited components/collection/DeckDetail.tsx | CSS: oracleId, scryfallUrl | ~84 |
+| 16:21 | Edited components/collection/DeckDetail.tsx | added nullish coalescing | ~222 |
+| 16:21 | Edited components/collection/DeckDetail.tsx | 4→7 lines | ~73 |
+| 16:22 | Edited components/collection/DeckDetail.tsx | 5→6 lines | ~67 |
+| 16:22 | Edited components/collection/DeckDetail.tsx | modified BuyTab() | ~753 |
+| 16:22 | Created tests/unit/conflicts-buy.test.ts | — | ~631 |
+| 16:23 | Created _co_bc_e2e_tmp.mjs | — | ~789 |
+| 16:27 | Edited lib/collection/conflicts.ts | added 1 condition(s) | ~98 |
+| 16:28 | Added Buy suggestions (co_buy_candidates SQL fn mig 365 + suggestBuys + /api/decks/[id]/buy + Buy tab w/ budget chips + Scryfall links) and Deck Conflicts (computeConflicts + listConflicts + /api/conflicts + /collection/conflicts page + overview link). 4 unit tests, e2e verified both; basic-land conflict noise fixed (bug-1502). Full suite pass, routes 307 | lib/collection/{buy-suggestions,conflicts}.ts, supabase/migrations/202605010365, app/api/decks/[id]/buy, app/api/conflicts, app/collection/conflicts, components/collection/DeckDetail.tsx | done+verified | ~18k |
+| 16:29 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~363 |
+| 16:41 | Edited lib/collection/synergy/tagger.ts | wipes() → wipe() | ~92 |
+| 16:41 | Edited lib/collection/synergy/tagger.ts | added 1 condition(s) | ~216 |
+| 16:41 | Edited lib/collection/synergy/tagger.ts | 1→4 lines | ~74 |
+| 16:42 | Edited tests/unit/synergy-tagger.test.ts | expanded (+15 lines) | ~402 |
+| 16:42 | Created supabase/migrations/202605010366_buy_ranking.sql | — | ~498 |
+| 16:43 | Edited lib/collection/buy-suggestions.ts | added 3 condition(s) | ~483 |
+| 16:44 | Edited lib/collection/ai-recommend.ts | added 1 import(s) | ~106 |
+| 16:45 | Edited lib/collection/ai-recommend.ts | 18→20 lines | ~118 |
+| 16:45 | Edited lib/collection/ai-recommend.ts | added optional chaining | ~278 |
+| 16:45 | Edited lib/collection/ai-recommend.ts | owns() → cards() | ~389 |
+| 16:45 | Edited components/collection/DeckDetail.tsx | CSS: border | ~204 |
+| 16:47 | Improved buy suggestions x3: (1) tagger CMC-efficiency weighting + board_wipe hard/soft split (re-backfilled 33k); (2) buy ranking mig 366 (weight>=2, best-in-budget) + round-robin diversify across need-tags; (3) AI deck-doctor now ranks owned+buy candidates, prefers owned, budget-aware. 22 tests pass; live Opus e2e verified (free includes + buy considers/skips with purchase reasoning) | lib/collection/{synergy/tagger,buy-suggestions,ai-recommend}.ts, supabase/migrations/202605010366, components/collection/DeckDetail.tsx | done+verified | ~15k |
+| 16:47 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified EDHREC() | ~334 |
+| 20:21 | Created lib/collection/scoring.ts | — | ~1481 |
+| 20:22 | Edited lib/collection/upgrade-scanner.ts | expanded (+12 lines) | ~211 |
+| 20:22 | Edited lib/collection/upgrade-scanner.ts | expanded (+6 lines) | ~163 |
+| 20:23 | Edited lib/collection/upgrade-scanner.ts | added 4 condition(s) | ~1637 |
+| 20:23 | Edited lib/collection/upgrade-scanner.ts | modified if() | ~81 |
+| 20:23 | Edited lib/collection/upgrade-scanner.ts | 2→2 lines | ~40 |
+| 20:23 | Edited tests/unit/upgrade-scanner.test.ts | 3→3 lines | ~36 |
+| 20:23 | Edited tests/unit/upgrade-scanner.test.ts | 3→3 lines | ~50 |
+| 20:24 | Created tests/unit/scoring.test.ts | — | ~1107 |
+| 20:24 | Edited lib/collection/power-score.ts | added 1 import(s) | ~37 |
+| 20:25 | Edited lib/collection/power-score.ts | expanded (+7 lines) | ~95 |
+| 20:25 | Edited lib/collection/power-score.ts | added nullish coalescing | ~774 |
+| 20:25 | Edited lib/collection/buy-suggestions.ts | 14→19 lines | ~163 |
+| 20:26 | Edited lib/collection/buy-suggestions.ts | added optional chaining | ~667 |
+| 20:26 | Edited lib/collection/buy-suggestions.ts | 2→2 lines | ~42 |
+| 20:26 | Edited lib/collection/ai-recommend.ts | 18→23 lines | ~133 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | added optional chaining | ~218 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | 3→6 lines | ~93 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | 14→18 lines | ~263 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | expanded (+13 lines) | ~261 |
+| 20:27 | Edited lib/collection/ai-recommend.ts | 7→11 lines | ~389 |
+| 20:28 | Edited tests/unit/ai-recommend.test.ts | 9→9 lines | ~238 |
+| 20:28 | Edited components/collection/DeckDetail.tsx | expanded (+6 lines) | ~222 |
+| 20:28 | Edited components/collection/DeckDetail.tsx | CSS: confidence, themeImpact | ~54 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | added 2 condition(s) | ~650 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | 5→7 lines | ~81 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | 10→12 lines | ~180 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | 10→12 lines | ~166 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | 5→7 lines | ~100 |
+| 20:29 | Edited components/collection/DeckDetail.tsx | CSS: confidence, themeImpact | ~58 |
+| 20:30 | Edited components/collection/DeckDetail.tsx | 4→6 lines | ~83 |
+| 20:31 | Edited lib/collection/power-score.ts | modified for() | ~50 |
+| 20:33 | Recommendation quality pass: new scoring.ts (commander synergy from commander tags, theme Keeps/Neutral/Weakens, curve fit, 0-100 confidence renormalized). Wired into scanner free/occupied (additive confidence/themeImpact/commanderSynergy fields, confidence-sorted, richer reasons) + buy + AI (signals+replaces in context, prefer-owned prompt). Deck Health axes on PowerScore. UI badges+health panel. 9 scoring tests; live AI verified concrete explanations | lib/collection/{scoring,power-score,upgrade-scanner,buy-suggestions,ai-recommend}.ts, components/collection/DeckDetail.tsx, tests | done+verified | ~24k |
+| 20:33 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | expanded (+9 lines) | ~541 |
+| 22:42 | Created lib/collection/dashboard.ts | — | ~1316 |
+| 22:42 | Edited lib/collection/import-deck.ts | added nullish coalescing | ~189 |
+| 22:42 | Created tests/unit/dashboard.test.ts | — | ~517 |
+| 22:43 | Created app/collection/page.tsx | — | ~2409 |
+
+## Session: 2026-06-28 22:44
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:45 | Edited lib/collection/dashboard.ts | 7→12 lines | ~142 |
+| 22:47 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/never-purge-user-data.md | — | ~318 |
+| 22:47 | Built Dashboard (collection value, free staples, deck health list, import history) + getDashboard helper + deck-import co_imports logging; 4 tests, 476 suite pass. MISTAKE: purged test-user co_* rows incl the user-created Yshtola deck (logged do-not-repeat) | lib/collection/dashboard.ts, app/collection/page.tsx, lib/collection/import-deck.ts | done; data-loss incident | ~12k |
+| 22:54 | Created lib/collection/insights.ts | — | ~1613 |
+| 22:54 | Created tests/unit/insights.test.ts | — | ~786 |
+| 22:54 | Created app/collection/insights/page.tsx | — | ~1390 |
+| 22:55 | Edited app/collection/page.tsx | 8→11 lines | ~163 |
+| 22:56 | Built Collection Insights: getCollectionInsights + pure rankDeckFits (perfect-fit per deck via reused scoring; unused staples collection-wide); /collection/insights page + dashboard link. 4 tests, 480 suite pass. E2e on THROWAWAY user, deleted only created ids (per never-purge lesson) | lib/collection/insights.ts, app/collection/insights/page.tsx, app/collection/page.tsx | done+verified | ~10k |
+| 22:56 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~282 |
+
+## Session: 2026-06-29 10:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-29 10:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:30 | Created supabase/migrations/202605010367_binder_name.sql | — | ~188 |
+| 10:31 | Edited lib/collection/types.ts | 4→5 lines | ~32 |
+| 10:31 | Edited lib/collection/parsers/manabox.ts | 16→18 lines | ~118 |
+| 10:31 | Edited lib/collection/parsers/manabox.ts | 3→4 lines | ~55 |
+| 10:31 | Edited lib/collection/parsers/manabox.ts | 2→3 lines | ~42 |
+| 10:31 | Edited lib/collection/import-collection.ts | 8→9 lines | ~58 |
+| 10:31 | Edited lib/collection/import-collection.ts | 5→6 lines | ~47 |
+| 10:32 | Edited lib/collection/deck-loader.ts | added optional chaining | ~318 |
+| 10:32 | Edited lib/collection/upgrade-scanner.ts | 7→8 lines | ~44 |
+| 10:32 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~30 |
+| 10:32 | Edited lib/collection/upgrade-scanner.ts | 1→4 lines | ~74 |
+| 10:32 | Edited lib/collection/upgrade-scanner.ts | added nullish coalescing | ~68 |
+| 10:32 | Edited lib/collection/dashboard.ts | 10→11 lines | ~78 |
+| 10:32 | Edited lib/collection/dashboard.ts | 14→15 lines | ~198 |
+| 10:33 | Edited lib/collection/insights.ts | inline fix | ~27 |
+| 10:33 | Edited lib/collection/insights.ts | 5→6 lines | ~39 |
+| 10:33 | Edited lib/collection/insights.ts | 1→5 lines | ~55 |
+| 10:33 | Edited lib/collection/insights.ts | 6→7 lines | ~74 |
+| 10:33 | Edited lib/collection/insights.ts | added nullish coalescing | ~50 |
+| 10:33 | Edited components/collection/DeckDetail.tsx | 9→10 lines | ~75 |
+| 10:34 | Edited components/collection/DeckDetail.tsx | 5→6 lines | ~87 |
+| 10:34 | Edited components/collection/DeckDetail.tsx | CSS: color | ~85 |
+| 10:34 | Edited app/collection/page.tsx | 7→12 lines | ~204 |
+| 10:34 | Edited app/collection/insights/page.tsx | CSS: color | ~156 |
+| 10:34 | Edited app/collection/insights/page.tsx | 8→13 lines | ~192 |
+| 10:35 | Edited tests/unit/manabox-parser.test.ts | 11→12 lines | ~84 |
+| 10:35 | Edited tests/unit/manabox-parser.test.ts | expanded (+7 lines) | ~117 |
+| 10:36 | Edited tests/unit/manabox-parser.test.ts | 6→7 lines | ~33 |
+| 10:37 | Added Binder Name support: mig 367 (binder_name col + uniq index incl binder_name), parser captures Binder Name, import stores it, loadBinderNames helper, surfaced in scanner free / dashboard staples / insights (perfect fits + unused). e2e verified store+surface on throwaway user. 482 suite pass | mig 367, manabox.ts, types.ts, import-collection.ts, deck-loader.ts, upgrade-scanner.ts, dashboard.ts, insights.ts, 3 UI files | done+verified | ~9k |
+| 10:38 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-optimizer-module.md | modified verified() | ~277 |
+| 11:32 | Edited lib/collection/deck-loader.ts | 3→8 lines | ~120 |
+| 11:32 | Edited lib/collection/resolve.ts | 1→2 lines | ~32 |
+| 11:33 | Edited lib/collection/upgrade-scanner.ts | modified for() | ~69 |
+| 11:33 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~33 |
+| 11:35 | Fixed URI-too-long: lowered .in() chunk 300→100 (shared IN_CHUNK in deck-loader, resolve, scanner). Surfaced by real large collection on dashboard. Verified 500 ids load clean; 481 suite pass | lib/collection/{deck-loader,resolve,upgrade-scanner}.ts | fixed+verified | ~3k |
+
+## Session: 2026-06-29 22:51
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 23:03 | Created image-loader.ts | — | ~226 |
+| 23:03 | Edited next.config.ts | expanded (+6 lines) | ~128 |
+| 23:27 | Fixed: most Scryfall card images 400 via /_next/image â Scryfall CDN now blocks default-UA fetch (subcode generic_user_agent); added custom image-loader.ts to bypass optimizer for cards.scryfall.io | next.config.ts, image-loader.ts | resolved (confirmed by user) | ~6k |
+| 23:34 | Edited supabase/functions_src/card_layered_power.sql | modified and() | ~205 |
+| 23:34 | Edited supabase/functions_src/card_layered_toughness.sql | modified and() | ~205 |
+| 23:34 | Edited supabase/functions_src/card_has_lifelink.sql | modified and() | ~125 |
+| 23:34 | Edited docs/commander-decks/card-scripts.json | expanded (+18 lines) | ~167 |
+| 23:35 | Edited supabase/migrations/202605010368_commander_anthem.sql | 2→7 lines | ~135 |
+| 23:41 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified anthem() | ~142 |
+| 23:41 | Edited supabase/migrations/202605010368_commander_anthem.sql | expanded (+9 lines) | ~211 |
+| 23:42 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~331 |
+| 23:43 | Created tests/feature/dancers-chakrams.test.ts | — | ~1411 |
+| 23:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/log-bugs.cjs | — | ~778 |
+| 23:48 | Dancer's Chakrams: scripted the missing "other commanders +2/+2 & lifelink" clause (commander_only anthem predicate, gated on attachment) + verified | functions_src accessors, card-scripts.json, mig 368, dancers-chakrams.test.ts | 3 tests green, dev DB patched | ~40k |
+| 00:01 | Edited lib/game/use-controller-game-state.ts | expanded (+8 lines) | ~289 |
+| 00:01 | Edited lib/game/use-controller-game-state.ts | added 3 condition(s) | ~369 |
+| 00:01 | Edited lib/game/use-board-game-state.ts | expanded (+6 lines) | ~226 |
+| 00:01 | Edited lib/game/use-board-game-state.ts | added 3 condition(s) | ~358 |
+| 00:03 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/log-perf.cjs | — | ~487 |
+| 00:03 | Perf: killed 2s idle-poll storm — gated controller+board fallback poll on channel health (SUBSCRIBED→no poll) instead of silence; healthy channel = zero idle reloads | use-controller-game-state.ts, use-board-game-state.ts | tsc+eslint clean | ~55k |
+| 00:14 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/rt-test.mjs | — | ~498 |
+| 00:16 | Created _rt_test2_tmp.mjs | — | ~674 |
+| 00:17 | Created _rt_test3_tmp.mjs | — | ~672 |
+| 00:18 | Created _rt_test4_tmp.mjs | — | ~484 |
+| 00:21 | Edited lib/game/use-controller-game-state.ts | expanded (+6 lines) | ~361 |
+| 00:21 | Edited lib/game/use-controller-game-state.ts | 9→12 lines | ~208 |
+| 00:22 | Edited lib/game/use-board-game-state.ts | expanded (+6 lines) | ~307 |
+| 00:22 | Edited lib/game/use-board-game-state.ts | the() → event() | ~189 |
+| 00:24 | Diagnosed bot-no-update: anon board realtime gets 0 events (RLS); fixed poll to gate on event-delivery not just SUBSCRIBED — authed clients stop idle-polling, anon board keeps fallback | use-controller/use-board-game-state.ts | tsc+eslint clean; realtime delivery proven empirically | ~70k |
+| 00:29 | Created _rt_race_tmp.mjs | — | ~531 |
+| 00:32 | Created lib/supabase/client.ts | — | ~342 |
+| 00:33 | ROOT CAUSE of fetch storm: supabase-js skips realtime.setAuth on INITIAL_SESSION → ssr cookie-restored sessions run realtime as anon → 0 postgres_changes → poll never stops. Fix: setAuth(session token) once in lib/supabase/client.ts | lib/supabase/client.ts | tsc+eslint clean; setAuth delivery proven | ~85k |
+| 12:32 | Created supabase/functions_src/note_spell_cast.sql | — | ~332 |
+| 12:32 | Edited supabase/functions_src/fire_watcher_triggers.sql | expanded (+7 lines) | ~137 |
+| 12:33 | Edited supabase/functions_src/resolve_count_amount.sql | expanded (+9 lines) | ~270 |
+| 12:33 | Edited supabase/functions_src/reduced_mana_cost.sql | 5→6 lines | ~27 |
+| 12:33 | Edited supabase/functions_src/reduced_mana_cost.sql | modified coalesce() | ~398 |
+| 12:33 | Edited docs/commander-decks/card-scripts.json | expanded (+11 lines) | ~191 |
+| 12:33 | Edited supabase/migrations/202605010369_dualcast.sql | expanded (+10 lines) | ~242 |
+| 12:34 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~150 |
+| 12:35 | Created tests/feature/dualcast.test.ts | — | ~877 |
+| 12:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/log-dualcast.cjs | — | ~490 |
+| 12:38 | Implemented Alisaie Dualcast: per-turn spell counter (note_spell_cast via spell_cast watcher) + nth_spell cost-reduction condition in reduced_mana_cost; scripted + tested + dev DB patched | functions_src x4, mig 369, card-scripts.json, dualcast.test.ts | AL1/AL2 + 33 regression green | ~60k |
+| 12:48 | Edited tests/feature/dualcast.test.ts | added optional chaining | ~190 |
+| 12:48 | Edited tests/feature/dualcast.test.ts | expanded (+26 lines) | ~441 |
+| 15:10 | Created supabase/functions_src/get_controller_state.sql | — | ~1659 |
+| 15:11 | Edited supabase/migrations/202605010370_controller_state.sql | modified get_controller_state() | ~98 |
+| 15:12 | Created _verify_cs_tmp.mjs | — | ~832 |
+| 15:13 | Edited lib/game/data.ts | added optional chaining | ~2455 |
+| 15:13 | Edited lib/game/use-controller-game-state.ts | removed 23 lines | ~24 |
+| 15:14 | Edited lib/game/use-controller-game-state.ts | reduced (-18 lines) | ~213 |
+| 15:15 | Created tests/feature/controller-state.test.ts | — | ~776 |
+| 15:18 | Perf: built get_controller_state RPC (mig 370) — bundles ~19 controller reads + the per-reload catalog re-fetch into ONE jsonb round-trip; verified byte-equal vs legacy on live session; rewired hook | get_controller_state.sql, data.ts, use-controller-game-state.ts, controller-state.test.ts | CS1 green, tsc+eslint clean | ~120k |
+| 21:35 | Created supabase/functions_src/get_board_state.sql | — | ~1014 |
+| 21:36 | Edited supabase/migrations/202605010371_board_state.sql | modified get_board_state() | ~94 |
+| 21:36 | Created _verify_bs_tmp.mjs | — | ~605 |
+| 21:37 | Edited lib/game/data.ts | reduced (-27 lines) | ~106 |
+| 21:37 | Edited lib/game/data.ts | added optional chaining | ~1048 |
+| 21:37 | Edited lib/game/use-board-game-state.ts | reduced (-9 lines) | ~11 |
+| 21:37 | Edited lib/game/use-board-game-state.ts | reduced (-8 lines) | ~78 |
+| 21:38 | Created tests/feature/board-state.test.ts | — | ~553 |
+| 21:40 | Perf: built get_board_state RPC (mig 371) — board counterpart of get_controller_state; ~8 reads → 1; shared mappers; verified byte-equal on live; board hook rewired | get_board_state.sql, data.ts, use-board-game-state.ts, board-state.test.ts | BS1+CS1 green, tsc+eslint clean | ~45k |
+| 22:08 | Edited lib/game/card-behavior-schema.ts | 5→7 lines | ~86 |
+| 22:10 | Fixed kapotte plain-drummer scripts: draw.amount was required in the validator but engine defaults missing→1 (DF3 guards this); made draw.amount optional | lib/game/card-behavior-schema.ts | seeder no longer aborts; fixtures 366/0, DF1-3 green | ~12k |
+| 22:30 | Edited app/board/[id]/page.tsx | added optional chaining | ~347 |
+| 22:31 | Board route now server-side login-gated (getClaims → redirect /auth/login?next=/board/:id) so it can no longer run anon → realtime delivers → fallback poll stops entirely | app/board/[id]/page.tsx | tsc+eslint clean; GameBoard only reachable via this route | ~15k |
+| 22:33 | Created _scan_ff_tmp.mjs | — | ~554 |
+| 22:36 | Edited lib/game/card-behavior-schema.ts | 5→10 lines | ~150 |
+| 22:36 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified filter() | ~185 |
+| 22:36 | Edited docs/commander-decks/card-scripts.json | expanded (+13 lines) | ~190 |
+| 22:37 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~215 |
+| 22:37 | Edited supabase/migrations/202605010372_second_spell_trigger.sql | 2→6 lines | ~120 |
+| 22:38 | Created tests/feature/second-spell-trigger.test.ts | — | ~530 |
+| 22:40 | Edited tests/feature/second-spell-trigger.test.ts | modified async() | ~302 |
+| 22:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/log-alphinaud.cjs | — | ~466 |
+| 22:41 | FF deck scan for "Nde spell": found Alphinaud Eukrasia missing → built spell_number filter (spell_cast trigger gated on spells_cast_this_turn==N) + scripted+tested. Reported Lyse Hext (noncreature count) + Hraesvelgr/Mog (per-cast) as separate gaps | fire_watcher_triggers.sql, card-behavior-schema.ts, card-scripts.json, mig 372, second-spell-trigger.test.ts | SS1 + 19 regression + 367 fixtures green | ~75k |
+
+## Session: 2026-07-03 14:01
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:10 | Edited tests/unit/scoring.test.ts | inline fix | ~25 |
+| 14:0X | Split uncommitted tree into 4 commits (perf RPCs, engine features, Collection Optimizer, wolf docs); fixed SynergyTag cast in scoring.test.ts | git, tests/unit/scoring.test.ts | tsc clean, tree clean | ~8k |
+| 14:22 | Edited scripts/triage-decklist.mjs | modified if() | ~152 |
+| 14:22 | Edited scripts/triage-decklist.mjs | 4→7 lines | ~80 |
+| 14:22 | Edited docs/commander-decks/card-scripts.json | expanded (+11 lines) | ~85 |
+| 14:22 | Edited docs/commander-decks/card-scripts.json | expanded (+10 lines) | ~115 |
+| 14:24 | Edited package.json | inline fix | ~20 |
+| 14:26 | Edited scripts/upsert-deck-scripts.mjs | 3→8 lines | ~118 |
+| 16:20 | Scions build: triage regenerated (next-deck = ScionsSpellcraft) — 71-card backlog was stale, only 3 Adventure DFCs left; workflow (6 agents) authored+verified them | next-deck.triage.md | 90 implemented / 0 needs-build | ~210k |
+| 16:30 | Integrated: Hildibrand +token-anthem, Murderous Rider +dies-trigger (Sprite already current); fixed front-face key matching in triage+upsert; validate-card-scripts .ts->.mts (bug-282); Soldier Token fixture+catalog row | card-scripts.json, triage/upsert scripts, test-cards.json | upsert applied (3 cards + token), validate 985/1000 (15 pre-existing v1-null rows), tsc+fixtures green | ~40k |
+| 16:50 | Restored compact fixture format (my null,2 rewrite blew up the diff); net change = 1 line Soldier Token | tests/fixtures/test-cards.json | fixtures 367/0 green, committed cd53c04 | ~6k |

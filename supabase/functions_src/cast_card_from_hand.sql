@@ -39,6 +39,7 @@ declare
   v_sac_id uuid;
   v_enters_tapped jsonb;
   v_land_tapped boolean := false;
+  v_pay_life_untap integer := 0;
   v_unless jsonb;
   v_lib_perm jsonb;
 begin
@@ -311,6 +312,13 @@ begin
             v_land_tapped := false;
           end if;
         end if;
+        if v_unless ? 'pay_life' then
+          -- Shock lands (Overgrown Tomb, …): "enters tapped UNLESS you pay N life."
+          -- It's the player's CHOICE, so it enters tapped now and a pay_life_untap
+          -- decision (raised after it's on the battlefield) lets them pay to untap it.
+          v_land_tapped := true;
+          v_pay_life_untap := coalesce((v_unless ->> 'pay_life')::integer, 2);
+        end if;
       end if;
     end if;
 
@@ -333,6 +341,20 @@ begin
     returning * into v_card;
 
     perform public.rebuild_scripted_continuous_effects(p_session_id);
+
+    -- Shock land: it's on the battlefield (tapped) — now offer the "pay N life to
+    -- untap it" choice as a pending decision (resolved via submit_decision).
+    if v_pay_life_untap > 0 then
+      insert into public.game_pending_decisions (
+        session_id, deciding_player_id, source_stack_item_id, decision_type, prompt,
+        options, min_choices, max_choices, params
+      ) values (
+        p_session_id, auth.uid(), null, 'pay_life_untap',
+        'Pay ' || v_pay_life_untap || ' life so this land enters untapped?',
+        '[]'::jsonb, 0, 0,
+        jsonb_build_object('card_id', p_game_card_id, 'life', v_pay_life_untap)
+      );
+    end if;
 
     return v_card;
   end if;

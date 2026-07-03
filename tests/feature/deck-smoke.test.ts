@@ -17,7 +17,7 @@
 
 import { test, before } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { withRolledBackTx } from '../harness/db'
 import { Scenario } from '../harness/scenario'
@@ -28,8 +28,19 @@ const scripts: Record<string, unknown> = JSON.parse(
   readFileSync(join(ROOT, 'docs', 'commander-decks', 'card-scripts.json'), 'utf8'))
 
 type OracleCard = { name: string; type_line?: string; mana_cost?: string; power?: string; toughness?: string }
+// The Scryfall oracle dump is gitignored and its filename varies (a dated bulk
+// export, e.g. oracle-cards-20260531210653.json, or the undated oracle-cards.json).
+// Resolve the newest match so a fresh checkout / re-download keeps working instead
+// of failing on a hardcoded date.
+const oracleFile = readdirSync(join(ROOT, 'lib'))
+  .filter((f) => /^oracle-cards.*\.json$/.test(f))
+  .sort()
+  .pop()
+if (!oracleFile) {
+  throw new Error('No lib/oracle-cards*.json found — download the Scryfall oracle bulk dump into lib/')
+}
 const oracle = new Map<string, OracleCard>()
-for (const c of JSON.parse(readFileSync(join(ROOT, 'lib', 'oracle-cards-20260531210653.json'), 'utf8')) as OracleCard[]) {
+for (const c of JSON.parse(readFileSync(join(ROOT, 'lib', oracleFile), 'utf8')) as OracleCard[]) {
   if (!oracle.has(c.name)) oracle.set(c.name, c)
   // Adventure/split cards ("Beanstalk Giant // Fertile Footsteps"): index the
   // front face under its own name too.

@@ -12,8 +12,52 @@ export type BotCard = {
   manaValue: number
 }
 
+// Combat-relevant keywords folded onto a creature. All optional → callers that
+// don't track keywords (and the older P/T-only tests) keep working unchanged; an
+// absent flag is treated as "doesn't have it".
+export type Keywords = {
+  flying?: boolean
+  reach?: boolean
+  trample?: boolean
+  menace?: boolean
+  deathtouch?: boolean
+  firstStrike?: boolean
+  doubleStrike?: boolean
+}
+
 /** A creature in combat — power/toughness already folded (counters/pumps). */
-export type Creature = { id: string; power: number; toughness: number }
+export type Creature = { id: string; power: number; toughness: number; keywords?: Keywords }
+
+const kw = (c: Creature): Keywords => c.keywords ?? {}
+// First/double strike both deal damage in the first-strike step.
+const strikesEarly = (c: Creature) => !!(kw(c).firstStrike || kw(c).doubleStrike)
+
+// Does `src` deal lethal to `tgt` with one combat hit? Deathtouch makes any
+// damage ≥1 lethal; otherwise it takes power ≥ toughness.
+function dealsLethal(src: Creature, tgt: Creature): boolean {
+  if (src.power <= 0) return false
+  return kw(src).deathtouch ? true : src.power >= tgt.toughness
+}
+
+// Can `blocker` legally block `attacker`? Flying is only blockable by flying or
+// reach. (Menace — must be blocked by two — is enforced where blocks are assigned.)
+function canBlock(blocker: Creature, attacker: Creature): boolean {
+  if (kw(attacker).flying) return !!(kw(blocker).flying || kw(blocker).reach)
+  return true
+}
+
+// Does `blocker` free-kill `attacker` — attacker dies, blocker survives (a
+// one-sided loss for the attacking side)? Respects strike order:
+//  • blocker strikes first and kills  → attacker never connects → blocker lives.
+//  • attacker strikes first and kills → blocker dies before it can swing back.
+//  • otherwise simultaneous: blocker kills it and isn't killed in return.
+function freeKills(blocker: Creature, attacker: Creature): boolean {
+  const blockerFirst = strikesEarly(blocker) && !strikesEarly(attacker)
+  const attackerFirst = strikesEarly(attacker) && !strikesEarly(blocker)
+  if (blockerFirst) return dealsLethal(blocker, attacker)
+  if (attackerFirst) return dealsLethal(attacker, blocker) ? false : dealsLethal(blocker, attacker)
+  return dealsLethal(blocker, attacker) && !dealsLethal(attacker, blocker)
+}
 
 export const isLand = (typeLine: string) => /\bland\b/i.test(typeLine)
 export const isCreatureType = (typeLine: string) => /creature/i.test(typeLine) && !isLand(typeLine)
@@ -81,37 +125,72 @@ export function decideMainPlays(
 }
 
 // ── Combat: attacks ────────────────────────────────────────────────────────────
-// A blocker "free-kills" an attacker if it kills it (power ≥ its toughness) AND
-// survives (its toughness > attacker power) — a one-sided loss for us. Equal and
-// favourable trades are NOT free-kills, so they still attack.
+// A blocker "free-kills" an attacker when the attacker dies and the blocker lives
+// (see freeKills — keyword-aware: deathtouch, first/double strike). Equal and
+// favourable trades are NOT free-kills, so those creatures still attack.
+//
+// Evasion: a flier the opponent can't block (no flying/reach), or a menace
+// creature they have fewer than two blockers for, always connects → always swing.
 //
 // Aggression: blockers are a LIMITED resource — each blocks only one attacker — so
 // once we send more attackers than they have blockers, the extras must connect.
 // In that case swing with EVERYTHING (this also covers an empty board and the
 // lethal alpha-strike). Only when they can cover every attacker do we get picky
 // and hold back the creatures they'd free-kill for nothing.
-export function decideAttacks(myCreatures: Creature[], oppBlockers: Creature[], _oppLife: number): string[] {
+//
+// Defensive reserves (only when `myLife` is known): if we're not swinging for
+// lethal and the opponent's board could race us to death on the back-swing,
+// attacking taps our creatures out of that block — so keep our best wall home.
+export function decideAttacks(
+  myCreatures: Creature[],
+  oppBlockers: Creature[],
+  oppLife: number,
+  opts: { myLife?: number } = {},
+): string[] {
   const able = myCreatures.filter((c) => c.power > 0)
   if (able.length === 0) return []
 
+  // Unblockable on the current board → always connects, so always worth swinging.
+  const unblockable = (a: Creature): boolean => {
+    const legal = oppBlockers.filter((b) => canBlock(b, a))
+    if (legal.length === 0) return true
+    if (kw(a).menace && legal.length < 2) return true
+    return false
+  }
+
   if (able.length > oppBlockers.length) return able.map((c) => c.id) // we outnumber → pressure leaks through
 
-  return able
-    .filter((c) => !oppBlockers.some((b) => b.power >= c.toughness && b.toughness > c.power))
-    .map((c) => c.id)
+  let attackers = able.filter((c) => unblockable(c) || !oppBlockers.some((b) => canBlock(b, c) && freeKills(b, c)))
+
+  const { myLife } = opts
+  if (myLife !== undefined && attackers.length > 0) {
+    const goingForLethal = attackers.reduce((s, c) => s + c.power, 0) >= oppLife
+    const swingBack = oppBlockers.reduce((s, b) => s + b.power, 0)
+    if (!goingForLethal && swingBack >= myLife) {
+      const reserve = [...attackers].sort((a, b) => b.toughness - a.toughness)[0]
+      attackers = attackers.filter((c) => c.id !== reserve.id)
+    }
+  }
+  return attackers.map((c) => c.id)
 }
 
 // ── Combat: blocks ──────────────────────────────────────────────────────────────
-// Returns blockerId → attackerId. First take value blocks (kill the attacker and
-// survive), then — only if the unblocked damage is lethal — chump the biggest
-// attackers to live. No needless chumping when you're not dying.
+// Returns blockerId → attackerId. First take value blocks (a single blocker that
+// legally blocks AND free-kills the attacker), then — only if the unblocked damage
+// is lethal — chump the biggest attackers to live. No needless chumping when not
+// dying. Keyword-aware: evasion (can't block fliers without flying/reach), menace
+// (needs two blockers), and trample (a chump only stops the blocker's toughness;
+// the excess still tramples through).
 export function decideBlocks(attackers: Creature[], myBlockers: Creature[], myLife: number): Record<string, string> {
   const assign: Record<string, string> = {}
   const used = new Set<string>()
   const blocked = new Set<string>()
 
+  // Value blocks are single-blocker only — committing two creatures for value
+  // isn't worth it — so skip menace attackers here (they need two).
   for (const atk of attackers) {
-    const b = myBlockers.find((bl) => !used.has(bl.id) && bl.power >= atk.toughness && bl.toughness > atk.power)
+    if (kw(atk).menace) continue
+    const b = myBlockers.find((bl) => !used.has(bl.id) && canBlock(bl, atk) && freeKills(bl, atk))
     if (b) { assign[b.id] = atk.id; used.add(b.id); blocked.add(atk.id) }
   }
 
@@ -120,9 +199,16 @@ export function decideBlocks(attackers: Creature[], myBlockers: Creature[], myLi
     const biggestFirst = attackers.filter((a) => !blocked.has(a.id)).sort((a, b) => b.power - a.power)
     for (const atk of biggestFirst) {
       if (incoming < myLife) break
-      const b = myBlockers.find((bl) => !used.has(bl.id))
-      if (!b) break
-      assign[b.id] = atk.id; used.add(b.id); incoming -= atk.power
+      const need = kw(atk).menace ? 2 : 1
+      const free = myBlockers.filter((bl) => !used.has(bl.id) && canBlock(bl, atk))
+      if (free.length < need) continue
+      const chosen = free.slice(0, need)
+      // Trample: blockers only soak up to their combined toughness; the rest leaks.
+      const stopped = kw(atk).trample
+        ? Math.min(atk.power, chosen.reduce((s, bl) => s + bl.toughness, 0))
+        : atk.power
+      chosen.forEach((bl) => { assign[bl.id] = atk.id; used.add(bl.id) })
+      incoming -= stopped
     }
   }
   return assign

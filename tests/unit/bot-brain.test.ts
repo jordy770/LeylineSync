@@ -93,6 +93,28 @@ test('swings the whole team when it outnumbers the blockers', () => {
   )
 })
 
+// ── decideAttacks: keywords ──────────────────────────────────────────────────
+const ck = (id: string, p: number, t: number, keywords: Creature['keywords']): Creature => ({ id, power: p, toughness: t, keywords })
+
+test('a flier swings past a ground blocker that would otherwise free-kill it', () => {
+  // 2/2 flier into a 3/3 with no flying/reach → can't be blocked → connects.
+  assert.deepEqual(decideAttacks([ck('f', 2, 2, { flying: true })], [c('g', 3, 3)], 20), ['f'])
+})
+test('reach blocks a flier, so the flier holds back when free-killed', () => {
+  assert.deepEqual(decideAttacks([ck('f', 2, 2, { flying: true })], [ck('r', 3, 3, { reach: true })], 20), [])
+})
+test('a menace creature swings when the opponent has only one blocker', () => {
+  // Menace needs two blockers; with one available it can't be blocked → connects.
+  assert.deepEqual(decideAttacks([ck('m', 2, 2, { menace: true })], [c('x', 3, 3)], 20), ['m'])
+})
+test('holds back a defensive reserve against a lethal swing-back', () => {
+  // 2/2 trade is fine, but their 2/2 racing us at 2 life → keep our wall home.
+  assert.deepEqual(decideAttacks([c('a', 2, 2)], [c('x', 2, 2)], 20, { myLife: 2 }), [])
+})
+test('still swings for lethal even when low on life', () => {
+  assert.deepEqual(decideAttacks([c('a', 25, 25)], [c('x', 2, 2)], 20, { myLife: 2 }), ['a'])
+})
+
 // ── decideBlocks ────────────────────────────────────────────────────────────
 test('takes a value block (kill and survive)', () => {
   // my 3/3 blocks a 2/2: kills it (3>=2) and survives (3>2).
@@ -108,4 +130,41 @@ test('chumps the biggest attacker to survive lethal', () => {
   // 6 + 2 incoming = 8 ≥ 5 life. Chump the 6/6 with the 1/1 → incoming 2 < 5.
   const assign = decideBlocks([c('big', 6, 6), c('small', 2, 2)], [c('chump', 1, 1)], 5)
   assert.deepEqual(assign, { chump: 'big' })
+})
+
+// ── decideBlocks: keywords ────────────────────────────────────────────────────
+test('a first-strike blocker value-blocks a same-size attacker (kills before taking damage)', () => {
+  // 2/2 first strike vs 2/2: it kills the attacker before the swing-back → free kill.
+  assert.deepEqual(decideBlocks([c('atk', 2, 2)], [ck('blk', 2, 2, { firstStrike: true })], 20), { blk: 'atk' })
+})
+test('a same-size attacker is only a trade without first strike → no value block', () => {
+  assert.deepEqual(decideBlocks([c('atk', 2, 2)], [c('blk', 2, 2)], 20), {})
+})
+test('a deathtouch first-striker free-kills anything it can block', () => {
+  assert.deepEqual(decideBlocks([c('atk', 5, 5)], [ck('blk', 1, 1, { deathtouch: true, firstStrike: true })], 20), { blk: 'atk' })
+})
+test('cannot value-block a flier without flying or reach', () => {
+  assert.deepEqual(decideBlocks([ck('atk', 2, 2, { flying: true })], [c('blk', 3, 3)], 20), {})
+})
+test('a reach blocker can value-block a flier', () => {
+  assert.deepEqual(decideBlocks([ck('atk', 2, 2, { flying: true })], [ck('blk', 3, 3, { reach: true })], 20), { blk: 'atk' })
+})
+test('needs two blockers to chump a menace attacker when dying', () => {
+  // One blocker can't legally block menace → no block even at lethal.
+  assert.deepEqual(decideBlocks([ck('m', 5, 5, { menace: true })], [c('b1', 1, 1)], 3), {})
+  // Two blockers → both commit to the menace attacker.
+  assert.deepEqual(decideBlocks([ck('m', 5, 5, { menace: true })], [c('b1', 1, 1), c('b2', 1, 1)], 3), { b1: 'm', b2: 'm' })
+})
+test('trample leak forces a second chump that a non-trampler would not need', () => {
+  // Two 3/3 attackers, 4 life, two 1/1 chumps. The trampler leaks 2 past one
+  // chump, so we must also chump the other attacker to live.
+  assert.deepEqual(
+    decideBlocks([ck('A', 3, 3, { trample: true }), c('B', 3, 3)], [c('b1', 1, 1), c('b2', 1, 1)], 4),
+    { b1: 'A', b2: 'B' },
+  )
+  // Without trample, one chump drops incoming to 3 < 4 → second attacker left open.
+  assert.deepEqual(
+    decideBlocks([c('A', 3, 3), c('B', 3, 3)], [c('b1', 1, 1), c('b2', 1, 1)], 4),
+    { b1: 'A' },
+  )
 })

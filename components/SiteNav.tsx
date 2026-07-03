@@ -5,7 +5,7 @@ import { EnvVarWarning } from "@/components/env-var-warning";
 import { hasEnvVars } from "@/lib/utils";
 
 // Shared top nav so the landing and decks pages wear the same identity.
-export default function SiteNav({ active }: { active?: "home" | "decks" }) {
+export default function SiteNav({ active }: { active?: "home" | "decks" | "collection" }) {
   return (
     <nav className="h-16 w-full border-b border-[var(--frame-gold)]/15">
       <div className="mx-auto flex h-full w-full max-w-5xl items-center justify-between px-5 text-sm">
@@ -22,6 +22,16 @@ export default function SiteNav({ active }: { active?: "home" | "decks" }) {
             }
           >
             Decks
+          </Link>
+          <Link
+            href="/collection"
+            className={
+              active === "collection"
+                ? "text-[var(--text)]"
+                : "text-[var(--text-dim)] transition-colors hover:text-[var(--text)]"
+            }
+          >
+            Collection
           </Link>
         </div>
         {!hasEnvVars ? (

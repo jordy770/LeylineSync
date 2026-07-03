@@ -30,6 +30,8 @@
 
 import { Client } from 'pg'
 import { shouldMulligan, chooseBottom, decideMainPlays, decideAttacks, decideBlocks } from '../lib/game/bot-brain.ts'
+import { parseManaCost, manaColors } from '../lib/game/mana.ts'
+import { manaSourceColors } from '../lib/game/mana-sources.ts'
 
 const DEFAULT_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
 
@@ -71,6 +73,28 @@ function did(action, session, bot, scope) {
 
 // Parse the engine's effective power/toughness (numeric/text) to a safe integer.
 const pt = (v) => { const n = Number(v); return Number.isFinite(n) ? n : 0 }
+
+// Combat keyword columns for a game_cards row `gc`, against session $1. Folded
+// into the brain's Creature.keywords so attack/block heuristics see evasion,
+// menace, trample, deathtouch and strike order — not just raw P/T.
+const KEYWORD_COLS = `
+  public.card_has_flying($1, gc.id) as flying,
+  public.card_has_reach($1, gc.id) as reach,
+  public.card_has_trample($1, gc.id) as trample,
+  public.card_has_menace($1, gc.id) as menace,
+  public.card_has_deathtouch($1, gc.id) as deathtouch,
+  public.card_has_first_strike($1, gc.id) as first_strike,
+  public.card_has_double_strike($1, gc.id) as double_strike`
+
+const toCreature = (r) => ({
+  id: r.id,
+  power: pt(r.power),
+  toughness: pt(r.toughness),
+  keywords: {
+    flying: r.flying, reach: r.reach, trample: r.trample, menace: r.menace,
+    deathtouch: r.deathtouch, firstStrike: r.first_strike, doubleStrike: r.double_strike,
+  },
+})
 
 /** Plain read as the postgres session role (RLS bypassed) — used for polling. */
 async function q(sql, params = []) {
@@ -114,6 +138,7 @@ function decisionResult(d) {
     case 'choose_color': return { color: options[0]?.color ?? 'W' }
     case 'choose_creature_type': return { type: options[0]?.type ?? 'Human' }
     case 'confirm': return { confirmed: false }
+    case 'pay_life_untap': return { confirmed: false } // bot declines — shock land enters tapped (safe, no life paid)
     default: return { chosen: ids.slice(0, min) }
   }
 }
@@ -134,24 +159,131 @@ async function resolveDecisions(session, bot) {
   }
 }
 
-async function topUpMana(session, bot) {
-  await client.query(
-    `insert into public.game_players (session_id, player_id, mana_pool) values ($1, $2, $3::jsonb)
-     on conflict (session_id, player_id) do update set mana_pool = excluded.mana_pool`,
-    [session, bot, JSON.stringify({ W: 20, U: 20, B: 20, R: 20, G: 20, C: 20 })],
+// A triggered ability the bot controls can sit on the stack awaiting a target —
+// e.g. Obuun's landfall "put a +1/+1 counter on target creature". Without a target
+// it can't resolve, stalling the stack. Pick a legal target (respecting the
+// trigger's target_type + target_controller) so it resolves. Only handles REQUIRED
+// targets; "up to one" optional triggers (target_required false) just resolve.
+async function resolveTriggerTargets(session, bot) {
+  const items = await q(
+    `select id, payload from public.game_stack_items
+     where session_id = $1 and status = 'pending' and action_type = 'triggered_ability'
+       and controller_player_id = $2
+       and (coalesce((payload ->> 'target_required')::boolean, false) = true
+            or coalesce((payload ->> 'target_optional')::boolean, false) = true)
+       and nullif(payload ->> 'target_card_id', '') is null`,
+    [session, bot],
   )
+  if (items.length === 0) return
+  const onField = await q(
+    `select gc.id, coalesce(gc.controller_player_id, gc.owner_id) as ctrl, lower(c.type_line) as type_line
+     from public.game_cards gc join public.cards c on c.id = gc.card_id
+     where gc.session_id = $1 and gc.zone = 'battlefield'`,
+    [session],
+  )
+  for (const it of items) {
+    const p = it.payload ?? {}
+    const ttype = String(p.target_type ?? 'creature').toLowerCase()
+    const tctrl = String(p.target_controller ?? 'you').toLowerCase()
+    const pool = onField.filter((r) => {
+      if (ttype !== 'permanent' && !r.type_line.includes(ttype)) return false
+      if (['you', 'self', 'controller'].includes(tctrl)) return r.ctrl === bot
+      if (tctrl === 'opponent') return r.ctrl !== bot
+      return true
+    })
+    const target = pool[0]?.id
+    if (!target) { console.warn(`  ⚠ no legal ${ttype} target for a triggered ability`); continue }
+    try {
+      await rpc(bot, 'choose_triggered_ability_creature_target', {
+        p_session_id: session, p_stack_item_id: it.id, p_target_card_id: target,
+      })
+      console.log(`  ↳ chose trigger target (${ttype})`)
+    } catch (e) {
+      console.warn(`  ⚠ choose trigger target failed: ${e.message}`)
+    }
+  }
+}
+
+// ── Real mana payment ─────────────────────────────────────────────────────────
+// The bot taps its actual untapped lands/rocks for colour-correct mana (via the
+// engine's add_mana_from_card, which taps the source and adds the chosen colour)
+// instead of cheating its pool full. If it can't cover a cost, payFor returns
+// false and the caller simply skips that cast.
+async function getPool(session, bot) {
+  const r = (await q(`select mana_pool from public.game_players where session_id = $1 and player_id = $2`, [session, bot]))[0]
+  const p = r?.mana_pool ?? {}
+  return { W: p.W ?? 0, U: p.U ?? 0, B: p.B ?? 0, R: p.R ?? 0, G: p.G ?? 0, C: p.C ?? 0 }
+}
+
+// Untapped permanents the bot controls that can make mana, with the colours each
+// can tap for ('any' = any-colour) and the amount produced per tap.
+async function untappedSources(session, bot) {
+  const rows = await q(
+    `select gc.id, gc.copied_script::text as cs, c.script::text as sc, c.type_line as tl
+     from public.game_cards gc join public.cards c on c.id = gc.card_id
+     where gc.session_id = $1 and coalesce(gc.controller_player_id, gc.owner_id) = $2
+       and gc.zone = 'battlefield' and gc.is_tapped = false`,
+    [session, bot],
+  )
+  const out = []
+  for (const r of rows) {
+    const script = r.cs ? JSON.parse(r.cs) : (r.sc ? JSON.parse(r.sc) : null)
+    const info = manaSourceColors(script, r.tl)
+    if (!info) continue
+    out.push({ id: r.id, colors: info.any ? 'any' : info.colors, amount: info.amount ?? 1 })
+  }
+  return out
+}
+
+// Tap real sources to cover `cost` ({generic, colored}). Pays coloured pips with
+// matching-colour sources first (any-colour as fallback), then the generic
+// remainder with whatever is left. Returns true once executed, false if the bot
+// can't actually afford it.
+async function payFor(session, bot, cost) {
+  const pool = await getPool(session, bot)
+  const sources = await untappedSources(session, bot)
+  const taps = []
+  const tap = (idx, color) => {
+    const [src] = sources.splice(idx, 1)
+    taps.push({ id: src.id, color, amount: src.amount })
+    pool[color] += src.amount
+  }
+  // Coloured pips: exact-colour source first, then any-colour / multi.
+  for (const color of manaColors) {
+    while (pool[color] < cost.colored[color]) {
+      let i = sources.findIndex((s) => Array.isArray(s.colors) && s.colors.length === 1 && s.colors[0] === color)
+      if (i < 0) i = sources.findIndex((s) => s.colors === 'any' || (Array.isArray(s.colors) && s.colors.includes(color)))
+      if (i < 0) return false
+      tap(i, color)
+    }
+  }
+  // Generic remainder: spare = pool beyond the coloured commitments.
+  const spare = () => manaColors.reduce((s, c) => s + Math.max(0, pool[c] - cost.colored[c]), 0)
+  while (spare() < cost.generic) {
+    if (sources.length === 0) return false
+    const src = sources[sources.length - 1]
+    tap(sources.length - 1, src.colors === 'any' ? 'C' : src.colors[0])
+  }
+  for (const t of taps) {
+    await rpc(bot, 'add_mana_from_card', {
+      p_game_card_id: t.id, p_session_id: session, p_player_id: bot,
+      p_color: t.color, p_amount: t.amount, p_should_tap_card: true,
+    })
+  }
+  return true
 }
 
 async function playMainPhase(session, bot, turn) {
   const hand = await q(
-    `select gc.id, c.type_line, public.mana_value(c.mana_cost) as cmc
+    `select gc.id, c.type_line, c.mana_cost, public.mana_value(c.mana_cost) as cmc
      from public.game_cards gc join public.cards c on c.id = gc.card_id
      where gc.session_id = $1 and gc.owner_id = $2 and gc.zone = 'hand' order by gc.zone_position`,
     [session, bot],
   )
+  const manaCostById = new Map(hand.map((c) => [c.id, c.mana_cost]))
   // REAL mana the brain may spend (untapped lands the bot already controls), so it
-  // sequences on-curve instead of dumping. The runner still cheats the actual
-  // payment below (topUpMana), but the *choice* respects this budget.
+  // sequences on-curve instead of dumping. The bot now pays for real (payFor taps
+  // its lands), so the budget and the payment agree.
   const untappedLands = (await q(
     `select count(*)::int as n from public.game_cards gc join public.cards c on c.id = gc.card_id
      where gc.session_id = $1 and gc.owner_id = $2 and gc.zone = 'battlefield'
@@ -163,7 +295,9 @@ async function playMainPhase(session, bot, turn) {
   // Commander in the command zone, with its CURRENT cost incl. the {2}-per-prior-cast
   // tax — so the brain weighs it against real mana like any other spell.
   const cmdr = (await q(
-    `select gc.id, public.mana_value(c.mana_cost) + 2 * coalesce(gc.command_zone_casts, 0) as cost
+    `select gc.id, c.mana_cost,
+            public.mana_value(c.mana_cost) + 2 * coalesce(gc.command_zone_casts, 0) as cost,
+            coalesce(gc.command_zone_casts, 0) as casts
      from public.game_cards gc join public.cards c on c.id = gc.card_id
      where gc.session_id = $1 and gc.owner_id = $2 and gc.zone = 'command' and gc.is_commander = true
      limit 1`,
@@ -182,26 +316,51 @@ async function playMainPhase(session, bot, turn) {
     catch (e) { console.warn(`  ⚠ land play failed: ${e.message}`) }
   }
 
-  await topUpMana(session, bot)
-  if (plan.castCommanderId) {
-    try { await rpc(bot, 'cast_commander', { p_session_id: session, p_game_card_id: plan.castCommanderId }); console.log('  ↳ cast its commander') }
-    catch (e) { console.warn(`  ⚠ commander cast failed: ${e.message}`) }
+  if (plan.castCommanderId && cmdr) {
+    // Commander cost = its mana cost + the {2}-per-prior-cast tax (generic).
+    const cost = parseManaCost(cmdr.mana_cost)
+    cost.generic += 2 * Number(cmdr.casts ?? 0)
+    if (await payFor(session, bot, cost)) {
+      try { await rpc(bot, 'cast_commander', { p_session_id: session, p_game_card_id: plan.castCommanderId }); console.log('  ↳ cast its commander') }
+      catch (e) { console.warn(`  ⚠ commander cast failed: ${e.message}`) }
+    } else { console.log('  ↳ skipped commander (not enough mana)') }
   }
   for (const id of plan.castIds) {
+    const cost = parseManaCost(manaCostById.get(id))
+    if (!(await payFor(session, bot, cost))) { console.log('  ↳ skipped a spell (not enough mana)'); continue }
     try { await rpc(bot, 'cast_card_from_hand', { p_session_id: session, p_game_card_id: id }); console.log('  ↳ cast a spell') }
     catch (e) { console.warn(`  ⚠ cast failed: ${e.message}`) }
   }
 }
 
 async function declareAttacks(session, bot, turn) {
-  const opp = (await q('select player_id, life_total from public.game_session_players where session_id = $1 and player_id <> $2 order by seat_number limit 1', [session, bot]))[0]
-  if (!opp) return
+  // Pick a defending opponent among ALL living opponents (humans AND other bots) —
+  // previously this just took the lowest-seat opponent, which was always the human.
+  // Heuristic: prefer the opponent closest to death (lowest life) with the weakest
+  // defense (fewest untapped blockers); a random jitter breaks exact ties so equal
+  // seats don't deterministically fall on the same player every turn.
+  const opps = await q(
+    `select p.player_id, p.life_total, p.seat_number,
+            (select count(*) from public.game_cards gc
+               join public.cards c on c.id = gc.card_id
+             where gc.session_id = $1
+               and coalesce(gc.controller_player_id, gc.owner_id) = p.player_id
+               and gc.zone = 'battlefield' and c.type_line ilike '%creature%'
+               and gc.is_tapped = false) as blockers
+     from public.game_session_players p
+     where p.session_id = $1 and p.player_id <> $2 and coalesce(p.life_total, 0) > 0`,
+    [session, bot],
+  )
+  if (!opps.length) return
+  const opp = opps
+    .map((o) => ({ ...o, score: pt(o.life_total) + Number(o.blockers) * 3 + Math.random() }))
+    .sort((a, b) => a.score - b.score)[0]
   // Eligible attackers: untapped, not-summoning-sick (entered a prior turn —
   // mirrors the engine's declare_attacker check; mig 314 stamps entered on cast).
   const eligible = await q(
     `select gc.id,
             public.card_effective_power($1, gc.id) as power,
-            public.card_effective_toughness($1, gc.id) as toughness
+            public.card_effective_toughness($1, gc.id) as toughness,${KEYWORD_COLS}
      from public.game_cards gc join public.cards c on c.id = gc.card_id
      where gc.session_id = $1 and gc.owner_id = $2 and gc.zone = 'battlefield'
        and c.type_line ilike '%creature%' and gc.is_tapped = false
@@ -214,24 +373,27 @@ async function declareAttacks(session, bot, turn) {
   const oppBlockers = await q(
     `select gc.id,
             public.card_effective_power($1, gc.id) as power,
-            public.card_effective_toughness($1, gc.id) as toughness
+            public.card_effective_toughness($1, gc.id) as toughness,${KEYWORD_COLS}
      from public.game_cards gc join public.cards c on c.id = gc.card_id
      where gc.session_id = $1 and coalesce(gc.controller_player_id, gc.owner_id) = $2
        and gc.zone = 'battlefield' and c.type_line ilike '%creature%' and gc.is_tapped = false`,
     [session, opp.player_id],
   )
+  // Our own life — lets the brain hold back defensive reserves against a lethal swing-back.
+  const myLife = pt((await q('select life_total from public.game_session_players where session_id = $1 and player_id = $2', [session, bot]))[0]?.life_total)
 
   const chosen = decideAttacks(
-    eligible.map((c) => ({ id: c.id, power: pt(c.power), toughness: pt(c.toughness) })),
-    oppBlockers.map((c) => ({ id: c.id, power: pt(c.power), toughness: pt(c.toughness) })),
+    eligible.map(toCreature),
+    oppBlockers.map(toCreature),
     pt(opp.life_total),
+    { myLife },
   )
   let declared = 0
   for (const id of chosen) {
     try { await rpc(bot, 'declare_attacker', { p_session_id: session, p_attacker_card_id: id, p_defending_player_id: opp.player_id }); declared += 1 }
     catch (e) { console.warn(`  ⚠ declare_attacker failed: ${e.message}`) }
   }
-  if (declared) console.log(`  ↳ attacking with ${declared}/${eligible.length}`)
+  if (declared) console.log(`  ↳ attacking seat ${opp.seat_number} (life ${opp.life_total}) with ${declared}/${eligible.length}`)
 }
 
 async function declareBlocks(session, bot, turn) {
@@ -239,7 +401,14 @@ async function declareBlocks(session, bot, turn) {
   const attackers = await q(
     `select ca.attacker_card_id as id,
             public.card_effective_power($1, ca.attacker_card_id) as power,
-            public.card_effective_toughness($1, ca.attacker_card_id) as toughness
+            public.card_effective_toughness($1, ca.attacker_card_id) as toughness,
+            public.card_has_flying($1, ca.attacker_card_id) as flying,
+            public.card_has_reach($1, ca.attacker_card_id) as reach,
+            public.card_has_trample($1, ca.attacker_card_id) as trample,
+            public.card_has_menace($1, ca.attacker_card_id) as menace,
+            public.card_has_deathtouch($1, ca.attacker_card_id) as deathtouch,
+            public.card_has_first_strike($1, ca.attacker_card_id) as first_strike,
+            public.card_has_double_strike($1, ca.attacker_card_id) as double_strike
      from public.game_combat_assignments ca
      where ca.session_id = $1 and ca.turn_number = $2 and ca.defending_player_id = $3`,
     [session, turn.turn_number, bot],
@@ -249,7 +418,7 @@ async function declareBlocks(session, bot, turn) {
   const blockers = await q(
     `select gc.id,
             public.card_effective_power($1, gc.id) as power,
-            public.card_effective_toughness($1, gc.id) as toughness
+            public.card_effective_toughness($1, gc.id) as toughness,${KEYWORD_COLS}
      from public.game_cards gc join public.cards c on c.id = gc.card_id
      where gc.session_id = $1 and coalesce(gc.controller_player_id, gc.owner_id) = $2
        and gc.zone = 'battlefield' and c.type_line ilike '%creature%' and gc.is_tapped = false
@@ -259,8 +428,8 @@ async function declareBlocks(session, bot, turn) {
   const myLife = pt((await q('select life_total from public.game_session_players where session_id = $1 and player_id = $2', [session, bot]))[0]?.life_total)
 
   const assign = decideBlocks(
-    attackers.map((c) => ({ id: c.id, power: pt(c.power), toughness: pt(c.toughness) })),
-    blockers.map((c) => ({ id: c.id, power: pt(c.power), toughness: pt(c.toughness) })),
+    attackers.map(toCreature),
+    blockers.map(toCreature),
     myLife,
   )
   let blocked = 0
@@ -342,6 +511,10 @@ async function tick(session, bot) {
   } else if (!myTurn && turn.step === 'declare_blockers') {
     if (did('block', session, bot, turn.turn_number)) await declareBlocks(session, bot, turn)
   }
+
+  // Satisfy any required trigger target the bot now owns on the stack (e.g. a land
+  // just played fired Obuun's landfall) before passing, so the trigger resolves.
+  await resolveTriggerTargets(session, bot)
 
   try { await rpc(bot, 'pass_priority', { p_session_id: session }) }
   catch (e) { /* lost a race to the server / state moved on */ void e }

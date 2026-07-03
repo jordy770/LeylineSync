@@ -5,7 +5,9 @@
     "build": "next build",
     "start": "next start",
     "import:cards": "node scripts/import-scryfall-cards.mjs",
-    "validate:scripts": "npx tsx scripts/validate-card-scripts.ts",
+    "import:printings": "node scripts/import-card-printings.mjs",
+    "tags:backfill": "node --import tsx scripts/tag-backfill.mjs",
+    "validate:scripts": "npx tsx scripts/validate-card-scripts.mts",
     "test:db:setup": "node scripts/setup-local-test-db.mjs",
     "test": "node scripts/run-tests.mjs",
     "lint": "eslint .",
@@ -28,6 +30,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.511.0",
+    "mana-font": "^1.18.0",
     "next": "latest",
     "next-themes": "^0.4.6",
     "qrcode.react": "^4.2.0",
@@ -39,17 +42,17 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
+    "@types/pg": "^8.11.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.20",
-    "@types/pg": "^8.11.10",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "pg": "^8.13.1",
     "postcss": "^8",
-    "tsx": "^4.19.2",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }

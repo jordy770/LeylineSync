@@ -236,6 +236,15 @@ begin
     join public.game_turn_state ts on ts.session_id = sp.session_id
     where sp.session_id = p_session_id and sp.player_id = p_controller_id;
 
+  elsif v_count = 'spells_cast_this_turn' then
+    -- Spells you have ALREADY cast this turn (mig 369, Alisaie's Dualcast). The
+    -- spell being cast now is index (this + 1). Turn-stamped via note_spell_cast.
+    select case when sp.turn_spells_cast_turn = ts.turn_number then sp.turn_spells_cast else 0 end
+    into v_n
+    from public.game_session_players sp
+    join public.game_turn_state ts on ts.session_id = sp.session_id
+    where sp.session_id = p_session_id and sp.player_id = p_controller_id;
+
   elsif v_count = 'devotion' and v_color <> '' then
     select coalesce(sum(
       (length(c.mana_cost) - length(replace(c.mana_cost, '{' || v_color || '}', ''))) / 3
@@ -267,6 +276,29 @@ begin
     select count(*)::integer into v_n
     from public.game_session_players
     where session_id = p_session_id and player_id is distinct from p_controller_id;
+
+  elsif v_count = 'shared_type_attackers' then
+    -- Shared Animosity (mig 340): "for each OTHER attacking creature that shares
+    -- a creature type with it." The source is the triggering attacker; compare
+    -- the creature SUBTYPES (the words after the "—"/"-" in the type line). The
+    -- pump resolves at stack resolution, by which point all attackers are
+    -- declared in game_combat_assignments.
+    with src as (
+      select string_to_array(
+               regexp_replace(lower(c.type_line), '^.*[—-]\s*', ''), ' ') as subtypes
+      from public.game_cards g
+      join public.cards c on c.id = g.card_id
+      where g.id = p_source_card_id and g.session_id = p_session_id
+    )
+    select count(*)::integer into v_n
+    from public.game_combat_assignments ca
+    join public.game_cards g on g.id = ca.attacker_card_id
+    join public.cards c on c.id = g.card_id, src
+    where ca.session_id = p_session_id
+      and ca.attacker_card_id is distinct from p_source_card_id
+      and g.zone = 'battlefield'
+      and string_to_array(regexp_replace(lower(c.type_line), '^.*[—-]\s*', ''), ' ')
+          && src.subtypes;
   end if;
 
   -- times (mig 268, Filigree Angel: 'gain 3 life for each artifact you

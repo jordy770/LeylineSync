@@ -18,6 +18,7 @@ declare
   v_next_position integer;
   v_target_type jsonb;
   v_requires_target boolean;
+  v_target_optional boolean;
   v_target_controller text;
   v_target_filter jsonb;
   v_has_target boolean;
@@ -32,15 +33,30 @@ begin
   end if;
 
   v_target_type := public.trigger_effects_target_type(p_effects);
-  v_requires_target := v_target_type is not null;
+  -- "Up to one target …" (Obuun's animate): the targeting effect carries
+  -- optional:true. Optional targets do NOT make the trigger require a target — it
+  -- resolves (as a no-op) if none is chosen — so it can never soft-lock the stack.
+  v_target_optional := v_target_type is not null and coalesce((
+    select (effects.effect ->> 'optional')::boolean
+    from jsonb_array_elements(coalesce(p_effects, '[]'::jsonb)) as effects(effect)
+    where public.trigger_effect_target_type(effects.effect) is not null
+    limit 1
+  ), false);
+  v_requires_target := v_target_type is not null and not v_target_optional;
 
-  if v_requires_target then
+  -- Target metadata is carried whenever the trigger CAN target (required or
+  -- optional) so the client can offer a picker; the controller/filter feed both
+  -- the picker and the chooser RPC's legality checks.
+  if v_target_type is not null then
     v_target_controller := coalesce(public.trigger_effects_target_controller(p_effects), 'any');
     -- Optional type-line restriction on the target (mig 310, Opportunistic Dragon:
-    -- "Human or artifact"). Carried into the payload so the client + the chooser
-    -- both enforce it.
+    -- "Human or artifact").
     v_target_filter := public.trigger_effects_target_filter(p_effects);
+  end if;
 
+  -- A REQUIRED target with no legal pick fizzles: don't enqueue (mirrors the
+  -- existing guard). Optional targets always enqueue — they just resolve no-op.
+  if v_requires_target then
     if v_target_filter is not null then
       -- Filter-aware availability: don't enqueue a "choose target" trigger when no
       -- battlefield permanent matches BOTH the target type and the type-line
@@ -105,10 +121,11 @@ begin
       'controller_player_id', p_controller_id,
       'effects', p_effects,
       'target_required', v_requires_target,
-      'target_type', case when v_requires_target then v_target_type else null end,
-      'target_count', case when v_requires_target then public.trigger_effects_target_count(p_effects) else null end,
-      'target_controller', case when v_requires_target then v_target_controller else null end,
-      'target_filter', case when v_requires_target then v_target_filter else null end,
+      'target_optional', v_target_optional,
+      'target_type', case when v_target_type is not null then v_target_type else null end,
+      'target_count', case when v_target_type is not null then public.trigger_effects_target_count(p_effects) else null end,
+      'target_controller', case when v_target_type is not null then v_target_controller else null end,
+      'target_filter', case when v_target_type is not null then v_target_filter else null end,
       'timing', 'triggered',
       'apnap_rank', v_apnap_rank,
       'triggering_card_id', p_triggering_card_id

@@ -58,6 +58,12 @@ as $$
                   end)
           and (coalesce((effects.payload ->> 'exclude_source')::boolean, false) = false
                or game_cards.id <> effects.source_card_id)
+          -- Commander-only anthem (Dancer's Chakrams: "other commanders you
+          -- control get +2/+2"). Limits the pump to commanders the source's
+          -- controller controls, excluding the equipped creature ("other").
+          and (effects.payload ->> 'commander_only' is null
+               or (game_cards.is_commander
+                   and game_cards.id is distinct from source_card.attached_to))
           -- Colour-filtered anthem (mig 209, Heraldic Banner): only creatures
           -- of the payload colour get the pump.
           -- Conditional anthem (mig 269, Jor Kadeen metalcraft: '+3/+0 as long
@@ -69,6 +75,12 @@ as $$
                     jsonb_build_object('count', effects.payload ->> 'condition_count'),
                     effects.source_card_id)
                   >= coalesce((effects.payload ->> 'condition_at_least')::integer, 1))
+          -- Conditional anthem on the source controller's library top card colour
+          -- (Vampire Nocturnus, mig 342: "as long as the top card is black").
+          and (effects.payload ->> 'condition_top_card_color' is null
+               or public.library_top_is_color(p_session_id,
+                    coalesce(source_card.controller_player_id, source_card.owner_id),
+                    effects.payload ->> 'condition_top_card_color'))
           and (effects.payload ->> 'color' is null
                or public.card_color_set(cards.mana_cost) @> array[lower(effects.payload ->> 'color')])
       ), 0)

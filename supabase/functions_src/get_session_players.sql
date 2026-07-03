@@ -14,7 +14,8 @@ CREATE OR REPLACE FUNCTION "public"."get_session_players"("p_session_id" "uuid")
     game_session_players.player_id,
     coalesce(
       nullif(profiles.username, ''),
-      case when game_session_players.is_bot then 'CPU 🤖'
+      -- Seat-numbered so multiple CPUs in one pod stay distinguishable.
+      case when game_session_players.is_bot then 'CPU 🤖 ' || game_session_players.seat_number
            else left(game_session_players.player_id::text, 8) end
     ) as username,
     game_session_players.seat_number,

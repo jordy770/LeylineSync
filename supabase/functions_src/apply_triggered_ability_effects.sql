@@ -103,6 +103,7 @@ begin
             update public.game_session_players
             set life_total = life_total + v_eff_amount
             where session_id = p_session_id and player_id = v_rid;
+            perform public.fire_lifegain_triggers(p_session_id, v_rid, v_eff_amount);
           end if;
         end loop;
       end if;
@@ -157,7 +158,10 @@ begin
 
     elsif v_eff_type = 'draw' then
       if p_controller_id is not null then
-        for v_draw_i in 1..greatest(1, v_eff_amount) loop
+        -- "draw a card" (no amount key) defaults to 1; an explicit amount draws
+        -- exactly that many — incl. a dynamic count that resolves to 0 ("draw a
+        -- card for each X" with X=0 draws nothing). 1..0 runs zero iterations.
+        for v_draw_i in 1..(case when v_effect ? 'amount' then v_eff_amount else 1 end) loop
           select coalesce(max(zone_position), -1) + 1 into v_next_hand_position
           from public.game_cards
           where session_id = p_session_id and owner_id = p_controller_id and zone = 'hand';
@@ -428,6 +432,8 @@ begin
             update public.game_session_players
             set life_total = life_total + v_token_count * (v_effect ->> 'gain_per_destroyed')::integer
             where session_id = p_session_id and player_id = p_controller_id;
+            perform public.fire_lifegain_triggers(p_session_id, p_controller_id,
+              v_token_count * (v_effect ->> 'gain_per_destroyed')::integer);
           else
             perform public.apply_triggered_ability_effects(
               p_session_id, p_controller_id, p_source_card_id,
@@ -782,6 +788,61 @@ begin
       -- mode). apply_creature_effect writes the keyword continuous effect.
       if p_source_card_id is not null then
         perform public.apply_creature_effect(p_session_id, 'grant_keyword', p_source_card_id, v_effect);
+      end if;
+
+    elsif v_eff_type = 'tap_self' then
+      -- Tap the source permanent (Immersturm Predator: "Tap it" after its
+      -- sacrifice ability). The AFTER-UPDATE is_tapped trigger (fire_tap_triggers)
+      -- fires the becomes_tapped event from here just like a mana/attack tap.
+      if p_source_card_id is not null then
+        update public.game_cards
+        set is_tapped = true
+        where id = p_source_card_id and session_id = p_session_id and zone = 'battlefield';
+      end if;
+
+    elsif v_eff_type = 'donate_self' then
+      -- Xantcha (mig 361): "enters under the control of an opponent of your choice"
+      -- — hand the source to an opponent of its current controller (1v1: the only
+      -- one). APPROX: "of your choice" is the first opponent in seat order.
+      if p_source_card_id is not null then
+        update public.game_cards
+        set controller_player_id = (
+          select sp.player_id from public.game_session_players sp
+          where sp.session_id = p_session_id and sp.player_id is distinct from p_controller_id
+          order by sp.seat_number limit 1)
+        where id = p_source_card_id and session_id = p_session_id and zone = 'battlefield'
+          and exists (select 1 from public.game_session_players sp
+                      where sp.session_id = p_session_id and sp.player_id is distinct from p_controller_id);
+        perform public.rebuild_scripted_continuous_effects(p_session_id);
+      end if;
+
+    elsif v_eff_type = 'copy_self' then
+      -- Create `count` token copies of the SOURCE under the controller, with the
+      -- given `except` overrides (Saw in Half, mig 356: two half-size copies of
+      -- the creature as it dies). Works from the graveyard (copy reads card_id).
+      if p_source_card_id is not null and p_controller_id is not null then
+        perform public.create_copy_token(p_session_id, p_controller_id, p_source_card_id, v_effect -> 'except')
+        from generate_series(1, greatest(1, coalesce((v_effect ->> 'count')::integer, 1)));
+      end if;
+
+    elsif v_eff_type = 'return_self_to_battlefield' then
+      -- Return the SOURCE card from the graveyard to the battlefield under its
+      -- owner's control (Feign Death / Supernatural Stamina / Not Dead After All,
+      -- mig 345, via a granted dies-trigger). Optionally tapped / with a +1/+1
+      -- counter. Only acts on a card currently in a graveyard.
+      if p_source_card_id is not null then
+        update public.game_cards gc
+        set zone = 'battlefield',
+            zone_position = (select coalesce(max(x.zone_position), -1) + 1 from public.game_cards x
+                             where x.session_id = p_session_id and x.owner_id = gc.owner_id and x.zone = 'battlefield'),
+            controller_player_id = gc.owner_id,
+            is_tapped = coalesce((v_effect ->> 'tapped')::boolean, false),
+            damage_marked = 0,
+            plus_one_counters = coalesce((v_effect ->> 'plus_one_counters')::integer, 0),
+            entered_battlefield_turn_number = (select turn_number from public.game_turn_state where session_id = p_session_id)
+        where gc.id = p_source_card_id and gc.session_id = p_session_id and gc.zone = 'graveyard';
+        perform public.rebuild_scripted_continuous_effects(p_session_id);
+        perform public.recheck_counter_state(p_session_id);
       end if;
 
     elsif v_eff_type = 'set_pt' then

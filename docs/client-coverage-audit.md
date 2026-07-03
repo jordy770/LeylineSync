@@ -1,5 +1,8 @@
 # Client coverage audit — engine vs UI
 
+> ⚠️ **For the current merged "what's left" list see `docs/open-items.md`** (built
+> 2026-06-25, verified vs migrations→333). This audit is a point-in-time snapshot.
+
 > **Refreshed 2026-06-14.** The original June audit (migs 239–285) inventoried a
 > large engine→UI gap. Since then the client caught up: every item below the old
 > audit flagged as missing is now implemented. This doc records that closure and

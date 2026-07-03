@@ -30,6 +30,13 @@ declare
   v_ctrl_ok boolean;
   v_once_key text;
 begin
+  -- Per-turn spell-cast tally (Alisaie's Dualcast: "the second spell you cast each
+  -- turn costs {2} less"). spell_cast fires once per cast with the caster as
+  -- p_changed_controller; bot/system casts pass a null caster and are skipped.
+  if p_event = 'spell_cast' and p_changed_controller is not null then
+    perform public.note_spell_cast(p_session_id, p_changed_controller);
+  end if;
+
   -- Token at either level: catalog tokens (cards.is_token) or copy tokens
   -- (game_cards.is_token, mig 239).
   select cards.type_line, public.mana_value(cards.mana_cost), cards.mana_cost,
@@ -45,7 +52,15 @@ begin
     from public.game_cards gc
     join public.cards c on c.id = gc.card_id
     where gc.session_id = p_session_id
-      and (gc.zone = 'battlefield' or gc.id = p_changed_card_id)
+      -- Watchers are permanents already on the battlefield. The changed card is
+      -- also allowed to watch its OWN event (e.g. a creature reacting to its own
+      -- tap/attack) — EXCEPT for cast events: a spell being cast is on the stack,
+      -- not yet on the battlefield, so it must not trigger its own "whenever you
+      -- cast …" ability (mig 325, Bygone Bishop casting itself).
+      and (
+        gc.zone = 'battlefield'
+        or (gc.id = p_changed_card_id and p_event not in ('spell_cast', 'cast_from_exile'))
+      )
     order by gc.controller_player_id, gc.id
   loop
     for v_ability in
@@ -155,7 +170,10 @@ begin
       if v_changed_type not ilike '%' || coalesce(v_f_type,
            case p_event when 'spell_cast' then '' when 'cast_from_exile' then ''
                         when 'land_entered' then 'land'
-                        when 'ability_activated' then '' else 'creature' end) || '%' then
+                        when 'ability_activated' then ''
+                        -- permanent_sacrificed (mig 341, Carmen): any permanent.
+                        when 'permanent_sacrificed' then ''
+                        else 'creature' end) || '%' then
         continue;
       end if;
 
@@ -229,6 +247,17 @@ begin
         else true
       end;
       if not v_ctrl_ok then
+        continue;
+      end if;
+
+      -- "your second spell each turn" (mig 372, Alphinaud's Eukrasia): fire only
+      -- when the cast spell is exactly the Nth the controller has cast this turn.
+      -- note_spell_cast (top of this fn) already counted THIS cast, so the 2nd
+      -- spell reads 2. Pairs with the spells_cast_this_turn counter (mig 369).
+      if v_filter ? 'spell_number'
+         and public.resolve_count_amount(p_session_id, p_changed_controller,
+               '{"count":"spells_cast_this_turn"}'::jsonb)
+             <> (v_filter ->> 'spell_number')::integer then
         continue;
       end if;
 

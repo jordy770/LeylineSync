@@ -77,15 +77,19 @@ begin
     raise exception 'Only the priority player can activate abilities';
   end if;
 
+  -- You activate the abilities of permanents you CONTROL (not necessarily own):
+  -- a donated/stolen permanent's abilities belong to its controller (mig 361,
+  -- Xantcha). For non-battlefield zones (graveyard/hand abilities) fall back to
+  -- ownership since control only exists on the battlefield.
   select game_cards.zone
   into v_zone
   from public.game_cards
   where game_cards.id = p_source_card_id
     and game_cards.session_id = p_session_id
-    and game_cards.owner_id = auth.uid();
+    and coalesce(game_cards.controller_player_id, game_cards.owner_id) = auth.uid();
 
   if not found then
-    raise exception 'Source card not found or not owned by current user';
+    raise exception 'Source card not found or not controlled by current user';
   end if;
 
   -- Restricted-mana pay context (Haven: "activate abilities of Dragon sources";
@@ -341,6 +345,7 @@ begin
   -- Sacrifice the source as a cost (after the other costs are paid).
   if v_has_sac then
     perform public.put_in_graveyard(p_session_id, p_source_card_id);
+    perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'permanent_sacrificed');
   end if;
 
   -- Pay the graveyard-exile cost: exile the chosen card (controller := owner).
@@ -356,6 +361,7 @@ begin
   -- Pay the sacrifice-a-creature cost.
   if v_has_sac_creature then
     perform public.put_in_graveyard(p_session_id, p_target_card_id);
+    perform public.fire_watcher_triggers(p_session_id, p_target_card_id, auth.uid(), 'permanent_sacrificed');
   end if;
 
   -- Pay the sacrifice-N-artifacts cost (mig 264): cheapest MV first, source
@@ -396,6 +402,7 @@ begin
         raise exception 'You must sacrifice % artifact(s) you control', v_sac_artifacts_count;
       end if;
       perform public.put_in_graveyard(p_session_id, v_sac_artifact);
+      perform public.fire_watcher_triggers(p_session_id, v_sac_artifact, auth.uid(), 'permanent_sacrificed');
     end loop;
   end if;
 
@@ -484,7 +491,7 @@ begin
       p_source_card_id
     );
 
-  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity', 'divide_damage', 'return_from_graveyard', 'play_hideaway', 'choose_one', 'gain_life', 'fight_pick', 'destroy_all', 'proliferate') then
+  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity', 'divide_damage', 'return_from_graveyard', 'play_hideaway', 'choose_one', 'gain_life', 'fight_pick', 'destroy_all', 'proliferate', 'copy_permanent', 'copy_self') then
     -- A single create_token / search_library / grant_keyword_all effect
     -- routes through a spell_effect stack item so it reuses the spell-effect
     -- resolver (incl. the `tapped` flag and tutor `filter`). Wayfarer's Bauble.

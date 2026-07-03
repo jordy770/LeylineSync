@@ -99,7 +99,12 @@ const tokenDeps = new Set()
 let invalid = 0
 for (const name of cardNames) {
   const key = name.toLowerCase()
-  const script = scriptOverrides.get(key) ?? fixtureScripts.get(key)
+  // Adventure/DFC scripts are keyed by the FRONT face name; the decklist (and
+  // the catalog rows) use the full "Front // Back" name.
+  const keys = key.includes(' // ') ? [key, key.split(' // ')[0]] : [key]
+  const script =
+    keys.map((k) => scriptOverrides.get(k)).find(Boolean) ??
+    keys.map((k) => fixtureScripts.get(k)).find(Boolean)
   if (!script) continue // no script needed / nothing to push
   const check = validateCardScript(script)
   if (!check.success) {

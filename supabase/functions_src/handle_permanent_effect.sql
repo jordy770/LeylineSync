@@ -23,6 +23,9 @@ declare
   v_affected_controller uuid;
   v_search_options jsonb;
   v_decision_id uuid;
+  v_kind text := lower(coalesce(p_stack_item.payload ->> 'kind', ''));
+  v_effect_params jsonb := p_stack_item.payload;
+  v_player_options jsonb;
 begin
   -- The destroyed permanent's controller, captured BEFORE the removal (which resets
   -- it to the owner) — for the affected-player search rider.
@@ -30,11 +33,55 @@ begin
   from public.game_cards
   where id = v_target_card_id and session_id = p_session_id and zone = 'battlefield';
 
+  -- gain_control needs an `acting_controller` — the CASTER (apply_creature_effect
+  -- raises without it). For a DONATE (`to:opponent`, Harmless Offering) the card
+  -- reads "target PLAYER gains control", so with MORE THAN ONE living opponent the
+  -- caster CHOOSES the recipient: park a choose_player decision and apply the
+  -- control change on submit (submit_decision's apply_permanent_effect resume).
+  -- With a single opponent (1v1) no choice is needed — apply now; the gain_control
+  -- branch's to:opponent redirect resolves that one opponent off the caster.
+  if v_kind = 'gain_control' then
+    if lower(coalesce(p_stack_item.payload ->> 'to', '')) = 'opponent' then
+      select coalesce(jsonb_agg(
+               jsonb_build_object('player_id', sp.player_id, 'username', pr.username)
+               order by sp.seat_number), '[]'::jsonb)
+        into v_player_options
+      from public.game_session_players sp
+      left join public.profiles pr on pr.id = sp.player_id
+      where sp.session_id = p_session_id
+        and sp.player_id <> v_controller
+        and sp.life_total > 0;
+
+      if jsonb_array_length(v_player_options) > 1 then
+        insert into public.game_pending_decisions (
+          session_id, deciding_player_id, source_stack_item_id, decision_type,
+          prompt, options, min_choices, max_choices, params
+        )
+        values (
+          p_session_id, v_controller, p_stack_item.id, 'choose_player',
+          'Choose a player to gain control', v_player_options, 1, 1,
+          -- The permanent_effect to run with the chosen player as acting_controller
+          -- (drop `to` so the gain_control branch uses the chosen player directly).
+          jsonb_build_object('apply_permanent_effect', p_stack_item.payload - 'to')
+        )
+        returning id into v_decision_id;
+
+        update public.game_stack_items
+        set status = 'awaiting_decision'
+        where id = p_stack_item.id;
+
+        return jsonb_build_object('awaiting_decision', true, 'decision_id', v_decision_id);
+      end if;
+    end if;
+    v_effect_params := p_stack_item.payload
+      || jsonb_build_object('acting_controller', v_controller);
+  end if;
+
   perform public.apply_creature_effect(
     p_session_id,
-    lower(coalesce(p_stack_item.payload ->> 'kind', '')),
+    v_kind,
     v_target_card_id,
-    p_stack_item.payload
+    v_effect_params
   );
 
   -- Caster `then` riders (mig 150): simple effects applied to the CASTER.
@@ -61,6 +108,7 @@ begin
       update public.game_session_players
       set life_total = life_total + v_ramount
       where session_id = p_session_id and player_id = v_controller;
+      perform public.fire_lifegain_triggers(p_session_id, v_controller, v_ramount);
 
     elsif v_rtype = 'draw' then
       for i in 1..greatest(0, v_ramount) loop

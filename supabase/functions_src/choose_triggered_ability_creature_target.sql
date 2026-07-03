@@ -35,7 +35,8 @@ begin
   end if;
 
   if v_stack_item.action_type <> 'triggered_ability'
-    or coalesce((v_stack_item.payload ->> 'target_required')::boolean, false) is not true
+    or (coalesce((v_stack_item.payload ->> 'target_required')::boolean, false) is not true
+        and coalesce((v_stack_item.payload ->> 'target_optional')::boolean, false) is not true)
   then
     raise exception 'Stack item does not require a trigger target';
   end if;
