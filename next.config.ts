@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
     "*.dweemo.nl",
   ],
   images: {
+    // Custom loader so cards.scryfall.io URLs bypass the Next image optimizer.
+    // Scryfall's CDN 400s any request with a default HTTP-library User-Agent,
+    // which is exactly what the optimizer's server-side fetch sends. See
+    // ./image-loader.ts.
+    loader: "custom",
+    loaderFile: "./image-loader.ts",
     remotePatterns: [
       {
         protocol: "https",
