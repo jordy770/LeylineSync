@@ -46,6 +46,214 @@ export const turnSteps = [
   'cleanup',
 ] as const
 
+// ─── Consolidated controller load ──────────────────────────────────────────
+// One RPC (get_controller_state, mig 370) returns every section the controller
+// hook needs, replacing ~19 separate PostgREST requests per game action. The raw
+// continuous_effects array is filtered here into the same seven derived shapes the
+// old per-effect-type queries produced — identical transforms, one round-trip.
+type RawCe = { effect_type: string; affected_card_id: string | null; affected_player_id: string | null; payload: Record<string, unknown> | null }
+type CommanderDamageRow = { defender_player_id: string; source_card_id: string; damage: number; name: string | null }
+
+// Map a board card row from get_controller_state / get_board_state (catalog fields
+// already joined in SQL) to a BoardCard — mirrors the old getBoardCards .map.
+function mapBoardCardRow(item: Record<string, unknown>): BoardCard {
+  return {
+    id: item.id as string,
+    card_id: item.card_id as string,
+    position_x: (item.position_x as number) ?? 0,
+    position_y: (item.position_y as number) ?? 0,
+    is_tapped: item.is_tapped as boolean,
+    damage_marked: (item.damage_marked as number) ?? 0,
+    zone: normalizeGameZone(item.zone as string),
+    name: (item.name as string) || 'Unknown',
+    image_url: (item.image_url as string | null) ?? null,
+    type_line: (item.type_line as string | null) ?? null,
+    mana_cost: (item.mana_cost as string | null) ?? null,
+    power_toughness: (item.power_toughness as string | null) ?? null,
+    keywords: (item.keywords as string[] | null) ?? null,
+    controller_player_id: (item.controller_player_id as string | null) ?? null,
+    plus_one_counters: (item.plus_one_counters as number) ?? 0,
+    counters: (item.counters as Record<string, number> | null) ?? null,
+    attached_to: (item.attached_to as string | null) ?? null,
+    is_token: (item.is_token as boolean | null) ?? false,
+    copy_original_card_id: (item.copy_original_card_id as string | null) ?? null,
+  }
+}
+
+// Group flat commander-damage rows by defender — mirrors getCommanderDamage.
+function groupCommanderDamageRows(rows: CommanderDamageRow[] | null): Record<string, CommanderDamageEntry[]> {
+  const out: Record<string, CommanderDamageEntry[]> = {}
+  for (const row of rows ?? []) {
+    ;(out[row.defender_player_id] ??= []).push({ sourceCardId: row.source_card_id, name: row.name ?? 'Commander', damage: row.damage })
+  }
+  return out
+}
+
+// Board (big-screen) counterpart of getControllerState — one RPC (get_board_state,
+// mig 371) instead of useBoardGameState's ~8 separate reads. Returns exactly the
+// values the board hook's refresh() destructured.
+export async function getBoardState(supabase: SupabaseClient, sessionId: string) {
+  const { data, error } = await supabase.rpc('get_board_state', { p_session_id: sessionId })
+  if (error) throw error
+  const r = (data ?? {}) as Record<string, unknown>
+
+  const animatedIds = new Set<string>()
+  const taxes: { playerId: string; mana: number; life: number }[] = []
+  for (const row of ((r.status_effects as RawCe[] | null) ?? [])) {
+    if (row.effect_type === 'animated' && row.affected_card_id) animatedIds.add(row.affected_card_id)
+    if (row.effect_type === 'attack_tax' && row.affected_player_id) {
+      taxes.push({ playerId: row.affected_player_id, mana: Number(row.payload?.mana ?? 0), life: Number(row.payload?.life ?? 0) })
+    }
+  }
+
+  return {
+    nextSession: r.session ? normalizeGameSession(r.session as Partial<GameSession>) : null,
+    boardCards: ((r.board_cards as Record<string, unknown>[] | null) ?? []).map(mapBoardCardRow),
+    sessionPlayers: ((r.players as GameSessionPlayer[] | null) ?? []),
+    nextTurnState: r.turn_state ? normalizeTurnState(r.turn_state as Partial<GameTurnState>) : null,
+    nextCombatAssignments: ((r.combat_assignments as CombatAssignment[] | null) ?? []),
+    nextStackItems: ((r.stack_items as StackItem[] | null) ?? []),
+    status: { animatedIds, taxes },
+    nextCommanderDamage: groupCommanderDamageRows(r.commander_damage as CommanderDamageRow[] | null),
+  }
+}
+
+export async function getControllerState(
+  supabase: SupabaseClient,
+  sessionId: string,
+  playerId: string,
+) {
+  const { data, error } = await supabase.rpc('get_controller_state', {
+    p_session_id: sessionId,
+    p_player_id: playerId,
+  })
+  if (error) throw error
+  const r = (data ?? {}) as Record<string, unknown>
+
+  const ce = (r.continuous_effects as RawCe[] | null) ?? []
+
+  // pump totals (mirrors getActivePumpTotals)
+  const pumpTotals: Record<string, { power: number; toughness: number }> = {}
+  for (const row of ce) {
+    if (row.effect_type !== 'pump' || !row.affected_card_id) continue
+    const power = Number(row.payload?.power ?? 0)
+    const toughness = Number(row.payload?.toughness ?? 0)
+    const entry = pumpTotals[row.affected_card_id] ?? { power: 0, toughness: 0 }
+    entry.power += Number.isFinite(power) ? power : 0
+    entry.toughness += Number.isFinite(toughness) ? toughness : 0
+    pumpTotals[row.affected_card_id] = entry
+  }
+
+  // protection colours (mirrors getProtectionColors)
+  const protectionColors: Record<string, string[]> = {}
+  for (const row of ce) {
+    if (row.effect_type !== 'protection') continue
+    const id = row.affected_card_id
+    const from = typeof row.payload?.from === 'string' ? (row.payload.from as string).toLowerCase() : null
+    if (!id || !from) continue
+    const list = protectionColors[id] ?? []
+    if (!list.includes(from)) list.push(from)
+    protectionColors[id] = list
+  }
+
+  // status effects (mirrors getStatusEffects)
+  const animatedIds = new Set<string>()
+  const taxes: { playerId: string; mana: number; life: number }[] = []
+  for (const row of ce) {
+    if (row.effect_type === 'animated' && row.affected_card_id) animatedIds.add(row.affected_card_id)
+    if (row.effect_type === 'attack_tax' && row.affected_player_id) {
+      taxes.push({ playerId: row.affected_player_id, mana: Number(row.payload?.mana ?? 0), life: Number(row.payload?.life ?? 0) })
+    }
+  }
+
+  // granted keywords (mirrors getGrantedKeywords)
+  const grantedKeywords: Record<string, string[]> = {}
+  for (const row of ce) {
+    if (!row.affected_card_id) continue
+    if (!(KEYWORD_EFFECT_TYPES as readonly string[]).includes(row.effect_type)) continue
+    ;(grantedKeywords[row.affected_card_id] ??= []).push(row.effect_type)
+  }
+
+  // cost reductions for this player (mirrors getCostReductions)
+  const nextCostReductions: CostReductionEffect[] = ce
+    .filter((row) => row.effect_type === 'cost_reduction' && row.affected_player_id === playerId)
+    .map((row) => {
+      const p = row.payload ?? {}
+      return {
+        amount: Number(p.amount ?? 0),
+        type_line: typeof p.type_line === 'string' && p.type_line !== '' ? (p.type_line as string) : null,
+        from_zone: typeof p.from_zone === 'string' && p.from_zone !== '' ? (p.from_zone as string) : null,
+      }
+    })
+
+  // cast-from-top perms (mirrors getCastFromLibraryTopPerms)
+  const nextCastFromTopPerms: CastFromTopPerm[] = ce
+    .filter((row) => row.effect_type === 'cast_from_library_top' && (row.affected_player_id === playerId || row.affected_player_id === null))
+    .map((row) => {
+      const p = row.payload ?? {}
+      return { creature: Boolean(p.creature), minPower: p.min_power != null ? Number(p.min_power) : null }
+    })
+
+  // play-from-exile ids (mirrors getPlayableFromExileIds)
+  const nextPlayableFromExileIds = new Set<string>()
+  for (const row of ce) {
+    if (row.effect_type !== 'play_from_exile' || row.affected_player_id !== playerId) continue
+    const cardIds = row.payload?.card_ids
+    if (Array.isArray(cardIds)) for (const id of cardIds) if (typeof id === 'string') nextPlayableFromExileIds.add(id)
+  }
+
+  // commander damage grouped by defender (mirrors getCommanderDamage)
+  const nextCommanderDamage = groupCommanderDamageRows(r.commander_damage as CommanderDamageRow[] | null)
+
+  // board cards — catalog fields already joined in the RPC (mirrors getBoardCards .map)
+  const allBoardCards = ((r.board_cards as Record<string, unknown>[] | null) ?? []).map(mapBoardCardRow)
+
+  // controller cards — `cards` nested catalog object already joined (mirrors getControllerCards .map)
+  const controllerCards = ((r.controller_cards as Record<string, unknown>[] | null) ?? []).map<ControllerCard>((card) => ({
+    id: card.id as string,
+    card_id: card.card_id as string,
+    is_tapped: card.is_tapped as boolean,
+    damage_marked: (card.damage_marked as number) ?? 0,
+    zone: normalizeGameZone(card.zone as string),
+    zone_position: (card.zone_position as number) ?? 0,
+    controller_player_id: (card.controller_player_id as string | null) ?? null,
+    copied_script: (card.copied_script as CardScript | null) ?? null,
+    static_effects_suppressed: (card.static_effects_suppressed as boolean) ?? false,
+    entered_battlefield_turn_number: (card.entered_battlefield_turn_number as number | null) ?? null,
+    plus_one_counters: (card.plus_one_counters as number) ?? 0,
+    counters: (card.counters as Record<string, number> | null) ?? null,
+    is_commander: (card.is_commander as boolean) ?? false,
+    command_zone_casts: (card.command_zone_casts as number) ?? 0,
+    attached_to: (card.attached_to as string | null) ?? null,
+    is_token: (card.is_token as boolean | null) ?? false,
+    copy_original_card_id: (card.copy_original_card_id as string | null) ?? null,
+    name: (card.name as string | null) ?? `Unknown (${card.card_id as string})`,
+    cards: (card.cards as LinkedCard | null) ?? null,
+  }))
+
+  return {
+    session: r.session ? normalizeGameSession(r.session as Partial<GameSession>) : null,
+    controllerResult: { cards: controllerCards },
+    allBoardCards,
+    sessionPlayers: ((r.players as GameSessionPlayer[] | null) ?? []),
+    nextTurnState: r.turn_state ? normalizeTurnState(r.turn_state as Partial<GameTurnState>) : null,
+    nextCombatActionState: r.combat_action_state as CombatActionState,
+    nextCombatAssignments: ((r.combat_assignments as CombatAssignment[] | null) ?? []),
+    nextStackItems: ((r.stack_items as StackItem[] | null) ?? []),
+    nextPendingDecisions: ((r.pending_decisions as PendingDecision[] | null) ?? []),
+    nextManaPool: normalizeManaPool((r.mana_pool as ManaPool | null) ?? null),
+    nextRestrictedMana: (Array.isArray(r.restricted_mana) ? (r.restricted_mana as RestrictedManaEntry[]) : []).filter((e) => e && (e.amount ?? 0) > 0),
+    pumpTotals,
+    protectionColors,
+    statusEffects: { animatedIds, taxes },
+    nextCommanderDamage,
+    nextPlayableFromExileIds,
+    nextCostReductions,
+    nextCastFromTopPerms,
+    grantedKeywords,
+  }
+}
+
 export async function getCurrentPlayerId(supabase: SupabaseClient) {
   const {
     data: { user },

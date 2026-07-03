@@ -3,29 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getErrorMessage } from './actions'
-import {
-  getActivePumpTotals,
-  getBoardCards,
-  getCombatActionState,
-  getCombatAssignments,
-  getCastFromLibraryTopPerms,
-  getCommanderDamage,
-  getControllerCards,
-  getCostReductions,
-  getCurrentPlayerId,
-  getGameSession,
-  getGameSessionPlayers,
-  getGrantedKeywords,
-  getPendingDecisions,
-  getPlayableFromExileIds,
-  getPlayerManaPool,
-  getPlayerRestrictedMana,
-  getProtectionColors,
-  getStatusEffects,
-  getStackItems,
-  getTurnState,
-  normalizeManaPool,
-} from './data'
+import { getControllerState, getCurrentPlayerId, normalizeManaPool } from './data'
 import { enableFallbackRefresh, fallbackRefreshIntervalMs } from './dev'
 import type { CastFromTopPerm, CommanderDamageEntry, CostReductionEffect } from './data'
 import type {
@@ -84,7 +62,9 @@ export function useControllerGameState(sessionId: string) {
         return
       }
 
-      const [
+      // One RPC for the whole controller view (mig 370) — replaces ~19 separate
+      // PostgREST requests per reload so a long game stops accumulating network.
+      const {
         session,
         controllerResult,
         allBoardCards,
@@ -104,27 +84,7 @@ export function useControllerGameState(sessionId: string) {
         nextCostReductions,
         nextCastFromTopPerms,
         grantedKeywords,
-      ] = await Promise.all([
-        getGameSession(supabase, sessionId),
-        getControllerCards(supabase, sessionId, currentPlayerId),
-        getBoardCards(supabase, sessionId),
-        getGameSessionPlayers(supabase, sessionId),
-        getTurnState(supabase, sessionId),
-        getCombatActionState(supabase, sessionId),
-        getCombatAssignments(supabase, sessionId),
-        getStackItems(supabase, sessionId),
-        getPendingDecisions(supabase, sessionId),
-        getPlayerManaPool(supabase, sessionId, currentPlayerId),
-        getPlayerRestrictedMana(supabase, sessionId, currentPlayerId),
-        getActivePumpTotals(supabase, sessionId),
-        getProtectionColors(supabase, sessionId),
-        getStatusEffects(supabase, sessionId),
-        getCommanderDamage(supabase, sessionId),
-        getPlayableFromExileIds(supabase, sessionId, currentPlayerId),
-        getCostReductions(supabase, sessionId, currentPlayerId),
-        getCastFromLibraryTopPerms(supabase, sessionId, currentPlayerId),
-        getGrantedKeywords(supabase, sessionId),
-      ])
+      } = await getControllerState(supabase, sessionId, currentPlayerId)
 
       // Fold active until-end-of-turn pumps onto each card so effective P/T shows
       // immediately, not just at declare blockers (which reads server-side P/T).
@@ -183,42 +143,69 @@ export function useControllerGameState(sessionId: string) {
     // reload (a cast touches game_cards + game_stack_items + game_turn_state + …).
     let debounceTimer: ReturnType<typeof setTimeout> | null = null
     let lastRealtimeAt = 0
+    // The fallback poll is keyed on whether realtime is actually DELIVERING to this
+    // client, not merely on channel status. An authenticated client (a player's
+    // phone) receives postgres_changes for every game table and we stop idle-polling
+    // once the first one arrives — turn-based play is mostly idle, so a silence poll
+    // would otherwise reload all ~18 queries every few seconds during think time. But
+    // an UNAUTHENTICATED client (e.g. a board opened without login) gets a SUBSCRIBED
+    // channel that delivers NOTHING — RLS yields zero postgres_changes — so it never
+    // sees `hasEverReceivedEvent` flip and keeps the poll as its only update path.
+    let channelHealthy = false
+    let hasSubscribedOnce = false
+    let hasEverReceivedEvent = false
     const scheduleReload = () => {
       lastRealtimeAt = Date.now()
       if (debounceTimer) clearTimeout(debounceTimer)
       debounceTimer = setTimeout(() => { debounceTimer = null; loadControllerState() }, RELOAD_DEBOUNCE_MS)
     }
+    // A genuine realtime delivery (vs. the re-subscribe catch-up below, which calls
+    // scheduleReload directly) — proves realtime works for this client.
+    const onRealtimeEvent = () => { hasEverReceivedEvent = true; scheduleReload() }
 
     const channel = supabase
       .channel(`controller-v2:${sessionId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_cards', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_cards', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
       // The global `cards` catalog has no session_id (can't be filtered) and is
       // static during play — its data is re-joined on every reload — so we don't
       // subscribe to it; doing so fired a game-wide reload on every catalog edit/import.
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_sessions', filter: `id=eq.${sessionId}` }, scheduleReload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `session_id=eq.${sessionId}` }, scheduleReload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_session_players', filter: `session_id=eq.${sessionId}` }, scheduleReload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_turn_state', filter: `session_id=eq.${sessionId}` }, scheduleReload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_stack_items', filter: `session_id=eq.${sessionId}` }, scheduleReload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_pending_decisions', filter: `session_id=eq.${sessionId}` }, scheduleReload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, scheduleReload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers', filter: `session_id=eq.${sessionId}` }, scheduleReload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, scheduleReload)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_commander_damage', filter: `session_id=eq.${sessionId}` }, scheduleReload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_sessions', filter: `id=eq.${sessionId}` }, onRealtimeEvent)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_session_players', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_turn_state', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_stack_items', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_pending_decisions', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_assignments', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_combat_blockers', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_continuous_effects', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_commander_damage', filter: `session_id=eq.${sessionId}` }, onRealtimeEvent)
       .subscribe((status, error) => {
         console.log('Controller v2 realtime status:', status)
+        if (status === 'SUBSCRIBED') {
+          // A RE-subscribe (after a dropped connection) may have missed events while
+          // down — reload once to catch up. The first subscribe is covered by the
+          // initial loadControllerState() above, so skip it.
+          if (hasSubscribedOnce) scheduleReload()
+          hasSubscribedOnce = true
+          channelHealthy = true
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          channelHealthy = false
+        }
         if (error) {
           console.error('Controller v2 realtime error:', error)
         }
       })
 
-    // Fallback poll: reload only when realtime has been SILENT for an interval.
-    // This still skips polling on top of a live, actively-delivering channel, but
-    // recovers a subscribed-but-silent one (e.g. a table missing from the
-    // supabase_realtime publication) instead of waiting for a manual refresh.
+    // Fallback poll: only for clients realtime can't serve — a DOWN channel, or a
+    // SUBSCRIBED-but-silent one that has never delivered an event (an unauthenticated
+    // board: RLS yields zero postgres_changes). Once we've received any event we know
+    // realtime works and stop idle-polling, so authenticated players (whose realtime
+    // delivers) no longer reload ~18 queries every few seconds during think time.
     const refreshInterval = enableFallbackRefresh
       ? window.setInterval(() => {
-          if (Date.now() - lastRealtimeAt >= fallbackRefreshIntervalMs) loadControllerState()
+          if ((!channelHealthy || !hasEverReceivedEvent) && Date.now() - lastRealtimeAt >= fallbackRefreshIntervalMs) {
+            loadControllerState()
+          }
         }, fallbackRefreshIntervalMs)
       : null
 
