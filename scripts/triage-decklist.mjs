@@ -178,12 +178,16 @@ for (const card of cards) {
   }
   const enriched = { card, type: entry.type_line ?? '', text: (entry.oracle_text ?? '').trim() }
   const key = card.name.toLowerCase()
+  // Adventure/DFC scripts are keyed by the FRONT face name (no " // "), so a
+  // "Hypnotic Sprite // Mesmeric Glare" decklist line must also match the
+  // curated "Hypnotic Sprite" entry.
+  const keys = key.includes(' // ') ? [key, key.split(' // ')[0]] : [key]
   const covered = COVERED_BY.get(key)
-  if (fixtureNames.has(key)) {
+  if (keys.some((k) => fixtureNames.has(k))) {
     buckets.implemented.push(enriched)
   } else if (covered) {
     buckets.implemented.push({ ...enriched, via: covered })
-  } else if (scriptOverrides.has(key)) {
+  } else if (keys.some((k) => scriptOverrides.has(k))) {
     // A curated script exists (card-scripts.json) — covered, no fixture needed.
     buckets.implemented.push({ ...enriched, via: 'card-scripts.json (curated)' })
   } else if (/^basic land/i.test(enriched.type) || enriched.text === '' || isKeywordsOnly(enriched.text)) {
@@ -242,7 +246,10 @@ for (const card of cards) {
   const key = card.name.toLowerCase()
   if (emitted.has(key)) continue
   emitted.add(key)
-  const script = scriptOverrides.get(key) ?? fixtureScripts.get(key)
+  const keys = key.includes(' // ') ? [key, key.split(' // ')[0]] : [key]
+  const script =
+    keys.map((k) => scriptOverrides.get(k)).find(Boolean) ??
+    keys.map((k) => fixtureScripts.get(k)).find(Boolean)
   if (!script) continue
   const check = validateCardScript(script)
   if (!check.success) {

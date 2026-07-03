@@ -12972,6 +12972,17 @@
   },
   "Hildibrand Manderville": {
     "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Token"
+        }
+      }
+    ],
     "adventure": {
       "name": "Hildibrand Manderville (Adventure)",
       "cost": "{1}{B}",
@@ -13755,6 +13766,16 @@
         "type": "lifelink",
         "affected": "source",
         "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "dies",
+        "effects": [
+          {
+            "type": "shuffle_self_into_library"
+          }
+        ]
       }
     ],
     "adventure": {
