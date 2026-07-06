@@ -40,23 +40,12 @@
 
 ## ./
 
-- `_co_actions_e2e_tmp.mjs` — Declares LOCAL_URL (~771 tok)
-- `_co_ai_e2e_tmp.mjs` — Declares DB (~744 tok)
-- `_co_apply_tmp.mjs` — Declares sql (~228 tok)
-- `_co_bc_e2e_tmp.mjs` — Declares DB (~789 tok)
-- `_co_check_tmp.mjs` — Declares client (~175 tok)
-- `_co_deck_e2e_tmp.mjs` — Declares LOCAL_URL (~636 tok)
-- `_co_e2e_tmp.mjs` — Declares LOCAL_URL (~829 tok)
-- `_co_scan_e2e_tmp.mjs` — LOCAL_URL: oid (~838 tok)
-- `_rt_race_tmp.mjs` — URL: mint (~531 tok)
-- `_rt_test2_tmp.mjs` — URL: b64url, mintJwt (~674 tok)
-- `_rt_test3_tmp.mjs` — URL: mint (~672 tok)
-- `_rt_test4_tmp.mjs` — Declares URL (~484 tok)
-- `_scan_ff_tmp.mjs` — Declares deck (~554 tok)
-- `_verify_bs_tmp.mjs` — Declares c (~605 tok)
-- `_verify_cs_tmp.mjs` — Declares c (~832 tok)
-- `_verify_tmp.mts` — file: diff (~406 tok)
+- `.dockerignore` — Docker build-context excludes (~25 tok)
+- `.env.example` — Documented production env vars: Supabase publishable pair (build-time), DATABASE_URL (Session pooler, bot), ANTHROPIC_API_KEY, APP_DOMAIN (~250 tok)
 - `.gitignore` — Git ignore rules (~370 tok)
+- `Caddyfile` — Caddy vhost: $APP_DOMAIN → web:3000, auto-HTTPS (~15 tok)
+- `compose.yml` — Production compose (OVH VPS): web (Next start), bot (bot-runner), caddy (80/443). One shared `leylinesync` image. (~260 tok)
+- `Dockerfile` — Single node:22-alpine image for web+bot; NEXT_PUBLIC_* as ARGs (inlined at build) (~210 tok)
 - `image-loader.ts` — Scryfall's image CDN now rejects requests sent with a default HTTP-library (~226 tok)
 - `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~506 tok)
 - `package.json` — Node.js package manifest (~578 tok)
@@ -237,6 +226,7 @@
 ## docs/
 
 - `backlog.md` — Backlog (~169 tok)
+- `deploy-ovh.md` — OVH VPS deploy guide: compose services, .env invulinstructies (Session pooler!), Cloudflare DNS, update/beheer-commando's (~900 tok)
 - `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1657 tok)
 - `open-items.md` — Open items — merged & verified (~1535 tok)
 

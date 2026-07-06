@@ -6419,3 +6419,19 @@
 | 15:17 | Edited supabase/migrations/202605010373_adventure_creature_cast.sql | 2→6 lines | ~110 |
 | 15:19 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~202 |
 | 17:30 | Playtest: 2 bot-vs-bot games (Krenko vs Y'shtola) to completion; found+fixed adventure-creature-cast engine bug (mig 373, front-face type check); ADV5 regression + DFC fixture; suite 1908/1908 | cast_card_from_hand.sql, mig 373, adventures.test.ts, test-cards.json | both games finished, no stalls | ~90k |
+
+## Session: 2026-07-06 11:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:30 | Full-app analysis: engine complete (373 migs, 1908 tests), V5 opponent-view redesign shipped, Collection Optimizer UI done; gaps are operational (no deploy/CI, app/protected stub, README V4 drift, anatomy.md lists deleted _tmp/vercel files) | docs/open-items.md, audit | recommended: deploy + real human playtest next | ~60k |
+| 12:05 | User koos OVHcloud als hosting; vastgelegd in cerebrum Decision Log + auto-memory | .wolf/cerebrum.md | deployplan volgt op OVH-product (VPS vs shared) | ~2k |
+| 11:44 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/hosting-ovhcloud.md | — | ~202 |
+| 11:47 | Created Dockerfile | — | ~207 |
+| 11:47 | Created .dockerignore | — | ~25 |
+| 11:47 | Created compose.yml | — | ~267 |
+| 11:47 | Created Caddyfile | — | ~12 |
+| 11:48 | Created docs/deploy-ovh.md | — | ~730 |
+| 12:20 | Deploy-artefacten voor OVH VPS: Dockerfile (1 image, web+bot), compose.yml (web/bot/caddy), Caddyfile, .env.example, .dockerignore, docs/deploy-ovh.md | Dockerfile, compose.yml, Caddyfile, .env.example, docs/deploy-ovh.md | docker build verificatie loopt | ~25k |
+| 12:35 | Docker build geverifieerd (image ok, daarna verwijderd); anatomy.md hersteld na 2e gutted auto-scan (bug-1504) + nieuwe deploy-files toegevoegd + stale _tmp-entries verwijderd | anatomy.md, buglog.json | deploy-artefacten compleet en geverifieerd | ~30k |
+| 12:50 | Commit 55a5bc4: 6 deploy-files (Dockerfile/.dockerignore/compose.yml/Caddyfile/.env.example/docs/deploy-ovh.md) | git | .wolf-wijzigingen bewust nog uncommitted | ~3k |
