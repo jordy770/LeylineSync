@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-06T13:03:47.268Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-06T14:26:21.698Z
 > Files: 241 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
@@ -44,7 +44,7 @@
 - `.env.example` — Documented production env vars: Supabase publishable pair (build-time), DATABASE_URL (Session pooler, bot), ANTHROPIC_API_KEY, APP_DOMAIN (~250 tok)
 - `.gitignore` — Git ignore rules (~370 tok)
 - `Caddyfile` — Caddy vhost: $APP_DOMAIN → web:3000, auto-HTTPS (~15 tok)
-- `compose.yml` — Docker Compose: 6 services (~427 tok)
+- `compose.yml` — Docker Compose: 6 services (~433 tok)
 - `Dockerfile` — Single node:22-alpine image for web+bot; NEXT_PUBLIC_* as ARGs (inlined at build) (~210 tok)
 - `image-loader.ts` — Scryfall's image CDN now rejects requests sent with a default HTTP-library (~226 tok)
 - `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~506 tok)

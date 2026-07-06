@@ -14,11 +14,11 @@ services:
 
   # AI-CPU bot runner — polls Postgres directly (DATABASE_URL), no HTTP surface.
   # --watch is required (without it the runner exits with a usage error and the
-  # service crash-loops). For hosted play, provision a bot auth user first
-  # (scripts/create-bot-user.mjs) and append: "--bot", "<auth-user-id>".
+  # service crash-loops). On hosted, BOT_USER_ID in .env (from
+  # scripts/create-bot-user.mjs) gives the bot a real auth-user seat.
   bot:
     image: leylinesync
-    command: ["npm", "run", "bot", "--", "--watch"]
+    command: ["sh", "-c", "npm run bot -- --watch ${BOT_USER_ID:+--bot $BOT_USER_ID}"]
     env_file: .env
     restart: unless-stopped
     depends_on:
