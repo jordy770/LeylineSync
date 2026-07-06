@@ -6435,3 +6435,23 @@
 | 12:20 | Deploy-artefacten voor OVH VPS: Dockerfile (1 image, web+bot), compose.yml (web/bot/caddy), Caddyfile, .env.example, .dockerignore, docs/deploy-ovh.md | Dockerfile, compose.yml, Caddyfile, .env.example, docs/deploy-ovh.md | docker build verificatie loopt | ~25k |
 | 12:35 | Docker build geverifieerd (image ok, daarna verwijderd); anatomy.md hersteld na 2e gutted auto-scan (bug-1504) + nieuwe deploy-files toegevoegd + stale _tmp-entries verwijderd | anatomy.md, buglog.json | deploy-artefacten compleet en geverifieerd | ~30k |
 | 12:50 | Commit 55a5bc4: 6 deploy-files (Dockerfile/.dockerignore/compose.yml/Caddyfile/.env.example/docs/deploy-ovh.md) | git | .wolf-wijzigingen bewust nog uncommitted | ~3k |
+| 13:46 | Edited components/board/GameFinishedOverlay.tsx | "/protected" → "/" | ~6 |
+| 13:46 | Edited components/update-password-form.tsx | 2→2 lines | ~31 |
+| 13:46 | Edited components/sign-up-form.tsx | "${window.location.origin}" → "${window.location.origin}" | ~16 |
+| 13:46 | Edited README.md | modified default() | ~242 |
+| 13:46 | Edited README.md | inline fix | ~47 |
+| 13:05 | Hygiene: app/protected (starter-stub) verwijderd; 3 verwijzingen omgeleid naar / (GameFinishedOverlay, update-password-form, sign-up-form emailRedirectTo); README controller-sectie V4->V5 | app/protected/, components, README.md | tsc schoon (na .next-purge, bug-1505), lint: alleen pre-existing doc/-errors | ~35k |
+| 15:00 | Edited lib/game/actions.ts | added 1 condition(s) | ~165 |
+| 15:00 | Edited components/ControllerListV5.tsx | 3→4 lines | ~33 |
+| 15:00 | Edited components/ControllerListV5.tsx | added 2 condition(s) | ~286 |
+| 15:00 | Edited components/ControllerListV5.tsx | CSS: preference, setCommanderRedirect, redirect | ~136 |
+| 15:00 | Edited components/ControllerListV5.tsx | 2→4 lines | ~89 |
+| 15:00 | Edited components/ControllerListV5.tsx | CSS: active, hover | ~334 |
+| 15:01 | Created scripts/cleanup-runner.mjs | — | ~769 |
+| 15:01 | Edited compose.yml | expanded (+13 lines) | ~223 |
+| 15:01 | Edited package.json | 2→3 lines | ~49 |
+| 15:01 | Edited docs/deploy-ovh.md | 5→8 lines | ~106 |
+| 15:01 | Edited docs/deploy-ovh.md | 3→1 lines | ~16 |
+| 15:01 | Edited docs/deploy-ovh.md | 3→8 lines | ~146 |
+| 15:03 | Edited docs/open-items.md | 2→2 lines | ~160 |
+| 13:45 | Open-items 12+13: commander-redirect toggle in V5 command-strip (RLS-scoped pref-read + set_commander_redirect wrapper) + cleanup-runner.mjs (dry-run/watch) als 4e compose-service; compose bot-command crash-loop gefixt (bug-1506) | ControllerListV5.tsx, actions.ts, scripts/cleanup-runner.mjs, compose.yml, package.json, deploy-ovh.md, open-items.md | tsc+lint schoon; dry-run vond 6 lokale finished sessions (niets verwijderd); compose config OK | ~80k |

@@ -16714,6 +16714,168 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-07-06T12:30:00+02:00"
+    },
+    {
+      "id": "bug-1021",
+      "timestamp": "2026-07-06T11:46:35.227Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/sign-up-form.tsx",
+      "root_cause": "Had `${window.location.origin}/protected`",
+      "fix": "Changed to `${window.location.origin}/`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T11:46:35.227Z"
+    },
+    {
+      "id": "bug-1505",
+      "timestamp": "2026-07-06T13:05:00+02:00",
+      "error_message": "tsc: Cannot find module '../../app/protected/page.js' in .next/types/validator.ts after deleting the route",
+      "file": "app/protected/ (deleted)",
+      "root_cause": "Next.js caches generated route-type validators in .next/; deleting a route leaves stale validator imports that tsc --noEmit still picks up",
+      "fix": "rm -rf .next and re-run tsc — clean. Rule: after deleting/renaming an app/ route, clear .next before the tsc gate.",
+      "tags": [
+        "nextjs",
+        "tsc",
+        "stale-cache",
+        "routes"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T13:05:00+02:00"
+    },
+    {
+      "id": "bug-1023",
+      "timestamp": "2026-07-06T13:00:17.898Z",
+      "error_message": "Missing await",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T13:00:17.898Z"
+    },
+    {
+      "id": "bug-1024",
+      "timestamp": "2026-07-06T13:00:26.711Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T13:00:26.711Z"
+    },
+    {
+      "id": "bug-1025",
+      "timestamp": "2026-07-06T13:00:31.675Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {commanderRedirectPref !== null && (; <button",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-06T13:00:48.804Z"
+    },
+    {
+      "id": "bug-1026",
+      "timestamp": "2026-07-06T13:01:28.196Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"seed:local-play\"",
+      "fix": "Changed to \"cleanup:sessions\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T13:01:28.196Z"
+    },
+    {
+      "id": "bug-1027",
+      "timestamp": "2026-07-06T13:01:44.526Z",
+      "error_message": "Wrong reference: drie should be vier",
+      "file": "docs/deploy-ovh.md",
+      "root_cause": "Used \"drie\" instead of \"vier\"",
+      "fix": "Changed drie → vier",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T13:01:44.526Z"
+    },
+    {
+      "id": "bug-1028",
+      "timestamp": "2026-07-06T13:01:49.671Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/deploy-ovh.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→8 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T13:01:49.671Z"
+    },
+    {
+      "id": "bug-1029",
+      "timestamp": "2026-07-06T13:03:47.291Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/open-items.md",
+      "root_cause": "Had `cleanup_finished_session`",
+      "fix": "Changed to `↩ to command zone`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T13:03:47.291Z"
+    },
+    {
+      "id": "bug-1506",
+      "timestamp": "2026-07-06T13:40:00+02:00",
+      "error_message": "compose.yml bot service ran npm run bot without args; bot-runner exits with a usage error (requires --watch or --session) so the service would crash-loop on the VPS",
+      "file": "compose.yml",
+      "root_cause": "bot-runner.mjs mandates --watch/--session; the compose command was written without checking the runner CLI contract",
+      "fix": "command is now [npm, run, bot, --, --watch]; caught pre-deploy while adding the cleanup service",
+      "tags": [
+        "deploy",
+        "compose",
+        "bot-runner",
+        "crash-loop"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T13:40:00+02:00"
     }
   ]
 }

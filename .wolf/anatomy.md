@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-03T12:26:41.710Z
-> Files: 247 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-06T13:03:47.268Z
+> Files: 241 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -44,11 +44,12 @@
 - `.env.example` — Documented production env vars: Supabase publishable pair (build-time), DATABASE_URL (Session pooler, bot), ANTHROPIC_API_KEY, APP_DOMAIN (~250 tok)
 - `.gitignore` — Git ignore rules (~370 tok)
 - `Caddyfile` — Caddy vhost: $APP_DOMAIN → web:3000, auto-HTTPS (~15 tok)
-- `compose.yml` — Production compose (OVH VPS): web (Next start), bot (bot-runner), caddy (80/443). One shared `leylinesync` image. (~260 tok)
+- `compose.yml` — Docker Compose: 6 services (~427 tok)
 - `Dockerfile` — Single node:22-alpine image for web+bot; NEXT_PUBLIC_* as ARGs (inlined at build) (~210 tok)
 - `image-loader.ts` — Scryfall's image CDN now rejects requests sent with a default HTTP-library (~226 tok)
 - `next.config.ts` — Pin the workspace root to this project. A stray parent lockfile (~506 tok)
-- `package.json` — Node.js package manifest (~578 tok)
+- `package.json` — Node.js package manifest (~595 tok)
+- `README.md` — Project documentation (~16101 tok)
 
 ## .claude/
 
@@ -187,16 +188,18 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70288 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70955 tok)
 - `GameBoard.tsx` — GameBoard (~7302 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~12039 tok)
+- `sign-up-form.tsx` — SignUpForm — renders form (~1686 tok)
 - `SiteNav.tsx` — Shared top nav so the landing and decks pages wear the same identity. (~457 tok)
+- `update-password-form.tsx` — UpdatePasswordForm — renders form (~724 tok)
 
 ## components/board/
 
 - `BoardViewChrome.tsx` — BoardViewChrome (~885 tok)
-- `GameFinishedOverlay.tsx` — GameFinishedOverlay (~1180 tok)
+- `GameFinishedOverlay.tsx` — GameFinishedOverlay (~1207 tok)
 
 ## components/collection/
 
@@ -226,9 +229,9 @@
 ## docs/
 
 - `backlog.md` — Backlog (~169 tok)
-- `deploy-ovh.md` — OVH VPS deploy guide: compose services, .env invulinstructies (Session pooler!), Cloudflare DNS, update/beheer-commando's (~900 tok)
 - `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1657 tok)
-- `open-items.md` — Open items — merged & verified (~1535 tok)
+- `deploy-ovh.md` — Deploy — OVHcloud VPS (~796 tok)
+- `open-items.md` — Open items — merged & verified (~1634 tok)
 
 ## docs/collection-optimizer/
 
@@ -273,7 +276,7 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 25 more (~13067 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13212 tok)
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21611 tok)
@@ -302,6 +305,7 @@
 ## scripts/
 
 - `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~8239 tok)
+- `cleanup-runner.mjs` — Cleanup runner — operational janitor for FINISHED games (mig 144). (~769 tok)
 - `import-card-printings.mjs` — Import Scryfall bulk card data into public.co_card_printings (Collection Optimizer). (~2856 tok)
 - `tag-backfill.mjs` — Backfill co_card_tags by running the synergy tagger over every oracle card. (~1075 tok)
 - `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3815 tok)

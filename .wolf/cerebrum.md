@@ -398,3 +398,8 @@
 ## Decision Log — 2026-07-06
 
 - **Hosting: OVHcloud** (gekozen door Jordy, boven Hetzner/Railway/Vercel-advies). Deploy-doel voor Next.js + bot-runner + cleanup-cron. Supabase blijft hosted apart.
+
+## Key Learnings — 2026-07-06
+
+- Na het verwijderen/hernoemen van een app/-route: eerst `.next/` weggooien vóór de `tsc --noEmit`-gate — Next cachet route-type-validators die anders stale imports geven (bug-1505).
+- `eslint .` heeft 2 pre-existing errors in de git-ignored lokale `doc/`-map (doc-filelist.js/doc-script.js) — niet van projectcode; overweeg `doc/**` in eslint.config.mjs ignores.
