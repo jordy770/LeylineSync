@@ -32,6 +32,10 @@ if (!URL || !SR) {
 }
 
 const email = process.argv[2] ?? 'cpu-bot@leyline.internal'
+// Optional display name — provision a FLEET for multi-bot games by running e.g.
+//   node scripts/create-bot-user.mjs cpu-bot-2@leyline.internal "CPU 🤖 2"
+// add_bot_to_session (mig 376) seats any free profile matching 'CPU 🤖%'.
+const username = process.argv[3] ?? 'CPU 🤖'
 const password = randomUUID()
 const sb = createClient(URL, SR, { auth: { persistSession: false, autoRefreshToken: false } })
 
@@ -57,7 +61,7 @@ async function main() {
 
   // Ensure a profile row (the FK target). The signup trigger normally makes one;
   // upsert is a belt-and-suspenders for environments without it.
-  const { error: profErr } = await sb.from('profiles').upsert({ id: uid, username: 'CPU 🤖' }, { onConflict: 'id' })
+  const { error: profErr } = await sb.from('profiles').upsert({ id: uid, username }, { onConflict: 'id' })
   if (profErr) console.warn(`(profile upsert warning: ${profErr.message})`)
 
   console.log('\nBot user id:', uid)

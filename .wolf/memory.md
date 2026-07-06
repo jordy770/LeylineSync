@@ -6487,3 +6487,10 @@
 | 21:28 | Edited components/GameSessionLobby.tsx | open() → starts() | ~61 |
 | 21:29 | Created tests/feature/bot-seat.test.ts | — | ~794 |
 | 20:20 | bug-1507 gefixt: Add CPU faalde op hosted (bare-UUID seat vs profiles-FK); mig 375 seats de CPU-profielgebruiker met bare-UUID fallback lokaal; lobby-tekst geactualiseerd; tests BOT1-3 | mig 375, bot-seat.test.ts, GameSessionLobby.tsx | 3/3 + botgroep 35/35 groen, tsc schoon | ~60k |
+| 20:45 | Mig 375 naar hosted gepusht + VPS gedeployed (4b33241); geverifieerd: CPU-profiel fc3915ad bestaat op hosted, RPC aanwezig, alle services up | hosted DB, VPS | Add CPU behoort nu te werken op play.dweemo.nl | ~15k |
+| 21:39 | Edited scripts/create-bot-user.mjs | 1→5 lines | ~90 |
+| 21:39 | Edited scripts/create-bot-user.mjs | inline fix | ~29 |
+| 21:39 | Edited supabase/migrations/202605010376_bot_fleet.sql | 12→7 lines | ~144 |
+| 21:39 | Edited supabase/migrations/202605010376_bot_fleet.sql | 16→17 lines | ~187 |
+| 21:40 | Edited tests/feature/bot-seat.test.ts | expanded (+25 lines) | ~306 |
+| 21:05 | Mig 376: bot-VLOOT — add_bot_to_session seatt elke vrije CPU-🤖%-profielgebruiker (naamvolgorde); create-bot-user kreeg username-arg; CPU 2+3 op hosted geprovisioned (de5e4d42, edfcfdba); test BOT4 | mig 376, bot-seat.test.ts, create-bot-user.mjs | 4/4 groen | ~40k |
