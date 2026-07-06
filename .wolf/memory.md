@@ -6499,3 +6499,6 @@
 | 21:52 | Created .github/workflows/deploy.yml | — | ~410 |
 | 21:53 | Edited docs/deploy-ovh.md | modified Secrets() | ~311 |
 | 21:50 | CI/CD op releases: ci.yml (tsc+lint+volle suite met supabase-in-runner op elke push/PR) + deploy.yml (release published -> db push via SUPABASE_DB_URL-secret + VPS checkout tag + rebuild); deploy-key + 3 GH-secrets gezet via gh (nooit getoond); deploy-doc bijgewerkt | .github/workflows, deploy-ovh.md | eerste CI-run start bij push | ~50k |
+| 21:57 | Edited .github/workflows/ci.yml | Supabase() → Postgres() | ~204 |
+| 22:01 | Edited .github/workflows/ci.yml | expanded (+16 lines) | ~202 |
+| 00:10 | CI/CD live: run 3 groen (3m12s, volle suite incl. smoke via gecachte Scryfall-dump); release v0.1.0 gepubliceerd -> deploy.yml succesvol (1m26s), VPS op tag v0.1.0, site 200. Deploy-flow = gh release create | .github/workflows, VPS | pipeline end-to-end gevalideerd | ~30k |
