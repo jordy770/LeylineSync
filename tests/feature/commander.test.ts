@@ -39,7 +39,9 @@ test('CM1 a commander is cast from the command zone (no tax first time)', async 
   })
 })
 
-// CM2 — a commander returns to the command zone instead of the graveyard on death.
+// CM2 — a dying commander can return to the command zone. Since mig 374 that is
+// a per-event DECISION (CR 903.9a): it lands in the graveyard first, then the
+// owner confirms the return.
 test('CM2 a dying commander returns to the command zone', async () => {
   await withRolledBackTx(async (client) => {
     const s = await Scenario.create(client)
@@ -49,6 +51,9 @@ test('CM2 a dying commander returns to the command zone', async () => {
 
     await s.as('A').putInGraveyard(cmdr)
 
+    const d = await s.pendingDecision()
+    assert.equal(d?.decision_type, 'commander_zone_return')
+    await s.as('A').submitDecision(d!.id, { confirmed: true })
     assert.equal(await s.zoneOf(cmdr), 'command') // not 'graveyard'
   })
 })

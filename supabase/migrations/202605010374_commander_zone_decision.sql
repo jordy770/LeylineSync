@@ -1,3 +1,129 @@
+-- Commander zone-return as a PER-EVENT DECISION (replaces the silent redirect
+-- for graveyard/exile).
+--
+-- Mig 142 rewrote a commander's battlefield→graveyard/exile/hand/library move
+-- to the command zone via a BEFORE trigger, gated on a STANDING per-player
+-- preference — which also suppressed the 'dies' trigger. That is rules-
+-- INACCURATE for graveyard/exile: under CR 903.9a the commander really goes to
+-- the graveyard/exile (dies/leaves triggers fire), and its owner may THEN move
+-- it to the command zone (a state-based choice).
+--
+-- This migration makes that path both rules-accurate and interactive:
+--   * redirect_commander_zone_change (reproduced from mig 142) now rewrites
+--     ONLY the hand/library destinations (CR 903.9b — a true replacement, no
+--     trigger concerns), still honouring the commander_redirect preference.
+--   * battlefield→graveyard/exile is left alone: the card lands there and
+--     dies/leaves triggers fire normally. A new AFTER trigger
+--     (offer_commander_zone_return) then parks a 'commander_zone_return'
+--     pending decision for the OWNER — Yes moves the card to the command zone,
+--     No leaves it where it lies (reanimation decks).
+--   * submit_decision (reproduced from mig 363) gains the branch. The move
+--     guards on the card still being in graveyard/exile (it may have been
+--     reanimated while the decision was pending).
+--
+-- The bot answers this decision with confirmed:true (scripts/bot-runner.mjs).
+-- The commander_redirect preference remains meaningful for hand/library only.
+
+-- ---------------------------------------------------------------------------
+-- 1. redirect_commander_zone_change — reproduced from mig 142; scope narrowed
+--    to hand/library. Graveyard/exile pass through untouched.
+-- ---------------------------------------------------------------------------
+create or replace function public.redirect_commander_zone_change()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_redirect boolean;
+  v_next_position integer;
+begin
+  -- Only a COMMANDER leaving the BATTLEFIELD to hand/library (903.9b). The
+  -- graveyard/exile paths are handled post-move by offer_commander_zone_return.
+  if not (
+    TG_OP = 'UPDATE'
+    and OLD.zone = 'battlefield'
+    and NEW.zone in ('hand', 'library')
+    and NEW.is_commander
+  ) then
+    return NEW;
+  end if;
+
+  -- Honour the owner's standing preference (default true if no row).
+  select commander_redirect into v_redirect
+  from public.game_session_players
+  where session_id = NEW.session_id and player_id = NEW.owner_id;
+
+  if not coalesce(v_redirect, true) then
+    return NEW; -- opt-out: let it go to the natural zone
+  end if;
+
+  -- Redirect to the owner's command zone (its own ordered zone per owner).
+  select coalesce(max(zone_position), -1) + 1
+  into v_next_position
+  from public.game_cards
+  where session_id = NEW.session_id
+    and owner_id = NEW.owner_id
+    and zone = 'command';
+
+  NEW.zone := 'command';
+  NEW.zone_position := v_next_position;
+  NEW.controller_player_id := NEW.owner_id;
+  NEW.is_tapped := false;
+  NEW.damage_marked := 0;
+  NEW.dealt_deathtouch_damage := false;
+  NEW.plus_one_counters := 0;
+  NEW.attached_to := null;
+  return NEW;
+end;
+$$;
+
+-- ---------------------------------------------------------------------------
+-- 2. offer_commander_zone_return — AFTER a commander lands in the graveyard or
+--    exile from the battlefield, park the owner's yes/no decision.
+-- ---------------------------------------------------------------------------
+create or replace function public.offer_commander_zone_return()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not (
+    TG_OP = 'UPDATE'
+    and OLD.zone = 'battlefield'
+    and NEW.zone in ('graveyard', 'exile')
+    and NEW.is_commander
+  ) then
+    return null;
+  end if;
+
+  insert into public.game_pending_decisions
+    (session_id, deciding_player_id, decision_type, prompt, options, min_choices, max_choices, params)
+  values (
+    NEW.session_id,
+    NEW.owner_id,
+    'commander_zone_return',
+    'Return ' || coalesce((select name from public.cards where id = NEW.card_id), 'your commander')
+      || ' to the command zone?',
+    '[]'::jsonb,
+    0,
+    0,
+    jsonb_build_object('game_card_id', NEW.id, 'from_zone', NEW.zone)
+  );
+  return null;
+end;
+$$;
+
+drop trigger if exists offer_commander_zone_return on public.game_cards;
+create trigger offer_commander_zone_return
+  after update of zone on public.game_cards
+  for each row execute function public.offer_commander_zone_return();
+
+-- ---------------------------------------------------------------------------
+-- 3. submit_decision — reproduced from mig 363 + the commander_zone_return
+--    apply branch (inserted after the 'confirm' branch).
+-- ---------------------------------------------------------------------------
 create or replace function public.submit_decision(
   p_decision_id uuid,
   p_result jsonb

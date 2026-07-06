@@ -1305,10 +1305,10 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
               onOpenLog={() => setLogOpen(true)}
               onOpenHelp={() => setCoachOpen(true)}
             />
-            {/* Command zone — cast your commander (sorcery speed) with live tax,
-                plus the redirect preference. Stays visible while the commander is
-                on the battlefield so the preference can be changed before it dies. */}
-            {(commandZone.length > 0 || hasCommander) && (
+            {/* Command zone — cast your commander (sorcery speed) with live tax.
+                The return preference lives in the commander's CardActionSheet;
+                death/exile asks per event (commander_zone_return, mig 374). */}
+            {commandZone.length > 0 && (
               <div className="flex shrink-0 items-center gap-2 overflow-x-auto border-b border-amber-500/20 bg-amber-500/[0.06] px-3 py-2">
                 <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-amber-400">
                   Command
@@ -1332,18 +1332,6 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
                     </button>
                   )
                 })}
-                {commanderRedirectPref !== null && (
-                  <button
-                    type="button"
-                    onClick={() => { void actions.setCommanderRedirect(!commanderRedirectPref) }}
-                    title={commanderRedirectPref
-                      ? 'When your commander would leave the battlefield it returns to the command zone. Tap to let it go to the graveyard/exile instead (e.g. to reanimate it).'
-                      : 'Your commander goes to the graveyard/exile like any other card. Tap to return it to the command zone instead.'}
-                    className="ml-auto flex shrink-0 items-center gap-1 rounded-full border border-amber-500/30 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-200/90 transition active:scale-95 hover:bg-amber-500/10"
-                  >
-                    {commanderRedirectPref ? '↩ to command zone' : '→ to graveyard'}
-                  </button>
-                )}
               </div>
             )}
             <div className="flex min-h-0 flex-1">
@@ -1449,6 +1437,8 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             onActivateLoyalty={async (sourceId, abilityIndex) => { await actions.activateLoyalty(sourceId, abilityIndex) }}
             onCastAura={async (cardId, targetCardId) => { await actions.castAura(cardId, targetCardId) }}
             onEquip={async (cardId, targetCardId) => { await actions.equip(cardId, targetCardId) }}
+            commanderRedirect={commanderRedirectPref}
+            onSetCommanderRedirect={async (redirect) => { await actions.setCommanderRedirect(redirect) }}
             onClose={() => setSelectedCard(null)}
           />
         )}
@@ -2515,7 +2505,7 @@ function PendingDecisionPrompt({
         <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
       ) : CARD_PICK_DECISIONS.has(decision.decision_type) ? (
         <CardPickBody decision={decision} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
-      ) : decision.decision_type === 'confirm' || decision.decision_type === 'pay_life_untap' ? (
+      ) : decision.decision_type === 'confirm' || decision.decision_type === 'pay_life_untap' || decision.decision_type === 'commander_zone_return' ? (
         <ConfirmBody isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'choose_player' ? (
         <ChoosePlayerBody decision={decision} isPending={isPending} onSubmit={submit} />

@@ -70,6 +70,8 @@ export function CardActionSheet({
   onActivateLoyalty,
   onCastAura,
   onEquip,
+  commanderRedirect,
+  onSetCommanderRedirect,
   onClose,
 }: {
   card: ControllerCard
@@ -113,6 +115,10 @@ export function CardActionSheet({
   onActivateLoyalty: (sourceId: string, abilityIndex: number) => Promise<void>
   onCastAura: (cardId: string, targetCardId: string) => Promise<void>
   onEquip: (cardId: string, targetCardId: string) => Promise<void>
+  // Commander-only (mig 142/374): the standing hand/library return preference.
+  // Graveyard/exile returns are a per-event decision and don't use this.
+  commanderRedirect?: boolean | null
+  onSetCommanderRedirect?: (redirect: boolean) => Promise<void>
   onClose: () => void
 }) {
   const script = normalizeCardBehaviorToV2(
@@ -1227,6 +1233,28 @@ export function CardActionSheet({
 
         {!hasActions && (
           <p className="py-2 text-center text-sm text-slate-700">No actions available</p>
+        )}
+
+        {/* Commander: standing return preference for HAND/LIBRARY bounces only —
+            death/exile asks on the spot via the commander_zone_return decision. */}
+        {card.is_commander && commanderRedirect != null && onSetCommanderRedirect && (
+          <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] px-3 py-2.5">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-widest text-amber-300">
+                If bounced to hand / library
+              </p>
+              <p className="text-[11px] leading-snug text-slate-400">
+                Death or exile always asks you on the spot.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { void onSetCommanderRedirect(!commanderRedirect) }}
+              className="shrink-0 rounded-full border border-amber-500/30 px-3 py-1.5 text-[10px] font-black uppercase tracking-wide text-amber-200/90 transition active:scale-95 hover:bg-amber-500/10"
+            >
+              {commanderRedirect ? '↩ command zone' : '→ hand/library'}
+            </button>
+          </div>
         )}
           </div>
         </div>
