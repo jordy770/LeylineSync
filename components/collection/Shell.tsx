@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import FanContentNotice from '@/components/layout/FanContentNotice'
 
 // The Collection Optimizer shell — the Leyline arcane ground (void + gold + ley
 // grid) with a slim header. Server-compatible (no hooks) so pages can wrap their
@@ -54,6 +55,9 @@ export function Shell({
         </div>
         {children}
       </main>
+      <footer className="border-t py-6" style={{ borderColor: 'color-mix(in srgb, var(--frame-gold) 15%, transparent)' }}>
+        <FanContentNotice />
+      </footer>
     </div>
   )
 }

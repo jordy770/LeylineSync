@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import GameSessionLobby from "@/components/GameSessionLobby";
 import LandingHero from "@/components/LandingHero";
+import FanContentNotice from "@/components/layout/FanContentNotice";
 import SiteNav from "@/components/SiteNav";
 import { hasEnvVars } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
@@ -86,19 +87,9 @@ export default async function Home() {
           </section>
         </div>
 
-        <footer className="w-full border-t border-[var(--frame-gold)]/15 py-10">
-          <div className="mx-auto flex w-full max-w-5xl items-center justify-center gap-6 px-5 text-center text-xs text-[var(--text-faint)]">
-            <p>
-              Powered by{" "}
-              <a
-                href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-                target="_blank"
-                className="font-semibold text-[var(--text-dim)] hover:underline"
-                rel="noreferrer"
-              >
-                Supabase
-              </a>
-            </p>
+        <footer className="w-full border-t border-[var(--frame-gold)]/15 py-8">
+          <FanContentNotice />
+          <div className="mx-auto mt-4 flex w-full max-w-5xl items-center justify-center px-5">
             <ThemeSwitcher />
           </div>
         </footer>
