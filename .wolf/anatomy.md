@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-06T14:26:21.698Z
-> Files: 241 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-06T15:04:06.096Z
+> Files: 248 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -10,9 +10,11 @@
 
 - `collection-optimizer-module.md` (~4794 tok)
 - `decisive-over-clarifying.md` (~269 tok)
+- `hosting-ovhcloud.md` (~340 tok)
 - `local-migrations.md` — Declares migrations (~422 tok)
 - `MEMORY.md` (~273 tok)
 - `never-purge-user-data.md` (~318 tok)
+- `no-paid-ai-features.md` (~274 tok)
 - `opponent-view-design.md` — Declares form (~1368 tok)
 
 ## ../../.cloudflared/
@@ -73,6 +75,7 @@
 ## app/
 
 - `globals.css` — Styles: 7 rules, 70 vars (~2206 tok)
+- `page.tsx` — The five colours of mana, used as a structural device throughout the landing. (~1600 tok)
 
 ## app/api/cards/generate-behavior/
 
@@ -188,7 +191,7 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70955 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70730 tok)
 - `GameBoard.tsx` — GameBoard (~7302 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~12039 tok)
@@ -206,11 +209,11 @@
 - `DeckDetail.tsx` — BUCKET_ORDER (~6709 tok)
 - `DeckImportForm.tsx` — DeckImportForm (~1390 tok)
 - `ImportWizard.tsx` — ImportWizard (~1446 tok)
-- `Shell.tsx` — Color-identity pips rendered as small mana-coloured dots. (~881 tok)
+- `Shell.tsx` — Color-identity pips rendered as small mana-coloured dots. (~976 tok)
 
 ## components/controller/
 
-- `CardActionSheet.tsx` — CardActionSheet (~19181 tok)
+- `CardActionSheet.tsx` — CardActionSheet (~19627 tok)
 - `KeywordIcon.tsx` — AUTO-GENERATED keyword icon set (game-icons.net, CC-BY 3.0, via Iconify). (~6101 tok)
 - `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~10516 tok)
 
@@ -219,6 +222,7 @@
 
 ## components/layout/
 
+- `FanContentNotice.tsx` — Legal notice required to distribute Magic-related fan content: the verbatim (~389 tok)
 
 ## components/tutorial/
 
@@ -304,7 +308,7 @@
 
 ## scripts/
 
-- `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~8239 tok)
+- `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~8267 tok)
 - `cleanup-runner.mjs` — Cleanup runner — operational janitor for FINISHED games (mig 144). (~769 tok)
 - `import-card-printings.mjs` — Import Scryfall bulk card data into public.co_card_printings (Collection Optimizer). (~2856 tok)
 - `tag-backfill.mjs` — Backfill co_card_tags by running the synergy tagger over every oracle card. (~1075 tok)
@@ -391,6 +395,7 @@
 - `202605010370_controller_state.sql` — 202605010370_controller_state (~1544 tok)
 - `202605010371_board_state.sql` — 202605010371_board_state (~958 tok)
 - `202605010372_second_spell_trigger.sql` — Alphinaud Eukrasia "2nd spell each turn → draw": adds a `spell_number` filter to fire_watcher_triggers (spell_cast trigger fires only when spells_cast_this_turn==N, mig 369 counter). (~3809 tok)
+- `202605010374_commander_zone_decision.sql` — Commander zone-return as a PER-EVENT DECISION (replaces the silent redirect (~16382 tok)
 - `tests/feature/dancers-chakrams.test.ts` — DC1-3: equipped host + other-commanders +2/+2 & lifelink; unequipped grants nothing; equipping a commander doesn't double-buff (the "other" exclusion). (~700 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
@@ -408,6 +413,8 @@
 - `change-deck.test.ts` — Lobby "change deck" (mig 324) — clear_deck_from_session lets a player undo a (~744 tok)
 - `choose-type-anthem.test.ts` — choose_creature_type → persistent anthem (mig 337). A "choose a creature type" (~998 tok)
 - `clavileno.test.ts` — Clavileño, First of the Blessed (mig 344). "Whenever you attack, target (~1066 tok)
+- `commander-return.test.ts` — Commander (EDH) — zone-return flow. Mig 142 built the silent redirect; mig 374 (~1532 tok)
+- `commander.test.ts` — Commander (EDH) slice 1 — the in-game command zone (mig 136). A commander is (~1995 tok)
 - `conjurers-closet.test.ts` — Conjurer's Closet (mig 351). "At the beginning of your end step, you may exile (~496 tok)
 - `controller-state.test.ts` — mig 370 — get_controller_state bundles the whole controller view into one jsonb (~776 tok)
 - `copy-token-cleanup.test.ts` — Copy-token end-step cleanup (mig 347). The copy_permanent action already makes (~842 tok)

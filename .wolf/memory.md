@@ -6459,3 +6459,26 @@
 | 15:30 | VPS-deploy OVH 162.19.220.12: bootstrap (apt/docker/swap/ufw), 36 commits gepusht, repo->/opt/leylinesync, .env (hosted values, pooler-pw placeholder), web+caddy UP (web:200). Prod-domein = play.dweemo.nl (app.dweemo.nl blijft dev-tunnel). Wacht op: DNS A-record, Supabase unpause, DB-wachtwoord | VPS, .env | web draait; bot/cleanup nog uit | ~60k |
 | 16:26 | Edited compose.yml | 7→7 lines | ~118 |
 | 16:20 | Hosted DB live gemaakt: migs 364-373 gepusht (user-akkoord), catalogus 33201 kaarten, deck-scripts alle 13 decklists geupsert (Edgar: 1 not-in-catalog; enkele kept-differs), bot-user fc3915ad aangemaakt + BOT_USER_ID op VPS, compose bot-command leest BOT_USER_ID | supabase hosted, compose.yml, VPS .env | printings+tags lopen in achtergrond; rest: DB-wachtwoord voor bot/cleanup | ~50k |
+| 16:41 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/hosting-ovhcloud.md | — | ~342 |
+| 16:50 | DEPLOY COMPLEET: DB-wachtwoord verwerkt, alle 4 services UP op OVH VPS (web/bot/cleanup/caddy); cleanup ruimde direct 4 oude finished games op; bot watcht op CPU-seats. play.dweemo.nl volledig live | VPS | end-to-end user-test + Supabase Auth Site URL resteren | ~30k |
+| 16:45 | Created components/layout/FanContentNotice.tsx | — | ~389 |
+| 16:45 | Edited app/page.tsx | reduced (-10 lines) | ~78 |
+| 16:45 | Edited app/page.tsx | added 1 import(s) | ~52 |
+| 16:45 | Edited components/collection/Shell.tsx | added 1 import(s) | ~39 |
+| 16:45 | Edited components/collection/Shell.tsx | CSS: borderColor | ~62 |
+| 17:15 | WotC Fan Content Policy-notice + Scryfall-credit als FanContentNotice component in landing-footer (verving starter Supabase-link) en collection Shell; commit d575943; VPS-rebuild loopt | FanContentNotice.tsx, app/page.tsx, Shell.tsx | tsc+lint schoon | ~20k |
+| 16:57 | Created supabase/migrations/202605010374_commander_zone_decision.sql | — | ~1310 |
+| 16:58 | Edited supabase/migrations/202605010374_commander_zone_decision.sql | added 1 condition(s) | ~327 |
+| 16:58 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/no-paid-ai-features.md | — | ~271 |
+| 18:05 | ANTHROPIC_API_KEY van VPS verwijderd (user wil geen per-call AI-kosten in prod; ook geen paywall) — beide AI-routes falen netjes; voorkeur gelogd in cerebrum + auto-memory | VPS .env, cerebrum | web herstart zonder key | ~10k |
+| 17:00 | Created tests/feature/commander-return.test.ts | — | ~1532 |
+| 17:01 | Edited tests/feature/commander.test.ts | added optional chaining | ~250 |
+| 17:02 | Edited components/ControllerListV5.tsx | inline fix | ~44 |
+| 17:03 | Edited components/controller/CardActionSheet.tsx | CSS: redirect | ~120 |
+| 17:03 | Edited components/controller/CardActionSheet.tsx | 4→6 lines | ~25 |
+| 17:03 | Edited components/controller/CardActionSheet.tsx | CSS: Commander, active, hover | ~403 |
+| 17:03 | Edited components/ControllerListV5.tsx | removed 14 lines | ~10 |
+| 17:03 | Edited components/ControllerListV5.tsx | 3→5 lines | ~119 |
+| 17:03 | Edited components/ControllerListV5.tsx | 4→4 lines | ~81 |
+| 17:04 | Edited scripts/bot-runner.mjs | 2→3 lines | ~73 |
+| 18:40 | Mig 374: commander-zone-return per-event decision (CR 903.9a-correct — dies-triggers vuren nu; hand/library blijft preference-redirect); RC1-6 herschreven + CM2 aangepast; ConfirmBody hergebruikt; toggle strip->CardActionSheet; bot case confirmed:true; functions_src/submit_decision gesynct | mig 374, commander-return.test.ts, commander.test.ts, ControllerListV5, CardActionSheet, bot-runner | commander-groep 31/31 groen; volle suite loopt | ~150k |

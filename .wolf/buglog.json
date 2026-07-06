@@ -16876,6 +16876,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-06T13:40:00+02:00"
+    },
+    {
+      "id": "bug-1031",
+      "timestamp": "2026-07-06T14:45:13.465Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/page.tsx",
+      "root_cause": "13 lines replaced/restructured",
+      "fix": "Rewrote 16→6 lines (13 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T14:45:13.465Z"
+    },
+    {
+      "id": "bug-1032",
+      "timestamp": "2026-07-06T15:01:31.450Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/commander.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T15:01:31.450Z"
+    },
+    {
+      "id": "bug-1033",
+      "timestamp": "2026-07-06T15:03:24.352Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T15:03:24.352Z"
     }
   ]
 }

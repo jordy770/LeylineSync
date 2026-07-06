@@ -403,3 +403,12 @@
 
 - Na het verwijderen/hernoemen van een app/-route: eerst `.next/` weggooien vóór de `tsc --noEmit`-gate — Next cachet route-type-validators die anders stale imports geven (bug-1505).
 - `eslint .` heeft 2 pre-existing errors in de git-ignored lokale `doc/`-map (doc-filelist.js/doc-script.js) — niet van projectcode; overweeg `doc/**` in eslint.config.mjs ignores.
+
+## User Preferences — 2026-07-06
+
+- GEEN per-call AI-features in productie: de kaart-behavior-AI-generator en de AI deck-doctor kosten Jordy API-geld per aanroep. Productie-.env heeft bewust geen ANTHROPIC_API_KEY. Ook geen paywall op die features. Authoring = guided form/JSON/dev-pipeline; upgrades = de gratis heuristische upgrade-scanner.
+
+## Key Learnings — 2026-07-06 (avond)
+
+- CR 903.9a is sinds 2020 GEEN replacement voor graveyard/exile: de commander belandt daar echt (dies/leaves-triggers vuren) en de eigenaar mag hem daarna via een keuze naar de command zone verplaatsen. Mig 142's silent redirect onderdrukte dies-triggers dus regels-incorrect; mig 374 herstelt dit met een commander_zone_return pending decision. Hand/library (903.9b) is wel een echte replacement — daar blijft de preference-redirect.
+- Nieuw decision-type toevoegen = 4 plekken: park-site (trigger/RPC), submit_decision-branch (reproduceer van LAATSTE def — grep eerst; 363 was actueel, functions_src was stale), client body-routing (ConfirmBody is herbruikbaar voor yes/no), bot-runner decisionResult-case.
