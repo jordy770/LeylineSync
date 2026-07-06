@@ -28,12 +28,17 @@ jobs:
       - name: Lint
         run: npx eslint .
 
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Start local Supabase (Postgres on 54322)
-        run: supabase start -x studio,imgproxy,inbucket,edge-runtime,logflare,vector
+      # NOT `supabase start`: that auto-applies supabase/migrations/ into a fresh
+      # DB, which fails — the baseline schema lives in supabase/local-bootstrap/
+      # (the hosted/local split). test:db:setup builds the whole test DB itself;
+      # it only needs a bare Supabase-Postgres (roles/extensions preinstalled)
+      # on 54322. Image pinned to the local dev version.
+      - name: Start Postgres (supabase image, port 54322)
+        run: |
+          docker run -d --name pg -p 54322:5432 \
+            -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres \
+            supabase/postgres:17.6.1.111
+          until docker exec pg pg_isready -U postgres -h 127.0.0.1 >/dev/null 2>&1; do sleep 2; done
 
       - name: Build test database
         run: npm run test:db:setup

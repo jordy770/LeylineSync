@@ -16942,6 +16942,104 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-06T20:15:00+02:00"
+    },
+    {
+      "id": "bug-1035",
+      "timestamp": "2026-07-06T19:39:28.427Z",
+      "error_message": "Incorrect value in code",
+      "file": "scripts/create-bot-user.mjs",
+      "root_cause": "Had 'CPU 🤖'",
+      "fix": "Changed to 'id'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T19:39:28.427Z"
+    },
+    {
+      "id": "bug-1036",
+      "timestamp": "2026-07-06T19:39:51.118Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010376_bot_fleet.sql",
+      "root_cause": "12 lines replaced/restructured",
+      "fix": "Rewrote 12→7 lines (12 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T19:39:51.118Z"
+    },
+    {
+      "id": "bug-1037",
+      "timestamp": "2026-07-06T19:40:09.840Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/bot-seat.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T19:40:09.840Z"
+    },
+    {
+      "id": "bug-1038",
+      "timestamp": "2026-07-06T19:53:18.427Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/deploy-ovh.md",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 11→25 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T19:53:18.427Z"
+    },
+    {
+      "id": "bug-1039",
+      "timestamp": "2026-07-06T19:57:28.269Z",
+      "error_message": "Significant refactor of ",
+      "file": ".github/workflows/ci.yml",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 6→11 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "yml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T19:57:28.269Z"
+    },
+    {
+      "id": "bug-1508",
+      "timestamp": "2026-07-06T22:05:00+02:00",
+      "error_message": "CI: supabase start failed — ERROR: type public.game_stack_items does not exist while applying migration 087 into a fresh DB",
+      "file": ".github/workflows/ci.yml",
+      "root_cause": "supabase start auto-applies supabase/migrations/ (starts at 087) into an empty database; the baseline schema lives in supabase/local-bootstrap/ (hosted/local split), which the CLI does not know about",
+      "fix": "CI starts a bare supabase/postgres:17.6.1.111 container on 54322 instead; npm run test:db:setup builds the test DB (bootstrap + migrations) itself. Also: gh run watch --exit-status piped through tail masks the exit code (pipe returns tail status) — check gh run list for the real conclusion.",
+      "tags": [
+        "ci",
+        "supabase-cli",
+        "local-bootstrap",
+        "migrations",
+        "pipeline"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T22:05:00+02:00"
     }
   ]
 }
