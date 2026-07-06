@@ -13,16 +13,14 @@ The important design choice is that browser UI does not directly mutate critical
 
 ## Controller Views
 
-The controller page supports several rendering versions, selected with a `?v=` query parameter on `/controller/[id]`:
+The controller page supports two rendering versions, selected with a `?v=` query parameter on `/controller/[id]`:
 
-- default (no param): `ControllerListV2`, the polished tabbed controller.
-- `?v=1`: `ControllerList`, the original legacy controller.
-- `?v=3`: `ControllerListV3`, the bare-HTML state-machine reference.
-- `?v=4`: `ControllerListV4`, the production landscape-mobile controller.
+- default (no param): `ControllerListV5`, the production controller (Arena-style hand fan).
+- `?v=1`: `ControllerList`, the original legacy controller (fallback).
 
-`ControllerListV4` is the current target design. It is a single-screen landscape layout that adapts to the turn state instead of using tabs. Its layout state is derived from the turn step, priority, stack, and incoming attackers, and switches between a default board view and dedicated Declare Attackers / Declare Blockers full-screen layouts.
+V2/V3 were retired 2026-06-10; V4 was retired 2026-06-18 after V5 superseded it in device testing. `ControllerListV5` keeps V4's single-screen landscape model — layout state derived from the turn step, priority, stack, and incoming attackers, switching between a default board view and dedicated Declare Attackers / Declare Blockers full-screen layouts — and adds the Arena-style hand fan, the own-board-primary opponent flow (pills → row grid → full board overlay, with each player's commander and keyword icons), and a command-zone strip with live commander tax.
 
-V4 features:
+Controller features (inherited from V4, still current in V5):
 
 - **Status bar** with a sliding gold step indicator (grouped phases), active-player dot, floating mana pool pips, library count, life total, and a priority (`YOU`) marker.
 - **Card-first interaction.** Tapping a battlefield card with a single simple `{T}: add mana` ability taps it directly; anything more complex opens a bottom `CardActionSheet`. There is no separate mana sidebar — cards are the interaction surface.
@@ -32,7 +30,7 @@ V4 features:
 - **Opponent inspection.** Compact opponent pills show life, hand count, permanents, and graveyard count at a glance; tapping one opens an `OpponentBoardOverlay` with tabbed Board / Graveyard / Exile zones. Face-down exiled cards render hidden.
 - **Own zones.** `GY` and `EX` buttons on the hand strip open a `MyZonesSheet` for your graveyard and exile.
 - **Cleanup discard.** When it is your cleanup step and your hand is over seven cards, a discard banner appears and tapping hand cards discards them to the graveyard.
-- **Priority is pass-only.** There is no "next step" shortcut in V4; the step advances on the server only when all players pass priority, so every player always receives priority.
+- **Priority is pass-only.** There is no "next step" shortcut; the step advances on the server only when all players pass priority, so every player always receives priority.
 
 ## Tech Stack
 

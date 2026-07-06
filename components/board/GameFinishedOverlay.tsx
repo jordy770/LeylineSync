@@ -93,7 +93,7 @@ export default function GameFinishedOverlay({
         )}
 
         <Link
-          href="/protected"
+          href="/"
           className="mt-8 inline-flex items-center justify-center rounded-lg border border-amber-300/40 bg-amber-500/10 px-6 py-2.5 text-sm font-semibold text-amber-100 transition-colors hover:bg-amber-500/20"
         >
           Back to lobby

@@ -70,7 +70,7 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/`,
           // Read by the handle_new_user() trigger to seed public.profiles.username.
           data: { username: trimmedUsername },
         },
