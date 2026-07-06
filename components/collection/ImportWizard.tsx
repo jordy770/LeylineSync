@@ -11,6 +11,14 @@ interface ImportResult {
   rowsUnmatched: number
   unmatched: { name: string; setCode: string | null; collectorNum: string | null; quantity: number }[]
   parseErrors: string[]
+  diff: {
+    addedUnique: number
+    removedUnique: number
+    qtyAdded: number
+    qtyRemoved: number
+    added: { name: string; qty: number }[]
+    removed: { name: string; qty: number }[]
+  } | null
 }
 
 export function ImportWizard() {
@@ -95,6 +103,30 @@ export function ImportWizard() {
             <Figure value={result.rowsUnmatched} label="unmatched" tone={result.rowsUnmatched > 0 ? 'var(--warn)' : 'var(--text-faint)'} />
             <Figure value={result.rowsTotal} label="total" tone="var(--text-dim)" />
           </div>
+
+          {result.diff ? (
+            <div className="mt-4 rounded-lg p-3" style={{ border: '1px solid rgba(201,154,58,0.18)' }}>
+              <h3 className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
+                Changes vs your previous snapshot
+              </h3>
+              <div className="mt-2 flex flex-wrap gap-6">
+                <Figure value={result.diff.qtyAdded} label={`cards in (+${result.diff.addedUnique} new)`} tone="var(--cast)" />
+                <Figure value={result.diff.qtyRemoved} label={`cards out (−${result.diff.removedUnique} gone)`} tone={result.diff.qtyRemoved > 0 ? 'var(--warn)' : 'var(--text-faint)'} />
+              </div>
+              {result.diff.added.length > 0 ? (
+                <p className="font-rules mt-2 text-sm" style={{ color: 'var(--text-dim)' }}>
+                  <span style={{ color: 'var(--cast)' }}>+</span>{' '}
+                  {result.diff.added.map((a) => `${a.qty}× ${a.name}`).join(', ')}
+                </p>
+              ) : null}
+              {result.diff.removed.length > 0 ? (
+                <p className="font-rules mt-1 text-sm" style={{ color: 'var(--text-dim)' }}>
+                  <span style={{ color: 'var(--warn)' }}>−</span>{' '}
+                  {result.diff.removed.map((r) => `${r.qty}× ${r.name}`).join(', ')}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
 
           {result.unmatched.length > 0 ? (
             <details className="mt-4">

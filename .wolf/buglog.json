@@ -17040,6 +17040,150 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-06T22:05:00+02:00"
+    },
+    {
+      "id": "bug-1041",
+      "timestamp": "2026-07-06T22:17:16.721Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 4→9 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T22:17:16.721Z"
+    },
+    {
+      "id": "bug-1042",
+      "timestamp": "2026-07-06T22:28:11.585Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/import-collection.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T22:28:11.585Z"
+    },
+    {
+      "id": "bug-1043",
+      "timestamp": "2026-07-06T22:28:33.570Z",
+      "error_message": "Wrong return value",
+      "file": "lib/collection/import-collection.ts",
+      "root_cause": "Was returning: { rowsTotal: 0, rowsMatched: 0, rowsUnmatched: 0, ",
+      "fix": "Now returns: { rowsTotal: 0, rowsMatched: 0, rowsUnmatched: 0, ",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T22:28:33.570Z"
+    },
+    {
+      "id": "bug-1044",
+      "timestamp": "2026-07-06T22:30:33.836Z",
+      "error_message": "Incorrect value in code",
+      "file": "app/collection/conflicts/page.tsx",
+      "root_cause": "Had '@/components/collection/Shell'",
+      "fix": "Changed to '@/components/collection/ConflictResolve'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T22:30:33.836Z"
+    },
+    {
+      "id": "bug-1045",
+      "timestamp": "2026-07-06T22:30:51.242Z",
+      "error_message": "Type error",
+      "file": "components/collection/ImportWizard.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T22:30:51.242Z"
+    },
+    {
+      "id": "bug-1046",
+      "timestamp": "2026-07-06T22:31:26.606Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: const [copied, setCopied] = useState(false); const totalEur = (buys ?? []).reduce((sum, b) => sum + (b.pr",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-06T22:32:28.722Z"
+    },
+    {
+      "id": "bug-1047",
+      "timestamp": "2026-07-06T22:31:48.345Z",
+      "error_message": "Type error",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T22:31:48.345Z"
+    },
+    {
+      "id": "bug-1048",
+      "timestamp": "2026-07-06T22:32:06.203Z",
+      "error_message": "Missing guard clause",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "No early return/throw for edge case: busy",
+      "fix": "Added guard clause: if (busy)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T22:32:06.203Z"
+    },
+    {
+      "id": "bug-1049",
+      "timestamp": "2026-07-06T22:33:05.654Z",
+      "error_message": "Type error",
+      "file": "app/collection/page.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T22:33:05.654Z"
     }
   ]
 }

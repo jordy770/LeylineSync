@@ -11,6 +11,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { parseManaboxCsv } from './parsers/manabox'
 import { buildPrintingLookup, resolveOracleId } from './resolve'
 import type {
+  CollectionDiff,
   CollectionImportResult,
   ResolvedCollectionRow,
   UnmatchedRow,
@@ -18,6 +19,7 @@ import type {
 
 const UNMATCHED_SAMPLE_CAP = 200
 const INSERT_CHUNK = 500
+const DIFF_SAMPLE_CAP = 12
 
 export async function importManaboxCollection(
   supabase: SupabaseClient,
@@ -54,6 +56,23 @@ export async function importManaboxCollection(
 
   const items = aggregateItems(userId, matched)
 
+  // Snapshot the outgoing collection (per-oracle totals) so the report can show
+  // what this re-import changed. Read-only; a first import diffs against nothing.
+  const before = new Map<string, { name: string; qty: number }>()
+  for (let from = 0; ; from += 1000) {
+    const { data: prevRows } = await supabase
+      .from('co_collection_items')
+      .select('oracle_id, name, quantity')
+      .eq('user_id', userId)
+      .range(from, from + 999)
+    for (const r of prevRows ?? []) {
+      const cur = before.get(r.oracle_id)
+      if (cur) cur.qty += r.quantity
+      else before.set(r.oracle_id, { name: r.name, qty: r.quantity })
+    }
+    if (!prevRows || prevRows.length < 1000) break
+  }
+
   // Replace the snapshot: clear, then insert fresh.
   const { error: deleteError } = await supabase.from('co_collection_items').delete().eq('user_id', userId)
   if (deleteError) {
@@ -86,6 +105,13 @@ export async function importManaboxCollection(
     .select('id')
     .single()
 
+  const after = new Map<string, { name: string; qty: number }>()
+  for (const row of matched) {
+    const cur = after.get(row.oracleId)
+    if (cur) cur.qty += row.quantity
+    else after.set(row.oracleId, { name: row.name, qty: row.quantity })
+  }
+
   return {
     result: {
       rowsTotal: rowsMatched + rowsUnmatched,
@@ -94,7 +120,50 @@ export async function importManaboxCollection(
       unmatched: unmatched.slice(0, UNMATCHED_SAMPLE_CAP),
       parseErrors,
       importId: importError ? null : (importRow?.id ?? null),
+      diff: before.size === 0 ? null : diffCollections(before, after),
     },
+  }
+}
+
+// Pure: compare per-oracle totals of the replaced snapshot vs the new one.
+export function diffCollections(
+  before: Map<string, { name: string; qty: number }>,
+  after: Map<string, { name: string; qty: number }>,
+): CollectionDiff {
+  const added: { name: string; qty: number }[] = []
+  const removed: { name: string; qty: number }[] = []
+  let addedUnique = 0
+  let removedUnique = 0
+  let qtyAdded = 0
+  let qtyRemoved = 0
+
+  for (const [oracle, next] of after) {
+    const prev = before.get(oracle)
+    const delta = next.qty - (prev?.qty ?? 0)
+    if (!prev) addedUnique += 1
+    if (delta > 0) {
+      qtyAdded += delta
+      added.push({ name: next.name, qty: delta })
+    }
+  }
+  for (const [oracle, prev] of before) {
+    const next = after.get(oracle)
+    const delta = prev.qty - (next?.qty ?? 0)
+    if (!next) removedUnique += 1
+    if (delta > 0) {
+      qtyRemoved += delta
+      removed.push({ name: prev.name, qty: delta })
+    }
+  }
+
+  const bigFirst = (a: { qty: number }, b: { qty: number }) => b.qty - a.qty
+  return {
+    addedUnique,
+    removedUnique,
+    qtyAdded,
+    qtyRemoved,
+    added: added.sort(bigFirst).slice(0, DIFF_SAMPLE_CAP),
+    removed: removed.sort(bigFirst).slice(0, DIFF_SAMPLE_CAP),
   }
 }
 
@@ -142,5 +211,5 @@ function isUuid(value: string): boolean {
 }
 
 function emptyResult(parseErrors: string[]): CollectionImportResult {
-  return { rowsTotal: 0, rowsMatched: 0, rowsUnmatched: 0, unmatched: [], parseErrors, importId: null }
+  return { rowsTotal: 0, rowsMatched: 0, rowsUnmatched: 0, unmatched: [], parseErrors, importId: null, diff: null }
 }

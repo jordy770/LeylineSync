@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-06T15:04:06.096Z
-> Files: 248 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-06T22:33:19.722Z
+> Files: 262 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -69,6 +69,11 @@
 ## .git/
 
 
+## .github/workflows/
+
+- `ci.yml` — CI — every push/PR: types, lint, and the FULL engine suite (~1900 tests) (~595 tok)
+- `deploy.yml` — CD — publishing a GitHub Release IS the production go: first the pending (~410 tok)
+
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
 
@@ -88,6 +93,10 @@
 
 - `route.ts` — POST /api/collection/move-card (~403 tok)
 
+## app/api/collection/resolve-conflict/
+
+- `route.ts` — POST /api/collection/resolve-conflict  { oracleId, deckId } (~392 tok)
+
 ## app/api/conflicts/
 
 - `route.ts` — GET /api/conflicts → cards committed to more decks than the player owns copies of. (~232 tok)
@@ -99,6 +108,14 @@
 ## app/api/decks/[id]/buy/
 
 - `route.ts` — GET /api/decks/:id/buy?budget=5   (budget omitted / 0 = no cap) (~366 tok)
+
+## app/api/decks/[id]/play/
+
+- `route.ts` — POST /api/decks/:id/play (~738 tok)
+
+## app/api/decks/[id]/pull-list/
+
+- `route.ts` — GET /api/decks/:id/pull-list (~268 tok)
 
 ## app/api/decks/[id]/recommend/
 
@@ -146,11 +163,11 @@
 
 ## app/collection/
 
-- `page.tsx` — dynamic (~2530 tok)
+- `page.tsx` — dynamic — renders form (~2771 tok)
 
 ## app/collection/conflicts/
 
-- `page.tsx` — dynamic (~793 tok)
+- `page.tsx` — dynamic (~856 tok)
 
 ## app/collection/decks/[id]/
 
@@ -167,6 +184,10 @@
 ## app/collection/insights/
 
 - `page.tsx` — dynamic (~1543 tok)
+
+## app/collection/search/
+
+- `page.tsx` — dynamic — renders form (~1916 tok)
 
 ## app/controller-style-lab/
 
@@ -191,10 +212,10 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70730 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70832 tok)
 - `GameBoard.tsx` — GameBoard (~7302 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
-- `GameSessionLobby.tsx` — GameSessionLobby (~12039 tok)
+- `GameSessionLobby.tsx` — GameSessionLobby (~12034 tok)
 - `sign-up-form.tsx` — SignUpForm — renders form (~1686 tok)
 - `SiteNav.tsx` — Shared top nav so the landing and decks pages wear the same identity. (~457 tok)
 - `update-password-form.tsx` — UpdatePasswordForm — renders form (~724 tok)
@@ -206,9 +227,10 @@
 
 ## components/collection/
 
-- `DeckDetail.tsx` — BUCKET_ORDER (~6709 tok)
+- `ConflictResolve.tsx` — ConflictResolve (~530 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~7445 tok)
 - `DeckImportForm.tsx` — DeckImportForm (~1390 tok)
-- `ImportWizard.tsx` — ImportWizard (~1446 tok)
+- `ImportWizard.tsx` — ImportWizard (~1960 tok)
 - `Shell.tsx` — Color-identity pips rendered as small mana-coloured dots. (~976 tok)
 
 ## components/controller/
@@ -234,7 +256,7 @@
 
 - `backlog.md` — Backlog (~169 tok)
 - `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1657 tok)
-- `deploy-ovh.md` — Deploy — OVHcloud VPS (~796 tok)
+- `deploy-ovh.md` — Deploy — OVHcloud VPS (~997 tok)
 - `open-items.md` — Open items — merged & verified (~1634 tok)
 
 ## docs/collection-optimizer/
@@ -259,14 +281,16 @@
 - `deck-loader.ts` — oracle_id → distinct binder name(s) the player's FREE copies sit in (for "go find it"). (~1564 tok)
 - `deck-mutations.ts` — Returns false if the card wasn't in the deck to begin with. (~622 tok)
 - `fetch-decklist.ts` — Pure: identify the site + deck id from a pasted URL. (~1541 tok)
-- `import-collection.ts` — Collection import orchestration: parse → resolve to oracle_id → persist. (~1336 tok)
+- `import-collection.ts` — Collection import orchestration: parse → resolve to oracle_id → persist. (~2059 tok)
 - `import-deck.ts` — Deck import orchestration: parse decklist → resolve to oracle_ids → persist a (~1585 tok)
 - `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1684 tok)
+- `locator.ts` — Copies sitting in a binder (binder_type='binder') — grabbable for a deck. (~986 tok)
 - `move-card.ts` — Move a card from one deck to another (resolves an "occupied" upgrade — you own (~626 tok)
 - `power-score.ts` — Power score — a transparent, deterministic 0–10 rating of a Commander deck from (~2172 tok)
+- `pull-list.ts` — Other decks of the user that claim this card (excluding the target deck). (~1308 tok)
 - `resolve.ts` — The minimum a row needs to be resolvable. (~864 tok)
 - `scoring.ts` — The deck's archetype tags — non-staple roles that appear on enough cards to be a (~1481 tok)
-- `types.ts` — One physical stack of cards as parsed from an import file (pre-resolution). (~652 tok)
+- `types.ts` — One physical stack of cards as parsed from an import file (pre-resolution). (~810 tok)
 - `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~3803 tok)
 
 ## lib/collection/parsers/
@@ -310,6 +334,7 @@
 
 - `bot-runner.mjs` — Plain read as the postgres session role (RLS bypassed) — used for polling. (~8267 tok)
 - `cleanup-runner.mjs` — Cleanup runner — operational janitor for FINISHED games (mig 144). (~769 tok)
+- `create-bot-user.mjs` — Provision a real Supabase auth user for the AI CPU bot, so it can occupy a (~872 tok)
 - `import-card-printings.mjs` — Import Scryfall bulk card data into public.co_card_printings (Collection Optimizer). (~2856 tok)
 - `tag-backfill.mjs` — Backfill co_card_tags by running the synergy tagger over every oracle card. (~1075 tok)
 - `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3815 tok)
@@ -396,6 +421,8 @@
 - `202605010371_board_state.sql` — 202605010371_board_state (~958 tok)
 - `202605010372_second_spell_trigger.sql` — Alphinaud Eukrasia "2nd spell each turn → draw": adds a `spell_number` filter to fire_watcher_triggers (spell_cast trigger fires only when spells_cast_this_turn==N, mig 369 counter). (~3809 tok)
 - `202605010374_commander_zone_decision.sql` — Commander zone-return as a PER-EVENT DECISION (replaces the silent redirect (~16382 tok)
+- `202605010375_bot_seat_hosted.sql` — Add CPU on HOSTED: seat the provisioned bot auth-user instead of a bare UUID. (~1479 tok)
+- `202605010376_bot_fleet.sql` — Multi-bot Add CPU: seat ANY free provisioned CPU user (mig 375 allowed one). (~1430 tok)
 - `tests/feature/dancers-chakrams.test.ts` — DC1-3: equipped host + other-commanders +2/+2 & lifelink; unequipped grants nothing; equipping a commander doesn't double-buff (the "other" exclusion). (~700 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
@@ -408,6 +435,7 @@
 
 - `blade-of-selves.test.ts` — Blade of Selves (mig 357). "Equipped creature has myriad." Built on the new (~598 tok)
 - `board-state.test.ts` — mig 371 — get_board_state bundles the big-screen board view into one jsonb (~553 tok)
+- `bot-seat.test.ts` — Add CPU on hosted (mig 375). add_bot_to_session seats the PROVISIONED bot (~1072 tok)
 - `carmen.test.ts` — Carmen, Cruel Skymarcher (mig 341). Two new pieces: (~914 tok)
 - `cast-watcher-self.test.ts` — Cast-watcher self-trigger (mig 325) — a "whenever you cast a creature spell" (~663 tok)
 - `change-deck.test.ts` — Lobby "change deck" (mig 324) — clear_deck_from_session lets a player undo a (~744 tok)
@@ -469,6 +497,7 @@
 - `ai-recommend.test.ts` — AI deck-doctor — the pure grounding helpers. The model call itself is not tested (~799 tok)
 - `auto-pass.test.ts` — shouldAutoPass — the controller's pure "should I pass priority right now?" (~2653 tok)
 - `bot-brain.test.ts` — bot-brain — the AI CPU's pure heuristic decisions (lib/game/bot-brain). Each (~2536 tok)
+- `collection-qol.test.ts` — Collection QoL (2026-07-07) — the pure cores of the re-import diff and the (~889 tok)
 - `conflicts-buy.test.ts` — Deck conflicts (pure detection) + buy-suggestion link building. (~631 tok)
 - `dashboard.test.ts` — Dashboard — pure "free staples" ranking (strong unused binder cards). (~517 tok)
 - `decklist-parser.test.ts` — Decklist parser — the pure core of the deck import. Covers the quantity/set/ (~813 tok)

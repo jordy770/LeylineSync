@@ -412,3 +412,9 @@
 
 - CR 903.9a is sinds 2020 GEEN replacement voor graveyard/exile: de commander belandt daar echt (dies/leaves-triggers vuren) en de eigenaar mag hem daarna via een keuze naar de command zone verplaatsen. Mig 142's silent redirect onderdrukte dies-triggers dus regels-incorrect; mig 374 herstelt dit met een commander_zone_return pending decision. Hand/library (903.9b) is wel een echte replacement — daar blijft de preference-redirect.
 - Nieuw decision-type toevoegen = 4 plekken: park-site (trigger/RPC), submit_decision-branch (reproduceer van LAATSTE def — grep eerst; 363 was actueel, functions_src was stale), client body-routing (ConfirmBody is herbruikbaar voor yes/no), bot-runner decisionResult-case.
+
+## Key Learnings — 2026-07-07
+
+- co_card_availability: free_qty = som van binder_type='binder' (niet owned-committed); committed zit er wel in maar wordt pas in conflicts.ts vergeleken. co_card_oracle kan niet via PostgREST-embed gejoined worden (view) — altijd los .in()-chunken (patroon: deck-loader.ts, IN_CHUNK=100).
+- Collection-import is REPLACE (snapshot): delete-then-insert per user; een diff moet dus VOOR de delete gelezen worden.
+- co_decks->game-decks brug: decklist-tekst met 'Commander'-header door import_deck_from_text; commander NIET dubbel in de Deck-sectie zetten (telt anders 2x).

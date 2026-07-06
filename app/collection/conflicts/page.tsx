@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { ConflictResolve } from '@/components/collection/ConflictResolve'
 import { Panel, Shell } from '@/components/collection/Shell'
 import { listConflicts } from '@/lib/collection/conflicts'
 import { createClient } from '@/lib/supabase/server'
@@ -62,6 +63,7 @@ export default async function ConflictsPage() {
                   Buy a copy ↗
                 </a>
               </div>
+              <ConflictResolve oracleId={c.oracleId} decks={c.decks} />
             </Panel>
           ))}
         </div>

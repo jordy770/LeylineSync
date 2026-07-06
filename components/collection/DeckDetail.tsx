@@ -38,15 +38,9 @@ interface ScanResult {
   free: FreeUpgrade[]
   occupied: OccupiedUpgrade[]
 }
-interface AiPick {
-  name: string
-  tag: string
-  source: string
-  priceEur: number | null
-  confidence: number
-  themeImpact: ThemeImpact
-  verdict: 'include' | 'consider' | 'skip'
-  reason: string
+interface PullList {
+  groups: { binder: string; cards: { name: string; need: number }[] }[]
+  missing: { name: string; need: number; inDecks: string[] }[]
 }
 interface BuySuggestion {
   oracleId: string
@@ -64,17 +58,19 @@ const BUCKET_ORDER = ['ramp', 'card_draw', 'removal', 'board_wipe', 'counterspel
 export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIdentity: string[] }) {
   const [scan, setScan] = useState<ScanResult | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [tab, setTab] = useState<'free' | 'occupied' | 'buy'>('free')
+  const [tab, setTab] = useState<'free' | 'occupied' | 'buy' | 'pull'>('free')
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [buyBudget, setBuyBudget] = useState<string>('5')
   const [buys, setBuys] = useState<BuySuggestion[] | null>(null)
   const [buyBusy, setBuyBusy] = useState(false)
   const [buyError, setBuyError] = useState<string | null>(null)
-  const [budget, setBudget] = useState<string>('') // '', '2', '5', '10'
-  const [aiBusy, setAiBusy] = useState(false)
-  const [aiError, setAiError] = useState<string | null>(null)
-  const [ai, setAi] = useState<{ summary: string; picks: AiPick[] } | null>(null)
+  const [pull, setPull] = useState<PullList | null>(null)
+  const [pullBusy, setPullBusy] = useState(false)
+  const [pullError, setPullError] = useState<string | null>(null)
+  const [playBusy, setPlayBusy] = useState(false)
+  const [playResult, setPlayResult] = useState<{ deckName: string; missing: { name: string }[] } | null>(null)
+  const [playError, setPlayError] = useState<string | null>(null)
 
   // The upgrades endpoint also returns the power score, so one call covers both.
   const load = useCallback(async () => {
@@ -155,23 +151,40 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
     }
   }
 
-  async function askDoctor() {
-    setAiBusy(true)
-    setAiError(null)
-    setAi(null)
-    try {
-      const res = await fetch(`/api/decks/${deckId}/recommend`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ budget: budget === '' ? null : Number(budget) }),
+  // The pull-list tab is fetched lazily, once.
+  useEffect(() => {
+    if (tab !== 'pull' || pull !== null || pullBusy) return
+    let live = true
+    setPullBusy(true)
+    setPullError(null)
+    fetch(`/api/decks/${deckId}/pull-list`)
+      .then((r) => r.json().then((b) => ({ ok: r.ok, b })))
+      .then(({ ok, b }) => {
+        if (!live) return
+        if (!ok) setPullError(b.error ?? 'Could not build the pull list.')
+        else setPull(b)
       })
+      .catch(() => live && setPullError('Network error building the pull list.'))
+      .finally(() => live && setPullBusy(false))
+    return () => {
+      live = false
+    }
+  }, [tab, pull, pullBusy, deckId])
+
+  // Bridge this collection deck to a PLAYABLE game deck (shows up on /decks).
+  async function playThisDeck() {
+    setPlayBusy(true)
+    setPlayError(null)
+    setPlayResult(null)
+    try {
+      const res = await fetch(`/api/decks/${deckId}/play`, { method: 'POST' })
       const body = await res.json()
-      if (!res.ok) setAiError(body.error ?? 'The deck doctor is unavailable.')
-      else setAi(body)
+      if (!res.ok) setPlayError(body.error ?? 'Could not create the game deck.')
+      else setPlayResult({ deckName: body.deckName, missing: body.missing ?? [] })
     } catch {
-      setAiError('Network error reaching the deck doctor.')
+      setPlayError('Network error creating the game deck.')
     } finally {
-      setAiBusy(false)
+      setPlayBusy(false)
     }
   }
 
@@ -237,81 +250,38 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
 
       <HealthPanel health={power.health} />
 
-      <Panel className="p-6">
+      {/* Bridge to the game side: one click turns this collection deck into a
+          playable game deck (visible on /decks and in the lobby's deck picker). */}
+      <Panel className="p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 className="font-display text-lg" style={{ color: 'var(--text-bright)' }}>
-              Deck doctor
-            </h3>
-            <p className="font-rules text-sm" style={{ color: 'var(--text-dim)' }}>
-              AI ranks &amp; explains upgrades from your collection — keeping the deck on-theme.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <select
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              className="rounded-lg px-3 py-2 text-sm"
-              style={{ border: '1px solid rgba(201,154,58,0.3)', background: 'var(--ink-2)', color: 'var(--text)' }}
-            >
-              <option value="">No budget</option>
-              <option value="2">Under €2</option>
-              <option value="5">Under €5</option>
-              <option value="10">Under €10</option>
-            </select>
-            <button
-              onClick={askDoctor}
-              disabled={aiBusy}
-              className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40"
-              style={{ background: 'linear-gradient(150deg, var(--gold-bright), var(--frame-gold))', color: '#1c1407' }}
-            >
-              {aiBusy ? 'Consulting…' : 'Ask the deck doctor'}
-            </button>
-          </div>
+          <p className="font-rules text-sm" style={{ color: 'var(--text-dim)' }}>
+            Done tuning? Send this deck to the game so you can play it tonight.
+          </p>
+          <button
+            onClick={playThisDeck}
+            disabled={playBusy}
+            className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40"
+            style={{ background: 'linear-gradient(150deg, var(--gold-bright), var(--frame-gold))', color: '#1c1407' }}
+          >
+            {playBusy ? 'Creating…' : '▶ Play this deck'}
+          </button>
         </div>
-
-        {aiError ? (
-          <p className="mt-3 text-sm" style={{ color: 'var(--danger)' }}>
-            {aiError}
+        {playError ? (
+          <p className="mt-2 text-sm" style={{ color: 'var(--danger)' }}>
+            {playError}
           </p>
         ) : null}
-
-        {ai ? (
-          <div className="mt-4 space-y-3">
-            <p className="font-rules text-sm" style={{ color: 'var(--text)' }}>
-              {ai.summary}
-            </p>
-            <ul className="space-y-2">
-              {ai.picks.map((p, i) => (
-                <li key={i} className="rounded-lg p-3" style={{ border: '1px solid rgba(201,154,58,0.18)' }}>
-                  <div className="flex items-center gap-2">
-                    <VerdictBadge verdict={p.verdict} />
-                    <span className="font-display text-sm" style={{ color: 'var(--text-bright)' }}>
-                      {p.name}
-                    </span>
-                    <Chip>{p.tag.replace(/_/g, ' ')}</Chip>
-                    {p.source === 'buy' ? (
-                      <span className="rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide" style={{ color: 'var(--warn)', border: '1px solid var(--warn)' }}>
-                        buy
-                      </span>
-                    ) : p.source === 'occupied' ? (
-                      <Chip>in a deck</Chip>
-                    ) : null}
-                    <ConfidenceBadge value={p.confidence} />
-                    <ThemeBadge impact={p.themeImpact} />
-                    {p.priceEur != null ? (
-                      <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
-                        €{p.priceEur.toFixed(2)}
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="font-rules mt-1 text-sm" style={{ color: 'var(--text-dim)' }}>
-                    {p.reason}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {playResult ? (
+          <p className="font-rules mt-2 text-sm" style={{ color: 'var(--cast)' }}>
+            “{playResult.deckName}” is ready as a game deck — pick it in the lobby or fine-tune it on{' '}
+            <a href="/decks" className="underline underline-offset-2">
+              the decks page
+            </a>
+            .
+            {playResult.missing.length > 0
+              ? ` ${playResult.missing.length} card(s) missing from the game catalog: ${playResult.missing.map((m) => m.name).join(', ')}.`
+              : ''}
+          </p>
         ) : null}
       </Panel>
 
@@ -325,6 +295,9 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
           </Tab>
           <Tab active={tab === 'buy'} onClick={() => setTab('buy')}>
             Buy
+          </Tab>
+          <Tab active={tab === 'pull'} onClick={() => setTab('pull')}>
+            Pull list
           </Tab>
         </div>
         {actionError ? (
@@ -428,10 +401,63 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
             ))}
           </div>
           )
-        ) : (
+        ) : tab === 'buy' ? (
           <BuyTab buys={buys} busy={buyBusy} error={buyError} budget={buyBudget} setBudget={setBuyBudget} />
+        ) : (
+          <PullTab pull={pull} busy={pullBusy} error={pullError} />
         )}
       </div>
+    </div>
+  )
+}
+
+// The physical gathering checklist: binder → alphabetical, plus what can't be
+// pulled (locked in another deck, or simply not owned free).
+function PullTab({ pull, busy, error }: { pull: PullList | null; busy: boolean; error: string | null }) {
+  if (busy) return <Empty>Walking your binders…</Empty>
+  if (error) return <Empty>{error}</Empty>
+  if (!pull) return <Empty>Open this tab to build the pull list.</Empty>
+  if (pull.groups.length === 0 && pull.missing.length === 0) return <Empty>Nothing to pull.</Empty>
+  return (
+    <div className="space-y-3">
+      {pull.groups.map((g) => (
+        <Panel key={g.binder} className="p-4">
+          <h4 className="font-display text-sm" style={{ color: 'var(--gold-bright)' }}>
+            📒 {g.binder}
+            <span className="ml-2 text-xs" style={{ color: 'var(--text-faint)' }}>
+              {g.cards.reduce((n, c) => n + c.need, 0)} cards
+            </span>
+          </h4>
+          <ul className="font-rules mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2" style={{ color: 'var(--text)' }}>
+            {g.cards.map((c, i) => (
+              <li key={i}>
+                {c.need > 1 ? `${c.need}× ` : ''}
+                {c.name}
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      ))}
+      {pull.missing.length > 0 ? (
+        <Panel className="p-4">
+          <h4 className="font-display text-sm" style={{ color: 'var(--warn)' }}>
+            Not in a binder ({pull.missing.length})
+          </h4>
+          <ul className="font-rules mt-2 space-y-1 text-sm" style={{ color: 'var(--text-dim)' }}>
+            {pull.missing.map((m, i) => (
+              <li key={i}>
+                {m.need > 1 ? `${m.need}× ` : ''}
+                {m.name}
+                {m.inDecks.length > 0 ? (
+                  <span style={{ color: 'var(--text-faint)' }}> — in {m.inDecks.join(', ')}</span>
+                ) : (
+                  <span style={{ color: 'var(--text-faint)' }}> — not owned loose (buy or proxy)</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      ) : null}
     </div>
   )
 }
@@ -455,9 +481,21 @@ function BuyTab({
     { label: 'Under €10', value: '10' },
     { label: 'No budget', value: '' },
   ]
+  const [copied, setCopied] = useState(false)
+  const totalEur = (buys ?? []).reduce((sum, b) => sum + (b.priceEur ?? 0), 0)
+
+  // Shopping-list export: plain "1 Name" lines — pastes into Moxfield, a
+  // webshop basket, or your notes for the card shop.
+  async function copyList() {
+    if (!buys || buys.length === 0) return
+    await navigator.clipboard.writeText(buys.map((b) => `1 ${b.name}`).join('\n'))
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {chips.map((c) => (
           <button
             key={c.value}
@@ -472,6 +510,16 @@ function BuyTab({
             {c.label}
           </button>
         ))}
+        {buys && buys.length > 0 ? (
+          <button
+            onClick={copyList}
+            className="ml-auto rounded-lg px-3 py-1.5 text-xs font-medium"
+            style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
+            title="Copy as a decklist-style shopping list"
+          >
+            {copied ? 'Copied ✓' : `Copy list${totalEur > 0 ? ` (≈€${totalEur.toFixed(2)})` : ''}`}
+          </button>
+        ) : null}
       </div>
 
       {busy ? (
@@ -546,15 +594,6 @@ function Tab({ active, onClick, children }: { active: boolean; onClick: () => vo
     >
       {children}
     </button>
-  )
-}
-
-function VerdictBadge({ verdict }: { verdict: 'include' | 'consider' | 'skip' }) {
-  const tone = verdict === 'include' ? 'var(--cast)' : verdict === 'consider' ? 'var(--warn)' : 'var(--text-faint)'
-  return (
-    <span className="rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide" style={{ color: tone, border: `1px solid ${tone}` }}>
-      {verdict}
-    </span>
   )
 }
 

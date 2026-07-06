@@ -6505,3 +6505,30 @@
 | 00:17 | Edited components/ControllerListV5.tsx | screen() → board() | ~179 |
 | 00:17 | Edited components/ControllerListV5.tsx | modified ChooseModeBody() | ~18 |
 | 09:20 | Decision-paneel (kaarten kiezen na spell) omgebouwd van inline 55vh-blok naar bottom-sheet overlay (85vh, backdrop, CardActionSheet-patroon) — viel te klein uit op landscape-telefoon doordat hij command-strip/bord wegdrukte i.p.v. bedekte | ControllerListV5.tsx | tsc+lint schoon | ~35k |
+| 00:27 | Edited lib/collection/types.ts | expanded (+13 lines) | ~209 |
+| 00:28 | Edited lib/collection/import-collection.ts | 8→10 lines | ~58 |
+| 00:28 | Edited lib/collection/import-collection.ts | added nullish coalescing | ~260 |
+| 00:28 | Edited lib/collection/import-collection.ts | added 5 condition(s) | ~521 |
+| 00:28 | Edited lib/collection/import-collection.ts | inline fix | ~33 |
+| 00:28 | Created lib/collection/locator.ts | — | ~986 |
+| 00:29 | Created lib/collection/pull-list.ts | — | ~1308 |
+| 00:29 | Created app/api/decks/[id]/pull-list/route.ts | — | ~268 |
+| 00:29 | Created app/api/decks/[id]/play/route.ts | — | ~738 |
+| 00:29 | Created app/api/collection/resolve-conflict/route.ts | — | ~392 |
+| 00:30 | Created app/collection/search/page.tsx | — | ~1916 |
+| 00:30 | Created components/collection/ConflictResolve.tsx | — | ~530 |
+| 00:30 | Edited app/collection/conflicts/page.tsx | added 1 import(s) | ~56 |
+| 00:30 | Edited app/collection/conflicts/page.tsx | 4→5 lines | ~48 |
+| 00:30 | Edited components/collection/ImportWizard.tsx | expanded (+8 lines) | ~121 |
+| 00:30 | Edited components/collection/ImportWizard.tsx | expanded (+24 lines) | ~418 |
+| 00:31 | Edited components/collection/DeckDetail.tsx | reduced (-6 lines) | ~53 |
+| 00:31 | Edited components/collection/DeckDetail.tsx | CSS: deckName, missing, name | ~242 |
+| 00:31 | Edited components/collection/DeckDetail.tsx | CSS: ok, deckName, missing | ~362 |
+| 00:31 | Edited components/collection/DeckDetail.tsx | CSS: side, catalog | ~471 |
+| 00:31 | Edited components/collection/DeckDetail.tsx | 4→7 lines | ~65 |
+| 00:32 | Edited components/collection/DeckDetail.tsx | added 4 condition(s) | ~681 |
+| 00:32 | Edited components/collection/DeckDetail.tsx | added nullish coalescing | ~496 |
+| 00:32 | Edited components/collection/DeckDetail.tsx | removed 10 lines | ~16 |
+| 00:33 | Edited app/collection/page.tsx | CSS: border, background, color | ~186 |
+| 00:33 | Created tests/unit/collection-qol.test.ts | — | ~889 |
+| 10:40 | Collection QoL-batch: locator (/collection/search + dashboard-zoekbalk, filters vrij/kleur/type), play-bridge (co_deck -> game-deck via import_deck_from_text), pull-list (binder->alfabet, greedy stock), buy-export (copy + totaal), conflict-resolver (release-knoppen), re-import-diff (+/- rapport); AI deck-doctor UI verwijderd (no-paid-AI); waarde-tegel bestond al | locator.ts, pull-list.ts, 3 API-routes, search/page, DeckDetail, ConflictResolve, ImportWizard, collection/page, types | 4/4 unit-tests, tsc+lint schoon, build loopt | ~180k |

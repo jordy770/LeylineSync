@@ -44,6 +44,19 @@ export interface CollectionImportResult {
   unmatched: UnmatchedRow[]
   parseErrors: string[]
   importId: string | null
+  /** What changed vs the replaced snapshot (null on a first import). */
+  diff: CollectionDiff | null
+}
+
+/** Re-import delta: the new snapshot compared against the one it replaced. */
+export interface CollectionDiff {
+  addedUnique: number
+  removedUnique: number
+  qtyAdded: number
+  qtyRemoved: number
+  /** Top samples for the report UI (capped, sorted by quantity). */
+  added: { name: string; qty: number }[]
+  removed: { name: string; qty: number }[]
 }
 
 /** Lookups the resolver consults, in priority order (scryfall id → set+collector → name). */

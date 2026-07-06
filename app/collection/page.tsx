@@ -30,6 +30,20 @@ export default async function CollectionDashboardPage() {
         </div>
       }
     >
+      {hasCollection ? (
+        <form action="/collection/search" className="mb-4 flex gap-2">
+          <input
+            type="search"
+            name="q"
+            placeholder="Where does a card live? Search binders & decks…"
+            className="w-full max-w-md rounded-lg px-3 py-2 text-sm outline-none"
+            style={{ border: '1px solid rgba(201,154,58,0.3)', background: 'var(--ink-2)', color: 'var(--text)' }}
+          />
+          <button type="submit" className="rounded-lg px-4 py-2 text-sm font-medium" style={ghostButton}>
+            Find
+          </button>
+        </form>
+      ) : null}
       {!hasCollection ? (
         <Panel className="p-8 text-center">
           <p className="font-display text-lg" style={{ color: 'var(--text-bright)' }}>
