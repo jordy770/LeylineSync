@@ -13,9 +13,22 @@ services:
       - "3000"
 
   # AI-CPU bot runner — polls Postgres directly (DATABASE_URL), no HTTP surface.
+  # --watch is required (without it the runner exits with a usage error and the
+  # service crash-loops). For hosted play, provision a bot auth user first
+  # (scripts/create-bot-user.mjs) and append: "--bot", "<auth-user-id>".
   bot:
     image: leylinesync
-    command: ["npm", "run", "bot"]
+    command: ["npm", "run", "bot", "--", "--watch"]
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      - web
+
+  # Janitor — every 6h deletes the runtime rows of games finished >24h ago
+  # (cleanup_finished_session, mig 144). Results/history are kept.
+  cleanup:
+    image: leylinesync
+    command: ["node", "scripts/cleanup-runner.mjs", "--watch"]
     env_file: .env
     restart: unless-stopped
     depends_on:

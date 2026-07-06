@@ -41,6 +41,7 @@ import {
   resetMana,
   resolveCombatDamage,
   setCombatBlockerOrder,
+  setCommanderRedirect as setCommanderRedirectAction,
   submitDecision,
   syncAutoPassSettings,
 } from '@/lib/game/actions'
@@ -511,6 +512,24 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   // You may only actually cast it at sorcery speed with priority (creatures).
   const canCastTopNow = topCardMatchesFilter && canCastSorceries
   const commandZone = cards.filter((c) => c.zone === 'command')
+  const hasCommander = cards.some((c) => c.is_commander)
+  // Commander-redirect preference (mig 142). Read once from game_session_players —
+  // RLS scopes the select to the player's own row, so no player filter is needed.
+  const [commanderRedirectPref, setCommanderRedirectPref] = useState<boolean | null>(null)
+  useEffect(() => {
+    if (!hasCommander || commanderRedirectPref !== null) return
+    let cancelled = false
+    void supabase
+      .from('game_session_players')
+      .select('commander_redirect')
+      .eq('session_id', sessionId)
+      .then(({ data }) => {
+        if (!cancelled && data && data.length > 0) {
+          setCommanderRedirectPref(Boolean(data[0].commander_redirect))
+        }
+      })
+    return () => { cancelled = true }
+  }, [hasCommander, commanderRedirectPref, supabase, sessionId])
   const ownCreatures = battlefieldCards.filter((c) => c.cards?.type_line?.toLowerCase().includes('creature'))
   const incomingAttackers = combatAssignments.filter((a) => a.defending_player_id === playerId)
   // Attackers this player has already declared this combat. Once non-empty, we
@@ -969,6 +988,11 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       await castCommanderAction(supabase, sessionId, cardId)
       await refresh()
     },
+    // Commander-redirect preference: on = back to the command zone, off = graveyard/exile.
+    setCommanderRedirect: async (redirect: boolean) => {
+      setCommanderRedirectPref(redirect)
+      await setCommanderRedirectAction(supabase, sessionId, redirect)
+    },
     // Targeted player-damage spell (Lightning Bolt etc.)
     dealDamageToPlayer: async (cardId: string, targetPlayerId: string) => {
       const card = cards.find((c) => c.id === cardId) ?? null
@@ -1281,8 +1305,10 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
               onOpenLog={() => setLogOpen(true)}
               onOpenHelp={() => setCoachOpen(true)}
             />
-            {/* Command zone — cast your commander (sorcery speed) with live tax. */}
-            {commandZone.length > 0 && (
+            {/* Command zone — cast your commander (sorcery speed) with live tax,
+                plus the redirect preference. Stays visible while the commander is
+                on the battlefield so the preference can be changed before it dies. */}
+            {(commandZone.length > 0 || hasCommander) && (
               <div className="flex shrink-0 items-center gap-2 overflow-x-auto border-b border-amber-500/20 bg-amber-500/[0.06] px-3 py-2">
                 <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-amber-400">
                   Command
@@ -1306,6 +1332,18 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
                     </button>
                   )
                 })}
+                {commanderRedirectPref !== null && (
+                  <button
+                    type="button"
+                    onClick={() => { void actions.setCommanderRedirect(!commanderRedirectPref) }}
+                    title={commanderRedirectPref
+                      ? 'When your commander would leave the battlefield it returns to the command zone. Tap to let it go to the graveyard/exile instead (e.g. to reanimate it).'
+                      : 'Your commander goes to the graveyard/exile like any other card. Tap to return it to the command zone instead.'}
+                    className="ml-auto flex shrink-0 items-center gap-1 rounded-full border border-amber-500/30 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-200/90 transition active:scale-95 hover:bg-amber-500/10"
+                  >
+                    {commanderRedirectPref ? '↩ to command zone' : '→ to graveyard'}
+                  </button>
+                )}
               </div>
             )}
             <div className="flex min-h-0 flex-1">

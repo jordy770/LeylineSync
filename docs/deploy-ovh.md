@@ -1,11 +1,12 @@
 # Deploy — OVHcloud VPS
 
-Production = één OVH VPS met Docker Compose, drie services:
+Production = één OVH VPS met Docker Compose, vier services:
 
 | Service | Wat | Poort |
 |---|---|---|
 | `web` | Next.js (`npm run start`) | intern 3000 |
-| `bot` | AI-CPU bot-runner (`npm run bot`, polt Postgres direct) | — |
+| `bot` | AI-CPU bot-runner (`npm run bot -- --watch`, polt Postgres direct) | — |
+| `cleanup` | Janitor: ruimt runtime-rows van games >24u finished op (elke 6u) | — |
 | `caddy` | Reverse proxy + automatische HTTPS (Let's Encrypt) | 80/443 |
 
 Supabase blijft het **hosted** project (DB/auth/realtime); de VPS draait alleen de app.
@@ -71,5 +72,10 @@ docker compose restart bot         # bot herstarten zonder web te raken
 ```
 
 - De bot draait permanent en polt; zonder actieve CPU-speler doet hij niets.
-- `cleanup_finished_session`-cron: nog niet ingericht (open item) — kan later als
-  vierde compose-service of host-cron.
+  Voor CPU-seats op hosted moet er eenmalig een bot-auth-user bestaan
+  (`scripts/create-bot-user.mjs`); voeg daarna `"--bot", "<auth-user-id>"` toe
+  aan het bot-command in `compose.yml`.
+- De `cleanup`-service draait `scripts/cleanup-runner.mjs --watch`: elke 6 uur
+  worden runtime-rows (kaarten/stack/effects/log) verwijderd van games die >24u
+  geleden finished zijn. Uitslag/history blijft staan. Handmatig testen kan met
+  `npm run cleanup:sessions -- --dry-run`.

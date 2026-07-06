@@ -16,6 +16,7 @@
     "deck:upsert": "node --import tsx scripts/upsert-deck-scripts.mjs",
     "deck:seed-precons": "node scripts/seed-precon-decks.mjs",
     "bot": "node --import tsx scripts/bot-runner.mjs",
+    "cleanup:sessions": "node scripts/cleanup-runner.mjs",
     "seed:local-play": "node scripts/seed-local-play.mjs"
   },
   "dependencies": {

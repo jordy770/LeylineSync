@@ -102,6 +102,24 @@ export async function castCommander(
   return data
 }
 
+// Commander-redirect preference (mig 142): true = your commander returns to the
+// command zone when it leaves the battlefield, false = it goes to the graveyard/
+// exile/hand/library like any other card.
+export async function setCommanderRedirect(
+  supabase: SupabaseClient,
+  sessionId: string,
+  redirect: boolean,
+) {
+  const { error } = await supabase.rpc('set_commander_redirect', {
+    p_session_id: sessionId,
+    p_redirect: redirect,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
 // Attach an Equipment you control onto a creature you control (sorcery-speed equip).
 export async function equip(
   supabase: SupabaseClient,

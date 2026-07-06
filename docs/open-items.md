@@ -60,8 +60,8 @@ Verified implemented at engine **and** client where applicable:
 
 ### Authoring / client surface (engine done)
 11. **Modal spells guided-form editor** — schema + cast path done; JSON/AI authorable only, no `CardBehaviorForm` modes widget. PARTIAL.
-12. **`set_commander_redirect` UI toggle** — RPC exists (mig 142); never surfaced in any component. PARTIAL.
-13. **`cleanup_finished_session` client call** — RPC exists (mig 144); only called from tests/harness, no production trigger. OPEN (low — could be a cron/service job instead).
+12. ~~**`set_commander_redirect` UI toggle**~~ — ✅ **DONE (2026-07-06)**. Toggle chip in the V5 command-zone strip (`↩ to command zone` / `→ to graveyard`); strip now stays visible while the commander is on the battlefield. Pref read RLS-scoped from `game_session_players.commander_redirect`; `setCommanderRedirect` wrapper in actions.ts.
+13. ~~**`cleanup_finished_session` client call**~~ — ✅ **DONE (2026-07-06)**. `scripts/cleanup-runner.mjs` (`npm run cleanup:sessions`, `--watch/--dry-run/--age/--interval`) cleans finished sessions >24h old; runs as the `cleanup` compose service in production.
 14. **hybrid/Phyrexian mana picker UI** — engine auto-pays {W/U},{2/W},{W/P} (mig 121); no player-choice picker client-side. PARTIAL (shared-UI follow-up).
 
 ---
