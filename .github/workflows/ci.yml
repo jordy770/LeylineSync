@@ -40,6 +40,22 @@ jobs:
             supabase/postgres:17.6.1.111
           until docker exec pg pg_isready -U postgres -h 127.0.0.1 >/dev/null 2>&1; do sleep 2; done
 
+      # deck-smoke needs the Scryfall oracle bulk (~170MB, gitignored). Cached
+      # across runs; bump the key to refresh the dump.
+      - name: Restore Scryfall oracle bulk
+        id: oracle-cache
+        uses: actions/cache@v4
+        with:
+          path: lib/oracle-cards.json
+          key: scryfall-oracle-v1
+
+      - name: Download Scryfall oracle bulk (cache miss)
+        if: steps.oracle-cache.outputs.cache-hit != 'true'
+        run: |
+          url=$(curl -s https://api.scryfall.com/bulk-data/oracle-cards | jq -r .download_uri)
+          curl -sL "$url" -o lib/oracle-cards.json
+          ls -la lib/oracle-cards.json
+
       - name: Build test database
         run: npm run test:db:setup
 
