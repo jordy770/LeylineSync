@@ -221,8 +221,8 @@ export default function GameSessionLobby() {
       await addBotToSession(supabase, activeSession.id)
       await refreshSession(activeSession.id)
       setStatusMessage(
-        'CPU seated. It only takes its turns while the bot driver is running — in a terminal, run ' +
-          '`node scripts/bot-runner.mjs --watch` once and leave it open (local Supabase only).',
+        'CPU seated. It takes its turns automatically once the game starts (the bot service is ' +
+          'always on in production; for local dev run `npm run bot -- --watch`).',
       )
     } catch (error) {
       const message = getErrorMessage(error)

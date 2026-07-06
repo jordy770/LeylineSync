@@ -16924,6 +16924,24 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-06T15:03:24.352Z"
+    },
+    {
+      "id": "bug-1507",
+      "timestamp": "2026-07-06T20:15:00+02:00",
+      "error_message": "Add CPU on play.dweemo.nl (hosted) failed: add_bot_to_session seats gen_random_uuid() which violates the game_session_players.player_id FK to profiles/auth.users on hosted (local FKs are relaxed)",
+      "file": "supabase/migrations/202605010375_bot_seat_hosted.sql",
+      "root_cause": "mig 319 seated a bare UUID; the provisioned bot auth-user (create-bot-user.mjs, profile CPU 🤖) was only wired into the runner (--bot), never into the seat-creating RPC",
+      "fix": "mig 375: add_bot_to_session prefers the CPU 🤖 profile id when present (clear error when already seated), keeps the bare-UUID fallback for local dev; lobby status text updated. Tests BOT1-3.",
+      "tags": [
+        "hosted",
+        "bot",
+        "foreign-key",
+        "add_bot_to_session",
+        "production"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-06T20:15:00+02:00"
     }
   ]
 }

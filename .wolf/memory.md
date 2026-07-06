@@ -6482,3 +6482,8 @@
 | 17:03 | Edited components/ControllerListV5.tsx | 4→4 lines | ~81 |
 | 17:04 | Edited scripts/bot-runner.mjs | 2→3 lines | ~73 |
 | 18:40 | Mig 374: commander-zone-return per-event decision (CR 903.9a-correct — dies-triggers vuren nu; hand/library blijft preference-redirect); RC1-6 herschreven + CM2 aangepast; ConfirmBody hergebruikt; toggle strip->CardActionSheet; bot case confirmed:true; functions_src/submit_decision gesynct | mig 374, commander-return.test.ts, commander.test.ts, ControllerListV5, CardActionSheet, bot-runner | commander-groep 31/31 groen; volle suite loopt | ~150k |
+| 19:30 | Mig 374 naar hosted gepusht (user-akkoord) + VPS gedeployed op a196bee; alle 4 services up, site 200. Commander-zone-decision live in productie | hosted DB, VPS | deploy-cyclus compleet | ~10k |
+| 21:28 | Created supabase/migrations/202605010375_bot_seat_hosted.sql | — | ~1479 |
+| 21:28 | Edited components/GameSessionLobby.tsx | open() → starts() | ~61 |
+| 21:29 | Created tests/feature/bot-seat.test.ts | — | ~794 |
+| 20:20 | bug-1507 gefixt: Add CPU faalde op hosted (bare-UUID seat vs profiles-FK); mig 375 seats de CPU-profielgebruiker met bare-UUID fallback lokaal; lobby-tekst geactualiseerd; tests BOT1-3 | mig 375, bot-seat.test.ts, GameSessionLobby.tsx | 3/3 + botgroep 35/35 groen, tsc schoon | ~60k |
