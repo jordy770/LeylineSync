@@ -1,0 +1,41 @@
+services:
+  web:
+    image: leylinesync
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+        NEXT_PUBLIC_SHOW_DEV_CONTROLS: ${NEXT_PUBLIC_SHOW_DEV_CONTROLS:-false}
+    env_file: .env
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  # AI-CPU bot runner — polls Postgres directly (DATABASE_URL), no HTTP surface.
+  bot:
+    image: leylinesync
+    command: ["npm", "run", "bot"]
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      - web
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+volumes:
+  caddy_data:
+  caddy_config:
