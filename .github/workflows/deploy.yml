@@ -1,0 +1,41 @@
+# CD — publishing a GitHub Release IS the production go: first the pending
+# migrations go to hosted Supabase (db push over the session-pooler URL), then
+# the OVH VPS checks out the release tag and rebuilds the compose stack.
+#
+# Secrets: SUPABASE_DB_URL (session-pooler connection string incl. password),
+# VPS_HOST, VPS_SSH_KEY (dedicated deploy key, see docs/deploy-ovh.md).
+name: Release deploy
+
+on:
+  release:
+    types: [published]
+
+concurrency: production   # never two production deploys at once
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Migrations → hosted Supabase
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: echo "Y" | supabase db push --db-url "$SUPABASE_DB_URL"
+
+      - name: Deploy release to the VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new "ubuntu@$VPS_HOST" \
+            "cd /opt/leylinesync && git fetch --tags -q origin && git checkout -q \"$TAG\" && docker compose up -d --build"

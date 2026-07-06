@@ -6494,3 +6494,8 @@
 | 21:39 | Edited supabase/migrations/202605010376_bot_fleet.sql | 16→17 lines | ~187 |
 | 21:40 | Edited tests/feature/bot-seat.test.ts | expanded (+25 lines) | ~306 |
 | 21:05 | Mig 376: bot-VLOOT — add_bot_to_session seatt elke vrije CPU-🤖%-profielgebruiker (naamvolgorde); create-bot-user kreeg username-arg; CPU 2+3 op hosted geprovisioned (de5e4d42, edfcfdba); test BOT4 | mig 376, bot-seat.test.ts, create-bot-user.mjs | 4/4 groen | ~40k |
+| 21:20 | Mig 376 naar hosted + VPS deploy (feae391); vloot geverifieerd op hosted: CPU 🤖, 2 en 3. Tot 3 bots per game live | hosted DB, VPS | multi-bot Commander mogelijk | ~10k |
+| 21:52 | Created .github/workflows/ci.yml | — | ~272 |
+| 21:52 | Created .github/workflows/deploy.yml | — | ~410 |
+| 21:53 | Edited docs/deploy-ovh.md | modified Secrets() | ~311 |
+| 21:50 | CI/CD op releases: ci.yml (tsc+lint+volle suite met supabase-in-runner op elke push/PR) + deploy.yml (release published -> db push via SUPABASE_DB_URL-secret + VPS checkout tag + rebuild); deploy-key + 3 GH-secrets gezet via gh (nooit getoond); deploy-doc bijgewerkt | .github/workflows, deploy-ovh.md | eerste CI-run start bij push | ~50k |

@@ -50,17 +50,31 @@ cp .env.example .env   # en invullen — zie hieronder
 De bestaande Cloudflare **Tunnel** (dev, `.cloudflared/config.yml`) blijft puur
 voor de dev-machine; de VPS heeft hem niet nodig.
 
-## Deployen / updaten
+## Deployen / updaten — via GitHub Releases (CI/CD)
+
+**Productie-deploys lopen via releases.** Een GitHub Release publiceren
+(`gh release create v0.x.y --generate-notes` of via de site) triggert
+`.github/workflows/deploy.yml`: eerst `supabase db push` naar hosted (over de
+pooler-URL uit het `SUPABASE_DB_URL`-secret), daarna checkt de VPS de
+release-tag uit en rebuildt de compose-stack. CI (`ci.yml`) draait op elke
+push/PR de volledige suite tegen een lokale Supabase in de runner.
+
+Secrets (GitHub → Settings → Secrets and variables → Actions):
+`SUPABASE_DB_URL`, `VPS_HOST`, `VPS_SSH_KEY` (dedicated deploy-key; de publieke
+helft staat in `~ubuntu/.ssh/authorized_keys` op de VPS).
+
+Let op: de VPS staat na een release-deploy op de **tag** (detached HEAD). Het
+oude handmatige pad werkt nog steeds, maar dan eerst terug naar master:
 
 ```bash
 cd /opt/leylinesync
-git pull
-docker compose up -d --build   # rebuild + rolling restart van gewijzigde services
+git checkout master && git pull
+docker compose up -d --build
 ```
 
-Database-migraties gaan zoals altijd via `supabase db push` (vanaf de dev-machine,
-alleen `supabase/migrations/` — zie README over de hosted/local-split), **vóór** de
-app-update als de code nieuwe RPC's verwacht.
+Migraties horen bij de release; los pushen kan nog altijd vanaf de dev-machine
+met `supabase db push` (alleen `supabase/migrations/` — zie README over de
+hosted/local-split), **vóór** de app-update als de code nieuwe RPC's verwacht.
 
 ## Beheer
 

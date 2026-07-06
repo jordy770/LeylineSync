@@ -1,0 +1,42 @@
+# CI — every push/PR: types, lint, and the FULL engine suite (~1900 tests)
+# against a real local Supabase Postgres, exactly like dev (test:db:setup
+# builds the isolated test DB from local-bootstrap + migrations).
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Types
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx eslint .
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase (Postgres on 54322)
+        run: supabase start -x studio,imgproxy,inbucket,edge-runtime,logflare,vector
+
+      - name: Build test database
+        run: npm run test:db:setup
+
+      - name: Engine + unit tests
+        run: npm test
