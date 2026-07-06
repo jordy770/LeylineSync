@@ -6502,3 +6502,6 @@
 | 21:57 | Edited .github/workflows/ci.yml | Supabase() → Postgres() | ~204 |
 | 22:01 | Edited .github/workflows/ci.yml | expanded (+16 lines) | ~202 |
 | 00:10 | CI/CD live: run 3 groen (3m12s, volle suite incl. smoke via gecachte Scryfall-dump); release v0.1.0 gepubliceerd -> deploy.yml succesvol (1m26s), VPS op tag v0.1.0, site 200. Deploy-flow = gh release create | .github/workflows, VPS | pipeline end-to-end gevalideerd | ~30k |
+| 00:17 | Edited components/ControllerListV5.tsx | screen() → board() | ~179 |
+| 00:17 | Edited components/ControllerListV5.tsx | modified ChooseModeBody() | ~18 |
+| 09:20 | Decision-paneel (kaarten kiezen na spell) omgebouwd van inline 55vh-blok naar bottom-sheet overlay (85vh, backdrop, CardActionSheet-patroon) — viel te klein uit op landscape-telefoon doordat hij command-strip/bord wegdrukte i.p.v. bedekte | ControllerListV5.tsx | tsc+lint schoon | ~35k |

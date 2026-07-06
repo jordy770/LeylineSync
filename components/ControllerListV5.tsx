@@ -2493,9 +2493,14 @@ function PendingDecisionPrompt({
   }
 
   return (
-    // Cap the panel so a long option list never eats the whole screen (the board
-    // stays visible below) and the confirm button stays reachable.
-    <div className="flex max-h-[55vh] flex-col overflow-y-auto border-b border-indigo-500/20 bg-indigo-950/30 px-3 py-2">
+    // A bottom sheet floating OVER the command strip and board (mirrors
+    // CardActionSheet) so a card-pick list gets real height on a landscape
+    // phone. The old inline panel was capped at 55vh and squeezed between the
+    // status bar and the command zone instead of covering them.
+    <>
+      <div className="absolute inset-0 z-40 bg-black/60" />
+      <div className="absolute inset-x-0 bottom-0 z-50 flex max-h-[85vh] flex-col overflow-y-auto rounded-t-3xl border-t border-indigo-500/30 bg-[#131426] px-4 pb-6 pt-3">
+      <div className="mx-auto mb-3 h-1 w-10 shrink-0 rounded-full bg-white/15" />
       <p className="mb-2 shrink-0 truncate text-[11px] font-black uppercase tracking-widest text-indigo-300">
         {decision.prompt ?? 'Make a choice'}
       </p>
@@ -2537,7 +2542,8 @@ function PendingDecisionPrompt({
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }
 
