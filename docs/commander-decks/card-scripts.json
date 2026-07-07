@@ -21119,5 +21119,2653 @@
         ]
       }
     ]
+  },
+  "Worn Powerstone": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 2
+          }
+        ]
+      }
+    ]
+  },
+  "Thran Dynamo": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 3
+          }
+        ]
+      }
+    ]
+  },
+  "Gilded Lotus": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "any",
+            "amount": 3
+          }
+        ]
+      }
+    ]
+  },
+  "Coalition Relic": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "any",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Prismatic Lens": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "any",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Guardian Idol": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Hedron Archive": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 2
+          }
+        ]
+      },
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{2}"
+          },
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "sacrifice_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 2
+          }
+        ]
+      }
+    ]
+  },
+  "Izzet Signet": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "U",
+            "amount": 1
+          },
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Simic Signet": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          },
+          {
+            "type": "add_mana",
+            "color": "U",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Gruul Signet": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          },
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Selesnya Signet": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          },
+          {
+            "type": "add_mana",
+            "color": "W",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Talisman of Resilience": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Talisman of Unity": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "W",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Talisman of Curiosity": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "U",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Charcoal Diamond": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Fire Diamond": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Moss Diamond": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Birds of Paradise": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "any",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Paradise Druid": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "any",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Sylvan Caryatid": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "defender",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "hexproof",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "any",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Avacyn's Pilgrim": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "W",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Three Visits": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "battlefield",
+          "filter": {
+            "type_line": "Forest"
+          }
+        }
+      ]
+    }
+  },
+  "Nature's Lore": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "battlefield",
+          "filter": {
+            "type_line": "Forest"
+          }
+        }
+      ]
+    }
+  },
+  "Skyshroud Claim": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 2,
+          "to": "battlefield",
+          "filter": {
+            "type_line": "Forest"
+          }
+        }
+      ]
+    }
+  },
+  "Explosive Vegetation": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 2,
+          "to": "battlefield",
+          "tapped": true,
+          "filter": {
+            "type_line": "Basic Land"
+          }
+        }
+      ]
+    }
+  },
+  "Grow from the Ashes": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "battlefield",
+          "filter": {
+            "type_line": "Basic Land"
+          }
+        }
+      ]
+    }
+  },
+  "Ranger's Path": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 2,
+          "to": "battlefield",
+          "tapped": true,
+          "filter": {
+            "type_line": "Forest"
+          }
+        }
+      ]
+    }
+  },
+  "Nissa's Pilgrimage": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "battlefield",
+          "tapped": true,
+          "filter": {
+            "type_line": "Basic Land — Forest"
+          }
+        },
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand",
+          "filter": {
+            "type_line": "Basic Land — Forest"
+          }
+        }
+      ]
+    }
+  },
+  "Go for the Throat": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "creature",
+          "exclude_type_line": "Artifact"
+        }
+      ]
+    }
+  },
+  "Infernal Grasp": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "creature",
+          "then": [
+            {
+              "type": "lose_life",
+              "amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Victim of Night": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "creature",
+          "exclude_type_line": "Vampire"
+        }
+      ]
+    }
+  },
+  "Pongify": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "creature"
+        },
+        {
+          "type": "create_token",
+          "token": "Beast Token",
+          "count": 1,
+          "recipient": "target_controller"
+        }
+      ]
+    }
+  },
+  "Despark": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "exile",
+          "target_type": "nonland_permanent"
+        }
+      ]
+    }
+  },
+  "Abrupt Decay": {
+    "schema_version": 2,
+    "cant_be_countered": true,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "nonland_permanent"
+        }
+      ]
+    }
+  },
+  "Assassin's Trophy": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "permanent",
+          "target_controller": "opponent",
+          "controller_searches_basic_land": true
+        }
+      ]
+    }
+  },
+  "Casualties of War": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "choose_one",
+          "choose": 1,
+          "choose_up_to": 5,
+          "prompt": "Choose one or more",
+          "modes": [
+            {
+              "label": "Destroy target artifact",
+              "actions": [
+                {
+                  "type": "destroy_up_to",
+                  "count": 1,
+                  "target_filter": {
+                    "controller": "any",
+                    "type_line": "artifact"
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Destroy target creature",
+              "actions": [
+                {
+                  "type": "destroy_up_to",
+                  "count": 1,
+                  "target_filter": {
+                    "controller": "any",
+                    "type_line": "creature"
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Destroy target enchantment",
+              "actions": [
+                {
+                  "type": "destroy_up_to",
+                  "count": 1,
+                  "target_filter": {
+                    "controller": "any",
+                    "type_line": "enchantment"
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Destroy target land",
+              "actions": [
+                {
+                  "type": "destroy_up_to",
+                  "count": 1,
+                  "target_filter": {
+                    "controller": "any",
+                    "type_line": "land"
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Destroy target planeswalker",
+              "actions": [
+                {
+                  "type": "destroy_up_to",
+                  "count": 1,
+                  "target_filter": {
+                    "controller": "any",
+                    "type_line": "planeswalker"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Rip Apart": {
+    "schema_version": 2,
+    "spell_effect": {
+      "choose": 1,
+      "modes": [
+        {
+          "label": "Rip Apart deals 3 damage to target creature.",
+          "actions": [
+            {
+              "type": "deal_damage",
+              "amount": 3,
+              "target_type": "creature"
+            }
+          ]
+        },
+        {
+          "label": "Destroy target artifact or enchantment.",
+          "actions": [
+            {
+              "type": "destroy",
+              "target_type": [
+                "artifact",
+                "enchantment"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Angrath's Rampage": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "choose_one",
+          "choose": 1,
+          "prompt": "Choose one",
+          "modes": [
+            {
+              "label": "Target player sacrifices an artifact of their choice",
+              "actions": [
+                {
+                  "type": "sacrifice",
+                  "who": "opponent",
+                  "count": 1,
+                  "filter": {
+                    "type_line": "artifact"
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Target player sacrifices a creature of their choice",
+              "actions": [
+                {
+                  "type": "sacrifice",
+                  "who": "opponent",
+                  "count": 1
+                }
+              ]
+            },
+            {
+              "label": "Target player sacrifices a planeswalker of their choice",
+              "actions": [
+                {
+                  "type": "sacrifice",
+                  "who": "opponent",
+                  "count": 1,
+                  "filter": {
+                    "type_line": "planeswalker"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Bituminous Blast": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "deal_damage",
+          "amount": 4,
+          "target_type": "creature"
+        }
+      ]
+    }
+  },
+  "Flame Slash": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "deal_damage",
+          "amount": 4,
+          "target_type": "creature"
+        }
+      ]
+    }
+  },
+  "Shatter": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "artifact"
+        }
+      ]
+    }
+  },
+  "Disenchant": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": [
+            "artifact",
+            "enchantment"
+          ]
+        }
+      ]
+    }
+  },
+  "Krosan Grip": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": [
+            "artifact",
+            "enchantment"
+          ]
+        }
+      ]
+    }
+  },
+  "Oblivion Ring": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "exile_until_leaves",
+            "target_type": "nonland_permanent"
+          }
+        ]
+      }
+    ]
+  },
+  "Journey to Nowhere": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "exile_until_leaves",
+            "target_type": "creature"
+          }
+        ]
+      }
+    ]
+  },
+  "Grasp of Fate": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "exile_until_leaves",
+            "target_type": "nonland_permanent",
+            "target_controller": "opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Reprobation": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "set_pt",
+        "affected": "enchanted",
+        "payload": {
+          "power": 0,
+          "toughness": 1
+        }
+      }
+    ]
+  },
+  "Damnation": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy_all"
+        }
+      ]
+    }
+  },
+  "Time Wipe": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "bounce",
+          "target_type": "creature",
+          "target_controller": "you"
+        },
+        {
+          "type": "destroy_all"
+        }
+      ]
+    }
+  },
+  "In Garruk's Wake": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy_all",
+          "scope": "opponent"
+        }
+      ]
+    }
+  },
+  "Plague Wind": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy_all",
+          "scope": "opponent"
+        }
+      ]
+    }
+  },
+  "Shatterstorm": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy_all",
+          "types": [
+            "artifact"
+          ]
+        }
+      ]
+    }
+  },
+  "Creeping Corrosion": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy_all",
+          "types": [
+            "artifact"
+          ]
+        }
+      ]
+    }
+  },
+  "Hour of Reckoning": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy_all",
+          "exclude_type": "Token"
+        }
+      ]
+    }
+  },
+  "Duneblast": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "mass_destroy_reanimate_one"
+        }
+      ]
+    }
+  },
+  "Deadly Tempest": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy_all"
+        }
+      ]
+    }
+  },
+  "Guardian Project": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "nontoken": true
+        },
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Mulldrifter": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 2
+          }
+        ]
+      }
+    ]
+  },
+  "Cloudblazer": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "gain_life",
+            "amount": 2
+          },
+          {
+            "type": "draw",
+            "amount": 2
+          }
+        ]
+      }
+    ]
+  },
+  "Shamanic Revelation": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": {
+            "count": "creatures_you_control"
+          }
+        },
+        {
+          "type": "gain_life",
+          "amount": {
+            "count": "creatures_you_control",
+            "min_power": 4,
+            "times": 4
+          }
+        }
+      ]
+    }
+  },
+  "Blue Sun's Zenith": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": "X"
+        }
+      ]
+    }
+  },
+  "Stroke of Genius": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": "X"
+        }
+      ]
+    }
+  },
+  "Pull from Tomorrow": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": "X"
+        },
+        {
+          "type": "discard",
+          "count": 1,
+          "who": "you"
+        }
+      ]
+    }
+  },
+  "Opportunity": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "choose_player",
+          "filter": "any",
+          "effects": [
+            {
+              "type": "draw",
+              "amount": 4
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Jace's Ingenuity": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 3
+        }
+      ]
+    }
+  },
+  "Secrets of the Golden City": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "conditional",
+          "condition": {
+            "count": "permanents_you_control",
+            "at_least": 10
+          },
+          "effects": [
+            {
+              "type": "draw",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Ambition's Cost": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 3
+        },
+        {
+          "type": "lose_life",
+          "amount": 3,
+          "recipient": "controller"
+        }
+      ]
+    }
+  },
+  "Ancient Craving": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 3
+        },
+        {
+          "type": "lose_life",
+          "amount": 3,
+          "recipient": "controller"
+        }
+      ]
+    }
+  },
+  "Damnable Pact": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": "X"
+        },
+        {
+          "type": "lose_life",
+          "amount": "X",
+          "recipient": "controller"
+        }
+      ]
+    }
+  },
+  "Deadly Dispute": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "sacrifice",
+          "who": "you",
+          "count": 1,
+          "filter": {
+            "type_line": "creature"
+          }
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "create_token",
+          "token": "Treasure Token",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "Costly Plunder": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "sacrifice",
+          "who": "you",
+          "count": 1,
+          "filter": {
+            "type_line": "creature"
+          }
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        }
+      ]
+    }
+  },
+  "Tidings": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 4
+        }
+      ]
+    }
+  },
+  "Finale of Revelation": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": "X"
+        }
+      ]
+    }
+  },
+  "Dovin's Veto": {
+    "schema_version": 2,
+    "cant_be_countered": true,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Counterflux": {
+    "schema_version": 2,
+    "cant_be_countered": true,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "An Offer You Can't Refuse": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Render Silent": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Absorb": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Ionize": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell",
+          "controller_loses_life": 2
+        }
+      ]
+    }
+  },
+  "Dream Fracture": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Rewind": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Didn't Say Please": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Wizard's Retort": {
+    "schema_version": 2,
+    "cost_reduction": {
+      "amount": 1,
+      "if": {
+        "count": "creatures_you_control",
+        "type_line": "Wizard",
+        "at_least": 1
+      }
+    },
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Diabolic Tutor": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand"
+        }
+      ]
+    }
+  },
+  "Solve the Equation": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand",
+          "reveal": true,
+          "filter": {
+            "type_line_any": [
+              "instant",
+              "sorcery"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "Fabricate": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand",
+          "reveal": true,
+          "filter": {
+            "type_line": "artifact"
+          }
+        }
+      ]
+    }
+  },
+  "Idyllic Tutor": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand",
+          "reveal": true,
+          "filter": {
+            "type_line": "enchantment"
+          }
+        }
+      ]
+    }
+  },
+  "Time of Need": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand",
+          "reveal": true,
+          "filter": {
+            "type_line": "Legendary Creature"
+          }
+        }
+      ]
+    }
+  },
+  "Razaketh's Rite": {
+    "schema_version": 2,
+    "cycling": "{B}",
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand"
+        }
+      ]
+    }
+  },
+  "Bonesplitter": {
+    "schema_version": 2,
+    "equip_cost": "{1}",
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "attached",
+        "payload": {
+          "power": 2,
+          "toughness": 0
+        },
+        "source_zone_required": "battlefield"
+      }
+    ]
+  },
+  "Heroic Intervention": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "grant_keyword_all",
+          "keyword": "hexproof",
+          "scope": "controller"
+        },
+        {
+          "type": "grant_keyword_all",
+          "keyword": "indestructible",
+          "scope": "controller"
+        }
+      ]
+    }
+  },
+  "Ranger's Guile": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "pump",
+          "power": 1,
+          "toughness": 1,
+          "target_type": "creature",
+          "target_controller": "you"
+        },
+        {
+          "type": "grant_keyword",
+          "keyword": "hexproof",
+          "target_type": "creature",
+          "target_controller": "you"
+        }
+      ]
+    }
+  },
+  "Blossoming Defense": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "pump",
+          "power": 2,
+          "toughness": 2,
+          "target_type": "creature",
+          "target_controller": "you"
+        },
+        {
+          "type": "grant_keyword",
+          "keyword": "hexproof",
+          "target_type": "creature",
+          "target_controller": "you"
+        }
+      ]
+    }
+  },
+  "Snakeskin Veil": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "add_counters",
+          "amount": 1,
+          "target_type": "creature",
+          "target_controller": "you"
+        },
+        {
+          "type": "grant_keyword",
+          "keyword": "hexproof",
+          "target_type": "creature",
+          "target_controller": "you"
+        }
+      ]
+    }
+  },
+  "Tamiyo's Safekeeping": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "grant_keyword",
+          "keyword": "hexproof",
+          "target_type": "creature",
+          "target_controller": "you"
+        },
+        {
+          "type": "grant_keyword",
+          "keyword": "indestructible",
+          "target_type": "creature",
+          "target_controller": "you"
+        },
+        {
+          "type": "gain_life",
+          "amount": 2
+        }
+      ]
+    }
+  },
+  "Unbreakable Formation": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "grant_keyword_all",
+          "keyword": "indestructible",
+          "scope": "controller"
+        },
+        {
+          "type": "may",
+          "prompt": "Addendum — did you cast this during your main phase? If so, put a +1/+1 counter on each creature you control and they gain vigilance.",
+          "effects": [
+            {
+              "type": "add_counters_all",
+              "amount": 1,
+              "target_controller": "you"
+            },
+            {
+              "type": "grant_keyword_all",
+              "keyword": "vigilance",
+              "scope": "controller"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Rootborn Defenses": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "grant_keyword_all",
+          "keyword": "indestructible",
+          "scope": "controller"
+        }
+      ]
+    }
+  },
+  "Make a Stand": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "pump_all",
+          "power": 1,
+          "toughness": 0,
+          "scope": "controller"
+        },
+        {
+          "type": "grant_keyword_all",
+          "keyword": "indestructible",
+          "scope": "controller"
+        }
+      ]
+    }
+  },
+  "Regrowth": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "return_from_graveyard",
+          "to": "hand",
+          "count": 1,
+          "filter": {
+            "types": [
+              "creature",
+              "artifact",
+              "enchantment",
+              "land",
+              "planeswalker",
+              "instant",
+              "sorcery"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "Nature's Spiral": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "return_from_graveyard",
+          "to": "hand",
+          "count": 1,
+          "filter": {
+            "types": [
+              "creature",
+              "artifact",
+              "enchantment",
+              "land",
+              "planeswalker"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "Disturbed Burial": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "return_from_graveyard",
+          "to": "hand",
+          "count": 1,
+          "filter": {
+            "type_line": "creature"
+          }
+        }
+      ]
+    }
+  },
+  "Ghoulcaller's Chant": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "choose_one",
+          "prompt": "Ghoulcaller's Chant",
+          "modes": [
+            {
+              "label": "Return a creature card from your graveyard to your hand",
+              "actions": [
+                {
+                  "type": "return_from_graveyard",
+                  "to": "hand",
+                  "count": 1,
+                  "filter": {
+                    "type_line": "creature"
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Return two Zombie cards from your graveyard to your hand",
+              "actions": [
+                {
+                  "type": "return_from_graveyard",
+                  "to": "hand",
+                  "count": 2,
+                  "filter": {
+                    "type_line": "Zombie"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "March of Wretched Sorrow": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "deal_damage",
+          "amount": "X",
+          "target_type": [
+            "creature",
+            "planeswalker"
+          ]
+        },
+        {
+          "type": "gain_life",
+          "amount": "X"
+        }
+      ]
+    }
+  },
+  "Frost Titan": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "tap",
+            "target_type": "permanent"
+          }
+        ]
+      },
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "tap",
+            "target_type": "permanent"
+          }
+        ]
+      }
+    ]
+  },
+  "Inferno Titan": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{R}"
+          }
+        ],
+        "effects": [
+          {
+            "type": "pump",
+            "power": 1,
+            "toughness": 0,
+            "target_type": "creature",
+            "target_controller": "you"
+          }
+        ]
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "divide_damage",
+            "amount": 3,
+            "max_targets": 3,
+            "target_filter": {
+              "controller": "any",
+              "types": [
+                "creature",
+                "planeswalker",
+                "player"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "divide_damage",
+            "amount": 3,
+            "max_targets": 3,
+            "target_filter": {
+              "controller": "any",
+              "types": [
+                "creature",
+                "planeswalker",
+                "player"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Primeval Titan": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "trample",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "search_library",
+            "count": 2,
+            "to": "battlefield",
+            "tapped": true,
+            "filter": {
+              "type_line": "land"
+            }
+          }
+        ]
+      },
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "search_library",
+            "count": 2,
+            "to": "battlefield",
+            "tapped": true,
+            "filter": {
+              "type_line": "land"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Duplicant": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "exile",
+            "target_type": "creature",
+            "optional": true
+          }
+        ]
+      }
+    ]
+  },
+  "Wurmcoil Engine": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "deathtouch",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "lifelink",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "dies",
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Deathtouch Phyrexian Wurm Token",
+            "count": 1
+          },
+          {
+            "type": "create_token",
+            "token": "Lifelink Phyrexian Wurm Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Bane of Progress": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "destroy_all",
+            "types": [
+              "artifact",
+              "enchantment"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Demon's Disciple": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "sacrifice",
+            "who": "you",
+            "count": 1
+          },
+          {
+            "type": "sacrifice",
+            "who": "each_opponent",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Terror of Mount Velus": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "double_strike",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "grant_keyword_all",
+            "keyword": "double_strike",
+            "scope": "controller"
+          }
+        ]
+      }
+    ]
+  },
+  "Epicure of Blood": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "you_gain_life",
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "each_opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Vito, Thorn of the Dusk Rose": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "you_gain_life",
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": "event_amount",
+            "recipient": "each_opponent"
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{3}{B}{B}"
+          }
+        ],
+        "effects": [
+          {
+            "type": "grant_keyword_all",
+            "keyword": "lifelink",
+            "scope": "controller"
+          }
+        ]
+      }
+    ]
+  },
+  "Sanguine Bond": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "you_gain_life",
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": "event_amount",
+            "recipient": "each_opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Cliffhaven Vampire": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "you_gain_life",
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "each_opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Bitterblossom": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "beginning_of_upkeep",
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "controller"
+          },
+          {
+            "type": "create_token",
+            "token": "Faerie Rogue Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Dreadhorde Invasion": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "beginning_of_upkeep",
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "controller"
+          },
+          {
+            "type": "amass",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "event": "creature_attacks",
+        "filter": {
+          "controller": "you",
+          "type_line": "Zombie",
+          "min_power": 6,
+          "token": true
+        },
+        "effects": [
+          {
+            "type": "grant_keyword",
+            "keyword": "lifelink",
+            "target": "triggering_creature"
+          }
+        ]
+      }
+    ]
+  },
+  "Awakening Zone": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "beginning_of_upkeep",
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Create a 0/1 Eldrazi Spawn?",
+            "effects": [
+              {
+                "type": "create_token",
+                "token": "Eldrazi Spawn Token",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "From Under the Floorboards": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Zombie Token",
+          "count": 3,
+          "tapped": true
+        },
+        {
+          "type": "gain_life",
+          "amount": 3
+        }
+      ]
+    }
+  },
+  "Spectral Procession": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Spirit Token",
+          "count": 3
+        }
+      ]
+    }
+  },
+  "Raise the Alarm": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Soldier Token",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Gather the Townsfolk": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Soldier Token",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Servo Exhibition": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Myr Token",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Queen's Commission": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Lifelink Vampire Token",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Triplicate Spirits": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Spirit Token",
+          "count": 3
+        }
+      ]
+    }
+  },
+  "Glorious Anthem": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1
+        }
+      }
+    ]
+  },
+  "Intangible Virtue": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Token"
+        }
+      },
+      {
+        "type": "vigilance",
+        "affected": "controller",
+        "payload": {
+          "token_only": true
+        }
+      }
+    ]
+  },
+  "Honor of the Pure": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "color": "white"
+        }
+      }
+    ]
+  },
+  "Bad Moon": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "all",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "color": "black"
+        }
+      }
+    ]
+  },
+  "Crusade": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "all",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "color": "white"
+        }
+      }
+    ]
+  },
+  "Gaea's Anthem": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1
+        }
+      }
+    ]
+  },
+  "Impassioned Orator": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "exclude_self": true
+        },
+        "effects": [
+          {
+            "type": "gain_life",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Suture Priest": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "exclude_self": true
+        },
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Gain 1 life?",
+            "effects": [
+              {
+                "type": "gain_life",
+                "amount": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "opponent"
+        },
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Have that player lose 1 life?",
+            "program": true,
+            "effects": [
+              {
+                "type": "lose_life",
+                "amount": 1,
+                "recipient": "triggering_controller"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

@@ -1,0 +1,242 @@
+# EDH staples — most-played cards across uploaded decks (not a playable deck;
+# feeds deck:triage / deck:upsert so user-imported decks get scripted cards).
+
+# Mana rocks
+1 Thought Vessel
+1 Mind Stone
+1 Worn Powerstone
+1 Thran Dynamo
+1 Gilded Lotus
+1 Chromatic Lantern
+1 Coalition Relic
+1 Everflowing Chalice
+1 Prismatic Lens
+1 Guardian Idol
+1 Hedron Archive
+1 Basalt Monolith
+1 Mana Vault
+1 Azorius Signet
+1 Orzhov Signet
+1 Izzet Signet
+1 Golgari Signet
+1 Boros Signet
+1 Simic Signet
+1 Gruul Signet
+1 Selesnya Signet
+1 Talisman of Progress
+1 Talisman of Dominance
+1 Talisman of Creativity
+1 Talisman of Resilience
+1 Talisman of Unity
+1 Talisman of Impulse
+1 Talisman of Hierarchy
+1 Talisman of Curiosity
+1 Sky Diamond
+1 Charcoal Diamond
+1 Fire Diamond
+1 Moss Diamond
+1 Marble Diamond
+1 Wayfarer's Bauble
+
+# Green ramp & dorks
+1 Birds of Paradise
+1 Paradise Druid
+1 Sylvan Caryatid
+1 Avacyn's Pilgrim
+1 Elvish Rejuvenator
+1 Three Visits
+1 Nature's Lore
+1 Skyshroud Claim
+1 Explosive Vegetation
+1 Circuitous Route
+1 Migration Path
+1 Harrow
+1 Grow from the Ashes
+1 Ranger's Path
+1 Nissa's Pilgrimage
+
+# Spot removal
+1 Doom Blade
+1 Go for the Throat
+1 Infernal Grasp
+1 Victim of Night
+1 Generous Gift
+1 Rapid Hybridization
+1 Pongify
+1 Despark
+1 Abrupt Decay
+1 Assassin's Trophy
+1 Vindicate
+1 Mortify
+1 Utter End
+1 Casualties of War
+1 Rip Apart
+1 Angrath's Rampage
+1 Bituminous Blast
+1 Flame Slash
+1 Abrade
+1 Shatter
+1 Disenchant
+1 Naturalize
+1 Krosan Grip
+1 Return to Dust
+1 Banishing Light
+1 Oblivion Ring
+1 Journey to Nowhere
+1 Grasp of Fate
+1 Swords to Plowshares
+1 Path to Exile
+1 Condemn
+1 Reprobation
+
+# Board wipes
+1 Damnation
+1 Day of Judgment
+1 Fumigate
+1 Cleansing Nova
+1 Time Wipe
+1 In Garruk's Wake
+1 Plague Wind
+1 Evacuation
+1 Whelming Wave
+1 Crux of Fate
+1 Extinction Event
+1 Shatterstorm
+1 Creeping Corrosion
+1 Hour of Reckoning
+1 Solar Blaze
+1 Fell the Mighty
+1 Duneblast
+1 Deadly Tempest
+1 Necromantic Selection
+
+# Card draw
+1 Phyrexian Arena
+1 Guardian Project
+1 Mulldrifter
+1 Cloudblazer
+1 Inspiring Call
+1 Shamanic Revelation
+1 Return of the Wildspeaker
+1 Blue Sun's Zenith
+1 Stroke of Genius
+1 Pull from Tomorrow
+1 Opportunity
+1 Jace's Ingenuity
+1 Secrets of the Golden City
+1 Painful Truths
+1 Ambition's Cost
+1 Ancient Craving
+1 Damnable Pact
+1 Village Rites
+1 Deadly Dispute
+1 Costly Plunder
+1 Plumb the Forbidden
+1 Read the Bones
+1 Harmonize
+1 Concentrate
+1 Tidings
+1 Mind Spring
+1 Finale of Revelation
+
+# Counterspells
+1 Dovin's Veto
+1 Counterflux
+1 An Offer You Can't Refuse
+1 Render Silent
+1 Absorb
+1 Ionize
+1 Dream Fracture
+1 Cancel
+1 Rewind
+1 Didn't Say Please
+1 Drown in the Loch
+1 Wizard's Retort
+
+# Tutors
+1 Diabolic Tutor
+1 Solve the Equation
+1 Fabricate
+1 Whir of Invention
+1 Idyllic Tutor
+1 Time of Need
+1 Diabolic Revelation
+1 Razaketh's Rite
+
+# Protection & pump
+1 Lightning Greaves
+1 Whispersilk Cloak
+1 Loxodon Warhammer
+1 Bonesplitter
+1 Heroic Intervention
+1 Ranger's Guile
+1 Blossoming Defense
+1 Snakeskin Veil
+1 Tamiyo's Safekeeping
+1 Gods Willing
+1 Feat of Resistance
+1 Unbreakable Formation
+1 Rootborn Defenses
+1 Make a Stand
+
+# Recursion & value
+1 Regrowth
+1 Revive
+1 Nature's Spiral
+1 Noxious Revival
+1 Disturbed Burial
+1 Ghoulcaller's Chant
+1 March of Wretched Sorrow
+1 Karmic Guide
+1 Sun Titan
+1 Grave Titan
+1 Frost Titan
+1 Inferno Titan
+1 Primeval Titan
+1 Duplicant
+1 Meteor Golem
+1 Steel Hellkite
+1 Wurmcoil Engine
+1 Myr Battlesphere
+1 Bane of Progress
+1 Acidic Slime
+1 Ravenous Chupacabra
+1 Plaguecrafter
+1 Merciless Executioner
+1 Demon's Disciple
+
+# Drain & lifegain
+1 Impact Tremors
+1 Warstorm Surge
+1 Terror of Mount Velus
+1 Fiery Emancipation
+1 Epicure of Blood
+1 Marauding Blight-Priest
+1 Vito, Thorn of the Dusk Rose
+1 Sanguine Bond
+1 Exquisite Blood
+1 Cliffhaven Vampire
+
+# Tokens & anthems
+1 Bitterblossom
+1 Dreadhorde Invasion
+1 Ophiomancer
+1 Awakening Zone
+1 From Under the Floorboards
+1 Spectral Procession
+1 Lingering Souls
+1 Raise the Alarm
+1 Gather the Townsfolk
+1 Servo Exhibition
+1 Queen's Commission
+1 Triplicate Spirits
+1 Glorious Anthem
+1 Intangible Virtue
+1 Honor of the Pure
+1 Bad Moon
+1 Crusade
+1 Gaea's Anthem
+1 Beastmaster Ascension
+1 Cathars' Crusade
+1 Impassioned Orator
+1 Suture Priest

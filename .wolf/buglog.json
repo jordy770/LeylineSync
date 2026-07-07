@@ -17347,6 +17347,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-07T11:35:00+02:00"
+    },
+    {
+      "id": "bug-1060",
+      "timestamp": "2026-07-07T13:22:25.173Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Rewind.json",
+      "root_cause": "Had \"land\"",
+      "fix": "Changed to \"permanent\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T13:22:25.173Z"
+    },
+    {
+      "id": "bug-1061",
+      "timestamp": "2026-07-07T13:34:24.016Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/SuturePriest.json",
+      "root_cause": "Had \"effects\"",
+      "fix": "Changed to \"program\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T13:34:24.016Z"
+    },
+    {
+      "id": "bug-1062",
+      "timestamp": "2026-07-07T13:44:36.292Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Bitterblossom.json",
+      "root_cause": "Had \"Spirit Token\"",
+      "fix": "Changed to \"Faerie Rogue Token\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T13:44:36.292Z"
     }
   ]
 }
