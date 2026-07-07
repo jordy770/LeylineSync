@@ -5,11 +5,15 @@ export default function BoardViewChrome({
   isFocusMode,
   onToggleFocus,
   onOpenLog,
+  castControls,
 }: {
   turnState: GameTurnState | null
   isFocusMode: boolean
   onToggleFocus: () => void
-  onOpenLog: () => void
+  // Absent in spectator mode (the anon log would be empty under RLS).
+  onOpenLog?: () => void
+  // Member-only 📺/🔗 controls (mig 378); null in spectator mode.
+  castControls?: React.ReactNode
 }) {
   // Priority sits with someone other than the active (turn) player → a response
   // window. The big screen names who everyone is waiting on, so the table knows
@@ -35,14 +39,17 @@ export default function BoardViewChrome({
         Turn {turnState?.turn_number ?? '-'} &middot; {formatStepLabel(turnState?.step)}
       </div>
       <div className="flex items-center justify-end gap-2 justify-self-end">
-        <button
-          type="button"
-          onClick={onOpenLog}
-          aria-label="Open game log"
-          className="rounded-lg border border-slate-700 bg-slate-900/85 px-3 py-2 text-sm font-semibold text-slate-200 shadow-lg shadow-black/20 transition-colors hover:border-cyan-300/40 hover:bg-slate-800 [@media(max-height:640px)]:px-2.5 [@media(max-height:640px)]:py-1.5 [@media(max-height:640px)]:text-xs"
-        >
-          📜
-        </button>
+        {castControls}
+        {onOpenLog && (
+          <button
+            type="button"
+            onClick={onOpenLog}
+            aria-label="Open game log"
+            className="rounded-lg border border-slate-700 bg-slate-900/85 px-3 py-2 text-sm font-semibold text-slate-200 shadow-lg shadow-black/20 transition-colors hover:border-cyan-300/40 hover:bg-slate-800 [@media(max-height:640px)]:px-2.5 [@media(max-height:640px)]:py-1.5 [@media(max-height:640px)]:text-xs"
+          >
+            📜
+          </button>
+        )}
         <button
           type="button"
           onClick={onToggleFocus}

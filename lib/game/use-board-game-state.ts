@@ -18,7 +18,7 @@ import type {
 // Coalesce that burst into a single board refresh instead of one per event.
 const REFRESH_DEBOUNCE_MS = 60
 
-export function useBoardGameState(sessionId: string) {
+export function useBoardGameState(sessionId: string, shareToken?: string | null) {
   const supabase = useMemo(() => createClient(), [])
   const [cards, setCards] = useState<BoardCard[]>([])
   const [session, setSession] = useState<GameSession | null>(null)
@@ -34,7 +34,7 @@ export function useBoardGameState(sessionId: string) {
     try {
       // One RPC for the whole board view (mig 371) — replaces ~8 separate reads.
       const { nextSession, boardCards, sessionPlayers, nextTurnState, nextCombatAssignments, nextStackItems, status, nextCommanderDamage } =
-        await getBoardState(supabase, sessionId)
+        await getBoardState(supabase, sessionId, shareToken)
 
       setErrorMessage(null)
       setSession(nextSession)
@@ -51,10 +51,18 @@ export function useBoardGameState(sessionId: string) {
       console.error('Failed to fetch board state:', error)
       setErrorMessage(error instanceof Error ? error.message : 'Could not load board state')
     }
-  }, [sessionId, supabase])
+  }, [sessionId, supabase, shareToken])
 
   useEffect(() => {
     refresh()
+
+    // SPECTATOR mode (mig 378): a token-keyed board (TV / cast receiver) is anon —
+    // RLS delivers zero realtime events, so skip the channel entirely and live on
+    // a steady poll. Members below keep the realtime-first path.
+    if (shareToken) {
+      const interval = window.setInterval(refresh, fallbackRefreshIntervalMs)
+      return () => window.clearInterval(interval)
+    }
 
     // Coalesce the burst of table-change events a single action produces into one
     // board refresh.

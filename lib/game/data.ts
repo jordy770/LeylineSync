@@ -89,11 +89,23 @@ function groupCommanderDamageRows(rows: CommanderDamageRow[] | null): Record<str
   return out
 }
 
+// The session's spectator key (mig 378) — members only; builds the shareable
+// board link for casting / TV browsers.
+export async function getBoardShareToken(supabase: SupabaseClient, sessionId: string): Promise<string> {
+  const { data, error } = await supabase.rpc('get_board_share_token', { p_session_id: sessionId })
+  if (error) throw error
+  return data as string
+}
+
 // Board (big-screen) counterpart of getControllerState — one RPC (get_board_state,
 // mig 371) instead of useBoardGameState's ~8 separate reads. Returns exactly the
 // values the board hook's refresh() destructured.
-export async function getBoardState(supabase: SupabaseClient, sessionId: string) {
-  const { data, error } = await supabase.rpc('get_board_state', { p_session_id: sessionId })
+export async function getBoardState(supabase: SupabaseClient, sessionId: string, shareToken?: string | null) {
+  // A spectator board (TV / cast receiver, mig 378) authenticates with the
+  // session's board_token instead of a login; same payload, same mapping.
+  const { data, error } = shareToken
+    ? await supabase.rpc('get_board_state_by_token', { p_session_id: sessionId, p_token: shareToken })
+    : await supabase.rpc('get_board_state', { p_session_id: sessionId })
   if (error) throw error
   const r = (data ?? {}) as Record<string, unknown>
 

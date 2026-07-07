@@ -6869,3 +6869,19 @@
 | 16:05 | v0.2.1 live: CI groen, release+deploy geslaagd, VPS op tag; staples-batch compleet (941 curated scripts, 136 hosted-rijen, mig 377 op prod) | VPS, hosted | uploaded decks krijgen staples out-of-the-box | ~15k |
 | 16:20 | Domein-switch ontdekt: user zette APP_DOMAIN op leylinesync.com (eigen domein), DNS+cert werken, site 200; play.dweemo.nl is dood; docs+memory bijgewerkt | deploy-ovh.md, .env.example, auto-memory | LET OP: Supabase Auth Site URL moet nog naar leylinesync.com | ~10k |
 | 16:40 | User heeft Supabase Auth Site URL + redirects op leylinesync.com gezet — domein-switch compleet, accountmails wijzen goed | Supabase dashboard | geen open punten meer | ~2k |
+| 16:26 | Created supabase/migrations/202605010378_board_share_token.sql | — | ~1723 |
+| 16:27 | Edited lib/game/data.ts | modified getBoardState() | ~143 |
+| 16:27 | Edited lib/game/data.ts | added 1 condition(s) | ~169 |
+| 16:27 | Edited lib/game/use-board-game-state.ts | modified useBoardGameState() | ~39 |
+| 16:27 | Edited lib/game/use-board-game-state.ts | 2→2 lines | ~58 |
+| 16:27 | Edited lib/game/use-board-game-state.ts | added 1 condition(s) | ~184 |
+| 16:27 | Created components/board/CastShareControls.tsx | — | ~779 |
+| 16:27 | Edited components/GameBoard.tsx | modified GameBoard() | ~80 |
+| 16:28 | Edited components/GameBoard.tsx | CSS: undefined | ~151 |
+| 16:28 | Edited components/GameBoard.tsx | added 1 import(s) | ~32 |
+| 16:28 | Edited components/board/BoardViewChrome.tsx | modified BoardViewChrome() | ~116 |
+| 16:28 | Edited components/board/BoardViewChrome.tsx | 9→12 lines | ~174 |
+| 16:28 | Edited app/board/[id]/page.tsx | added nullish coalescing | ~421 |
+| 16:28 | Created tests/feature/board-share-token.test.ts | — | ~692 |
+| 16:31 | Created supabase/migrations/202605010378_board_share_token.sql | — | ~919 |
+| 18:30 | Board-casting gebouwd (mig 378): board_token op game_sessions, get_board_state_by_token (token-gate + tx-lokale host-impersonatie zodat de membership-gefilterde helpers werken — reproductieloze aanpak), get_board_share_token; spectator-modus in board page/hook (anon polt, geen realtime/chrome), CastShareControls (Presentation API + copy-link). Tests BST1-3 | mig 378, board page/hook/chrome, CastShareControls, data.ts | board-groep 8/8, tsc+lint schoon | ~120k |

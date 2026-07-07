@@ -17395,6 +17395,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-07T13:44:36.292Z"
+    },
+    {
+      "id": "bug-1063",
+      "timestamp": "2026-07-07T14:27:05.029Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/data.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→7 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T14:27:05.029Z"
+    },
+    {
+      "id": "bug-1064",
+      "timestamp": "2026-07-07T14:27:08.513Z",
+      "error_message": "Missing guard clause",
+      "file": "lib/game/data.ts",
+      "root_cause": "No early return/throw for edge case: error",
+      "fix": "Added guard clause: if (error)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T14:27:08.513Z"
+    },
+    {
+      "id": "bug-1065",
+      "timestamp": "2026-07-07T14:28:00.343Z",
+      "error_message": "CSS fix: null",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "null: focusSeat.player?.player_id ?? null)) → <CastShareControls sessionId={sessionId",
+      "fix": "Changed null: focusSeat.player?.player_id ?? null)) → <CastShareControls sessionId={sessionId",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T14:28:00.343Z"
+    },
+    {
+      "id": "bug-1066",
+      "timestamp": "2026-07-07T14:28:33.068Z",
+      "error_message": "Null/undefined access in ",
+      "file": "app/board/[id]/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T14:28:33.068Z"
     }
   ]
 }

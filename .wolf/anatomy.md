@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T13:51:43.031Z
-> Files: 534 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T14:31:07.251Z
+> Files: 537 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -425,7 +425,7 @@
 
 ## app/board/[id]/
 
-- `page.tsx` — BoardPage (~422 tok)
+- `page.tsx` — BoardPage (~506 tok)
 
 ## app/cards/behavior/
 
@@ -482,7 +482,7 @@
 ## components/
 
 - `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70832 tok)
-- `GameBoard.tsx` — GameBoard (~7302 tok)
+- `GameBoard.tsx` — GameBoard (~7376 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
 - `GameSessionLobby.tsx` — GameSessionLobby (~12034 tok)
 - `sign-up-form.tsx` — SignUpForm — renders form (~1686 tok)
@@ -491,7 +491,8 @@
 
 ## components/board/
 
-- `BoardViewChrome.tsx` — BoardViewChrome (~885 tok)
+- `BoardViewChrome.tsx` — BoardViewChrome (~962 tok)
+- `CastShareControls.tsx` — CastShareControls (~779 tok)
 - `GameFinishedOverlay.tsx` — GameFinishedOverlay (~1207 tok)
 
 ## components/collection/
@@ -584,11 +585,11 @@
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21611 tok)
-- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 3 more (~13767 tok)
+- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 4 more (~13963 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
 - `types.ts` — Exports ManaPool, RestrictedManaEntry, ManaColor, GameZone + 30 more (~3023 tok)
-- `use-board-game-state.ts` — Exports useBoardGameState (~2087 tok)
+- `use-board-game-state.ts` — Exports useBoardGameState (~2215 tok)
 - `use-controller-game-state.ts` — Exports useControllerGameState (~3406 tok)
 
 ## lib/supabase/
@@ -701,6 +702,7 @@
 - `202605010375_bot_seat_hosted.sql` — Add CPU on HOSTED: seat the provisioned bot auth-user instead of a bare UUID. (~1479 tok)
 - `202605010376_bot_fleet.sql` — Multi-bot Add CPU: seat ANY free provisioned CPU user (mig 375 allowed one). (~1430 tok)
 - `202605010377_nonland_trigger_target.sql` — `nonland_permanent` as a TRIGGER target type (Oblivion Ring, Grasp of Fate). (~381 tok)
+- `202605010378_board_share_token.sql` — Spectator board link + cast support. (~919 tok)
 - `tests/feature/dancers-chakrams.test.ts` — DC1-3: equipped host + other-commanders +2/+2 & lifelink; unequipped grants nothing; equipping a commander doesn't double-buff (the "other" exclusion). (~700 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
@@ -712,6 +714,7 @@
 ## tests/feature/
 
 - `blade-of-selves.test.ts` — Blade of Selves (mig 357). "Equipped creature has myriad." Built on the new (~598 tok)
+- `board-share-token.test.ts` — Board spectator token (mig 378). The board_token on game_sessions grants (~692 tok)
 - `board-state.test.ts` — mig 371 — get_board_state bundles the big-screen board view into one jsonb (~553 tok)
 - `bot-seat.test.ts` — Add CPU on hosted (mig 375). add_bot_to_session seats the PROVISIONED bot (~1072 tok)
 - `carmen.test.ts` — Carmen, Cruel Skymarcher (mig 341). Two new pieces: (~914 tok)
