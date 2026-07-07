@@ -76,4 +76,4 @@ Commander
 1 Temple of Malady
 1 Llanowar Wastes
 17 Forest
-16 Swamp
+15 Swamp

@@ -76,4 +76,4 @@ Commander
 1 Godless Shrine
 12 Plains
 11 Swamp
-11 Mountain
+10 Mountain

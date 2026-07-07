@@ -73,4 +73,4 @@ Commander
 # Lands
 1 Mystic Sanctuary
 1 Reliquary Tower
-35 Island
+34 Island
