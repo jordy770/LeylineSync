@@ -6899,3 +6899,4 @@
 | 17:22 | Edited components/GameSessionLobby.tsx | modified lobby() | ~194 |
 | 17:22 | Edited components/GameSessionLobby.tsx | added 1 import(s) | ~49 |
 | 18:35 | bug-1512: auth-proxy bounced de spectator-bordlink naar login (globale middleware, key-check kwam nooit aan bod) — isSpectatorBoard-exemptie; CastShareControls ook in lobby naast Open board | proxy.ts, GameSessionLobby | tsc+lint+build groen; v0.3.2 keten start | ~40k |
+| 19:00 | v0.3.2 live: spectator-URL met key → 200 (geen login meer), zonder key → 307 naar login (gate intact); cast-knoppen in lobby. Extern geverifieerd | VPS, prod | casting end-to-end werkend | ~10k |
