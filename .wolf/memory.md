@@ -6536,3 +6536,191 @@
 | 10:14 | Edited scripts/seed-precon-decks.mjs | added 1 condition(s) | ~260 |
 | 10:16 | Edited scripts/upsert-deck-scripts.mjs | added 2 condition(s) | ~234 |
 | 12:05 | Edgar Markov gefixt: front-face fallback (naam // %) in seed-precons + upsert catalog-lookup (bug-1509); Edgar-precon live op hosted (100 kaarten) + Bloodline Keeper-script geupsert | seed-precon-decks.mjs, upsert-deck-scripts.mjs | 11 precons live; alleen Fellwar Stone kept-differs (bewust) | ~25k |
+| 10:23 | Created docs/commander-decks/wilhelt-zombies.txt | — | ~343 |
+| 10:24 | Created docs/commander-decks/prosper-treasures.txt | — | ~344 |
+| 10:24 | Created docs/commander-decks/talrand-spellslinger.txt | — | ~312 |
+| 10:24 | Edited docs/commander-decks/wilhelt-zombies.txt | 2→2 lines | ~5 |
+| 10:24 | Edited docs/commander-decks/prosper-treasures.txt | 2→2 lines | ~6 |
+| 10:24 | Edited docs/commander-decks/talrand-spellslinger.txt | 3→2 lines | ~10 |
+| 10:24 | Edited docs/commander-decks/talrand-spellslinger.txt | 3→3 lines | ~13 |
+| 10:25 | Created docs/commander-decks/meren-graveyard.txt | — | ~341 |
+| 10:25 | Created docs/commander-decks/kaalia-angels.txt | — | ~361 |
+| 10:25 | Created docs/commander-decks/ezuri-elves.txt | — | ~310 |
+| 10:26 | Edited docs/commander-decks/talrand-spellslinger.txt | inline fix | ~5 |
+| 13:30 | Deck-batch gestart: 6 nieuwe decklists (Wilhelt/Prosper/Talrand/Meren/Kaalia/Ezuri) geschreven + getriaged (230 needs-build, 206 uniek na dedupe); workflow wf_a93d3b00-a56 draait: 35 chunks author->adversarial-verify->fix, zelf-validerend via validate-one.mts | docs/commander-decks/*.txt, workflow | deck-smoke test scripts runtime (geen fixtures nodig); merge+upsert+seed+release volgen | ~80k |
+| 10:34 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/workflows/scripts/script-deck-batch-wf_a93d3b00-a56.js | added nullish coalescing | ~36 |
+| 10:36 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-one-chunk8.mts | — | ~143 |
+| 10:37 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-one-chunk8.mts | 2→2 lines | ~40 |
+| 10:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/SidisiUndeadVizier.json | — | ~199 |
+| 10:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/NoxiousGhoul.json | — | ~112 |
+| 10:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/RottingRegisaur.json | — | ~55 |
+| 10:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/HerosDownfall.json | — | ~42 |
+| 10:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Counterspell.json | — | ~36 |
+| 10:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Negate.json | — | ~36 |
+| 10:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/LordOfTheUndead.json | — | ~126 |
+| 10:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/UndeadWarchief.json | — | ~51 |
+| 10:37 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ShepherdOfRot.json | — | ~74 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-one-abs.mts | — | ~139 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/PlagueBelcher.json | — | ~171 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/CorpseKnight.json | — | ~74 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/BrasssBounty.json | — | ~51 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ShatteringSpree.json | — | ~37 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/GoblinBombardment.json | — | ~72 |
+| 10:38 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-one-abs.mts | "C:/Users/Jordy/dev/Leylin" → "file:///C:/Users/Jordy/de" | ~29 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MayhemPatrol.json | — | ~92 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-abs.mts | — | ~125 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-one-fileurl.mts | — | ~142 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-abs.mts | — | ~162 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/WeeDragonauts.json | — | ~149 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/AvenWindMage.json | — | ~149 |
+| 10:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/CloudkinSeer.json | — | ~80 |
+| 10:39 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-one.mts | "./lib/game/card-behavior-" → "file:///C:/Users/Jordy/de" | ~29 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ChartACourse.json | — | ~48 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/TreasureCruise.json | — | ~32 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/FranticSearch.json | — | ~66 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/CarefulStudy.json | — | ~48 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/CompulsiveResearch.json | — | ~66 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/CompulsiveResearch.json | — | ~48 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ExclusionMage.json | — | ~76 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/BloodfellCaves.json | — | ~135 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Talrand.json | — | ~112 |
+| 10:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ShipwreckDowser.json | — | ~166 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/EssenceScatter.json | — | ~43 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MurmuringMystic.json | — | ~117 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Cancel.json | — | ~43 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/YoungPyromancer.json | — | ~117 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Archaeomancer.json | — | ~73 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/WilheltTheRotcleaver.json | — | ~227 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ButcherGhoul.json | — | ~13 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/CarrionFeeder.json | — | ~96 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/FyndhornElves.json | — | ~61 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/DiregrafGhoul.json | — | ~15 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/WoodElves.json | — | ~84 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/DreadWanderer.json | — | ~137 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/FarhavenElf.json | — | ~93 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Gravecrawler.json | — | ~55 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Remand.json | — | ~48 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MercilessExecutioner.json | — | ~76 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Shriekmaw.json | — | ~91 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/CausticCaterpillar.json | — | ~81 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Peek.json | — | ~32 |
+| 10:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MindGames.json | — | ~36 |
+| 10:41 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/FranticSearch.json | inline fix | ~20 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ReclamationSage.json | — | ~61 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/EternalWitness.json | — | ~105 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/BoneShredder.json | — | ~90 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Plaguecrafter.json | — | ~76 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/BurnishedHart.json | — | ~112 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/GolgariFindbroker.json | — | ~83 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MeteorGolem.json | — | ~89 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/GraveTitan.json | — | ~125 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/JuriMasterOfTheRevue.json | — | ~65 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/BlinkOfAnEye.json | — | ~46 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/IntoTheRoil.json | — | ~46 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Consider.json | — | ~57 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MarionetteMaster.json | — | ~292 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Curate.json | — | ~57 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/DiscipleOfTheVault.json | — | ~105 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Kokusho.json | — | ~122 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/RecklessFireweaver.json | — | ~79 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ButcherOfMalakir.json | — | ~113 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/KalainReclusivePainter.json | — | ~61 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ThoughtScour.json | — | ~102 |
+| 10:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MentalNote.json | — | ~66 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/AngelOfDespair.json | — | ~90 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/AngelOfSerenity.json | — | ~93 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/AureliaTheWarleader.json | — | ~155 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/AnguishedUnmaking.json | — | ~67 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MysticSanctuary.json | — | ~132 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ReliquaryTower.json | — | ~61 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MerenOfClanNelToth.json | — | ~143 |
+| 10:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/SakuraTribeElder.json | — | ~94 |
+| 10:45 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ElvishMystic.json | — | ~61 |
+| 10:45 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/LlanowarElves.json | — | ~61 |
+| 10:45 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/BloodgiftDemon.json | — | ~133 |
+| 10:45 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ThundermawHellkite.json | — | ~66 |
+| 10:45 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/WirewoodLodge.json | — | ~112 |
+| 10:46 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/PoisonTipArcher.json | — | ~136 |
+| 10:46 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/MaelstromPulse.json | — | ~40 |
+| 10:46 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/GrimHaruspex.json | — | ~72 |
+| 10:46 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/GolgariCharm.json | — | ~239 |
+| 10:46 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/BorosCharm.json | — | ~205 |
+| 10:46 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/OrzhovSignet.json | — | ~100 |
+| 10:46 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/LightningHelix.json | — | ~66 |
+| 10:46 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/UtterEnd.json | — | ~39 |
+| 10:46 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/OverwhelmingStampede.json | — | ~102 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/WrathOfGod.json | — | ~31 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ReturnToNature.json | — | ~237 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/DayOfJudgment.json | — | ~31 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Oblation.json | — | ~41 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Naturalize.json | — | ~42 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/AspectOfHydra.json | — | ~76 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ReturnToDust.json | — | ~46 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/EzuriRenegadeLeader.json | — | ~126 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ArborElf.json | — | ~50 |
+| 10:47 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ArborElf.json | inline fix | ~19 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ElvishVisionary.json | — | ~42 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/LlanowarVisionary.json | — | ~95 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/GreatOakGuardian.json | — | ~114 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/EndRazeForerunners.json | — | ~197 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/RegalForce.json | — | ~57 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/CraterhoofBehemoth.json | — | ~155 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/LeadTheStampede.json | — | ~63 |
+| 10:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ElvishPromenade.json | — | ~67 |
+| 10:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Overrun.json | — | ~68 |
+| 10:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/BorealDruid.json | — | ~61 |
+| 10:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ElvesOfDeepShadow.json | — | ~61 |
+| 10:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ElvishArchdruid.json | — | ~63 |
+| 10:49 | Adversarial verify chunk-8 (Bolt, Dreadbore, Faithless Looting, Thrill, Light Up the Stage, Wrenn's Resolve): 6/6 schema-VALID, notes checked vs schema+precedents (Murderous Rider destroy[creature,planeswalker], Trash for Treasure cost-as-action) | scratchpad/verify-8-*.json | all ok | ~9k |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/WirewoodChanneler.json | — | ~92 |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/LlanowarTribe.json | — | ~61 |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ImperiousPerfect.json | — | ~141 |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ElvishWarmaster.json | — | ~212 |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/DwynenGiltLeafDaen.json | — | ~144 |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ElvishClancaller.json | — | ~173 |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-17-1.json | — | ~48 |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-17-2.json | — | ~32 |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-17-3.json | — | ~36 |
+| 10:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-17-4-landtest.json | — | ~42 |
+| 10:51 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-1-1.json | — | ~301 |
+| 10:51 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-1-2.json | — | ~13 |
+| 10:51 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-1-3.json | — | ~127 |
+| 10:51 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-1-4.json | — | ~15 |
+| 10:51 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-1-5.json | — | ~160 |
+| 10:51 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-1-6.json | — | ~63 |
+| 10:52 | Verified chunk-17 scripts: found guide/schema mismatch — card-behavior-llm.ts claims tap/destroy target_type "land" is supported but BehaviorTargetTypeSchema rejects it | lib/game/card-behavior-llm.ts, lib/game/card-behavior-schema.ts | 3 of 6 verdicts failed (skipped scriptable cantrips) | ~15k |
+| 10:54 | Verified chunk-18 scripts (Blink of an Eye, Into the Roil, Consider, Curate, Thought Scour, Mental Note) — all 6 VALID, kicker-skip confirmed real | scratchpad/verify-18-*.json | all ok | ~9k |
+| 10:54 | Adversarial review chunk-14 (counterspells/bounce): all 6 scripts VALID, all unsupported-reasons confirmed vs handle_counter_spell + ThenRiderSchema + bounce_all | .wolf/memory.md | 6x ok | ~30k |
+| 10:54 | Adversarial review chunk-16 (Chart a Course, Treasure Cruise, Frantic Search, Careful Study, Compulsive Research, Mana Leak): all 5 scripts VALID; land target_type probe INVALID confirms schema/guide mismatch; all partial/unsupported notes verified | scratchpad verify-16-*.json | all ok | ~9k |
+| 10:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-11-1.json | — | ~215 |
+| 10:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-11-2.json | — | ~168 |
+| 10:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-11-3.json | — | ~173 |
+| 10:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-35-1.json | — | ~163 |
+| 10:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-11-4.json | — | ~173 |
+| 10:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-11-5.json | — | ~105 |
+| 10:55 | Adversarial review chunk-11 (Bloodfell Caves, Talrand, Murmuring Mystic, Young Pyromancer, Archaeomancer, Snapcaster) — all 5 scripts VALID, spell_cast/types vocab confirmed, Snapcaster unsupported verdict verified vs cast_spell_effect | scratchpad verify-11-*.json | all ok | ~30k |
+| 10:57 | Adversarial review chunk-21 (Rec Sage, E.Witness, Findbroker, Grave Titan, Kokusho, Butcher): all 6 VALID vs schema; vocab confirmed (num_opponents+times, filter.types/permanent, target_type array mig 114) | .wolf/memory.md | all ok | ~300 |
+| 10:57 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-25-1.json | — | ~66 |
+| 10:57 | Adversarial review chunk-12 (Baral/Gadwick/Naru Meha wrongly skipped; 3 scripts VALID) | .wolf/memory.md | done | ~150 |
+| 10:57 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-25-2.json | — | ~133 |
+| 10:58 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-7-2.json | — | ~104 |
+| 10:58 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-7-3.json | — | ~98 |
+| 10:58 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-7-5.json | — | ~131 |
+| 10:58 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-7-6.json | — | ~106 |
+| 10:59 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Condescend.json | — | ~32 |
+| 10:59 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/SlipThroughSpace.json | — | ~32 |
+| 10:59 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ShadowRift.json | — | ~32 |
+| 10:59 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Mahadi-Emporium-Master.json | — | ~91 |
+| 11:00 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ShepherdOfRot.json | — | ~166 |
+| 11:00 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Gisela-Blade-of-Goldnight.json | — | ~68 |
+| 11:00 | Adversarial review chunk-7 (Terror of the Peaks, Bone Shredder, Plaguecrafter, Ophiomancer, Burnished Hart, Meteor Golem): all 4 scripts VALID, 2 unsupported verdicts verified against engine (no power_of:triggering_creature, no Snake token, no each-upkeep event) | scratchpad/verify-7-*.json | all ok | ~30k |
+| 11:01 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-29-1.json | — | ~61 |
+| 11:01 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-29-2.json | — | ~61 |
+| 11:01 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/verify-29-4.json | — | ~74 |
+| 11:01 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Baral-Chief-of-Compliance.json | — | ~106 |
+| 11:01 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Gadwick-the-Wizened.json | — | ~98 |
+| 11:01 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/Naru-Meha-Master-Wizard.json | — | ~75 |
+| 11:04 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/WildbornPreserver.json | — | ~47 |
+| 11:04 | chunk-28 adversarial review: 6/6 scripts VALID, all pass (Wrath/DoJ/Oblation/RtD/Ezuri/Arbor Elf); land target_type confirmed rejected by schema | .wolf/memory.md | ok | ~30k |
+| 11:14 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/LightningHelix.json | — | ~46 |
+| 15:20 | Workflow klaar: 78 agents, 6.1M tokens, 40 min — 174 kaarten gescript / 32 eerlijk unsupported (van 206); merge -> 808 curated scripts; deck-smoke 806/806 na 1 fix (Meteor Golem array-target_type -> permanent) | card-scripts.json | 6 nieuwe decks klaar voor upsert+seed | ~60k |

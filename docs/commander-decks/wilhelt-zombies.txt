@@ -1,0 +1,77 @@
+# Wilhelt, the Rotcleaver — UB zombie tribal (100 cards)
+
+Commander
+1 Wilhelt, the Rotcleaver
+
+# Creatures
+1 Cemetery Reaper
+1 Lord of the Accursed
+1 Diregraf Captain
+1 Death Baron
+1 Undead Augur
+1 Midnight Reaper
+1 Vengeful Dead
+1 Gleaming Overseer
+1 Champion of the Perished
+1 Gravespawn Sovereign
+1 Marauding Blight-Priest
+1 Gray Merchant of Asphodel
+1 Butcher Ghoul
+1 Carrion Feeder
+1 Diregraf Ghoul
+1 Dread Wanderer
+1 Gravecrawler
+1 Highborn Ghoul
+1 Lord of the Undead
+1 Undead Warchief
+1 Shepherd of Rot
+1 Plague Belcher
+1 Wight of Precinct Six
+1 Corpse Knight
+1 Sidisi, Undead Vizier
+1 Overseer of the Damned
+1 Noxious Ghoul
+1 Rotting Regisaur
+
+# Spells
+1 Sol Ring
+1 Arcane Signet
+1 Dimir Signet
+1 Commander's Sphere
+1 Swiftfoot Boots
+1 Murder
+1 Feed the Swarm
+1 Hero's Downfall
+1 Counterspell
+1 Negate
+1 Sinister Sabotage
+1 Undermine
+1 Raise Dead
+1 Reanimate
+1 Animate Dead
+1 Zombify
+1 Rise from the Grave
+1 Mind Rot
+1 Sign in Blood
+1 Read the Bones
+1 Divination
+1 Opt
+1 Preordain
+1 Army of the Damned
+1 Necromantic Selection
+1 Patriarch's Bidding
+1 Liliana's Mastery
+1 Open the Graves
+1 Curse of Disturbance
+1 Kindred Discovery
+
+# Lands
+1 Command Tower
+1 Dimir Aqueduct
+1 Choked Estuary
+1 Sunken Hollow
+1 Drowned Catacomb
+1 Watery Grave
+1 Temple of Deceit
+19 Swamp
+15 Island

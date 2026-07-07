@@ -17354,5 +17354,3770 @@
         ]
       }
     ]
+  },
+  "Wilhelt, the Rotcleaver": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "type_line": "Zombie",
+          "controller": "you",
+          "exclude_self": true,
+          "nontoken": true
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Zombie Token",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "event": "beginning_of_end_step",
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Sacrifice a Zombie to draw a card?",
+            "program": true,
+            "condition": {
+              "count": "creatures_you_control",
+              "type_line": "Zombie",
+              "at_least": 1
+            },
+            "effects": [
+              {
+                "type": "sacrifice",
+                "who": "you",
+                "count": 1,
+                "filter": {
+                  "type_line": "Zombie"
+                }
+              },
+              {
+                "type": "draw",
+                "amount": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Butcher Ghoul": {
+    "schema_version": 2,
+    "undying": true
+  },
+  "Carrion Feeder": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "cant_block",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "sacrifice_creature"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_counters",
+            "amount": 1,
+            "counter_type": "plus_one_one"
+          }
+        ]
+      }
+    ]
+  },
+  "Diregraf Ghoul": {
+    "schema_version": 2,
+    "enters_tapped": true
+  },
+  "Dread Wanderer": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "activated_abilities": [
+      {
+        "label": "Return this card from your graveyard to the battlefield",
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{2}{B}"
+          }
+        ],
+        "source_zone_required": "graveyard",
+        "effects": [
+          {
+            "type": "return_from_graveyard",
+            "to": "battlefield",
+            "count": 1,
+            "filter": {
+              "type_line": "Zombie",
+              "max_mana_value": 1
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Gravecrawler": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "cant_block",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "graveyard_cast_cost": {
+      "mana": "{B}"
+    }
+  },
+  "Lord of the Undead": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "all",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Zombie",
+          "exclude_source": true
+        }
+      }
+    ],
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}{B}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "return_from_graveyard",
+            "count": 1,
+            "to": "hand",
+            "filter": {
+              "type_line": "Zombie"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Undead Warchief": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 2,
+          "toughness": 1,
+          "creature_type": "Zombie"
+        }
+      }
+    ]
+  },
+  "Shepherd of Rot": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": {
+              "count": "creatures_you_control",
+              "type_line": "Zombie"
+            },
+            "recipient": "each_opponent"
+          },
+          {
+            "type": "lose_life",
+            "amount": {
+              "count": "creatures_you_control",
+              "type_line": "Zombie"
+            },
+            "recipient": "controller"
+          }
+        ]
+      }
+    ]
+  },
+  "Plague Belcher": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "menace",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "add_counters",
+            "amount": 2,
+            "counter_type": "minus_one_one",
+            "target_type": "creature",
+            "target_controller": "you"
+          }
+        ]
+      },
+      {
+        "event": "creature_died",
+        "filter": {
+          "type_line": "Zombie",
+          "controller": "you",
+          "exclude_self": true
+        },
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "each_opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Corpse Knight": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "exclude_self": true
+        },
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "each_opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Sidisi, Undead Vizier": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "deathtouch",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Exploit — sacrifice a creature? If you do, search your library for a card and put it into your hand.",
+            "program": true,
+            "condition": {
+              "count": "creatures_you_control",
+              "at_least": 1
+            },
+            "effects": [
+              {
+                "type": "sacrifice",
+                "who": "you",
+                "count": 1
+              },
+              {
+                "type": "search_library",
+                "count": 1,
+                "to": "hand"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Noxious Ghoul": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "type_line": "Zombie",
+          "controller": "any"
+        },
+        "effects": [
+          {
+            "type": "pump_all",
+            "power": -1,
+            "toughness": -1,
+            "scope": "all",
+            "creature_type": "Zombie",
+            "exclude_type": true
+          }
+        ]
+      }
+    ]
+  },
+  "Rotting Regisaur": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "beginning_of_upkeep",
+        "effects": [
+          {
+            "type": "discard",
+            "count": 1,
+            "who": "you"
+          }
+        ]
+      }
+    ]
+  },
+  "Hero's Downfall": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": [
+            "creature",
+            "planeswalker"
+          ]
+        }
+      ]
+    }
+  },
+  "Counterspell": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Negate": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Raise Dead": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "return_from_graveyard",
+          "to": "hand",
+          "count": 1,
+          "filter": {
+            "type_line": "creature"
+          }
+        }
+      ]
+    }
+  },
+  "Zombify": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "return_from_graveyard",
+          "to": "battlefield",
+          "count": 1,
+          "filter": {
+            "type_line": "creature"
+          }
+        }
+      ]
+    }
+  },
+  "Rise from the Grave": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "return_from_graveyard",
+          "to": "battlefield",
+          "count": 1,
+          "from": "all_graveyards",
+          "control": "decider",
+          "filter": {
+            "type_line": "creature"
+          }
+        }
+      ]
+    }
+  },
+  "Mind Rot": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "discard",
+          "count": 2,
+          "who": "opponent"
+        }
+      ]
+    }
+  },
+  "Sign in Blood": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "choose_player",
+          "filter": "any",
+          "effects": [
+            {
+              "type": "draw",
+              "amount": 2
+            },
+            {
+              "type": "lose_life",
+              "amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Preordain": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "scry",
+          "amount": 2
+        },
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Kindred Discovery": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "choose_creature_type",
+            "effects": []
+          }
+        ]
+      },
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "type_line": "$chosen"
+        },
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "event": "creature_attacks",
+        "filter": {
+          "controller": "you",
+          "type_line": "$chosen"
+        },
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Prosper, Tome-Bound": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "deathtouch",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "beginning_of_end_step",
+        "effects": [
+          {
+            "type": "impulse",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "event": "cast_from_exile",
+        "filter": {
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Treasure Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Ragavan, Nimble Pilferer": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "dealt_combat_damage_to_player",
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Treasure Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Imperial Recruiter": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "search_library",
+            "count": 1,
+            "to": "hand",
+            "reveal": true,
+            "filter": {
+              "type_line": "creature"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Mahadi, Emporium Master": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "beginning_of_end_step",
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Treasure Token",
+            "count": {
+              "count": "nontoken_creatures_died_this_turn"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Juri, Master of the Revue": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "permanent_sacrificed",
+        "filter": {
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "add_counters",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Marionette Master": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "choose_one",
+            "prompt": "Fabricate 3",
+            "modes": [
+              {
+                "label": "Put three +1/+1 counters on this creature",
+                "actions": [
+                  {
+                    "type": "add_counters",
+                    "amount": 3
+                  }
+                ]
+              },
+              {
+                "label": "Create three 1/1 colorless Servo artifact creature tokens",
+                "actions": [
+                  {
+                    "type": "create_token",
+                    "token": "Servo Token",
+                    "count": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "event": "creature_died",
+        "filter": {
+          "type_line": "artifact",
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "choose_player",
+            "filter": "opponent",
+            "effects": [
+              {
+                "type": "lose_life",
+                "amount": {
+                  "power_of": "source"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Disciple of the Vault": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "type_line": "artifact",
+          "controller": "any"
+        },
+        "effects": [
+          {
+            "type": "choose_player",
+            "filter": "opponent",
+            "effects": [
+              {
+                "type": "lose_life",
+                "amount": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Reckless Fireweaver": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "type_line": "artifact",
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 1,
+            "recipient": "each_opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Kalain, Reclusive Painter": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Treasure Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Bone Shredder": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "destroy",
+            "target_type": "creature"
+          }
+        ]
+      }
+    ]
+  },
+  "Plaguecrafter": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "sacrifice",
+            "who": "you",
+            "count": 1
+          },
+          {
+            "type": "sacrifice",
+            "who": "each_opponent",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Burnished Hart": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{3}"
+          },
+          {
+            "type": "sacrifice_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "search_library",
+            "count": 2,
+            "to": "battlefield",
+            "tapped": true,
+            "filter": {
+              "type_line": "Basic Land"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Meteor Golem": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "destroy",
+            "target_type": "permanent",
+            "target_controller": "opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Lightning Bolt": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "deal_damage",
+          "amount": 3,
+          "target_type": [
+            "creature",
+            "player"
+          ]
+        }
+      ]
+    }
+  },
+  "Dreadbore": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": [
+            "creature",
+            "planeswalker"
+          ]
+        }
+      ]
+    }
+  },
+  "Faithless Looting": {
+    "schema_version": 2,
+    "flashback": "{2}{R}",
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "discard",
+          "count": 2,
+          "who": "you"
+        }
+      ]
+    }
+  },
+  "Thrill of Possibility": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "discard",
+          "count": 1,
+          "who": "you"
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        }
+      ]
+    }
+  },
+  "Light Up the Stage": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "impulse",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Wrenn's Resolve": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "impulse",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Reckless Impulse": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "impulse",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Big Score": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "discard",
+          "count": 1,
+          "who": "you"
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "create_token",
+          "token": "Treasure Token",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Unexpected Windfall": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "discard",
+          "count": 1,
+          "who": "you"
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "create_token",
+          "token": "Treasure Token",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Seize the Spoils": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "discard",
+          "count": 1,
+          "who": "you"
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "create_token",
+          "token": "Treasure Token",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "Strike It Rich": {
+    "schema_version": 2,
+    "flashback": "{2}{R}",
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Treasure Token",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "Pirate's Pillage": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "discard",
+          "count": 1,
+          "who": "you"
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "create_token",
+          "token": "Treasure Token",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Brass's Bounty": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Treasure Token",
+          "count": {
+            "count": "lands_you_control"
+          }
+        }
+      ]
+    }
+  },
+  "Shattering Spree": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "artifact"
+        }
+      ]
+    }
+  },
+  "Goblin Bombardment": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "sacrifice_creature"
+          }
+        ],
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": 1,
+            "target_type": [
+              "creature",
+              "player"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Mayhem Patrol": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "menace",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "pump",
+            "power": 1,
+            "toughness": 0,
+            "target_type": "creature"
+          }
+        ]
+      }
+    ]
+  },
+  "Bloodfell Caves": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "gain_life",
+            "amount": 1
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "R",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Talrand, Sky Summoner": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Instant"
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Drake Token",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Sorcery"
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Drake Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Murmuring Mystic": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Instant"
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Bird Illusion Token",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Sorcery"
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Bird Illusion Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Young Pyromancer": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Instant"
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Red Elemental Token",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Sorcery"
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Red Elemental Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Archaeomancer": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "return_from_graveyard",
+            "to": "hand",
+            "count": 1,
+            "filter": {
+              "types": [
+                "instant",
+                "sorcery"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Baral, Chief of Compliance": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "cost_reduction",
+        "affected": "controller",
+        "payload": {
+          "type_line": "Instant",
+          "amount": 1
+        }
+      },
+      {
+        "type": "cost_reduction",
+        "affected": "controller",
+        "payload": {
+          "type_line": "Sorcery",
+          "amount": 1
+        }
+      }
+    ]
+  },
+  "Gadwick, the Wizened": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "spell_color": "U"
+        },
+        "effects": [
+          {
+            "type": "tap",
+            "target_type": "nonland_permanent",
+            "target_controller": "opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Naru Meha, Master Wizard": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Wizard",
+          "exclude_source": true
+        }
+      }
+    ]
+  },
+  "Wee Dragonauts": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Instant"
+        },
+        "effects": [
+          {
+            "type": "pump",
+            "power": 2,
+            "toughness": 0
+          }
+        ]
+      },
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Sorcery"
+        },
+        "effects": [
+          {
+            "type": "pump",
+            "power": 2,
+            "toughness": 0
+          }
+        ]
+      }
+    ]
+  },
+  "Cloudkin Seer": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Aven Wind Mage": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Instant"
+        },
+        "effects": [
+          {
+            "type": "pump",
+            "power": 1,
+            "toughness": 1
+          }
+        ]
+      },
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Sorcery"
+        },
+        "effects": [
+          {
+            "type": "pump",
+            "power": 1,
+            "toughness": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Exclusion Mage": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "bounce",
+            "target_type": "creature",
+            "target_controller": "opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Shipwreck Dowser": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "exclude_type": "Creature"
+        },
+        "effects": [
+          {
+            "type": "pump",
+            "power": 1,
+            "toughness": 1
+          }
+        ]
+      },
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "return_from_graveyard",
+            "to": "hand",
+            "count": 1,
+            "filter": {
+              "types": [
+                "instant",
+                "sorcery"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Essence Scatter": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Cancel": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Dissolve": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Exclude": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Swan Song": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Vapor Snag": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "bounce",
+          "target_type": "creature"
+        }
+      ]
+    }
+  },
+  "Cyclonic Rift": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "bounce",
+          "target_type": "nonland_permanent",
+          "target_controller": "opponent"
+        }
+      ]
+    }
+  },
+  "Echoing Truth": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "bounce",
+          "target_type": "nonland_permanent"
+        }
+      ]
+    }
+  },
+  "Boomerang": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "bounce",
+          "target_type": "permanent"
+        }
+      ]
+    }
+  },
+  "Ponder": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "scry",
+          "amount": 3
+        },
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Serum Visions": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 1
+        },
+        {
+          "type": "scry",
+          "amount": 2
+        }
+      ]
+    }
+  },
+  "Concentrate": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 3
+        }
+      ]
+    }
+  },
+  "Chart a Course": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "discard",
+          "count": 1,
+          "who": "you"
+        }
+      ]
+    }
+  },
+  "Treasure Cruise": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 3
+        }
+      ]
+    }
+  },
+  "Frantic Search": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "discard",
+          "count": 2,
+          "who": "you"
+        },
+        {
+          "type": "untap",
+          "target_type": "permanent",
+          "targets": 3
+        }
+      ]
+    }
+  },
+  "Careful Study": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 2
+        },
+        {
+          "type": "discard",
+          "count": 2,
+          "who": "you"
+        }
+      ]
+    }
+  },
+  "Compulsive Research": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 3
+        },
+        {
+          "type": "discard",
+          "count": 2,
+          "who": "you"
+        }
+      ]
+    }
+  },
+  "Remand": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        },
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Condescend": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "scry",
+          "amount": 2
+        }
+      ]
+    }
+  },
+  "Peek": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Slip Through Space": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Shadow Rift": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Mind Games": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "tap",
+          "target_type": "permanent"
+        }
+      ]
+    }
+  },
+  "Blink of an Eye": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "bounce",
+          "target_type": "nonland_permanent"
+        }
+      ]
+    }
+  },
+  "Into the Roil": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "bounce",
+          "target_type": "nonland_permanent"
+        }
+      ]
+    }
+  },
+  "Consider": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "surveil",
+          "amount": 1
+        },
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Curate": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "surveil",
+          "amount": 2
+        },
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Thought Scour": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "choose_player",
+          "filter": "any",
+          "effects": [
+            {
+              "type": "mill",
+              "amount": 2,
+              "recipient": "controller"
+            }
+          ]
+        },
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Mental Note": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "mill",
+          "amount": 2,
+          "recipient": "controller"
+        },
+        {
+          "type": "draw",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "Mystic Sanctuary": {
+    "schema_version": 2,
+    "enters_tapped": {
+      "unless": {
+        "count": "lands_you_control",
+        "type_line": "Island",
+        "at_least": 3
+      }
+    },
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "U",
+            "amount": 1
+          }
+        ]
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "graveyard_to_library_top"
+          }
+        ]
+      }
+    ]
+  },
+  "Reliquary Tower": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Meren of Clan Nel Toth": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "controller": "you",
+          "exclude_self": true
+        },
+        "effects": [
+          {
+            "type": "add_player_counters",
+            "amount": 1,
+            "counter_type": "experience",
+            "recipient": "controller"
+          }
+        ]
+      },
+      {
+        "event": "beginning_of_end_step",
+        "effects": [
+          {
+            "type": "return_from_graveyard",
+            "to": "battlefield",
+            "count": 1,
+            "filter": {
+              "type_line": "creature"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Sakura-Tribe Elder": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "sacrifice_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "search_library",
+            "count": 1,
+            "to": "battlefield",
+            "tapped": true,
+            "filter": {
+              "type_line": "Basic Land"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Elvish Mystic": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Llanowar Elves": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Fyndhorn Elves": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Wood Elves": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "search_library",
+            "count": 1,
+            "to": "battlefield",
+            "filter": {
+              "type_line": "Forest"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Farhaven Elf": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "search_library",
+            "count": 1,
+            "to": "battlefield",
+            "tapped": true,
+            "filter": {
+              "type_line": "basic land"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Merciless Executioner": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "sacrifice",
+            "who": "you",
+            "count": 1
+          },
+          {
+            "type": "sacrifice",
+            "who": "each_opponent",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Shriekmaw": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "intimidate",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "destroy",
+            "target_type": "creature"
+          }
+        ]
+      }
+    ]
+  },
+  "Caustic Caterpillar": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}{G}"
+          },
+          {
+            "type": "sacrifice_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "destroy",
+            "target_type": [
+              "artifact",
+              "enchantment"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Reclamation Sage": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "destroy",
+            "target_type": [
+              "artifact",
+              "enchantment"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Eternal Witness": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "return_from_graveyard",
+            "count": 1,
+            "to": "hand",
+            "filter": {
+              "types": [
+                "creature",
+                "artifact",
+                "enchantment",
+                "land",
+                "planeswalker",
+                "instant",
+                "sorcery"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Golgari Findbroker": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "return_from_graveyard",
+            "count": 1,
+            "to": "hand",
+            "filter": {
+              "permanent": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Grave Titan": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "deathtouch",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Zombie Token",
+            "count": 2
+          }
+        ]
+      },
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Zombie Token",
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  "Kokusho, the Evening Star": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "dies",
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 5,
+            "recipient": "each_opponent"
+          },
+          {
+            "type": "gain_life",
+            "amount": {
+              "count": "num_opponents",
+              "times": 5
+            },
+            "recipient": "controller"
+          }
+        ]
+      }
+    ]
+  },
+  "Butcher of Malakir": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "sacrifice",
+            "who": "each_opponent",
+            "count": 1,
+            "filter": {
+              "type_line": "creature"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Poison-Tip Archer": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "reach",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "deathtouch",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "controller": "any",
+          "exclude_self": true
+        },
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "each_opponent"
+          }
+        ]
+      }
+    ]
+  },
+  "Maelstrom Pulse": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": "nonland_permanent"
+        }
+      ]
+    }
+  },
+  "Grim Haruspex": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "controller": "you",
+          "exclude_self": true,
+          "nontoken": true
+        },
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Golgari Charm": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "choose_one",
+          "prompt": "Golgari Charm",
+          "modes": [
+            {
+              "label": "All creatures get -1/-1 until end of turn",
+              "actions": [
+                {
+                  "type": "pump_all",
+                  "power": -1,
+                  "toughness": -1,
+                  "scope": "all"
+                }
+              ]
+            },
+            {
+              "label": "Destroy target enchantment",
+              "actions": [
+                {
+                  "type": "destroy",
+                  "target_type": "enchantment"
+                }
+              ]
+            },
+            {
+              "label": "Regenerate each creature you control (indestructible until end of turn)",
+              "actions": [
+                {
+                  "type": "grant_keyword_all",
+                  "keyword": "indestructible",
+                  "scope": "controller"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Diabolic Intent": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "sacrifice",
+          "who": "you",
+          "count": 1,
+          "filter": {
+            "type_line": "creature"
+          }
+        },
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand"
+        }
+      ]
+    }
+  },
+  "Demonic Tutor": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand"
+        }
+      ]
+    }
+  },
+  "Jarad's Orders": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "hand",
+          "reveal": true,
+          "filter": {
+            "type_line": "creature"
+          }
+        },
+        {
+          "type": "search_library",
+          "count": 1,
+          "to": "graveyard",
+          "reveal": true,
+          "filter": {
+            "type_line": "creature"
+          }
+        }
+      ]
+    }
+  },
+  "Village Rites": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "sacrifice",
+          "who": "you",
+          "count": 1,
+          "filter": {
+            "type_line": "creature"
+          }
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        }
+      ]
+    }
+  },
+  "Golgari Rot Farm": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "bounce_up_to",
+            "count": 1,
+            "target_filter": {
+              "controller": "you",
+              "type_line": "land"
+            }
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          },
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Jungle Hollow": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "gain_life",
+            "amount": 1
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Woodland Cemetery": {
+    "schema_version": 2,
+    "enters_tapped": {
+      "unless": {
+        "control_type": [
+          "Swamp",
+          "Forest"
+        ]
+      }
+    },
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Llanowar Wastes": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Kaalia of the Vast": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "put_from_hand",
+            "count": 1,
+            "filter": {
+              "type_line": "creature"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Baneslayer Angel": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "first_strike",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "lifelink",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ]
+  },
+  "Lyra Dawnbringer": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "first_strike",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "lifelink",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Angel",
+          "exclude_source": true
+        },
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "lifelink",
+        "affected": "controller",
+        "payload": {
+          "creature_type": "Angel",
+          "exclude_source": true
+        },
+        "source_zone_required": "battlefield"
+      }
+    ]
+  },
+  "Shivan Dragon": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{R}"
+          }
+        ],
+        "effects": [
+          {
+            "type": "pump",
+            "power": 1,
+            "toughness": 0,
+            "target_type": "creature",
+            "target_controller": "you"
+          }
+        ]
+      }
+    ]
+  },
+  "Thundermaw Hellkite": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "haste",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ]
+  },
+  "Bloodgift Demon": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "beginning_of_upkeep",
+        "effects": [
+          {
+            "type": "choose_player",
+            "filter": "any",
+            "effects": [
+              {
+                "type": "draw",
+                "amount": 1
+              },
+              {
+                "type": "lose_life",
+                "amount": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Angel of Despair": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "destroy",
+            "target_type": "permanent"
+          }
+        ]
+      }
+    ]
+  },
+  "Angel of Serenity": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "exile_until_leaves",
+            "target_type": "creature"
+          }
+        ]
+      }
+    ]
+  },
+  "Aurelia, the Warleader": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "vigilance",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "haste",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "attacks",
+        "once_per_turn": true,
+        "effects": [
+          {
+            "type": "untap_all",
+            "target_controller": "you"
+          },
+          {
+            "type": "extra_combat"
+          }
+        ]
+      }
+    ]
+  },
+  "Gisela, Blade of Goldnight": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "first_strike",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ]
+  },
+  "Anguished Unmaking": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "exile",
+          "target_type": "nonland_permanent",
+          "then": [
+            {
+              "type": "lose_life",
+              "amount": 3
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Orzhov Signet": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "W",
+            "amount": 1
+          },
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Lightning Helix": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "deal_damage",
+          "amount": 3,
+          "target_type": [
+            "creature",
+            "player"
+          ]
+        }
+      ]
+    }
+  },
+  "Utter End": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "exile",
+          "target_type": "nonland_permanent"
+        }
+      ]
+    }
+  },
+  "Wrath of God": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy_all"
+        }
+      ]
+    }
+  },
+  "Day of Judgment": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy_all"
+        }
+      ]
+    }
+  },
+  "Oblation": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "shuffle_into_library",
+          "target_type": "permanent"
+        }
+      ]
+    }
+  },
+  "Return to Dust": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "exile",
+          "target_type": [
+            "artifact",
+            "enchantment"
+          ],
+          "targets": 2
+        }
+      ]
+    }
+  },
+  "Ezuri, Renegade Leader": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "label": "Elves get +3/+3 and trample until end of turn",
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{2}{G}{G}{G}"
+          }
+        ],
+        "effects": [
+          {
+            "type": "pump_all",
+            "power": 3,
+            "toughness": 3,
+            "scope": "controller",
+            "creature_type": "Elf"
+          },
+          {
+            "type": "grant_keyword_all",
+            "keyword": "trample",
+            "scope": "controller",
+            "creature_type": "Elf"
+          }
+        ]
+      }
+    ]
+  },
+  "Arbor Elf": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "untap",
+            "target_type": "permanent"
+          }
+        ]
+      }
+    ]
+  },
+  "Boreal Druid": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Elves of Deep Shadow": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Elvish Archdruid": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Elf",
+          "exclude_source": true
+        }
+      }
+    ]
+  },
+  "Llanowar Tribe": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 3
+          }
+        ]
+      }
+    ]
+  },
+  "Imperious Perfect": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Elf",
+          "exclude_source": true
+        }
+      }
+    ],
+    "activated_abilities": [
+      {
+        "label": "Create a 1/1 green Elf Warrior creature token",
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{G}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Elf Warrior Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Elvish Warmaster": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "type_line": "Elf",
+          "controller": "you",
+          "exclude_self": true
+        },
+        "once_per_turn": true,
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Elf Warrior Token",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "label": "Elves you control get +2/+2 and gain deathtouch until end of turn",
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{5}{G}{G}"
+          }
+        ],
+        "effects": [
+          {
+            "type": "pump_all",
+            "power": 2,
+            "toughness": 2,
+            "scope": "controller",
+            "creature_type": "Elf"
+          },
+          {
+            "type": "grant_keyword_all",
+            "keyword": "deathtouch",
+            "scope": "controller",
+            "creature_type": "Elf"
+          }
+        ]
+      }
+    ]
+  },
+  "Dwynen, Gilt-Leaf Daen": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "reach",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Elf",
+          "exclude_source": true
+        }
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "creature_attacks",
+        "filter": {
+          "type_line": "Elf",
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "gain_life",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Elvish Clancaller": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Elf",
+          "exclude_source": true
+        }
+      }
+    ],
+    "activated_abilities": [
+      {
+        "label": "Search your library for a card named Elvish Clancaller, put it onto the battlefield, then shuffle",
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{4}{G}{G}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "search_library",
+            "count": 1,
+            "to": "battlefield",
+            "filter": {
+              "name": "Elvish Clancaller"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Canopy Tactician": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "controller",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Elf",
+          "exclude_source": true
+        }
+      }
+    ],
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 3
+          }
+        ]
+      }
+    ]
+  },
+  "Jagged-Scar Archers": {
+    "schema_version": 2,
+    "cda": {
+      "power": {
+        "count": "creatures_you_control",
+        "type_line": "Elf"
+      },
+      "toughness": {
+        "count": "creatures_you_control",
+        "type_line": "Elf"
+      }
+    },
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": {
+              "power_of": "source"
+            },
+            "target_type": "creature"
+          }
+        ]
+      }
+    ]
+  },
+  "Elvish Champion": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "all",
+        "payload": {
+          "power": 1,
+          "toughness": 1,
+          "creature_type": "Elf",
+          "exclude_source": true
+        }
+      }
+    ]
+  },
+  "Wellwisher": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "gain_life",
+            "amount": {
+              "count": "creatures_you_control",
+              "type_line": "Elf"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Essence Warden": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "any",
+          "exclude_self": true
+        },
+        "effects": [
+          {
+            "type": "gain_life",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Beast Whisperer": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "creature"
+        },
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Elvish Visionary": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Llanowar Visionary": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "G",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Wildborn Preserver": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "reach",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ]
+  },
+  "Great Oak Guardian": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "reach",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "pump_all",
+            "power": 2,
+            "toughness": 2,
+            "scope": "controller"
+          },
+          {
+            "type": "untap_all",
+            "target_controller": "you"
+          }
+        ]
+      }
+    ]
+  },
+  "Regal Force": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "draw",
+            "amount": {
+              "count": "creatures_you_control"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "End-Raze Forerunners": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "vigilance",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "trample",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "haste",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "pump_all",
+            "power": 2,
+            "toughness": 2,
+            "scope": "controller"
+          },
+          {
+            "type": "grant_keyword_all",
+            "keyword": "vigilance",
+            "scope": "controller"
+          },
+          {
+            "type": "grant_keyword_all",
+            "keyword": "trample",
+            "scope": "controller"
+          }
+        ]
+      }
+    ]
+  },
+  "Craterhoof Behemoth": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "haste",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "grant_keyword_all",
+            "keyword": "trample",
+            "scope": "controller"
+          },
+          {
+            "type": "pump_all",
+            "power": {
+              "count": "creatures_you_control"
+            },
+            "toughness": {
+              "count": "creatures_you_control"
+            },
+            "scope": "controller"
+          }
+        ]
+      }
+    ]
+  },
+  "Lead the Stampede": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "look_top",
+          "count": 5,
+          "to": "hand",
+          "picks": 5,
+          "filter": {
+            "creature": true
+          }
+        }
+      ]
+    }
+  },
+  "Elvish Promenade": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Elf Warrior Token",
+          "count": {
+            "count": "creatures_you_control",
+            "type_line": "Elf"
+          }
+        }
+      ]
+    }
+  },
+  "Overrun": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "pump_all",
+          "power": 3,
+          "toughness": 3,
+          "scope": "controller"
+        },
+        {
+          "type": "grant_keyword_all",
+          "keyword": "trample",
+          "scope": "controller"
+        }
+      ]
+    }
+  },
+  "Overwhelming Stampede": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "pump_all",
+          "power": {
+            "count": "greatest_power_you_control"
+          },
+          "toughness": {
+            "count": "greatest_power_you_control"
+          },
+          "scope": "controller"
+        },
+        {
+          "type": "grant_keyword_all",
+          "keyword": "trample",
+          "scope": "controller"
+        }
+      ]
+    }
+  },
+  "Return to Nature": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "choose_one",
+          "prompt": "Choose one",
+          "modes": [
+            {
+              "label": "Destroy target artifact",
+              "actions": [
+                {
+                  "type": "destroy_up_to",
+                  "count": 1,
+                  "target_filter": {
+                    "controller": "any",
+                    "type_line": "artifact"
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Destroy target enchantment",
+              "actions": [
+                {
+                  "type": "destroy_up_to",
+                  "count": 1,
+                  "target_filter": {
+                    "controller": "any",
+                    "type_line": "enchantment"
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Exile target card from a graveyard",
+              "actions": [
+                {
+                  "type": "exile_from_any_graveyard"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Naturalize": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": [
+            "artifact",
+            "enchantment"
+          ]
+        }
+      ]
+    }
+  },
+  "Aspect of Hydra": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "pump",
+          "power": {
+            "count": "devotion",
+            "color": "G"
+          },
+          "toughness": {
+            "count": "devotion",
+            "color": "G"
+          },
+          "target_type": "creature"
+        }
+      ]
+    }
+  },
+  "Wirewood Lodge": {
+    "schema_version": 2,
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "C",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{G}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "untap",
+            "target_type": "creature"
+          }
+        ]
+      }
+    ]
   }
 }

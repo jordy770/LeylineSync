@@ -17234,6 +17234,102 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-07T12:05:00+02:00"
+    },
+    {
+      "id": "bug-1053",
+      "timestamp": "2026-07-07T08:34:35.007Z",
+      "error_message": "Null/undefined access in ",
+      "file": "../../.claude/projects/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/workflows/scripts/script-deck-batch-wf_a93d3b00-a56.js",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T08:34:35.007Z"
+    },
+    {
+      "id": "bug-1054",
+      "timestamp": "2026-07-07T08:37:16.931Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-one-chunk8.mts",
+      "root_cause": "Had 'C:/Users/Jordy/dev/LeylineSync/lib/game/card-beha",
+      "fix": "Changed to 'file:///C:/Users/Jordy/dev/LeylineSync/lib/game/c",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T08:37:16.931Z"
+    },
+    {
+      "id": "bug-1055",
+      "timestamp": "2026-07-07T08:38:20.533Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-one-abs.mts",
+      "root_cause": "Had 'C:/Users/Jordy/dev/LeylineSync/lib/game/card-beha",
+      "fix": "Changed to 'file:///C:/Users/Jordy/dev/LeylineSync/lib/game/c",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T08:38:20.533Z"
+    },
+    {
+      "id": "bug-1056",
+      "timestamp": "2026-07-07T08:39:40.010Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/validate-one.mts",
+      "root_cause": "Had './lib/game/card-behavior-schema'",
+      "fix": "Changed to 'file:///C:/Users/Jordy/dev/LeylineSync/lib/game/c",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T08:39:40.010Z"
+    },
+    {
+      "id": "bug-1057",
+      "timestamp": "2026-07-07T08:41:42.969Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/FranticSearch.json",
+      "root_cause": "Had \"land\"",
+      "fix": "Changed to \"permanent\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T08:41:42.969Z"
+    },
+    {
+      "id": "bug-1058",
+      "timestamp": "2026-07-07T08:47:42.366Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/ArborElf.json",
+      "root_cause": "Had \"land\"",
+      "fix": "Changed to \"permanent\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T08:47:42.366Z"
     }
   ]
 }

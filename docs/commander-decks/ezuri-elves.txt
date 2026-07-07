@@ -1,0 +1,69 @@
+# Ezuri, Renegade Leader — mono-green elves (100 cards)
+
+Commander
+1 Ezuri, Renegade Leader
+
+# Creatures
+1 Llanowar Elves
+1 Elvish Mystic
+1 Fyndhorn Elves
+1 Arbor Elf
+1 Boreal Druid
+1 Elves of Deep Shadow
+1 Priest of Titania
+1 Elvish Archdruid
+1 Marwyn, the Nurturer
+1 Circle of Dreams Druid
+1 Wirewood Channeler
+1 Llanowar Tribe
+1 Imperious Perfect
+1 Elvish Warmaster
+1 Dwynen, Gilt-Leaf Daen
+1 Elvish Clancaller
+1 Canopy Tactician
+1 Jagged-Scar Archers
+1 Elvish Champion
+1 Wellwisher
+1 Essence Warden
+1 Reclamation Sage
+1 Wood Elves
+1 Farhaven Elf
+1 Springbloom Druid
+1 Beast Whisperer
+1 Elvish Visionary
+1 Llanowar Visionary
+1 Wildborn Preserver
+1 Steel Leaf Champion
+1 Great Oak Guardian
+1 Regal Force
+1 End-Raze Forerunners
+1 Craterhoof Behemoth
+
+# Spells
+1 Sol Ring
+1 Arcane Signet
+1 Emerald Medallion
+1 Swiftfoot Boots
+1 Rampant Growth
+1 Cultivate
+1 Kodama's Reach
+1 Farseek
+1 Harmonize
+1 Lead the Stampede
+1 Elvish Promenade
+1 Overrun
+1 Overwhelming Stampede
+1 Beast Within
+1 Return to Nature
+1 Naturalize
+1 Prey Upon
+1 Ram Through
+1 Giant Growth
+1 Aspect of Hydra
+1 Wildwood Scourge
+1 Genesis Wave
+
+# Lands
+1 Wirewood Lodge
+1 Reliquary Tower
+41 Forest
