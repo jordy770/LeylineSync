@@ -6894,3 +6894,4 @@
 | 17:06 | Edited components/collection/Shell.tsx | reduced (-27 lines) | ~74 |
 | 17:06 | Edited .github/workflows/ci.yml | expanded (+9 lines) | ~134 |
 | 17:30 | bug-1511 gefixt: Shell+SiteNav trok next/headers in client-bundle via gedeelde Panel/ColorPips — primitieven naar collection/ui.tsx, client-imports omgehangen; CI kreeg next-build-stap (gat gedicht); lokale build groen | ui.tsx, Shell, DeckDetail, ImportWizard, DeckImportForm, ci.yml | v0.3.1 volgt na CI | ~40k |
+| 17:45 | v0.3.1 LIVE: CI (nu met build-stap) groen, deploy 2m47s, VPS op tag, alle services vers, site 200 — casting + uniforme nav eindelijk in productie | VPS | v0.3.0-incident volledig afgewikkeld | ~10k |
