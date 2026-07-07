@@ -143,11 +143,19 @@ const stable = (v) => JSON.stringify(canonicalize(v))
 let updated = 0, current = 0, skippedDiffering = 0, notFound = 0, written = 0
 
 for (const { name, script } of plan) {
-  const { data: rows, error } = await supabase
+  const esc = name.replaceAll('%', '\\%').replaceAll('_', '\\_')
+  let { data: rows, error } = await supabase
     .from('cards')
     .select('id, name, script')
-    .ilike('name', name.replaceAll('%', '\\%').replaceAll('_', '\\_'))
+    .ilike('name', esc)
   if (error) throw new Error(`select ${name}: ${error.message}`)
+  // A front-face-only decklist name ("Bloodline Keeper") matches its DFC catalog
+  // row ("Bloodline Keeper // Lord of Lineage") by prefix — mirrors seed-precons.
+  if ((!rows || rows.length === 0) && !name.includes(' // ')) {
+    const dfc = await supabase.from('cards').select('id, name, script').ilike('name', `${esc} // %`)
+    if (dfc.error) throw new Error(`select ${name}: ${dfc.error.message}`)
+    rows = dfc.data
+  }
   if (!rows || rows.length === 0) {
     console.log(`NOT IN CATALOG  ${name} (run npm run import:cards, or check the name)`)
     notFound++

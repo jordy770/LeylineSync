@@ -86,14 +86,23 @@ function parseDecklist(text) {
   return { lines, commanderName }
 }
 
-/** Resolve a card name to a catalog id (case-insensitive exact; prefers a printing with art). */
+/** Resolve a card name to a catalog id (case-insensitive exact; prefers a printing
+    with art). Falls back to the FRONT FACE of a double-faced name — decklists say
+    "Bloodline Keeper", the catalog says "Bloodline Keeper // Lord of Lineage" —
+    the same convention deck:triage/deck:upsert use. */
 async function resolveCardId(name) {
+  const exact = await bestMatch(name, (n) => n === name.toLowerCase())
+  if (exact) return exact
+  return bestMatch(`${name} // %`, (n) => n.startsWith(`${name.toLowerCase()} // `))
+}
+
+async function bestMatch(pattern, nameMatches) {
   const { data, error } = await supabase
     .from('cards')
     .select('id, name, image_url')
-    .ilike('name', name)
+    .ilike('name', pattern)
   if (error) throw error
-  const matches = (data ?? []).filter((c) => (c.name ?? '').toLowerCase() === name.toLowerCase())
+  const matches = (data ?? []).filter((c) => nameMatches((c.name ?? '').toLowerCase()))
   if (matches.length === 0) return null
   matches.sort((a, b) => (a.image_url ? 0 : 1) - (b.image_url ? 0 : 1) || a.id.localeCompare(b.id))
   return matches[0].id

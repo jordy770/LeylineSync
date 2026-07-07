@@ -17184,6 +17184,56 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-06T22:33:05.654Z"
+    },
+    {
+      "id": "bug-1050",
+      "timestamp": "2026-07-07T08:14:30.712Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/seed-precon-decks.mjs",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 12→21 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T08:14:30.712Z"
+    },
+    {
+      "id": "bug-1051",
+      "timestamp": "2026-07-07T08:16:17.805Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/upsert-deck-scripts.mjs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 11→19 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T08:16:17.805Z"
+    },
+    {
+      "id": "bug-1509",
+      "timestamp": "2026-07-07T12:05:00+02:00",
+      "error_message": "Edgar Markov precon skipped: Bloodline Keeper / Edgar, Charmed Groom not in catalog — decklists use the front-face name, the catalog stores DFCs as \"Front // Back\"",
+      "file": "scripts/seed-precon-decks.mjs, scripts/upsert-deck-scripts.mjs",
+      "root_cause": "resolveCardId (seed) and the catalog select (upsert) matched exact names only; DFC catalog rows carry the full double name so front-face decklist names missed",
+      "fix": "Both scripts fall back to an ilike \"<name> // %\" prefix match when the exact name misses and the name has no //. Edgar precon seeded (100 cards) + Bloodline Keeper script upserted on hosted.",
+      "tags": [
+        "dfc",
+        "name-matching",
+        "precon",
+        "catalog",
+        "scripts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T12:05:00+02:00"
     }
   ]
 }

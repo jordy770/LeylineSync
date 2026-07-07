@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-06T22:33:19.722Z
-> Files: 262 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T08:16:17.784Z
+> Files: 263 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -336,9 +336,10 @@
 - `cleanup-runner.mjs` — Cleanup runner — operational janitor for FINISHED games (mig 144). (~769 tok)
 - `create-bot-user.mjs` — Provision a real Supabase auth user for the AI CPU bot, so it can occupy a (~872 tok)
 - `import-card-printings.mjs` — Import Scryfall bulk card data into public.co_card_printings (Collection Optimizer). (~2856 tok)
+- `seed-precon-decks.mjs` — Parse a decklist the way import_deck_from_text does (quantity, Commander header, set-code strip). (~2009 tok)
 - `tag-backfill.mjs` — Backfill co_card_tags by running the synergy tagger over every oracle card. (~1075 tok)
 - `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3815 tok)
-- `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2440 tok)
+- `upsert-deck-scripts.mjs` — Upsert a decklist's behavior scripts onto the HOSTED card catalog (~2561 tok)
 
 ## supabase/
 
