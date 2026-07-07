@@ -54,10 +54,19 @@ export async function updateSession(request: NextRequest) {
     (request.nextUrl.pathname.startsWith("/controller-style-lab") ||
       request.nextUrl.pathname.startsWith("/style-guide"));
 
+  // Spectator board (mig 378): a TV / cast receiver opens /board/<id>?key=<token>
+  // and never has a login. The page and the token-gated RPC validate the key —
+  // the proxy only needs to let the request through instead of bouncing it to
+  // /auth/login before the page ever runs (bug-1512).
+  const isSpectatorBoard =
+    request.nextUrl.pathname.startsWith("/board/") &&
+    request.nextUrl.searchParams.has("key");
+
   if (
     request.nextUrl.pathname !== "/" &&
     !user &&
     !isPublicLab &&
+    !isSpectatorBoard &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth")
   ) {

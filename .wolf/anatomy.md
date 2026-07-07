@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T15:06:59.227Z
-> Files: 538 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T15:22:39.456Z
+> Files: 539 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -484,7 +484,7 @@
 - `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70832 tok)
 - `GameBoard.tsx` — GameBoard (~7376 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
-- `GameSessionLobby.tsx` — GameSessionLobby (~12034 tok)
+- `GameSessionLobby.tsx` — GameSessionLobby (~12136 tok)
 - `sign-up-form.tsx` — SignUpForm — renders form (~1686 tok)
 - `SiteNav.tsx` — Shared top nav so the landing and decks pages wear the same identity. (~457 tok)
 - `update-password-form.tsx` — UpdatePasswordForm — renders form (~724 tok)
@@ -596,6 +596,7 @@
 ## lib/supabase/
 
 - `client.ts` — Exports createClient (~342 tok)
+- `proxy.ts` — Exports updateSession (~1055 tok)
 
 ## mockups/
 

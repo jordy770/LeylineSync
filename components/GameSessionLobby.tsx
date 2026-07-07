@@ -39,6 +39,7 @@ import {
   getSpawnedDeckOwnerIds,
   getUserDecks,
 } from '@/lib/game/data'
+import CastShareControls from '@/components/board/CastShareControls'
 import type { DeckSummary, GameSession, GameSessionPlayer, GameSessionStatus } from '@/lib/game/types'
 
 export default function GameSessionLobby() {
@@ -844,6 +845,10 @@ export default function GameSessionLobby() {
               >
                 <Monitor className="h-4 w-4" /> Open board
               </Link>
+              {/* Put the board on the TV straight from the lobby (mig 378):
+                  📺 casts via the Presentation API, 🔗 copies the no-login
+                  spectator link for any smart-TV browser. */}
+              <CastShareControls sessionId={activeSession.id} />
             </div>
           </div>
 

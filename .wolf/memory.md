@@ -6895,3 +6895,7 @@
 | 17:06 | Edited .github/workflows/ci.yml | expanded (+9 lines) | ~134 |
 | 17:30 | bug-1511 gefixt: Shell+SiteNav trok next/headers in client-bundle via gedeelde Panel/ColorPips — primitieven naar collection/ui.tsx, client-imports omgehangen; CI kreeg next-build-stap (gat gedicht); lokale build groen | ui.tsx, Shell, DeckDetail, ImportWizard, DeckImportForm, ci.yml | v0.3.1 volgt na CI | ~40k |
 | 17:45 | v0.3.1 LIVE: CI (nu met build-stap) groen, deploy 2m47s, VPS op tag, alle services vers, site 200 — casting + uniforme nav eindelijk in productie | VPS | v0.3.0-incident volledig afgewikkeld | ~10k |
+| 17:22 | Edited lib/supabase/proxy.ts | modified board() | ~183 |
+| 17:22 | Edited components/GameSessionLobby.tsx | modified lobby() | ~194 |
+| 17:22 | Edited components/GameSessionLobby.tsx | added 1 import(s) | ~49 |
+| 18:35 | bug-1512: auth-proxy bounced de spectator-bordlink naar login (globale middleware, key-check kwam nooit aan bod) — isSpectatorBoard-exemptie; CastShareControls ook in lobby naast Open board | proxy.ts, GameSessionLobby | tsc+lint+build groen; v0.3.2 keten start | ~40k |

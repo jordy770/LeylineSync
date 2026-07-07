@@ -17511,6 +17511,42 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-07-07T17:20:00+02:00"
+    },
+    {
+      "id": "bug-1070",
+      "timestamp": "2026-07-07T15:22:39.476Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Had '@/lib/game/types'",
+      "fix": "Changed to '@/components/board/CastShareControls'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T15:22:39.476Z"
+    },
+    {
+      "id": "bug-1512",
+      "timestamp": "2026-07-07T18:30:00+02:00",
+      "error_message": "Cast/spectator-bord vroeg om login: /board/<id>?key=<token> gaf 307 naar /auth/login op prod",
+      "file": "lib/supabase/proxy.ts",
+      "root_cause": "De globale auth-proxy (Next 16 proxy.ts, supabase-starter updateSession) redirect ELKE uitgelogde request behalve / en /auth/* — de spectator-URL werd gebounced voordat de board-page zijn key-logica kon draaien",
+      "fix": "isSpectatorBoard-exemptie in de proxy-conditie (pad /board/* + ?key= aanwezig); token wordt daarna alsnog door de page + get_board_state_by_token gevalideerd. Cast-knoppen ook in de lobby toegevoegd.",
+      "tags": [
+        "middleware",
+        "proxy",
+        "spectator",
+        "cast",
+        "auth-redirect"
+      ],
+      "related_bugs": [
+        "bug-1511"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T18:30:00+02:00"
     }
   ]
 }
