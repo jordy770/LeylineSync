@@ -6868,3 +6868,4 @@
 |------|--------|---------|---------|--------|
 | 16:05 | v0.2.1 live: CI groen, release+deploy geslaagd, VPS op tag; staples-batch compleet (941 curated scripts, 136 hosted-rijen, mig 377 op prod) | VPS, hosted | uploaded decks krijgen staples out-of-the-box | ~15k |
 | 16:20 | Domein-switch ontdekt: user zette APP_DOMAIN op leylinesync.com (eigen domein), DNS+cert werken, site 200; play.dweemo.nl is dood; docs+memory bijgewerkt | deploy-ovh.md, .env.example, auto-memory | LET OP: Supabase Auth Site URL moet nog naar leylinesync.com | ~10k |
+| 16:40 | User heeft Supabase Auth Site URL + redirects op leylinesync.com gezet — domein-switch compleet, accountmails wijzen goed | Supabase dashboard | geen open punten meer | ~2k |
