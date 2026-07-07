@@ -59,8 +59,10 @@ export async function updateSession(request: NextRequest) {
   // the proxy only needs to let the request through instead of bouncing it to
   // /auth/login before the page ever runs (bug-1512).
   const isSpectatorBoard =
-    request.nextUrl.pathname.startsWith("/board/") &&
-    request.nextUrl.searchParams.has("key");
+    (request.nextUrl.pathname.startsWith("/board/") &&
+      request.nextUrl.searchParams.has("key")) ||
+    // /tv: the TV's login-free room-code entry (mig 379).
+    request.nextUrl.pathname === "/tv";
 
   if (
     request.nextUrl.pathname !== "/" &&

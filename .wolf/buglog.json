@@ -17547,6 +17547,38 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-07-07T18:30:00+02:00"
+    },
+    {
+      "id": "bug-1072",
+      "timestamp": "2026-07-07T15:43:54.573Z",
+      "error_message": "Type error",
+      "file": "lib/supabase/proxy.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T15:43:54.573Z"
+    },
+    {
+      "id": "bug-1073",
+      "timestamp": "2026-07-07T15:44:26.563Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/board-share-token.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T15:44:26.563Z"
     }
   ]
 }

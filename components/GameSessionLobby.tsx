@@ -850,6 +850,17 @@ export default function GameSessionLobby() {
                   spectator link for any smart-TV browser. */}
               <CastShareControls sessionId={activeSession.id} />
             </div>
+            {/* Phones can't cast reliably (Android Chrome won't present URLs to a
+                Chromecast; iOS not at all) — the TV route is the room code. */}
+            {activeSession.tv_code ? (
+              <p className="text-xs text-slate-400">
+                📺 TV without cast? Open{' '}
+                <span className="font-semibold text-slate-200">leylinesync.com/tv</span> in its browser and enter code{' '}
+                <span className="rounded bg-amber-500/15 px-1.5 py-0.5 font-mono text-sm font-black tracking-[0.25em] text-amber-300">
+                  {activeSession.tv_code}
+                </span>
+              </p>
+            ) : null}
           </div>
 
           {/* Deck-pick step — shown after pressing Start, before the game begins. */}

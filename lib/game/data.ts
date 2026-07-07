@@ -843,7 +843,7 @@ export async function getTurnState(supabase: SupabaseClient, sessionId: string) 
 export async function getGameSession(supabase: SupabaseClient, sessionId: string) {
   const { data, error } = await supabase
     .from('game_sessions')
-    .select('id, status, format, created_by, created_at, locked_at, finished_at, winner_player_id')
+    .select('id, status, format, created_by, created_at, locked_at, finished_at, winner_player_id, tv_code')
     .eq('id', sessionId)
     .maybeSingle()
 
@@ -1102,7 +1102,7 @@ export async function getCurrentPlayerSessions(supabase: SupabaseClient) {
 
   const { data: sessions, error: sessionsError } = await supabase
     .from('game_sessions')
-    .select('id, status, created_by, created_at, locked_at, finished_at, winner_player_id')
+    .select('id, status, created_by, created_at, locked_at, finished_at, winner_player_id, tv_code')
     .in('id', sessionIds)
     .order('created_at', { ascending: false })
 

@@ -44,6 +44,34 @@ test('BST2 a wrong token is rejected', async () => {
   })
 })
 
+test('BST4 the TV room code resolves to the spectator access without auth (mig 379)', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    const { rows: [row] } = await client.query(
+      'select tv_code, board_token from public.game_sessions where id = $1', [s.sessionId])
+
+    const access = await rpc<{ session_id: string; board_token: string }>(
+      client, 'get_board_access_by_code', { p_code: row.tv_code.toLowerCase() }) // case-insensitive
+
+    assert.equal(access.session_id, s.sessionId)
+    assert.equal(access.board_token, row.board_token)
+  })
+})
+
+test('BST5 a finished session’s code stops resolving', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    const { rows: [row] } = await client.query(
+      'select tv_code from public.game_sessions where id = $1', [s.sessionId])
+    await client.query("update public.game_sessions set status = 'finished' where id = $1", [s.sessionId])
+
+    await assert.rejects(
+      rpc(client, 'get_board_access_by_code', { p_code: row.tv_code }),
+      /Unknown TV code/,
+    )
+  })
+})
+
 test('BST3 members fetch the share token; the member board gate is unchanged', async () => {
   await withRolledBackTx(async (client) => {
     const s = await Scenario.create(client)

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T15:22:39.456Z
-> Files: 539 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T15:44:26.540Z
+> Files: 542 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -479,12 +479,16 @@
 ## app/style-guide/
 
 
+## app/tv/
+
+- `page.tsx` — The TV's one stable address (bookmark it once on the TV browser): enter the (~133 tok)
+
 ## components/
 
 - `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70832 tok)
 - `GameBoard.tsx` — GameBoard (~7376 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
-- `GameSessionLobby.tsx` — GameSessionLobby (~12136 tok)
+- `GameSessionLobby.tsx` — GameSessionLobby (~12330 tok)
 - `sign-up-form.tsx` — SignUpForm — renders form (~1686 tok)
 - `SiteNav.tsx` — Shared top nav so the landing and decks pages wear the same identity. (~457 tok)
 - `update-password-form.tsx` — UpdatePasswordForm — renders form (~724 tok)
@@ -494,6 +498,7 @@
 - `BoardViewChrome.tsx` — BoardViewChrome (~962 tok)
 - `CastShareControls.tsx` — CastShareControls (~779 tok)
 - `GameFinishedOverlay.tsx` — GameFinishedOverlay (~1207 tok)
+- `TvCodeEntry.tsx` — TvCodeEntry — renders form (~718 tok)
 
 ## components/collection/
 
@@ -589,14 +594,14 @@
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 4 more (~13963 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
-- `types.ts` — Exports ManaPool, RestrictedManaEntry, ManaColor, GameZone + 30 more (~3023 tok)
+- `types.ts` — Short room code for the /tv spectator flow (mig 379). (~3049 tok)
 - `use-board-game-state.ts` — Exports useBoardGameState (~2219 tok)
 - `use-controller-game-state.ts` — Exports useControllerGameState (~3406 tok)
 
 ## lib/supabase/
 
 - `client.ts` — Exports createClient (~342 tok)
-- `proxy.ts` — Exports updateSession (~1055 tok)
+- `proxy.ts` — Exports updateSession (~1086 tok)
 
 ## mockups/
 
@@ -705,6 +710,7 @@
 - `202605010376_bot_fleet.sql` — Multi-bot Add CPU: seat ANY free provisioned CPU user (mig 375 allowed one). (~1430 tok)
 - `202605010377_nonland_trigger_target.sql` — `nonland_permanent` as a TRIGGER target type (Oblivion Ring, Grasp of Fate). (~381 tok)
 - `202605010378_board_share_token.sql` — Spectator board link + cast support. (~919 tok)
+- `202605010379_tv_room_code.sql` — TV room code — the Jackbox pattern for couch play. (~467 tok)
 - `tests/feature/dancers-chakrams.test.ts` — DC1-3: equipped host + other-commanders +2/+2 & lifelink; unequipped grants nothing; equipping a commander doesn't double-buff (the "other" exclusion). (~700 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
@@ -716,7 +722,7 @@
 ## tests/feature/
 
 - `blade-of-selves.test.ts` — Blade of Selves (mig 357). "Equipped creature has myriad." Built on the new (~598 tok)
-- `board-share-token.test.ts` — Board spectator token (mig 378). The board_token on game_sessions grants (~692 tok)
+- `board-share-token.test.ts` — Board spectator token (mig 378). The board_token on game_sessions grants (~1020 tok)
 - `board-state.test.ts` — mig 371 — get_board_state bundles the big-screen board view into one jsonb (~553 tok)
 - `bot-seat.test.ts` — Add CPU on hosted (mig 375). add_bot_to_session seats the PROVISIONED bot (~1072 tok)
 - `carmen.test.ts` — Carmen, Cruel Skymarcher (mig 341). Two new pieces: (~914 tok)

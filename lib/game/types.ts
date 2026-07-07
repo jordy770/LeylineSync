@@ -25,6 +25,8 @@ export type GameSession = {
   locked_at?: string | null
   finished_at?: string | null
   winner_player_id?: string | null
+  /** Short room code for the /tv spectator flow (mig 379). */
+  tv_code?: string | null
 }
 
 export type GameSessionPlayer = {

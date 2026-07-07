@@ -6900,3 +6900,11 @@
 | 17:22 | Edited components/GameSessionLobby.tsx | added 1 import(s) | ~49 |
 | 18:35 | bug-1512: auth-proxy bounced de spectator-bordlink naar login (globale middleware, key-check kwam nooit aan bod) — isSpectatorBoard-exemptie; CastShareControls ook in lobby naast Open board | proxy.ts, GameSessionLobby | tsc+lint+build groen; v0.3.2 keten start | ~40k |
 | 19:00 | v0.3.2 live: spectator-URL met key → 200 (geen login meer), zonder key → 307 naar login (gate intact); cast-knoppen in lobby. Extern geverifieerd | VPS, prod | casting end-to-end werkend | ~10k |
+| 17:43 | Created supabase/migrations/202605010379_tv_room_code.sql | — | ~467 |
+| 17:43 | Created app/tv/page.tsx | — | ~133 |
+| 17:43 | Created components/board/TvCodeEntry.tsx | — | ~718 |
+| 17:43 | Edited lib/supabase/proxy.ts | 3→5 lines | ~66 |
+| 17:43 | Edited lib/game/types.ts | 10→12 lines | ~97 |
+| 17:44 | Edited components/GameSessionLobby.tsx | modified lobby() | ~282 |
+| 17:44 | Edited tests/feature/board-share-token.test.ts | expanded (+28 lines) | ~355 |
+| 20:10 | TV-kamercode gebouwd (Jackbox-patroon, mig 379): tv_code op sessions + anon resolve-RPC, /tv-pagina (login-vrij, proxy-exemptie), code prominent in lobby; reden: Android Chrome kan geen URLs presenteren naar Chromecast, iOS helemaal niet — TV opent zelf 1 vast adres | mig 379, app/tv, TvCodeEntry, lobby, proxy.ts, data.ts, types | BST4-5 groen (5/5), tsc+lint+build groen | ~90k |
