@@ -6908,3 +6908,4 @@
 | 17:44 | Edited components/GameSessionLobby.tsx | modified lobby() | ~282 |
 | 17:44 | Edited tests/feature/board-share-token.test.ts | expanded (+28 lines) | ~355 |
 | 20:10 | TV-kamercode gebouwd (Jackbox-patroon, mig 379): tv_code op sessions + anon resolve-RPC, /tv-pagina (login-vrij, proxy-exemptie), code prominent in lobby; reden: Android Chrome kan geen URLs presenteren naar Chromecast, iOS helemaal niet — TV opent zelf 1 vast adres | mig 379, app/tv, TvCodeEntry, lobby, proxy.ts, data.ts, types | BST4-5 groen (5/5), tsc+lint+build groen | ~90k |
+| 20:35 | v0.4.0 live: /tv geeft 200 zonder login en rendert de code-entry ("Watch the table"); VPS op tag. TV-route compleet: bookmark /tv + lobby-code | prod | casting-verhaal afgerond | ~8k |
