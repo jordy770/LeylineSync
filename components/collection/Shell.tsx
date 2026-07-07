@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import FanContentNotice from '@/components/layout/FanContentNotice'
+import SiteNav from '@/components/SiteNav'
 
 // The Collection Optimizer shell — the Leyline arcane ground (void + gold + ley
 // grid) with a slim header. Server-compatible (no hooks) so pages can wrap their
@@ -19,16 +20,20 @@ export function Shell({
 }) {
   return (
     <div className="landing-void min-h-screen" style={{ color: 'var(--text)' }}>
-      <header
-        className="flex items-center justify-between px-4 py-3 sm:px-8"
+      {/* Same top nav as the landing and decks pages — one identity, so hopping
+          between Home / Decks / Collection never changes the header. */}
+      <SiteNav active="collection" />
+      {/* Collection sub-nav: the section links the old bespoke header carried. */}
+      <div
+        className="flex items-center gap-4 overflow-x-auto px-5 py-2 text-sm"
         style={{ borderBottom: '1px solid rgba(201,154,58,0.18)' }}
       >
-        <Link href="/collection" className="font-display text-lg tracking-wide" style={{ color: 'var(--gold-bright)' }}>
-          Leyline<span style={{ color: 'var(--text-faint)' }}> · Collection</span>
-        </Link>
-        <nav className="flex items-center gap-4 text-sm">
+        <nav className="mx-auto flex w-full max-w-5xl items-center gap-4">
           <Link href="/collection" className="hover:underline" style={{ color: 'var(--text-dim)' }}>
             Overview
+          </Link>
+          <Link href="/collection/search" className="hover:underline" style={{ color: 'var(--text-dim)' }}>
+            Find a card
           </Link>
           <Link href="/collection/import" className="hover:underline" style={{ color: 'var(--text-dim)' }}>
             Import collection
@@ -37,7 +42,7 @@ export function Shell({
             Import deck
           </Link>
         </nav>
-      </header>
+      </div>
 
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">

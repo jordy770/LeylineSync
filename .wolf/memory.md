@@ -6887,3 +6887,6 @@
 | 18:30 | Board-casting gebouwd (mig 378): board_token op game_sessions, get_board_state_by_token (token-gate + tx-lokale host-impersonatie zodat de membership-gefilterde helpers werken — reproductieloze aanpak), get_board_share_token; spectator-modus in board page/hook (anon polt, geen realtime/chrome), CastShareControls (Presentation API + copy-link). Tests BST1-3 | mig 378, board page/hook/chrome, CastShareControls, data.ts | board-groep 8/8, tsc+lint schoon | ~120k |
 | 16:33 | Edited lib/game/use-board-game-state.ts | inline fix | ~14 |
 | 18:55 | Casting-feature af en CI-groen op master; user houdt prod-push van mig 378 + release v0.3.0 bewust aan — NIET gepusht. Bij go: release publiceren volstaat (pipeline doet db push + deploy) | - | wacht op user-go | ~5k |
+| 16:45 | Edited components/collection/Shell.tsx | added 1 import(s) | ~51 |
+| 16:45 | Edited components/collection/Shell.tsx | CSS: sub-nav | ~351 |
+| 19:20 | Nav-uniformering: collection Shell gebruikt nu SiteNav (active=collection) + slanke sub-nav (Overview/Find a card/Import x2) i.p.v. eigen afwijkende header — overal dezelfde kopregel om tussen Home/Decks/Collection te switchen | Shell.tsx | tsc+lint schoon | ~15k |
