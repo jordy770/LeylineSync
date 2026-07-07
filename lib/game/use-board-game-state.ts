@@ -137,7 +137,7 @@ export function useBoardGameState(sessionId: string, shareToken?: string | null)
       }
       supabase.removeChannel(channel)
     }
-  }, [refresh, sessionId, supabase])
+  }, [refresh, sessionId, supabase, shareToken])
 
   return {
     cards,
