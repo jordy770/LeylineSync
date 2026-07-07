@@ -6885,3 +6885,5 @@
 | 16:28 | Created tests/feature/board-share-token.test.ts | — | ~692 |
 | 16:31 | Created supabase/migrations/202605010378_board_share_token.sql | — | ~919 |
 | 18:30 | Board-casting gebouwd (mig 378): board_token op game_sessions, get_board_state_by_token (token-gate + tx-lokale host-impersonatie zodat de membership-gefilterde helpers werken — reproductieloze aanpak), get_board_share_token; spectator-modus in board page/hook (anon polt, geen realtime/chrome), CastShareControls (Presentation API + copy-link). Tests BST1-3 | mig 378, board page/hook/chrome, CastShareControls, data.ts | board-groep 8/8, tsc+lint schoon | ~120k |
+| 16:33 | Edited lib/game/use-board-game-state.ts | inline fix | ~14 |
+| 18:55 | Casting-feature af en CI-groen op master; user houdt prod-push van mig 378 + release v0.3.0 bewust aan — NIET gepusht. Bij go: release publiceren volstaat (pipeline doet db push + deploy) | - | wacht op user-go | ~5k |
