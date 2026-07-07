@@ -17330,6 +17330,23 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-07T08:47:42.366Z"
+    },
+    {
+      "id": "bug-1510",
+      "timestamp": "2026-07-07T11:35:00+02:00",
+      "error_message": "Release deploy v0.2.0 failed in 11s: supabase/setup-cli \"Failed to resolve latest Supabase CLI release: rate limit exceeded\"",
+      "file": ".github/workflows/deploy.yml",
+      "root_cause": "version: latest makes the action query the GitHub releases API unauthenticated from a shared runner IP — rate-limited",
+      "fix": "Pin version 2.109.1 (matches dev machine) + pass GITHUB_TOKEN to the action; re-tagged the release commit",
+      "tags": [
+        "ci",
+        "deploy",
+        "supabase-cli",
+        "rate-limit"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T11:35:00+02:00"
     }
   ]
 }

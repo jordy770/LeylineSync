@@ -6724,3 +6724,10 @@
 | 11:04 | chunk-28 adversarial review: 6/6 scripts VALID, all pass (Wrath/DoJ/Oblation/RtD/Ezuri/Arbor Elf); land target_type confirmed rejected by schema | .wolf/memory.md | ok | ~30k |
 | 11:14 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/LightningHelix.json | — | ~46 |
 | 15:20 | Workflow klaar: 78 agents, 6.1M tokens, 40 min — 174 kaarten gescript / 32 eerlijk unsupported (van 206); merge -> 808 curated scripts; deck-smoke 806/806 na 1 fix (Meteor Golem array-target_type -> permanent) | card-scripts.json | 6 nieuwe decks klaar voor upsert+seed | ~60k |
+
+## Session: 2026-07-07 11:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:32 | Edited .github/workflows/deploy.yml | 3→6 lines | ~66 |
+| 11:40 | Deploy v0.2.0 faalde op setup-cli rate-limit (bug-1510); CLI gepind op 2.109.1 + GITHUB_TOKEN; release/tag opnieuw uitgegeven op de fix-commit | deploy.yml | herdeploy loopt | ~10k |
