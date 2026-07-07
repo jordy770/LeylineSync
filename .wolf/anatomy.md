@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T14:31:07.251Z
-> Files: 537 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T15:06:59.227Z
+> Files: 538 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -340,7 +340,7 @@
 
 ## .github/workflows/
 
-- `ci.yml` — CI — every push/PR: types, lint, and the FULL engine suite (~1900 tests) (~595 tok)
+- `ci.yml` — CI — every push/PR: types, lint, and the FULL engine suite (~1900 tests) (~717 tok)
 - `deploy.yml` — CD — publishing a GitHub Release IS the production go: first the pending (~454 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
@@ -501,7 +501,8 @@
 - `DeckDetail.tsx` — BUCKET_ORDER (~7445 tok)
 - `DeckImportForm.tsx` — DeckImportForm (~1390 tok)
 - `ImportWizard.tsx` — ImportWizard (~1960 tok)
-- `Shell.tsx` — Color-identity pips rendered as small mana-coloured dots. (~976 tok)
+- `Shell.tsx` — The Collection Optimizer shell — the Leyline arcane ground (void + gold + ley (~814 tok)
+- `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~406 tok)
 
 ## components/controller/
 
@@ -589,7 +590,7 @@
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)
 - `types.ts` — Exports ManaPool, RestrictedManaEntry, ManaColor, GameZone + 30 more (~3023 tok)
-- `use-board-game-state.ts` — Exports useBoardGameState (~2215 tok)
+- `use-board-game-state.ts` — Exports useBoardGameState (~2219 tok)
 - `use-controller-game-state.ts` — Exports useControllerGameState (~3406 tok)
 
 ## lib/supabase/

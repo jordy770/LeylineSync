@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { ColorPips, Panel } from './Shell'
+import { ColorPips, Panel } from './ui'
 
 type ThemeImpact = 'Keeps Theme' | 'Neutral' | 'Weakens Theme'
 interface PowerScore {

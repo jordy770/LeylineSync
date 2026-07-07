@@ -17459,6 +17459,58 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-07T14:28:33.068Z"
+    },
+    {
+      "id": "bug-1067",
+      "timestamp": "2026-07-07T14:45:12.357Z",
+      "error_message": "Type error",
+      "file": "components/collection/Shell.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T14:45:12.357Z"
+    },
+    {
+      "id": "bug-1068",
+      "timestamp": "2026-07-07T15:06:31.513Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/Shell.tsx",
+      "root_cause": "29 lines replaced/restructured",
+      "fix": "Rewrote 31→4 lines (29 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T15:06:31.513Z"
+    },
+    {
+      "id": "bug-1511",
+      "timestamp": "2026-07-07T17:20:00+02:00",
+      "error_message": "v0.3.0 deploy failed: Turbopack build error — lib/supabase/server.ts (next/headers) pulled into a Client Component Browser bundle via components/auth-button.tsx",
+      "file": "components/collection/Shell.tsx",
+      "root_cause": "De nav-fix liet Shell SiteNav renderen (→ AuthButton → lib/supabase/server), maar CLIENT components (DeckDetail/ImportWizard/DeckImportForm) importeerden Panel/ColorPips uit datzelfde Shell-module — waardoor de client-bundle server-only code traverseerde. CI draaide geen next build, dus dit brak pas op de VPS.",
+      "fix": "Panel/ColorPips naar components/collection/ui.tsx; client-importeurs wijzen daarheen; Shell re-exporteert voor server-pages. CI kreeg een next-build-stap (dummy NEXT_PUBLIC env). Herdeployed als v0.3.1.",
+      "tags": [
+        "nextjs",
+        "server-client-boundary",
+        "deploy",
+        "ci-gap",
+        "turbopack"
+      ],
+      "related_bugs": [
+        "bug-1510"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T17:20:00+02:00"
     }
   ]
 }

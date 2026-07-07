@@ -418,3 +418,7 @@
 - co_card_availability: free_qty = som van binder_type='binder' (niet owned-committed); committed zit er wel in maar wordt pas in conflicts.ts vergeleken. co_card_oracle kan niet via PostgREST-embed gejoined worden (view) — altijd los .in()-chunken (patroon: deck-loader.ts, IN_CHUNK=100).
 - Collection-import is REPLACE (snapshot): delete-then-insert per user; een diff moet dus VOOR de delete gelezen worden.
 - co_decks->game-decks brug: decklist-tekst met 'Commander'-header door import_deck_from_text; commander NIET dubbel in de Deck-sectie zetten (telt anders 2x).
+
+## Do-Not-Repeat — 2026-07-07
+
+- Een module die door ZOWEL server- als client-components geïmporteerd wordt mag nooit (transitief) next/headers-code bevatten — Shell.tsx kreeg SiteNav→AuthButton→lib/supabase/server terwijl DeckDetail (client) er Panel uit importeerde → Turbopack-buildbreuk die alleen bij `next build` zichtbaar is (bug-1511). Gedeelde primitieven in een eigen bestand (collection/ui.tsx); en CI draait nu wél een build-stap.

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { Panel } from './Shell'
+import { Panel } from './ui'
 
 export function DeckImportForm() {
   const router = useRouter()

@@ -28,6 +28,15 @@ jobs:
       - name: Lint
         run: npx eslint .
 
+      # Production build — tsc alone misses server/client boundary violations
+      # (e.g. a client component transitively importing next/headers), which
+      # otherwise only surface during the VPS deploy build (v0.3.0 incident).
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_dummy
+
       # NOT `supabase start`: that auto-applies supabase/migrations/ into a fresh
       # DB, which fails — the baseline schema lives in supabase/local-bootstrap/
       # (the hosted/local split). test:db:setup builds the whole test DB itself;

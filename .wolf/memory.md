@@ -6890,3 +6890,7 @@
 | 16:45 | Edited components/collection/Shell.tsx | added 1 import(s) | ~51 |
 | 16:45 | Edited components/collection/Shell.tsx | CSS: sub-nav | ~351 |
 | 19:20 | Nav-uniformering: collection Shell gebruikt nu SiteNav (active=collection) + slanke sub-nav (Overview/Find a card/Import x2) i.p.v. eigen afwijkende header — overal dezelfde kopregel om tussen Home/Decks/Collection te switchen | Shell.tsx | tsc+lint schoon | ~15k |
+| 17:06 | Created components/collection/ui.tsx | — | ~406 |
+| 17:06 | Edited components/collection/Shell.tsx | reduced (-27 lines) | ~74 |
+| 17:06 | Edited .github/workflows/ci.yml | expanded (+9 lines) | ~134 |
+| 17:30 | bug-1511 gefixt: Shell+SiteNav trok next/headers in client-bundle via gedeelde Panel/ColorPips — primitieven naar collection/ui.tsx, client-imports omgehangen; CI kreeg next-build-stap (gat gedicht); lokale build groen | ui.tsx, Shell, DeckDetail, ImportWizard, DeckImportForm, ci.yml | v0.3.1 volgt na CI | ~40k |
