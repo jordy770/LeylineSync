@@ -6731,3 +6731,4 @@
 |------|--------|---------|---------|--------|
 | 11:32 | Edited .github/workflows/deploy.yml | 3→6 lines | ~66 |
 | 11:40 | Deploy v0.2.0 faalde op setup-cli rate-limit (bug-1510); CLI gepind op 2.109.1 + GITHUB_TOKEN; release/tag opnieuw uitgegeven op de fix-commit | deploy.yml | herdeploy loopt | ~10k |
+| 11:50 | v0.2.0 live: deploy geslaagd (1m31s) na CLI-pin, VPS op tag v0.2.0, site 200. Eindstand batch: 17 precons, 907 gescripte kaarten op hosted, 808 curated scripts in repo | VPS, hosted | deck-batch compleet | ~10k |
