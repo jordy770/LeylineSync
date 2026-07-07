@@ -6856,3 +6856,14 @@
 | 15:44 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/DreadhordeInvasion.json | inline fix | ~26 |
 | 15:51 | Created supabase/migrations/202605010377_nonland_trigger_target.sql | — | ~381 |
 | 17:10 | Staples-workflow klaar: 60 agents, 4M tokens, 27 min — 133 gescript / 19 unsupported (van 152); merge -> 941 curated; deck-smoke 939/939 na mig 377 (nonland_permanent als trigger-target: spell-pad kende het via mig 150, trigger-gate mig 114 niet) | card-scripts.json, mig 377, staples.txt | wacht: db push 377 + upsert staples + release | ~70k |
+
+## Session: 2026-07-07 16:00
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-07 16:00
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:05 | v0.2.1 live: CI groen, release+deploy geslaagd, VPS op tag; staples-batch compleet (941 curated scripts, 136 hosted-rijen, mig 377 op prod) | VPS, hosted | uploaded decks krijgen staples out-of-the-box | ~15k |
