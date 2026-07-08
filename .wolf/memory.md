@@ -7035,3 +7035,15 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 10:05 | Herverificatie ronde 2 groen (tsc/lint/unit 485); verzendreeks gestart met user-akkoord | — | commit+push+CI+mig380+release | ~15k |
+| 09:56 | Created lib/intelligence/models.ts | — | ~999 |
+| 09:56 | Edited lib/intelligence/models.ts | expanded (+7 lines) | ~230 |
+| 09:57 | Created lib/intelligence/rules/legacy.ts | — | ~2088 |
+| 09:58 | Created lib/intelligence/rules/extended.ts | — | ~2621 |
+| 09:58 | Created lib/intelligence/card-engine.ts | — | ~892 |
+| 09:59 | Created lib/collection/synergy/tagger.ts | — | ~362 |
+| 10:00 | Created lib/intelligence/commander-profiles.ts | — | ~1043 |
+| 10:00 | Created app/api/intelligence/classify/route.ts | — | ~605 |
+| 10:00 | Created app/collection/playground/page.tsx | — | ~278 |
+| 10:01 | Created components/collection/RulePlayground.tsx | — | ~2082 |
+| 10:01 | Created tests/unit/intelligence-engine.test.ts | — | ~1202 |
+| 12:30 | v0.4.1 live (mig 380 + ronde 2). Intelligence Engine fase 1: lib/intelligence (models/rules/card-engine), legacy-tagger geport naar 27 benoemde rules (pariteit gepind: 15/15), 60+ extended rules (40+ rollen, tribes, hints), commander-profielen (12) + synergy-scorer, Rule Playground (/collection/playground + /api/intelligence/classify) | lib/intelligence/*, tagger.ts, RulePlayground | unit 492/492, tsc+lint schoon | ~120k |

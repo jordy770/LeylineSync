@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T23:02:59.758Z
-> Files: 549 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T08:01:48.097Z
+> Files: 558 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -410,6 +410,10 @@
 
 - `route.ts` — POST /api/decks/import (~924 tok)
 
+## app/api/intelligence/classify/
+
+- `route.ts` — GET /api/intelligence/classify?name=<card name> (~605 tok)
+
 ## app/auth/confirm/
 
 
@@ -466,6 +470,10 @@
 
 - `page.tsx` — dynamic (~1521 tok)
 
+## app/collection/playground/
+
+- `page.tsx` — dynamic (~278 tok)
+
 ## app/collection/search/
 
 - `page.tsx` — dynamic (~485 tok)
@@ -519,6 +527,7 @@
 - `DeckDetail.tsx` — BUCKET_ORDER (~10735 tok)
 - `DeckImportForm.tsx` — DeckImportForm (~1246 tok)
 - `ImportWizard.tsx` — ImportWizard (~2308 tok)
+- `RulePlayground.tsx` — RulePlayground (~2082 tok)
 - `SearchLive.tsx` — COLORS (~2166 tok)
 - `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1091 tok)
 - `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~406 tok)
@@ -598,7 +607,7 @@
 
 ## lib/collection/synergy/
 
-- `tagger.ts` — Synergy tagger — pure heuristics that turn a card's oracle text/type/keywords (~2053 tok)
+- `tagger.ts` — Synergy tagger — COMPATIBILITY VIEW over the Leyline Intelligence Engine (~362 tok)
 
 ## lib/game/
 
@@ -612,6 +621,17 @@
 - `types.ts` — Short room code for the /tv spectator flow (mig 379). (~3049 tok)
 - `use-board-game-state.ts` — Exports useBoardGameState (~2219 tok)
 - `use-controller-game-state.ts` — Exports useControllerGameState (~3406 tok)
+
+## lib/intelligence/
+
+- `card-engine.ts` — The legacy SynergyTag view — the contract co_card_tags/power-score read. (~892 tok)
+- `commander-profiles.ts` — Exact commander card name (front face). (~1043 tok)
+- `models.ts` — Broad, curated role vocabulary. Extend freely — rules reference these. (~1094 tok)
+
+## lib/intelligence/rules/
+
+- `extended.ts` — Extended rule set — the NEW vocabulary on top of the ported legacy rules. (~2621 tok)
+- `legacy.ts` — The original synergy-tagger heuristics (lib/collection/synergy/tagger.ts), (~2088 tok)
 
 ## lib/supabase/
 
@@ -808,6 +828,7 @@
 - `decklist-parser.test.ts` — Decklist parser — the pure core of the deck import. Covers the quantity/set/ (~813 tok)
 - `fetch-decklist.test.ts` — Deck-URL import — the pure URL detection + JSON→text mappers, plus the fetch (~1159 tok)
 - `insights.test.ts` — Collection Insights — pure per-deck fit ranking. (~786 tok)
+- `intelligence-engine.test.ts` — Leyline Intelligence Engine — classifyCard profiles (multi-role, tags, (~1202 tok)
 - `keyword-icons.test.ts` — normalizeKeywords — the pure mapper that turns a card's keyword strings into the (~510 tok)
 - `manabox-parser.test.ts` — ManaBox CSV parser + oracle resolver — the pure core of the collection import. (~1374 tok)
 - `power-score.test.ts` — Power score — deterministic deck rating from synergy buckets + curve. Builds (~804 tok)

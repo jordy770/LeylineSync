@@ -437,3 +437,7 @@
 - co_decks.source_url bestond al in mig 364 maar werd nooit gevuld; importDeck vult hem nu alleen bij URL-imports. syncDeckFromText vervangt deck_cards (delete+insert, zelfde patroon als collectie-snapshot) en behoudt deck-id zodat analyses/links blijven.
 - Kaart-preview: Scryfall named-image endpoint (`/cards/named?exact=…&format=image`) werkt prima als browser-<img> (alleen server-side fetches hebben het UA-probleem uit image-loader.ts); portal naar document.body verplicht want meerdere call-sites zitten in hover-scale (transform) panels.
 - applySwap accepteert nu in=null (remove-only) als undo van een add-only upgrade — minstens één van in/out verplicht.
+
+## Decision Log — 2026-07-08
+
+- Intelligence Engine: GEEN greenfield naast lib/collection maar een evolutie — lib/intelligence is de bron, lib/collection/synergy/tagger.ts is een compatibiliteitslaag (classifyCard().legacyTags). De SynergyTag-vocabulaire blijft het score-contract tot consumers naar rollen migreren; pariteit wordt gepind door synergy-tagger.test.ts. Rules zijn benoemde, geversioneerde data-objecten (id 'categorie.slug' + beschrijving + evidence) — de Rule Playground toont per kaart welke rules vuurden en waarom.
