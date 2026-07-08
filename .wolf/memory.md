@@ -7206,3 +7206,12 @@
 | 16:10 | Edited lib/collection/conflicts.ts | added 1 condition(s) | ~210 |
 | 16:12 | bug-1116 gefixt: 1000-rij PostgREST-cap kapte collecties >1000 uniek af op 4 plekken; loadAvailability (paged) in deck-loader + conflicts pagineert items; gevalideerd tegen echte lokale data (5451 uniek/9660 totaal) | lib/collection/{deck-loader,dashboard,upgrade-scanner,insights,conflicts}.ts | tsc+build+tests groen | ~15k |
 | 16:46 | Release v0.8.1 live (fix bug-1116, 1000-rij truncatie): deploy success, leylinesync.com 200 | GitHub release v0.8.1 | live | ~2k |
+| 21:23 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/no-paid-ai-features.md | — | ~393 |
+| 21:23 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | inline fix | ~52 |
+| 21:23 | AI-beleid herzien door Jordy: LLM in productie OK mits achter paywall; memory no-paid-ai-features + MEMORY.md + cerebrum bijgewerkt; feature-kandidaten besproken (deck-doctor, NL-zoeken, brew-assistent, import-fixer, primers, regel-assistent) | memory/*.md, .wolf/cerebrum.md | beleid vastgelegd | ~4k |
+| 21:42 | Created lib/game/cast.ts | — | ~851 |
+| 21:42 | Created app/cast-receiver/page.tsx | — | ~759 |
+| 21:42 | Edited app/cast-receiver/page.tsx | 4→3 lines | ~54 |
+| 21:42 | Edited components/board/CastShareControls.tsx | added 2 condition(s) | ~664 |
+| 21:43 | Created docs/cast-setup.md | — | ~641 |
+| 21:45 | Chromecast optie B: Cast SDK sender (lib/game/cast.ts, CAST_APP_ID-constante) + CAF receiver-pagina /cast-receiver (custom namespace, same-origin guard, disableIdleTimeout) + CastShareControls prefereert SDK boven Presentation API; docs/cast-setup.md met registratiestappen ( console, receiver-URL leylinesync.com/cast-receiver) | lib/game/cast.ts, app/cast-receiver/page.tsx, components/board/CastShareControls.tsx, docs/cast-setup.md | tsc+build+502 tests groen; werkt pas na App ID-registratie door Jordy | ~20k |

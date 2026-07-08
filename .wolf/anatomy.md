@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T14:10:39.080Z
-> Files: 578 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T19:43:12.093Z
+> Files: 581 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -21,9 +21,9 @@
 - `decisive-over-clarifying.md` (~269 tok)
 - `hosting-ovhcloud.md` (~340 tok)
 - `local-migrations.md` — Declares migrations (~422 tok)
-- `MEMORY.md` (~447 tok)
+- `MEMORY.md` (~452 tok)
 - `never-purge-user-data.md` (~318 tok)
-- `no-paid-ai-features.md` (~274 tok)
+- `no-paid-ai-features.md` (~369 tok)
 - `opponent-view-design.md` — Declares form (~1368 tok)
 
 ## ../../.cloudflared/
@@ -455,6 +455,10 @@
 ## app/cards/behavior/
 
 
+## app/cast-receiver/
+
+- `page.tsx` — RECEIVER_SDK (~743 tok)
+
 ## app/collection/
 
 - `page.tsx` — dynamic — renders form (~3744 tok)
@@ -538,7 +542,7 @@
 ## components/board/
 
 - `BoardViewChrome.tsx` — BoardViewChrome (~962 tok)
-- `CastShareControls.tsx` — CastShareControls (~779 tok)
+- `CastShareControls.tsx` — CastShareControls (~947 tok)
 - `GameFinishedOverlay.tsx` — GameFinishedOverlay (~1207 tok)
 - `TvCodeEntry.tsx` — TvCodeEntry — renders form (~718 tok)
 
@@ -580,6 +584,7 @@
 ## docs/
 
 - `backlog.md` — Backlog (~169 tok)
+- `cast-setup.md` — Chromecast — custom receiver setup (~601 tok)
 - `client-coverage-audit.md` — Client coverage audit — engine vs UI (~1657 tok)
 - `deploy-ovh.md` — Deploy — OVHcloud VPS (~997 tok)
 - `open-items.md` — Open items — merged & verified (~1634 tok)
@@ -643,6 +648,7 @@
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
 - `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10537 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21611 tok)
+- `cast.ts` — Custom message channel: the sender tells the receiver which board to load. (~851 tok)
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 4 more (~13963 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
 - `mana.ts` — Exports manaColors, ManaPayment, ParsedManaCost, parseManaCost + 5 more (~830 tok)

@@ -2,12 +2,16 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
+import { castBoardUrl, initCastSender } from '@/lib/game/cast'
 import { getBoardShareToken } from '@/lib/game/data'
 import { createClient } from '@/lib/supabase/client'
 
-// Cast the board to a TV. Two paths off the same spectator link (mig 378):
-//   📺 Presentation API — a Chromecast/Miracast device loads the tokenized board
-//      URL itself (crisp, no mirroring); Chromium-only, hidden elsewhere.
+// Cast the board to a TV. Three paths off the same spectator link (mig 378):
+//   📺 Google Cast SDK — the REGISTERED receiver app (docs/cast-setup.md) shows
+//      the native cast picker; works on desktop Chrome AND Android Chrome/PWA.
+//      Active once CAST_APP_ID is set in lib/game/cast.ts.
+//   📺 Presentation API fallback — desktop Chromium presents the tokenized
+//      board URL directly when no Cast app id is configured.
 //   🔗 Copy link — paste into any smart-TV/console browser; the token grants
 //      read-only board polling without a login.
 export default function CastShareControls({ sessionId }: { sessionId: string }) {
@@ -15,6 +19,7 @@ export default function CastShareControls({ sessionId }: { sessionId: string }) 
   const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [castError, setCastError] = useState(false)
+  const [sdkReady, setSdkReady] = useState(false)
 
   useEffect(() => {
     let live = true
@@ -28,13 +33,27 @@ export default function CastShareControls({ sessionId }: { sessionId: string }) 
     }
   }, [supabase, sessionId])
 
-  const canCast = typeof window !== 'undefined' && 'PresentationRequest' in window
+  useEffect(() => {
+    let live = true
+    initCastSender().then((ok) => {
+      if (live && ok) setSdkReady(true)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
+
+  const canCast = sdkReady || (typeof window !== 'undefined' && 'PresentationRequest' in window)
 
   if (!shareUrl) return null
 
   const startCast = async () => {
     setCastError(false)
     try {
+      if (sdkReady) {
+        await castBoardUrl(shareUrl)
+        return
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- PresentationRequest is Chromium-only
       const request = new (window as any).PresentationRequest([shareUrl])
       await request.start()
