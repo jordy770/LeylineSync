@@ -7074,3 +7074,10 @@
 | 10:50 | Edited components/CardBehaviorForm.tsx | 18→22 lines | ~301 |
 | 10:52 | Edited tests/unit/card-behavior-builder.test.ts | 2→5 lines | ~214 |
 | 16:00 | Vraag user: Murmuring Mystic — al gescript (spell_cast watcher, staat op hosted); guided form miste het event -> spell_cast toegevoegd aan BUILDER_TRIGGER_EVENTS + WATCHER_EVENTS, filter-UI event-bewust (spell-placeholder, creature-checkboxes verborgen), round-trip-test | card-behavior-builder.ts, CardBehaviorForm.tsx, builder-test | 290/290 + unit 496/496, tsc+lint schoon | ~40k |
+
+## Session: 2026-07-08 11:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:16 | Advies verdienmodel: affiliate-links op upgrade-scanner + supporter-tier (Ko-fi eerst, later Stripe+iDEAL), cosmetica later; gameplay blijft gratis (FCP) | - | advies, geen code | ~1k |
+| 16:30 | v0.5.1 live: spell_cast in guided form gedeployed | VPS | — | ~5k |
