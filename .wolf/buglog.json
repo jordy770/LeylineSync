@@ -18709,6 +18709,102 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-08T14:12:18.229Z"
+    },
+    {
+      "id": "bug-1144",
+      "timestamp": "2026-07-08T20:30:33.410Z",
+      "error_message": "Null/undefined access in ",
+      "file": "app/api/decks/[id]/recommend/route.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T20:30:33.410Z"
+    },
+    {
+      "id": "bug-1145",
+      "timestamp": "2026-07-08T20:30:45.320Z",
+      "error_message": "Type error",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: const [tab, setTab] = useState<'list' | 'free' | 'occupied' ; const [doctor, setDoctor] = useState<DoctorResult | null>(nu",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-08T20:30:48.157Z"
+    },
+    {
+      "id": "bug-1146",
+      "timestamp": "2026-07-08T20:30:52.563Z",
+      "error_message": "Missing error handling in function",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T20:30:52.563Z"
+    },
+    {
+      "id": "bug-1147",
+      "timestamp": "2026-07-08T20:31:28.909Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T20:31:28.909Z"
+    },
+    {
+      "id": "bug-1148",
+      "timestamp": "2026-07-08T20:33:04.587Z",
+      "error_message": "Type error",
+      "file": "tests/feature/ai-quota.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T20:33:04.587Z"
+    },
+    {
+      "id": "bug-1149",
+      "timestamp": "2026-07-08T20:34:25.400Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/feature/ai-quota.test.ts",
+      "root_cause": "Had `insert into auth.users (id, email) values ($1, $1",
+      "fix": "Changed to `insert into auth.users (id, email) values ($1::uu",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T20:34:25.400Z"
     }
   ]
 }

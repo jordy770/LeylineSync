@@ -7207,3 +7207,19 @@
 | 16:12 | bug-1116 gefixt: 1000-rij PostgREST-cap kapte collecties >1000 uniek af op 4 plekken; loadAvailability (paged) in deck-loader + conflicts pagineert items; gevalideerd tegen echte lokale data (5451 uniek/9660 totaal) | lib/collection/{deck-loader,dashboard,upgrade-scanner,insights,conflicts}.ts | tsc+build+tests groen | ~15k |
 | 16:46 | Release v0.8.1 live (fix bug-1116, 1000-rij truncatie): deploy success, leylinesync.com 200 | GitHub release v0.8.1 | live | ~2k |
 | 22:09 | Chromecast optie B gereverteerd op verzoek (Jackbox/TV-code blijft de route); implementatie bewaard in git-history commit f2cae2d; kennis+beslissing in cerebrum; .next purge nodig na route-delete (bug-1505) | git revert d995f68 | tsc groen | ~3k |
+| 22:29 | Created supabase/migrations/202605010382_premium_ai_credits.sql | — | ~893 |
+| 22:30 | Edited app/api/decks/[id]/recommend/route.ts | added nullish coalescing | ~471 |
+| 22:30 | Edited components/collection/DeckDetail.tsx | expanded (+15 lines) | ~95 |
+| 22:30 | Edited components/collection/DeckDetail.tsx | CSS: message | ~109 |
+| 22:30 | Edited components/collection/DeckDetail.tsx | added error handling | ~264 |
+| 22:31 | Edited components/collection/DeckDetail.tsx | 4→7 lines | ~68 |
+| 22:31 | Edited components/collection/DeckDetail.tsx | expanded (+9 lines) | ~141 |
+| 22:31 | Edited components/collection/DeckDetail.tsx | added nullish coalescing | ~1520 |
+| 22:31 | Created tests/feature/ai-quota.test.ts | — | ~1052 |
+| 22:33 | Edited tests/feature/ai-quota.test.ts | modified provisionAuthUser() | ~172 |
+| 22:33 | Edited tests/feature/ai-quota.test.ts | 5→6 lines | ~82 |
+| 22:33 | Edited tests/feature/ai-quota.test.ts | 4→5 lines | ~77 |
+| 22:33 | Edited tests/feature/ai-quota.test.ts | 5→6 lines | ~82 |
+| 22:33 | Edited tests/feature/ai-quota.test.ts | now() → stub() | ~134 |
+| 22:34 | Edited tests/feature/ai-quota.test.ts | modified values() | ~37 |
+| 22:36 | Premium-laag + AI Deck Doctor: mig 382 (co_entitlements, co_ai_usage, consume_ai_credit security definer met row-lock), recommend-route gated (402 premium_required / 429 quota, 20/maand), Doctor-tab in DeckDetail (plan+include/consider/skip, upsell-paneel), feature-test AQ1-4 groen (4/4), Jordy premium op lokale play-DB (user 0df4a143) | supabase/migrations/202605010382*, app/api/decks/[id]/recommend/route.ts, components/collection/DeckDetail.tsx, tests/feature/ai-quota.test.ts | tsc+build+502 unit+4 feature groen | ~35k |

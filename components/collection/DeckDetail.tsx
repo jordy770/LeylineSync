@@ -55,6 +55,21 @@ interface PullList {
   groups: { binder: string; cards: { name: string; need: number }[] }[]
   missing: { name: string; need: number; inDecks: string[] }[]
 }
+interface DoctorPick {
+  oracleId: string
+  name: string
+  tag: string
+  source: 'free' | 'occupied' | 'buy'
+  priceEur: number | null
+  confidence: number
+  themeImpact: string
+  verdict: 'include' | 'consider' | 'skip'
+  reason: string
+}
+interface DoctorResult {
+  summary: string
+  picks: DoctorPick[]
+}
 interface BuySuggestion {
   oracleId: string
   name: string
@@ -82,7 +97,11 @@ export function DeckDetail({
   const router = useRouter()
   const [scan, setScan] = useState<ScanResult | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [tab, setTab] = useState<'list' | 'free' | 'occupied' | 'buy' | 'pull'>('free')
+  const [tab, setTab] = useState<'list' | 'free' | 'occupied' | 'buy' | 'pull' | 'doctor'>('free')
+  const [doctor, setDoctor] = useState<DoctorResult | null>(null)
+  const [doctorBusy, setDoctorBusy] = useState(false)
+  const [doctorError, setDoctorError] = useState<{ message: string; code?: string } | null>(null)
+  const [doctorBudget, setDoctorBudget] = useState<string>('5')
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [buyBudget, setBuyBudget] = useState<string>('5')
@@ -354,6 +373,28 @@ export function DeckDetail({
     }
   }
 
+  // AI Deck Doctor (premium): the model ranks + explains the scanner's own
+  // candidates. The route consumes a server-side credit first — the UI just
+  // translates 402/429 into the upsell/quota message.
+  async function runDoctor() {
+    setDoctorBusy(true)
+    setDoctorError(null)
+    try {
+      const res = await fetch(`/api/decks/${deckId}/recommend`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ budget: doctorBudget === '' ? null : Number(doctorBudget) }),
+      })
+      const body = await res.json()
+      if (!res.ok) setDoctorError({ message: body.error ?? 'The doctor could not run.', code: body.code })
+      else setDoctor(body)
+    } catch {
+      setDoctorError({ message: 'Network error running the doctor.' })
+    } finally {
+      setDoctorBusy(false)
+    }
+  }
+
   // Set/change the commander after the fact (text imports without a
   // "Commander" header land with none). Identity + score change with it, so
   // re-scan AND refresh the server-rendered page chrome (color pips).
@@ -515,6 +556,9 @@ export function DeckDetail({
           <Tab active={tab === 'pull'} onClick={() => setTab('pull')}>
             Pull list
           </Tab>
+          <Tab active={tab === 'doctor'} onClick={() => setTab('doctor')}>
+            ✨ Doctor
+          </Tab>
         </div>
         {tab === 'free' || tab === 'occupied' || tab === 'buy' ? (
           // The badge meanings, visible everywhere (tooltips don't exist on touch).
@@ -587,6 +631,15 @@ export function DeckDetail({
           )
         ) : tab === 'buy' ? (
           <BuyTab buys={buys} busy={buyBusy} error={buyError} budget={buyBudget} setBudget={setBuyBudget} />
+        ) : tab === 'doctor' ? (
+          <DoctorTab
+            result={doctor}
+            busy={doctorBusy}
+            error={doctorError}
+            budget={doctorBudget}
+            setBudget={setDoctorBudget}
+            onRun={runDoctor}
+          />
         ) : (
           <PullTab pull={pull} busy={pullBusy} error={pullError} />
         )}
@@ -1103,6 +1156,139 @@ function BuyTab({
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+// The AI Deck Doctor (premium): one coherent, grounded upgrade plan — the
+// model only ranks/explains candidates the deterministic scanner produced.
+const VERDICT_ORDER = ['include', 'consider', 'skip'] as const
+const VERDICT_LABEL: Record<string, string> = { include: 'Include', consider: 'Consider', skip: 'Skip' }
+const SOURCE_LABEL: Record<string, string> = { free: 'in your binder', occupied: 'in another deck', buy: 'to buy' }
+
+function DoctorTab({
+  result,
+  busy,
+  error,
+  budget,
+  setBudget,
+  onRun,
+}: {
+  result: DoctorResult | null
+  busy: boolean
+  error: { message: string; code?: string } | null
+  budget: string
+  setBudget: (b: string) => void
+  onRun: () => void
+}) {
+  const chips: { label: string; value: string }[] = [
+    { label: 'Buys under €2', value: '2' },
+    { label: 'Under €5', value: '5' },
+    { label: 'Under €10', value: '10' },
+    { label: 'No budget', value: '' },
+  ]
+
+  return (
+    <div className="space-y-3">
+      <Panel className="p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="font-rules mr-auto text-sm" style={{ color: 'var(--text-dim)' }}>
+            The doctor turns the scan into one coherent plan — what to swap, what to skip, and why. Grounded in your
+            own collection; it never invents cards.
+          </p>
+          {chips.map((c) => (
+            <button
+              key={c.value}
+              onClick={() => setBudget(c.value)}
+              className="rounded-full px-3 py-1 text-xs"
+              style={
+                budget === c.value
+                  ? { background: 'var(--frame-gold)', color: '#1c1407' }
+                  : { border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text-dim)' }
+              }
+            >
+              {c.label}
+            </button>
+          ))}
+          <button
+            onClick={onRun}
+            disabled={busy}
+            className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40"
+            style={{ background: 'linear-gradient(150deg, var(--gold-bright), var(--frame-gold))', color: '#1c1407' }}
+          >
+            {busy ? 'Consulting…' : result ? 'Run again' : '✨ Run the doctor'}
+          </button>
+        </div>
+      </Panel>
+
+      {error ? (
+        <Panel className="p-5">
+          {error.code === 'premium_required' ? (
+            <>
+              <p className="font-display text-sm" style={{ color: 'var(--gold-bright)' }}>
+                ✨ The AI Deck Doctor is a premium feature
+              </p>
+              <p className="font-rules mt-1 text-sm" style={{ color: 'var(--text-dim)' }}>
+                Premium covers the AI costs and unlocks {`the doctor's`} monthly runs. The free heuristic scanner (the
+                other tabs) stays free, always.
+              </p>
+            </>
+          ) : (
+            <p className="text-sm" style={{ color: error.code === 'quota_exceeded' ? 'var(--warn)' : 'var(--danger)' }}>
+              {error.message}
+            </p>
+          )}
+        </Panel>
+      ) : null}
+
+      {busy && !result ? <Empty>Reading the scan and weighing the candidates…</Empty> : null}
+
+      {result ? (
+        <>
+          <Panel className="p-5">
+            <h4 className="mb-1 text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
+              The plan
+            </h4>
+            <p className="font-rules text-sm" style={{ color: 'var(--text)' }}>
+              {result.summary}
+            </p>
+          </Panel>
+          {VERDICT_ORDER.map((verdict) => {
+            const picks = result.picks.filter((p) => p.verdict === verdict)
+            if (picks.length === 0) return null
+            const tone = verdict === 'include' ? 'var(--cast)' : verdict === 'consider' ? 'var(--warn)' : 'var(--text-faint)'
+            return (
+              <Panel key={verdict} className="p-4">
+                <h4 className="font-display text-sm" style={{ color: tone }}>
+                  {VERDICT_LABEL[verdict]}
+                  <span className="ml-2 text-xs" style={{ color: 'var(--text-faint)' }}>
+                    {picks.length}
+                  </span>
+                </h4>
+                <ul className="mt-2 space-y-2">
+                  {picks.map((p) => (
+                    <li key={p.oracleId} className="text-sm">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <CardName name={p.name} className="font-display" style={{ color: 'var(--text-bright)' }} />
+                        <Chip>{p.tag.replace(/_/g, ' ')}</Chip>
+                        <Chip>{SOURCE_LABEL[p.source] ?? p.source}</Chip>
+                        {p.priceEur != null && p.source === 'buy' ? (
+                          <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
+                            €{p.priceEur.toFixed(2)}
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="font-rules mt-0.5 text-sm" style={{ color: 'var(--text-dim)' }}>
+                        {p.reason}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </Panel>
+            )
+          })}
+        </>
+      ) : null}
     </div>
   )
 }

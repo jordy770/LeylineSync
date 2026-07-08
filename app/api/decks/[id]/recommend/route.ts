@@ -5,11 +5,14 @@ import { createClient } from '@/lib/supabase/server'
 
 // POST /api/decks/:id/recommend
 // Body: { budget?: number | null }
-// Returns: { summary, picks[] } | { error }
+// Returns: { summary, picks[] } | { error, code? }
 //
 // The AI deck doctor ranks + explains upgrades the deterministic scanner already
-// produced (grounded — no invented cards). Gated to signed-in users; the API key
-// never leaves the server.
+// produced (grounded — no invented cards). PREMIUM: every run consumes a credit
+// via consume_ai_credit (mig 382) — server-side, so the paywall and the monthly
+// quota can't be bypassed. The API key never leaves the server.
+
+const DOCTOR_MONTHLY_LIMIT = 20
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient()
@@ -19,6 +22,29 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
   const userId = data.claims.sub as string
   const { id: deckId } = await params
+
+  const { data: credit, error: creditError } = await supabase.rpc('consume_ai_credit', {
+    p_feature: 'deck_doctor',
+    p_limit: DOCTOR_MONTHLY_LIMIT,
+  })
+  if (creditError) {
+    return NextResponse.json({ error: `Credit check failed: ${creditError.message}` }, { status: 500 })
+  }
+  if (!credit?.allowed) {
+    if (credit?.reason === 'premium_required') {
+      return NextResponse.json(
+        { error: 'The AI Deck Doctor is a premium feature.', code: 'premium_required' },
+        { status: 402 },
+      )
+    }
+    return NextResponse.json(
+      {
+        error: `Monthly AI limit reached (${credit?.used ?? '?'}/${credit?.limit ?? DOCTOR_MONTHLY_LIMIT}) — resets next month.`,
+        code: 'quota_exceeded',
+      },
+      { status: 429 },
+    )
+  }
 
   let budget: number | null = null
   try {
