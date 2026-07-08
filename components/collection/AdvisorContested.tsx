@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { CardName } from './CardName'
+import { ShopLinksInline } from './ShopLinks'
 import { Panel } from './ui'
 
 // Contested cards WITH the arbiter's one-click resolution. "Keep in <winner>"
@@ -189,15 +190,9 @@ export function AdvisorContested({ contested }: { contested: ContestedView[] }) 
                   {busyKey === `rel-${c.oracleId}-${d.deckId}` ? '…' : d.deckName}
                 </button>
               ))}
-              <a
-                href={`https://www.cardmarket.com/en/Magic/Products/Search?searchString=${encodeURIComponent(c.cardName)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="ml-auto rounded-lg px-3 py-1.5 text-xs"
-                style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
-              >
-                Buy a copy ↗
-              </a>
+              <span className="ml-auto">
+                <ShopLinksInline name={c.cardName} />
+              </span>
             </div>
           </Panel>
         )

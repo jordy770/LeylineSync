@@ -7162,3 +7162,14 @@
 | 14:14 | Edited components/collection/DeckDetail.tsx | expanded (+6 lines) | ~151 |
 | 14:15 | Collectiewaarde-grafiek (mig 381 snapshot_value_eur op co_imports, import legt waarde vast, SVG-lijnchart met tooltip op dashboard), Decklist ×-verwijderknop met undo (qty-aware), badge-legend zichtbaar op touch | supabase/migrations/202605010381*, lib/collection/import-collection.ts, lib/collection/dashboard.ts, components/collection/CollectionValueChart.tsx, DeckDetail.tsx, app/collection/page.tsx | tsc+build+tests groen; mig lokaal toegepast | ~30k |
 | 14:24 | Release v0.7.0 live: deploy-workflow success (incl. db push mig 381 naar hosted), leylinesync.com 200 | GitHub release v0.7.0 | live | ~2k |
+| 14:37 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-monetization-intent.md | modified correctie() | ~199 |
+| 14:38 | Affiliate-onderzoek: Cardmarket/CardTrader hebben geen echt affiliate-programma (alleen referral met cap), TCGplayer wel (Impact, VS-gericht); eerdere aanname gecorrigeerd in memory+cerebrum; geen codewijziging | memory collection-monetization-intent.md, .wolf/cerebrum.md | advies bijgesteld | ~5k |
+| 15:21 | Created lib/collection/shop-links.ts | — | ~439 |
+| 15:22 | Created components/collection/ShopLinks.tsx | — | ~540 |
+| 15:22 | Edited components/collection/DeckDetail.tsx | added 1 import(s) | ~39 |
+| 15:22 | Edited components/collection/DeckDetail.tsx | reduced (-7 lines) | ~70 |
+| 15:22 | Edited components/collection/DeckDetail.tsx | reduced (-8 lines) | ~167 |
+| 15:22 | Edited components/collection/AdvisorContested.tsx | added 1 import(s) | ~32 |
+| 15:22 | Edited components/collection/AdvisorContested.tsx | reduced (-6 lines) | ~34 |
+| 15:22 | Created tests/unit/shop-links.test.ts | — | ~399 |
+| 15:24 | Multi-marketplace kooplinks: lib/collection/shop-links.ts (Cardmarket/CardTrader/TCGplayer, TCGplayer affiliate-klaar via TCGPLAYER_AFFILIATE_PREFIX-constante) + ShopLinks/ShopLinksInline component; BuyTab, occupied-chip en Advisor omgezet; CardTrader zoek-URL = /en/manasearch_results?q= (geverifieerd) | lib/collection/shop-links.ts, components/collection/ShopLinks.tsx, DeckDetail.tsx, AdvisorContested.tsx, tests/unit/shop-links.test.ts | tsc+build+502 tests groen | ~15k |

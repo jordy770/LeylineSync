@@ -468,3 +468,12 @@
 - Collectiewaarde-historie: een import REPLACET de snapshot, dus historische aantallen bestaan niet meer — de waarde wordt daarom als getal op de import-rij bewaard (mig 381: co_imports.snapshot_value_eur; import-collection berekent som(prijs×qty) uit de al bestaande after-map vóór de co_imports-insert). Dashboard plot die punten + een live nu-punt; oude imports blijven NULL (geen nepgeschiedenis). Grafiek = components/collection/CollectionValueChart.tsx (pure SVG, geen lib; vectorEffect non-scaling-stroke, tooltip via pointer events werkt ook op touch).
 - `npx supabase migration up` werkte dit keer direct op de lokale play-DB (geen phantom-version repair meer nodig zoals in juni) — eerst gewoon proberen vóór de handmatige pg-route uit [[local-migrations]].
 - Decklist ×-knop verwijdert ÉÉN copy: deck-mutations removeCardFromDeck decrementeert quantity vóór delete, dus veilig voor 30× basics; undo = swaps add (increment). 
+
+## Do-Not-Repeat — 2026-07-08 (affiliate-aanname)
+
+- Ik adviseerde "Cardmarket affiliate-links" als inkomstenstroom ZONDER het programma te verifiëren — Cardmarket heeft geen affiliate-programma voor websites (alleen refer-a-friend: % van hun eigen ~5% commissie, alleen nieuwe gebruikers, tegoed, cap €10/maand). CardTrader idem (referral-krediet). Alleen TCGplayer heeft een echt link-based programma (Impact, first-click, hele cart) maar is VS-gericht — beperkte waarde voor de EU-doelgroep. Les: business-/partnerprogramma-claims altijd eerst webverifiëren vóór ze in een advies of memory belanden. De Cardmarket-links in de app blijven als UX-feature.
+
+## Key Learnings — 2026-07-08 (ronde 6, shop-links)
+
+- Kooplinks zijn gecentraliseerd in lib/collection/shop-links.ts (pure builders) + components/collection/ShopLinks.tsx (ShopLinks = primaire Cardmarket-knop + alternates; ShopLinksInline = quiet tekstrij; geen hooks dus server- én client-bruikbaar). CardTrader-zoek-URL is /en/manasearch_results?q=… (het form-action van hun /en/search-pagina; /en/magic/search en /cards geven 404/301 — live geverifieerd). TCGplayer = /search/magic/product?productLineName=magic&q=….
+- TCGplayer-affiliate activeren = alleen de Impact deep-link-prefix (t/m ?u=) in TCGPLAYER_AFFILIATE_PREFIX plakken; wrapAffiliate URL-encodeert het doel erin (getest in shop-links.test.ts). Bewust een code-constante, geen NEXT_PUBLIC_ env var — die zou Dockerfile/compose ARG-plumbing vereisen en de prefix is toch publiek zichtbaar in elke link.

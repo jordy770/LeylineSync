@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { CardName } from './CardName'
+import { ShopLinks, ShopLinksInline } from './ShopLinks'
 import { ColorPips, Panel } from './ui'
 
 type ThemeImpact = 'Keeps Theme' | 'Neutral' | 'Weakens Theme'
@@ -573,16 +574,9 @@ export function DeckDetail({
                     {busyKey === `occ-${i}` ? '…' : `Move from ${truncate(u.usedBy[0]?.name ?? 'other deck', 24)}`}
                   </button>
                 ) : (
-                  <a
-                    href={`https://www.cardmarket.com/en/Magic/Products/Search?searchString=${encodeURIComponent(u.in.name)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="shrink-0 rounded px-2 py-1 text-xs uppercase tracking-wide"
-                    style={{ color: 'var(--text-faint)', border: '1px solid rgba(201,154,58,0.3)' }}
-                    title="Every copy you own is in a deck that needs it — buy a copy or proxy"
-                  >
-                    buy a copy ↗
-                  </a>
+                  <span className="shrink-0" title="Every copy you own is in a deck that needs it — buy a copy or proxy">
+                    <ShopLinksInline name={u.in.name} />
+                  </span>
                 )}
               </Panel>
             ))}
@@ -1064,16 +1058,8 @@ function BuyTab({
                 </p>
               </div>
               <div className="flex shrink-0 flex-col items-end gap-1">
-                {/* Cardmarket is where the EU price on this row actually lives. */}
-                <a
-                  href={`https://www.cardmarket.com/en/Magic/Products/Search?searchString=${encodeURIComponent(b.name)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg px-3 py-1.5 text-sm"
-                  style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
-                >
-                  {b.priceEur != null ? `€${b.priceEur.toFixed(2)} · Cardmarket ↗` : 'Cardmarket ↗'}
-                </a>
+                {/* Cardmarket carries the EU price on this row; alternates below. */}
+                <ShopLinks name={b.name} priceEur={b.priceEur} />
                 <a
                   href={b.scryfallUrl}
                   target="_blank"

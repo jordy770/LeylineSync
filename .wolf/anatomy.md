@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T12:14:34.080Z
-> Files: 572 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T13:22:44.571Z
+> Files: 575 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -16,7 +16,7 @@
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
-- `collection-monetization-intent.md` (~256 tok)
+- `collection-monetization-intent.md` (~362 tok)
 - `collection-optimizer-module.md` (~4794 tok)
 - `decisive-over-clarifying.md` (~269 tok)
 - `hosting-ovhcloud.md` (~340 tok)
@@ -540,15 +540,16 @@
 
 ## components/collection/
 
-- `AdvisorContested.tsx` — contested cards with one-click "Keep in <winner>" (releases losers), per-deck release chips, Cardmarket link, 10s undo via swaps add-back (~2471 tok)
+- `AdvisorContested.tsx` — AdvisorContested (~2396 tok)
 - `CardName.tsx` — hover card preview + tap-to-toggle on touch (hover:none); portal to document.body (~1099 tok)
 - `CollectionValueChart.tsx` — W (~1431 tok)
-- `DeckDetail.tsx` — BUCKET_ORDER (~13242 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~13025 tok)
 - `DeckImportForm.tsx` — DeckImportForm (~1267 tok)
 - `ImportWizard.tsx` — ImportWizard (~2308 tok)
 - `RulePlayground.tsx` — RulePlayground (~2127 tok)
 - `SearchLive.tsx` — instant search + per-result add-to-deck (deck chips, undo toast, refreshTick re-fetch) (~3622 tok)
 - `Shell.tsx` — 4-item sub-nav (Overview/Advisor/Binders/Find a card); import pages reached via Overview buttons. Omit `active` on nested pages (deck detail). (~1062 tok)
+- `ShopLinks.tsx` — Buy-a-card links, one per marketplace. No hooks, so server AND client (~540 tok)
 - `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~406 tok)
 
 ## components/controller/
@@ -616,6 +617,7 @@
 - `pull-list.ts` — Other decks of the user that claim this card (excluding the target deck). (~1308 tok)
 - `resolve.ts` — The minimum a row needs to be resolvable. (~864 tok)
 - `scoring.ts` — The deck's archetype tags — non-staple roles that appear on enough cards to be a (~1481 tok)
+- `shop-links.ts` — Wrap a target URL in an Impact-style deep-link prefix (no-op without one). (~439 tok)
 - `types.ts` — One physical stack of cards as parsed from an import file (pre-resolution). (~810 tok)
 - `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4084 tok)
 
@@ -860,6 +862,7 @@
 - `power-score.test.ts` — Power score — deterministic deck rating from synergy buckets + curve. Builds (~804 tok)
 - `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3222 tok)
 - `scoring.test.ts` — Recommendation scoring — commander synergy, theme impact, curve fit, confidence. (~1108 tok)
+- `shop-links.test.ts` — Marketplace buy links — pure URL builders. Names with commas/apostrophes (~399 tok)
 - `synergy-tagger.test.ts` — Synergy tagger — heuristic role detection from oracle text. Uses real card (~1500 tok)
 - `upgrade-scanner.test.ts` — Upgrade scanner — the pure selection core (free swaps/additions, occupied, (~1028 tok)
 

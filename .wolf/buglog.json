@@ -18466,6 +18466,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-08T12:14:07.987Z"
+    },
+    {
+      "id": "bug-1129",
+      "timestamp": "2026-07-08T13:22:15.973Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Had './ui'",
+      "fix": "Changed to './ShopLinks'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T13:22:15.973Z"
+    },
+    {
+      "id": "bug-1130",
+      "timestamp": "2026-07-08T13:22:19.224Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "10 lines replaced/restructured",
+      "fix": "Rewrote 12→5 lines (10 removed) | Also: {/* Cardmarket is where the EU price on this row a; href={`https://www.cardmarket.com/en/Magic/Product",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-08T13:22:24.965Z"
+    },
+    {
+      "id": "bug-1131",
+      "timestamp": "2026-07-08T13:22:26.752Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/AdvisorContested.tsx",
+      "root_cause": "Had './ui'",
+      "fix": "Changed to './ShopLinks'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T13:22:26.752Z"
+    },
+    {
+      "id": "bug-1132",
+      "timestamp": "2026-07-08T13:22:28.967Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/AdvisorContested.tsx",
+      "root_cause": "9 lines replaced/restructured",
+      "fix": "Rewrote 9→3 lines (9 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T13:22:28.967Z"
     }
   ]
 }
