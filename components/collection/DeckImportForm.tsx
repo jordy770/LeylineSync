@@ -11,7 +11,6 @@ export function DeckImportForm() {
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [text, setText] = useState('')
-  const [source, setSource] = useState('moxfield')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -22,7 +21,9 @@ export function DeckImportForm() {
           ? { name, url: url.trim() }
           : null
         : text.trim()
-          ? { name, source, text }
+          ? // The parser auto-detects Moxfield/Archidekt/plain formats; 'paste' is
+            // recorded as the import's source metadata only.
+            { name, source: 'paste', text }
           : null
     if (!payload) {
       setError(mode === 'url' ? 'Paste a Moxfield or Archidekt deck link first.' : 'Paste a decklist first.')
@@ -60,27 +61,13 @@ export function DeckImportForm() {
         </ModeTab>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Deck name (optional)"
-          className="flex-1 rounded-lg bg-transparent px-3 py-2 text-sm"
-          style={{ border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text)', minWidth: '12rem' }}
-        />
-        {mode === 'paste' ? (
-          <select
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-            className="rounded-lg px-3 py-2 text-sm"
-            style={{ border: '1px solid rgba(201,154,58,0.3)', background: 'var(--ink-2)', color: 'var(--text)' }}
-          >
-            <option value="moxfield">Moxfield</option>
-            <option value="archidekt">Archidekt</option>
-            <option value="txt">Plain text</option>
-          </select>
-        ) : null}
-      </div>
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Deck name (optional)"
+        className="w-full rounded-lg bg-transparent px-3 py-2 text-sm"
+        style={{ border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text)' }}
+      />
 
       {mode === 'url' ? (
         <input

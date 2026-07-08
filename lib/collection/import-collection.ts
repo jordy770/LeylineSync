@@ -112,6 +112,19 @@ export async function importManaboxCollection(
     else after.set(row.oracleId, { name: row.name, qty: row.quantity })
   }
 
+  // The collection changed, so every deck's cached upgrade counts are stale —
+  // reset them to "never scanned" (NULL) so the dashboard doesn't show numbers
+  // the next scan would contradict. Best-effort; never fails the import.
+  const { data: deckRows } = await supabase.from('co_decks').select('id').eq('user_id', userId)
+  const deckIds = (deckRows ?? []).map((d) => d.id as string)
+  if (deckIds.length > 0) {
+    await supabase
+      .from('co_deck_analyses')
+      .update({ free_upgrades: null, occupied_upgrades: null, scanned_at: null })
+      .in('deck_id', deckIds)
+      .then(undefined, () => {})
+  }
+
   return {
     result: {
       rowsTotal: rowsMatched + rowsUnmatched,

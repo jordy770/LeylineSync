@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { CardName } from '@/components/collection/CardName'
 import { Panel, Shell } from '@/components/collection/Shell'
 import { getCollectionInsights } from '@/lib/collection/insights'
 import { createClient } from '@/lib/supabase/server'
@@ -19,11 +20,7 @@ export default async function InsightsPage() {
     <Shell
       title="Collection insights"
       lead="What your whole collection says — best fits per deck, and strong cards going to waste."
-      actions={
-        <Link href="/collection" className="rounded-lg px-4 py-2 text-sm" style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}>
-          ← Back
-        </Link>
-      }
+      active="insights"
     >
       {empty ? (
         <Panel className="p-6">
@@ -47,9 +44,7 @@ export default async function InsightsPage() {
                 <Panel className="flex items-center justify-between gap-4 p-4 transition-transform hover:scale-[1.01]">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-display text-base" style={{ color: 'var(--text-bright)' }}>
-                        {f.name}
-                      </span>
+                      <CardName name={f.name} className="font-display text-base" style={{ color: 'var(--text-bright)' }} />
                       <span style={{ color: 'var(--frame-gold)' }}>→</span>
                       <span className="text-sm" style={{ color: 'var(--text)' }}>
                         {f.deckName}
@@ -83,9 +78,7 @@ export default async function InsightsPage() {
             {ins.unusedStaples.map((s) => (
               <div key={s.oracleId} className="flex items-center justify-between px-4 py-2.5" style={{ borderColor: 'rgba(201,154,58,0.12)' }}>
                 <div className="flex items-center gap-2">
-                  <span className="font-display text-sm" style={{ color: 'var(--text-bright)' }}>
-                    {s.name}
-                  </span>
+                  <CardName name={s.name} className="font-display text-sm" style={{ color: 'var(--text-bright)' }} />
                   <Tag>{s.tag.replace(/_/g, ' ')}</Tag>
                   {s.binderNames && s.binderNames.length > 0 ? (
                     <span className="text-xs" style={{ color: 'var(--text-faint)' }}>

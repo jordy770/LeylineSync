@@ -12,7 +12,7 @@ export default async function CollectionImportPage() {
   if (error || !data?.claims?.sub) redirect('/auth/login')
 
   return (
-    <Shell title="Import collection" lead="Upload a ManaBox CSV export. Every row is matched to its Scryfall identity.">
+    <Shell title="Import collection" lead="Upload a ManaBox CSV export. Every row is matched to its Scryfall identity." active="import">
       <ImportWizard />
     </Shell>
   )

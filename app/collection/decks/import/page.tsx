@@ -12,7 +12,7 @@ export default async function DeckImportPage() {
   if (error || !data?.claims?.sub) redirect('/auth/login')
 
   return (
-    <Shell title="Import a deck" lead="Paste a Moxfield, Archidekt or plain-text decklist to analyse and scan it.">
+    <Shell title="Import a deck" lead="Paste a Moxfield, Archidekt or plain-text decklist to analyse and scan it." active="deck-import">
       <DeckImportForm />
     </Shell>
   )

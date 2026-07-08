@@ -7,15 +7,30 @@ import SiteNav from '@/components/SiteNav'
 // grid) with a slim header. Server-compatible (no hooks) so pages can wrap their
 // server-rendered content directly.
 
+export type CollectionSection = 'overview' | 'search' | 'binders' | 'insights' | 'conflicts' | 'import' | 'deck-import'
+
+const SECTIONS: { key: CollectionSection; href: string; label: string }[] = [
+  { key: 'overview', href: '/collection', label: 'Overview' },
+  { key: 'search', href: '/collection/search', label: 'Find a card' },
+  { key: 'binders', href: '/collection/binders', label: 'Binders' },
+  { key: 'insights', href: '/collection/insights', label: 'Insights' },
+  { key: 'conflicts', href: '/collection/conflicts', label: 'Conflicts' },
+  { key: 'import', href: '/collection/import', label: 'Import collection' },
+  { key: 'deck-import', href: '/collection/decks/import', label: 'Import deck' },
+]
+
 export function Shell({
   title,
   lead,
   actions,
+  active,
   children,
 }: {
   title: string
   lead?: string
   actions?: ReactNode
+  /** Which section to highlight in the sub-nav. Omit on nested pages (deck detail). */
+  active?: CollectionSection
   children: ReactNode
 }) {
   return (
@@ -23,24 +38,31 @@ export function Shell({
       {/* Same top nav as the landing and decks pages — one identity, so hopping
           between Home / Decks / Collection never changes the header. */}
       <SiteNav active="collection" />
-      {/* Collection sub-nav: the section links the old bespoke header carried. */}
+      {/* Collection sub-nav: every section, with the current one lit so you
+          always know where you are (and Back buttons become unnecessary). */}
       <div
         className="flex items-center gap-4 overflow-x-auto px-5 py-2 text-sm"
         style={{ borderBottom: '1px solid rgba(201,154,58,0.18)' }}
       >
         <nav className="mx-auto flex w-full max-w-5xl items-center gap-4">
-          <Link href="/collection" className="hover:underline" style={{ color: 'var(--text-dim)' }}>
-            Overview
-          </Link>
-          <Link href="/collection/search" className="hover:underline" style={{ color: 'var(--text-dim)' }}>
-            Find a card
-          </Link>
-          <Link href="/collection/import" className="hover:underline" style={{ color: 'var(--text-dim)' }}>
-            Import collection
-          </Link>
-          <Link href="/collection/decks/import" className="hover:underline" style={{ color: 'var(--text-dim)' }}>
-            Import deck
-          </Link>
+          {SECTIONS.map((s) => {
+            const isActive = active === s.key
+            return (
+              <Link
+                key={s.key}
+                href={s.href}
+                aria-current={isActive ? 'page' : undefined}
+                className="whitespace-nowrap hover:underline underline-offset-4"
+                style={
+                  isActive
+                    ? { color: 'var(--gold-bright)', textDecoration: 'underline', textUnderlineOffset: 4 }
+                    : { color: 'var(--text-dim)' }
+                }
+              >
+                {s.label}
+              </Link>
+            )
+          })}
         </nav>
       </div>
 

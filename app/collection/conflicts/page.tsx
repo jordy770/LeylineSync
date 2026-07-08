@@ -1,6 +1,6 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { CardName } from '@/components/collection/CardName'
 import { ConflictResolve } from '@/components/collection/ConflictResolve'
 import { Panel, Shell } from '@/components/collection/Shell'
 import { listConflicts } from '@/lib/collection/conflicts'
@@ -20,11 +20,7 @@ export default async function ConflictsPage() {
     <Shell
       title="Deck conflicts"
       lead="Cards claimed by more decks than you own copies of — you can't field them all at once."
-      actions={
-        <Link href="/collection" className="rounded-lg px-4 py-2 text-sm" style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}>
-          ← Back
-        </Link>
-      }
+      active="conflicts"
     >
       {conflicts.length === 0 ? (
         <Panel className="p-6">
@@ -37,8 +33,8 @@ export default async function ConflictsPage() {
           {conflicts.map((c) => (
             <Panel key={c.oracleId} className="flex flex-wrap items-center justify-between gap-3 p-4">
               <div className="min-w-0">
-                <div className="font-display text-base" style={{ color: 'var(--text-bright)' }}>
-                  {c.name}
+                <div>
+                  <CardName name={c.name} className="font-display text-base" style={{ color: 'var(--text-bright)' }} />
                 </div>
                 <div className="font-rules mt-1 text-sm" style={{ color: 'var(--text-dim)' }}>
                   Wanted by {c.decks.map((d) => d.name).join(', ')}

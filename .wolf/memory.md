@@ -6909,3 +6909,129 @@
 | 17:44 | Edited tests/feature/board-share-token.test.ts | expanded (+28 lines) | ~355 |
 | 20:10 | TV-kamercode gebouwd (Jackbox-patroon, mig 379): tv_code op sessions + anon resolve-RPC, /tv-pagina (login-vrij, proxy-exemptie), code prominent in lobby; reden: Android Chrome kan geen URLs presenteren naar Chromecast, iOS helemaal niet — TV opent zelf 1 vast adres | mig 379, app/tv, TvCodeEntry, lobby, proxy.ts, data.ts, types | BST4-5 groen (5/5), tsc+lint+build groen | ~90k |
 | 20:35 | v0.4.0 live: /tv geeft 200 zonder login en rendert de code-entry ("Watch the table"); VPS op tag. TV-route compleet: bookmark /tv + lobby-code | prod | casting-verhaal afgerond | ~8k |
+
+## Session: 2026-07-07 23:12
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-07 00:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:36 | Edited components/collection/Shell.tsx | modified Shell() | ~644 |
+| 00:36 | Edited app/collection/page.tsx | modified CollectionDashboardPage() | ~252 |
+| 00:36 | Edited app/collection/page.tsx | CSS: goldButton | ~609 |
+| 00:37 | Edited app/collection/search/page.tsx | 9→5 lines | ~51 |
+| 00:37 | Edited app/collection/insights/page.tsx | 9→5 lines | ~50 |
+| 00:37 | Edited app/collection/conflicts/page.tsx | 9→5 lines | ~49 |
+| 00:37 | Edited app/collection/import/page.tsx | inline fix | ~39 |
+| 00:37 | Edited app/collection/decks/import/page.tsx | inline fix | ~39 |
+| 00:37 | Edited app/collection/conflicts/page.tsx | 4→3 lines | ~34 |
+| 00:37 | Edited components/collection/DeckDetail.tsx | removed 38 lines | ~16 |
+| 00:37 | Edited components/collection/DeckDetail.tsx | Occupied() → decks() | ~41 |
+| 00:37 | Edited components/collection/DeckDetail.tsx | 10→13 lines | ~190 |
+| 00:37 | Edited components/collection/DeckDetail.tsx | added optional chaining | ~404 |
+| 00:38 | Edited components/collection/DeckDetail.tsx | modified truncate() | ~573 |
+| 00:38 | Edited components/collection/DeckDetail.tsx | 5→5 lines | ~64 |
+| 00:38 | Edited components/collection/DeckImportForm.tsx | 3→2 lines | ~23 |
+| 00:38 | Edited components/collection/DeckImportForm.tsx | CSS: source | ~66 |
+| 00:38 | Edited components/collection/DeckImportForm.tsx | reduced (-14 lines) | ~83 |
+
+## Session: 2026-07-08 UX refactor (collection optimizer)
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| — | Collection sub-nav: all 6 sections + active-state highlight (`active` prop on Shell); removed per-page ← Back buttons | components/collection/Shell.tsx, app/collection/{page,search,insights,conflicts,import,decks/import}/page.tsx | ✓ tsc/lint/build clean | ~1200 |
+| — | Dashboard: conflict-count banner (listConflicts in parallel, only when >0); actionable empty-deck CTA; removed duplicate Insights/Conflicts header links | app/collection/page.tsx | ✓ | ~600 |
+| — | DeckDetail: "Occupied"→"In other decks", rows now show current deck + "Move from X" button, +delta labeled "power", Play-bridge moved below tabs, loading copy w/ pulse | components/collection/DeckDetail.tsx | ✓ | ~800 |
+| — | DeckImportForm: removed dead source dropdown (parser is format-agnostic; bug-2680 logged) | components/collection/DeckImportForm.tsx | ✓ | ~200 |
+| 00:52 | Created supabase/migrations/202605010380_scan_cache.sql | — | ~248 |
+| 00:53 | Edited app/api/decks/[id]/upgrades/route.ts | modified if() | ~192 |
+| 00:53 | Edited lib/collection/import-collection.ts | added nullish coalescing | ~248 |
+| 00:53 | Edited lib/collection/dashboard.ts | 6→9 lines | ~85 |
+| 00:53 | Edited lib/collection/dashboard.ts | 14→16 lines | ~216 |
+| 00:53 | Edited lib/collection/dashboard.ts | added optional chaining | ~206 |
+| 00:53 | Edited app/collection/page.tsx | 15→16 lines | ~238 |
+| 00:53 | Edited app/collection/page.tsx | added nullish coalescing | ~276 |
+| 00:54 | Created components/collection/CardName.tsx | — | ~855 |
+| 00:54 | Edited components/collection/DeckDetail.tsx | added 1 import(s) | ~39 |
+| 00:54 | Edited components/collection/DeckDetail.tsx | 15→11 lines | ~185 |
+| 00:54 | Edited components/collection/DeckDetail.tsx | 9→7 lines | ~126 |
+| 00:54 | Edited components/collection/DeckDetail.tsx | 6→4 lines | ~82 |
+| 00:54 | Edited components/collection/DeckDetail.tsx | 6→6 lines | ~55 |
+| 00:54 | Edited app/collection/page.tsx | added 1 import(s) | ~55 |
+| 00:55 | Edited app/collection/page.tsx | 7→5 lines | ~122 |
+| 00:55 | Edited app/collection/insights/page.tsx | added 1 import(s) | ~35 |
+| 00:55 | Edited app/collection/insights/page.tsx | 5→3 lines | ~78 |
+| 00:55 | Edited app/collection/insights/page.tsx | 5→3 lines | ~66 |
+| 00:55 | Edited app/collection/conflicts/page.tsx | added 1 import(s) | ~38 |
+| 00:55 | Edited app/collection/conflicts/page.tsx | 4→4 lines | ~59 |
+| 00:55 | Edited lib/collection/apply-swap.ts | added 2 condition(s) | ~650 |
+| 00:55 | Edited app/api/decks/[id]/swaps/route.ts | 3→5 lines | ~83 |
+| 00:55 | Edited app/api/decks/[id]/swaps/route.ts | modified if() | ~139 |
+| 00:56 | Edited components/collection/DeckDetail.tsx | inline fix | ~19 |
+| 00:56 | Edited components/collection/DeckDetail.tsx | added error handling | ~349 |
+| 00:56 | Edited components/collection/DeckDetail.tsx | added optional chaining | ~215 |
+| 00:56 | Edited components/collection/DeckDetail.tsx | added 2 condition(s) | ~332 |
+| 00:56 | Edited components/collection/DeckDetail.tsx | expanded (+19 lines) | ~389 |
+| 00:57 | Created app/api/collection/search/route.ts | — | ~356 |
+| 00:57 | Created components/collection/SearchLive.tsx | — | ~2166 |
+| 00:57 | Created app/collection/search/page.tsx | — | ~485 |
+| 00:58 | Edited lib/collection/import-deck.ts | 11→15 lines | ~161 |
+| 00:58 | Edited lib/collection/import-deck.ts | 8→9 lines | ~81 |
+| 00:58 | Edited lib/collection/import-deck.ts | added optional chaining | ~1319 |
+| 00:58 | Created app/api/decks/[id]/sync/route.ts | — | ~520 |
+| 00:58 | Edited app/api/decks/import/route.ts | 3→4 lines | ~35 |
+| 00:58 | Edited app/api/decks/import/route.ts | modified if() | ~67 |
+| 00:58 | Edited app/api/decks/import/route.ts | inline fix | ~24 |
+| 00:59 | Edited app/collection/decks/[id]/page.tsx | 2→2 lines | ~45 |
+| 00:59 | Edited app/collection/decks/[id]/page.tsx | 1→6 lines | ~66 |
+| 00:59 | Edited components/collection/DeckDetail.tsx | modified DeckDetail() | ~53 |
+| 00:59 | Edited components/collection/DeckDetail.tsx | 2→5 lines | ~110 |
+| 00:59 | Edited components/collection/DeckDetail.tsx | added error handling | ~216 |
+| 00:59 | Edited components/collection/DeckDetail.tsx | expanded (+27 lines) | ~418 |
+| 00:59 | Edited components/collection/DeckDetail.tsx | modified if() | ~190 |
+| 01:00 | Edited components/collection/DeckDetail.tsx | added error handling | ~521 |
+| 01:00 | Edited components/collection/DeckDetail.tsx | removed 57 lines | ~136 |
+| 01:00 | Edited components/collection/DeckDetail.tsx | added nullish coalescing | ~1693 |
+| 01:01 | Created lib/collection/binders.ts | — | ~945 |
+| 01:01 | Created app/collection/binders/page.tsx | — | ~1235 |
+| 01:01 | Edited components/collection/Shell.tsx | 10→11 lines | ~203 |
+| 01:02 | Edited components/collection/DeckDetail.tsx | 8→11 lines | ~175 |
+| 01:02 | Edited components/collection/DeckDetail.tsx | CSS: background | ~325 |
+| 01:02 | Edited components/collection/DeckDetail.tsx | 2→2 lines | ~19 |
+| 01:02 | Edited components/collection/ImportWizard.tsx | CSS: https, border | ~542 |
+| 01:02 | Edited components/collection/ImportWizard.tsx | added 1 condition(s) | ~187 |
+| 01:02 | Edited app/api/decks/[id]/upgrades/route.ts | added 1 condition(s) | ~172 |
+
+## Session: 2026-07-08 collection verbeterronde 2 ("alles verwerken")
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| — | Mig 380: co_deck_analyses + free_upgrades/occupied_upgrades/scanned_at (scan-cache); lokaal toegepast | supabase/migrations/202605010380_scan_cache.sql | ✓ migration up | ~200 |
+| — | Upgrade-badges dashboard: upgrades-route persist counts; import-collection invalideert; getDashboard leest cache; UpgradeHint op deckkaarten | app/api/decks/[id]/upgrades/route.ts, lib/collection/{import-collection,dashboard}.ts, app/collection/page.tsx | ✓ | ~900 |
+| — | CardName hover-preview (portal, Scryfall named-image) toegepast in DeckDetail/dashboard/insights/conflicts/binders/search | components/collection/CardName.tsx + call sites | ✓ | ~700 |
+| — | Undo-toast na apply/move/bulk; swaps-route + applySwap ondersteunen remove-only (in=null) | lib/collection/apply-swap.ts, app/api/decks/[id]/swaps/route.ts, DeckDetail.tsx | ✓ | ~800 |
+| — | Instant search: /api/collection/search + SearchLive (debounce 250ms, URL-sync via router.replace) | app/api/collection/search/route.ts, components/collection/SearchLive.tsx, app/collection/search/page.tsx | ✓ | ~900 |
+| — | Deck re-sync: importDeck slaat source_url op; syncDeckFromText (replace + diff); POST /api/decks/[id]/sync; sync-regel in DeckDetail | lib/collection/import-deck.ts, app/api/decks/[id]/sync/route.ts, app/api/decks/import/route.ts, deck-pagina | ✓ | ~1200 |
+| — | Bulk apply: FreeUpgradesList met checkboxes/select-high-confidence/sorteer (impact/prijs/confidence) + batch-undo | components/collection/DeckDetail.tsx | ✓ | ~900 |
+| — | Binderspagina /collection/binders (+?binder=X) + nav-item; lib/collection/binders.ts | app/collection/binders/page.tsx, lib/collection/binders.ts, Shell.tsx | ✓ | ~700 |
+| — | BuyTab sorteer best-fit/cheapest; ImportWizard unmatched: copy-knop + Scryfall check-links | DeckDetail.tsx, ImportWizard.tsx | ✓ | ~300 |
+| — | Verificatie: tsc ✓, eslint ✓, unit 485/485 ✓, next build ✓ | — | ✓ alles groen | — |
+
+## Session: 2026-07-08 02:43
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-08 09:33
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-08 09:33
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:05 | Herverificatie ronde 2 groen (tsc/lint/unit 485); verzendreeks gestart met user-akkoord | — | commit+push+CI+mig380+release | ~15k |

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T15:44:26.540Z
-> Files: 542 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-07T23:02:59.758Z
+> Files: 549 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -366,6 +366,10 @@
 
 - `route.ts` — POST /api/collection/resolve-conflict  { oracleId, deckId } (~392 tok)
 
+## app/api/collection/search/
+
+- `route.ts` — GET /api/collection/search?q=…&free=1&color=G&type=creature (~356 tok)
+
 ## app/api/conflicts/
 
 - `route.ts` — GET /api/conflicts → cards committed to more decks than the player owns copies of. (~232 tok)
@@ -392,15 +396,19 @@
 
 ## app/api/decks/[id]/swaps/
 
-- `route.ts` — POST /api/decks/:id/swaps (~413 tok)
+- `route.ts` — POST /api/decks/:id/swaps (~472 tok)
+
+## app/api/decks/[id]/sync/
+
+- `route.ts` — POST /api/decks/:id/sync (~520 tok)
 
 ## app/api/decks/[id]/upgrades/
 
-- `route.ts` — GET /api/decks/:id/upgrades (~363 tok)
+- `route.ts` — GET /api/decks/:id/upgrades (~538 tok)
 
 ## app/api/decks/import/
 
-- `route.ts` — POST /api/decks/import (~876 tok)
+- `route.ts` — POST /api/decks/import (~924 tok)
 
 ## app/auth/confirm/
 
@@ -432,31 +440,35 @@
 
 ## app/collection/
 
-- `page.tsx` — dynamic — renders form (~2771 tok)
+- `page.tsx` — dynamic — renders form (~3420 tok)
+
+## app/collection/binders/
+
+- `page.tsx` — dynamic (~1235 tok)
 
 ## app/collection/conflicts/
 
-- `page.tsx` — dynamic (~856 tok)
+- `page.tsx` — dynamic (~816 tok)
 
 ## app/collection/decks/[id]/
 
-- `page.tsx` — dynamic (~342 tok)
+- `page.tsx` — dynamic (~394 tok)
 
 ## app/collection/decks/import/
 
-- `page.tsx` — dynamic (~184 tok)
+- `page.tsx` — dynamic (~195 tok)
 
 ## app/collection/import/
 
-- `page.tsx` — dynamic (~185 tok)
+- `page.tsx` — dynamic (~195 tok)
 
 ## app/collection/insights/
 
-- `page.tsx` — dynamic (~1543 tok)
+- `page.tsx` — dynamic (~1521 tok)
 
 ## app/collection/search/
 
-- `page.tsx` — dynamic — renders form (~1916 tok)
+- `page.tsx` — dynamic (~485 tok)
 
 ## app/controller-style-lab/
 
@@ -502,11 +514,13 @@
 
 ## components/collection/
 
+- `CardName.tsx` — IMG_W (~855 tok)
 - `ConflictResolve.tsx` — ConflictResolve (~530 tok)
-- `DeckDetail.tsx` — BUCKET_ORDER (~7445 tok)
-- `DeckImportForm.tsx` — DeckImportForm (~1390 tok)
-- `ImportWizard.tsx` — ImportWizard (~1960 tok)
-- `Shell.tsx` — The Collection Optimizer shell — the Leyline arcane ground (void + gold + ley (~814 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~10735 tok)
+- `DeckImportForm.tsx` — DeckImportForm (~1246 tok)
+- `ImportWizard.tsx` — ImportWizard (~2308 tok)
+- `SearchLive.tsx` — COLORS (~2166 tok)
+- `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1091 tok)
 - `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~406 tok)
 
 ## components/controller/
@@ -557,15 +571,16 @@
 
 - `ai-recommend.ts` — Flatten the scan's free + occupied upgrades into one candidate list (deduped). (~2828 tok)
 - `analyze-deck.ts` — Deck analysis: load → score → (optionally) cache the result in co_deck_analyses. (~339 tok)
-- `apply-swap.ts` — Apply a free upgrade: cut OUT (optional) and add IN to a deck. The physical card (~644 tok)
+- `apply-swap.ts` — Apply a free upgrade: cut OUT (optional) and add IN to a deck. The physical card (~720 tok)
+- `binders.ts` — Binder browsing — "what's physically in binder X?" The search page answers (~945 tok)
 - `buy-suggestions.ts` — A Scryfall exact-name search link — the brief uses Scryfall for card info/pricing. (~1358 tok)
 - `conflicts.ts` — Pure: an oracle is a conflict when its committed copies exceed owned copies. (~858 tok)
-- `dashboard.ts` — Pure: the strongest unused binder cards — high-synergy cards sitting idle. (~1400 tok)
+- `dashboard.ts` — Cached scan counts (mig 380) — null when the deck was never scanned (or the cache was invalidated by (~1690 tok)
 - `deck-loader.ts` — oracle_id → distinct binder name(s) the player's FREE copies sit in (for "go find it"). (~1564 tok)
 - `deck-mutations.ts` — Returns false if the card wasn't in the deck to begin with. (~622 tok)
 - `fetch-decklist.ts` — Pure: identify the site + deck id from a pasted URL. (~1541 tok)
-- `import-collection.ts` — Collection import orchestration: parse → resolve to oracle_id → persist. (~2059 tok)
-- `import-deck.ts` — Deck import orchestration: parse decklist → resolve to oracle_ids → persist a (~1585 tok)
+- `import-collection.ts` — Collection import orchestration: parse → resolve to oracle_id → persist. (~2240 tok)
+- `import-deck.ts` — Original deck URL (Moxfield/Archidekt) — stored so the deck can be re-synced later. (~3013 tok)
 - `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1684 tok)
 - `locator.ts` — Copies sitting in a binder (binder_type='binder') — grabbable for a deck. (~986 tok)
 - `move-card.ts` — Move a card from one deck to another (resolves an "occupied" upgrade — you own (~626 tok)
@@ -711,6 +726,7 @@
 - `202605010377_nonland_trigger_target.sql` — `nonland_permanent` as a TRIGGER target type (Oblivion Ring, Grasp of Fate). (~381 tok)
 - `202605010378_board_share_token.sql` — Spectator board link + cast support. (~919 tok)
 - `202605010379_tv_room_code.sql` — TV room code — the Jackbox pattern for couch play. (~467 tok)
+- `202605010380_scan_cache.sql` — Upgrade-scan cache (Collection Optimizer UX). (~248 tok)
 - `tests/feature/dancers-chakrams.test.ts` — DC1-3: equipped host + other-commanders +2/+2 & lifelink; unequipped grants nothing; equipping a commander doesn't double-buff (the "other" exclusion). (~700 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)

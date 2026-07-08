@@ -422,3 +422,18 @@
 ## Do-Not-Repeat — 2026-07-07
 
 - Een module die door ZOWEL server- als client-components geïmporteerd wordt mag nooit (transitief) next/headers-code bevatten — Shell.tsx kreeg SiteNav→AuthButton→lib/supabase/server terwijl DeckDetail (client) er Panel uit importeerde → Turbopack-buildbreuk die alleen bij `next build` zichtbaar is (bug-1511). Gedeelde primitieven in een eigen bestand (collection/ui.tsx); en CI draait nu wél een build-stap.
+
+## Key Learnings — 2026-07-08
+
+- Deck-import `source` is METADATA ONLY (co_imports.source): the decklist parser auto-detects Moxfield/Archidekt/plain formats; never surface a format picker in import UI.
+- Shell.tsx sub-nav takes an `active?: CollectionSection` prop ('overview'|'search'|'insights'|'conflicts'|'import'|'deck-import'); every /collection page passes its key. Nested pages (deck detail) omit it and keep a ← Back action.
+- Dashboard conflict count = `listConflicts` run in Promise.all next to getDashboard (accurate, matches the conflicts page) — do NOT approximate from co_card_availability.committed_qty (misses committed-but-unowned cards, the view is rooted in co_collection_items).
+- UX conventions for the collection optimizer (Linear/Apple direction, 2026-07-08 refactor): one primary (gold) action per screen, warn-colored elements only when actionable (conflict banner renders only when count>0), recommendation rows must answer "where is the card now" (occupied rows show `usedBy` + "Move from X"), numbers get unit microlabels (+delta = "power").
+
+## Key Learnings — 2026-07-08 (ronde 2)
+
+- Unit tests draaien via `node scripts/run-tests.mjs tests/unit` (node --test + tsx) — NIET vitest; npx vitest installeert een vreemde runner en geeft een misleidende exit 1.
+- Scan-cache patroon (mig 380): upgrades-route schrijft free/occupied counts op co_deck_analyses (upsert, best-effort); collectie-import zet ze op NULL (stale); dashboard toont NULL als "niet gescand" — nooit 0 faken.
+- co_decks.source_url bestond al in mig 364 maar werd nooit gevuld; importDeck vult hem nu alleen bij URL-imports. syncDeckFromText vervangt deck_cards (delete+insert, zelfde patroon als collectie-snapshot) en behoudt deck-id zodat analyses/links blijven.
+- Kaart-preview: Scryfall named-image endpoint (`/cards/named?exact=…&format=image`) werkt prima als browser-<img> (alleen server-side fetches hebben het UA-probleem uit image-loader.ts); portal naar document.body verplicht want meerdere call-sites zitten in hover-scale (transform) panels.
+- applySwap accepteert nu in=null (remove-only) als undo van een add-only upgrade — minstens één van in/out verplicht.

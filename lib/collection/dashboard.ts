@@ -22,6 +22,9 @@ export interface DeckSummary {
   name: string
   colorIdentity: string[]
   power: number | null
+  /** Cached scan counts (mig 380) — null when the deck was never scanned (or the cache was invalidated by a re-import). */
+  freeUpgrades: number | null
+  occupiedUpgrades: number | null
 }
 
 export interface ImportRecord {
@@ -69,7 +72,7 @@ export function rankStaples(cards: RankInput[], limit = 12): StapleCard[] {
 }
 
 export async function getDashboard(supabase: SupabaseClient, userId: string): Promise<DashboardData> {
-  const [availRes, decksRes, importsRes] = await Promise.all([
+  const [availRes, decksRes, importsRes, analysesRes] = await Promise.all([
     supabase.from('co_card_availability').select('oracle_id, owned_qty, free_qty').eq('user_id', userId),
     supabase
       .from('co_decks')
@@ -82,6 +85,8 @@ export async function getDashboard(supabase: SupabaseClient, userId: string): Pr
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(10),
+    // RLS scopes analysis rows to the caller's decks, so no explicit filter needed.
+    supabase.from('co_deck_analyses').select('deck_id, free_upgrades, occupied_upgrades'),
   ])
 
   const rows = availRes.data ?? []
@@ -115,11 +120,21 @@ export async function getDashboard(supabase: SupabaseClient, userId: string): Pr
     }),
   ).map((s) => ({ ...s, binderNames: binderNames.get(s.oracleId) ?? [] }))
 
+  const scanByDeck = new Map<string, { free: number | null; occupied: number | null }>()
+  for (const a of analysesRes.data ?? []) {
+    scanByDeck.set(a.deck_id as string, {
+      free: a.free_upgrades == null ? null : Number(a.free_upgrades),
+      occupied: a.occupied_upgrades == null ? null : Number(a.occupied_upgrades),
+    })
+  }
+
   const decks: DeckSummary[] = (decksRes.data ?? []).map((d) => ({
     id: d.id as string,
     name: d.name as string,
     colorIdentity: (d.color_identity as string[]) ?? [],
     power: d.power_score == null ? null : Number(d.power_score),
+    freeUpgrades: scanByDeck.get(d.id as string)?.free ?? null,
+    occupiedUpgrades: scanByDeck.get(d.id as string)?.occupied ?? null,
   }))
   const scored = decks.filter((d) => d.power != null)
   const avgPower = scored.length ? Math.round((scored.reduce((s, d) => s + (d.power as number), 0) / scored.length) * 10) / 10 : null

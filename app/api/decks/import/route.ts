@@ -26,6 +26,7 @@ export async function POST(request: Request) {
   let text = ''
   let name: string | null = null
   let source: string | null = null
+  let sourceUrl: string | null = null
 
   const contentType = request.headers.get('content-type') ?? ''
   try {
@@ -47,6 +48,7 @@ export async function POST(request: Request) {
         text = fetched.text
         name = body.name || fetched.name
         source = fetched.source
+        sourceUrl = body.url.trim()
       } else {
         text = body.text ?? ''
         name = body.name ?? null
@@ -67,7 +69,7 @@ export async function POST(request: Request) {
 
   let outcome
   try {
-    outcome = await importDeck(supabase, userId, text, { name, source })
+    outcome = await importDeck(supabase, userId, text, { name, source, sourceUrl })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unexpected import error'
     return NextResponse.json({ error: message }, { status: 500 })

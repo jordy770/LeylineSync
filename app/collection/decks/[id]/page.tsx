@@ -13,7 +13,7 @@ export default async function DeckDetailPage({ params }: { params: Promise<{ id:
   const { data: claims, error: authError } = await supabase.auth.getClaims()
   if (authError || !claims?.claims?.sub) redirect('/auth/login')
 
-  const { data: deck } = await supabase.from('co_decks').select('id, name, color_identity').eq('id', id).single()
+  const { data: deck } = await supabase.from('co_decks').select('id, name, color_identity, source, source_url').eq('id', id).single()
   if (!deck) notFound()
 
   return (
@@ -26,7 +26,12 @@ export default async function DeckDetailPage({ params }: { params: Promise<{ id:
         </Link>
       }
     >
-      <DeckDetail deckId={deck.id as string} colorIdentity={(deck.color_identity as string[]) ?? []} />
+      <DeckDetail
+        deckId={deck.id as string}
+        colorIdentity={(deck.color_identity as string[]) ?? []}
+        source={(deck.source as string) ?? null}
+        sourceUrl={(deck.source_url as string) ?? null}
+      />
     </Shell>
   )
 }

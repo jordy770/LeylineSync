@@ -17579,6 +17579,374 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-07T15:44:26.563Z"
+    },
+    {
+      "id": "bug-1074",
+      "timestamp": "2026-07-07T22:36:25.644Z",
+      "error_message": "CSS fix: color, sub-nav, hover",
+      "file": "components/collection/Shell.tsx",
+      "root_cause": "color: 'var(--text)' → 'var(--text-dim)'; sub-nav: the section links the old bespoke header carried. */ → every section, with the current one lit so you; hover: underline\" style={{ color: 'var(--text-dim)' → underline underline-offset-4\"",
+      "fix": "Changed color: 'var(--text)' → 'var(--text-dim)'; sub-nav: the section links the old bespoke header carried. */ → every section, with the current one lit so you; hover: underline\" style={{ color: 'var(--text-dim)' → underline underline-offset-4\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:36:25.644Z"
+    },
+    {
+      "id": "bug-1075",
+      "timestamp": "2026-07-07T22:36:51.740Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/collection/page.tsx",
+      "root_cause": "8 lines replaced/restructured",
+      "fix": "Rewrote 25→46 lines (8 removed) | Also: actions={; <Link href=\"/collection\" className=\"rounded-lg px-",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-07-07T22:37:05.568Z"
+    },
+    {
+      "id": "bug-1076",
+      "timestamp": "2026-07-07T22:37:29.818Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "34 lines replaced/restructured",
+      "fix": "Rewrote 38→3 lines (34 removed) | Also: <p className=\"font-rules\" style={{ color: 'var(--t; Analysing deck…",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-07T22:38:08.487Z"
+    },
+    {
+      "id": "bug-1077",
+      "timestamp": "2026-07-07T22:37:51.132Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:37:51.132Z"
+    },
+    {
+      "id": "bug-1078",
+      "timestamp": "2026-07-07T22:38:05.984Z",
+      "error_message": "Type error",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:38:05.984Z"
+    },
+    {
+      "id": "bug-1079",
+      "timestamp": "2026-07-07T22:38:17.274Z",
+      "error_message": "Missing import: s source metadata only.\n            { name, source: ",
+      "file": "components/collection/DeckImportForm.tsx",
+      "root_cause": "Module(s) not imported: s source metadata only.\n            { name, source: ",
+      "fix": "Added import(s) for s source metadata only.\n            { name, source: ",
+      "tags": [
+        "auto-detected",
+        "missing-import",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:38:17.274Z"
+    },
+    {
+      "id": "bug-1080",
+      "timestamp": "2026-07-07T22:38:21.675Z",
+      "error_message": "CSS fix: border",
+      "file": "components/collection/DeckImportForm.tsx",
+      "root_cause": "border: '1px solid rgba(201,154,58,0.3)', background: 'var(--ink-2)', color: 'var(--text)' → '1px solid rgba(201,154,58,0.3)', color: 'var(--text)'",
+      "fix": "Changed border: '1px solid rgba(201,154,58,0.3)', background: 'var(--ink-2)', color: 'var(--text)' → '1px solid rgba(201,154,58,0.3)', color: 'var(--text)'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:38:21.675Z"
+    },
+    {
+      "id": "bug-2680",
+      "timestamp": "2026-07-08T00:00:00.000Z",
+      "error_message": "UX: paste-mode source dropdown (Moxfield/Archidekt/Plain text) had no effect on parsing — user decision with zero behavior",
+      "file": "components/collection/DeckImportForm.tsx",
+      "root_cause": "importDeck only stores options.source as co_imports.source metadata; the decklist parser is format-agnostic, so the dropdown was a dead control",
+      "fix": "Removed the select; paste mode now sends source:paste as metadata only",
+      "tags": [
+        "ux",
+        "collection-optimizer",
+        "dead-control"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T00:00:00.000Z"
+    },
+    {
+      "id": "bug-1082",
+      "timestamp": "2026-07-07T22:53:14.083Z",
+      "error_message": "Missing await",
+      "file": "app/api/decks/[id]/upgrades/route.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:53:14.083Z"
+    },
+    {
+      "id": "bug-1083",
+      "timestamp": "2026-07-07T22:53:18.796Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/import-collection.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:53:18.796Z"
+    },
+    {
+      "id": "bug-1084",
+      "timestamp": "2026-07-07T22:53:37.732Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/dashboard.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:53:37.732Z"
+    },
+    {
+      "id": "bug-1085",
+      "timestamp": "2026-07-07T22:53:53.110Z",
+      "error_message": "Null/undefined access in ",
+      "file": "app/collection/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:53:53.110Z"
+    },
+    {
+      "id": "bug-1086",
+      "timestamp": "2026-07-07T22:54:59.664Z",
+      "error_message": "Incorrect value in code",
+      "file": "app/collection/page.tsx",
+      "root_cause": "Had '@/components/collection/Shell'",
+      "fix": "Changed to '@/components/collection/CardName'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-07-07T22:59:06.581Z"
+    },
+    {
+      "id": "bug-1087",
+      "timestamp": "2026-07-07T22:55:51.455Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/api/decks/[id]/swaps/route.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:55:51.455Z"
+    },
+    {
+      "id": "bug-1088",
+      "timestamp": "2026-07-07T22:56:15.084Z",
+      "error_message": "Missing error handling in function",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: // Re-fetch the deck's source URL and replace the compositio; // what changed on Moxfield/Archidekt since the import. | Also: // Apply every selected free upgrade in one go (sequential —; // on the previous deck state), then one re-scan. The whole ",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-07-07T23:00:06.497Z"
+    },
+    {
+      "id": "bug-1089",
+      "timestamp": "2026-07-07T22:56:30.414Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {undo ? (; <div | Also: type FreeSort = 'delta' | 'price' | 'confidence'; // The free-upgrades work surface: sortable, multi-selectabl",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-07-07T23:00:49.172Z"
+    },
+    {
+      "id": "bug-1090",
+      "timestamp": "2026-07-07T22:56:36.579Z",
+      "error_message": "Missing guard clause",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "No early return/throw for edge case: !res.ok",
+      "fix": "Added guard clause: if (!res.ok)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:56:36.579Z"
+    },
+    {
+      "id": "bug-1091",
+      "timestamp": "2026-07-07T22:58:42.584Z",
+      "error_message": "Missing error handling in function",
+      "file": "lib/collection/import-deck.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:58:42.584Z"
+    },
+    {
+      "id": "bug-1092",
+      "timestamp": "2026-07-07T22:59:34.926Z",
+      "error_message": "Type error",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T22:59:34.926Z"
+    },
+    {
+      "id": "bug-1093",
+      "timestamp": "2026-07-07T23:00:24.162Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "50 lines replaced/restructured",
+      "fix": "Rewrote 57→14 lines (50 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T23:00:24.162Z"
+    },
+    {
+      "id": "bug-1094",
+      "timestamp": "2026-07-07T23:02:15.422Z",
+      "error_message": "Wrong reference: buys should be sorted",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Used \"buys\" instead of \"sorted\"",
+      "fix": "Changed buys → sorted",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T23:02:15.422Z"
+    },
+    {
+      "id": "bug-1095",
+      "timestamp": "2026-07-07T23:02:30.541Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/ImportWizard.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 19→38 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T23:02:30.541Z"
+    },
+    {
+      "id": "bug-1096",
+      "timestamp": "2026-07-07T23:02:34.528Z",
+      "error_message": "Missing guard clause",
+      "file": "components/collection/ImportWizard.tsx",
+      "root_cause": "No early return/throw for edge case: !result || result.unmatched.length === 0",
+      "fix": "Added guard clause: if (!result || result.unmatched.length === 0)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-07T23:02:34.528Z"
     }
   ]
 }

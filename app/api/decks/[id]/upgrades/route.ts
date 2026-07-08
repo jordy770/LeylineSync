@@ -30,5 +30,23 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   if (outcome.error) {
     return NextResponse.json({ error: outcome.error }, { status: 404 })
   }
+
+  // Leave the headline counts behind on the analysis row (mig 380) so the
+  // dashboard can show "N upgrades ready" without re-running the scanner.
+  // Best-effort: a cache write must never fail the scan response.
+  const r = outcome.result
+  if (r) {
+    await supabase
+      .from('co_deck_analyses')
+      .upsert({
+        deck_id: deckId,
+        power_score: r.power.power,
+        free_upgrades: r.free.length,
+        occupied_upgrades: r.occupied.length,
+        scanned_at: new Date().toISOString(),
+      })
+      .then(undefined, () => {})
+  }
+
   return NextResponse.json(outcome.result)
 }

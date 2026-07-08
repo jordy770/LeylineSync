@@ -27,6 +27,16 @@ export function ImportWizard() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ImportResult | null>(null)
+  const [copiedUnmatched, setCopiedUnmatched] = useState(false)
+
+  // Unmatched cards as plain "N Name" lines — paste into Scryfall, a fix-up
+  // sheet, or a support message instead of retyping them.
+  async function copyUnmatched() {
+    if (!result || result.unmatched.length === 0) return
+    await navigator.clipboard.writeText(result.unmatched.map((u) => `${u.quantity} ${u.name}`).join('\n'))
+    setCopiedUnmatched(true)
+    setTimeout(() => setCopiedUnmatched(false), 2000)
+  }
 
   async function submit() {
     if (!file) return
@@ -137,14 +147,33 @@ export function ImportWizard() {
                 {result.unmatched.map((u, i) => (
                   <li key={i}>
                     {u.quantity}× {u.name}
-                    {u.setCode ? ` (${u.setCode} ${u.collectorNum ?? ''})` : ''}
+                    {u.setCode ? ` (${u.setCode} ${u.collectorNum ?? ''})` : ''}{' '}
+                    <a
+                      href={`https://scryfall.com/search?q=${encodeURIComponent(u.name)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs underline underline-offset-2"
+                      style={{ color: 'var(--text-faint)' }}
+                      title="Look the card up on Scryfall to check the exact name"
+                    >
+                      check ↗
+                    </a>
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-xs" style={{ color: 'var(--text-faint)' }}>
-                Most misses are split / double-faced cards or names that differ from Scryfall. Exact-printing matching
-                improves once the full printings mirror is loaded.
-              </p>
+              <div className="mt-2 flex items-center gap-3">
+                <button
+                  onClick={copyUnmatched}
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium"
+                  style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
+                >
+                  {copiedUnmatched ? 'Copied ✓' : 'Copy list'}
+                </button>
+                <p className="text-xs" style={{ color: 'var(--text-faint)' }}>
+                  Most misses are split / double-faced cards or names that differ from Scryfall. Exact-printing matching
+                  improves once the full printings mirror is loaded.
+                </p>
+              </div>
             </details>
           ) : null}
 

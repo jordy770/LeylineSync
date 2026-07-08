@@ -1,7 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { CardName } from './CardName'
 import { ColorPips, Panel } from './ui'
 
 type ThemeImpact = 'Keeps Theme' | 'Neutral' | 'Weakens Theme'
@@ -55,7 +56,17 @@ interface BuySuggestion {
 
 const BUCKET_ORDER = ['ramp', 'card_draw', 'removal', 'board_wipe', 'counterspell', 'tutor'] as const
 
-export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIdentity: string[] }) {
+export function DeckDetail({
+  deckId,
+  colorIdentity,
+  source,
+  sourceUrl,
+}: {
+  deckId: string
+  colorIdentity: string[]
+  source?: string | null
+  sourceUrl?: string | null
+}) {
   const [scan, setScan] = useState<ScanResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [tab, setTab] = useState<'free' | 'occupied' | 'buy' | 'pull'>('free')
@@ -71,6 +82,45 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
   const [playBusy, setPlayBusy] = useState(false)
   const [playResult, setPlayResult] = useState<{ deckName: string; missing: { name: string }[] } | null>(null)
   const [playError, setPlayError] = useState<string | null>(null)
+  const [syncBusy, setSyncBusy] = useState(false)
+  const [syncResult, setSyncResult] = useState<{ added: { name: string; qty: number }[]; removed: { name: string; qty: number }[] } | null>(null)
+  const [syncError, setSyncError] = useState<string | null>(null)
+  // Undo toast: every apply/move offers a 10s window to reverse it, so trying
+  // a recommendation is never a commitment.
+  const [undo, setUndo] = useState<{ label: string; run: () => Promise<void> } | null>(null)
+  const undoTimer = useRef<number | null>(null)
+
+  const offerUndo = useCallback((label: string, run: () => Promise<void>) => {
+    if (undoTimer.current != null) window.clearTimeout(undoTimer.current)
+    setUndo({ label, run })
+    undoTimer.current = window.setTimeout(() => setUndo(null), 10_000)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (undoTimer.current != null) window.clearTimeout(undoTimer.current)
+    }
+  }, [])
+
+  async function runUndo() {
+    if (!undo) return
+    const entry = undo
+    setUndo(null)
+    setBusyKey('undo')
+    setActionError(null)
+    try {
+      await entry.run()
+      await load()
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Undo failed.')
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
+  // Bulk selection on the free-upgrades list, by index into the current scan;
+  // any re-scan invalidates the indexes, so load() clears it.
+  const [selected, setSelected] = useState<Set<number>>(new Set())
 
   // The upgrades endpoint also returns the power score, so one call covers both.
   const load = useCallback(async () => {
@@ -82,6 +132,7 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
         return
       }
       setScan(body)
+      setSelected(new Set())
     } catch {
       setError('Network error.')
     }
@@ -124,7 +175,17 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
       })
       const body = await res.json()
       if (!res.ok) setActionError(body.error ?? 'Could not apply the swap.')
-      else await load()
+      else {
+        offerUndo(u.out ? `${u.in.name} in, ${u.out.name} out` : `${u.in.name} added`, async () => {
+          const undoRes = await fetch(`/api/decks/${deckId}/swaps`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ inOracleId: u.out?.oracleId ?? null, outOracleId: u.in.oracleId }),
+          })
+          if (!undoRes.ok) throw new Error((await undoRes.json()).error ?? 'Undo failed.')
+        })
+        await load()
+      }
     } catch {
       setActionError('Network error applying the swap.')
     } finally {
@@ -135,15 +196,28 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
   async function moveHere(u: OccupiedUpgrade, key: string) {
     setBusyKey(key)
     setActionError(null)
+    const from = u.usedBy[0]
     try {
       const res = await fetch('/api/collection/move-card', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ oracleId: u.in.oracleId, fromDeckId: u.usedBy[0]?.id, toDeckId: deckId }),
+        body: JSON.stringify({ oracleId: u.in.oracleId, fromDeckId: from?.id, toDeckId: deckId }),
       })
       const body = await res.json()
       if (!res.ok) setActionError(body.error ?? 'Could not move the card.')
-      else await load()
+      else {
+        if (from) {
+          offerUndo(`${u.in.name} moved from ${from.name}`, async () => {
+            const undoRes = await fetch('/api/collection/move-card', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ oracleId: u.in.oracleId, fromDeckId: deckId, toDeckId: from.id }),
+            })
+            if (!undoRes.ok) throw new Error((await undoRes.json()).error ?? 'Undo failed.')
+          })
+        }
+        await load()
+      }
     } catch {
       setActionError('Network error moving the card.')
     } finally {
@@ -170,6 +244,70 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
       live = false
     }
   }, [tab, pull, pullBusy, deckId])
+
+  // Apply every selected free upgrade in one go (sequential — each swap depends
+  // on the previous deck state), then one re-scan. The whole batch gets a
+  // single undo that reverses the applied swaps in reverse order.
+  async function applySelected(list: { u: FreeUpgrade; index: number }[]) {
+    if (list.length === 0) return
+    setBusyKey('bulk')
+    setActionError(null)
+    const applied: FreeUpgrade[] = []
+    try {
+      for (const { u } of list) {
+        const res = await fetch(`/api/decks/${deckId}/swaps`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ inOracleId: u.in.oracleId, outOracleId: u.out?.oracleId ?? null }),
+        })
+        if (!res.ok) {
+          const body = await res.json()
+          setActionError(`Stopped at ${u.in.name}: ${body.error ?? 'swap failed'} (${applied.length} of ${list.length} applied).`)
+          break
+        }
+        applied.push(u)
+      }
+      if (applied.length > 0) {
+        const toReverse = [...applied].reverse()
+        offerUndo(`${applied.length} swap${applied.length === 1 ? '' : 's'} applied`, async () => {
+          for (const u of toReverse) {
+            const res = await fetch(`/api/decks/${deckId}/swaps`, {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ inOracleId: u.out?.oracleId ?? null, outOracleId: u.in.oracleId }),
+            })
+            if (!res.ok) throw new Error((await res.json()).error ?? 'Undo failed partway.')
+          }
+        })
+      }
+      await load()
+    } catch {
+      setActionError('Network error while applying swaps.')
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
+  // Re-fetch the deck's source URL and replace the composition; the diff shows
+  // what changed on Moxfield/Archidekt since the import.
+  async function syncDeck() {
+    setSyncBusy(true)
+    setSyncError(null)
+    setSyncResult(null)
+    try {
+      const res = await fetch(`/api/decks/${deckId}/sync`, { method: 'POST' })
+      const body = await res.json()
+      if (!res.ok) setSyncError(body.error ?? 'Could not sync the deck.')
+      else {
+        setSyncResult({ added: body.added ?? [], removed: body.removed ?? [] })
+        await load()
+      }
+    } catch {
+      setSyncError('Network error while syncing.')
+    } finally {
+      setSyncBusy(false)
+    }
+  }
 
   // Bridge this collection deck to a PLAYABLE game deck (shows up on /decks).
   async function playThisDeck() {
@@ -198,8 +336,8 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
   if (!scan) {
     return (
       <Panel className="p-6">
-        <p className="font-rules" style={{ color: 'var(--text-dim)' }}>
-          Analysing deck…
+        <p className="font-rules animate-pulse" style={{ color: 'var(--text-dim)' }}>
+          Analysing deck — scoring power and scanning your binder for upgrades…
         </p>
       </Panel>
     )
@@ -250,8 +388,119 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
 
       <HealthPanel health={power.health} />
 
-      {/* Bridge to the game side: one click turns this collection deck into a
-          playable game deck (visible on /decks and in the lobby's deck picker). */}
+      {sourceUrl ? (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs" style={{ color: 'var(--text-faint)' }}>
+          <span>
+            Imported from{' '}
+            <a href={sourceUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">
+              {source === 'archidekt' ? 'Archidekt' : source === 'moxfield' ? 'Moxfield' : 'source'} ↗
+            </a>
+          </span>
+          <button onClick={syncDeck} disabled={syncBusy} className="underline underline-offset-2 disabled:opacity-40" style={{ color: 'var(--gold-bright)' }}>
+            {syncBusy ? 'Syncing…' : 'Sync latest changes'}
+          </button>
+          {syncError ? <span style={{ color: 'var(--danger)' }}>{syncError}</span> : null}
+          {syncResult ? (
+            <span style={{ color: 'var(--text-dim)' }}>
+              {syncResult.added.length === 0 && syncResult.removed.length === 0
+                ? 'Already up to date.'
+                : [
+                    syncResult.added.length > 0 ? `+ ${syncResult.added.map((a) => `${a.qty}× ${a.name}`).join(', ')}` : null,
+                    syncResult.removed.length > 0 ? `− ${syncResult.removed.map((r) => `${r.qty}× ${r.name}`).join(', ')}` : null,
+                  ]
+                    .filter(Boolean)
+                    .join('  ·  ')}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div>
+        <div className="mb-3 flex gap-2">
+          <Tab active={tab === 'free'} onClick={() => setTab('free')}>
+            Free upgrades ({free.length})
+          </Tab>
+          <Tab active={tab === 'occupied'} onClick={() => setTab('occupied')}>
+            In other decks ({occupied.length})
+          </Tab>
+          <Tab active={tab === 'buy'} onClick={() => setTab('buy')}>
+            Buy
+          </Tab>
+          <Tab active={tab === 'pull'} onClick={() => setTab('pull')}>
+            Pull list
+          </Tab>
+        </div>
+        {actionError ? (
+          <p className="mb-3 text-sm" style={{ color: 'var(--danger)' }}>
+            {actionError}
+          </p>
+        ) : null}
+
+        {tab === 'free' ? (
+          free.length === 0 ? (
+            <Empty>No free upgrades found in your binder for this deck&apos;s needs.</Empty>
+          ) : (
+            <FreeUpgradesList
+              free={free}
+              busyKey={busyKey}
+              selected={selected}
+              setSelected={setSelected}
+              onApplyOne={applyFree}
+              onApplySelected={applySelected}
+            />
+          )
+        ) : tab === 'occupied' ? (
+          occupied.length === 0 ? (
+            <Empty>Nothing that fits is locked in another deck.</Empty>
+          ) : (
+          <div className="space-y-2">
+            {occupied.map((u, i) => (
+              <Panel key={i} className="flex items-center justify-between gap-4 p-4">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <CardName name={u.in.name} className="font-display text-base" style={{ color: 'var(--text-bright)' }} />
+                    <Chip>{u.tag.replace(/_/g, ' ')}</Chip>
+                    <ConfidenceBadge value={u.confidence} />
+                    <ThemeBadge impact={u.themeImpact} />
+                  </div>
+                  <p className="font-rules mt-1 text-sm" style={{ color: 'var(--text-dim)' }}>
+                    {u.reason}
+                  </p>
+                  {u.usedBy.length > 0 ? (
+                    <div className="mt-1 text-xs" style={{ color: 'var(--text-faint)' }}>
+                      🃏 currently in {u.usedBy.map((d) => d.name).join(', ')}
+                      {u.action === 'move' ? ' — moving it weakens that deck' : ''}
+                    </div>
+                  ) : null}
+                </div>
+                {u.action === 'move' ? (
+                  <button
+                    onClick={() => moveHere(u, `occ-${i}`)}
+                    disabled={busyKey !== null}
+                    className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+                    style={{ border: '1px solid rgba(217,165,59,0.5)', color: 'var(--warn)' }}
+                  >
+                    {busyKey === `occ-${i}` ? '…' : `Move from ${truncate(u.usedBy[0]?.name ?? 'other deck', 24)}`}
+                  </button>
+                ) : (
+                  <span className="shrink-0 rounded px-2 py-1 text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)', border: '1px solid rgba(201,154,58,0.3)' }} title="Every copy you own is in a deck that needs it — buy a copy or proxy">
+                    buy a copy
+                  </span>
+                )}
+              </Panel>
+            ))}
+          </div>
+          )
+        ) : tab === 'buy' ? (
+          <BuyTab buys={buys} busy={buyBusy} error={buyError} budget={buyBudget} setBudget={setBuyBudget} />
+        ) : (
+          <PullTab pull={pull} busy={pullBusy} error={pullError} />
+        )}
+      </div>
+
+      {/* Bridge to the game side, AFTER the tuning work area — one click turns this
+          collection deck into a playable game deck (visible on /decks and in the
+          lobby's deck picker). */}
       <Panel className="p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="font-rules text-sm" style={{ color: 'var(--text-dim)' }}>
@@ -285,128 +534,172 @@ export function DeckDetail({ deckId, colorIdentity }: { deckId: string; colorIde
         ) : null}
       </Panel>
 
-      <div>
-        <div className="mb-3 flex gap-2">
-          <Tab active={tab === 'free'} onClick={() => setTab('free')}>
-            Free upgrades ({free.length})
-          </Tab>
-          <Tab active={tab === 'occupied'} onClick={() => setTab('occupied')}>
-            Occupied ({occupied.length})
-          </Tab>
-          <Tab active={tab === 'buy'} onClick={() => setTab('buy')}>
-            Buy
-          </Tab>
-          <Tab active={tab === 'pull'} onClick={() => setTab('pull')}>
-            Pull list
-          </Tab>
+      {undo ? (
+        <div
+          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-xl px-4 py-2.5 shadow-2xl"
+          style={{ background: 'var(--ink-2)', border: '1px solid rgba(201,154,58,0.4)' }}
+        >
+          <span className="text-sm" style={{ color: 'var(--text)' }}>
+            {undo.label}
+          </span>
+          <button
+            onClick={runUndo}
+            disabled={busyKey !== null}
+            className="rounded-lg px-3 py-1 text-sm font-medium disabled:opacity-40"
+            style={{ color: 'var(--gold-bright)', border: '1px solid rgba(201,154,58,0.45)' }}
+          >
+            {busyKey === 'undo' ? '…' : 'Undo'}
+          </button>
         </div>
-        {actionError ? (
-          <p className="mb-3 text-sm" style={{ color: 'var(--danger)' }}>
-            {actionError}
-          </p>
-        ) : null}
+      ) : null}
+    </div>
+  )
+}
 
-        {tab === 'free' ? (
-          free.length === 0 ? (
-            <Empty>No free upgrades found in your binder for this deck&apos;s needs.</Empty>
-          ) : (
-            <div className="space-y-2">
-              {free.map((u, i) => (
-                <Panel key={i} className="flex items-center justify-between gap-4 p-4">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      {u.out ? (
-                        <>
-                          <span className="text-sm line-through" style={{ color: 'var(--text-faint)' }}>
-                            {u.out.name}
-                          </span>
-                          <span style={{ color: 'var(--frame-gold)' }}>→</span>
-                        </>
-                      ) : (
-                        <span className="text-xs uppercase tracking-wide" style={{ color: 'var(--cast)' }}>
-                          add
-                        </span>
-                      )}
-                      <span className="font-display text-base" style={{ color: 'var(--text-bright)' }}>
-                        {u.in.name}
-                      </span>
-                      <Chip>{u.tag.replace(/_/g, ' ')}</Chip>
-                      <ConfidenceBadge value={u.confidence} />
-                      <ThemeBadge impact={u.themeImpact} />
-                    </div>
-                    <p className="font-rules mt-1 text-sm" style={{ color: 'var(--text-dim)' }}>
-                      {u.reason}
-                    </p>
-                    <BinderTag names={u.binderNames} />
-                  </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    <div className="text-right">
-                      <div className="font-display text-lg" style={{ color: 'var(--cast)' }}>
-                        +{u.delta}
-                      </div>
-                      {u.in.priceEur != null ? (
-                        <div className="text-xs" style={{ color: 'var(--text-faint)' }}>
-                          €{u.in.priceEur.toFixed(2)}
-                        </div>
-                      ) : null}
-                    </div>
-                    <button
-                      onClick={() => applyFree(u, `free-${i}`)}
-                      disabled={busyKey !== null}
-                      className="rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
-                      style={{ background: 'linear-gradient(150deg, var(--gold-bright), var(--frame-gold))', color: '#1c1407' }}
-                    >
-                      {busyKey === `free-${i}` ? '…' : u.out ? 'Apply' : 'Add'}
-                    </button>
-                  </div>
-                </Panel>
-              ))}
-            </div>
-          )
-        ) : tab === 'occupied' ? (
-          occupied.length === 0 ? (
-            <Empty>Nothing that fits is locked in another deck.</Empty>
-          ) : (
-          <div className="space-y-2">
-            {occupied.map((u, i) => (
-              <Panel key={i} className="flex items-center justify-between gap-4 p-4">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-display text-base" style={{ color: 'var(--text-bright)' }}>
-                      {u.in.name}
-                    </span>
-                    <Chip>{u.tag.replace(/_/g, ' ')}</Chip>
-                    <ConfidenceBadge value={u.confidence} />
-                    <ThemeBadge impact={u.themeImpact} />
-                  </div>
-                  <p className="font-rules mt-1 text-sm" style={{ color: 'var(--text-dim)' }}>
-                    {u.reason}
-                  </p>
-                </div>
-                {u.action === 'move' ? (
-                  <button
-                    onClick={() => moveHere(u, `occ-${i}`)}
-                    disabled={busyKey !== null}
-                    className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
-                    style={{ border: '1px solid rgba(217,165,59,0.5)', color: 'var(--warn)' }}
-                  >
-                    {busyKey === `occ-${i}` ? '…' : 'Move here'}
-                  </button>
+function truncate(s: string, max: number): string {
+  return s.length > max ? `${s.slice(0, max - 1)}…` : s
+}
+
+type FreeSort = 'delta' | 'price' | 'confidence'
+
+// The free-upgrades work surface: sortable, multi-selectable, one primary
+// action per row and one batch action for the whole selection. Selection is
+// tracked by ORIGINAL index so sorting never changes what's selected.
+function FreeUpgradesList({
+  free,
+  busyKey,
+  selected,
+  setSelected,
+  onApplyOne,
+  onApplySelected,
+}: {
+  free: FreeUpgrade[]
+  busyKey: string | null
+  selected: Set<number>
+  setSelected: (s: Set<number>) => void
+  onApplyOne: (u: FreeUpgrade, key: string) => void
+  onApplySelected: (list: { u: FreeUpgrade; index: number }[]) => void
+}) {
+  const [sort, setSort] = useState<FreeSort>('delta')
+
+  const rows = free
+    .map((u, index) => ({ u, index }))
+    .sort((a, b) => {
+      if (sort === 'price') return (a.u.in.priceEur ?? 0) - (b.u.in.priceEur ?? 0)
+      if (sort === 'confidence') return b.u.confidence - a.u.confidence
+      return b.u.delta - a.u.delta
+    })
+
+  const selectedRows = rows.filter((r) => selected.has(r.index))
+  const selectedDelta = Math.round(selectedRows.reduce((sum, r) => sum + r.u.delta, 0) * 10) / 10
+
+  function toggle(index: number) {
+    const next = new Set(selected)
+    if (next.has(index)) next.delete(index)
+    else next.add(index)
+    setSelected(next)
+  }
+
+  function selectConfident() {
+    setSelected(new Set(free.map((u, i) => (u.confidence >= 70 ? i : -1)).filter((i) => i >= 0)))
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-2 text-xs" style={{ color: 'var(--text-faint)' }}>
+        <span>Sort by</span>
+        {(['delta', 'price', 'confidence'] as const).map((key) => (
+          <button
+            key={key}
+            onClick={() => setSort(key)}
+            className="rounded-full px-2.5 py-0.5"
+            style={sort === key ? { background: 'var(--frame-gold)', color: '#1c1407' } : { border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text-dim)' }}
+          >
+            {key === 'delta' ? 'impact' : key}
+          </button>
+        ))}
+        <span className="mx-1" aria-hidden>
+          ·
+        </span>
+        <button onClick={selectConfident} className="underline underline-offset-2" style={{ color: 'var(--text-dim)' }}>
+          Select all high-confidence
+        </button>
+        {selected.size > 0 ? (
+          <button onClick={() => setSelected(new Set())} className="underline underline-offset-2" style={{ color: 'var(--text-dim)' }}>
+            Clear
+          </button>
+        ) : null}
+        {selected.size > 0 ? (
+          <button
+            onClick={() => onApplySelected(selectedRows)}
+            disabled={busyKey !== null}
+            className="ml-auto rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+            style={{ background: 'linear-gradient(150deg, var(--gold-bright), var(--frame-gold))', color: '#1c1407' }}
+          >
+            {busyKey === 'bulk' ? 'Applying…' : `Apply ${selected.size} selected (+${selectedDelta} power)`}
+          </button>
+        ) : null}
+      </div>
+
+      {rows.map(({ u, index }) => (
+        <Panel key={index} className="flex items-center justify-between gap-4 p-4">
+          <div className="flex min-w-0 items-start gap-3">
+            <input
+              type="checkbox"
+              checked={selected.has(index)}
+              onChange={() => toggle(index)}
+              className="mt-1.5 h-4 w-4 shrink-0 cursor-pointer"
+              style={{ accentColor: 'var(--frame-gold)' }}
+              aria-label={`Select ${u.in.name}`}
+            />
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                {u.out ? (
+                  <>
+                    <CardName name={u.out.name} className="text-sm line-through" style={{ color: 'var(--text-faint)' }} />
+                    <span style={{ color: 'var(--frame-gold)' }}>→</span>
+                  </>
                 ) : (
-                  <span className="shrink-0 rounded px-2 py-1 text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)', border: '1px solid rgba(201,154,58,0.3)' }} title="Owned by several decks — buy a copy or proxy">
-                    buy
+                  <span className="text-xs uppercase tracking-wide" style={{ color: 'var(--cast)' }}>
+                    add
                   </span>
                 )}
-              </Panel>
-            ))}
+                <CardName name={u.in.name} className="font-display text-base" style={{ color: 'var(--text-bright)' }} />
+                <Chip>{u.tag.replace(/_/g, ' ')}</Chip>
+                <ConfidenceBadge value={u.confidence} />
+                <ThemeBadge impact={u.themeImpact} />
+              </div>
+              <p className="font-rules mt-1 text-sm" style={{ color: 'var(--text-dim)' }}>
+                {u.reason}
+              </p>
+              <BinderTag names={u.binderNames} />
+            </div>
           </div>
-          )
-        ) : tab === 'buy' ? (
-          <BuyTab buys={buys} busy={buyBusy} error={buyError} budget={buyBudget} setBudget={setBuyBudget} />
-        ) : (
-          <PullTab pull={pull} busy={pullBusy} error={pullError} />
-        )}
-      </div>
+          <div className="flex shrink-0 items-center gap-3">
+            <div className="text-right">
+              <div className="font-display text-lg" style={{ color: 'var(--cast)' }}>
+                +{u.delta}
+              </div>
+              <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
+                power
+              </div>
+              {u.in.priceEur != null ? (
+                <div className="text-xs" style={{ color: 'var(--text-faint)' }}>
+                  €{u.in.priceEur.toFixed(2)}
+                </div>
+              ) : null}
+            </div>
+            <button
+              onClick={() => onApplyOne(u, `free-${index}`)}
+              disabled={busyKey !== null}
+              className="rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+              style={{ background: 'linear-gradient(150deg, var(--gold-bright), var(--frame-gold))', color: '#1c1407' }}
+            >
+              {busyKey === `free-${index}` ? '…' : u.out ? 'Apply' : 'Add'}
+            </button>
+          </div>
+        </Panel>
+      ))}
     </div>
   )
 }
@@ -432,7 +725,7 @@ function PullTab({ pull, busy, error }: { pull: PullList | null; busy: boolean; 
             {g.cards.map((c, i) => (
               <li key={i}>
                 {c.need > 1 ? `${c.need}× ` : ''}
-                {c.name}
+                <CardName name={c.name} />
               </li>
             ))}
           </ul>
@@ -482,7 +775,10 @@ function BuyTab({
     { label: 'No budget', value: '' },
   ]
   const [copied, setCopied] = useState(false)
+  const [sort, setSort] = useState<'fit' | 'price'>('fit')
   const totalEur = (buys ?? []).reduce((sum, b) => sum + (b.priceEur ?? 0), 0)
+  // 'fit' keeps the server's ranking; 'price' answers "cheapest wins first".
+  const sorted = sort === 'fit' ? (buys ?? []) : [...(buys ?? [])].sort((a, b) => (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity))
 
   // Shopping-list export: plain "1 Name" lines — pastes into Moxfield, a
   // webshop basket, or your notes for the card shop.
@@ -511,14 +807,29 @@ function BuyTab({
           </button>
         ))}
         {buys && buys.length > 0 ? (
-          <button
-            onClick={copyList}
-            className="ml-auto rounded-lg px-3 py-1.5 text-xs font-medium"
-            style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
-            title="Copy as a decklist-style shopping list"
-          >
-            {copied ? 'Copied ✓' : `Copy list${totalEur > 0 ? ` (≈€${totalEur.toFixed(2)})` : ''}`}
-          </button>
+          <>
+            <span className="mx-1 text-xs" style={{ color: 'var(--text-faint)' }} aria-hidden>
+              ·
+            </span>
+            {(['fit', 'price'] as const).map((key) => (
+              <button
+                key={key}
+                onClick={() => setSort(key)}
+                className="rounded-full px-2.5 py-0.5 text-xs"
+                style={sort === key ? { background: 'var(--frame-gold)', color: '#1c1407' } : { border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text-dim)' }}
+              >
+                {key === 'fit' ? 'best fit' : 'cheapest'}
+              </button>
+            ))}
+            <button
+              onClick={copyList}
+              className="ml-auto rounded-lg px-3 py-1.5 text-xs font-medium"
+              style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
+              title="Copy as a decklist-style shopping list"
+            >
+              {copied ? 'Copied ✓' : `Copy list${totalEur > 0 ? ` (≈€${totalEur.toFixed(2)})` : ''}`}
+            </button>
+          </>
         ) : null}
       </div>
 
@@ -530,13 +841,11 @@ function BuyTab({
         <Empty>No purchase suggestions for this deck&apos;s needs within the budget.</Empty>
       ) : (
         <div className="space-y-2">
-          {buys.map((b) => (
+          {sorted.map((b) => (
             <Panel key={b.oracleId} className="flex items-center justify-between gap-4 p-4">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-display text-base" style={{ color: 'var(--text-bright)' }}>
-                    {b.name}
-                  </span>
+                  <CardName name={b.name} className="font-display text-base" style={{ color: 'var(--text-bright)' }} />
                   <Chip>{b.tag.replace(/_/g, ' ')}</Chip>
                   <ConfidenceBadge value={b.confidence} />
                   <ThemeBadge impact={b.themeImpact} />
