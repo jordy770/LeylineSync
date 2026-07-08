@@ -486,3 +486,7 @@
 ## Do-Not-Repeat — 2026-07-08 (1000-rij cap)
 
 - ELKE Supabase-select die "alles van de user" leest MOET pagineren: PostgREST kapt zonder .range() stilletjes af op 1000 rijen (bug-1116 — dashboard toonde exact 1000 unieke kaarten bij een collectie van 5451). Gebruik loadAvailability (deck-loader.ts) voor co_card_availability; voor andere tabellen het .order(pk)+.range(from, from+999)-looppatroon (binders.ts/import-collection.ts). Let op: ook een .in()-chunk kan >1000 rijen terugkrijgen als de gevraagde kolom niet uniek is per rij. Symptoomherkenning: een teller die exact op 1000 (of een veelvoud) blijft hangen = vrijwel zeker deze cap, geen datacorruptie.
+
+## Decision Log — 2026-07-08 (casten: Jackbox-route)
+
+- Jordy koos definitief (voor nu) de Jackbox-route voor TV-weergave: room code op leylinesync.com/tv + de spectator-link — GEEN Google Cast SDK. Optie B (Cast SDK + custom receiver) is volledig gebouwd en daarna gereverteerd; de complete implementatie staat in git op commit f2cae2d (sender lib/game/cast.ts, receiver-pagina app.cast-receiver, docs cast-setup.md) — bij heroverweging: cherry-pick die commit + eenmalig 5 dollar receiver-registratie op cast.google.com/publish. Waarom telefoons niet kunnen casten (blijvende platformkennis): de Presentation API presenteert alleen op desktop-Chromium URLs naar een Chromecast; Android Chrome niet, iOS heeft de API niet, en een standalone PWA mist ook het browsermenu voor tab-casting.
