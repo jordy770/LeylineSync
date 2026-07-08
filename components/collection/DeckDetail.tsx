@@ -321,6 +321,37 @@ export function DeckDetail({
     }
   }
 
+  // Remove ONE copy from the decklist (deck-mutations decrements before
+  // deleting, so a 30× basic loses one, not all). Undo adds the copy back.
+  async function removeCard(c: DeckListCard) {
+    setBusyKey(`rm-${c.oracleId}`)
+    setActionError(null)
+    try {
+      const res = await fetch(`/api/decks/${deckId}/swaps`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ outOracleId: c.oracleId }),
+      })
+      const body = await res.json()
+      if (!res.ok) setActionError(body.error ?? 'Could not remove the card.')
+      else {
+        offerUndo(`${c.name} removed`, async () => {
+          const undoRes = await fetch(`/api/decks/${deckId}/swaps`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ inOracleId: c.oracleId }),
+          })
+          if (!undoRes.ok) throw new Error((await undoRes.json()).error ?? 'Undo failed.')
+        })
+        await load()
+      }
+    } catch {
+      setActionError('Network error removing the card.')
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
   // Set/change the commander after the fact (text imports without a
   // "Commander" header land with none). Identity + score change with it, so
   // re-scan AND refresh the server-rendered page chrome (color pips).
@@ -481,6 +512,12 @@ export function DeckDetail({
             Pull list
           </Tab>
         </div>
+        {tab === 'free' || tab === 'occupied' || tab === 'buy' ? (
+          // The badge meanings, visible everywhere (tooltips don't exist on touch).
+          <p className="mb-3 text-xs" style={{ color: 'var(--text-faint)' }}>
+            % = engine confidence the card fits this deck · on/off-theme = effect on the deck&apos;s theme
+          </p>
+        ) : null}
         {actionError ? (
           <p className="mb-3 text-sm" style={{ color: 'var(--danger)' }}>
             {actionError}
@@ -488,7 +525,7 @@ export function DeckDetail({
         ) : null}
 
         {tab === 'list' ? (
-          <DecklistTab cards={deckList ?? []} busyKey={busyKey} onSetCommander={setCommander} />
+          <DecklistTab cards={deckList ?? []} busyKey={busyKey} onSetCommander={setCommander} onRemove={removeCard} />
         ) : tab === 'free' ? (
           free.length === 0 ? (
             <Empty>No free upgrades found in your binder for this deck&apos;s needs.</Empty>
@@ -777,10 +814,12 @@ function DecklistTab({
   cards,
   busyKey,
   onSetCommander,
+  onRemove,
 }: {
   cards: DeckListCard[]
   busyKey: string | null
   onSetCommander: (c: DeckListCard) => void
+  onRemove: (c: DeckListCard) => void
 }) {
   if (cards.length === 0) return <Empty>No cards in this deck.</Empty>
 
@@ -851,6 +890,16 @@ function DecklistTab({
                       {busyKey === `cmdr-${c.oracleId}` ? '…' : '♛'}
                     </button>
                   ) : null}
+                  <button
+                    onClick={() => onRemove(c)}
+                    disabled={busyKey !== null}
+                    className="text-xs disabled:opacity-40"
+                    style={{ color: 'var(--text-faint)' }}
+                    title={`Remove ${c.qty > 1 ? 'one copy of ' : ''}${c.name} from the deck`}
+                    aria-label={`Remove ${c.name} from the deck`}
+                  >
+                    {busyKey === `rm-${c.oracleId}` ? '…' : '×'}
+                  </button>
                   <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
                     {type !== 'Land' ? c.cmc : ''}
                   </span>

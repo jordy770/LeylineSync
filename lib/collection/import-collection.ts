@@ -8,6 +8,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import { loadOracleMeta } from './deck-loader'
 import { parseManaboxCsv } from './parsers/manabox'
 import { buildPrintingLookup, resolveOracleId } from './resolve'
 import type {
@@ -90,6 +91,23 @@ export async function importManaboxCollection(
   const rowsUnmatched = unmatched.reduce((sum, u) => sum + u.quantity, 0)
   const rowsMatched = matched.reduce((sum, m) => sum + m.quantity, 0)
 
+  const after = new Map<string, { name: string; qty: number }>()
+  for (const row of matched) {
+    const cur = after.get(row.oracleId)
+    if (cur) cur.qty += row.quantity
+    else after.set(row.oracleId, { name: row.name, qty: row.quantity })
+  }
+
+  // What is this snapshot worth right now? Remembered on the import row (mig
+  // 381) so the dashboard can plot collection value over time — quantities are
+  // gone after the next replace, the value point is not.
+  const priceMeta = await loadOracleMeta(supabase, [...after.keys()])
+  let snapshotValueEur = 0
+  for (const [oracleId, { qty }] of after) {
+    const price = priceMeta.get(oracleId)?.priceEur
+    if (price) snapshotValueEur += qty * price
+  }
+
   const { data: importRow, error: importError } = await supabase
     .from('co_imports')
     .insert({
@@ -101,16 +119,10 @@ export async function importManaboxCollection(
       rows_matched: rowsMatched,
       rows_unmatched: rowsUnmatched,
       unmatched: unmatched.slice(0, UNMATCHED_SAMPLE_CAP),
+      snapshot_value_eur: Math.round(snapshotValueEur * 100) / 100,
     })
     .select('id')
     .single()
-
-  const after = new Map<string, { name: string; qty: number }>()
-  for (const row of matched) {
-    const cur = after.get(row.oracleId)
-    if (cur) cur.qty += row.quantity
-    else after.set(row.oracleId, { name: row.name, qty: row.quantity })
-  }
 
   // The collection changed, so every deck's cached upgrade counts are stale —
   // reset them to "never scanned" (NULL) so the dashboard doesn't show numbers

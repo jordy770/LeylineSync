@@ -1,7 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T11:15:30.523Z
-> Files: 569 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T12:14:34.080Z
+> Files: 572 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../.claude/jobs/adcb6c2b/tmp/
+
+- `check-col.mjs` — Declares c (~91 tok)
 
 ## ../../.claude/plans/
 
@@ -449,7 +453,7 @@
 
 ## app/collection/
 
-- `page.tsx` — dynamic — renders form (~3470 tok)
+- `page.tsx` — dynamic — renders form (~3744 tok)
 
 ## app/collection/advisor/
 
@@ -538,7 +542,8 @@
 
 - `AdvisorContested.tsx` — contested cards with one-click "Keep in <winner>" (releases losers), per-deck release chips, Cardmarket link, 10s undo via swaps add-back (~2471 tok)
 - `CardName.tsx` — hover card preview + tap-to-toggle on touch (hover:none); portal to document.body (~1099 tok)
-- `DeckDetail.tsx` — BUCKET_ORDER (~12642 tok)
+- `CollectionValueChart.tsx` — W (~1431 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~13242 tok)
 - `DeckImportForm.tsx` — DeckImportForm (~1267 tok)
 - `ImportWizard.tsx` — ImportWizard (~2308 tok)
 - `RulePlayground.tsx` — RulePlayground (~2127 tok)
@@ -598,11 +603,11 @@
 - `binders.ts` — Binder browsing — "what's physically in binder X?" The search page answers (~945 tok)
 - `buy-suggestions.ts` — A Scryfall exact-name search link — the brief uses Scryfall for card info/pricing. (~1358 tok)
 - `conflicts.ts` — Pure: an oracle is a conflict when its committed copies exceed owned copies. (~858 tok)
-- `dashboard.ts` — Cached scan counts (mig 380) — null when the deck was never scanned (or the cache was invalidated by (~1690 tok)
+- `dashboard.ts` — Cached scan counts (mig 380) — null when the deck was never scanned (or the cache was invalidated by (~1983 tok)
 - `deck-loader.ts` — oracle_id → distinct binder name(s) the player's FREE copies sit in (for "go find it"). (~1564 tok)
 - `deck-mutations.ts` — Returns false if the card wasn't in the deck to begin with. (~622 tok)
 - `fetch-decklist.ts` — Pure: identify the site + deck id from a pasted URL. (~1541 tok)
-- `import-collection.ts` — Collection import orchestration: parse → resolve to oracle_id → persist. (~2240 tok)
+- `import-collection.ts` — Collection import orchestration: parse → resolve to oracle_id → persist. (~2408 tok)
 - `import-deck.ts` — Original deck URL (Moxfield/Archidekt) — stored so the deck can be re-synced later. (~3132 tok)
 - `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1684 tok)
 - `locator.ts` — Copies sitting in a binder (binder_type='binder') — grabbable for a deck. (~986 tok)
@@ -765,6 +770,7 @@
 - `202605010378_board_share_token.sql` — Spectator board link + cast support. (~919 tok)
 - `202605010379_tv_room_code.sql` — TV room code — the Jackbox pattern for couch play. (~467 tok)
 - `202605010380_scan_cache.sql` — Upgrade-scan cache (Collection Optimizer UX). (~248 tok)
+- `202605010381_import_value_snapshot.sql` — Collection value history (Collection Optimizer UX). (~135 tok)
 - `tests/feature/dancers-chakrams.test.ts` — DC1-3: equipped host + other-commanders +2/+2 & lifelink; unequipped grants nothing; equipping a commander doesn't double-buff (the "other" exclusion). (~700 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)

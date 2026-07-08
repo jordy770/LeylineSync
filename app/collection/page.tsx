@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { CardName } from '@/components/collection/CardName'
+import { CollectionValueChart } from '@/components/collection/CollectionValueChart'
 import { ColorPips, Panel, Shell } from '@/components/collection/Shell'
 import { listConflicts } from '@/lib/collection/conflicts'
 import { getDashboard } from '@/lib/collection/dashboard'
@@ -71,6 +72,26 @@ export default async function CollectionDashboardPage() {
           <Stat label="Avg power" value={d.avgPower == null ? '—' : d.avgPower.toFixed(1)} hint="/10" />
         </div>
       )}
+
+      {d.valueHistory.length >= 2 ? (
+        <section className="mt-10">
+          <div className="mb-3 flex items-end justify-between">
+            <h2 className="font-display text-xl" style={{ color: 'var(--text-bright)' }}>
+              Collection value
+            </h2>
+            <span className="text-sm" style={{ color: 'var(--text-faint)' }}>
+              one point per import · today&apos;s prices close the line
+            </span>
+          </div>
+          <Panel className="p-4">
+            <CollectionValueChart points={d.valueHistory} />
+          </Panel>
+        </section>
+      ) : hasCollection ? (
+        <p className="mt-3 text-xs" style={{ color: 'var(--text-faint)' }}>
+          Value history builds from your next collection import — each import adds a point to the value-over-time chart.
+        </p>
+      ) : null}
 
       {d.freeStaples.length > 0 ? (
         <section className="mt-10">

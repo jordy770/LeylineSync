@@ -462,3 +462,9 @@
 
 - Commander-detectie bij deck-import heeft nu DRIE vormen (parsers/decklist.ts): sectieheader 'commander(s)' (trailing '(N)' én trailing ':' worden gestript), Archidekt [Commander]-categorie, en een *CMDR*-regelmarker (TappedOut). Herstel achteraf = POST /api/decks/:id/commander {oracleId}: cleart is_commander, flagt de gekozen kaart, zet co_decks.commander_oracle_id + color_identity = identity van de commander (partner → null) en re-analyzed. UI: ♛-knop op rijen met 'Legendary' in de type_line op de Decklist-tab; bij geen commander een warn-panel met uitleg.
 - syncDeckFromText mag een handmatig gezette commander NIET overschrijven wanneer de gefetchte lijst geen commander-marker heeft: als commanders leeg is en co_decks.commander_oracle_id nog in de nieuwe lijst zit, wordt die rij opnieuw geflagd en blijft de identity op de commander gebaseerd.
+
+## Key Learnings — 2026-07-08 (ronde 5, waardegrafiek)
+
+- Collectiewaarde-historie: een import REPLACET de snapshot, dus historische aantallen bestaan niet meer — de waarde wordt daarom als getal op de import-rij bewaard (mig 381: co_imports.snapshot_value_eur; import-collection berekent som(prijs×qty) uit de al bestaande after-map vóór de co_imports-insert). Dashboard plot die punten + een live nu-punt; oude imports blijven NULL (geen nepgeschiedenis). Grafiek = components/collection/CollectionValueChart.tsx (pure SVG, geen lib; vectorEffect non-scaling-stroke, tooltip via pointer events werkt ook op touch).
+- `npx supabase migration up` werkte dit keer direct op de lokale play-DB (geen phantom-version repair meer nodig zoals in juni) — eerst gewoon proberen vóór de handmatige pg-route uit [[local-migrations]].
+- Decklist ×-knop verwijdert ÉÉN copy: deck-mutations removeCardFromDeck decrementeert quantity vóór delete, dus veilig voor 30× basics; undo = swaps add (increment). 

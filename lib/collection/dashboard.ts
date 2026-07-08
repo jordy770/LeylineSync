@@ -37,6 +37,11 @@ export interface ImportRecord {
   createdAt: string
 }
 
+export interface ValuePoint {
+  date: string
+  valueEur: number
+}
+
 export interface DashboardData {
   totalCards: number
   uniqueCards: number
@@ -47,6 +52,8 @@ export interface DashboardData {
   freeStaples: StapleCard[]
   decks: DeckSummary[]
   imports: ImportRecord[]
+  /** Snapshot value per collection import (mig 381), oldest first, plus a live "now" point. */
+  valueHistory: ValuePoint[]
 }
 
 interface RankInput {
@@ -72,7 +79,7 @@ export function rankStaples(cards: RankInput[], limit = 12): StapleCard[] {
 }
 
 export async function getDashboard(supabase: SupabaseClient, userId: string): Promise<DashboardData> {
-  const [availRes, decksRes, importsRes, analysesRes] = await Promise.all([
+  const [availRes, decksRes, importsRes, analysesRes, historyRes] = await Promise.all([
     supabase.from('co_card_availability').select('oracle_id, owned_qty, free_qty').eq('user_id', userId),
     supabase
       .from('co_decks')
@@ -87,6 +94,14 @@ export async function getDashboard(supabase: SupabaseClient, userId: string): Pr
       .limit(10),
     // RLS scopes analysis rows to the caller's decks, so no explicit filter needed.
     supabase.from('co_deck_analyses').select('deck_id, free_upgrades, occupied_upgrades'),
+    supabase
+      .from('co_imports')
+      .select('created_at, snapshot_value_eur')
+      .eq('user_id', userId)
+      .eq('kind', 'collection')
+      .not('snapshot_value_eur', 'is', null)
+      .order('created_at', { ascending: true })
+      .limit(100),
   ])
 
   const rows = availRes.data ?? []
@@ -149,15 +164,27 @@ export async function getDashboard(supabase: SupabaseClient, userId: string): Pr
     createdAt: i.created_at as string,
   }))
 
+  // Value over time: one point per import snapshot, closed with a live "now"
+  // point at today's prices (so the chart always ends at the headline value).
+  const roundedValue = Math.round(collectionValueEur * 100) / 100
+  const valueHistory: ValuePoint[] = (historyRes.data ?? []).map((h) => ({
+    date: h.created_at as string,
+    valueEur: Math.round(Number(h.snapshot_value_eur) * 100) / 100,
+  }))
+  if (valueHistory.length > 0 && roundedValue > 0) {
+    valueHistory.push({ date: new Date().toISOString(), valueEur: roundedValue })
+  }
+
   return {
     totalCards,
     uniqueCards: rows.length,
     freeCopies,
-    collectionValueEur: Math.round(collectionValueEur * 100) / 100,
+    collectionValueEur: roundedValue,
     deckCount: decks.length,
     avgPower,
     freeStaples,
     decks,
     imports,
+    valueHistory,
   }
 }

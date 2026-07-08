@@ -7144,3 +7144,20 @@
 | 13:15 | Edited components/collection/DeckImportForm.tsx | 3→3 lines | ~103 |
 | 13:16 | Commander-fix na user-report: parser toleranter (Commander:/Commanders/*CMDR*), nieuw POST /api/decks/:id/commander, Decklist-tab ♛ set-commander + no-commander-melding, sync behoudt handmatige commander; +2 parser-tests | lib/collection/parsers/decklist.ts, lib/collection/import-deck.ts, app/api/decks/[id]/commander/route.ts, components/collection/DeckDetail.tsx, DeckImportForm.tsx | tsc+build+500 tests groen | ~18k |
 | 14:01 | Release v0.6.0 gepubliceerd en live: CI groen (volledige suite), Release-deploy success, leylinesync.com 200 / advisor 307→login zoals verwacht; geen nieuwe migraties | GitHub release v0.6.0, VPS via CD | live | ~3k |
+| 14:09 | Created supabase/migrations/202605010381_import_value_snapshot.sql | — | ~135 |
+| 14:10 | Created ../../.claude/jobs/adcb6c2b/tmp/check-col.mjs | — | ~91 |
+| 14:11 | Edited lib/collection/import-collection.ts | added 1 import(s) | ~47 |
+| 14:11 | Edited lib/collection/import-collection.ts | added optional chaining | ~381 |
+| 14:12 | Edited lib/collection/dashboard.ts | expanded (+7 lines) | ~127 |
+| 14:12 | Edited lib/collection/dashboard.ts | inline fix | ~25 |
+| 14:12 | Edited lib/collection/dashboard.ts | expanded (+8 lines) | ~126 |
+| 14:12 | Edited lib/collection/dashboard.ts | added nullish coalescing | ~219 |
+| 14:13 | Created components/collection/CollectionValueChart.tsx | — | ~1431 |
+| 14:13 | Edited app/collection/page.tsx | added 1 import(s) | ~62 |
+| 14:13 | Edited app/collection/page.tsx | CSS: color, color, color | ~425 |
+| 14:14 | Edited components/collection/DeckDetail.tsx | added error handling | ~346 |
+| 14:14 | Edited components/collection/DeckDetail.tsx | inline fix | ~34 |
+| 14:14 | Edited components/collection/DeckDetail.tsx | CSS: onRemove | ~61 |
+| 14:14 | Edited components/collection/DeckDetail.tsx | expanded (+10 lines) | ~388 |
+| 14:14 | Edited components/collection/DeckDetail.tsx | expanded (+6 lines) | ~151 |
+| 14:15 | Collectiewaarde-grafiek (mig 381 snapshot_value_eur op co_imports, import legt waarde vast, SVG-lijnchart met tooltip op dashboard), Decklist ×-verwijderknop met undo (qty-aware), badge-legend zichtbaar op touch | supabase/migrations/202605010381*, lib/collection/import-collection.ts, lib/collection/dashboard.ts, components/collection/CollectionValueChart.tsx, DeckDetail.tsx, app/collection/page.tsx | tsc+build+tests groen; mig lokaal toegepast | ~30k |
