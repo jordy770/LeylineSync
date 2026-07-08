@@ -445,3 +445,20 @@
 ## Do-Not-Repeat — 2026-07-08
 
 - Client-components ('use client') importeren Panel/ColorPips uit components/collection/ui.tsx — NOOIT uit Shell.tsx: Shell trekt SiteNav→AuthButton→lib/supabase/server.ts (next/headers) mee en dat breekt de Turbopack-build in de client-graph (bug-1513).
+
+## Decision Log — 2026-07-08 (ronde 3, usability)
+
+- Collection-subnav geconsolideerd naar 4 PLEKKEN (Overview / Advisor / Binders / Find a card); Insights + Intelligence + Conflicts zijn samengevoegd tot /collection/advisor en de oude routes zijn redirects (URL-compat). Import-pagina's bestaan nog maar zitten niet in de nav — bereikbaar via de Overview-actieknoppen. Motivatie: aanbevelingen stonden op 4 plekken (dashboard staples ≈ insights unused staples; intelligence contested ≈ conflicts-pagina) en de slimste pagina (Intelligence) was read-only.
+- Advisor-acties: "Keep in <winner>" volgt de arbiter (release uit alle verliezende decks, keepCount = max(1, ownedQty)); undo = per released deck POST /api/decks/:id/swaps {inOracleId} (resolve-conflict verwijdert de co_deck_cards-rij, swaps-add zet hem terug). Elke mutatie in de collection-UI hoort het 10s-undo-toast-patroon te volgen (DeckDetail/AdvisorContested/SearchLive doen dit nu alle drie).
+- Buy-links wijzen primair naar Cardmarket (EU-doelgroep; latere affiliate-kans zonder paywall), Scryfall als secundaire link. Jordy overweegt Collection als monetization-pijler (zie auto-memory collection-monetization-intent).
+
+## Key Learnings — 2026-07-08 (ronde 3)
+
+- UpgradeScanResult heeft nu deckList (oracleId/name/qty/typeLine/cmc/isCommander): scoreCards en inDeck uit loadDeckForScoring zijn index-aligned (zelfde loop), dus de naam komt uit inDeck[i]. De deckpagina toont de decklijst uit dezelfde upgrades-call — GEEN extra endpoint; alle drie de return-punten van scanDeckUpgrades moeten deckList meegeven.
+- React-effect her-triggeren na een mutatie: setQ(v => v) werkt NIET (React bailt uit bij identieke state, effect-deps veranderen niet). Patroon in SearchLive: een refreshTick-state in de effect-deps + lastKey.current = '' reset.
+- CardName touch-preview: check matchMedia('(hover: none)') IN de onClick-handler (niet in state — SSR/hydration), met preventDefault + stopPropagation zodat een omliggende <Link> niet navigeert; document-pointerdown sluit bij tap-buiten. ContestedCard (lib/intelligence/loaders.ts) draagt nu oracleId zodat de Advisor er acties op kan doen.
+
+## Key Learnings — 2026-07-08 (ronde 4, commander-fix)
+
+- Commander-detectie bij deck-import heeft nu DRIE vormen (parsers/decklist.ts): sectieheader 'commander(s)' (trailing '(N)' én trailing ':' worden gestript), Archidekt [Commander]-categorie, en een *CMDR*-regelmarker (TappedOut). Herstel achteraf = POST /api/decks/:id/commander {oracleId}: cleart is_commander, flagt de gekozen kaart, zet co_decks.commander_oracle_id + color_identity = identity van de commander (partner → null) en re-analyzed. UI: ♛-knop op rijen met 'Legendary' in de type_line op de Decklist-tab; bij geen commander een warn-panel met uitleg.
+- syncDeckFromText mag een handmatig gezette commander NIET overschrijven wanneer de gefetchte lijst geen commander-marker heeft: als commanders leeg is en co_decks.commander_oracle_id nog in de nieuwe lijst zit, wordt die rij opnieuw geflagd en blijft de identity op de commander gebaseerd.

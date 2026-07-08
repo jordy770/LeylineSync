@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T08:30:09.174Z
-> Files: 563 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T11:15:30.523Z
+> Files: 569 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -12,11 +12,12 @@
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
+- `collection-monetization-intent.md` (~256 tok)
 - `collection-optimizer-module.md` (~4794 tok)
 - `decisive-over-clarifying.md` (~269 tok)
 - `hosting-ovhcloud.md` (~340 tok)
 - `local-migrations.md` — Declares migrations (~422 tok)
-- `MEMORY.md` (~273 tok)
+- `MEMORY.md` (~447 tok)
 - `never-purge-user-data.md` (~318 tok)
 - `no-paid-ai-features.md` (~274 tok)
 - `opponent-view-design.md` — Declares form (~1368 tok)
@@ -382,6 +383,10 @@
 
 - `route.ts` — GET /api/decks/:id/buy?budget=5   (budget omitted / 0 = no cap) (~366 tok)
 
+## app/api/decks/[id]/commander/
+
+- `route.ts` — POST /api/decks/:id/commander  { oracleId } (~865 tok)
+
 ## app/api/decks/[id]/play/
 
 - `route.ts` — POST /api/decks/:id/play (~738 tok)
@@ -444,15 +449,19 @@
 
 ## app/collection/
 
-- `page.tsx` — dynamic — renders form (~3420 tok)
+- `page.tsx` — dynamic — renders form (~3470 tok)
+
+## app/collection/advisor/
+
+- `page.tsx` — Advisor: merged Insights+Intelligence+Conflicts — contested cards (AdvisorContested actions), perfect fits, deck diagnosis, unused staples (rows link to search) (~3053 tok)
 
 ## app/collection/binders/
 
-- `page.tsx` — dynamic (~1235 tok)
+- `page.tsx` — dynamic; binder contents sortable via ?sort=name|price|type link chips (~1675 tok)
 
 ## app/collection/conflicts/
 
-- `page.tsx` — dynamic (~816 tok)
+- `page.tsx` — Merged into the Advisor (2026-07-08) — kept so old links keep working. (~56 tok)
 
 ## app/collection/decks/[id]/
 
@@ -468,11 +477,11 @@
 
 ## app/collection/insights/
 
-- `page.tsx` — dynamic (~1521 tok)
+- `page.tsx` — Merged into the Advisor (2026-07-08) — kept so old links keep working. (~56 tok)
 
 ## app/collection/intelligence/
 
-- `page.tsx` — dynamic (~1997 tok)
+- `page.tsx` — Merged into the Advisor (2026-07-08) — kept so old links keep working. (~57 tok)
 
 ## app/collection/playground/
 
@@ -480,7 +489,7 @@
 
 ## app/collection/search/
 
-- `page.tsx` — dynamic (~485 tok)
+- `page.tsx` — dynamic (~604 tok)
 
 ## app/controller-style-lab/
 
@@ -509,6 +518,7 @@
 
 ## components/
 
+- `CardBehaviorForm.tsx` — inputClass (~11582 tok)
 - `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~70832 tok)
 - `GameBoard.tsx` — GameBoard (~7376 tok)
 - `GameLogPanel.tsx` — Shared self-contained game-log overlay (own supabase client + game_action_log realtime); used by GameBoard. Controller has its own GameLogSheet (~1215 tok)
@@ -526,14 +536,14 @@
 
 ## components/collection/
 
-- `CardName.tsx` — IMG_W (~855 tok)
-- `ConflictResolve.tsx` — ConflictResolve (~530 tok)
-- `DeckDetail.tsx` — BUCKET_ORDER (~10735 tok)
-- `DeckImportForm.tsx` — DeckImportForm (~1246 tok)
+- `AdvisorContested.tsx` — contested cards with one-click "Keep in <winner>" (releases losers), per-deck release chips, Cardmarket link, 10s undo via swaps add-back (~2471 tok)
+- `CardName.tsx` — hover card preview + tap-to-toggle on touch (hover:none); portal to document.body (~1099 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~12642 tok)
+- `DeckImportForm.tsx` — DeckImportForm (~1267 tok)
 - `ImportWizard.tsx` — ImportWizard (~2308 tok)
 - `RulePlayground.tsx` — RulePlayground (~2127 tok)
-- `SearchLive.tsx` — COLORS (~2166 tok)
-- `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1120 tok)
+- `SearchLive.tsx` — instant search + per-result add-to-deck (deck chips, undo toast, refreshTick re-fetch) (~3622 tok)
+- `Shell.tsx` — 4-item sub-nav (Overview/Advisor/Binders/Find a card); import pages reached via Overview buttons. Omit `active` on nested pages (deck detail). (~1062 tok)
 - `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~406 tok)
 
 ## components/controller/
@@ -593,7 +603,7 @@
 - `deck-mutations.ts` — Returns false if the card wasn't in the deck to begin with. (~622 tok)
 - `fetch-decklist.ts` — Pure: identify the site + deck id from a pasted URL. (~1541 tok)
 - `import-collection.ts` — Collection import orchestration: parse → resolve to oracle_id → persist. (~2240 tok)
-- `import-deck.ts` — Original deck URL (Moxfield/Archidekt) — stored so the deck can be re-synced later. (~3013 tok)
+- `import-deck.ts` — Original deck URL (Moxfield/Archidekt) — stored so the deck can be re-synced later. (~3132 tok)
 - `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1684 tok)
 - `locator.ts` — Copies sitting in a binder (binder_type='binder') — grabbable for a deck. (~986 tok)
 - `move-card.ts` — Move a card from one deck to another (resolves an "occupied" upgrade — you own (~626 tok)
@@ -602,11 +612,11 @@
 - `resolve.ts` — The minimum a row needs to be resolvable. (~864 tok)
 - `scoring.ts` — The deck's archetype tags — non-staple roles that appear on enough cards to be a (~1481 tok)
 - `types.ts` — One physical stack of cards as parsed from an import file (pre-resolution). (~810 tok)
-- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~3803 tok)
+- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4084 tok)
 
 ## lib/collection/parsers/
 
-- `decklist.ts` — Returns the section this header switches to, or null if the line isn't a header. (~1193 tok)
+- `decklist.ts` — Returns the section this header switches to, or null if the line isn't a header. (~1324 tok)
 - `manabox.ts` — ManaBox collection CSV parser — pure, no I/O. (~1583 tok)
 
 ## lib/collection/synergy/
@@ -618,6 +628,7 @@
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13212 tok)
 - `auto-pass.ts` — You are the active (turn) player. (~1508 tok)
 - `bot-brain.ts` — Pure AI-bot heuristics: mulligan, main-phase plays, and keyword-aware combat (decideAttacks/decideBlocks honour evasion/menace/trample/first-strike/deathtouch + defensive reserves). (~3013 tok)
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10537 tok)
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21611 tok)
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 4 more (~13963 tok)
 - `mana-sources.ts` — What mana colours a permanent can make, collapsed for the controller's own (~1293 tok)
@@ -632,7 +643,7 @@
 - `commander-profiles.ts` — Exact commander card name (front face). (~1043 tok)
 - `conflict-arbiter.ts` — The deck's commander card name (front face), when known. (~722 tok)
 - `deck-analyzer.ts` — Stable id, e.g. 'low-draw' — the future AI layer keys explanations off this. (~1377 tok)
-- `loaders.ts` — Up to 3 free binder cards that share the card's strongest role — swaps for the losers. (~1575 tok)
+- `loaders.ts` — Up to 3 free binder cards that share the card's strongest role — swaps for the losers. (~1590 tok)
 - `models.ts` — Broad, curated role vocabulary. Extend freely — rules reference these. (~1094 tok)
 
 ## lib/intelligence/rules/
@@ -826,13 +837,14 @@
 
 ## tests/unit/
 
-- `ai-recommend.test.ts` — AI deck-doctor — the pure grounding helpers. The model call itself is not tested (~799 tok)
+- `ai-recommend.test.ts` — AI deck-doctor — the pure grounding helpers. The model call itself is not tested (~822 tok)
 - `auto-pass.test.ts` — shouldAutoPass — the controller's pure "should I pass priority right now?" (~2653 tok)
 - `bot-brain.test.ts` — bot-brain — the AI CPU's pure heuristic decisions (lib/game/bot-brain). Each (~2536 tok)
+- `card-behavior-builder.test.ts` — Characterization tests for the guided-form ↔ script-JSON conversion in (~15783 tok)
 - `collection-qol.test.ts` — Collection QoL (2026-07-07) — the pure cores of the re-import diff and the (~889 tok)
 - `conflicts-buy.test.ts` — Deck conflicts (pure detection) + buy-suggestion link building. (~631 tok)
 - `dashboard.test.ts` — Dashboard — pure "free staples" ranking (strong unused binder cards). (~517 tok)
-- `decklist-parser.test.ts` — Decklist parser — the pure core of the deck import. Covers the quantity/set/ (~813 tok)
+- `decklist-parser.test.ts` — Decklist parser — the pure core of the deck import. Covers the quantity/set/ (~1124 tok)
 - `fetch-decklist.test.ts` — Deck-URL import — the pure URL detection + JSON→text mappers, plus the fetch (~1159 tok)
 - `insights.test.ts` — Collection Insights — pure per-deck fit ranking. (~786 tok)
 - `intelligence-engine.test.ts` — Leyline Intelligence Engine — classifyCard profiles (multi-role, tags, (~1202 tok)

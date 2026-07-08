@@ -7081,3 +7081,65 @@
 |------|--------|---------|---------|--------|
 | 11:16 | Advies verdienmodel: affiliate-links op upgrade-scanner + supporter-tier (Ko-fi eerst, later Stripe+iDEAL), cosmetica later; gameplay blijft gratis (FCP) | - | advies, geen code | ~1k |
 | 16:30 | v0.5.1 live: spell_cast in guided form gedeployed | VPS | — | ~5k |
+
+## Session: 2026-07-08 12:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:19 | Usability-analyse Collection-onderdeel (alle pagina's + componenten gereviewd, geen code gewijzigd; monetization-focus) | app/collection/*, components/collection/* | rapport aan user | ~30k |
+| 12:19 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/collection-monetization-intent.md | — | ~252 |
+| 12:19 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | 1→2 lines | ~68 |
+| 12:30 | Edited lib/intelligence/loaders.ts | 4→5 lines | ~35 |
+| 12:30 | Edited lib/intelligence/loaders.ts | 2→3 lines | ~32 |
+| 12:30 | Edited components/collection/Shell.tsx | 12→10 lines | ~174 |
+| 12:31 | Created components/collection/AdvisorContested.tsx | — | ~2471 |
+| 12:32 | Created app/collection/advisor/page.tsx | — | ~3053 |
+| 12:32 | Created app/collection/insights/page.tsx | — | ~56 |
+| 12:32 | Created app/collection/intelligence/page.tsx | — | ~57 |
+| 12:32 | Created app/collection/conflicts/page.tsx | — | ~56 |
+| 12:32 | Edited app/collection/page.tsx | "/collection/conflicts" → "/collection/advisor" | ~13 |
+| 12:32 | Edited lib/collection/upgrade-scanner.ts | added optional chaining | ~333 |
+| 12:33 | Edited lib/collection/upgrade-scanner.ts | modified if() | ~65 |
+| 12:33 | Edited lib/collection/upgrade-scanner.ts | 4→5 lines | ~29 |
+| 12:33 | Edited components/collection/DeckDetail.tsx | expanded (+9 lines) | ~73 |
+| 12:33 | Edited components/collection/DeckDetail.tsx | "free" → "list" | ~25 |
+| 12:33 | Edited components/collection/DeckDetail.tsx | added nullish coalescing | ~34 |
+| 12:33 | Edited components/collection/DeckDetail.tsx | 4→7 lines | ~87 |
+| 12:33 | Edited components/collection/DeckDetail.tsx | added nullish coalescing | ~40 |
+| 12:34 | Edited components/collection/DeckDetail.tsx | added nullish coalescing | ~813 |
+| 12:34 | Edited components/collection/CardName.tsx | CSS: e, hover, e | ~291 |
+| 12:34 | Edited components/collection/CardName.tsx | 3→4 lines | ~27 |
+| 12:34 | Edited components/collection/DeckDetail.tsx | 3→4 lines | ~38 |
+| 12:34 | Edited components/collection/DeckDetail.tsx | CSS: border | ~141 |
+| 12:34 | Edited components/collection/DeckDetail.tsx | CSS: https | ~339 |
+| 12:35 | Edited components/collection/DeckDetail.tsx | CSS: https | ~179 |
+| 12:35 | Edited app/collection/page.tsx | CSS: hover | ~385 |
+| 12:35 | Edited app/collection/search/page.tsx | added nullish coalescing | ~240 |
+| 12:35 | Edited components/collection/SearchLive.tsx | added error handling | ~932 |
+| 12:36 | Edited components/collection/SearchLive.tsx | 2→4 lines | ~80 |
+| 12:36 | Edited components/collection/SearchLive.tsx | setQ() → setRefreshTick() | ~77 |
+| 12:36 | Edited components/collection/SearchLive.tsx | setQ() → setRefreshTick() | ~56 |
+| 12:36 | Edited components/collection/SearchLive.tsx | 2→2 lines | ~28 |
+| 12:36 | Edited components/collection/SearchLive.tsx | expanded (+34 lines) | ~784 |
+| 12:36 | Edited components/collection/SearchLive.tsx | modified searchKey() | ~232 |
+| 12:37 | Edited app/collection/binders/page.tsx | added 2 condition(s) | ~413 |
+| 12:37 | Edited app/collection/binders/page.tsx | CSS: background, border | ~316 |
+| 12:37 | Edited app/collection/binders/page.tsx | 10→11 lines | ~85 |
+| 12:38 | Edited tests/unit/ai-recommend.test.ts | 5→6 lines | ~80 |
+| 12:39 | Edited components/collection/CardName.tsx | 4→3 lines | ~42 |
+| 12:41 | Usability-verbeteringen Collection doorgevoerd: Advisor-pagina (merge insights/intelligence/conflicts + volg-advies/release met undo), 4-item subnav, Decklist-tab op deckpagina (scanner levert deckList), tap-to-preview CardName, retry-knop, Cardmarket-links, klikbare staples, add-to-deck vanuit zoeken, binder-sortering; ConflictResolve.tsx verwijderd | app/collection/*, components/collection/*, lib/collection/upgrade-scanner.ts, lib/intelligence/loaders.ts | tsc+eslint+build+498 unit tests groen | ~65k |
+| 13:13 | Edited lib/collection/parsers/decklist.ts | modified asSectionHeader() | ~184 |
+| 13:13 | Edited lib/collection/parsers/decklist.ts | added 1 condition(s) | ~86 |
+| 13:14 | Edited tests/unit/decklist-parser.test.ts | added optional chaining | ~303 |
+| 13:14 | Created app/api/decks/[id]/commander/route.ts | — | ~865 |
+| 13:14 | Edited components/collection/DeckDetail.tsx | added 1 import(s) | ~35 |
+| 13:14 | Edited components/collection/DeckDetail.tsx | 2→3 lines | ~42 |
+| 13:14 | Edited components/collection/DeckDetail.tsx | added error handling | ~268 |
+| 13:14 | Edited components/collection/DeckDetail.tsx | 3→3 lines | ~45 |
+| 13:14 | Edited components/collection/DeckDetail.tsx | CSS: busyKey, onSetCommander, c | ~98 |
+| 13:14 | Edited components/collection/DeckDetail.tsx | expanded (+10 lines) | ~312 |
+| 13:15 | Edited components/collection/DeckDetail.tsx | CSS: disabled | ~335 |
+| 13:15 | Edited lib/collection/import-deck.ts | 2→2 lines | ~51 |
+| 13:15 | Edited lib/collection/import-deck.ts | added 2 condition(s) | ~200 |
+| 13:15 | Edited components/collection/DeckImportForm.tsx | 3→3 lines | ~103 |
+| 13:16 | Commander-fix na user-report: parser toleranter (Commander:/Commanders/*CMDR*), nieuw POST /api/decks/:id/commander, Decklist-tab ♛ set-commander + no-commander-melding, sync behoudt handmatige commander; +2 parser-tests | lib/collection/parsers/decklist.ts, lib/collection/import-deck.ts, app/api/decks/[id]/commander/route.ts, components/collection/DeckDetail.tsx, DeckImportForm.tsx | tsc+build+500 tests groen | ~18k |

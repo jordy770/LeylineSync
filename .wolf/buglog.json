@@ -17980,6 +17980,396 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-08T10:20:00+02:00"
+    },
+    {
+      "id": "bug-1099",
+      "timestamp": "2026-07-08T08:50:11.704Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/CardBehaviorForm.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 12→15 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T08:50:11.704Z"
+    },
+    {
+      "id": "bug-1100",
+      "timestamp": "2026-07-08T10:30:57.698Z",
+      "error_message": "Missing import:  / ,  pages exist but are reached via Overview",
+      "file": "components/collection/Shell.tsx",
+      "root_cause": "Module(s) not imported:  / ,  pages exist but are reached via Overview",
+      "fix": "Added import(s) for  / ,  pages exist but are reached via Overview",
+      "tags": [
+        "auto-detected",
+        "missing-import",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:30:57.698Z"
+    },
+    {
+      "id": "bug-1101",
+      "timestamp": "2026-07-08T10:32:23.311Z",
+      "error_message": "Incorrect value in code",
+      "file": "app/collection/page.tsx",
+      "root_cause": "Had \"/collection/conflicts\"",
+      "fix": "Changed to \"/collection/advisor\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:32:23.311Z"
+    },
+    {
+      "id": "bug-1102",
+      "timestamp": "2026-07-08T10:32:58.541Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/upgrade-scanner.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:32:58.541Z"
+    },
+    {
+      "id": "bug-1103",
+      "timestamp": "2026-07-08T10:33:01.236Z",
+      "error_message": "Wrong return value",
+      "file": "lib/collection/upgrade-scanner.ts",
+      "root_cause": "Was returning: { result: { deckId, power, free: [], occupied: [] ",
+      "fix": "Now returns: { result: { deckId, power, free: [], occupied: [],",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:33:01.236Z"
+    },
+    {
+      "id": "bug-1104",
+      "timestamp": "2026-07-08T10:33:30.793Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Had 'free'",
+      "fix": "Changed to 'list'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:33:30.793Z"
+    },
+    {
+      "id": "bug-1105",
+      "timestamp": "2026-07-08T10:33:37.838Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {tab === 'list' ? (; <DecklistTab cards={deckList ?? []} /> | Also: // The deck's own list — commander on top, then grouped by c; // first. Seeing what's IN the deck is what makes the swap s",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-07-08T10:34:05.324Z"
+    },
+    {
+      "id": "bug-1106",
+      "timestamp": "2026-07-08T10:34:24.390Z",
+      "error_message": "Missing guard clause",
+      "file": "components/collection/CardName.tsx",
+      "root_cause": "No early return/throw for edge case: timer.current != null",
+      "fix": "Added guard clause: if (timer.current != null)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:34:24.390Z"
+    },
+    {
+      "id": "bug-1107",
+      "timestamp": "2026-07-08T10:34:55.059Z",
+      "error_message": "CSS fix: color",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "color: 'var(--text-dim)' → 'var(--text-faint)'",
+      "fix": "Changed color: 'var(--text-dim)' → 'var(--text-faint)'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:34:55.060Z"
+    },
+    {
+      "id": "bug-1108",
+      "timestamp": "2026-07-08T10:35:06.514Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→12 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:35:06.514Z"
+    },
+    {
+      "id": "bug-1109",
+      "timestamp": "2026-07-08T10:35:39.697Z",
+      "error_message": "Null/undefined access in ",
+      "file": "app/collection/search/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:35:39.697Z"
+    },
+    {
+      "id": "bug-1110",
+      "timestamp": "2026-07-08T10:35:59.681Z",
+      "error_message": "Missing error handling in SearchLive",
+      "file": "components/collection/SearchLive.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:35:59.681Z"
+    },
+    {
+      "id": "bug-1111",
+      "timestamp": "2026-07-08T10:36:40.743Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/SearchLive.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {added ? (; <div",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-08T10:36:50.393Z"
+    },
+    {
+      "id": "bug-1112",
+      "timestamp": "2026-07-08T10:37:06.624Z",
+      "error_message": "Missing guard clause",
+      "file": "app/collection/binders/page.tsx",
+      "root_cause": "No early return/throw for edge case: sort === 'price'",
+      "fix": "Added guard clause: if (sort === 'price')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:37:06.624Z"
+    },
+    {
+      "id": "bug-1113",
+      "timestamp": "2026-07-08T10:37:16.392Z",
+      "error_message": "CSS fix: color",
+      "file": "app/collection/binders/page.tsx",
+      "root_cause": "color: 'var(--text-dim)' → 'var(--text-faint)'",
+      "fix": "Changed color: 'var(--text-dim)' → 'var(--text-faint)'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:37:16.392Z"
+    },
+    {
+      "id": "bug-1114",
+      "timestamp": "2026-07-08T10:40:18.400Z",
+      "error_message": "Card image preview never appeared on touch devices (usability audit 2026-07-08): CardName was hover-only",
+      "file": "components/collection/CardName.tsx",
+      "root_cause": "Preview bound solely to onMouseEnter; devices matching (hover: none) never fire it, so phone/tablet users never saw a card image anywhere in the collection UI",
+      "fix": "Tap now toggles the preview on hover-less devices (onClick checks matchMedia hover:none, preventDefault+stopPropagation so surrounding Links do not navigate; a document pointerdown listener closes it on tap-outside)",
+      "tags": [
+        "touch",
+        "mobile",
+        "collection",
+        "card-preview",
+        "usability"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:40:18.400Z"
+    },
+    {
+      "id": "bug-1115",
+      "timestamp": "2026-07-08T11:14:01.785Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/unit/decklist-parser.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T11:14:01.785Z"
+    },
+    {
+      "id": "bug-1116",
+      "timestamp": "2026-07-08T11:14:35.380Z",
+      "error_message": "Missing error handling in function",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T11:14:35.380Z"
+    },
+    {
+      "id": "bug-1117",
+      "timestamp": "2026-07-08T11:14:53.753Z",
+      "error_message": "CSS fix: color",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "color: 'var(--text-bright)' → 'var(--text-dim)'",
+      "fix": "Changed color: 'var(--text-bright)' → 'var(--text-dim)'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T11:14:53.753Z"
+    },
+    {
+      "id": "bug-1118",
+      "timestamp": "2026-07-08T11:15:07.218Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T11:15:07.218Z"
+    },
+    {
+      "id": "bug-1119",
+      "timestamp": "2026-07-08T11:15:23.050Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/collection/import-deck.ts",
+      "root_cause": "Had 'id, name'",
+      "fix": "Changed to 'id, name, commander_oracle_id'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T11:15:23.050Z"
+    },
+    {
+      "id": "bug-1120",
+      "timestamp": "2026-07-08T11:15:27.290Z",
+      "error_message": "Type error",
+      "file": "lib/collection/import-deck.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T11:15:27.290Z"
+    },
+    {
+      "id": "bug-1121",
+      "timestamp": "2026-07-08T11:15:30.545Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/DeckImportForm.tsx",
+      "root_cause": "Had 'A “Commander” section header or Archidekt [Comman",
+      "fix": "Changed to 'A “Commander” section header, an Archidekt [Comma",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T11:15:30.545Z"
+    },
+    {
+      "id": "bug-1115",
+      "timestamp": "2026-07-08T11:16:44.911Z",
+      "error_message": "User: text-deck import zette de commander niet bovenaan en er was geen manier om hem later te selecteren/wijzigen",
+      "file": "lib/collection/parsers/decklist.ts",
+      "root_cause": "Parser herkent een commander alleen via een exact 'Commander'-sectieheader of Archidekt [Commander]-categorie; varianten als 'Commander:' (dubbele punt) of *CMDR*-markers vielen erdoorheen. Daarnaast bestond er geen UI/endpoint om commander_oracle_id achteraf te zetten, en color_identity bleef dan de unie van alle kaarten",
+      "fix": "Parser accepteert nu Commander:/Commanders(+count) headers en een *CMDR* regelmarker; nieuw endpoint POST /api/decks/:id/commander (flags co_deck_cards.is_commander, zet commander_oracle_id + color_identity van de commander, re-analyze); Decklist-tab toont ♛ op legendarische kaarten + een no-commander-waarschuwing; syncDeckFromText behoudt een handmatig gezette commander als de gefetchte lijst geen marker heeft",
+      "tags": [
+        "deck-import",
+        "commander",
+        "parser",
+        "collection",
+        "usability"
+      ],
+      "related_bugs": [
+        "bug-1114"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T11:16:44.911Z"
     }
   ]
 }
