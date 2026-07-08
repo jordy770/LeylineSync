@@ -7143,3 +7143,4 @@
 | 13:15 | Edited lib/collection/import-deck.ts | added 2 condition(s) | ~200 |
 | 13:15 | Edited components/collection/DeckImportForm.tsx | 3→3 lines | ~103 |
 | 13:16 | Commander-fix na user-report: parser toleranter (Commander:/Commanders/*CMDR*), nieuw POST /api/decks/:id/commander, Decklist-tab ♛ set-commander + no-commander-melding, sync behoudt handmatige commander; +2 parser-tests | lib/collection/parsers/decklist.ts, lib/collection/import-deck.ts, app/api/decks/[id]/commander/route.ts, components/collection/DeckDetail.tsx, DeckImportForm.tsx | tsc+build+500 tests groen | ~18k |
+| 14:01 | Release v0.6.0 gepubliceerd en live: CI groen (volledige suite), Release-deploy success, leylinesync.com 200 / advisor 307→login zoals verwacht; geen nieuwe migraties | GitHub release v0.6.0, VPS via CD | live | ~3k |
