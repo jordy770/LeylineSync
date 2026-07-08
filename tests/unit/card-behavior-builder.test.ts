@@ -232,6 +232,9 @@ const CASES: Case[] = [
   { name: 'watcher filter type-only → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { type_line: 'Zombie', exclude_self: true }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: true },
   // Midnight Reaper: a nontoken death watcher.
   { name: 'midnight reaper (nontoken death watcher) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_died', filter: { controller: 'you', nontoken: true }, effects: [{ type: 'draw', amount: 1 }, { type: 'lose_life', amount: 1, recipient: 'controller' }] }] }, form: true },
+  // spell_cast in the guided form (2026-07-08) — Murmuring Mystic's shape:
+  // "whenever you cast an Instant spell, create a token".
+  { name: 'spell_cast watcher (Murmuring Mystic) → form', script: { schema_version: 2, triggered_abilities: [{ event: 'spell_cast', filter: { type_line: 'Instant' }, effects: [{ type: 'create_token', token: 'Bird Illusion Token', count: 1 }] }] }, form: true },
   // Non-canonical filters bail to JSON.
   { name: 'watcher filter unknown key → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { foo: 1 }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },
   { name: 'watcher filter bad controller → json', script: { schema_version: 2, triggered_abilities: [{ event: 'creature_entered', filter: { controller: 'nobody' }, effects: [{ type: 'add_counters', amount: 1 }] }] }, form: false },

@@ -641,11 +641,14 @@ function TriggerEditor({
             type="text"
             value={trigger.filter.typeLine}
             disabled={disabled}
-            placeholder="any type"
-            title="Creature type the trigger watches (blank = any creature)"
+            placeholder={trigger.event === 'spell_cast' ? 'Instant / Sorcery / any' : 'any type'}
+            title={trigger.event === 'spell_cast'
+              ? 'Spell type the trigger watches (e.g. Instant — add a second trigger for Sorcery; blank = any spell)'
+              : 'Creature type the trigger watches (blank = any creature)'}
             onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, typeLine: event.target.value } })}
             className={`${inputClass} w-28`}
           />
+          {trigger.event === 'spell_cast' ? <span>spell is cast by</span> : null}
           <select
             value={trigger.filter.controller}
             disabled={disabled}
@@ -659,24 +662,28 @@ function TriggerEditor({
               </option>
             ))}
           </select>
-          <label className="flex items-center gap-1.5" title="Exclude this creature (the &quot;another&quot; wording)">
-            <input
-              type="checkbox"
-              checked={trigger.filter.excludeSelf}
-              disabled={disabled}
-              onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, excludeSelf: event.target.checked } })}
-            />
-            another (not this)
-          </label>
-          <label className="flex items-center gap-1.5" title="Ignore token creatures (Midnight Reaper, Open the Graves)">
-            <input
-              type="checkbox"
-              checked={trigger.filter.nontoken}
-              disabled={disabled}
-              onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, nontoken: event.target.checked } })}
-            />
-            nontoken only
-          </label>
+          {trigger.event !== 'spell_cast' ? (
+            <>
+              <label className="flex items-center gap-1.5" title="Exclude this creature (the &quot;another&quot; wording)">
+                <input
+                  type="checkbox"
+                  checked={trigger.filter.excludeSelf}
+                  disabled={disabled}
+                  onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, excludeSelf: event.target.checked } })}
+                />
+                another (not this)
+              </label>
+              <label className="flex items-center gap-1.5" title="Ignore token creatures (Midnight Reaper, Open the Graves)">
+                <input
+                  type="checkbox"
+                  checked={trigger.filter.nontoken}
+                  disabled={disabled}
+                  onChange={(event) => onChange({ ...trigger, filter: { ...trigger.filter, nontoken: event.target.checked } })}
+                />
+                nontoken only
+              </label>
+            </>
+          ) : null}
         </div>
       )}
 
