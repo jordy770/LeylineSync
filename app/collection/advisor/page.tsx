@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { AdvisorContested } from '@/components/collection/AdvisorContested'
+import { AdvisorFits } from '@/components/collection/AdvisorFits'
 import { CardName } from '@/components/collection/CardName'
 import { Panel, Shell } from '@/components/collection/Shell'
 import { getCollectionInsights } from '@/lib/collection/insights'
@@ -76,33 +77,21 @@ export default async function AdvisorPage() {
                 Perfect fits
               </h2>
               <p className="font-rules mb-3 text-sm" style={{ color: 'var(--text-dim)' }}>
-                The single best free upgrade your binder offers each deck — open the deck to apply it.
+                The single best free upgrade your binder offers each deck — add it right here, or open the deck to see
+                what to cut.
               </p>
-              <div className="space-y-2">
-                {ins.perfectFits.map((f) => (
-                  <Link key={`${f.deckId}-${f.oracleId}`} href={`/collection/decks/${f.deckId}`}>
-                    <Panel className="flex items-center justify-between gap-4 p-4 transition-transform hover:scale-[1.01]">
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <CardName name={f.name} className="font-display text-base" style={{ color: 'var(--text-bright)' }} />
-                          <span style={{ color: 'var(--frame-gold)' }}>→</span>
-                          <span className="text-sm" style={{ color: 'var(--text)' }}>
-                            {f.deckName}
-                          </span>
-                          <Tag>{f.tag.replace(/_/g, ' ')}</Tag>
-                          {f.themeImpact === 'Keeps Theme' ? <Tag tone="var(--cast)">on-theme</Tag> : null}
-                        </div>
-                        {f.binderNames && f.binderNames.length > 0 ? (
-                          <div className="mt-1 text-xs" style={{ color: 'var(--text-faint)' }}>
-                            📒 in {f.binderNames.join(', ')}
-                          </div>
-                        ) : null}
-                      </div>
-                      <Confidence value={f.confidence} />
-                    </Panel>
-                  </Link>
-                ))}
-              </div>
+              <AdvisorFits
+                fits={ins.perfectFits.map((f) => ({
+                  oracleId: f.oracleId,
+                  name: f.name,
+                  deckId: f.deckId,
+                  deckName: f.deckName,
+                  tag: f.tag,
+                  confidence: f.confidence,
+                  onTheme: f.themeImpact === 'Keeps Theme',
+                  binderNames: f.binderNames ?? [],
+                }))}
+              />
             </section>
           ) : null}
 
@@ -216,19 +205,5 @@ function Tag({ children, tone }: { children: React.ReactNode; tone?: string }) {
     >
       {children}
     </span>
-  )
-}
-
-function Confidence({ value }: { value: number }) {
-  const tone = value >= 70 ? 'var(--cast)' : value >= 45 ? 'var(--warn)' : 'var(--text-faint)'
-  return (
-    <div className="shrink-0 text-right">
-      <div className="font-display text-lg" style={{ color: tone }}>
-        {value}%
-      </div>
-      <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
-        fit
-      </div>
-    </div>
   )
 }

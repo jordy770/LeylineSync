@@ -43,6 +43,7 @@ interface DeckListCard {
   typeLine: string
   cmc: number
   isCommander: boolean
+  priceEur: number | null
 }
 interface ScanResult {
   power: PowerScore
@@ -424,6 +425,7 @@ export function DeckDetail({
 
   const { power, free, occupied, deckList } = scan
   const deckSize = (deckList ?? []).reduce((n, c) => n + c.qty, 0)
+  const deckValueEur = (deckList ?? []).reduce((sum, c) => sum + (c.priceEur ?? 0) * c.qty, 0)
 
   return (
     <div className="space-y-6">
@@ -435,6 +437,7 @@ export function DeckDetail({
               <ColorPips colors={colorIdentity} />
               <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
                 {power.landCount} lands · avg MV {power.avgMv}
+                {deckValueEur > 0 ? ` · ≈€${Math.round(deckValueEur).toLocaleString('en-US')}` : ''}
               </span>
             </div>
             <p className="font-rules mt-2 max-w-md text-sm" style={{ color: 'var(--text-dim)' }}>
@@ -815,10 +818,26 @@ function DecklistTab({
   onSetCommander: (c: DeckListCard) => void
   onRemove: (c: DeckListCard) => void
 }) {
+  const [copied, setCopied] = useState(false)
   if (cards.length === 0) return <Empty>No cards in this deck.</Empty>
 
   const commanders = cards.filter((c) => c.isCommander)
   const rest = cards.filter((c) => !c.isCommander)
+
+  // Moxfield/Archidekt-compatible text export — the mirror of the import.
+  async function copyDecklist() {
+    const lines: string[] = []
+    if (commanders.length > 0) {
+      lines.push('Commander')
+      for (const c of commanders) lines.push(`${c.qty} ${c.name}`)
+      lines.push('')
+    }
+    lines.push('Deck')
+    for (const c of [...rest].sort((x, y) => x.name.localeCompare(y.name))) lines.push(`${c.qty} ${c.name}`)
+    await navigator.clipboard.writeText(lines.join('\n'))
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
   const groups = new Map<string, DeckListCard[]>()
   for (const c of rest) {
     const key = primaryType(c.typeLine)
@@ -832,6 +851,16 @@ function DecklistTab({
 
   return (
     <div className="space-y-3">
+      <div className="flex justify-end">
+        <button
+          onClick={copyDecklist}
+          className="rounded-lg px-3 py-1.5 text-xs font-medium"
+          style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
+          title="Copy as a text decklist (pastes into Moxfield or Archidekt)"
+        >
+          {copied ? 'Copied ✓' : 'Copy decklist'}
+        </button>
+      </div>
       {commanders.length > 0 ? (
         <Panel className="p-4">
           <h4 className="font-display text-sm" style={{ color: 'var(--gold-bright)' }}>
@@ -894,8 +923,8 @@ function DecklistTab({
                   >
                     {busyKey === `rm-${c.oracleId}` ? '…' : '×'}
                   </button>
-                  <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
-                    {type !== 'Land' ? c.cmc : ''}
+                  <span className="w-12 text-right text-xs" style={{ color: 'var(--text-faint)' }}>
+                    {c.priceEur != null ? `€${c.priceEur.toFixed(c.priceEur >= 10 ? 0 : 2)}` : ''}
                   </span>
                 </span>
               </li>

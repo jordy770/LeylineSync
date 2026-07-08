@@ -49,6 +49,7 @@ export interface InDeckCard {
   oracleId: string
   name: string
   tags: CardTag[]
+  priceEur?: number | null
 }
 
 export interface FreeUpgrade {
@@ -269,6 +270,7 @@ export interface DeckListCard {
   typeLine: string
   cmc: number
   isCommander: boolean
+  priceEur: number | null
 }
 
 export interface UpgradeScanResult {
@@ -295,6 +297,7 @@ export async function scanDeckUpgrades(
     typeLine: c.typeLine,
     cmc: c.cmc,
     isCommander: c.isCommander,
+    priceEur: inDeck[i]?.priceEur ?? null,
   }))
 
   const power = computePowerScore(scoreCards)

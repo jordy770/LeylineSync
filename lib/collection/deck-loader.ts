@@ -58,7 +58,7 @@ export async function loadDeckForScoring(supabase: SupabaseClient, deckId: strin
       isCommander: Boolean(r.is_commander),
       tags,
     })
-    inDeck.push({ oracleId, name: meta?.name ?? oracleId, tags })
+    inDeck.push({ oracleId, name: meta?.name ?? oracleId, tags, priceEur: meta?.priceEur ?? null })
   }
 
   return {

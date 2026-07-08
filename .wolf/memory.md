@@ -7173,3 +7173,22 @@
 | 15:22 | Edited components/collection/AdvisorContested.tsx | reduced (-6 lines) | ~34 |
 | 15:22 | Created tests/unit/shop-links.test.ts | — | ~399 |
 | 15:24 | Multi-marketplace kooplinks: lib/collection/shop-links.ts (Cardmarket/CardTrader/TCGplayer, TCGplayer affiliate-klaar via TCGPLAYER_AFFILIATE_PREFIX-constante) + ShopLinks/ShopLinksInline component; BuyTab, occupied-chip en Advisor omgezet; CardTrader zoek-URL = /en/manasearch_results?q= (geverifieerd) | lib/collection/shop-links.ts, components/collection/ShopLinks.tsx, DeckDetail.tsx, AdvisorContested.tsx, tests/unit/shop-links.test.ts | tsc+build+502 tests groen | ~15k |
+| 15:48 | Created app/api/decks/[id]/route.ts | — | ~659 |
+| 15:49 | Created components/collection/DeckActions.tsx | — | ~1095 |
+| 15:49 | Edited app/collection/decks/[id]/page.tsx | added 1 import(s) | ~92 |
+| 15:49 | Edited app/collection/decks/[id]/page.tsx | 5→8 lines | ~105 |
+| 15:49 | Edited lib/collection/deck-loader.ts | inline fix | ~29 |
+| 15:49 | Edited lib/collection/upgrade-scanner.ts | 5→6 lines | ~32 |
+| 15:49 | Edited lib/collection/upgrade-scanner.ts | 9→10 lines | ~69 |
+| 15:49 | Edited lib/collection/upgrade-scanner.ts | 8→9 lines | ~78 |
+| 15:49 | Edited components/collection/DeckDetail.tsx | CSS: priceEur | ~45 |
+| 15:49 | Edited components/collection/DeckDetail.tsx | 2→3 lines | ~61 |
+| 15:49 | Edited components/collection/DeckDetail.tsx | 3→4 lines | ~76 |
+| 15:50 | Edited components/collection/DeckDetail.tsx | CSS: lines | ~285 |
+| 15:50 | Edited components/collection/DeckDetail.tsx | CSS: border | ~184 |
+| 15:50 | Edited components/collection/DeckDetail.tsx | CSS: 0 | ~82 |
+| 15:51 | Created components/collection/AdvisorFits.tsx | — | ~1692 |
+| 15:51 | Edited app/collection/advisor/page.tsx | added 1 import(s) | ~58 |
+| 15:51 | Edited app/collection/advisor/page.tsx | added nullish coalescing | ~215 |
+| 15:51 | Edited app/collection/advisor/page.tsx | — | ~0 |
+| 15:52 | Pre-release bundel: deck rename+delete (PATCH/DELETE /api/decks/:id, cascade mig 364 wist kinderen; DeckActions two-step delete), Copy decklist-export (Moxfield-formaat), deckwaarde (priceEur op InDeckCard/deckList, totaal in kop + rijprijzen), Advisor perfect fits met Add to deck+undo | app/api/decks/[id]/route.ts, components/collection/DeckActions.tsx, AdvisorFits.tsx, DeckDetail.tsx, lib/collection/deck-loader.ts, upgrade-scanner.ts, app/collection/advisor+decks | tsc+build+502 tests groen | ~25k |

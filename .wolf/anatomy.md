@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T13:22:44.571Z
-> Files: 575 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T13:51:32.775Z
+> Files: 578 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -379,6 +379,10 @@
 
 - `route.ts` — GET /api/conflicts → cards committed to more decks than the player owns copies of. (~232 tok)
 
+## app/api/decks/[id]/
+
+- `route.ts` — PATCH  /api/decks/:id  { name }  — rename a collection deck. (~659 tok)
+
 ## app/api/decks/[id]/analysis/
 
 - `route.ts` — GET /api/decks/:id/analysis  → power score + buckets + curve (cached to co_deck_analyses) (~310 tok)
@@ -457,7 +461,7 @@
 
 ## app/collection/advisor/
 
-- `page.tsx` — Advisor: merged Insights+Intelligence+Conflicts — contested cards (AdvisorContested actions), perfect fits, deck diagnosis, unused staples (rows link to search) (~3053 tok)
+- `page.tsx` — dynamic (~2664 tok)
 
 ## app/collection/binders/
 
@@ -469,7 +473,7 @@
 
 ## app/collection/decks/[id]/
 
-- `page.tsx` — dynamic (~394 tok)
+- `page.tsx` — dynamic (~460 tok)
 
 ## app/collection/decks/import/
 
@@ -541,9 +545,11 @@
 ## components/collection/
 
 - `AdvisorContested.tsx` — AdvisorContested (~2396 tok)
+- `AdvisorFits.tsx` — AdvisorFits (~1692 tok)
 - `CardName.tsx` — hover card preview + tap-to-toggle on touch (hover:none); portal to document.body (~1099 tok)
 - `CollectionValueChart.tsx` — W (~1431 tok)
-- `DeckDetail.tsx` — BUCKET_ORDER (~13025 tok)
+- `DeckActions.tsx` — DeckActions (~1095 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~13396 tok)
 - `DeckImportForm.tsx` — DeckImportForm (~1267 tok)
 - `ImportWizard.tsx` — ImportWizard (~2308 tok)
 - `RulePlayground.tsx` — RulePlayground (~2127 tok)
@@ -605,7 +611,7 @@
 - `buy-suggestions.ts` — A Scryfall exact-name search link — the brief uses Scryfall for card info/pricing. (~1358 tok)
 - `conflicts.ts` — Pure: an oracle is a conflict when its committed copies exceed owned copies. (~858 tok)
 - `dashboard.ts` — Cached scan counts (mig 380) — null when the deck was never scanned (or the cache was invalidated by (~1983 tok)
-- `deck-loader.ts` — oracle_id → distinct binder name(s) the player's FREE copies sit in (for "go find it"). (~1564 tok)
+- `deck-loader.ts` — oracle_id → distinct binder name(s) the player's FREE copies sit in (for "go find it"). (~1626 tok)
 - `deck-mutations.ts` — Returns false if the card wasn't in the deck to begin with. (~622 tok)
 - `fetch-decklist.ts` — Pure: identify the site + deck id from a pasted URL. (~1541 tok)
 - `import-collection.ts` — Collection import orchestration: parse → resolve to oracle_id → persist. (~2408 tok)
@@ -619,7 +625,7 @@
 - `scoring.ts` — The deck's archetype tags — non-staple roles that appear on enough cards to be a (~1481 tok)
 - `shop-links.ts` — Wrap a target URL in an Impact-style deep-link prefix (no-op without one). (~439 tok)
 - `types.ts` — One physical stack of cards as parsed from an import file (pre-resolution). (~810 tok)
-- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4084 tok)
+- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4112 tok)
 
 ## lib/collection/parsers/
 

@@ -477,3 +477,8 @@
 
 - Kooplinks zijn gecentraliseerd in lib/collection/shop-links.ts (pure builders) + components/collection/ShopLinks.tsx (ShopLinks = primaire Cardmarket-knop + alternates; ShopLinksInline = quiet tekstrij; geen hooks dus server- én client-bruikbaar). CardTrader-zoek-URL is /en/manasearch_results?q=… (het form-action van hun /en/search-pagina; /en/magic/search en /cards geven 404/301 — live geverifieerd). TCGplayer = /search/magic/product?productLineName=magic&q=….
 - TCGplayer-affiliate activeren = alleen de Impact deep-link-prefix (t/m ?u=) in TCGPLAYER_AFFILIATE_PREFIX plakken; wrapAffiliate URL-encodeert het doel erin (getest in shop-links.test.ts). Bewust een code-constante, geen NEXT_PUBLIC_ env var — die zou Dockerfile/compose ARG-plumbing vereisen en de prefix is toch publiek zichtbaar in elke link.
+
+## Key Learnings — 2026-07-08 (ronde 7, deck-CRUD)
+
+- co_deck_cards en co_deck_analyses hebben on delete cascade op co_decks (mig 364) — deck-delete is één DELETE op co_decks; de fysieke kaarten komen automatisch vrij (availability-view is afgeleid). Rename/delete = app/api/decks/[id]/route.ts (PATCH {name} / DELETE), UI = DeckActions (two-step delete: eerste klik armt 4s, tweede bevestigt — geen modal).
+- Decklist-export (Copy decklist op de Decklist-tab) schrijft exact het formaat dat de eigen parser leest (Commander-header + "qty name") — import↔export is nu een cirkel; DeckListCard draagt priceEur (deck-loader zet meta.priceEur op inDeck).
