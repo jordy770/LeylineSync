@@ -7,12 +7,13 @@ import SiteNav from '@/components/SiteNav'
 // grid) with a slim header. Server-compatible (no hooks) so pages can wrap their
 // server-rendered content directly.
 
-export type CollectionSection = 'overview' | 'search' | 'binders' | 'insights' | 'conflicts' | 'import' | 'deck-import'
+export type CollectionSection = 'overview' | 'search' | 'binders' | 'intelligence' | 'insights' | 'conflicts' | 'import' | 'deck-import'
 
 const SECTIONS: { key: CollectionSection; href: string; label: string }[] = [
   { key: 'overview', href: '/collection', label: 'Overview' },
   { key: 'search', href: '/collection/search', label: 'Find a card' },
   { key: 'binders', href: '/collection/binders', label: 'Binders' },
+  { key: 'intelligence', href: '/collection/intelligence', label: 'Intelligence' },
   { key: 'insights', href: '/collection/insights', label: 'Insights' },
   { key: 'conflicts', href: '/collection/conflicts', label: 'Conflicts' },
   { key: 'import', href: '/collection/import', label: 'Import collection' },

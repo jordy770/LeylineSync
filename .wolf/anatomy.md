@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T08:07:00.003Z
-> Files: 558 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T08:30:09.174Z
+> Files: 563 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -470,6 +470,10 @@
 
 - `page.tsx` — dynamic (~1521 tok)
 
+## app/collection/intelligence/
+
+- `page.tsx` — dynamic (~1997 tok)
+
 ## app/collection/playground/
 
 - `page.tsx` — dynamic (~278 tok)
@@ -529,7 +533,7 @@
 - `ImportWizard.tsx` — ImportWizard (~2308 tok)
 - `RulePlayground.tsx` — RulePlayground (~2127 tok)
 - `SearchLive.tsx` — COLORS (~2166 tok)
-- `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1091 tok)
+- `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1120 tok)
 - `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~406 tok)
 
 ## components/controller/
@@ -626,6 +630,9 @@
 
 - `card-engine.ts` — The legacy SynergyTag view — the contract co_card_tags/power-score read. (~892 tok)
 - `commander-profiles.ts` — Exact commander card name (front face). (~1043 tok)
+- `conflict-arbiter.ts` — The deck's commander card name (front face), when known. (~722 tok)
+- `deck-analyzer.ts` — Stable id, e.g. 'low-draw' — the future AI layer keys explanations off this. (~1377 tok)
+- `loaders.ts` — Up to 3 free binder cards that share the card's strongest role — swaps for the losers. (~1575 tok)
 - `models.ts` — Broad, curated role vocabulary. Extend freely — rules reference these. (~1094 tok)
 
 ## lib/intelligence/rules/
@@ -829,6 +836,7 @@
 - `fetch-decklist.test.ts` — Deck-URL import — the pure URL detection + JSON→text mappers, plus the fetch (~1159 tok)
 - `insights.test.ts` — Collection Insights — pure per-deck fit ranking. (~786 tok)
 - `intelligence-engine.test.ts` — Leyline Intelligence Engine — classifyCard profiles (multi-role, tags, (~1202 tok)
+- `intelligence-phase2.test.ts` — Intelligence Engine phase 2 — the pure deck analyzer (role counts + (~1108 tok)
 - `keyword-icons.test.ts` — normalizeKeywords — the pure mapper that turns a card's keyword strings into the (~510 tok)
 - `manabox-parser.test.ts` — ManaBox CSV parser + oracle resolver — the pure core of the collection import. (~1374 tok)
 - `power-score.test.ts` — Power score — deterministic deck rating from synergy buckets + curve. Builds (~804 tok)
