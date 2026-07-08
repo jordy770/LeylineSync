@@ -7192,3 +7192,4 @@
 | 15:51 | Edited app/collection/advisor/page.tsx | added nullish coalescing | ~215 |
 | 15:51 | Edited app/collection/advisor/page.tsx | — | ~0 |
 | 15:52 | Pre-release bundel: deck rename+delete (PATCH/DELETE /api/decks/:id, cascade mig 364 wist kinderen; DeckActions two-step delete), Copy decklist-export (Moxfield-formaat), deckwaarde (priceEur op InDeckCard/deckList, totaal in kop + rijprijzen), Advisor perfect fits met Add to deck+undo | app/api/decks/[id]/route.ts, components/collection/DeckActions.tsx, AdvisorFits.tsx, DeckDetail.tsx, lib/collection/deck-loader.ts, upgrade-scanner.ts, app/collection/advisor+decks | tsc+build+502 tests groen | ~25k |
+| 16:03 | Release v0.8.0 live: deploy success, leylinesync.com 200; bevat multi-marketplace links + deck rename/delete + decklist-export + deckwaarde + Advisor one-click fits | GitHub release v0.8.0 | live | ~2k |
