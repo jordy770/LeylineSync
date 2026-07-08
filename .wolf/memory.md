@@ -7048,3 +7048,4 @@
 | 10:01 | Created tests/unit/intelligence-engine.test.ts | — | ~1202 |
 | 12:30 | v0.4.1 live (mig 380 + ronde 2). Intelligence Engine fase 1: lib/intelligence (models/rules/card-engine), legacy-tagger geport naar 27 benoemde rules (pariteit gepind: 15/15), 60+ extended rules (40+ rollen, tribes, hints), commander-profielen (12) + synergy-scorer, Rule Playground (/collection/playground + /api/intelligence/classify) | lib/intelligence/*, tagger.ts, RulePlayground | unit 492/492, tsc+lint schoon | ~120k |
 | 10:07 | Edited components/collection/RulePlayground.tsx | 1→3 lines | ~54 |
+| 12:50 | bug-1513 gefixt (Panel via ui.tsx) — CI groen (4m02s); Intelligence Engine fase 1 compleet op master | RulePlayground.tsx | klaar voor release wanneer user wil | ~15k |
