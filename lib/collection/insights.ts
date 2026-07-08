@@ -9,7 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { rankStaples } from './dashboard'
 import type { StapleCard } from './dashboard'
-import { loadBinderNames, loadDeckForScoring, loadOracleMeta, loadTags } from './deck-loader'
+import { loadAvailability, loadBinderNames, loadDeckForScoring, loadOracleMeta, loadTags } from './deck-loader'
 import { computePowerScore } from './power-score'
 import type { DeckNeed } from './power-score'
 import { buildDeckContext, commanderSynergy, confidence, curveFit, themeImpact } from './scoring'
@@ -92,12 +92,9 @@ export async function getCollectionInsights(supabase: SupabaseClient, userId: st
     .eq('user_id', userId)
     .order('updated_at', { ascending: false })
 
-  // Binder, loaded once: free copies with tags + metadata.
-  const { data: avail } = await supabase
-    .from('co_card_availability')
-    .select('oracle_id, free_qty')
-    .eq('user_id', userId)
-  const freeIds = (avail ?? []).filter((a) => Number(a.free_qty ?? 0) > 0).map((a) => a.oracle_id as string)
+  // Binder, loaded once (paged, bug-1116): free copies with tags + metadata.
+  const avail = await loadAvailability(supabase, userId)
+  const freeIds = avail.filter((a) => a.freeQty > 0).map((a) => a.oracleId)
 
   const [binderMeta, binderTags, binderNames] = await Promise.all([
     loadOracleMeta(supabase, freeIds),

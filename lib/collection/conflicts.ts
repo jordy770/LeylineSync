@@ -61,16 +61,21 @@ export async function listConflicts(supabase: SupabaseClient, userId: string): P
   }
   if (usage.size === 0) return []
 
-  // Owned copies per oracle.
-  const { data: items, error: itemsError } = await supabase
-    .from('co_collection_items')
-    .select('oracle_id, quantity')
-    .eq('user_id', userId)
-  if (itemsError) throw new Error(`Collection load failed: ${itemsError.message}`)
-
+  // Owned copies per oracle — paged (an un-ranged select caps at 1000 rows,
+  // which undercounted big collections and invented conflicts, bug-1116).
   const owned = new Map<string, number>()
-  for (const i of items ?? []) {
-    owned.set(i.oracle_id as string, (owned.get(i.oracle_id as string) ?? 0) + ((i.quantity as number) ?? 0))
+  for (let from = 0; ; from += 1000) {
+    const { data: items, error: itemsError } = await supabase
+      .from('co_collection_items')
+      .select('oracle_id, quantity')
+      .eq('user_id', userId)
+      .order('id')
+      .range(from, from + 999)
+    if (itemsError) throw new Error(`Collection load failed: ${itemsError.message}`)
+    for (const i of items ?? []) {
+      owned.set(i.oracle_id as string, (owned.get(i.oracle_id as string) ?? 0) + ((i.quantity as number) ?? 0))
+    }
+    if (!items || items.length < 1000) break
   }
 
   const meta = await loadOracleMeta(supabase, [...usage.keys()])

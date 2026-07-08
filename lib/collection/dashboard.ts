@@ -5,7 +5,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import { loadBinderNames, loadOracleMeta, loadTags } from './deck-loader'
+import { loadAvailability, loadBinderNames, loadOracleMeta, loadTags } from './deck-loader'
 import type { CardTag } from './synergy/tagger'
 
 export interface StapleCard {
@@ -79,8 +79,8 @@ export function rankStaples(cards: RankInput[], limit = 12): StapleCard[] {
 }
 
 export async function getDashboard(supabase: SupabaseClient, userId: string): Promise<DashboardData> {
-  const [availRes, decksRes, importsRes, analysesRes, historyRes] = await Promise.all([
-    supabase.from('co_card_availability').select('oracle_id, owned_qty, free_qty').eq('user_id', userId),
+  const [avail, decksRes, importsRes, analysesRes, historyRes] = await Promise.all([
+    loadAvailability(supabase, userId),
     supabase
       .from('co_decks')
       .select('id, name, color_identity, power_score')
@@ -104,33 +104,31 @@ export async function getDashboard(supabase: SupabaseClient, userId: string): Pr
       .limit(100),
   ])
 
-  const rows = availRes.data ?? []
-  const ownedIds = rows.map((r) => r.oracle_id as string)
+  const ownedIds = avail.map((r) => r.oracleId)
   const meta = await loadOracleMeta(supabase, ownedIds)
 
   let totalCards = 0
   let freeCopies = 0
   let collectionValueEur = 0
-  for (const r of rows) {
-    const owned = Number(r.owned_qty ?? 0)
-    totalCards += owned
-    freeCopies += Number(r.free_qty ?? 0)
-    const price = meta.get(r.oracle_id as string)?.priceEur
-    if (price) collectionValueEur += owned * price
+  for (const r of avail) {
+    totalCards += r.ownedQty
+    freeCopies += r.freeQty
+    const price = meta.get(r.oracleId)?.priceEur
+    if (price) collectionValueEur += r.ownedQty * price
   }
 
-  const freeRows = rows.filter((r) => Number(r.free_qty ?? 0) > 0)
-  const freeIds = freeRows.map((r) => r.oracle_id as string)
+  const freeRows = avail.filter((r) => r.freeQty > 0)
+  const freeIds = freeRows.map((r) => r.oracleId)
   const [freeTags, binderNames] = await Promise.all([loadTags(supabase, freeIds), loadBinderNames(supabase, userId, freeIds)])
   const freeStaples = rankStaples(
     freeRows.map((r) => {
-      const m = meta.get(r.oracle_id as string)
+      const m = meta.get(r.oracleId)
       return {
-        oracleId: r.oracle_id as string,
-        name: m?.name ?? (r.oracle_id as string),
+        oracleId: r.oracleId,
+        name: m?.name ?? r.oracleId,
         typeLine: m?.typeLine ?? '',
         priceEur: m?.priceEur ?? null,
-        tags: freeTags.get(r.oracle_id as string) ?? [],
+        tags: freeTags.get(r.oracleId) ?? [],
       }
     }),
   ).map((s) => ({ ...s, binderNames: binderNames.get(s.oracleId) ?? [] }))
@@ -177,7 +175,7 @@ export async function getDashboard(supabase: SupabaseClient, userId: string): Pr
 
   return {
     totalCards,
-    uniqueCards: rows.length,
+    uniqueCards: avail.length,
     freeCopies,
     collectionValueEur: roundedValue,
     deckCount: decks.length,

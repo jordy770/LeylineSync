@@ -11,7 +11,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import { IN_CHUNK, loadBinderNames, loadDeckForScoring, loadOracleMeta, loadTags, oneToOne } from './deck-loader'
+import { IN_CHUNK, loadAvailability, loadBinderNames, loadDeckForScoring, loadOracleMeta, loadTags, oneToOne } from './deck-loader'
 import { computePowerScore } from './power-score'
 import type { DeckNeed, PowerScore } from './power-score'
 import {
@@ -307,14 +307,16 @@ export async function scanDeckUpgrades(
   // Commander + theme + curve context, so suggestions are ranked on deck FIT.
   const ctx = buildDeckContext(scoreCards, power.avgMv)
 
-  // Candidate pool: everything the user owns, with availability split.
-  const { data: avail, error: avError } = await supabase
-    .from('co_card_availability')
-    .select('oracle_id, free_qty, committed_qty')
-    .eq('user_id', userId)
-  if (avError) return { error: `Could not load collection: ${avError.message}` }
+  // Candidate pool: everything the user owns, with availability split (paged —
+  // an un-ranged select capped the pool at 1000 uniques, bug-1116).
+  let avail
+  try {
+    avail = await loadAvailability(supabase, userId)
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Could not load collection.' }
+  }
 
-  const ownedOracleIds = (avail ?? []).map((a) => a.oracle_id as string).filter((id) => !deckOracleIds.has(id))
+  const ownedOracleIds = avail.map((a) => a.oracleId).filter((id) => !deckOracleIds.has(id))
   if (ownedOracleIds.length === 0) {
     return { result: { deckId, power, free: [], occupied: [], deckList } }
   }
@@ -324,8 +326,8 @@ export async function scanDeckUpgrades(
 
   const freeCands: UpgradeCandidate[] = []
   const occupiedOracleIds: string[] = []
-  for (const a of avail ?? []) {
-    const oracleId = a.oracle_id as string
+  for (const a of avail) {
+    const oracleId = a.oracleId
     if (deckOracleIds.has(oracleId)) continue
     const m = meta.get(oracleId)
     if (!m || !fitsColorIdentity(m.colorIdentity, deckIdentity)) continue
@@ -336,9 +338,9 @@ export async function scanDeckUpgrades(
       priceEur: m.priceEur,
       tags: candTags.get(oracleId) ?? [],
     }
-    if ((a.free_qty as number) > 0) {
+    if (a.freeQty > 0) {
       freeCands.push(candidate)
-    } else if ((a.committed_qty as number) > 0) {
+    } else if (a.committedQty > 0) {
       occupiedOracleIds.push(oracleId)
     }
   }

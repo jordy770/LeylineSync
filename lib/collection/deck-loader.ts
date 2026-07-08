@@ -70,6 +70,39 @@ export async function loadDeckForScoring(supabase: SupabaseClient, deckId: strin
   }
 }
 
+export interface AvailabilityRow {
+  oracleId: string
+  ownedQty: number
+  freeQty: number
+  committedQty: number
+}
+
+/** The user's ENTIRE availability view, paged — PostgREST silently caps an
+ *  un-ranged select at 1000 rows, which truncated every >1000-unique
+ *  collection (bug-1116). Ordered by oracle_id so the pages are stable. */
+export async function loadAvailability(supabase: SupabaseClient, userId: string): Promise<AvailabilityRow[]> {
+  const rows: AvailabilityRow[] = []
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await supabase
+      .from('co_card_availability')
+      .select('oracle_id, owned_qty, free_qty, committed_qty')
+      .eq('user_id', userId)
+      .order('oracle_id')
+      .range(from, from + 999)
+    if (error) throw new Error(`Availability load failed: ${error.message}`)
+    for (const r of data ?? []) {
+      rows.push({
+        oracleId: r.oracle_id as string,
+        ownedQty: Number(r.owned_qty ?? 0),
+        freeQty: Number(r.free_qty ?? 0),
+        committedQty: Number(r.committed_qty ?? 0),
+      })
+    }
+    if (!data || data.length < 1000) break
+  }
+  return rows
+}
+
 export interface OracleMeta {
   name: string
   cmc: number

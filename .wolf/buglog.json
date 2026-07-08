@@ -18626,6 +18626,89 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-08T13:51:16.976Z"
+    },
+    {
+      "id": "bug-1139",
+      "timestamp": "2026-07-08T14:08:55.554Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/deck-loader.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T14:08:55.554Z"
+    },
+    {
+      "id": "bug-1140",
+      "timestamp": "2026-07-08T14:09:06.281Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/collection/dashboard.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→3 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T14:09:06.281Z"
+    },
+    {
+      "id": "bug-1141",
+      "timestamp": "2026-07-08T14:10:06.487Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "lib/collection/upgrade-scanner.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T14:10:06.487Z"
+    },
+    {
+      "id": "bug-1142",
+      "timestamp": "2026-07-08T14:10:17.090Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/collection/insights.ts",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 6→3 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T14:10:17.090Z"
+    },
+    {
+      "id": "bug-1116",
+      "timestamp": "2026-07-08T14:12:18.229Z",
+      "error_message": "User: collectie toont 10007 kaarten maar slechts 1000 unieke (werkelijk: 5451 uniek lokaal)",
+      "file": "lib/collection/deck-loader.ts",
+      "root_cause": "PostgREST/Supabase kapt elke select zonder .range() af op 1000 rijen (default max-rows). Vier whole-collection reads pagineerden niet: dashboard (co_card_availability), upgrade-scanner kandidatenpool, insights binderpool, conflicts owned-tellingen. Gevolg: uniqueCards plafond 1000, totalCards/collectiewaarde/staples over afgekapte set, gemiste upgrades, potentieel valse conflicten",
+      "fix": "Gedeelde gepagineerde loader loadAvailability (deck-loader.ts, .order(oracle_id) + .range-loop per 1000) gebruikt door dashboard/upgrade-scanner/insights; conflicts.ts pagineert co_collection_items met .order(id). Patroon bestond al in binders.ts/import-collection.ts",
+      "tags": [
+        "pagination",
+        "postgrest",
+        "max-rows",
+        "collection",
+        "dashboard",
+        "truncation"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T14:12:18.229Z"
     }
   ]
 }

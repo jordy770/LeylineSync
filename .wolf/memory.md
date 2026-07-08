@@ -7193,3 +7193,15 @@
 | 15:51 | Edited app/collection/advisor/page.tsx | — | ~0 |
 | 15:52 | Pre-release bundel: deck rename+delete (PATCH/DELETE /api/decks/:id, cascade mig 364 wist kinderen; DeckActions two-step delete), Copy decklist-export (Moxfield-formaat), deckwaarde (priceEur op InDeckCard/deckList, totaal in kop + rijprijzen), Advisor perfect fits met Add to deck+undo | app/api/decks/[id]/route.ts, components/collection/DeckActions.tsx, AdvisorFits.tsx, DeckDetail.tsx, lib/collection/deck-loader.ts, upgrade-scanner.ts, app/collection/advisor+decks | tsc+build+502 tests groen | ~25k |
 | 16:03 | Release v0.8.0 live: deploy success, leylinesync.com 200; bevat multi-marketplace links + deck rename/delete + decklist-export + deckwaarde + Advisor one-click fits | GitHub release v0.8.0 | live | ~2k |
+| 16:08 | Edited lib/collection/deck-loader.ts | added nullish coalescing | ~335 |
+| 16:09 | Edited lib/collection/dashboard.ts | inline fix | ~26 |
+| 16:09 | Edited lib/collection/dashboard.ts | 3→3 lines | ~40 |
+| 16:09 | Edited lib/collection/dashboard.ts | modified for() | ~284 |
+| 16:09 | Edited lib/collection/dashboard.ts | 4→4 lines | ~21 |
+| 16:10 | Edited lib/collection/upgrade-scanner.ts | added error handling | ~122 |
+| 16:10 | Edited lib/collection/upgrade-scanner.ts | modified for() | ~175 |
+| 16:10 | Edited lib/collection/insights.ts | inline fix | ~32 |
+| 16:10 | Edited lib/collection/insights.ts | modified once() | ~60 |
+| 16:10 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~38 |
+| 16:10 | Edited lib/collection/conflicts.ts | added 1 condition(s) | ~210 |
+| 16:12 | bug-1116 gefixt: 1000-rij PostgREST-cap kapte collecties >1000 uniek af op 4 plekken; loadAvailability (paged) in deck-loader + conflicts pagineert items; gevalideerd tegen echte lokale data (5451 uniek/9660 totaal) | lib/collection/{deck-loader,dashboard,upgrade-scanner,insights,conflicts}.ts | tsc+build+tests groen | ~15k |

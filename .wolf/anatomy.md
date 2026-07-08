@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T13:51:32.775Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T14:10:39.080Z
 > Files: 578 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
@@ -609,14 +609,14 @@
 - `apply-swap.ts` — Apply a free upgrade: cut OUT (optional) and add IN to a deck. The physical card (~720 tok)
 - `binders.ts` — Binder browsing — "what's physically in binder X?" The search page answers (~945 tok)
 - `buy-suggestions.ts` — A Scryfall exact-name search link — the brief uses Scryfall for card info/pricing. (~1358 tok)
-- `conflicts.ts` — Pure: an oracle is a conflict when its committed copies exceed owned copies. (~858 tok)
-- `dashboard.ts` — Cached scan counts (mig 380) — null when the deck was never scanned (or the cache was invalidated by (~1983 tok)
-- `deck-loader.ts` — oracle_id → distinct binder name(s) the player's FREE copies sit in (for "go find it"). (~1626 tok)
+- `conflicts.ts` — Pure: an oracle is a conflict when its committed copies exceed owned copies. (~963 tok)
+- `dashboard.ts` — Cached scan counts (mig 380) — null when the deck was never scanned (or the cache was invalidated by (~1919 tok)
+- `deck-loader.ts` — The user's ENTIRE availability view, paged — PostgREST silently caps an (~1961 tok)
 - `deck-mutations.ts` — Returns false if the card wasn't in the deck to begin with. (~622 tok)
 - `fetch-decklist.ts` — Pure: identify the site + deck id from a pasted URL. (~1541 tok)
 - `import-collection.ts` — Collection import orchestration: parse → resolve to oracle_id → persist. (~2408 tok)
 - `import-deck.ts` — Original deck URL (Moxfield/Archidekt) — stored so the deck can be re-synced later. (~3132 tok)
-- `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1684 tok)
+- `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1709 tok)
 - `locator.ts` — Copies sitting in a binder (binder_type='binder') — grabbable for a deck. (~986 tok)
 - `move-card.ts` — Move a card from one deck to another (resolves an "occupied" upgrade — you own (~626 tok)
 - `power-score.ts` — Power score — a transparent, deterministic 0–10 rating of a Commander deck from (~2172 tok)
@@ -625,7 +625,7 @@
 - `scoring.ts` — The deck's archetype tags — non-staple roles that appear on enough cards to be a (~1481 tok)
 - `shop-links.ts` — Wrap a target URL in an Impact-style deep-link prefix (no-op without one). (~439 tok)
 - `types.ts` — One physical stack of cards as parsed from an import file (pre-resolution). (~810 tok)
-- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4112 tok)
+- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4103 tok)
 
 ## lib/collection/parsers/
 

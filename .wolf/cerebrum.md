@@ -482,3 +482,7 @@
 
 - co_deck_cards en co_deck_analyses hebben on delete cascade op co_decks (mig 364) — deck-delete is één DELETE op co_decks; de fysieke kaarten komen automatisch vrij (availability-view is afgeleid). Rename/delete = app/api/decks/[id]/route.ts (PATCH {name} / DELETE), UI = DeckActions (two-step delete: eerste klik armt 4s, tweede bevestigt — geen modal).
 - Decklist-export (Copy decklist op de Decklist-tab) schrijft exact het formaat dat de eigen parser leest (Commander-header + "qty name") — import↔export is nu een cirkel; DeckListCard draagt priceEur (deck-loader zet meta.priceEur op inDeck).
+
+## Do-Not-Repeat — 2026-07-08 (1000-rij cap)
+
+- ELKE Supabase-select die "alles van de user" leest MOET pagineren: PostgREST kapt zonder .range() stilletjes af op 1000 rijen (bug-1116 — dashboard toonde exact 1000 unieke kaarten bij een collectie van 5451). Gebruik loadAvailability (deck-loader.ts) voor co_card_availability; voor andere tabellen het .order(pk)+.range(from, from+999)-looppatroon (binders.ts/import-collection.ts). Let op: ook een .in()-chunk kan >1000 rijen terugkrijgen als de gevraagde kolom niet uniek is per rij. Symptoomherkenning: een teller die exact op 1000 (of een veelvoud) blijft hangen = vrijwel zeker deze cap, geen datacorruptie.
