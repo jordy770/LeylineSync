@@ -7161,3 +7161,4 @@
 | 14:14 | Edited components/collection/DeckDetail.tsx | expanded (+10 lines) | ~388 |
 | 14:14 | Edited components/collection/DeckDetail.tsx | expanded (+6 lines) | ~151 |
 | 14:15 | Collectiewaarde-grafiek (mig 381 snapshot_value_eur op co_imports, import legt waarde vast, SVG-lijnchart met tooltip op dashboard), Decklist ×-verwijderknop met undo (qty-aware), badge-legend zichtbaar op touch | supabase/migrations/202605010381*, lib/collection/import-collection.ts, lib/collection/dashboard.ts, components/collection/CollectionValueChart.tsx, DeckDetail.tsx, app/collection/page.tsx | tsc+build+tests groen; mig lokaal toegepast | ~30k |
+| 14:24 | Release v0.7.0 live: deploy-workflow success (incl. db push mig 381 naar hosted), leylinesync.com 200 | GitHub release v0.7.0 | live | ~2k |
