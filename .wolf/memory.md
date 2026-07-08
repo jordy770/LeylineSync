@@ -7205,3 +7205,4 @@
 | 16:10 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~38 |
 | 16:10 | Edited lib/collection/conflicts.ts | added 1 condition(s) | ~210 |
 | 16:12 | bug-1116 gefixt: 1000-rij PostgREST-cap kapte collecties >1000 uniek af op 4 plekken; loadAvailability (paged) in deck-loader + conflicts pagineert items; gevalideerd tegen echte lokale data (5451 uniek/9660 totaal) | lib/collection/{deck-loader,dashboard,upgrade-scanner,insights,conflicts}.ts | tsc+build+tests groen | ~15k |
+| 16:46 | Release v0.8.1 live (fix bug-1116, 1000-rij truncatie): deploy success, leylinesync.com 200 | GitHub release v0.8.1 | live | ~2k |
