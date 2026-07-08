@@ -74,8 +74,9 @@ export function parseDecklist(text: string): DeckParseResult {
 function asSectionHeader(line: string): 'commander' | 'included' | 'skipped' | null {
   // A card line always begins with a quantity; a header never does.
   if (/^\d/.test(line)) return null
-  const name = line.replace(/\s*\(\d+\)\s*$/, '').trim().toLowerCase()
-  if (name === 'commander') return 'commander'
+  // Tolerate a trailing count ("Deck (99)") and a trailing colon ("Commander:").
+  const name = line.replace(/\s*\(\d+\)\s*$/, '').replace(/:\s*$/, '').trim().toLowerCase()
+  if (name === 'commander' || name === 'commanders') return 'commander'
   if (INCLUDED_SECTIONS.has(name)) return 'included'
   if (SKIPPED_SECTIONS.has(name)) return 'skipped'
   return null
@@ -109,6 +110,12 @@ function parseCardLine(raw: string): ParsedLine | null {
     category = catMatch[1].trim()
     categoryIsCommander = /commander/i.test(category)
     rest = rest.slice(0, catMatch.index).trim()
+  }
+
+  // TappedOut-style commander marker on the line itself: "1 Atraxa *CMDR*".
+  if (/\*cmdr\*/i.test(rest)) {
+    categoryIsCommander = true
+    rest = rest.replace(/\*cmdr\*/gi, '').trim()
   }
 
   // Foil / etched markers: *F*, *E*, *foil*.

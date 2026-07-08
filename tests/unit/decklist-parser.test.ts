@@ -50,6 +50,24 @@ test('Archidekt inline [Commander] category marks the commander', () => {
   assert.equal(cards.find((c) => c.name === 'Goblin Matron')?.category, 'Ramp')
 })
 
+test('a "Commander:" header with colon (and "Commanders") also marks the section', () => {
+  const list = ['Commander:', '1 Atraxa, Praetors\' Voice', 'Deck', '1 Sol Ring'].join('\n')
+  const { cards } = parseDecklist(list)
+  assert.equal(cards.find((c) => c.name.startsWith('Atraxa'))?.isCommander, true)
+  assert.equal(cards.find((c) => c.name === 'Sol Ring')?.isCommander, false)
+
+  const plural = parseDecklist(['Commanders (2)', '1 Thrasios, Triton Hero', '1 Tymna the Weaver', 'Deck', '1 Sol Ring'].join('\n'))
+  assert.equal(plural.cards.filter((c) => c.isCommander).length, 2)
+})
+
+test('a *CMDR* line marker marks the commander without a section header', () => {
+  const { cards } = parseDecklist('1 Atraxa, Praetors\' Voice *CMDR*\n1 Sol Ring\n')
+  const atraxa = cards.find((c) => c.name.startsWith('Atraxa'))
+  assert.equal(atraxa?.isCommander, true)
+  assert.equal(atraxa?.name, 'Atraxa, Praetors\' Voice')
+  assert.equal(cards.find((c) => c.name === 'Sol Ring')?.isCommander, false)
+})
+
 test('sideboard / maybeboard sections are skipped', () => {
   const list = ['Deck', '1 Sol Ring', 'Sideboard', '1 Pyroblast', 'Maybeboard', '1 Wheel of Fortune'].join('\n')
   const { cards } = parseDecklist(list)

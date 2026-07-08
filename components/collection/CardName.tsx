@@ -58,6 +58,28 @@ export function CardName({
     setPos(null)
   }
 
+  // Touch devices have no hover — there a tap on the name toggles the preview
+  // instead. preventDefault/stopPropagation so a surrounding <Link>/button
+  // doesn't fire on the peek; a second tap (or a tap anywhere else) closes it
+  // and normal interaction resumes.
+  function handleClick(e: React.MouseEvent) {
+    if (!window.matchMedia('(hover: none)').matches) return
+    e.preventDefault()
+    e.stopPropagation()
+    if (pos != null) hide()
+    else show()
+  }
+
+  useEffect(() => {
+    if (pos == null) return
+    function onPointerDown(e: PointerEvent) {
+      if (ref.current && e.target instanceof Node && ref.current.contains(e.target)) return
+      hide()
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [pos])
+
   const src = `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(name)}&format=image&version=normal`
 
   return (
@@ -67,6 +89,7 @@ export function CardName({
       style={style}
       onMouseEnter={scheduleShow}
       onMouseLeave={hide}
+      onClick={handleClick}
     >
       {children ?? name}
       {pos != null && typeof document !== 'undefined'

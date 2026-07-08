@@ -106,7 +106,7 @@ export function DeckImportForm() {
       <p className="text-xs" style={{ color: 'var(--text-faint)' }}>
         {mode === 'url'
           ? 'Paste a public Moxfield or Archidekt deck link. Private decks can’t be fetched — paste the list instead.'
-          : 'A “Commander” section header or Archidekt [Commander] category marks the commander. Sideboard / maybeboard sections are ignored.'}
+          : 'A “Commander” section header, an Archidekt [Commander] category or a *CMDR* marker sets the commander — no marker? Set it afterwards via ♛ on the deck page. Sideboard / maybeboard sections are ignored.'}
       </p>
     </Panel>
   )

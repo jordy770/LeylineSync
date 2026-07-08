@@ -8,19 +8,29 @@ import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
-// /collection/binders           → all binders with counts
-// /collection/binders?binder=X  → what's in binder X
+// /collection/binders                  → all binders with counts
+// /collection/binders?binder=X&sort=…  → what's in binder X (name | price | type)
 
-export default async function BindersPage({ searchParams }: { searchParams: Promise<{ binder?: string }> }) {
+const SORTS = ['name', 'price', 'type'] as const
+type BinderSort = (typeof SORTS)[number]
+
+function sortCards<T extends { name: string; priceEur: number | null; typeLine: string | null }>(cards: T[], sort: BinderSort): T[] {
+  if (sort === 'price') return [...cards].sort((a, b) => (b.priceEur ?? 0) - (a.priceEur ?? 0) || a.name.localeCompare(b.name))
+  if (sort === 'type') return [...cards].sort((a, b) => (a.typeLine ?? '').localeCompare(b.typeLine ?? '') || a.name.localeCompare(b.name))
+  return cards // getBinderContents already returns name-sorted
+}
+
+export default async function BindersPage({ searchParams }: { searchParams: Promise<{ binder?: string; sort?: string }> }) {
   const supabase = await createClient()
   const { data: claims, error } = await supabase.auth.getClaims()
   if (error || !claims?.claims?.sub) redirect('/auth/login')
   const userId = claims.claims.sub as string
 
-  const { binder } = await searchParams
+  const { binder, sort: sortParam } = await searchParams
+  const sort: BinderSort = SORTS.includes(sortParam as BinderSort) ? (sortParam as BinderSort) : 'name'
 
   if (binder) {
-    const cards = await getBinderContents(supabase, userId, binder)
+    const cards = sortCards(await getBinderContents(supabase, userId, binder), sort)
     const total = cards.reduce((n, c) => n + c.qty, 0)
     const value = cards.reduce((sum, c) => sum + (c.priceEur ?? 0) * c.qty, 0)
     return (
@@ -41,7 +51,25 @@ export default async function BindersPage({ searchParams }: { searchParams: Prom
             </p>
           </Panel>
         ) : (
-          <Panel className="divide-y p-0">
+          <>
+            <div className="mb-3 flex flex-wrap items-center gap-2 text-xs" style={{ color: 'var(--text-faint)' }}>
+              <span>Sort by</span>
+              {SORTS.map((s) => (
+                <Link
+                  key={s}
+                  href={`/collection/binders?binder=${encodeURIComponent(binder)}${s === 'name' ? '' : `&sort=${s}`}`}
+                  className="rounded-full px-2.5 py-0.5"
+                  style={
+                    sort === s
+                      ? { background: 'var(--frame-gold)', color: '#1c1407' }
+                      : { border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text-dim)' }
+                  }
+                >
+                  {s}
+                </Link>
+              ))}
+            </div>
+            <Panel className="divide-y p-0">
             {cards.map((c) => (
               <div key={c.oracleId} className="flex items-center justify-between gap-3 px-4 py-2.5" style={{ borderColor: 'rgba(201,154,58,0.12)' }}>
                 <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -61,7 +89,8 @@ export default async function BindersPage({ searchParams }: { searchParams: Prom
                 </span>
               </div>
             ))}
-          </Panel>
+            </Panel>
+          </>
         )}
       </Shell>
     )

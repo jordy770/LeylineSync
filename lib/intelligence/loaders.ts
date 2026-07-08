@@ -78,6 +78,7 @@ export async function loadDeckIntelligence(
 }
 
 export interface ContestedCard {
+  oracleId: string
   arbitration: Arbitration
   ownedQty: number
   committedQty: number
@@ -123,6 +124,7 @@ export async function loadCollectionIntelligence(
     })
 
     contested.push({
+      oracleId: conflict.oracleId,
       arbitration: arbitrateConflict(profile, decks),
       ownedQty: conflict.ownedQty,
       committedQty: conflict.committedQty,

@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { CardName } from './CardName'
@@ -34,10 +35,19 @@ interface OccupiedUpgrade {
   action: string
   reason: string
 }
+interface DeckListCard {
+  oracleId: string
+  name: string
+  qty: number
+  typeLine: string
+  cmc: number
+  isCommander: boolean
+}
 interface ScanResult {
   power: PowerScore
   free: FreeUpgrade[]
   occupied: OccupiedUpgrade[]
+  deckList: DeckListCard[]
 }
 interface PullList {
   groups: { binder: string; cards: { name: string; need: number }[] }[]
@@ -67,9 +77,10 @@ export function DeckDetail({
   source?: string | null
   sourceUrl?: string | null
 }) {
+  const router = useRouter()
   const [scan, setScan] = useState<ScanResult | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [tab, setTab] = useState<'free' | 'occupied' | 'buy' | 'pull'>('free')
+  const [tab, setTab] = useState<'list' | 'free' | 'occupied' | 'buy' | 'pull'>('free')
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [buyBudget, setBuyBudget] = useState<string>('5')
@@ -124,6 +135,7 @@ export function DeckDetail({
 
   // The upgrades endpoint also returns the power score, so one call covers both.
   const load = useCallback(async () => {
+    setError(null)
     try {
       const res = await fetch(`/api/decks/${deckId}/upgrades`)
       const body = await res.json()
@@ -309,6 +321,31 @@ export function DeckDetail({
     }
   }
 
+  // Set/change the commander after the fact (text imports without a
+  // "Commander" header land with none). Identity + score change with it, so
+  // re-scan AND refresh the server-rendered page chrome (color pips).
+  async function setCommander(c: DeckListCard) {
+    setBusyKey(`cmdr-${c.oracleId}`)
+    setActionError(null)
+    try {
+      const res = await fetch(`/api/decks/${deckId}/commander`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ oracleId: c.oracleId }),
+      })
+      const body = await res.json()
+      if (!res.ok) setActionError(body.error ?? 'Could not set the commander.')
+      else {
+        await load()
+        router.refresh()
+      }
+    } catch {
+      setActionError('Network error setting the commander.')
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
   // Bridge this collection deck to a PLAYABLE game deck (shows up on /decks).
   async function playThisDeck() {
     setPlayBusy(true)
@@ -328,8 +365,18 @@ export function DeckDetail({
 
   if (error) {
     return (
-      <Panel className="p-6">
+      <Panel className="flex flex-wrap items-center justify-between gap-3 p-6">
         <p style={{ color: 'var(--danger)' }}>{error}</p>
+        <button
+          onClick={() => {
+            setScan(null)
+            void load()
+          }}
+          className="rounded-lg px-4 py-2 text-sm font-medium"
+          style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
+        >
+          Try again
+        </button>
       </Panel>
     )
   }
@@ -343,7 +390,8 @@ export function DeckDetail({
     )
   }
 
-  const { power, free, occupied } = scan
+  const { power, free, occupied, deckList } = scan
+  const deckSize = (deckList ?? []).reduce((n, c) => n + c.qty, 0)
 
   return (
     <div className="space-y-6">
@@ -416,7 +464,10 @@ export function DeckDetail({
       ) : null}
 
       <div>
-        <div className="mb-3 flex gap-2">
+        <div className="mb-3 flex flex-wrap gap-2">
+          <Tab active={tab === 'list'} onClick={() => setTab('list')}>
+            Decklist ({deckSize})
+          </Tab>
           <Tab active={tab === 'free'} onClick={() => setTab('free')}>
             Free upgrades ({free.length})
           </Tab>
@@ -436,7 +487,9 @@ export function DeckDetail({
           </p>
         ) : null}
 
-        {tab === 'free' ? (
+        {tab === 'list' ? (
+          <DecklistTab cards={deckList ?? []} busyKey={busyKey} onSetCommander={setCommander} />
+        ) : tab === 'free' ? (
           free.length === 0 ? (
             <Empty>No free upgrades found in your binder for this deck&apos;s needs.</Empty>
           ) : (
@@ -483,9 +536,16 @@ export function DeckDetail({
                     {busyKey === `occ-${i}` ? '…' : `Move from ${truncate(u.usedBy[0]?.name ?? 'other deck', 24)}`}
                   </button>
                 ) : (
-                  <span className="shrink-0 rounded px-2 py-1 text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)', border: '1px solid rgba(201,154,58,0.3)' }} title="Every copy you own is in a deck that needs it — buy a copy or proxy">
-                    buy a copy
-                  </span>
+                  <a
+                    href={`https://www.cardmarket.com/en/Magic/Products/Search?searchString=${encodeURIComponent(u.in.name)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shrink-0 rounded px-2 py-1 text-xs uppercase tracking-wide"
+                    style={{ color: 'var(--text-faint)', border: '1px solid rgba(201,154,58,0.3)' }}
+                    title="Every copy you own is in a deck that needs it — buy a copy or proxy"
+                  >
+                    buy a copy ↗
+                  </a>
                 )}
               </Panel>
             ))}
@@ -704,6 +764,106 @@ function FreeUpgradesList({
   )
 }
 
+// The deck's own list — commander on top, then grouped by card type, cheapest
+// first. Seeing what's IN the deck is what makes the swap suggestions readable.
+const TYPE_GROUPS = ['Creature', 'Planeswalker', 'Instant', 'Sorcery', 'Artifact', 'Enchantment', 'Battle', 'Land'] as const
+
+function primaryType(typeLine: string): string {
+  for (const t of TYPE_GROUPS) if (typeLine.includes(t)) return t
+  return 'Other'
+}
+
+function DecklistTab({
+  cards,
+  busyKey,
+  onSetCommander,
+}: {
+  cards: DeckListCard[]
+  busyKey: string | null
+  onSetCommander: (c: DeckListCard) => void
+}) {
+  if (cards.length === 0) return <Empty>No cards in this deck.</Empty>
+
+  const commanders = cards.filter((c) => c.isCommander)
+  const rest = cards.filter((c) => !c.isCommander)
+  const groups = new Map<string, DeckListCard[]>()
+  for (const c of rest) {
+    const key = primaryType(c.typeLine)
+    const list = groups.get(key) ?? []
+    list.push(c)
+    groups.set(key, list)
+  }
+  const ordered: [string, DeckListCard[]][] = [...TYPE_GROUPS, 'Other']
+    .filter((t) => groups.has(t))
+    .map((t) => [t, (groups.get(t) ?? []).sort((a, b) => a.cmc - b.cmc || a.name.localeCompare(b.name))])
+
+  return (
+    <div className="space-y-3">
+      {commanders.length > 0 ? (
+        <Panel className="p-4">
+          <h4 className="font-display text-sm" style={{ color: 'var(--gold-bright)' }}>
+            Commander
+          </h4>
+          <ul className="font-rules mt-2 space-y-1 text-sm" style={{ color: 'var(--text)' }}>
+            {commanders.map((c) => (
+              <li key={c.oracleId}>
+                ♛ <CardName name={c.name} className="font-display" style={{ color: 'var(--text-bright)' }} />
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      ) : (
+        <Panel className="p-4">
+          <h4 className="font-display text-sm" style={{ color: 'var(--warn)' }}>
+            No commander set
+          </h4>
+          <p className="font-rules mt-1 text-sm" style={{ color: 'var(--text-dim)' }}>
+            The imported list had no &ldquo;Commander&rdquo; marker — tap ♛ on a legendary card below to make it the
+            commander (this also fixes the deck&apos;s colour identity and upgrade suggestions).
+          </p>
+        </Panel>
+      )}
+      {ordered.map(([type, list]) => (
+        <Panel key={type} className="p-4">
+          <h4 className="font-display text-sm" style={{ color: 'var(--gold-bright)' }}>
+            {type}
+            <span className="ml-2 text-xs" style={{ color: 'var(--text-faint)' }}>
+              {list.reduce((n, c) => n + c.qty, 0)}
+            </span>
+          </h4>
+          <ul className="font-rules mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2" style={{ color: 'var(--text)' }}>
+            {list.map((c) => (
+              <li key={c.oracleId} className="flex items-baseline justify-between gap-2">
+                <span className="min-w-0 truncate">
+                  {c.qty > 1 ? `${c.qty}× ` : ''}
+                  <CardName name={c.name} />
+                </span>
+                <span className="flex shrink-0 items-baseline gap-2">
+                  {c.typeLine.includes('Legendary') ? (
+                    <button
+                      onClick={() => onSetCommander(c)}
+                      disabled={busyKey !== null}
+                      className="text-xs disabled:opacity-40"
+                      style={{ color: 'var(--text-faint)' }}
+                      title={`Make ${c.name} the commander`}
+                      aria-label={`Make ${c.name} the commander`}
+                    >
+                      {busyKey === `cmdr-${c.oracleId}` ? '…' : '♛'}
+                    </button>
+                  ) : null}
+                  <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
+                    {type !== 'Land' ? c.cmc : ''}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      ))}
+    </div>
+  )
+}
+
 // The physical gathering checklist: binder → alphabetical, plus what can't be
 // pulled (locked in another deck, or simply not owned free).
 function PullTab({ pull, busy, error }: { pull: PullList | null; busy: boolean; error: string | null }) {
@@ -854,15 +1014,27 @@ function BuyTab({
                   {b.reason}
                 </p>
               </div>
-              <a
-                href={b.scryfallUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="shrink-0 rounded-lg px-3 py-1.5 text-sm"
-                style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
-              >
-                {b.priceEur != null ? `€${b.priceEur.toFixed(2)} ↗` : 'View ↗'}
-              </a>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                {/* Cardmarket is where the EU price on this row actually lives. */}
+                <a
+                  href={`https://www.cardmarket.com/en/Magic/Products/Search?searchString=${encodeURIComponent(b.name)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-lg px-3 py-1.5 text-sm"
+                  style={{ border: '1px solid rgba(201,154,58,0.4)', color: 'var(--text)' }}
+                >
+                  {b.priceEur != null ? `€${b.priceEur.toFixed(2)} · Cardmarket ↗` : 'Cardmarket ↗'}
+                </a>
+                <a
+                  href={b.scryfallUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs underline underline-offset-2"
+                  style={{ color: 'var(--text-faint)' }}
+                >
+                  Scryfall ↗
+                </a>
+              </div>
             </Panel>
           ))}
         </div>

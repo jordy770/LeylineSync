@@ -7,17 +7,15 @@ import SiteNav from '@/components/SiteNav'
 // grid) with a slim header. Server-compatible (no hooks) so pages can wrap their
 // server-rendered content directly.
 
-export type CollectionSection = 'overview' | 'search' | 'binders' | 'intelligence' | 'insights' | 'conflicts' | 'import' | 'deck-import'
+// 'import' / 'deck-import' pages exist but are reached via Overview's action
+// buttons — the nav stays four places, not a mix of places and actions.
+export type CollectionSection = 'overview' | 'advisor' | 'search' | 'binders' | 'import' | 'deck-import'
 
 const SECTIONS: { key: CollectionSection; href: string; label: string }[] = [
   { key: 'overview', href: '/collection', label: 'Overview' },
-  { key: 'search', href: '/collection/search', label: 'Find a card' },
+  { key: 'advisor', href: '/collection/advisor', label: 'Advisor' },
   { key: 'binders', href: '/collection/binders', label: 'Binders' },
-  { key: 'intelligence', href: '/collection/intelligence', label: 'Intelligence' },
-  { key: 'insights', href: '/collection/insights', label: 'Insights' },
-  { key: 'conflicts', href: '/collection/conflicts', label: 'Conflicts' },
-  { key: 'import', href: '/collection/import', label: 'Import collection' },
-  { key: 'deck-import', href: '/collection/decks/import', label: 'Import deck' },
+  { key: 'search', href: '/collection/search', label: 'Find a card' },
 ]
 
 export function Shell({

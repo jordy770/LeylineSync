@@ -30,7 +30,12 @@ export default async function CollectionSearchPage({
   const color = params.color && COLORS.includes(params.color as (typeof COLORS)[number]) ? params.color : null
   const type = (params.type ?? '').trim() || null
 
-  const results = q ? await locateCards(supabase, userId, q, { freeOnly, color, type }) : []
+  const [results, { data: deckRows }] = await Promise.all([
+    q ? locateCards(supabase, userId, q, { freeOnly, color, type }) : Promise.resolve([]),
+    // The user's decks, so a found card can be added right from the results.
+    supabase.from('co_decks').select('id, name').eq('user_id', userId).order('updated_at', { ascending: false }),
+  ])
+  const decks = (deckRows ?? []).map((d) => ({ id: d.id as string, name: d.name as string }))
 
   return (
     <Shell
@@ -38,7 +43,14 @@ export default async function CollectionSearchPage({
       lead="Search your collection: which binder holds it, which decks claim it, and how many copies are free."
       active="search"
     >
-      <SearchLive initialQ={q} initialFree={freeOnly} initialColor={color} initialType={type} initialResults={results} />
+      <SearchLive
+        initialQ={q}
+        initialFree={freeOnly}
+        initialColor={color}
+        initialType={type}
+        initialResults={results}
+        decks={decks}
+      />
     </Shell>
   )
 }

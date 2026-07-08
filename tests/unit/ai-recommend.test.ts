@@ -20,6 +20,7 @@ function scan(): UpgradeScanResult {
     occupied: [
       { in: { oracleId: 'o-esper', name: 'Esper Sentinel', priceEur: 30 }, tag: 'card_draw', weight: 3, confidence: 60, themeImpact: 'Neutral', commanderSynergy: 0, usedBy: [{ id: 'd2', name: 'Urza' }], action: 'move', reason: '' },
     ],
+    deckList: [],
   }
 }
 

@@ -33,12 +33,14 @@ export function SearchLive({
   initialColor,
   initialType,
   initialResults,
+  decks = [],
 }: {
   initialQ: string
   initialFree: boolean
   initialColor: string | null
   initialType: string | null
   initialResults: LocatedCard[]
+  decks?: { id: string; name: string }[]
 }) {
   const router = useRouter()
   const [q, setQ] = useState(initialQ)
@@ -48,8 +50,79 @@ export function SearchLive({
   const [results, setResults] = useState<LocatedCard[]>(initialResults)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Add-to-deck: which result row has its deck picker open, and the last add
+  // (with a 10s undo window — same convention as the deck page).
+  const [addOpenFor, setAddOpenFor] = useState<string | null>(null)
+  const [addBusy, setAddBusy] = useState<string | null>(null)
+  const [addError, setAddError] = useState<string | null>(null)
+  const [added, setAdded] = useState<{ label: string; oracleId: string; deckId: string } | null>(null)
+  const addedTimer = useRef<number | null>(null)
+  // Bumped after an add/undo to force the search effect to re-fetch counts.
+  const [refreshTick, setRefreshTick] = useState(0)
   // Skip the fetch for the state the server already rendered.
   const lastKey = useRef(searchKey(initialQ, initialFree, initialColor, initialType))
+
+  useEffect(() => {
+    return () => {
+      if (addedTimer.current != null) window.clearTimeout(addedTimer.current)
+    }
+  }, [])
+
+  async function addToDeck(card: LocatedCard, deck: { id: string; name: string }) {
+    setAddBusy(deck.id)
+    setAddError(null)
+    try {
+      const res = await fetch(`/api/decks/${deck.id}/swaps`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ inOracleId: card.oracleId }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        setAddError(body.error ?? 'Could not add the card.')
+        return
+      }
+      setAddOpenFor(null)
+      setAdded({ label: `${card.name} added to ${deck.name}`, oracleId: card.oracleId, deckId: deck.id })
+      if (addedTimer.current != null) window.clearTimeout(addedTimer.current)
+      addedTimer.current = window.setTimeout(() => setAdded(null), 10_000)
+      // Re-run the current search so free/deck counts update in place.
+      lastKey.current = ''
+      setRefreshTick((t) => t + 1)
+      router.refresh()
+    } catch {
+      setAddError('Network error while adding.')
+    } finally {
+      setAddBusy(null)
+    }
+  }
+
+  async function undoAdd() {
+    if (!added) return
+    const entry = added
+    setAdded(null)
+    setAddBusy('undo')
+    setAddError(null)
+    try {
+      const res = await fetch(`/api/decks/${entry.deckId}/swaps`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ outOracleId: entry.oracleId }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        setAddError(body.error ?? 'Undo failed.')
+        return
+      }
+      lastKey.current = ''
+      setRefreshTick((t) => t + 1)
+      router.refresh()
+    } catch {
+      setAddError('Network error during undo.')
+    } finally {
+      setAddBusy(null)
+    }
+  }
 
   useEffect(() => {
     const key = searchKey(q, freeOnly, color, type)
@@ -89,7 +162,7 @@ export function SearchLive({
       }
     }, DEBOUNCE_MS)
     return () => window.clearTimeout(timer)
-  }, [q, freeOnly, color, type, router])
+  }, [q, freeOnly, color, type, router, refreshTick])
 
   return (
     <div>
@@ -175,6 +248,40 @@ export function SearchLive({
                     ))}
                   </div>
                 ) : null}
+                {decks.length > 0 ? (
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setAddError(null)
+                        setAddOpenFor(addOpenFor === card.oracleId ? null : card.oracleId)
+                      }}
+                      className="rounded-full px-3 py-1 text-xs"
+                      style={{ border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text-dim)' }}
+                    >
+                      {addOpenFor === card.oracleId ? '× Cancel' : '+ Add to deck'}
+                    </button>
+                    {addOpenFor === card.oracleId
+                      ? decks
+                          .filter((d) => !card.decks.some((cd) => cd.id === d.id))
+                          .map((d) => (
+                            <button
+                              key={d.id}
+                              onClick={() => addToDeck(card, d)}
+                              disabled={addBusy !== null}
+                              className="rounded-full px-3 py-1 text-xs disabled:opacity-40"
+                              style={{ border: '1px solid rgba(201,154,58,0.45)', color: 'var(--gold-bright)' }}
+                            >
+                              {addBusy === d.id ? '…' : d.name}
+                            </button>
+                          ))
+                      : null}
+                    {addOpenFor === card.oracleId && addError ? (
+                      <span className="text-xs" style={{ color: 'var(--danger)' }}>
+                        {addError}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
               <div className="text-right">
                 <div className="font-display text-lg" style={{ color: card.freeQty > 0 ? 'var(--cast)' : 'var(--text-faint)' }}>
@@ -188,6 +295,25 @@ export function SearchLive({
           ))}
         </div>
       )}
+
+      {added ? (
+        <div
+          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-xl px-4 py-2.5 shadow-2xl"
+          style={{ background: 'var(--ink-2)', border: '1px solid rgba(201,154,58,0.4)' }}
+        >
+          <span className="text-sm" style={{ color: 'var(--text)' }}>
+            {added.label}
+          </span>
+          <button
+            onClick={undoAdd}
+            disabled={addBusy !== null}
+            className="rounded-lg px-3 py-1 text-sm font-medium disabled:opacity-40"
+            style={{ color: 'var(--gold-bright)', border: '1px solid rgba(201,154,58,0.45)' }}
+          >
+            {addBusy === 'undo' ? '…' : 'Undo'}
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }

@@ -84,7 +84,12 @@ export default async function CollectionDashboardPage() {
           </div>
           <Panel className="divide-y p-0" >
             {d.freeStaples.map((s) => (
-              <div key={s.oracleId} className="flex items-center justify-between px-4 py-2.5" style={{ borderColor: 'rgba(201,154,58,0.12)' }}>
+              <Link
+                key={s.oracleId}
+                href={`/collection/search?q=${encodeURIComponent(s.name)}`}
+                className="flex items-center justify-between px-4 py-2.5 hover:bg-[rgba(201,154,58,0.06)]"
+                style={{ borderColor: 'rgba(201,154,58,0.12)' }}
+              >
                 <div className="flex items-center gap-2">
                   <CardName name={s.name} className="font-display text-sm" style={{ color: 'var(--text-bright)' }} />
                   <span className="rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-faint)', border: '1px solid rgba(201,154,58,0.25)' }}>
@@ -99,7 +104,7 @@ export default async function CollectionDashboardPage() {
                 <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
                   {s.priceEur != null ? `€${s.priceEur.toFixed(2)}` : ''}
                 </span>
-              </div>
+              </Link>
             ))}
           </Panel>
         </section>
@@ -107,7 +112,7 @@ export default async function CollectionDashboardPage() {
 
       {conflicts.length > 0 ? (
         <section className="mt-10">
-          <Link href="/collection/conflicts">
+          <Link href="/collection/advisor">
             <Panel className="flex items-center justify-between gap-4 p-4 transition-transform hover:scale-[1.005]">
               <div className="flex items-center gap-3">
                 <span className="font-display text-2xl" style={{ color: 'var(--warn)' }}>

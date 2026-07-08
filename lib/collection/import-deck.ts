@@ -131,7 +131,7 @@ export async function syncDeckFromText(
   deckId: string,
   text: string,
 ): Promise<{ result?: DeckSyncResult; error?: string }> {
-  const { data: deck } = await supabase.from('co_decks').select('id, name').eq('id', deckId).maybeSingle()
+  const { data: deck } = await supabase.from('co_decks').select('id, name, commander_oracle_id').eq('id', deckId).maybeSingle()
   if (!deck) return { error: 'Deck not found.' }
 
   const { cards, errors: parseErrors } = parseDecklist(text)
@@ -148,7 +148,16 @@ export async function syncDeckFromText(
 
   const deckCards = aggregateDeckCards(matched)
   if (deckCards.length === 0) return { error: 'Nothing in the fetched list could be matched to a card.' }
-  const commanders = deckCards.filter((c) => c.is_commander).map((c) => c.oracle_id)
+  let commanders = deckCards.filter((c) => c.is_commander).map((c) => c.oracle_id)
+  // A manually-set commander survives a sync whose fetched list carries no
+  // commander marker — as long as the card is still in the deck.
+  if (commanders.length === 0 && deck.commander_oracle_id) {
+    const kept = deckCards.find((c) => c.oracle_id === (deck.commander_oracle_id as string))
+    if (kept) {
+      kept.is_commander = true
+      commanders = [kept.oracle_id]
+    }
+  }
   const colorIdentity = deriveColorIdentity(deckCards, commanders, lookup)
 
   // Diff vs the current composition, BEFORE the replace.

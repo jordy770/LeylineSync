@@ -261,11 +261,22 @@ export function fitsColorIdentity(cardIdentity: string[], deckIdentity: string[]
 
 // ───────────────────────── Orchestrator (I/O) ─────────────────────────
 
+/** One row of the deck's own list — so the deck page can SHOW the deck. */
+export interface DeckListCard {
+  oracleId: string
+  name: string
+  qty: number
+  typeLine: string
+  cmc: number
+  isCommander: boolean
+}
+
 export interface UpgradeScanResult {
   deckId: string
   power: PowerScore
   free: FreeUpgrade[]
   occupied: OccupiedUpgrade[]
+  deckList: DeckListCard[]
 }
 
 export async function scanDeckUpgrades(
@@ -276,9 +287,19 @@ export async function scanDeckUpgrades(
   const { found, deckIdentity, deckOracleIds, scoreCards, inDeck } = await loadDeckForScoring(supabase, deckId)
   if (!found) return { error: 'Deck not found.' }
 
+  // scoreCards and inDeck are built index-aligned by loadDeckForScoring.
+  const deckList: DeckListCard[] = scoreCards.map((c, i) => ({
+    oracleId: c.oracleId,
+    name: inDeck[i]?.name ?? c.oracleId,
+    qty: c.quantity,
+    typeLine: c.typeLine,
+    cmc: c.cmc,
+    isCommander: c.isCommander,
+  }))
+
   const power = computePowerScore(scoreCards)
   if (power.needs.length === 0) {
-    return { result: { deckId, power, free: [], occupied: [] } }
+    return { result: { deckId, power, free: [], occupied: [], deckList } }
   }
   // Commander + theme + curve context, so suggestions are ranked on deck FIT.
   const ctx = buildDeckContext(scoreCards, power.avgMv)
@@ -292,7 +313,7 @@ export async function scanDeckUpgrades(
 
   const ownedOracleIds = (avail ?? []).map((a) => a.oracle_id as string).filter((id) => !deckOracleIds.has(id))
   if (ownedOracleIds.length === 0) {
-    return { result: { deckId, power, free: [], occupied: [] } }
+    return { result: { deckId, power, free: [], occupied: [], deckList } }
   }
 
   const meta = await loadOracleMeta(supabase, ownedOracleIds)
@@ -346,6 +367,7 @@ export async function scanDeckUpgrades(
         binderNames: binderNames.get(f.in.oracleId) ?? [],
       })),
       occupied: buildOccupiedUpgrades(power.needs, occupiedCands, ctx),
+      deckList,
     },
   }
 }
