@@ -17947,6 +17947,39 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-07T23:02:34.528Z"
+    },
+    {
+      "id": "bug-1097",
+      "timestamp": "2026-07-08T08:07:00.027Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/RulePlayground.tsx",
+      "root_cause": "Had './Shell'",
+      "fix": "Changed to './ui'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T08:07:00.027Z"
+    },
+    {
+      "id": "bug-1513",
+      "timestamp": "2026-07-08T10:20:00+02:00",
+      "error_message": "Turbopack build: next/headers in Pages Router — RulePlayground (client) importeerde Panel uit Shell.tsx, dat SiteNav→AuthButton→lib/supabase/server.ts (server-only) de client-graph in trok",
+      "file": "components/collection/RulePlayground.tsx",
+      "root_cause": "Sinds ronde 2 importeert Shell.tsx SiteNav (unified nav). Client components moeten Panel/ColorPips uit components/collection/ui.tsx halen, nooit uit Shell",
+      "fix": "Import gewijzigd naar ./ui + comment; build groen. Regel: use-client bestanden importeren NOOIT uit Shell.tsx",
+      "tags": [
+        "nextjs",
+        "client-server-boundary",
+        "build",
+        "collection"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-08T10:20:00+02:00"
     }
   ]
 }

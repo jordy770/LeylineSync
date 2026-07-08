@@ -441,3 +441,7 @@
 ## Decision Log — 2026-07-08
 
 - Intelligence Engine: GEEN greenfield naast lib/collection maar een evolutie — lib/intelligence is de bron, lib/collection/synergy/tagger.ts is een compatibiliteitslaag (classifyCard().legacyTags). De SynergyTag-vocabulaire blijft het score-contract tot consumers naar rollen migreren; pariteit wordt gepind door synergy-tagger.test.ts. Rules zijn benoemde, geversioneerde data-objecten (id 'categorie.slug' + beschrijving + evidence) — de Rule Playground toont per kaart welke rules vuurden en waarom.
+
+## Do-Not-Repeat — 2026-07-08
+
+- Client-components ('use client') importeren Panel/ColorPips uit components/collection/ui.tsx — NOOIT uit Shell.tsx: Shell trekt SiteNav→AuthButton→lib/supabase/server.ts (next/headers) mee en dat breekt de Turbopack-build in de client-graph (bug-1513).

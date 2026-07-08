@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T08:01:48.097Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T08:07:00.003Z
 > Files: 558 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
@@ -527,7 +527,7 @@
 - `DeckDetail.tsx` — BUCKET_ORDER (~10735 tok)
 - `DeckImportForm.tsx` — DeckImportForm (~1246 tok)
 - `ImportWizard.tsx` — ImportWizard (~2308 tok)
-- `RulePlayground.tsx` — RulePlayground (~2082 tok)
+- `RulePlayground.tsx` — RulePlayground (~2127 tok)
 - `SearchLive.tsx` — COLORS (~2166 tok)
 - `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1091 tok)
 - `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~406 tok)

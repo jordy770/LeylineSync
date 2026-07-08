@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react'
 
-import { Panel } from './Shell'
+// Panel comes from the client-safe ui module — importing it via Shell would
+// drag SiteNav→AuthButton→the server-only Supabase client into the client graph.
+import { Panel } from './ui'
 
 interface ClassifyResponse {
   card: { name: string; typeLine: string | null; oracleText: string | null; cmc: number | null }
