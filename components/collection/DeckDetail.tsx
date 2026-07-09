@@ -93,12 +93,14 @@ export function DeckDetail({
   source,
   sourceUrl,
   initialTargets,
+  initialLocks,
 }: {
   deckId: string
   colorIdentity: string[]
   source?: string | null
   sourceUrl?: string | null
   initialTargets?: Record<string, number> | null
+  initialLocks?: { locked?: string[]; excluded?: string[] } | null
 }) {
   const router = useRouter()
   const [scan, setScan] = useState<ScanResult | null>(null)
@@ -111,6 +113,45 @@ export function DeckDetail({
   const [doctorGoal, setDoctorGoal] = useState<string>('')
   const [doctorPower, setDoctorPower] = useState<string>('')
   const [tuning, setTuning] = useState(false)
+  // Card locks (mig 385): 🔒 pet cards are never proposed as cuts; ✕ dismissed
+  // suggestions are never proposed again. Saved on the deck, enforced serverside.
+  const [locks, setLocks] = useState<{ locked: string[]; excluded: string[] }>({
+    locked: initialLocks?.locked ?? [],
+    excluded: initialLocks?.excluded ?? [],
+  })
+
+  async function saveLocks(next: { locked: string[]; excluded: string[] }, rescan: boolean) {
+    setLocks(next)
+    setActionError(null)
+    try {
+      const res = await fetch(`/api/decks/${deckId}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ cardLocks: next.locked.length > 0 || next.excluded.length > 0 ? next : null }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        setActionError(body.error ?? 'Could not save the locks.')
+        return
+      }
+      if (rescan) await load()
+    } catch {
+      setActionError('Network error saving the locks.')
+    }
+  }
+
+  function toggleLock(oracleId: string) {
+    const has = locks.locked.includes(oracleId)
+    void saveLocks(
+      { ...locks, locked: has ? locks.locked.filter((i) => i !== oracleId) : [...locks.locked, oracleId] },
+      true,
+    )
+  }
+
+  function dismissSuggestion(oracleId: string) {
+    if (locks.excluded.includes(oracleId)) return
+    void saveLocks({ ...locks, excluded: [...locks.excluded, oracleId] }, true)
+  }
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [buyBudget, setBuyBudget] = useState<string>('5')
@@ -604,7 +645,21 @@ export function DeckDetail({
         {tab === 'free' || tab === 'occupied' || tab === 'buy' ? (
           // The badge meanings, visible everywhere (tooltips don't exist on touch).
           <p className="mb-3 text-xs" style={{ color: 'var(--text-faint)' }}>
-            % = engine confidence the card fits this deck · on/off-theme = effect on the deck&apos;s theme
+            % = engine confidence the card fits this deck · on/off-theme = effect on the deck&apos;s theme · ✕ = never
+            suggest this card again
+            {locks.excluded.length > 0 ? (
+              <>
+                {' · '}
+                {locks.excluded.length} dismissed —{' '}
+                <button
+                  onClick={() => void saveLocks({ ...locks, excluded: [] }, true)}
+                  className="underline underline-offset-2"
+                  style={{ color: 'var(--text-dim)' }}
+                >
+                  bring them back
+                </button>
+              </>
+            ) : null}
           </p>
         ) : null}
         {actionError ? (
@@ -614,7 +669,14 @@ export function DeckDetail({
         ) : null}
 
         {tab === 'list' ? (
-          <DecklistTab cards={deckList ?? []} busyKey={busyKey} onSetCommander={setCommander} onRemove={removeCard} />
+          <DecklistTab
+            cards={deckList ?? []}
+            busyKey={busyKey}
+            locked={locks.locked}
+            onSetCommander={setCommander}
+            onRemove={removeCard}
+            onToggleLock={toggleLock}
+          />
         ) : tab === 'free' ? (
           free.length === 0 ? (
             <Empty>No free upgrades found in your binder for this deck&apos;s needs.</Empty>
@@ -626,6 +688,7 @@ export function DeckDetail({
               setSelected={setSelected}
               onApplyOne={applyFree}
               onApplySelected={applySelected}
+              onDismiss={dismissSuggestion}
             />
           )
         ) : tab === 'occupied' ? (
@@ -666,12 +729,22 @@ export function DeckDetail({
                     <ShopLinksInline name={u.in.name} />
                   </span>
                 )}
+                <button
+                  onClick={() => dismissSuggestion(u.in.oracleId)}
+                  disabled={busyKey !== null}
+                  className="shrink-0 text-sm disabled:opacity-40"
+                  style={{ color: 'var(--text-faint)' }}
+                  title={`Never suggest ${u.in.name} for this deck again`}
+                  aria-label={`Dismiss ${u.in.name}`}
+                >
+                  ✕
+                </button>
               </Panel>
             ))}
           </div>
           )
         ) : tab === 'buy' ? (
-          <BuyTab buys={buys} busy={buyBusy} error={buyError} budget={buyBudget} setBudget={setBuyBudget} />
+          <BuyTab buys={buys} busy={buyBusy} error={buyError} budget={buyBudget} setBudget={setBuyBudget} onDismiss={dismissSuggestion} />
         ) : tab === 'doctor' ? (
           <DoctorTab
             result={doctor}
@@ -768,6 +841,7 @@ function FreeUpgradesList({
   setSelected,
   onApplyOne,
   onApplySelected,
+  onDismiss,
 }: {
   free: FreeUpgrade[]
   busyKey: string | null
@@ -775,6 +849,7 @@ function FreeUpgradesList({
   setSelected: (s: Set<number>) => void
   onApplyOne: (u: FreeUpgrade, key: string) => void
   onApplySelected: (list: { u: FreeUpgrade; index: number }[]) => void
+  onDismiss: (oracleId: string) => void
 }) {
   const [sort, setSort] = useState<FreeSort>('delta')
 
@@ -899,6 +974,16 @@ function FreeUpgradesList({
             >
               {busyKey === `free-${index}` ? '…' : u.out ? 'Apply' : 'Add'}
             </button>
+            <button
+              onClick={() => onDismiss(u.in.oracleId)}
+              disabled={busyKey !== null}
+              className="text-sm disabled:opacity-40"
+              style={{ color: 'var(--text-faint)' }}
+              title={`Never suggest ${u.in.name} for this deck again`}
+              aria-label={`Dismiss ${u.in.name}`}
+            >
+              ✕
+            </button>
           </div>
         </Panel>
       ))}
@@ -918,13 +1003,17 @@ function primaryType(typeLine: string): string {
 function DecklistTab({
   cards,
   busyKey,
+  locked,
   onSetCommander,
   onRemove,
+  onToggleLock,
 }: {
   cards: DeckListCard[]
   busyKey: string | null
+  locked: string[]
   onSetCommander: (c: DeckListCard) => void
   onRemove: (c: DeckListCard) => void
+  onToggleLock: (oracleId: string) => void
 }) {
   const [copied, setCopied] = useState(false)
   if (cards.length === 0) return <Empty>No cards in this deck.</Empty>
@@ -1009,6 +1098,20 @@ function DecklistTab({
                   <CardName name={c.name} />
                 </span>
                 <span className="flex shrink-0 items-baseline gap-2">
+                  <button
+                    onClick={() => onToggleLock(c.oracleId)}
+                    disabled={busyKey !== null}
+                    className="text-xs disabled:opacity-40"
+                    style={{ color: locked.includes(c.oracleId) ? 'var(--gold-bright)' : 'var(--text-faint)', opacity: locked.includes(c.oracleId) ? 1 : 0.55 }}
+                    title={
+                      locked.includes(c.oracleId)
+                        ? `${c.name} is protected — never proposed as a cut. Click to unlock.`
+                        : `Protect ${c.name} — never propose cutting it`
+                    }
+                    aria-label={`Toggle protection for ${c.name}`}
+                  >
+                    {locked.includes(c.oracleId) ? '🔒' : '🔓'}
+                  </button>
                   {c.typeLine.includes('Legendary') ? (
                     <button
                       onClick={() => onSetCommander(c)}
@@ -1101,12 +1204,14 @@ function BuyTab({
   error,
   budget,
   setBudget,
+  onDismiss,
 }: {
   buys: BuySuggestion[] | null
   busy: boolean
   error: string | null
   budget: string
   setBudget: (b: string) => void
+  onDismiss: (oracleId: string) => void
 }) {
   const chips: { label: string; value: string }[] = [
     { label: 'Under €2', value: '2' },
@@ -1197,15 +1302,26 @@ function BuyTab({
               <div className="flex shrink-0 flex-col items-end gap-1">
                 {/* Cardmarket carries the EU price on this row; alternates below. */}
                 <ShopLinks name={b.name} priceEur={b.priceEur} />
-                <a
-                  href={b.scryfallUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs underline underline-offset-2"
-                  style={{ color: 'var(--text-faint)' }}
-                >
-                  Scryfall ↗
-                </a>
+                <span className="flex items-center gap-3">
+                  <a
+                    href={b.scryfallUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs underline underline-offset-2"
+                    style={{ color: 'var(--text-faint)' }}
+                  >
+                    Scryfall ↗
+                  </a>
+                  <button
+                    onClick={() => onDismiss(b.oracleId)}
+                    className="text-sm"
+                    style={{ color: 'var(--text-faint)' }}
+                    title={`Never suggest ${b.name} for this deck again`}
+                    aria-label={`Dismiss ${b.name}`}
+                  >
+                    ✕
+                  </button>
+                </span>
               </div>
             </Panel>
           ))}
@@ -1388,14 +1504,15 @@ function DoctorTab({
 // Per-deck target tuning (mig 384): "this deck runs fine on 34 lands", "this
 // deck wants 12 interaction". Saving re-scores the deck — the needs, the
 // scanner, the Advisor and the Doctor all follow the tuned targets.
-const TUNABLE_FIELDS: { key: string; label: string; def: number | null }[] = [
-  { key: 'land', label: 'lands', def: 37 },
-  { key: 'ramp', label: 'ramp', def: 10 },
-  { key: 'card_draw', label: 'card draw', def: 10 },
-  { key: 'removal', label: 'removal', def: 8 },
-  { key: 'board_wipe', label: 'board wipes', def: 3 },
-  { key: 'counterspell', label: 'counterspells', def: null },
-  { key: 'tutor', label: 'tutors', def: null },
+const TUNABLE_FIELDS: { key: string; label: string; def: number | null; min: number; max: number; step: number }[] = [
+  { key: 'land', label: 'lands', def: 37, min: 0, max: 60, step: 1 },
+  { key: 'ramp', label: 'ramp', def: 10, min: 0, max: 60, step: 1 },
+  { key: 'card_draw', label: 'card draw', def: 10, min: 0, max: 60, step: 1 },
+  { key: 'removal', label: 'removal', def: 8, min: 0, max: 60, step: 1 },
+  { key: 'board_wipe', label: 'board wipes', def: 3, min: 0, max: 60, step: 1 },
+  { key: 'counterspell', label: 'counterspells', def: null, min: 0, max: 60, step: 1 },
+  { key: 'tutor', label: 'tutors', def: null, min: 0, max: 60, step: 1 },
+  { key: 'curve', label: 'avg mana value', def: 3, min: 1, max: 8, step: 0.1 },
 ]
 
 function TargetTuner({
@@ -1460,8 +1577,9 @@ function TargetTuner({
             <span className="mb-1 block capitalize">{f.label}</span>
             <input
               type="number"
-              min={0}
-              max={60}
+              min={f.min}
+              max={f.max}
+              step={f.step}
               value={draft[f.key]}
               placeholder={f.def != null ? String(f.def) : 'off'}
               onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}

@@ -16,7 +16,7 @@ export default async function DeckDetailPage({ params }: { params: Promise<{ id:
 
   const { data: deck } = await supabase
     .from('co_decks')
-    .select('id, name, color_identity, source, source_url, target_overrides')
+    .select('id, name, color_identity, source, source_url, target_overrides, card_locks')
     .eq('id', id)
     .single()
   if (!deck) notFound()
@@ -40,6 +40,7 @@ export default async function DeckDetailPage({ params }: { params: Promise<{ id:
         source={(deck.source as string) ?? null}
         sourceUrl={(deck.source_url as string) ?? null}
         initialTargets={(deck.target_overrides as Record<string, number> | null) ?? null}
+        initialLocks={(deck.card_locks as { locked?: string[]; excluded?: string[] } | null) ?? null}
       />
     </Shell>
   )

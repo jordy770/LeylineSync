@@ -41,10 +41,11 @@ export async function suggestBuys(
   deckId: string,
   budget: number | null,
 ): Promise<{ result?: BuyResult; error?: string }> {
-  const { found, deckIdentity, scoreCards } = await loadDeckForScoring(supabase, deckId)
+  const { found, deckIdentity, scoreCards, targetOverrides, cardLocks } = await loadDeckForScoring(supabase, deckId)
   if (!found) return { error: 'Deck not found.' }
+  const excluded = new Set(cardLocks?.excluded ?? [])
 
-  const power = computePowerScore(scoreCards)
+  const power = computePowerScore(scoreCards, targetOverrides)
   // Lands are bought differently (mana base) — keep buy suggestions to spell roles.
   const needTags = power.needs.map((n) => n.tag).filter((t) => t !== 'land')
   if (needTags.length === 0) return { result: { needs: power.needs, buys: [] } }
@@ -62,7 +63,9 @@ export async function suggestBuys(
   })
   if (error) return { error: `Buy lookup failed: ${error.message}` }
 
-  const all: BuySuggestion[] = (data ?? []).map((r: Record<string, unknown>) => {
+  const all: BuySuggestion[] = (data ?? [])
+    .filter((r: Record<string, unknown>) => !excluded.has(String(r.oracle_id)))
+    .map((r: Record<string, unknown>) => {
     const priceEur = r.price_eur != null ? Number(r.price_eur) : null
     const tag = String(r.tag) as SynergyTag
     const weight = Number(r.weight)

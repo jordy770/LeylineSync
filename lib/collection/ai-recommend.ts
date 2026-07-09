@@ -9,7 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { askClaudeJson, requireApiKey } from './ai-client'
 import { suggestBuys } from './buy-suggestions'
-import { loadAvailability, loadOracleMeta, loadTags } from './deck-loader'
+import { loadAvailability, loadOracleMeta, loadTags, sanitizeCardLocks } from './deck-loader'
 import { scanDeckUpgrades } from './upgrade-scanner'
 import type { UpgradeScanResult } from './upgrade-scanner'
 
@@ -183,8 +183,13 @@ export async function recommendDeckUpgrades(
       source: 'buy' as const, confidence: b.confidence, themeImpact: b.themeImpact, replaces: null,
     }))
 
-  const { data: deck } = await supabase.from('co_decks').select('commander_oracle_id, color_identity').eq('id', deckId).maybeSingle()
+  const { data: deck } = await supabase
+    .from('co_decks')
+    .select('commander_oracle_id, color_identity, card_locks')
+    .eq('id', deckId)
+    .maybeSingle()
   const deckIdentity = (deck?.color_identity as string[]) ?? []
+  const cardLocks = sanitizeCardLocks(deck?.card_locks)
   let commander: string | null = null
   if (deck?.commander_oracle_id) {
     commander = (await loadOracleMeta(supabase, [deck.commander_oracle_id as string])).get(deck.commander_oracle_id as string)?.name ?? null
@@ -210,6 +215,7 @@ export async function recommendDeckUpgrades(
       ...scan.result.deckList.map((c) => c.oracleId),
       ...owned.map((c) => c.oracleId),
       ...buyCandidates.map((c) => c.oracleId),
+      ...(cardLocks?.excluded ?? []), // dismissed for this deck — never resuggest
     ])
     goalPool = buildGoalPool(
       freeIds.flatMap((id) => {
@@ -239,6 +245,11 @@ export async function recommendDeckUpgrades(
     targetPower,
     // The deck's own list, so goal/power advice can name concrete cuts.
     deckCards: goal || targetPower != null ? scan.result.deckList.map((c) => c.name) : undefined,
+    // Pet cards — the model may never propose cutting these.
+    lockedCards:
+      cardLocks && cardLocks.locked.length > 0
+        ? scan.result.deckList.filter((c) => cardLocks.locked.includes(c.oracleId)).map((c) => c.name)
+        : undefined,
     power: scan.result.power.power,
     deckTheme: scan.result.power.health.find((h) => h.axis === 'Theme')?.explanation ?? null,
     buckets: scan.result.power.buckets,
@@ -281,6 +292,7 @@ Rules:
 - "include" = clear upgrade now; "consider" = situational / theme tension / optional buy; "skip" = on-list but not worth it.
 Goal mode: when the context has a non-null "playerGoal", it states what the player WANTS this deck to become — judge every candidate primarily on how much it advances that goal (the computed "needs" become secondary), and say in the summary how far the goal can be reached from owned cards alone. In goal mode the list also contains candidates with "confidence": 0 — those come from the player's wider binder without an engine score; evaluate them yourself from the card name and its role. The ownership priority is absolute in goal mode: exhaust "free" candidates that serve the goal before recommending any "buy". Do not restate weak goal-fits as includes just to fill space — a short, on-goal plan beats a long padded one.
 Playgroup meta: when "playgroupMeta" is non-null it describes what the player's pod actually plays. Weigh candidates against that meta (e.g. graveyard-heavy pod → grave hate rises; treasure decks → artifact interaction rises) and reference the meta in reasons where it drives a verdict.
+Locked cards: "lockedCards" (when present) lists pet cards the player protects — NEVER propose cutting one, not even in a reason; work around them.
 Power tuning: when "targetPower" is non-null the player wants the deck AT that power level (0-10 scale; "power" is the current level). If the target is BELOW the current power, propose DOWN-tunes: for each include, name a stronger card from "deckCards" to cut in the reason ("swap in X for Y"), keep the deck's theme intact, and never call a downgrade an upgrade — be honest that it weakens the deck on purpose. If the target is above, tune upward as usual. "deckCards" is the deck's own list, for naming cuts only — never recommend a deckCards entry as a pick.
 Respond with ONLY a JSON object: {"summary": string, "picks": [{"name": string, "verdict": "include"|"consider"|"skip", "reason": string}]}. No prose, no code fences.`
 

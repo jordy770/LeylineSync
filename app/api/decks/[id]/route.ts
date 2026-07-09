@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { analyzeDeck } from '@/lib/collection/analyze-deck'
+import { sanitizeCardLocks } from '@/lib/collection/deck-loader'
 import { sanitizeTargetOverrides } from '@/lib/collection/power-score'
 import { createClient } from '@/lib/supabase/server'
 
@@ -21,7 +22,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   const { id: deckId } = await params
 
-  let body: { name?: string; targetOverrides?: unknown }
+  let body: { name?: string; targetOverrides?: unknown; cardLocks?: unknown }
   try {
     body = await request.json()
   } catch {
@@ -42,7 +43,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     patch.target_overrides = sanitizeTargetOverrides(body.targetOverrides)
   }
 
-  if (!('name' in patch) && !tuningTargets) {
+  const tuningLocks = 'cardLocks' in body
+  if (tuningLocks) {
+    patch.card_locks = sanitizeCardLocks(body.cardLocks)
+  }
+
+  if (!('name' in patch) && !tuningTargets && !tuningLocks) {
     return NextResponse.json({ error: 'Nothing to change.' }, { status: 400 })
   }
 

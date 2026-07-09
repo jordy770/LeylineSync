@@ -53,3 +53,18 @@ test('sanitizeTargetOverrides keeps known tags, clamps, and rejects junk', () =>
     tutor: 0,
   })
 })
+
+test('a curve target stops punishing a deliberately top-heavy deck', () => {
+  const heavy: DeckCardForScore[] = [
+    land(37),
+    { oracleId: 'fatty', quantity: 20, cmc: 5, typeLine: 'Creature — Dragon', isCommander: false, tags: [] },
+  ]
+  const before = computePowerScore(heavy)
+  const after = computePowerScore(heavy, { curve: 5 })
+  assert.ok(after.power > before.power, 'tuned curve target raises the score')
+})
+
+test('sanitizeTargetOverrides accepts a fractional curve target and clamps it', () => {
+  assert.deepEqual(sanitizeTargetOverrides({ curve: 4.25 }), { curve: 4.3 })
+  assert.deepEqual(sanitizeTargetOverrides({ curve: 99 }), { curve: 8 })
+})

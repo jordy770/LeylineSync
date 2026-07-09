@@ -55,10 +55,14 @@ export const DEFAULT_TARGETS: Partial<Record<SynergyTag, number>> = {
  *  default target — overriding them ADDS a need the guidelines don't track. */
 export const TUNABLE_TAGS = ['land', 'ramp', 'card_draw', 'removal', 'board_wipe', 'counterspell', 'tutor'] as const
 export type TunableTag = (typeof TUNABLE_TAGS)[number]
-export type TargetOverrides = Partial<Record<TunableTag, number>>
+/** Tag targets plus `curve` — the desired average mana value (default 3). A
+ *  deliberately top-heavy deck sets it higher and stops being punished for it. */
+export type TargetOverrides = Partial<Record<TunableTag, number>> & { curve?: number }
 
-/** Pure: keep only known tags with sane integer values (0..60). Returns null
- *  when nothing survives — "no overrides". */
+export const DEFAULT_CURVE_TARGET = 3
+
+/** Pure: keep only known tags with sane integer values (0..60), plus a curve
+ *  target (avg MV, 1..8, one decimal). Returns null when nothing survives. */
 export function sanitizeTargetOverrides(input: unknown): TargetOverrides | null {
   if (input == null || typeof input !== 'object') return null
   const out: TargetOverrides = {}
@@ -67,6 +71,10 @@ export function sanitizeTargetOverrides(input: unknown): TargetOverrides | null 
     if (typeof v === 'number' && Number.isFinite(v)) {
       out[tag] = Math.max(0, Math.min(60, Math.round(v)))
     }
+  }
+  const curve = (input as Record<string, unknown>).curve
+  if (typeof curve === 'number' && Number.isFinite(curve)) {
+    out.curve = Math.max(1, Math.min(8, Math.round(curve * 10) / 10))
   }
   return Object.keys(out).length > 0 ? out : null
 }
@@ -95,8 +103,11 @@ const BUCKET_TAGS: SynergyTag[] = [
 ]
 
 export function computePowerScore(cards: DeckCardForScore[], overrides?: TargetOverrides | null): PowerScore {
-  // Effective targets: guidelines + the deck's own tuning (mig 384).
-  const targets: Partial<Record<SynergyTag, number>> = { ...DEFAULT_TARGETS, ...(overrides ?? {}) }
+  // Effective targets: guidelines + the deck's own tuning (mig 384). `curve`
+  // is not a tag target — split it off before spreading into the needs map.
+  const { curve: curveTargetRaw, ...tagOverrides } = overrides ?? {}
+  const curveTarget = curveTargetRaw ?? DEFAULT_CURVE_TARGET
+  const targets: Partial<Record<SynergyTag, number>> = { ...DEFAULT_TARGETS, ...tagOverrides }
   const isLand = (c: DeckCardForScore) => c.tags.some((t) => t.tag === 'land') || /\bland\b/i.test(c.typeLine)
 
   let landCount = 0
@@ -133,8 +144,9 @@ export function computePowerScore(cards: DeckCardForScore[], overrides?: TargetO
     const have = tag === 'land' ? landCount : bucketCounts.get(tag) ?? 0
     return Math.min(1, have / target)
   }
-  // Curve: reward an average mana value around 3; fall off above it.
-  const curveScore = nonlandCount === 0 ? 0 : clamp01(1 - Math.max(0, avgMv - 3) / 3)
+  // Curve: reward an average mana value around the deck's target (default 3);
+  // fall off above it. A tuned high-curve deck stops being punished for it.
+  const curveScore = nonlandCount === 0 ? 0 : clamp01(1 - Math.max(0, avgMv - curveTarget) / 3)
 
   const score01 =
     WEIGHTS.land * coverage('land') +

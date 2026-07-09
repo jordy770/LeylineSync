@@ -7340,3 +7340,39 @@
 | 16:53 | Edited components/collection/DeckDetail.tsx | modified DeckDetail() | ~72 |
 | 16:53 | Edited app/collection/decks/[id]/page.tsx | 4→3 lines | ~34 |
 | 16:54 | Binder-restyle geïmplementeerd (scoped .binder-shell token-override in globals.css + Outfit/Karla via next/font in Shell; CardPocket met echte Scryfall-scans + gradient-fallback; Deckbox met power-dial; boekenplank-mappen met 12-pocket paginering; swap-rijen met pockets; mulligan-hand als pockets; bnd-ai premium-panelen; pill-nav/tabs) + target-tuning per deck (mig 384 target_overrides, sanitize+engine+PATCH+TargetTuner-UI, 4 nieuwe unit tests) | globals.css, Shell/ui/CardPocket/DeckDetail/binders/page/advisor-componenten, power-score.ts, deck-loader.ts, api/decks/[id] | tsc+build+511 tests groen; mig 384 lokaal | ~80k |
+| 17:07 | Created supabase/migrations/202605010385_card_locks.sql | — | ~124 |
+| 17:07 | Edited lib/collection/power-score.ts | added 1 condition(s) | ~358 |
+| 17:07 | Edited lib/collection/power-score.ts | modified computePowerScore() | ~140 |
+| 17:07 | Edited lib/collection/power-score.ts | 2→3 lines | ~72 |
+| 17:07 | Edited lib/collection/deck-loader.ts | added 1 condition(s) | ~279 |
+| 17:07 | Edited lib/collection/deck-loader.ts | modified loadDeckForScoring() | ~211 |
+| 17:07 | Edited lib/collection/deck-loader.ts | 3→4 lines | ~36 |
+| 17:08 | Edited lib/collection/upgrade-scanner.ts | added optional chaining | ~84 |
+| 17:08 | Edited lib/collection/upgrade-scanner.ts | added 1 condition(s) | ~88 |
+| 17:08 | Edited lib/collection/upgrade-scanner.ts | 1→2 lines | ~54 |
+| 17:08 | Edited lib/collection/buy-suggestions.ts | added optional chaining | ~82 |
+| 17:08 | Edited lib/collection/buy-suggestions.ts | 1→3 lines | ~48 |
+| 17:08 | Edited lib/collection/ai-recommend.ts | 3→3 lines | ~58 |
+| 17:08 | Edited lib/collection/ai-recommend.ts | 2→7 lines | ~82 |
+| 17:08 | Edited lib/collection/ai-recommend.ts | added optional chaining | ~77 |
+| 17:08 | Edited lib/collection/ai-recommend.ts | 2→7 lines | ~120 |
+| 17:09 | Edited lib/collection/ai-recommend.ts | 1→2 lines | ~55 |
+| 17:09 | Edited app/api/decks/[id]/route.ts | added 1 import(s) | ~71 |
+| 17:09 | Edited app/api/decks/[id]/route.ts | added 1 condition(s) | ~296 |
+| 17:09 | Edited app/collection/decks/[id]/page.tsx | "id, name, color_identity," → "id, name, color_identity," | ~26 |
+| 17:09 | Edited components/collection/DeckDetail.tsx | modified DeckDetail() | ~96 |
+| 17:09 | Edited components/collection/DeckDetail.tsx | added error handling | ~425 |
+| 17:09 | Edited components/collection/DeckDetail.tsx | expanded (+7 lines) | ~88 |
+| 17:10 | Edited components/collection/DeckDetail.tsx | 8→9 lines | ~87 |
+| 17:10 | Edited components/collection/DeckDetail.tsx | CSS: locked, onToggleLock, oracleId | ~86 |
+| 17:10 | Edited components/collection/DeckDetail.tsx | CSS: opacity, 1 | ~418 |
+| 17:10 | Edited components/collection/DeckDetail.tsx | CSS: onDismiss, oracleId | ~116 |
+| 17:10 | Edited components/collection/DeckDetail.tsx | expanded (+10 lines) | ~253 |
+| 17:10 | Edited components/collection/DeckDetail.tsx | CSS: disabled, color | ~220 |
+| 17:10 | Edited components/collection/DeckDetail.tsx | 9→10 lines | ~210 |
+| 17:10 | Edited components/collection/DeckDetail.tsx | modified String() | ~65 |
+| 17:11 | Edited components/collection/DeckDetail.tsx | CSS: excluded | ~257 |
+| 17:11 | Edited components/collection/DeckDetail.tsx | 3→3 lines | ~58 |
+| 17:11 | Edited components/collection/DeckDetail.tsx | CSS: onDismiss, oracleId | ~71 |
+| 17:11 | Edited components/collection/DeckDetail.tsx | expanded (+11 lines) | ~241 |
+| 17:12 | Curve-target + kaart-locks: TargetOverrides.curve (1..8, 1 decimaal; curveScore rond eigen target ipv hardcoded 3); mig 385 co_decks.card_locks {locked, excluded} + sanitizeCardLocks (deck-loader); scanner: excluded uit pools, locked uit OUT-kandidaten (inDeck-filter vóór buildFreeUpgrades); suggestBuys: overrides + excluded-filter; Doctor: excluded uit goalPool + lockedCards in context/prompt; PATCH cardLocks; UI: 🔒-toggle op decklijst, ✕ never op free/occupied/buy + 'bring them back', curve-veld in TargetTuner; 3 nieuwe tests | power-score/deck-loader/upgrade-scanner/buy-suggestions/ai-recommend/route/DeckDetail | tsc+build+514 tests groen; mig 385 lokaal | ~40k |

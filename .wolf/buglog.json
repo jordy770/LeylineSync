@@ -19317,6 +19317,214 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09T14:50:53.962Z"
+    },
+    {
+      "id": "bug-1182",
+      "timestamp": "2026-07-09T15:07:17.705Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/collection/power-score.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 17→25 lines (3 removed) | Also: // Effective targets: guidelines + the deck's own ; const targets: Partial<Record<SynergyTag, number>>",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T15:07:27.620Z"
+    },
+    {
+      "id": "bug-1183",
+      "timestamp": "2026-07-09T15:07:35.620Z",
+      "error_message": "Missing guard clause",
+      "file": "lib/collection/deck-loader.ts",
+      "root_cause": "No early return/throw for edge case: input == null || typeof input !== 'object'",
+      "fix": "Added guard clause: if (input == null || typeof input !== 'objec)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:07:35.620Z"
+    },
+    {
+      "id": "bug-1184",
+      "timestamp": "2026-07-09T15:08:09.072Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/upgrade-scanner.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:08:09.072Z"
+    },
+    {
+      "id": "bug-1185",
+      "timestamp": "2026-07-09T15:08:21.839Z",
+      "error_message": "Type error",
+      "file": "lib/collection/upgrade-scanner.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:08:21.839Z"
+    },
+    {
+      "id": "bug-1186",
+      "timestamp": "2026-07-09T15:08:25.240Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/buy-suggestions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:08:25.240Z"
+    },
+    {
+      "id": "bug-1187",
+      "timestamp": "2026-07-09T15:08:26.831Z",
+      "error_message": "Wrong reference: map should be filter",
+      "file": "lib/collection/buy-suggestions.ts",
+      "root_cause": "Used \"map\" instead of \"filter\"",
+      "fix": "Changed map → filter",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:08:26.831Z"
+    },
+    {
+      "id": "bug-1188",
+      "timestamp": "2026-07-09T15:08:45.399Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/ai-recommend.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:08:45.399Z"
+    },
+    {
+      "id": "bug-1189",
+      "timestamp": "2026-07-09T15:09:02.101Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/collection/ai-recommend.ts",
+      "root_cause": "Had \"targetPower\"",
+      "fix": "Changed to \"lockedCards\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:09:02.101Z"
+    },
+    {
+      "id": "bug-1190",
+      "timestamp": "2026-07-09T15:09:36.881Z",
+      "error_message": "Incorrect value in code",
+      "file": "app/collection/decks/[id]/page.tsx",
+      "root_cause": "Had 'id, name, color_identity, source, source_url, tar",
+      "fix": "Changed to 'id, name, color_identity, source, source_url, tar",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:09:36.881Z"
+    },
+    {
+      "id": "bug-1191",
+      "timestamp": "2026-07-09T15:09:47.653Z",
+      "error_message": "Missing error handling in function",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:09:47.653Z"
+    },
+    {
+      "id": "bug-1192",
+      "timestamp": "2026-07-09T15:10:10.883Z",
+      "error_message": "Type error",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:10:10.883Z"
+    },
+    {
+      "id": "bug-1193",
+      "timestamp": "2026-07-09T15:10:38.366Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:10:38.366Z"
+    },
+    {
+      "id": "bug-1194",
+      "timestamp": "2026-07-09T15:10:43.987Z",
+      "error_message": "CSS fix: key",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "key: 'tutor', label: 'tutors', def: null → 'curve', label: 'avg mana value', def: 3, min: 1, max: 8, step: 0.1",
+      "fix": "Changed key: 'tutor', label: 'tutors', def: null → 'curve', label: 'avg mana value', def: 3, min: 1, max: 8, step: 0.1",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T15:11:04.106Z"
     }
   ]
 }

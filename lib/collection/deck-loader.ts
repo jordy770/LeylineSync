@@ -6,6 +6,25 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { sanitizeTargetOverrides } from './power-score'
 import type { DeckCardForScore, TargetOverrides } from './power-score'
+
+export interface CardLocks {
+  /** Pet cards — never propose cutting these. */
+  locked: string[]
+  /** Dismissed suggestions — never propose adding these. */
+  excluded: string[]
+}
+
+/** Pure: only uuid-shaped ids survive, deduped and capped. Null = no locks. */
+export function sanitizeCardLocks(input: unknown): CardLocks | null {
+  if (input == null || typeof input !== 'object') return null
+  const take = (v: unknown): string[] =>
+    Array.isArray(v)
+      ? [...new Set(v.filter((x): x is string => typeof x === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x)))].slice(0, 400)
+      : []
+  const locked = take((input as Record<string, unknown>).locked)
+  const excluded = take((input as Record<string, unknown>).excluded)
+  return locked.length > 0 || excluded.length > 0 ? { locked, excluded } : null
+}
 import type { CardTag, SynergyTag } from './synergy/tagger'
 import type { InDeckCard } from './upgrade-scanner'
 
@@ -22,14 +41,24 @@ export interface LoadedDeck {
   inDeck: InDeckCard[]
   /** The deck's own target tuning (mig 384) — null = classic guidelines. */
   targetOverrides: TargetOverrides | null
+  /** Pet cards / dismissed suggestions (mig 385) — null = no locks. */
+  cardLocks: CardLocks | null
 }
 
 export async function loadDeckForScoring(supabase: SupabaseClient, deckId: string): Promise<LoadedDeck> {
-  const empty: LoadedDeck = { found: false, deckIdentity: [], deckOracleIds: new Set(), scoreCards: [], inDeck: [], targetOverrides: null }
+  const empty: LoadedDeck = {
+    found: false,
+    deckIdentity: [],
+    deckOracleIds: new Set(),
+    scoreCards: [],
+    inDeck: [],
+    targetOverrides: null,
+    cardLocks: null,
+  }
 
   const { data: deck, error: deckError } = await supabase
     .from('co_decks')
-    .select('id, color_identity, target_overrides')
+    .select('id, color_identity, target_overrides, card_locks')
     .eq('id', deckId)
     .single()
   if (deckError || !deck) return empty
@@ -71,6 +100,7 @@ export async function loadDeckForScoring(supabase: SupabaseClient, deckId: strin
     scoreCards,
     inDeck,
     targetOverrides: sanitizeTargetOverrides(deck.target_overrides),
+    cardLocks: sanitizeCardLocks(deck.card_locks),
   }
 }
 

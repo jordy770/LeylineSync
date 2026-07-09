@@ -68,3 +68,14 @@ test('groundTradePackage keeps only real tradables, dedupes, and recomputes the 
   assert.deepEqual(cards.map((c) => c.name), ['Rhystic Study', 'Smothering Tithe'])
   assert.equal(totalEur, 60.5)
 })
+
+test('sanitizeCardLocks keeps only uuid-shaped ids and drops empty results', async () => {
+  const { sanitizeCardLocks } = await import('../../lib/collection/deck-loader')
+  const id = '0df4a143-c50d-47ce-a995-0fb77d02de03'
+  assert.equal(sanitizeCardLocks(null), null)
+  assert.equal(sanitizeCardLocks({ locked: ['not-a-uuid'], excluded: [] }), null)
+  assert.deepEqual(sanitizeCardLocks({ locked: [id, id, 'junk'], excluded: [id] }), {
+    locked: [id],
+    excluded: [id],
+  })
+})

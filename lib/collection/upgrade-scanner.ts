@@ -286,8 +286,10 @@ export async function scanDeckUpgrades(
   userId: string,
   deckId: string,
 ): Promise<{ result?: UpgradeScanResult; error?: string }> {
-  const { found, deckIdentity, deckOracleIds, scoreCards, inDeck, targetOverrides } = await loadDeckForScoring(supabase, deckId)
+  const { found, deckIdentity, deckOracleIds, scoreCards, inDeck, targetOverrides, cardLocks } = await loadDeckForScoring(supabase, deckId)
   if (!found) return { error: 'Deck not found.' }
+  const excluded = new Set(cardLocks?.excluded ?? [])
+  const locked = new Set(cardLocks?.locked ?? [])
 
   // scoreCards and inDeck are built index-aligned by loadDeckForScoring.
   const deckList: DeckListCard[] = scoreCards.map((c, i) => ({
@@ -329,6 +331,7 @@ export async function scanDeckUpgrades(
   for (const a of avail) {
     const oracleId = a.oracleId
     if (deckOracleIds.has(oracleId)) continue
+    if (excluded.has(oracleId)) continue // dismissed for this deck — never resuggest
     const m = meta.get(oracleId)
     if (!m || !fitsColorIdentity(m.colorIdentity, deckIdentity)) continue
     const candidate: UpgradeCandidate = {
@@ -367,7 +370,8 @@ export async function scanDeckUpgrades(
     result: {
       deckId,
       power,
-      free: buildFreeUpgrades(power.needs, freeCands, inDeck, ctx).map((f) => ({
+      // Locked (pet) cards can never be picked as the OUT of a swap.
+      free: buildFreeUpgrades(power.needs, freeCands, inDeck.filter((c) => !locked.has(c.oracleId)), ctx).map((f) => ({
         ...f,
         binderNames: binderNames.get(f.in.oracleId) ?? [],
       })),
