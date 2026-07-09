@@ -16,10 +16,13 @@ export default async function GamesPage() {
   if (error || !claims?.claims?.sub) redirect('/auth/login')
   const userId = claims.claims.sub as string
 
+  // is_bot=false: bot test runs seat a bot under a real auth id — those are not
+  // the user's games and must never reach the coach (bug-1210).
   const { data: rows } = await supabase
     .from('game_session_players')
     .select('session_id, game_sessions!inner(id, status, created_at, finished_at, winner_player_id, format)')
     .eq('player_id', userId)
+    .eq('is_bot', false)
     .eq('game_sessions.status', 'finished')
     .limit(60)
 

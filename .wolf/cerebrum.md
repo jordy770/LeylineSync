@@ -536,3 +536,9 @@
 
 ## Key Learnings — 2026-07-09 (lifelink-status)
 - Lifelink is 3 lagen: (1) damage-afhandeling in apply_damage_to_player/creature + card_has_lifelink accessor — WERKT (mig 283, incl. fire_lifegain_triggers); (2) printed keyword uit cards.keywords → de case-loop in register_card_continuous_effects mapt 'lifelink' NIET (valt op null, wordt geskipt) → vanilla lifelink-creatures gainen géén life; (3) editor: BUILDER_KEYWORDS in lib/game/card-behavior-builder.ts mist 'lifelink' (schema staat het wél toe). Extra vals signaal: HANDLED_KEYWORDS in card-behavior.ts claimt lifelink als 'engine-handled' → deck editor toont zulke kaarten als 'vanilla'.
+
+## Key Learnings — 2026-07-10 (ManaBox deck-containers)
+- ManaBox-export markeert deck-lidmaatschap via binder_type='deck' + binder_name=decknaam; co_collection_items bewaart dat al per item, dus decks bouwen = puur hergroeperen op binder_name (geen naam-matching). Commander staat NIET in de export → kandidaten = legendary creatures uit de container, bevestiging via UI; enige kandidaat wordt automatisch gekozen. Nieuwe seam: lib/collection/deck-containers.ts + GET/POST /api/collection/deck-containers + DeckContainersPanel (ImportWizard). Verificatie-truc: e2e-script moet IN de repo staan (node_modules-resolutie) en relatieve imports gebruiken (Windows-abs-pad breekt ESM); service-key runtime inlezen via 'supabase status -o json', nooit printen.
+
+## Do-Not-Repeat — 2026-07-10 (bot onder user-account)
+- Lokale bot-tests NOOIT met het echte user-account (jordy@test.com / 0df4a143) als --bot draaien: scripts/bot-runner.mjs flagt die seat is_bot=true maar de games komen dan op naam van de user te staan (bron van bug-1210, Krenko-coaching). Gebruik cpu-bot-test@local (f950ffe1) voor lokale bot-seats. App-kant filtert inmiddels op is_bot, maar de vervuiling zelf voorkomen is beter.

@@ -19805,6 +19805,72 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-07-09T00:00:00Z"
+    },
+    {
+      "id": "bug-1212",
+      "timestamp": "2026-07-09T22:08:25.825Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../.claude/jobs/adcb6c2b/tmp/verify-deck-containers.mts",
+      "root_cause": "Had 'C:/Users/Jordy/dev/LeylineSync/lib/collection/dec",
+      "fix": "Changed to './lib/collection/deck-containers'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T22:08:25.825Z"
+    },
+    {
+      "id": "bug-1213",
+      "timestamp": "2026-07-09T22:21:41.129Z",
+      "error_message": "Missing guard clause",
+      "file": "lib/collection/ai-game-analysis.ts",
+      "root_cause": "No early return/throw for edge case: !seat",
+      "fix": "Added guard clause: if (!seat)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T22:21:41.129Z"
+    },
+    {
+      "id": "bug-1214",
+      "timestamp": "2026-07-09T22:22:49.963Z",
+      "error_message": "Wrong reference: resolveCombat should be as",
+      "file": "tests/feature/game-log.test.ts",
+      "root_cause": "Used \"resolveCombat\" instead of \"as\"",
+      "fix": "Changed resolveCombat → as",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T22:22:49.963Z"
+    },
+    {
+      "id": "bug-1210",
+      "timestamp": "2026-07-10T00:00:00Z",
+      "error_message": "Post-game coaching claimt dat de user een Krenko-game speelde die hij nooit gespeeld heeft; acties lijken door elkaar gehaald",
+      "file": "app/collection/games/page.tsx; lib/collection/ai-game-analysis.ts",
+      "root_cause": "Bot-vs-bot testsessies (3 juli) zetten een botseat onder het echte auth-id van de user (game_session_players.is_bot=true, player_id=user). De games-lijst filterde alleen op player_id + status=finished, en analyzeGame labelt alles van dat id als You — dus de Krenko-acties van de bot werden als user-acties gecoacht. Het log zelf was correct; de seat-selectie niet.",
+      "fix": "games/page.tsx filtert nu .eq(is_bot,false); analyzeGame weigert sessies waar de user-seat is_bot=true (of ontbreekt). Daarnaast mig 387: log verrijkt met turn-markers, attack/block-regels, creature-deaths en winnaar zodat de coach beurtcontext heeft (was: alleen casts/resolves/life).",
+      "tags": [
+        "post-game-coaching",
+        "game_action_log",
+        "is_bot",
+        "ai",
+        "game_session_players"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-10T00:00:00Z"
     }
   ]
 }

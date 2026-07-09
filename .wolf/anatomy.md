@@ -1,10 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T20:34:47.478Z
-> Files: 66 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T22:22:49.931Z
+> Files: 73 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
+- `verify-deck-containers.mts` — End-to-end verify of the ManaBox deck-container import against the LOCAL dev (~1120 tok)
 
 ## ../../.claude/plans/
 
@@ -62,6 +63,10 @@
 
 ## app/api/cards/generate-behavior/
 
+
+## app/api/collection/deck-containers/
+
+- `route.ts` — GET  /api/collection/deck-containers (~669 tok)
 
 ## app/api/collection/import/
 
@@ -188,7 +193,7 @@
 ## app/collection/games/
 
 - `loading.tsx` — Loading (~71 tok)
-- `page.tsx` — dynamic (~655 tok)
+- `page.tsx` — dynamic (~704 tok)
 
 ## app/collection/import/
 
@@ -244,8 +249,10 @@
 - `AdvisorFits.tsx` — AdvisorFits (~1729 tok)
 - `CardPocket.tsx` — MANA_GRADIENT (~552 tok)
 - `CombosTab.tsx` — CombosTab (~1526 tok)
+- `DeckContainersPanel.tsx` — Bump to refetch — the wizard raises this after a fresh collection import. (~2006 tok)
 - `DeckDetail.tsx` — BUCKET_ORDER (~19935 tok)
 - `GameAnalysisList.tsx` — GameAnalysisList (~1333 tok)
+- `ImportWizard.tsx` — ImportWizard (~2390 tok)
 - `MulliganTab.tsx` — MulliganTab (~1636 tok)
 - `SearchLive.tsx` — COLORS (~3669 tok)
 - `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1018 tok)
@@ -284,7 +291,7 @@
 
 - `ai-client.ts` — One JSON-shaped exchange: cached static system prompt, JSON context in the (~673 tok)
 - `ai-combos.ts` — A card completing the line that the player does NOT own (buy target). (~1595 tok)
-- `ai-game-analysis.ts` — Post-game analysis — the feature only LeylineSync can build: the app IS the (~1059 tok)
+- `ai-game-analysis.ts` — Post-game analysis — the feature only LeylineSync can build: the app IS the (~1268 tok)
 - `ai-gate.ts` — The one paywall/quota gate every premium AI route calls before touching the (~350 tok)
 - `ai-mulligan.ts` — Mulligan trainer — the player judges a sample hand from their own deck, the (~944 tok)
 - `ai-recommend.ts` — Flatten the scan's free + occupied upgrades into one candidate list (deduped). (~4484 tok)
@@ -292,6 +299,7 @@
 - `analyze-deck.ts` — Deck analysis: load → score → (optionally) cache the result in co_deck_analyses. (~359 tok)
 - `brackets.ts` — How many Game Changers a deck may hold at a target bracket. (~1148 tok)
 - `buy-suggestions.ts` — A Scryfall exact-name search link — the brief uses Scryfall for card info/pricing. (~1448 tok)
+- `deck-containers.ts` — Legendary creatures in the container — the plausible commanders. (~2040 tok)
 - `deck-loader.ts` — Pet cards — never propose cutting these. (~2536 tok)
 - `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1716 tok)
 - `mulligan.ts` — Pure sample-hand drawing for the mulligan trainer. The caller supplies the (~203 tok)
@@ -346,6 +354,7 @@
 - `202605010384_deck_target_overrides.sql` — Per-deck target tuning. (~187 tok)
 - `202605010385_card_locks.sql` — Card locks per deck. (~124 tok)
 - `202605010386_printed_lifelink.sql` — Printed lifelink: keyword-loop in register_card_continuous_effects mapt nu ook 'lifelink' uit cards.keywords. (~3021 tok)
+- `202605010387_game_log_combat_turns.sql` — 202605010387_game_log_combat_turns (~1673 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -356,6 +365,7 @@
 ## tests/feature/
 
 - `ai-quota.test.ts` — Premium AI credits (mig 382). consume_ai_credit is the single server-side (~1236 tok)
+- `game-log.test.ts` — mig 387 — the game log grows turn/combat/death/winner context. (~749 tok)
 - `lifelink-taps.test.ts` — mig 283 — lifelink and the becomes_tapped event. (~1296 tok)
 
 ## tests/fixtures/

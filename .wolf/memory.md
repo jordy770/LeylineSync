@@ -7435,3 +7435,26 @@
 | 18:30 | Edited tests/feature/lifelink-taps.test.ts | expanded (+17 lines) | ~245 |
 | 18:31 | Edited scripts/triage-decklist.mjs | 5→5 lines | ~62 |
 | -- | Fix printed lifelink: mig 386 (keyword-loop), BUILDER_KEYWORDS+labels, triage-lijst, LT4-test + seed keywords-kolom | supabase/migrations/202605010386_printed_lifelink.sql, lib/game/card-behavior-builder.ts, tests/feature/lifelink-taps.test.ts, tests/harness/seed.ts, tests/fixtures/test-cards.json, scripts/triage-decklist.mjs | LT1-4 groen, tsc schoon, volle suite draait | ~25k |
+| -- | Deploy naar prod: db push migs 382-386 naar hosted (user draaide push zelf), VPS git pull df2ce22 + compose rebuild; site 200 | VPS /opt/leylinesync | web/bot/cleanup Up, leylinesync.com OK | ~5k |
+| -- | Release v0.9.0 gepubliceerd; deploy-workflow groen, VPS op tag v0.9.0, site 200 | github.com/jordy770/LeylineSync releases | prod in sync met release | ~3k |
+| 22:34 | Edited .github/workflows/deploy.yml | 8→6 lines | ~57 |
+| 22:34 | Edited .github/workflows/ci.yml | 3→3 lines | ~20 |
+| 22:34 | Edited .github/workflows/ci.yml | inline fix | ~9 |
+| -- | GH Actions gebumpt van Node20-deprecated versies: checkout v7, setup-node v6, cache v6, setup-cli v3 (npm-install, token weg); CI groen op ba7a2b4 | .github/workflows/{ci,deploy}.yml | deprecation-warning weg | ~8k |
+| 00:03 | Created lib/collection/deck-containers.ts | — | ~2040 |
+| 00:03 | Created app/api/collection/deck-containers/route.ts | — | ~669 |
+| 00:04 | Created components/collection/DeckContainersPanel.tsx | — | ~2006 |
+| 00:04 | Edited components/collection/ImportWizard.tsx | added 1 import(s) | ~48 |
+| 00:04 | Edited components/collection/ImportWizard.tsx | 2→4 lines | ~75 |
+| 00:04 | Edited components/collection/ImportWizard.tsx | 4→5 lines | ~27 |
+| 00:04 | Edited components/collection/ImportWizard.tsx | 6→8 lines | ~36 |
+| 00:07 | Created ../../.claude/jobs/adcb6c2b/tmp/verify-deck-containers.mts | — | ~1127 |
+| 00:08 | Edited ../../.claude/jobs/adcb6c2b/tmp/verify-deck-containers.mts | "C:/Users/Jordy/dev/Leylin" → "./lib/collection/deck-con" | ~26 |
+| -- | ManaBox deck-containers feature: lib/collection/deck-containers.ts (detectie + import), API GET/POST /api/collection/deck-containers, DeckContainersPanel in ImportWizard; e2e geverifieerd op dev-DB (42 containers, round-trip Toph-deck incl. cleanup) | lib/collection/deck-containers.ts, app/api/collection/deck-containers/route.ts, components/collection/{DeckContainersPanel,ImportWizard}.tsx | tsc/lint/build groen, ALL CHECKS PASSED | ~45k |
+| 00:21 | Created supabase/migrations/202605010387_game_log_combat_turns.sql | — | ~1673 |
+| 00:21 | Edited app/collection/games/page.tsx | CSS: false | ~127 |
+| 00:21 | Edited lib/collection/ai-game-analysis.ts | added 2 condition(s) | ~182 |
+| 00:21 | Edited lib/collection/ai-game-analysis.ts | 1→2 lines | ~107 |
+| 00:22 | Created tests/feature/game-log.test.ts | — | ~746 |
+| 00:22 | Edited tests/feature/game-log.test.ts | 2→2 lines | ~37 |
+| -- | Coaching-bug: botseats onder user-id vervuilden games-lijst → is_bot-filter + analyse-guard; mig 387 verrijkt game log (turns/attacks/blocks/deaths/winner) + tests GL1-2 | app/collection/games/page.tsx, lib/collection/ai-game-analysis.ts, supabase/migrations/202605010387_game_log_combat_turns.sql, tests/feature/game-log.test.ts | GL1-2 groen, tsc schoon, suite draait | ~40k |

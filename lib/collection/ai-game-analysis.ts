@@ -22,6 +22,7 @@ export type GameAnalysis = z.infer<typeof ReplySchema>
 
 const SYSTEM = `You are a Magic: The Gathering Commander game coach analysing a finished multiplayer game from the ENGINE'S OWN ACTION LOG.
 The log lines are real events ("You: casts Sol Ring", "Opponent 2: life 9 → 6"). "You" is the player being coached; other seats are labeled Opponent 1..N.
+The log also carries turn markers ("turn 4 begins"), combat ("attacks seat 2 with X", "blocks X with Y"), creature deaths and the winner ("wins the game") — use turn markers to anchor moments in time ("on turn 6, ...").
 Deliver:
 - "summary": 2-4 sentences — how the game went for You and (if determinable) how it was won or lost.
 - "keyMoments": 2-5 turning points, each one sentence, referencing actual log events.
@@ -37,6 +38,17 @@ export async function analyzeGame(
   options: { apiKey?: string } = {},
 ): Promise<{ result?: GameAnalysis; error?: string }> {
   const apiKey = requireApiKey(options.apiKey)
+
+  // The user must have HUMANLY played this game. Bot test runs can seat a bot
+  // under a real auth id; coaching someone on a bot's plays is nonsense (bug-1210).
+  const { data: seat } = await supabase
+    .from('game_session_players')
+    .select('is_bot')
+    .eq('session_id', sessionId)
+    .eq('player_id', userId)
+    .maybeSingle()
+  if (!seat) return { error: 'You were not a player in this game.' }
+  if (seat.is_bot) return { error: 'This was a bot test game — there is nothing to coach you on.' }
 
   // RLS: only session members can read the log — a non-member gets 0 rows.
   const { data: rows, error } = await supabase
