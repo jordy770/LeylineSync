@@ -13,7 +13,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { estimateBracket, gameChangerAllowance, isGameChanger } from './brackets'
 import type { BracketEstimate } from './brackets'
-import { IN_CHUNK, loadAvailability, loadBinderNames, loadDeckForScoring, loadOracleMeta, loadTags, oneToOne } from './deck-loader'
+import { IN_CHUNK, forEachIdChunk, loadAvailability, loadBinderNames, loadDeckForScoring, loadOracleMeta, loadTags, oneToOne } from './deck-loader'
 import { computePowerScore } from './power-score'
 import type { DeckNeed, PowerScore } from './power-score'
 import {
@@ -407,8 +407,7 @@ async function loadUsedBy(
 ): Promise<Map<string, DeckRef[]>> {
   const out = new Map<string, DeckRef[]>()
   if (oracleIds.length === 0) return out
-  for (let i = 0; i < oracleIds.length; i += IN_CHUNK) {
-    const chunk = oracleIds.slice(i, i + IN_CHUNK)
+  await forEachIdChunk(oracleIds, IN_CHUNK, async (chunk) => {
     const { data, error } = await supabase
       .from('co_deck_cards')
       .select('oracle_id, co_decks!inner(name, user_id, id)')
@@ -421,6 +420,6 @@ async function loadUsedBy(
       list.push({ id: deck.id as string, name: deck.name as string })
       out.set(r.oracle_id as string, list)
     }
-  }
+  })
   return out
 }

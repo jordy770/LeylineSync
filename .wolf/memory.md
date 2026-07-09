@@ -7394,3 +7394,10 @@
 | 17:25 | Edited tests/unit/ai-recommend.test.ts | 3→5 lines | ~39 |
 | 17:26 | Edited lib/collection/power-score.ts | 1→2 lines | ~54 |
 | 17:26 | Commander Brackets geïntegreerd: lib/collection/brackets.ts (officiële 53-kaarts Game Changers-lijst per 9-2-2026, via Scryfall is:gamechanger opgehaald 9-7; estimateBracket op GC+tutors, gameChangerAllowance 0/0/3/inf/inf); target_overrides.bracket (1-5); scanner filtert GC-kandidaten boven allowance en levert bracket+targetBracket in scanresult; Doctor krijgt bracket-context + promptregels (GC's cutten bij te laag target); UI: ~B-badge naast power + bracket-veld in TargetTuner; 2 nieuwe tests | brackets.ts, power-score, upgrade-scanner, ai-recommend, DeckDetail | 516 tests groen | ~30k |
+| 17:46 | Edited lib/collection/deck-loader.ts | modified forEachIdChunk() | ~282 |
+| 17:46 | Edited lib/collection/deck-loader.ts | modified loadOracleMeta() | ~253 |
+| 17:46 | Edited lib/collection/deck-loader.ts | modified for() | ~208 |
+| 17:46 | Edited lib/collection/deck-loader.ts | modified loadTags() | ~184 |
+| 17:46 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~42 |
+| 17:47 | Edited lib/collection/upgrade-scanner.ts | modified for() | ~209 |
+| 17:48 | bug-1117 (perf): trage /collection door 55 sequentiële meta-chunks (gevolg van bug-1116 volledige set); forEachIdChunk met concurrency 8 in deck-loader + scanner loadUsedBy | lib/collection/deck-loader.ts, upgrade-scanner.ts | tsc+build+516 tests groen | ~10k |

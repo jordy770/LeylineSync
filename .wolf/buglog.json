@@ -19637,6 +19637,58 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09T15:24:58.492Z"
+    },
+    {
+      "id": "bug-1202",
+      "timestamp": "2026-07-09T15:46:23.566Z",
+      "error_message": "Missing await",
+      "file": "lib/collection/deck-loader.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T15:46:45.596Z"
+    },
+    {
+      "id": "bug-1203",
+      "timestamp": "2026-07-09T15:47:06.060Z",
+      "error_message": "Function not marked async",
+      "file": "lib/collection/upgrade-scanner.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:47:06.060Z"
+    },
+    {
+      "id": "bug-1117",
+      "timestamp": "2026-07-09T15:48:26.376Z",
+      "error_message": "User: /collection openen duurt extreem lang",
+      "file": "lib/collection/deck-loader.ts",
+      "root_cause": "Alle chunked .in()-loaders (loadOracleMeta/loadTags/loadBinderNames/loadUsedBy) draaiden hun 100-id-chunks SEQUENTIEEL. Na de bug-1116 paginatie-fix laadt het dashboard de volledige collectie (5451 uniek = 55 chunks ipv 10) — 55+ seriële netwerkrondes van elk ~50-150ms = vele seconden per paginaweergave",
+      "fix": "forEachIdChunk-helper (deck-loader.ts): chunks draaien met bounded concurrency 8 (Promise.all per batch) — zelfde queries, ~7x minder wandkloktijd; toegepast op loadOracleMeta, loadTags, loadBinderNames en scanner loadUsedBy",
+      "tags": [
+        "performance",
+        "sequential-io",
+        "pagination",
+        "collection",
+        "dashboard"
+      ],
+      "related_bugs": [
+        "bug-1116"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:48:26.376Z"
     }
   ]
 }

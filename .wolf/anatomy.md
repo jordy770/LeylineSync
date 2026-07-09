@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T15:26:26.750Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T15:47:06.036Z
 > Files: 47 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
@@ -280,11 +280,11 @@
 - `analyze-deck.ts` — Deck analysis: load → score → (optionally) cache the result in co_deck_analyses. (~359 tok)
 - `brackets.ts` — How many Game Changers a deck may hold at a target bracket. (~1148 tok)
 - `buy-suggestions.ts` — A Scryfall exact-name search link — the brief uses Scryfall for card info/pricing. (~1448 tok)
-- `deck-loader.ts` — Pet cards — never propose cutting these. (~2361 tok)
+- `deck-loader.ts` — Pet cards — never propose cutting these. (~2536 tok)
 - `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1716 tok)
 - `mulligan.ts` — Pure sample-hand drawing for the mulligan trainer. The caller supplies the (~203 tok)
 - `power-score.ts` — Tags a player may set a per-deck target for. counterspell/tutor have no (~3113 tok)
-- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4490 tok)
+- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4482 tok)
 
 ## lib/collection/parsers/
 

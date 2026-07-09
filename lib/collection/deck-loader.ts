@@ -33,6 +33,24 @@ import type { InDeckCard } from './upgrade-scanner'
 // chunked `.in()` loader uses the same safe size.
 export const IN_CHUNK = 100
 
+// A 5000+-unique collection means 50+ chunks — run them CONCURRENTLY (bounded)
+// instead of one round trip at a time, or the dashboard takes seconds per view
+// (perf regression after the bug-1116 pagination fix surfaced the full set).
+const CHUNK_CONCURRENCY = 8
+
+/** Run `fn` over id-chunks of `size`, at most CHUNK_CONCURRENCY in flight. */
+export async function forEachIdChunk(
+  ids: string[],
+  size: number,
+  fn: (chunk: string[]) => Promise<void>,
+): Promise<void> {
+  const chunks: string[][] = []
+  for (let i = 0; i < ids.length; i += size) chunks.push(ids.slice(i, i + size))
+  for (let i = 0; i < chunks.length; i += CHUNK_CONCURRENCY) {
+    await Promise.all(chunks.slice(i, i + CHUNK_CONCURRENCY).map(fn))
+  }
+}
+
 export interface LoadedDeck {
   found: boolean
   deckIdentity: string[]
@@ -147,8 +165,7 @@ export interface OracleMeta {
 
 export async function loadOracleMeta(supabase: SupabaseClient, oracleIds: string[]): Promise<Map<string, OracleMeta>> {
   const out = new Map<string, OracleMeta>()
-  for (let i = 0; i < oracleIds.length; i += IN_CHUNK) {
-    const chunk = oracleIds.slice(i, i + IN_CHUNK)
+  await forEachIdChunk(oracleIds, IN_CHUNK, async (chunk) => {
     const { data, error } = await supabase
       .from('co_card_oracle')
       .select('oracle_id, name, cmc, type_line, color_identity, prices')
@@ -164,7 +181,7 @@ export async function loadOracleMeta(supabase: SupabaseClient, oracleIds: string
         priceEur: prices?.eur ? Number(prices.eur) : null,
       })
     }
-  }
+  })
   return out
 }
 
@@ -176,8 +193,7 @@ export async function loadBinderNames(
 ): Promise<Map<string, string[]>> {
   const out = new Map<string, string[]>()
   if (oracleIds.length === 0) return out
-  for (let i = 0; i < oracleIds.length; i += IN_CHUNK) {
-    const chunk = oracleIds.slice(i, i + IN_CHUNK)
+  await forEachIdChunk(oracleIds, IN_CHUNK, async (chunk) => {
     const { data, error } = await supabase
       .from('co_collection_items')
       .select('oracle_id, binder_name')
@@ -192,14 +208,13 @@ export async function loadBinderNames(
       if (!list.includes(name)) list.push(name)
       out.set(r.oracle_id as string, list)
     }
-  }
+  })
   return out
 }
 
 export async function loadTags(supabase: SupabaseClient, oracleIds: string[]): Promise<Map<string, CardTag[]>> {
   const out = new Map<string, CardTag[]>()
-  for (let i = 0; i < oracleIds.length; i += IN_CHUNK) {
-    const chunk = oracleIds.slice(i, i + IN_CHUNK)
+  await forEachIdChunk(oracleIds, IN_CHUNK, async (chunk) => {
     const { data, error } = await supabase.from('co_card_tags').select('oracle_id, tag, weight').in('oracle_id', chunk)
     if (error) throw new Error(`Tag load failed: ${error.message}`)
     for (const r of data ?? []) {
@@ -207,7 +222,7 @@ export async function loadTags(supabase: SupabaseClient, oracleIds: string[]): P
       list.push({ tag: r.tag as SynergyTag, weight: Number(r.weight) || 1 })
       out.set(r.oracle_id as string, list)
     }
-  }
+  })
   return out
 }
 

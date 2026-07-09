@@ -525,3 +525,7 @@
 ## Key Learnings — 2026-07-09 (Commander Brackets)
 
 - Brackets-integratie: lib/collection/brackets.ts bevat de OFFICIËLE Game Changers-lijst (53 kaarten, WotC-update 9-2-2026) — geverifieerd opgehaald via Scryfall `is:gamechanger` (curl-oneliner staat in de file-header; lijst wijzigt paar keer per jaar → bij een WotC-update alleen die array verversen). Regels: GC's verboden in bracket 1-2, max 3 in bracket 3, vrij in 4-5 (gameChangerAllowance). estimateBracket meet alleen wat meetbaar is (GC-count + tutor-dichtheid → schat 2/3/4); MLD/extra turns/early combos blijven expliciet "eigen oordeel" in de note. target_overrides.bracket (1-5) wordt net als curve UIT de tag-spread gedestructured in computePowerScore (anders pseudo-need). Scanner: kandidaat die GC is wordt overgeslagen zodra gcRoom (allowance − huidige GC's) 0 is. Split-face matching: front-face naam telt (Tergrid).
+
+## Do-Not-Repeat — 2026-07-09 (sequentiële chunk-IO)
+
+- Chunked .in()-loaders NOOIT sequentieel awaiten in een for-loop: bij een volledige collectie (5451 uniek) werd loadOracleMeta 55 seriële requests → seconden laadtijd op /collection (bug-1117, het perf-staartje van de bug-1116 paginatie-fix). Gebruik forEachIdChunk (deck-loader.ts, bounded concurrency 8). Symptoom: een pagina die lineair trager wordt met collectiegrootte terwijl de queries zelf snel zijn. Structurele vervolg-optie als het ooit wéér te traag wordt: dashboard-aggregaten (waarde-som, staple-ranking) server-side in één security-definer RPC berekenen ipv alle meta naar Node te halen.
