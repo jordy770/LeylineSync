@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { CardName } from './CardName'
+import { CardPocket } from './CardPocket'
 import { ShopLinksInline } from './ShopLinks'
 import { Panel } from './ui'
 
@@ -117,7 +118,9 @@ export function AdvisorContested({ contested }: { contested: ContestedView[] }) 
         const losers = c.ranking.slice(keepCount)
         const winner = c.ranking[0]
         return (
-          <Panel key={c.oracleId} className="p-5">
+          <Panel key={c.oracleId} className="flex gap-4 p-5">
+            <CardPocket name={c.cardName} className="hidden w-20 shrink-0 self-start sm:block" />
+            <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <span className="font-display text-base" style={{ color: 'var(--text-bright)' }}>
                 <CardName name={c.cardName} />
@@ -193,6 +196,7 @@ export function AdvisorContested({ contested }: { contested: ContestedView[] }) 
               <span className="ml-auto">
                 <ShopLinksInline name={c.cardName} />
               </span>
+            </div>
             </div>
           </Panel>
         )

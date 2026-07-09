@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { createClient } from '@/lib/supabase/client'
 import { CardName } from './CardName'
+import { CardPocket } from './CardPocket'
 import { CombosTab } from './CombosTab'
 import { MulliganTab } from './MulliganTab'
 import { ShopLinks, ShopLinksInline } from './ShopLinks'
@@ -91,11 +92,13 @@ export function DeckDetail({
   colorIdentity,
   source,
   sourceUrl,
+  initialTargets,
 }: {
   deckId: string
   colorIdentity: string[]
   source?: string | null
   sourceUrl?: string | null
+  initialTargets?: Record<string, number> | null
 }) {
   const router = useRouter()
   const [scan, setScan] = useState<ScanResult | null>(null)
@@ -107,6 +110,7 @@ export function DeckDetail({
   const [doctorBudget, setDoctorBudget] = useState<string>('5')
   const [doctorGoal, setDoctorGoal] = useState<string>('')
   const [doctorPower, setDoctorPower] = useState<string>('')
+  const [tuning, setTuning] = useState(false)
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [buyBudget, setBuyBudget] = useState<string>('5')
@@ -497,9 +501,19 @@ export function DeckDetail({
         </Panel>
 
         <Panel className="p-6">
-          <h3 className="mb-3 text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
-            Composition
-          </h3>
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
+              Composition
+            </h3>
+            <button
+              onClick={() => setTuning((t) => !t)}
+              className="text-xs underline underline-offset-2"
+              style={{ color: tuning ? 'var(--gold-bright)' : 'var(--text-faint)' }}
+              title="Tune this deck's targets — fewer lands, more interaction, whatever this deck actually wants"
+            >
+              ⚙ Tune targets
+            </button>
+          </div>
           <div className="grid grid-cols-3 gap-3">
             {BUCKET_ORDER.map((tag) => {
               const need = power.needs.find((n) => n.tag === tag)
@@ -518,6 +532,18 @@ export function DeckDetail({
           </div>
         </Panel>
       </div>
+
+      {tuning ? (
+        <TargetTuner
+          deckId={deckId}
+          initial={initialTargets ?? null}
+          onSaved={async () => {
+            setTuning(false)
+            setScan(null)
+            await load()
+          }}
+        />
+      ) : null}
 
       <HealthPanel health={power.health} />
 
@@ -822,6 +848,12 @@ function FreeUpgradesList({
               style={{ accentColor: 'var(--frame-gold)' }}
               aria-label={`Select ${u.in.name}`}
             />
+            {/* The swap, visually: old card greyed out → new card in colour. */}
+            <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
+              {u.out ? <CardPocket name={u.out.name} dimmed className="w-14" /> : <div className="w-14" />}
+              <span className="font-display" style={{ color: 'var(--gold-bright)' }}>→</span>
+              <CardPocket name={u.in.name} className="w-14" />
+            </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 {u.out ? (
@@ -1221,7 +1253,7 @@ function DoctorTab({
 
   return (
     <div className="space-y-3">
-      <Panel className="space-y-3 p-4">
+      <Panel className="bnd-ai space-y-3 p-4">
         <p className="font-rules text-sm" style={{ color: 'var(--text-dim)' }}>
           The doctor turns the scan into one coherent plan — what to swap, what to skip, and why. Tell it where you
           want the deck to go and it hunts your own binder first, buys last. Grounded in your collection; it never
@@ -1305,8 +1337,8 @@ function DoctorTab({
 
       {result ? (
         <>
-          <Panel className="p-5">
-            <h4 className="mb-1 text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
+          <Panel className="bnd-ai p-5">
+            <h4 className="mb-1 text-xs uppercase tracking-wide" style={{ color: 'var(--gold-bright)' }}>
               The plan
             </h4>
             <p className="font-rules text-sm" style={{ color: 'var(--text)' }}>
@@ -1350,6 +1382,119 @@ function DoctorTab({
         </>
       ) : null}
     </div>
+  )
+}
+
+// Per-deck target tuning (mig 384): "this deck runs fine on 34 lands", "this
+// deck wants 12 interaction". Saving re-scores the deck — the needs, the
+// scanner, the Advisor and the Doctor all follow the tuned targets.
+const TUNABLE_FIELDS: { key: string; label: string; def: number | null }[] = [
+  { key: 'land', label: 'lands', def: 37 },
+  { key: 'ramp', label: 'ramp', def: 10 },
+  { key: 'card_draw', label: 'card draw', def: 10 },
+  { key: 'removal', label: 'removal', def: 8 },
+  { key: 'board_wipe', label: 'board wipes', def: 3 },
+  { key: 'counterspell', label: 'counterspells', def: null },
+  { key: 'tutor', label: 'tutors', def: null },
+]
+
+function TargetTuner({
+  deckId,
+  initial,
+  onSaved,
+}: {
+  deckId: string
+  initial: Record<string, number> | null
+  onSaved: () => Promise<void>
+}) {
+  const [draft, setDraft] = useState<Record<string, string>>(() => {
+    const d: Record<string, string> = {}
+    for (const f of TUNABLE_FIELDS) d[f.key] = initial?.[f.key] != null ? String(initial[f.key]) : ''
+    return d
+  })
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function save(reset = false) {
+    setBusy(true)
+    setError(null)
+    const overrides: Record<string, number> = {}
+    if (!reset) {
+      for (const f of TUNABLE_FIELDS) {
+        const raw = draft[f.key].trim()
+        if (raw !== '' && !Number.isNaN(Number(raw))) overrides[f.key] = Number(raw)
+      }
+    }
+    try {
+      const res = await fetch(`/api/decks/${deckId}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ targetOverrides: Object.keys(overrides).length > 0 ? overrides : null }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        setError(body.error ?? 'Could not save the targets.')
+        return
+      }
+      await onSaved()
+    } catch {
+      setError('Network error saving the targets.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <Panel className="p-5">
+      <div className="flex items-baseline justify-between gap-3">
+        <h3 className="text-xs uppercase tracking-wide" style={{ color: 'var(--gold-bright)' }}>
+          ⚙ This deck&apos;s targets
+        </h3>
+        <p className="font-rules text-xs" style={{ color: 'var(--text-faint)' }}>
+          Empty = the classic guideline. Everything follows: needs, scanner, Advisor, Doctor.
+        </p>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-3">
+        {TUNABLE_FIELDS.map((f) => (
+          <label key={f.key} className="text-xs" style={{ color: 'var(--text-dim)' }}>
+            <span className="mb-1 block capitalize">{f.label}</span>
+            <input
+              type="number"
+              min={0}
+              max={60}
+              value={draft[f.key]}
+              placeholder={f.def != null ? String(f.def) : 'off'}
+              onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
+              className="w-20 rounded-lg bg-transparent px-2 py-1.5 text-sm"
+              style={{ border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text)' }}
+            />
+          </label>
+        ))}
+      </div>
+      <div className="mt-4 flex items-center gap-3">
+        <button
+          onClick={() => void save(false)}
+          disabled={busy}
+          className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40"
+          style={{ background: 'linear-gradient(150deg, var(--gold-bright), var(--frame-gold))', color: '#1c1407' }}
+        >
+          {busy ? 'Saving…' : 'Save & re-score'}
+        </button>
+        <button
+          onClick={() => void save(true)}
+          disabled={busy}
+          className="text-sm underline underline-offset-2"
+          style={{ color: 'var(--text-dim)' }}
+        >
+          Reset to guidelines
+        </button>
+        {error ? (
+          <span className="text-sm" style={{ color: 'var(--danger)' }}>
+            {error}
+          </span>
+        ) : null}
+      </div>
+    </Panel>
   )
 }
 
@@ -1449,11 +1594,11 @@ function Tab({ active, onClick, children }: { active: boolean; onClick: () => vo
   return (
     <button
       onClick={onClick}
-      className="rounded-lg px-4 py-2 text-sm font-medium"
+      className="rounded-lg px-3.5 py-2 text-sm font-medium"
       style={
         active
           ? { background: 'linear-gradient(150deg, var(--gold-bright), var(--frame-gold))', color: '#1c1407' }
-          : { border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text-dim)' }
+          : { color: 'var(--text-dim)' }
       }
     >
       {children}

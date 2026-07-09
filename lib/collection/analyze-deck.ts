@@ -12,10 +12,10 @@ export async function analyzeDeck(
   deckId: string,
   options: { persist?: boolean } = {},
 ): Promise<{ power?: PowerScore; error?: string }> {
-  const { found, scoreCards } = await loadDeckForScoring(supabase, deckId)
+  const { found, scoreCards, targetOverrides } = await loadDeckForScoring(supabase, deckId)
   if (!found) return { error: 'Deck not found.' }
 
-  const power = computePowerScore(scoreCards)
+  const power = computePowerScore(scoreCards, targetOverrides)
 
   if (options.persist) {
     await supabase.from('co_deck_analyses').upsert({

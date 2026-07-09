@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 import { drawSampleHand } from '@/lib/collection/mulligan'
-import { CardName } from './CardName'
+import { CardPocket } from './CardPocket'
 import { Panel } from './ui'
 
 // 🃏 Mulligan trainer (premium): draw a real sample hand from THIS deck, make
@@ -87,13 +87,11 @@ export function MulliganTab({ deckId, cards }: { deckId: string; cards: Mulligan
 
       {hand.length > 0 ? (
         <Panel className="p-4">
-          <ul className="font-rules grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2" style={{ color: 'var(--text)' }}>
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
             {hand.map((name, i) => (
-              <li key={`${name}-${i}`}>
-                <CardName name={name} className="font-display" style={{ color: 'var(--text-bright)' }} />
-              </li>
+              <CardPocket key={`${name}-${i}`} name={name} />
             ))}
-          </ul>
+          </div>
           {!grade ? (
             <div className="mt-3 flex gap-2">
               <button

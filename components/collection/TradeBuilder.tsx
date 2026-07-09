@@ -48,7 +48,7 @@ export function TradeBuilder() {
 
   return (
     <div className="space-y-3">
-      <Panel className="space-y-3 p-4">
+      <Panel className="bnd-ai space-y-3 p-4">
         <p className="font-rules text-sm" style={{ color: 'var(--text-dim)' }}>
           Trading for something? Say what you want — the builder assembles a fair package from your spare binder cards
           at market prices, with swap-in alternates.

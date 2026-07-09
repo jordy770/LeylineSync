@@ -46,7 +46,7 @@ export function CombosTab({ deckId }: { deckId: string }) {
 
   return (
     <div className="space-y-3">
-      <Panel className="flex flex-wrap items-center justify-between gap-3 p-4">
+      <Panel className="bnd-ai flex flex-wrap items-center justify-between gap-3 p-4">
         <p className="font-rules text-sm" style={{ color: 'var(--text-dim)' }}>
           Which combo lines does this deck already contain, which can your binder complete — and which famous line is
           one card away? Only cards you own can appear in a line.

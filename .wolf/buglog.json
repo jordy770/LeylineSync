@@ -19061,6 +19061,262 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09T14:11:42.149Z"
+    },
+    {
+      "id": "bug-1166",
+      "timestamp": "2026-07-09T14:42:56.648Z",
+      "error_message": "Missing guard clause",
+      "file": "lib/collection/power-score.ts",
+      "root_cause": "No early return/throw for edge case: input == null || typeof input !== 'object'",
+      "fix": "Added guard clause: if (input == null || typeof input !== 'objec)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T14:43:10.435Z"
+    },
+    {
+      "id": "bug-1167",
+      "timestamp": "2026-07-09T14:43:07.164Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/power-score.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:43:07.164Z"
+    },
+    {
+      "id": "bug-1168",
+      "timestamp": "2026-07-09T14:44:29.647Z",
+      "error_message": "Null/undefined access in ",
+      "file": "app/api/decks/[id]/route.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:44:29.647Z"
+    },
+    {
+      "id": "bug-1169",
+      "timestamp": "2026-07-09T14:45:44.514Z",
+      "error_message": "Missing await",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:45:44.514Z"
+    },
+    {
+      "id": "bug-1170",
+      "timestamp": "2026-07-09T14:46:10.169Z",
+      "error_message": "Missing error handling in TargetTuner",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:46:10.169Z"
+    },
+    {
+      "id": "bug-1171",
+      "timestamp": "2026-07-09T14:47:25.759Z",
+      "error_message": "CSS fix: sub-nav, borderBottom",
+      "file": "components/collection/Shell.tsx",
+      "root_cause": "sub-nav: every section, with the current one lit so you → pill per section, the current one lit. */; borderBottom: '1px solid rgba(201,154,58,0.18)' → '1px solid #26282f'",
+      "fix": "Changed sub-nav: every section, with the current one lit so you → pill per section, the current one lit. */; borderBottom: '1px solid rgba(201,154,58,0.18)' → '1px solid #26282f'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:47:25.759Z"
+    },
+    {
+      "id": "bug-1172",
+      "timestamp": "2026-07-09T14:47:48.610Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/ui.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:47:48.610Z"
+    },
+    {
+      "id": "bug-1173",
+      "timestamp": "2026-07-09T14:48:26.367Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/collection/page.tsx",
+      "root_cause": "9 lines replaced/restructured",
+      "fix": "Rewrote 18→11 lines (9 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:48:26.367Z"
+    },
+    {
+      "id": "bug-1174",
+      "timestamp": "2026-07-09T14:48:33.144Z",
+      "error_message": "Null/undefined access in ",
+      "file": "app/collection/page.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:48:33.144Z"
+    },
+    {
+      "id": "bug-1175",
+      "timestamp": "2026-07-09T14:48:44.110Z",
+      "error_message": "Incorrect value in code",
+      "file": "app/collection/page.tsx",
+      "root_cause": "Had '@/components/collection/CardName'",
+      "fix": "Changed to '@/components/collection/CardPocket'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:48:44.110Z"
+    },
+    {
+      "id": "bug-1176",
+      "timestamp": "2026-07-09T14:49:54.177Z",
+      "error_message": "CSS fix: color",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "color: 'var(--text-faint)' → 'var(--gold-bright)'",
+      "fix": "Changed color: 'var(--text-faint)' → 'var(--gold-bright)'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:49:54.177Z"
+    },
+    {
+      "id": "bug-1177",
+      "timestamp": "2026-07-09T14:49:56.620Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/MulliganTab.tsx",
+      "root_cause": "Had './CardName'",
+      "fix": "Changed to './CardPocket'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:49:56.620Z"
+    },
+    {
+      "id": "bug-1178",
+      "timestamp": "2026-07-09T14:49:59.521Z",
+      "error_message": "CSS fix: sm",
+      "file": "components/collection/MulliganTab.tsx",
+      "root_cause": "sm: grid-cols-2\" style={{ color: 'var(--text)' → grid-cols-7\">",
+      "fix": "Changed sm: grid-cols-2\" style={{ color: 'var(--text)' → grid-cols-7\">",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:49:59.521Z"
+    },
+    {
+      "id": "bug-1179",
+      "timestamp": "2026-07-09T14:50:30.305Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/AdvisorFits.tsx",
+      "root_cause": "Had './ui'",
+      "fix": "Changed to './CardPocket'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:50:30.305Z"
+    },
+    {
+      "id": "bug-1180",
+      "timestamp": "2026-07-09T14:50:34.861Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/SearchLive.tsx",
+      "root_cause": "Had './ui'",
+      "fix": "Changed to './CardPocket'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:50:34.861Z"
+    },
+    {
+      "id": "bug-1181",
+      "timestamp": "2026-07-09T14:50:53.962Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/GameAnalysisList.tsx",
+      "root_cause": "Had \"mt-3 space-y-3\"",
+      "fix": "Changed to \"bnd-ai mt-3 space-y-3 rounded-xl p-4\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:50:53.962Z"
     }
   ]
 }

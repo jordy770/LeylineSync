@@ -286,7 +286,7 @@ export async function scanDeckUpgrades(
   userId: string,
   deckId: string,
 ): Promise<{ result?: UpgradeScanResult; error?: string }> {
-  const { found, deckIdentity, deckOracleIds, scoreCards, inDeck } = await loadDeckForScoring(supabase, deckId)
+  const { found, deckIdentity, deckOracleIds, scoreCards, inDeck, targetOverrides } = await loadDeckForScoring(supabase, deckId)
   if (!found) return { error: 'Deck not found.' }
 
   // scoreCards and inDeck are built index-aligned by loadDeckForScoring.
@@ -300,7 +300,7 @@ export async function scanDeckUpgrades(
     priceEur: inDeck[i]?.priceEur ?? null,
   }))
 
-  const power = computePowerScore(scoreCards)
+  const power = computePowerScore(scoreCards, targetOverrides)
   if (power.needs.length === 0) {
     return { result: { deckId, power, free: [], occupied: [], deckList } }
   }

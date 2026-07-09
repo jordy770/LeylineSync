@@ -1,7 +1,12 @@
 import Link from 'next/link'
+import { Karla, Outfit } from 'next/font/google'
 import type { ReactNode } from 'react'
 import FanContentNotice from '@/components/layout/FanContentNotice'
 import SiteNav from '@/components/SiteNav'
+
+// Binder-theme typography (design: mockups/collection-binder-screens.html).
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', weight: ['400', '500', '600', '700'] })
+const karla = Karla({ subsets: ['latin'], variable: '--font-karla', weight: ['400', '500', '600', '700'] })
 
 // The Collection Optimizer shell — the Leyline arcane ground (void + gold + ley
 // grid) with a slim header. Server-compatible (no hooks) so pages can wrap their
@@ -33,17 +38,13 @@ export function Shell({
   children: ReactNode
 }) {
   return (
-    <div className="landing-void min-h-screen" style={{ color: 'var(--text)' }}>
+    <div className={`binder-shell min-h-screen ${outfit.variable} ${karla.variable}`} style={{ color: 'var(--text)' }}>
       {/* Same top nav as the landing and decks pages — one identity, so hopping
           between Home / Decks / Collection never changes the header. */}
       <SiteNav active="collection" />
-      {/* Collection sub-nav: every section, with the current one lit so you
-          always know where you are (and Back buttons become unnecessary). */}
-      <div
-        className="flex items-center gap-4 overflow-x-auto px-5 py-2 text-sm"
-        style={{ borderBottom: '1px solid rgba(201,154,58,0.18)' }}
-      >
-        <nav className="mx-auto flex w-full max-w-5xl items-center gap-4">
+      {/* Collection sub-nav: pill per section, the current one lit. */}
+      <div className="flex items-center gap-2 overflow-x-auto px-5 py-2 text-sm" style={{ borderBottom: '1px solid #26282f' }}>
+        <nav className="mx-auto flex w-full max-w-5xl items-center gap-2">
           {SECTIONS.map((s) => {
             const isActive = active === s.key
             return (
@@ -51,12 +52,8 @@ export function Shell({
                 key={s.key}
                 href={s.href}
                 aria-current={isActive ? 'page' : undefined}
-                className="whitespace-nowrap hover:underline underline-offset-4"
-                style={
-                  isActive
-                    ? { color: 'var(--gold-bright)', textDecoration: 'underline', textUnderlineOffset: 4 }
-                    : { color: 'var(--text-dim)' }
-                }
+                className="whitespace-nowrap rounded-lg px-3 py-1.5 font-medium"
+                style={isActive ? { background: '#2e313a', color: '#fff' } : { color: 'var(--text-dim)' }}
               >
                 {s.label}
               </Link>
@@ -91,4 +88,4 @@ export function Shell({
 // Re-exported for the SERVER pages that import them alongside Shell. CLIENT
 // components must import from './ui' directly — importing via this module
 // drags the server-only SiteNav (next/headers) into their bundle.
-export { ColorPips, Panel } from './ui'
+export { ColorPips, Panel, Deckbox, spineColor } from './ui'

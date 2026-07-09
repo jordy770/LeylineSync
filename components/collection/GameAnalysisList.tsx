@@ -92,7 +92,7 @@ export function GameAnalysisList({ games }: { games: GameRow[] }) {
             ) : null}
 
             {analysis ? (
-              <div className="mt-3 space-y-3">
+              <div className="bnd-ai mt-3 space-y-3 rounded-xl p-4">
                 <p className="font-rules text-sm" style={{ color: 'var(--text)' }}>
                   {analysis.summary}
                 </p>

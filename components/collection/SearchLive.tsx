@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 import { CardName } from './CardName'
+import { CardPocket } from './CardPocket'
 import { ColorPips, Panel } from './ui'
 
 // Instant collection search — results update as you type (debounced), no page
@@ -223,7 +224,8 @@ export function SearchLive({
         <div className="space-y-2">
           {results.map((card) => (
             <Panel key={card.oracleId} className="flex flex-wrap items-center justify-between gap-3 p-4">
-              <div className="min-w-0">
+              <CardPocket name={card.name} colors={card.colorIdentity} className="hidden w-14 shrink-0 sm:block" />
+              <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <CardName name={card.name} className="font-display text-base" style={{ color: 'var(--text-bright)' }} />
                   <ColorPips colors={card.colorIdentity} />

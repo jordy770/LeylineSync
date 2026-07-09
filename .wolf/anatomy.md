@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T14:18:00.392Z
-> Files: 27 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T14:53:10.821Z
+> Files: 44 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -77,6 +77,7 @@
 
 ## app/api/decks/[id]/
 
+- `route.ts` — PATCH  /api/decks/:id  { name? , targetOverrides? } (~922 tok)
 
 ## app/api/decks/[id]/analysis/
 
@@ -157,6 +158,7 @@
 
 ## app/collection/
 
+- `page.tsx` — dynamic — renders form (~3330 tok)
 
 ## app/collection/advisor/
 
@@ -164,12 +166,14 @@
 
 ## app/collection/binders/
 
+- `page.tsx` — dynamic (~2030 tok)
 
 ## app/collection/conflicts/
 
 
 ## app/collection/decks/[id]/
 
+- `page.tsx` — dynamic (~498 tok)
 
 ## app/collection/decks/import/
 
@@ -225,11 +229,17 @@
 
 ## components/collection/
 
-- `CombosTab.tsx` — CombosTab (~1524 tok)
-- `DeckDetail.tsx` — BUCKET_ORDER (~16822 tok)
-- `GameAnalysisList.tsx` — GameAnalysisList (~1327 tok)
-- `MulliganTab.tsx` — MulliganTab (~1678 tok)
-- `TradeBuilder.tsx` — TradeBuilder (~1507 tok)
+- `AdvisorContested.tsx` — AdvisorContested (~2457 tok)
+- `AdvisorFits.tsx` — AdvisorFits (~1729 tok)
+- `CardPocket.tsx` — MANA_GRADIENT (~552 tok)
+- `CombosTab.tsx` — CombosTab (~1526 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~18360 tok)
+- `GameAnalysisList.tsx` — GameAnalysisList (~1333 tok)
+- `MulliganTab.tsx` — MulliganTab (~1636 tok)
+- `SearchLive.tsx` — COLORS (~3669 tok)
+- `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1109 tok)
+- `TradeBuilder.tsx` — TradeBuilder (~1509 tok)
+- `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~758 tok)
 
 ## components/controller/
 
@@ -267,7 +277,12 @@
 - `ai-mulligan.ts` — Mulligan trainer — the player judges a sample hand from their own deck, the (~944 tok)
 - `ai-recommend.ts` — Flatten the scan's free + occupied upgrades into one candidate list (deduped). (~4072 tok)
 - `ai-trade.ts` — Pure: keep only offered cards that are really in the tradable list, and (~1229 tok)
+- `analyze-deck.ts` — Deck analysis: load → score → (optionally) cache the result in co_deck_analyses. (~359 tok)
+- `deck-loader.ts` — The deck's own target tuning (mig 384) — null = classic guidelines. (~2049 tok)
+- `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1716 tok)
 - `mulligan.ts` — Pure sample-hand drawing for the mulligan trainer. The caller supplies the (~203 tok)
+- `power-score.ts` — Tags a player may set a per-deck target for. counterspell/tutor have no (~2761 tok)
+- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4113 tok)
 
 ## lib/collection/parsers/
 
@@ -311,6 +326,7 @@
 
 - `202605010382_premium_ai_credits.sql` — Premium entitlements + AI usage quota (Collection Optimizer monetization). (~893 tok)
 - `202605010383_player_meta.sql` — Playgroup meta profile (AI personalization). (~204 tok)
+- `202605010384_deck_target_overrides.sql` — Per-deck target tuning. (~187 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -335,6 +351,7 @@
 
 - `ai-recommend.test.ts` — AI deck-doctor — the pure grounding helpers. The model call itself is not tested (~830 tok)
 - `ai-suite.test.ts` — Pure cores of the premium AI suite: sample-hand drawing (mulligan trainer), (~829 tok)
+- `target-overrides.test.ts` — Per-deck target tuning (mig 384) — the pure engine side: overrides shift the (~741 tok)
 
 ## vercel/
 

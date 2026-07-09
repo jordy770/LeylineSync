@@ -7287,3 +7287,56 @@
 | 16:12 | Vijf stijlconcepten voor het Collection-onderdeel in mockups/collection-concepts.html (switcher): A Card Catalog (papier/archief, licht), B Binder (visueel, 9-pocket + deckboxen), C Pro Terminal (dicht/mono/prijzen), D Game Night (speelmat, couch-DNA), E Five Colors (licht redactioneel, WUBRG-systeem); zelfde echte content per concept | mockups/collection-concepts.html | wacht op keuze Jordy | ~20k |
 | 16:18 | Created mockups/collection-binder-screens.html | — | ~6724 |
 | 16:18 | Binder-concept (keuze Jordy) uitgewerkt naar alle 6 schermen in mockups/collection-binder-screens.html: Overzicht (deckboxen+pocket-grid), Deckpagina (swap-rijen met kaartthumbs, Doctor-paneel), Mappen (boekenplank-ruggen + 9-pocket pagina's), Advisor (contested met kaart+rank, fits kaart→deck), Zoeken (visuele hits + add-chips), Post-game; designsysteem-tokens in de head gedocumenteerd | mockups/collection-binder-screens.html | wacht op feedback vóór implementatie | ~25k |
+| 16:42 | Created supabase/migrations/202605010384_deck_target_overrides.sql | — | ~187 |
+| 16:42 | Edited lib/collection/power-score.ts | added 2 condition(s) | ~382 |
+| 16:43 | Edited lib/collection/power-score.ts | added nullish coalescing | ~112 |
+| 16:43 | Edited lib/collection/power-score.ts | added 1 condition(s) | ~106 |
+| 16:43 | Edited lib/collection/power-score.ts | 10→10 lines | ~128 |
+| 16:43 | Edited lib/collection/power-score.ts | modified computeHealth() | ~167 |
+| 16:43 | Edited lib/collection/power-score.ts | 9→9 lines | ~146 |
+| 16:43 | Edited lib/collection/deck-loader.ts | added 1 import(s) | ~68 |
+| 16:43 | Edited lib/collection/deck-loader.ts | modified loadDeckForScoring() | ~210 |
+| 16:43 | Edited lib/collection/deck-loader.ts | 8→9 lines | ~60 |
+| 16:43 | Edited lib/collection/analyze-deck.ts | 4→4 lines | ~59 |
+| 16:44 | Edited lib/collection/upgrade-scanner.ts | 2→2 lines | ~51 |
+| 16:44 | Edited lib/collection/upgrade-scanner.ts | modified if() | ~50 |
+| 16:44 | Edited lib/collection/insights.ts | 3→3 lines | ~53 |
+| 16:44 | Edited app/api/decks/[id]/route.ts | added 4 condition(s) | ~715 |
+| 16:45 | Created tests/unit/target-overrides.test.ts | — | ~741 |
+| 16:45 | Edited app/collection/decks/[id]/page.tsx | 2→6 lines | ~56 |
+| 16:45 | Edited app/collection/decks/[id]/page.tsx | 6→8 lines | ~103 |
+| 16:45 | Edited components/collection/DeckDetail.tsx | modified DeckDetail() | ~81 |
+| 16:45 | Edited components/collection/DeckDetail.tsx | expanded (+22 lines) | ~491 |
+| 16:45 | Edited components/collection/DeckDetail.tsx | 1→2 lines | ~31 |
+| 16:46 | Edited components/collection/DeckDetail.tsx | added error handling | ~1184 |
+| 16:47 | Edited components/collection/Shell.tsx | 4→9 lines | ~150 |
+| 16:47 | Edited components/collection/Shell.tsx | CSS: background | ~328 |
+| 16:47 | Created components/collection/CardPocket.tsx | — | ~552 |
+| 16:47 | Edited components/collection/ui.tsx | added optional chaining | ~426 |
+| 16:48 | Edited components/collection/Shell.tsx | inline fix | ~18 |
+| 16:48 | Edited app/collection/page.tsx | added 1 import(s) | ~83 |
+| 16:48 | Edited app/collection/page.tsx | reduced (-7 lines) | ~170 |
+| 16:48 | Edited app/collection/page.tsx | added optional chaining | ~190 |
+| 16:48 | Edited app/collection/page.tsx | 2→1 lines | ~18 |
+| 16:48 | Edited app/collection/page.tsx | removed 14 lines | ~6 |
+| 16:49 | Created app/collection/binders/page.tsx | — | ~2030 |
+| 16:49 | Edited components/collection/DeckDetail.tsx | added 1 import(s) | ~50 |
+| 16:49 | Edited components/collection/DeckDetail.tsx | modified Tab() | ~130 |
+| 16:49 | Edited components/collection/DeckDetail.tsx | CSS: visually, sm, color | ~281 |
+| 16:49 | Edited components/collection/DeckDetail.tsx | 8→8 lines | ~126 |
+| 16:49 | Edited components/collection/DeckDetail.tsx | 6→6 lines | ~62 |
+| 16:49 | Edited components/collection/MulliganTab.tsx | 3→3 lines | ~37 |
+| 16:49 | Edited components/collection/MulliganTab.tsx | 9→7 lines | ~74 |
+| 16:50 | Edited components/collection/AdvisorContested.tsx | added 1 import(s) | ~44 |
+| 16:50 | Edited components/collection/AdvisorContested.tsx | CSS: sm | ~186 |
+| 16:50 | Edited components/collection/AdvisorContested.tsx | 6→7 lines | ~53 |
+| 16:50 | Edited components/collection/AdvisorFits.tsx | added 1 import(s) | ~31 |
+| 16:50 | Edited components/collection/AdvisorFits.tsx | CSS: sm | ~117 |
+| 16:50 | Edited components/collection/SearchLive.tsx | added 1 import(s) | ~34 |
+| 16:50 | Edited components/collection/SearchLive.tsx | CSS: sm | ~142 |
+| 16:50 | Edited components/collection/CombosTab.tsx | 5→5 lines | ~104 |
+| 16:50 | Edited components/collection/TradeBuilder.tsx | 5→5 lines | ~89 |
+| 16:50 | Edited components/collection/GameAnalysisList.tsx | 2→2 lines | ~27 |
+| 16:53 | Edited components/collection/DeckDetail.tsx | modified DeckDetail() | ~72 |
+| 16:53 | Edited app/collection/decks/[id]/page.tsx | 4→3 lines | ~34 |
+| 16:54 | Binder-restyle geïmplementeerd (scoped .binder-shell token-override in globals.css + Outfit/Karla via next/font in Shell; CardPocket met echte Scryfall-scans + gradient-fallback; Deckbox met power-dial; boekenplank-mappen met 12-pocket paginering; swap-rijen met pockets; mulligan-hand als pockets; bnd-ai premium-panelen; pill-nav/tabs) + target-tuning per deck (mig 384 target_overrides, sanitize+engine+PATCH+TargetTuner-UI, 4 nieuwe unit tests) | globals.css, Shell/ui/CardPocket/DeckDetail/binders/page/advisor-componenten, power-score.ts, deck-loader.ts, api/decks/[id] | tsc+build+511 tests groen; mig 384 lokaal | ~80k |

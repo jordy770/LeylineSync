@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server'
 
+import { analyzeDeck } from '@/lib/collection/analyze-deck'
+import { sanitizeTargetOverrides } from '@/lib/collection/power-score'
 import { createClient } from '@/lib/supabase/server'
 
-// PATCH  /api/decks/:id  { name }  — rename a collection deck.
-// DELETE /api/decks/:id            — delete it; co_deck_cards and
-//   co_deck_analyses cascade (mig 364), which frees the physical cards for
-//   other decks automatically. RLS scopes both to the owner.
+// PATCH  /api/decks/:id  { name? , targetOverrides? }
+//   - name: rename the deck
+//   - targetOverrides: per-deck target tuning (mig 384) — an object like
+//     {"land": 34, "removal": 12}, or null to reset to the guidelines.
+//     Changing targets re-scores the deck (needs/scanner/Doctor follow).
+// DELETE /api/decks/:id — delete it; co_deck_cards and co_deck_analyses
+//   cascade (mig 364), which frees the physical cards for other decks
+//   automatically. RLS scopes both to the owner.
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient()
@@ -15,26 +21,39 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   const { id: deckId } = await params
 
-  let body: { name?: string }
+  let body: { name?: string; targetOverrides?: unknown }
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 })
   }
-  const name = (body.name ?? '').trim()
-  if (!name) return NextResponse.json({ error: 'A deck name is required.' }, { status: 400 })
-  if (name.length > 120) return NextResponse.json({ error: 'That name is too long (120 max).' }, { status: 400 })
 
-  const { data, error } = await supabase
-    .from('co_decks')
-    .update({ name, updated_at: new Date().toISOString() })
-    .eq('id', deckId)
-    .select('id')
-    .maybeSingle()
-  if (error) return NextResponse.json({ error: `Rename failed: ${error.message}` }, { status: 500 })
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() }
+
+  if (body.name !== undefined) {
+    const name = (body.name ?? '').trim()
+    if (!name) return NextResponse.json({ error: 'A deck name is required.' }, { status: 400 })
+    if (name.length > 120) return NextResponse.json({ error: 'That name is too long (120 max).' }, { status: 400 })
+    patch.name = name
+  }
+
+  const tuningTargets = 'targetOverrides' in body
+  if (tuningTargets) {
+    patch.target_overrides = sanitizeTargetOverrides(body.targetOverrides)
+  }
+
+  if (!('name' in patch) && !tuningTargets) {
+    return NextResponse.json({ error: 'Nothing to change.' }, { status: 400 })
+  }
+
+  const { data, error } = await supabase.from('co_decks').update(patch).eq('id', deckId).select('id').maybeSingle()
+  if (error) return NextResponse.json({ error: `Update failed: ${error.message}` }, { status: 500 })
   if (!data) return NextResponse.json({ error: 'Deck not found.' }, { status: 404 })
 
-  return NextResponse.json({ ok: true, name })
+  // New targets shift the score and the needs — refresh the cache (best-effort).
+  if (tuningTargets) await analyzeDeck(supabase, deckId, { persist: true }).catch(() => {})
+
+  return NextResponse.json({ ok: true })
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {

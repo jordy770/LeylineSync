@@ -40,13 +40,35 @@ export interface PowerScore {
   explanation: string
 }
 
-// Classic Commander deck-building guidelines (per ~99-card deck).
-const TARGETS: Partial<Record<SynergyTag, number>> = {
+// Classic Commander deck-building guidelines (per ~99-card deck). These are
+// the DEFAULTS — a deck can override any of the tunable tags (mig 384), which
+// shifts needs, the scanner, the Advisor and the Doctor along with it.
+export const DEFAULT_TARGETS: Partial<Record<SynergyTag, number>> = {
   land: 37,
   ramp: 10,
   card_draw: 10,
   removal: 8,
   board_wipe: 3,
+}
+
+/** Tags a player may set a per-deck target for. counterspell/tutor have no
+ *  default target — overriding them ADDS a need the guidelines don't track. */
+export const TUNABLE_TAGS = ['land', 'ramp', 'card_draw', 'removal', 'board_wipe', 'counterspell', 'tutor'] as const
+export type TunableTag = (typeof TUNABLE_TAGS)[number]
+export type TargetOverrides = Partial<Record<TunableTag, number>>
+
+/** Pure: keep only known tags with sane integer values (0..60). Returns null
+ *  when nothing survives — "no overrides". */
+export function sanitizeTargetOverrides(input: unknown): TargetOverrides | null {
+  if (input == null || typeof input !== 'object') return null
+  const out: TargetOverrides = {}
+  for (const tag of TUNABLE_TAGS) {
+    const v = (input as Record<string, unknown>)[tag]
+    if (typeof v === 'number' && Number.isFinite(v)) {
+      out[tag] = Math.max(0, Math.min(60, Math.round(v)))
+    }
+  }
+  return Object.keys(out).length > 0 ? out : null
 }
 
 // How much each component pulls the 0–1 score before scaling to 10.
@@ -72,7 +94,9 @@ const BUCKET_TAGS: SynergyTag[] = [
   'win_condition',
 ]
 
-export function computePowerScore(cards: DeckCardForScore[]): PowerScore {
+export function computePowerScore(cards: DeckCardForScore[], overrides?: TargetOverrides | null): PowerScore {
+  // Effective targets: guidelines + the deck's own tuning (mig 384).
+  const targets: Partial<Record<SynergyTag, number>> = { ...DEFAULT_TARGETS, ...(overrides ?? {}) }
   const isLand = (c: DeckCardForScore) => c.tags.some((t) => t.tag === 'land') || /\bland\b/i.test(c.typeLine)
 
   let landCount = 0
@@ -101,9 +125,11 @@ export function computePowerScore(cards: DeckCardForScore[]): PowerScore {
   const buckets: Record<string, number> = {}
   for (const tag of BUCKET_TAGS) buckets[tag] = bucketCounts.get(tag) ?? 0
 
-  // Component coverage vs targets, each clamped to [0,1].
+  // Component coverage vs targets, each clamped to [0,1]. A target of 0 means
+  // "this deck doesn't want these" — full coverage by definition.
   const coverage = (tag: SynergyTag) => {
-    const target = TARGETS[tag]!
+    const target = targets[tag] ?? 0
+    if (target <= 0) return 1
     const have = tag === 'land' ? landCount : bucketCounts.get(tag) ?? 0
     return Math.min(1, have / target)
   }
@@ -120,16 +146,16 @@ export function computePowerScore(cards: DeckCardForScore[]): PowerScore {
 
   const power = round1(clamp(score01 * 10, 0, 10))
 
-  const needs: DeckNeed[] = (Object.keys(TARGETS) as SynergyTag[])
+  const needs: DeckNeed[] = (Object.keys(targets) as SynergyTag[])
     .map((tag) => {
-      const target = TARGETS[tag]!
+      const target = targets[tag] ?? 0
       const have = tag === 'land' ? landCount : bucketCounts.get(tag) ?? 0
       return { tag, have, target, gap: Math.max(0, target - have) }
     })
     .filter((n) => n.gap > 0)
     .sort((a, b) => b.gap - a.gap)
 
-  const health = computeHealth(bucketCounts, landCount, nonlandCount, avgMv, curveScore, cards)
+  const health = computeHealth(bucketCounts, landCount, nonlandCount, avgMv, curveScore, cards, targets)
 
   return {
     power,
@@ -153,9 +179,14 @@ function computeHealth(
   avgMv: number,
   curveScore: number,
   cards: DeckCardForScore[],
+  targets: Partial<Record<SynergyTag, number>>,
 ): HealthAxis[] {
   const b = (t: SynergyTag) => bucket.get(t) ?? 0
-  const pct = (have: number, target: number) => Math.round(clamp01(have / target) * 100)
+  const pct = (have: number, target: number) => (target <= 0 ? 100 : Math.round(clamp01(have / target) * 100))
+  const tLand = targets.land ?? 37
+  const tRamp = targets.ramp ?? 10
+  const tDraw = targets.card_draw ?? 10
+  const tInteraction = (targets.removal ?? 8) + (targets.counterspell ?? 2)
 
   const ramp = b('ramp')
   const draw = b('card_draw')
@@ -187,13 +218,13 @@ function computeHealth(
   )
 
   return [
-    { axis: 'Mana Base', score: pct(landCount, 37), explanation: `${landCount}/37 lands.` },
-    { axis: 'Ramp', score: pct(ramp, 10), explanation: `${ramp} ramp sources (target ~10).` },
-    { axis: 'Draw', score: pct(draw, 10), explanation: `${draw} card-draw sources (target ~10).` },
+    { axis: 'Mana Base', score: pct(landCount, tLand), explanation: `${landCount}/${tLand} lands.` },
+    { axis: 'Ramp', score: pct(ramp, tRamp), explanation: `${ramp} ramp sources (target ~${tRamp}).` },
+    { axis: 'Draw', score: pct(draw, tDraw), explanation: `${draw} card-draw sources (target ~${tDraw}).` },
     {
       axis: 'Interaction',
-      score: pct(removal + counter, 10),
-      explanation: `${removal} removal + ${counter} counterspells (target ~10).`,
+      score: pct(removal + counter, tInteraction),
+      explanation: `${removal} removal + ${counter} counterspells (target ~${tInteraction}).`,
     },
     {
       axis: 'Win Conditions',

@@ -133,7 +133,7 @@ export async function getCollectionInsights(supabase: SupabaseClient, userId: st
   for (const deck of decks ?? []) {
     const loaded = await loadDeckForScoring(supabase, deck.id as string)
     if (!loaded.found) continue
-    const power = computePowerScore(loaded.scoreCards)
+    const power = computePowerScore(loaded.scoreCards, loaded.targetOverrides)
     if (power.needs.length === 0) {
       deckFitCounts.push({ deckId: deck.id as string, deckName: deck.name as string, fitCount: 0 })
       continue

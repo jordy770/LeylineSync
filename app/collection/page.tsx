@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
-import { CardName } from '@/components/collection/CardName'
+import { CardPocket } from '@/components/collection/CardPocket'
 import { CollectionValueChart } from '@/components/collection/CollectionValueChart'
-import { ColorPips, Panel, Shell } from '@/components/collection/Shell'
+import { ColorPips, Deckbox, Panel, Shell } from '@/components/collection/Shell'
 import { listConflicts } from '@/lib/collection/conflicts'
 import { getDashboard } from '@/lib/collection/dashboard'
 import { createClient } from '@/lib/supabase/server'
@@ -103,30 +103,19 @@ export default async function CollectionDashboardPage() {
               strong cards sitting unused in your binder
             </span>
           </div>
-          <Panel className="divide-y p-0" >
-            {d.freeStaples.map((s) => (
-              <Link
-                key={s.oracleId}
-                href={`/collection/search?q=${encodeURIComponent(s.name)}`}
-                className="flex items-center justify-between px-4 py-2.5 hover:bg-[rgba(201,154,58,0.06)]"
-                style={{ borderColor: 'rgba(201,154,58,0.12)' }}
-              >
-                <div className="flex items-center gap-2">
-                  <CardName name={s.name} className="font-display text-sm" style={{ color: 'var(--text-bright)' }} />
-                  <span className="rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-faint)', border: '1px solid rgba(201,154,58,0.25)' }}>
-                    {s.tag.replace(/_/g, ' ')}
-                  </span>
-                  {s.binderNames && s.binderNames.length > 0 ? (
-                    <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
-                      📒 {s.binderNames.join(', ')}
-                    </span>
-                  ) : null}
-                </div>
-                <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
-                  {s.priceEur != null ? `€${s.priceEur.toFixed(2)}` : ''}
-                </span>
-              </Link>
-            ))}
+          <Panel className="p-4">
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-8">
+              {d.freeStaples.map((s) => (
+                <Link
+                  key={s.oracleId}
+                  href={`/collection/search?q=${encodeURIComponent(s.name)}`}
+                  title={`${s.name} · ${s.tag.replace(/_/g, ' ')}${s.binderNames?.length ? ` · 📒 ${s.binderNames.join(', ')}` : ''}`}
+                  className="transition-transform hover:scale-[1.03]"
+                >
+                  <CardPocket name={s.name} priceEur={s.priceEur} />
+                </Link>
+              ))}
+            </div>
           </Panel>
         </section>
       ) : null}
@@ -179,19 +168,12 @@ export default async function CollectionDashboardPage() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {d.decks.map((deck) => (
-              <Link key={deck.id} href={`/collection/decks/${deck.id}`}>
-                <Panel className="flex items-center justify-between p-4 transition-transform hover:scale-[1.01]">
-                  <div className="min-w-0">
-                    <div className="truncate font-display text-base" style={{ color: 'var(--text-bright)' }}>
-                      {deck.name}
-                    </div>
-                    <div className="mt-1 flex items-center gap-2">
-                      <ColorPips colors={deck.colorIdentity} />
-                      <UpgradeHint free={deck.freeUpgrades} occupied={deck.occupiedUpgrades} />
-                    </div>
+              <Link key={deck.id} href={`/collection/decks/${deck.id}`} className="transition-transform hover:scale-[1.01]">
+                <Deckbox name={deck.name} power={deck.power} colors={deck.colorIdentity} sub={<ColorPips colors={deck.colorIdentity} />}>
+                  <div className="mt-2">
+                    <UpgradeHint free={deck.freeUpgrades} occupied={deck.occupiedUpgrades} />
                   </div>
-                  <PowerBadge score={deck.power} />
-                </Panel>
+                </Deckbox>
               </Link>
             ))}
           </div>
@@ -273,19 +255,6 @@ function UpgradeHint({ free, occupied }: { free: number | null; occupied: number
     <span className="text-[10px]" style={{ color: 'var(--text-faint)' }}>
       up to date
     </span>
-  )
-}
-
-function PowerBadge({ score }: { score: number | null }) {
-  return (
-    <div className="shrink-0 text-right">
-      <div className="font-display text-2xl" style={{ color: score == null ? 'var(--text-faint)' : 'var(--gold-bright)' }}>
-        {score == null ? '—' : score.toFixed(1)}
-      </div>
-      <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
-        power
-      </div>
-    </div>
   )
 }
 

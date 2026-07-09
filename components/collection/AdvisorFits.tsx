@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { CardName } from './CardName'
+import { CardPocket } from './CardPocket'
 import { Panel } from './ui'
 
 // Perfect fits with a one-click Apply — adds the binder card to its deck right
@@ -96,7 +97,8 @@ export function AdvisorFits({ fits }: { fits: FitView[] }) {
       ) : null}
       {fits.map((f) => (
         <Panel key={`${f.deckId}-${f.oracleId}`} className="flex items-center justify-between gap-4 p-4">
-          <div className="min-w-0">
+          <CardPocket name={f.name} className="hidden w-14 shrink-0 sm:block" />
+          <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <CardName name={f.name} className="font-display text-base" style={{ color: 'var(--text-bright)' }} />
               <span style={{ color: 'var(--frame-gold)' }}>→</span>

@@ -4,7 +4,8 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { DeckCardForScore } from './power-score'
+import { sanitizeTargetOverrides } from './power-score'
+import type { DeckCardForScore, TargetOverrides } from './power-score'
 import type { CardTag, SynergyTag } from './synergy/tagger'
 import type { InDeckCard } from './upgrade-scanner'
 
@@ -19,14 +20,16 @@ export interface LoadedDeck {
   deckOracleIds: Set<string>
   scoreCards: DeckCardForScore[]
   inDeck: InDeckCard[]
+  /** The deck's own target tuning (mig 384) — null = classic guidelines. */
+  targetOverrides: TargetOverrides | null
 }
 
 export async function loadDeckForScoring(supabase: SupabaseClient, deckId: string): Promise<LoadedDeck> {
-  const empty: LoadedDeck = { found: false, deckIdentity: [], deckOracleIds: new Set(), scoreCards: [], inDeck: [] }
+  const empty: LoadedDeck = { found: false, deckIdentity: [], deckOracleIds: new Set(), scoreCards: [], inDeck: [], targetOverrides: null }
 
   const { data: deck, error: deckError } = await supabase
     .from('co_decks')
-    .select('id, color_identity')
+    .select('id, color_identity, target_overrides')
     .eq('id', deckId)
     .single()
   if (deckError || !deck) return empty
@@ -67,6 +70,7 @@ export async function loadDeckForScoring(supabase: SupabaseClient, deckId: strin
     deckOracleIds,
     scoreCards,
     inDeck,
+    targetOverrides: sanitizeTargetOverrides(deck.target_overrides),
   }
 }
 
