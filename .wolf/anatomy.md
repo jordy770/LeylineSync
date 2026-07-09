@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T16:31:49.284Z
-> Files: 64 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T20:34:47.478Z
+> Files: 66 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -50,6 +50,8 @@
 
 ## .github/workflows/
 
+- `ci.yml` — CI — every push/PR: types, lint, and the FULL engine suite (~1900 tests) (~717 tok)
+- `deploy.yml` — CD — publishing a GitHub Release IS the production go: first the pending (~435 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 

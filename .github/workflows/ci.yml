@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -53,7 +53,7 @@ jobs:
       # across runs; bump the key to refresh the dump.
       - name: Restore Scryfall oracle bulk
         id: oracle-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: lib/oracle-cards.json
           key: scryfall-oracle-v1

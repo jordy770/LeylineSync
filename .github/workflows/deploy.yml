@@ -17,14 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      # Pinned: resolving "latest" hits the GitHub API unauthenticated and rate-limits.
-      - uses: supabase/setup-cli@v1
+      # Pinned for reproducible deploys; v3 installs from npm (no GITHUB_TOKEN needed).
+      - uses: supabase/setup-cli@v3
         with:
           version: 2.109.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Migrations → hosted Supabase
         env:
