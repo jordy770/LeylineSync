@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+import { DeckContainersPanel } from './DeckContainersPanel'
 import { Panel } from './ui'
 
 interface ImportResult {
@@ -28,6 +29,8 @@ export function ImportWizard() {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ImportResult | null>(null)
   const [copiedUnmatched, setCopiedUnmatched] = useState(false)
+  // Bumped after each successful import so the deck-containers panel refetches.
+  const [importCount, setImportCount] = useState(0)
 
   // Unmatched cards as plain "N Name" lines — paste into Scryfall, a fix-up
   // sheet, or a support message instead of retyping them.
@@ -54,6 +57,7 @@ export function ImportWizard() {
         return
       }
       setResult(body)
+      setImportCount((n) => n + 1)
     } catch {
       setError('Network error during import.')
     } finally {
@@ -186,6 +190,8 @@ export function ImportWizard() {
           </button>
         </Panel>
       ) : null}
+
+      <DeckContainersPanel refreshKey={importCount} />
     </div>
   )
 }
