@@ -7412,3 +7412,10 @@
 | 17:57 | Edited components/collection/DeckDetail.tsx | added 1 import(s) | ~63 |
 | 17:58 | Edited components/collection/DeckDetail.tsx | removed 9 lines | ~15 |
 | 17:58 | Skeleton loading: components/collection/Skeletons.tsx (Skel/SkelStatbar/SkelPockets/SkelDeckboxes/SkelRows/PageSkeleton/DeckScanSkeleton, binder-vormen, role=status) + loading.tsx voor /collection, advisor, binders, search, games, decks/[id]; DeckDetail scan-placeholder vervangen door DeckScanSkeleton | app/collection/**/loading.tsx, Skeletons.tsx, DeckDetail.tsx | tsc+build+516 tests groen | ~12k |
+| 18:05 | Created components/binder-fonts.ts | — | ~161 |
+| 18:05 | Edited components/collection/Shell.tsx | 9→5 lines | ~67 |
+| 18:05 | Edited components/collection/Shell.tsx | "binder-shell min-h-screen" → "binder-shell min-h-screen" | ~28 |
+| 18:05 | Edited app/page.tsx | added 1 import(s) | ~107 |
+| 18:05 | Edited app/page.tsx | CSS: everywhere | ~100 |
+| 18:05 | Edited app/decks/page.tsx | added 1 import(s) | ~160 |
+| 18:06 | Home + Decks in Binder-stijl getrokken: gedeelde components/binder-fonts.ts (Outfit/Karla, ook door Shell gebruikt); beide pagina's wrapper landing-void+ley-grid → binder-shell (CSS-var-override doet de rest, SiteNav rethemet automatisch); game-board/controller behouden eigen chrome | app/page.tsx, app/decks/page.tsx, components/binder-fonts.ts, Shell.tsx | tsc+build+lint groen | ~8k |

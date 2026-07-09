@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T15:58:00.777Z
-> Files: 54 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T16:05:30.064Z
+> Files: 57 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -56,6 +56,7 @@
 
 ## app/
 
+- `page.tsx` — The five colours of mana, used as a structural device throughout the landing. (~1645 tok)
 
 ## app/api/cards/generate-behavior/
 
@@ -211,6 +212,7 @@
 
 ## app/decks/
 
+- `page.tsx` — DecksPage (~707 tok)
 
 ## app/judge/[id]/
 
@@ -229,6 +231,7 @@
 
 ## components/
 
+- `binder-fonts.ts` — The binder theme's typography (Outfit for display, Karla for body), shared (~161 tok)
 
 ## components/board/
 
@@ -243,7 +246,7 @@
 - `GameAnalysisList.tsx` — GameAnalysisList (~1333 tok)
 - `MulliganTab.tsx` — MulliganTab (~1636 tok)
 - `SearchLive.tsx` — COLORS (~3669 tok)
-- `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1109 tok)
+- `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1018 tok)
 - `Skeletons.tsx` — Full-page shell for route-level loading.tsx files. (~1134 tok)
 - `TradeBuilder.tsx` — TradeBuilder (~1509 tok)
 - `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~758 tok)

@@ -1,3 +1,4 @@
+import { binderFonts } from '@/components/binder-fonts'
 import DeckManager from '@/components/DeckManager'
 import SiteNav from '@/components/SiteNav'
 import { ThemeSwitcher } from '@/components/theme-switcher'
@@ -5,9 +6,8 @@ import { hasEnvVars } from '@/lib/utils'
 
 export default function DecksPage() {
   return (
-    <main className="landing-void relative min-h-screen overflow-hidden text-[var(--text)]">
-      <div className="ley-grid pointer-events-none absolute inset-0" />
-
+    // Same binder shell as the collection and the landing — one identity.
+    <main className={`binder-shell relative min-h-screen overflow-hidden text-[var(--text)] ${binderFonts}`}>
       <div className="relative flex min-h-screen flex-col items-center">
         <SiteNav active="decks" />
 

@@ -19705,6 +19705,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09T15:58:00.802Z"
+    },
+    {
+      "id": "bug-1206",
+      "timestamp": "2026-07-09T16:05:08.321Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/Shell.tsx",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 9→5 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T16:05:08.321Z"
+    },
+    {
+      "id": "bug-1207",
+      "timestamp": "2026-07-09T16:05:10.877Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/Shell.tsx",
+      "root_cause": "Had `binder-shell min-h-screen ${outfit.variable} ${ka",
+      "fix": "Changed to `binder-shell min-h-screen ${binderFonts}`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T16:05:10.877Z"
+    },
+    {
+      "id": "bug-1208",
+      "timestamp": "2026-07-09T16:05:24.576Z",
+      "error_message": "Type error",
+      "file": "app/page.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: import { binderFonts } from '@/components/binder-fonts'; // Same binder shell as the collection and the landing — one",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T16:05:30.090Z"
     }
   ]
 }

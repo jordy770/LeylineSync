@@ -1,12 +1,8 @@
 import Link from 'next/link'
-import { Karla, Outfit } from 'next/font/google'
 import type { ReactNode } from 'react'
+import { binderFonts } from '@/components/binder-fonts'
 import FanContentNotice from '@/components/layout/FanContentNotice'
 import SiteNav from '@/components/SiteNav'
-
-// Binder-theme typography (design: mockups/collection-binder-screens.html).
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', weight: ['400', '500', '600', '700'] })
-const karla = Karla({ subsets: ['latin'], variable: '--font-karla', weight: ['400', '500', '600', '700'] })
 
 // The Collection Optimizer shell — the Leyline arcane ground (void + gold + ley
 // grid) with a slim header. Server-compatible (no hooks) so pages can wrap their
@@ -38,7 +34,7 @@ export function Shell({
   children: ReactNode
 }) {
   return (
-    <div className={`binder-shell min-h-screen ${outfit.variable} ${karla.variable}`} style={{ color: 'var(--text)' }}>
+    <div className={`binder-shell min-h-screen ${binderFonts}`} style={{ color: 'var(--text)' }}>
       {/* Same top nav as the landing and decks pages — one identity, so hopping
           between Home / Decks / Collection never changes the header. */}
       <SiteNav active="collection" />

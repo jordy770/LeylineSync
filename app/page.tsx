@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { binderFonts } from "@/components/binder-fonts";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import GameSessionLobby from "@/components/GameSessionLobby";
 import LandingHero from "@/components/LandingHero";
@@ -27,9 +28,9 @@ export default async function Home() {
   }
 
   return (
-    <main className="landing-void relative min-h-screen overflow-hidden text-[var(--text)]">
-      <div className="ley-grid pointer-events-none absolute inset-0" />
-
+    // One identity everywhere: the landing wears the same binder shell as the
+    // collection and decks pages (the in-game board keeps its own chrome).
+    <main className={`binder-shell relative min-h-screen overflow-hidden text-[var(--text)] ${binderFonts}`}>
       <div className="relative flex min-h-screen flex-col items-center">
         <SiteNav active="home" />
 

@@ -529,3 +529,7 @@
 ## Do-Not-Repeat — 2026-07-09 (sequentiële chunk-IO)
 
 - Chunked .in()-loaders NOOIT sequentieel awaiten in een for-loop: bij een volledige collectie (5451 uniek) werd loadOracleMeta 55 seriële requests → seconden laadtijd op /collection (bug-1117, het perf-staartje van de bug-1116 paginatie-fix). Gebruik forEachIdChunk (deck-loader.ts, bounded concurrency 8). Symptoom: een pagina die lineair trager wordt met collectiegrootte terwijl de queries zelf snel zijn. Structurele vervolg-optie als het ooit wéér te traag wordt: dashboard-aggregaten (waarde-som, staple-ranking) server-side in één security-definer RPC berekenen ipv alle meta naar Node te halen.
+
+## User Preferences — 2026-07-09 (thema-reikwijdte)
+
+- Het Binder-thema is nu de identiteit van de HELE app-schil: landing (app/page.tsx), decks-pagina én collection dragen allemaal .binder-shell + binderFonts (components/binder-fonts.ts — gedeelde next/font consts; Shell.tsx importeert dezelfde). Alleen de in-game vlakken (board, controller, judge) behouden hun eigen chrome. De eerdere notitie "game-kant onaangeroerd, alleen collection" is hiermee verruimd op verzoek van Jordy.
