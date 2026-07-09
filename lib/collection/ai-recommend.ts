@@ -4,16 +4,17 @@
 // list is dropped. This keeps legality/price/ownership truthful and the output
 // grounded. Theme preservation is delegated to the model via the commander name.
 
-import Anthropic from '@anthropic-ai/sdk'
 import { z } from 'zod'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import { askClaudeJson, requireApiKey } from './ai-client'
 import { suggestBuys } from './buy-suggestions'
 import { loadAvailability, loadOracleMeta, loadTags } from './deck-loader'
 import { scanDeckUpgrades } from './upgrade-scanner'
 import type { UpgradeScanResult } from './upgrade-scanner'
 
-const MODEL = 'claude-opus-4-8'
+export { AiNotConfiguredError } from './ai-client'
+
 const OWNED_CAP = 16 // free + occupied candidates shown to the model
 const BUY_CAP = 10 // purchase candidates shown to the model
 const GOAL_POOL_CAP = 100 // wider binder pool shown when the player states a goal
@@ -114,8 +115,9 @@ export function buildGoalPool(
   deckIdentity: string[],
   exclude: Set<string>,
   cap = GOAL_POOL_CAP,
+  direction: 'strong' | 'weak' = 'strong',
 ): RecommendCandidate[] {
-  return entries
+  const pool = entries
     .filter((e) => !exclude.has(e.oracleId))
     .filter((e) => !/basic land/i.test(e.typeLine))
     .filter((e) => e.colorIdentity.every((c) => deckIdentity.includes(c)))
@@ -136,23 +138,30 @@ export function buildGoalPool(
         replaces: null,
       }
     })
-    .sort((a, b) => b.weight - a.weight || (b.priceEur ?? 0) - (a.priceEur ?? 0))
-    .slice(0, cap)
+  // Down-tuning wants the WEAK cards first — that's what you swap in to hit a
+  // lower power target without leaving the theme.
+  pool.sort((a, b) =>
+    direction === 'weak'
+      ? a.weight - b.weight || (a.priceEur ?? 0) - (b.priceEur ?? 0)
+      : b.weight - a.weight || (b.priceEur ?? 0) - (a.priceEur ?? 0),
+  )
+  return pool.slice(0, cap)
 }
-
-export class AiNotConfiguredError extends Error {}
 
 export async function recommendDeckUpgrades(
   supabase: SupabaseClient,
   userId: string,
   deckId: string,
-  options: { budget?: number | null; apiKey?: string; goal?: string | null },
+  options: { budget?: number | null; apiKey?: string; goal?: string | null; targetPower?: number | null },
 ): Promise<{ result?: RecommendResult; error?: string }> {
-  const apiKey = options.apiKey ?? process.env.ANTHROPIC_API_KEY
-  if (!apiKey) throw new AiNotConfiguredError('AI is not configured. Set ANTHROPIC_API_KEY on the server.')
+  const apiKey = requireApiKey(options.apiKey)
 
   const budget = options.budget ?? null
   const goal = (options.goal ?? '').trim().slice(0, GOAL_MAX_LENGTH) || null
+  const targetPower =
+    options.targetPower != null && options.targetPower >= 1 && options.targetPower <= 10
+      ? Math.round(options.targetPower * 10) / 10
+      : null
 
   const scan = await scanDeckUpgrades(supabase, userId, deckId)
   if (scan.error || !scan.result) return { error: scan.error ?? 'Could not analyse this deck.' }
@@ -181,11 +190,19 @@ export async function recommendDeckUpgrades(
     commander = (await loadOracleMeta(supabase, [deck.commander_oracle_id as string])).get(deck.commander_oracle_id as string)?.name ?? null
   }
 
-  // Goal mode: the player stated a DIRECTION, so the need-based candidates are
-  // not enough — widen the pool to their whole color-legal free binder (capped)
-  // so the model can chase the goal through owned cards FIRST, buys last.
+  // Playgroup meta (mig 383): free text about what the pod plays, injected into
+  // every run so the advice is tuned to the actual tables this deck faces.
+  const { data: metaRow } = await supabase.from('co_player_meta').select('meta').eq('user_id', userId).maybeSingle()
+  const playgroupMeta = ((metaRow?.meta as string) ?? '').trim().slice(0, 400) || null
+
+  const detuning = targetPower != null && targetPower < scan.result.power.power
+
+  // Goal or power-target mode: the need-based candidates are not enough —
+  // widen the pool to the whole color-legal free binder (capped) so the model
+  // can chase the direction through owned cards FIRST, buys last. Down-tuning
+  // flips the ranking: the weak cards are the swap-ins.
   let goalPool: RecommendCandidate[] = []
-  if (goal) {
+  if (goal || targetPower != null) {
     const avail = await loadAvailability(supabase, userId)
     const freeIds = avail.filter((a) => a.freeQty > 0).map((a) => a.oracleId)
     const [poolMeta, poolTags] = await Promise.all([loadOracleMeta(supabase, freeIds), loadTags(supabase, freeIds)])
@@ -203,6 +220,8 @@ export async function recommendDeckUpgrades(
       }),
       deckIdentity,
       exclude,
+      GOAL_POOL_CAP,
+      detuning ? 'weak' : 'strong',
     )
   }
 
@@ -216,6 +235,10 @@ export async function recommendDeckUpgrades(
     commander,
     colorIdentity: deckIdentity,
     playerGoal: goal,
+    playgroupMeta,
+    targetPower,
+    // The deck's own list, so goal/power advice can name concrete cuts.
+    deckCards: goal || targetPower != null ? scan.result.deckList.map((c) => c.name) : undefined,
     power: scan.result.power.power,
     deckTheme: scan.result.power.health.find((h) => h.axis === 'Theme')?.explanation ?? null,
     buckets: scan.result.power.buckets,
@@ -236,7 +259,7 @@ export async function recommendDeckUpgrades(
     })),
   }
 
-  const raw = await callClaude(apiKey, context)
+  const raw = await askClaudeJson(apiKey, SYSTEM, context, ReplySchema, 2500)
   return { result: { summary: raw.summary, picks: validatePicks(raw.picks, candidates) } }
 }
 
@@ -257,34 +280,7 @@ Rules:
 - Give CONCRETE, specific reasons, not generic praise. Reference the role gap, the commander's payoff, and — for swaps — why IN beats the named OUT card. Example of the right altitude: "Phyrexian Arena draws every upkeep with no board needed, so it out-values Curiosity, which only triggers when its enchanted creature connects."
 - "include" = clear upgrade now; "consider" = situational / theme tension / optional buy; "skip" = on-list but not worth it.
 Goal mode: when the context has a non-null "playerGoal", it states what the player WANTS this deck to become — judge every candidate primarily on how much it advances that goal (the computed "needs" become secondary), and say in the summary how far the goal can be reached from owned cards alone. In goal mode the list also contains candidates with "confidence": 0 — those come from the player's wider binder without an engine score; evaluate them yourself from the card name and its role. The ownership priority is absolute in goal mode: exhaust "free" candidates that serve the goal before recommending any "buy". Do not restate weak goal-fits as includes just to fill space — a short, on-goal plan beats a long padded one.
+Playgroup meta: when "playgroupMeta" is non-null it describes what the player's pod actually plays. Weigh candidates against that meta (e.g. graveyard-heavy pod → grave hate rises; treasure decks → artifact interaction rises) and reference the meta in reasons where it drives a verdict.
+Power tuning: when "targetPower" is non-null the player wants the deck AT that power level (0-10 scale; "power" is the current level). If the target is BELOW the current power, propose DOWN-tunes: for each include, name a stronger card from "deckCards" to cut in the reason ("swap in X for Y"), keep the deck's theme intact, and never call a downgrade an upgrade — be honest that it weakens the deck on purpose. If the target is above, tune upward as usual. "deckCards" is the deck's own list, for naming cuts only — never recommend a deckCards entry as a pick.
 Respond with ONLY a JSON object: {"summary": string, "picks": [{"name": string, "verdict": "include"|"consider"|"skip", "reason": string}]}. No prose, no code fences.`
 
-async function callClaude(apiKey: string, context: unknown): Promise<z.infer<typeof ReplySchema>> {
-  const client = new Anthropic({ apiKey })
-  const system: Anthropic.TextBlockParam[] = [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }]
-  const messages: Anthropic.MessageParam[] = [{ role: 'user', content: JSON.stringify(context) }]
-
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    const response = await client.messages.create({ model: MODEL, max_tokens: 2500, system, messages })
-    const text = response.content.filter((b): b is Anthropic.TextBlock => b.type === 'text').map((b) => b.text).join('')
-    const parsed = extractJson(text)
-    const validated = ReplySchema.safeParse(parsed)
-    if (validated.success) return validated.data
-
-    messages.push({ role: 'assistant', content: text })
-    messages.push({ role: 'user', content: 'That was not the required JSON shape. Respond with only the JSON object {"summary","picks":[{"name","verdict","reason"}]}.' })
-  }
-  throw new Error('The AI could not produce a valid recommendation.')
-}
-
-function extractJson(text: string): unknown {
-  const trimmed = text.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim()
-  const start = trimmed.indexOf('{')
-  const end = trimmed.lastIndexOf('}')
-  if (start === -1 || end === -1 || end < start) return null
-  try {
-    return JSON.parse(trimmed.slice(start, end + 1))
-  } catch {
-    return null
-  }
-}

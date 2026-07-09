@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 
+import { requireAiCredit } from '@/lib/collection/ai-gate'
 import { AiNotConfiguredError, recommendDeckUpgrades } from '@/lib/collection/ai-recommend'
 import { createClient } from '@/lib/supabase/server'
 
@@ -23,41 +24,27 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const userId = data.claims.sub as string
   const { id: deckId } = await params
 
-  const { data: credit, error: creditError } = await supabase.rpc('consume_ai_credit', {
-    p_feature: 'deck_doctor',
-    p_limit: DOCTOR_MONTHLY_LIMIT,
-  })
-  if (creditError) {
-    return NextResponse.json({ error: `Credit check failed: ${creditError.message}` }, { status: 500 })
-  }
-  if (!credit?.allowed) {
-    if (credit?.reason === 'premium_required') {
-      return NextResponse.json(
-        { error: 'The AI Deck Doctor is a premium feature.', code: 'premium_required' },
-        { status: 402 },
-      )
-    }
-    return NextResponse.json(
-      {
-        error: `Monthly AI limit reached (${credit?.used ?? '?'}/${credit?.limit ?? DOCTOR_MONTHLY_LIMIT}) — resets next month.`,
-        code: 'quota_exceeded',
-      },
-      { status: 429 },
-    )
-  }
+  const gate = await requireAiCredit(supabase, 'deck_doctor', DOCTOR_MONTHLY_LIMIT)
+  if (gate) return gate
 
   let budget: number | null = null
   let goal: string | null = null
+  let targetPower: number | null = null
   try {
-    const body = (await request.json().catch(() => ({}))) as { budget?: number | null; goal?: string | null }
+    const body = (await request.json().catch(() => ({}))) as {
+      budget?: number | null
+      goal?: string | null
+      targetPower?: number | null
+    }
     budget = body.budget ?? null
     goal = typeof body.goal === 'string' ? body.goal : null
+    targetPower = typeof body.targetPower === 'number' ? body.targetPower : null
   } catch {
     budget = null
   }
 
   try {
-    const outcome = await recommendDeckUpgrades(supabase, userId, deckId, { budget, goal })
+    const outcome = await recommendDeckUpgrades(supabase, userId, deckId, { budget, goal, targetPower })
     if (outcome.error) return NextResponse.json({ error: outcome.error }, { status: 404 })
     return NextResponse.json(outcome.result)
   } catch (err) {

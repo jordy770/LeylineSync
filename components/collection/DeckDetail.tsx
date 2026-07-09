@@ -1,9 +1,12 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { createClient } from '@/lib/supabase/client'
 import { CardName } from './CardName'
+import { CombosTab } from './CombosTab'
+import { MulliganTab } from './MulliganTab'
 import { ShopLinks, ShopLinksInline } from './ShopLinks'
 import { ColorPips, Panel } from './ui'
 
@@ -97,12 +100,13 @@ export function DeckDetail({
   const router = useRouter()
   const [scan, setScan] = useState<ScanResult | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [tab, setTab] = useState<'list' | 'free' | 'occupied' | 'buy' | 'pull' | 'doctor'>('free')
+  const [tab, setTab] = useState<'list' | 'free' | 'occupied' | 'buy' | 'pull' | 'doctor' | 'combos' | 'mull'>('free')
   const [doctor, setDoctor] = useState<DoctorResult | null>(null)
   const [doctorBusy, setDoctorBusy] = useState(false)
   const [doctorError, setDoctorError] = useState<{ message: string; code?: string } | null>(null)
   const [doctorBudget, setDoctorBudget] = useState<string>('5')
   const [doctorGoal, setDoctorGoal] = useState<string>('')
+  const [doctorPower, setDoctorPower] = useState<string>('')
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [buyBudget, setBuyBudget] = useState<string>('5')
@@ -384,7 +388,11 @@ export function DeckDetail({
       const res = await fetch(`/api/decks/${deckId}/recommend`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ budget: doctorBudget === '' ? null : Number(doctorBudget), goal: doctorGoal.trim() || null }),
+        body: JSON.stringify({
+          budget: doctorBudget === '' ? null : Number(doctorBudget),
+          goal: doctorGoal.trim() || null,
+          targetPower: doctorPower === '' ? null : Number(doctorPower),
+        }),
       })
       const body = await res.json()
       if (!res.ok) setDoctorError({ message: body.error ?? 'The doctor could not run.', code: body.code })
@@ -560,6 +568,12 @@ export function DeckDetail({
           <Tab active={tab === 'doctor'} onClick={() => setTab('doctor')}>
             ✨ Doctor
           </Tab>
+          <Tab active={tab === 'combos'} onClick={() => setTab('combos')}>
+            ⚡ Combos
+          </Tab>
+          <Tab active={tab === 'mull'} onClick={() => setTab('mull')}>
+            🃏 Mulligan
+          </Tab>
         </div>
         {tab === 'free' || tab === 'occupied' || tab === 'buy' ? (
           // The badge meanings, visible everywhere (tooltips don't exist on touch).
@@ -641,8 +655,14 @@ export function DeckDetail({
             setBudget={setDoctorBudget}
             goal={doctorGoal}
             setGoal={setDoctorGoal}
+            power={doctorPower}
+            setPower={setDoctorPower}
             onRun={runDoctor}
           />
+        ) : tab === 'combos' ? (
+          <CombosTab deckId={deckId} />
+        ) : tab === 'mull' ? (
+          <MulliganTab deckId={deckId} cards={(deckList ?? []).map((c) => ({ name: c.name, qty: c.qty, isCommander: c.isCommander }))} />
         ) : (
           <PullTab pull={pull} busy={pullBusy} error={pullError} />
         )}
@@ -1177,6 +1197,8 @@ function DoctorTab({
   setBudget,
   goal,
   setGoal,
+  power,
+  setPower,
   onRun,
 }: {
   result: DoctorResult | null
@@ -1186,6 +1208,8 @@ function DoctorTab({
   setBudget: (b: string) => void
   goal: string
   setGoal: (g: string) => void
+  power: string
+  setPower: (p: string) => void
   onRun: () => void
 }) {
   const chips: { label: string; value: string }[] = [
@@ -1212,6 +1236,25 @@ function DoctorTab({
           className="font-rules w-full rounded-lg bg-transparent px-3 py-2 text-sm"
           style={{ border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text)' }}
         />
+        <MetaProfileField />
+        <div className="flex flex-wrap items-center gap-2 text-xs" style={{ color: 'var(--text-faint)' }}>
+          <span>Tune toward power</span>
+          {['', '4', '5', '6', '7', '8', '9'].map((p) => (
+            <button
+              key={p || 'auto'}
+              onClick={() => setPower(p)}
+              className="rounded-full px-2.5 py-0.5"
+              style={
+                power === p
+                  ? { background: 'var(--frame-gold)', color: '#1c1407' }
+                  : { border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text-dim)' }
+              }
+            >
+              {p || 'auto'}
+            </button>
+          ))}
+          <span className="ml-1">— lower than the current score means honest down-tuning for casual pods</span>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           {chips.map((c) => (
             <button
@@ -1306,6 +1349,79 @@ function DoctorTab({
           })}
         </>
       ) : null}
+    </div>
+  )
+}
+
+// Persistent playgroup-meta text (mig 383) — remembered across sessions and
+// injected into every Doctor run server-side. RLS scopes reads/writes to the
+// signed-in user, so no API route is needed.
+function MetaProfileField() {
+  const supabase = useMemo(() => createClient(), [])
+  const [meta, setMeta] = useState('')
+  const [loaded, setLoaded] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [dirty, setDirty] = useState(false)
+
+  useEffect(() => {
+    let live = true
+    supabase
+      .from('co_player_meta')
+      .select('meta')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!live) return
+        setMeta((data?.meta as string) ?? '')
+        setLoaded(true)
+      })
+    return () => {
+      live = false
+    }
+  }, [supabase])
+
+  async function save() {
+    const { data: u } = await supabase.auth.getUser()
+    if (!u.user) return
+    const { error } = await supabase
+      .from('co_player_meta')
+      .upsert({ user_id: u.user.id, meta: meta.trim(), updated_at: new Date().toISOString() })
+    if (!error) {
+      setDirty(false)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    }
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <span className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
+          Playgroup meta — remembered for every run
+        </span>
+        {dirty ? (
+          <button onClick={save} className="text-xs underline underline-offset-2" style={{ color: 'var(--gold-bright)' }}>
+            Save
+          </button>
+        ) : saved ? (
+          <span className="text-xs" style={{ color: 'var(--cast)' }}>
+            Saved ✓
+          </span>
+        ) : null}
+      </div>
+      <textarea
+        value={meta}
+        onChange={(e) => {
+          setMeta(e.target.value)
+          setDirty(true)
+        }}
+        onBlur={() => dirty && void save()}
+        rows={2}
+        maxLength={400}
+        disabled={!loaded}
+        placeholder="What does your pod play? e.g. “lots of graveyard recursion and treasures, one stax player, games go long”"
+        className="font-rules mt-1 w-full rounded-lg bg-transparent px-3 py-2 text-sm disabled:opacity-50"
+        style={{ border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text)' }}
+      />
     </div>
   )
 }

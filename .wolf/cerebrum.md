@@ -500,3 +500,10 @@
 ## Key Learnings — 2026-07-09 (Doctor goal mode)
 
 - Deck Doctor kent nu een doel-modus: de speler schrijft vrije tekst ("meer sacrifice-synergie") en het model beoordeelt kandidaten primair op dat doel. Grounding-uitbreiding: naast de need-based scan-kandidaten gaat in goal mode een bredere pool mee — buildGoalPool (pure, ai-recommend.ts) = kleur-legale VRIJE binderkaarten, basics en deck/bestaande kandidaten uitgesloten, gerankt op sterkste tag-weight, cap 100, confidence 0 als marker "geen engine-score, beoordeel zelf". validatePicks blijft het hallucinatiefilter (pool zit in de candidates-lijst). PROMPT-CACHE-REGEL: de goal-tekst hoort in de user-context-JSON, nooit in het SYSTEM-blok (dat draagt cache_control ephemeral) — goal-semantiek is als statische paragraaf aan SYSTEM toegevoegd.
+
+## Key Learnings — 2026-07-09 (AI-suite, 6 features)
+
+- Premium-AI-architectuur is nu drielaags en herbruikbaar: lib/collection/ai-client.ts (askClaudeJson: model claude-opus-4-8, cached static system, JSON-retry, zod-schema) + ai-gate.ts (requireAiCredit → 402/429 NextResponse of null) + per feature een lib met een PURE grounding-functie die alleen owned kaarten doorlaat (groundCombos, groundTradePackage, validatePicks) — de pure functies zijn unit-getest (ai-suite.test.ts). Feature-keys/limieten: deck_doctor 20, combos 20, mulligan 100, trade_builder 20, game_analysis 20.
+- Doctor-uitbreidingen: co_player_meta (mig 383, user mag eigen rij r/w — anders dan entitlements) wordt in ELKE run geïnjecteerd; targetPower onder huidige power flipt buildGoalPool naar weight-ASC (zwakke kaarten zijn de swap-ins bij detunen) en deckCards gaan mee zodat cuts benoemd kunnen worden (deckCards nooit als pick — prompt-regel).
+- Post-game analyse leest game_action_log (description-regels; RLS = session members) met seat-labels You/Opponent N; bij lange games de STAART bewaren (daar valt de beslissing); game_sessions heeft GEEN naam-kolom — label games op finished_at+format+winner_player_id.
+- game_session_players→game_sessions embed met .eq('game_sessions.status','finished') werkt alleen met !inner join-syntax.

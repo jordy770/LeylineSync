@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T06:58:17.058Z
-> Files: 6 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T07:29:55.389Z
+> Files: 25 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -84,8 +84,16 @@
 ## app/api/decks/[id]/buy/
 
 
+## app/api/decks/[id]/combos/
+
+- `route.ts` — POST /api/decks/:id/combos — premium: which combo lines does this deck (and (~441 tok)
+
 ## app/api/decks/[id]/commander/
 
+
+## app/api/decks/[id]/mulligan/
+
+- `route.ts` — POST /api/decks/:id/mulligan  { hand: string[], choice: 'keep'|'mulligan' } (~562 tok)
 
 ## app/api/decks/[id]/play/
 
@@ -95,7 +103,7 @@
 
 ## app/api/decks/[id]/recommend/
 
-- `route.ts` — POST /api/decks/:id/recommend (~788 tok)
+- `route.ts` — POST /api/decks/:id/recommend (~665 tok)
 
 ## app/api/decks/[id]/swaps/
 
@@ -109,8 +117,16 @@
 ## app/api/decks/import/
 
 
+## app/api/games/[id]/analyze/
+
+- `route.ts` — POST /api/games/:id/analyze — premium post-game coaching from the engine's (~444 tok)
+
 ## app/api/intelligence/classify/
 
+
+## app/api/trade/
+
+- `route.ts` — POST /api/trade  { want: string, targetValueEur?: number } (~546 tok)
 
 ## app/auth/confirm/
 
@@ -144,6 +160,7 @@
 
 ## app/collection/advisor/
 
+- `page.tsx` — dynamic (~3001 tok)
 
 ## app/collection/binders/
 
@@ -156,6 +173,10 @@
 
 ## app/collection/decks/import/
 
+
+## app/collection/games/
+
+- `page.tsx` — dynamic (~655 tok)
 
 ## app/collection/import/
 
@@ -204,7 +225,11 @@
 
 ## components/collection/
 
-- `DeckDetail.tsx` — BUCKET_ORDER (~15652 tok)
+- `CombosTab.tsx` — CombosTab (~1524 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~16822 tok)
+- `GameAnalysisList.tsx` — GameAnalysisList (~1327 tok)
+- `MulliganTab.tsx` — MulliganTab (~1678 tok)
+- `TradeBuilder.tsx` — TradeBuilder (~1507 tok)
 
 ## components/controller/
 
@@ -235,7 +260,14 @@
 
 ## lib/collection/
 
-- `ai-recommend.ts` — Flatten the scan's free + occupied upgrades into one candidate list (deduped). (~3908 tok)
+- `ai-client.ts` — One JSON-shaped exchange: cached static system prompt, JSON context in the (~673 tok)
+- `ai-combos.ts` — A card completing the line that the player does NOT own (buy target). (~1595 tok)
+- `ai-game-analysis.ts` — Post-game analysis — the feature only LeylineSync can build: the app IS the (~1059 tok)
+- `ai-gate.ts` — The one paywall/quota gate every premium AI route calls before touching the (~350 tok)
+- `ai-mulligan.ts` — Mulligan trainer — the player judges a sample hand from their own deck, the (~944 tok)
+- `ai-recommend.ts` — Flatten the scan's free + occupied upgrades into one candidate list (deduped). (~4072 tok)
+- `ai-trade.ts` — Pure: keep only offered cards that are really in the tradable list, and (~1229 tok)
+- `mulligan.ts` — Pure sample-hand drawing for the mulligan trainer. The caller supplies the (~203 tok)
 
 ## lib/collection/parsers/
 
@@ -276,6 +308,7 @@
 ## supabase/migrations/
 
 - `202605010382_premium_ai_credits.sql` — Premium entitlements + AI usage quota (Collection Optimizer monetization). (~893 tok)
+- `202605010383_player_meta.sql` — Playgroup meta profile (AI personalization). (~204 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -299,6 +332,7 @@
 ## tests/unit/
 
 - `ai-recommend.test.ts` — AI deck-doctor — the pure grounding helpers. The model call itself is not tested (~830 tok)
+- `ai-suite.test.ts` — Pure cores of the premium AI suite: sample-hand drawing (mulligan trainer), (~829 tok)
 
 ## vercel/
 

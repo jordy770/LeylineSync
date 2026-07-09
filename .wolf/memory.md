@@ -7237,3 +7237,47 @@
 | 08:58 | Edited components/collection/DeckDetail.tsx | modified DoctorTab() | ~436 |
 | 08:58 | Edited tests/unit/ai-recommend.test.ts | 2→2 lines | ~55 |
 | 09:00 | Doctor doel-modus: optional goal (max 300 chars) op recommend; buildGoalPool (pure, getest) levert gecapte kleur-legale vrije binderpool (100) met confidence 0 naast de engine-kandidaten; system prompt goal-semantiek statisch (cache-veilig, goal zit in user-context); binder-eerst-dan-kopen absoluut in goal mode; textarea in DoctorTab; max_tokens 1600 naar 2500 | lib/collection/ai-recommend.ts, app/api/decks/[id]/recommend/route.ts, components/collection/DeckDetail.tsx, tests/unit/ai-recommend.test.ts | tsc+build+503 tests groen | ~18k |
+| 09:20 | Created supabase/migrations/202605010383_player_meta.sql | — | ~204 |
+| 09:21 | Created lib/collection/ai-client.ts | — | ~673 |
+| 09:21 | Edited lib/collection/ai-recommend.ts | 5→5 lines | ~55 |
+| 09:21 | Edited lib/collection/ai-recommend.ts | 2→3 lines | ~35 |
+| 09:21 | Edited lib/collection/ai-recommend.ts | modified buildGoalPool() | ~363 |
+| 09:21 | Edited lib/collection/ai-recommend.ts | modified recommendDeckUpgrades() | ~176 |
+| 09:21 | Edited lib/collection/ai-recommend.ts | added optional chaining | ~470 |
+| 09:21 | Edited lib/collection/ai-recommend.ts | 5→9 lines | ~95 |
+| 09:22 | Edited lib/collection/ai-recommend.ts | callClaude() → askClaudeJson() | ~49 |
+| 09:22 | Edited lib/collection/ai-recommend.ts | 2→4 lines | ~498 |
+| 09:22 | Edited lib/collection/ai-recommend.ts | — | ~0 |
+| 09:22 | Edited app/api/decks/[id]/recommend/route.ts | expanded (+6 lines) | ~171 |
+| 09:22 | Edited components/collection/DeckDetail.tsx | added 1 import(s) | ~64 |
+| 09:22 | Edited components/collection/DeckDetail.tsx | 1→2 lines | ~34 |
+| 09:22 | Edited components/collection/DeckDetail.tsx | CSS: targetPower | ~65 |
+| 09:22 | Edited components/collection/DeckDetail.tsx | 4→6 lines | ~51 |
+| 09:23 | Edited components/collection/DeckDetail.tsx | CSS: power, setPower, p | ~92 |
+| 09:23 | Edited components/collection/DeckDetail.tsx | CSS: background | ~351 |
+| 09:23 | Edited components/collection/DeckDetail.tsx | added optional chaining | ~682 |
+| 09:24 | Created lib/collection/ai-combos.ts | — | ~1595 |
+| 09:24 | Created lib/collection/ai-gate.ts | — | ~350 |
+| 09:24 | Edited app/api/decks/[id]/recommend/route.ts | added 1 import(s) | ~58 |
+| 09:24 | Edited app/api/decks/[id]/recommend/route.ts | removed 22 lines | ~31 |
+| 09:24 | Created app/api/decks/[id]/combos/route.ts | — | ~441 |
+| 09:25 | Created lib/collection/mulligan.ts | — | ~203 |
+| 09:25 | Created lib/collection/ai-mulligan.ts | — | ~944 |
+| 09:25 | Created lib/collection/ai-trade.ts | — | ~1229 |
+| 09:26 | Created lib/collection/ai-game-analysis.ts | — | ~1059 |
+| 09:26 | Created app/api/decks/[id]/mulligan/route.ts | — | ~562 |
+| 09:26 | Created app/api/trade/route.ts | — | ~546 |
+| 09:26 | Created app/api/games/[id]/analyze/route.ts | — | ~444 |
+| 09:27 | Created components/collection/CombosTab.tsx | — | ~1524 |
+| 09:27 | Created components/collection/MulliganTab.tsx | — | ~1678 |
+| 09:27 | Edited components/collection/DeckDetail.tsx | added 2 import(s) | ~50 |
+| 09:28 | Edited components/collection/DeckDetail.tsx | inline fix | ~34 |
+| 09:28 | Edited components/collection/DeckDetail.tsx | expanded (+6 lines) | ~101 |
+| 09:28 | Edited components/collection/DeckDetail.tsx | added nullish coalescing | ~108 |
+| 09:28 | Created components/collection/TradeBuilder.tsx | — | ~1507 |
+| 09:28 | Edited app/collection/advisor/page.tsx | added 1 import(s) | ~77 |
+| 09:28 | Edited app/collection/advisor/page.tsx | expanded (+26 lines) | ~355 |
+| 09:29 | Created app/collection/games/page.tsx | — | ~655 |
+| 09:29 | Created components/collection/GameAnalysisList.tsx | — | ~1327 |
+| 09:29 | Created tests/unit/ai-suite.test.ts | — | ~829 |
+| 09:31 | AI-suite (6 features): mig 383 co_player_meta; ai-client.ts (gedeelde askClaudeJson) + ai-gate.ts (requireAiCredit); Doctor kreeg playgroupMeta+targetPower (detune = zwakke pool eerst); ai-combos (groundCombos), ai-mulligan (+pure drawSampleHand), ai-trade (groundTradePackage), ai-game-analysis (game_action_log → coaching); routes combos/mulligan/trade/games-analyze; UI: Combos+Mulligan-tabs, TradeBuilder+games-link op Advisor, /collection/games | 14 nieuwe/gewijzigde bestanden | tsc+build+507 tests groen | ~90k |

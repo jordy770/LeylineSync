@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { AdvisorContested } from '@/components/collection/AdvisorContested'
 import { AdvisorFits } from '@/components/collection/AdvisorFits'
 import { CardName } from '@/components/collection/CardName'
+import { TradeBuilder } from '@/components/collection/TradeBuilder'
 import { Panel, Shell } from '@/components/collection/Shell'
 import { getCollectionInsights } from '@/lib/collection/insights'
 import { loadCollectionIntelligence } from '@/lib/intelligence/loaders'
@@ -191,6 +192,32 @@ export default async function AdvisorPage() {
               </Panel>
             </section>
           ) : null}
+
+          {/* Premium AI corners: trade packages + post-game coaching */}
+          <section>
+            <h2 className="mb-3 text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
+              ✨ Trade builder
+            </h2>
+            <TradeBuilder />
+          </section>
+
+          <section>
+            <Link href="/collection/games">
+              <Panel className="flex items-center justify-between gap-4 p-4 transition-transform hover:scale-[1.005]">
+                <div>
+                  <div className="font-display text-sm" style={{ color: 'var(--text-bright)' }}>
+                    🎮 Post-game coaching
+                  </div>
+                  <div className="font-rules text-xs" style={{ color: 'var(--text-dim)' }}>
+                    AI analysis of your finished games, straight from the engine&apos;s own action log.
+                  </div>
+                </div>
+                <span className="shrink-0 text-sm" style={{ color: 'var(--gold-bright)' }}>
+                  →
+                </span>
+              </Panel>
+            </Link>
+          </section>
         </div>
       )}
     </Shell>

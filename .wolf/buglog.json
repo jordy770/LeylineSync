@@ -18901,6 +18901,150 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09T06:58:01.578Z"
+    },
+    {
+      "id": "bug-1156",
+      "timestamp": "2026-07-09T07:21:11.959Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/collection/ai-recommend.ts",
+      "root_cause": "Had 'claude-opus-4-8'",
+      "fix": "Changed to './ai-client'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T07:21:11.959Z"
+    },
+    {
+      "id": "bug-1157",
+      "timestamp": "2026-07-09T07:21:21.353Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/collection/ai-recommend.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 30→37 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T07:21:21.353Z"
+    },
+    {
+      "id": "bug-1158",
+      "timestamp": "2026-07-09T07:21:32.703Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/ai-recommend.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: // Playgroup meta (mig 383): free text about what the pod pl; // every run so the advice is tuned to the actual tables thi | Also: playgroupMeta,; targetPower,",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-07-09T07:21:54.922Z"
+    },
+    {
+      "id": "bug-1159",
+      "timestamp": "2026-07-09T07:22:34.024Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/api/decks/[id]/recommend/route.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 12→18 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T07:22:34.024Z"
+    },
+    {
+      "id": "bug-1160",
+      "timestamp": "2026-07-09T07:22:55.503Z",
+      "error_message": "CSS fix: body",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "body: JSON.stringify({ budget: doctorBudget === '' ? null : Number(doctorBudget), goal: doctorGoal.trim() || null → JSON.stringify({",
+      "fix": "Changed body: JSON.stringify({ budget: doctorBudget === '' ? null : Number(doctorBudget), goal: doctorGoal.trim() || null → JSON.stringify({",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T07:23:13.958Z"
+    },
+    {
+      "id": "bug-1161",
+      "timestamp": "2026-07-09T07:23:29.923Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: ) : tab === 'combos' ? (; <CombosTab deckId={deckId} />",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-09T07:28:06.953Z"
+    },
+    {
+      "id": "bug-1162",
+      "timestamp": "2026-07-09T07:24:26.224Z",
+      "error_message": "Incorrect value in code",
+      "file": "app/api/decks/[id]/recommend/route.ts",
+      "root_cause": "Had '@/lib/collection/ai-recommend'",
+      "fix": "Changed to '@/lib/collection/ai-gate'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T07:24:26.224Z"
+    },
+    {
+      "id": "bug-1163",
+      "timestamp": "2026-07-09T07:24:30.142Z",
+      "error_message": "Missing guard clause",
+      "file": "app/api/decks/[id]/recommend/route.ts",
+      "root_cause": "No early return/throw for edge case: gate",
+      "fix": "Added guard clause: if (gate)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T07:24:30.142Z"
+    },
+    {
+      "id": "bug-1164",
+      "timestamp": "2026-07-09T07:28:03.492Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Had 'free'",
+      "fix": "Changed to 'combos'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T07:28:03.492Z"
     }
   ]
 }
