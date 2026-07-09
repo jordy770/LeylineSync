@@ -55,9 +55,10 @@ export const DEFAULT_TARGETS: Partial<Record<SynergyTag, number>> = {
  *  default target — overriding them ADDS a need the guidelines don't track. */
 export const TUNABLE_TAGS = ['land', 'ramp', 'card_draw', 'removal', 'board_wipe', 'counterspell', 'tutor'] as const
 export type TunableTag = (typeof TUNABLE_TAGS)[number]
-/** Tag targets plus `curve` — the desired average mana value (default 3). A
- *  deliberately top-heavy deck sets it higher and stops being punished for it. */
-export type TargetOverrides = Partial<Record<TunableTag, number>> & { curve?: number }
+/** Tag targets plus `curve` (desired average mana value, default 3) and
+ *  `bracket` (the deck's target Commander Bracket, 1-5 — used by the scanner
+ *  and Doctor to respect the Game Changers allowance, not by the score). */
+export type TargetOverrides = Partial<Record<TunableTag, number>> & { curve?: number; bracket?: number }
 
 export const DEFAULT_CURVE_TARGET = 3
 
@@ -75,6 +76,10 @@ export function sanitizeTargetOverrides(input: unknown): TargetOverrides | null 
   const curve = (input as Record<string, unknown>).curve
   if (typeof curve === 'number' && Number.isFinite(curve)) {
     out.curve = Math.max(1, Math.min(8, Math.round(curve * 10) / 10))
+  }
+  const bracket = (input as Record<string, unknown>).bracket
+  if (typeof bracket === 'number' && Number.isFinite(bracket)) {
+    out.bracket = Math.max(1, Math.min(5, Math.round(bracket)))
   }
   return Object.keys(out).length > 0 ? out : null
 }
@@ -104,8 +109,10 @@ const BUCKET_TAGS: SynergyTag[] = [
 
 export function computePowerScore(cards: DeckCardForScore[], overrides?: TargetOverrides | null): PowerScore {
   // Effective targets: guidelines + the deck's own tuning (mig 384). `curve`
-  // is not a tag target — split it off before spreading into the needs map.
-  const { curve: curveTargetRaw, ...tagOverrides } = overrides ?? {}
+  // and `bracket` are not tag targets — split them off before spreading into
+  // the needs map (bracket doesn't touch the score at all).
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- bracket is split off, not scored
+  const { curve: curveTargetRaw, bracket: _bracket, ...tagOverrides } = overrides ?? {}
   const curveTarget = curveTargetRaw ?? DEFAULT_CURVE_TARGET
   const targets: Partial<Record<SynergyTag, number>> = { ...DEFAULT_TARGETS, ...tagOverrides }
   const isLand = (c: DeckCardForScore) => c.tags.some((t) => t.tag === 'land') || /\bland\b/i.test(c.typeLine)

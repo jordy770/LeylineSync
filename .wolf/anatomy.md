@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T15:11:13.173Z
-> Files: 46 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T15:26:26.750Z
+> Files: 47 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -233,7 +233,7 @@
 - `AdvisorFits.tsx` — AdvisorFits (~1729 tok)
 - `CardPocket.tsx` — MANA_GRADIENT (~552 tok)
 - `CombosTab.tsx` — CombosTab (~1526 tok)
-- `DeckDetail.tsx` — BUCKET_ORDER (~19766 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~19982 tok)
 - `GameAnalysisList.tsx` — GameAnalysisList (~1333 tok)
 - `MulliganTab.tsx` — MulliganTab (~1636 tok)
 - `SearchLive.tsx` — COLORS (~3669 tok)
@@ -275,15 +275,16 @@
 - `ai-game-analysis.ts` — Post-game analysis — the feature only LeylineSync can build: the app IS the (~1059 tok)
 - `ai-gate.ts` — The one paywall/quota gate every premium AI route calls before touching the (~350 tok)
 - `ai-mulligan.ts` — Mulligan trainer — the player judges a sample hand from their own deck, the (~944 tok)
-- `ai-recommend.ts` — Flatten the scan's free + occupied upgrades into one candidate list (deduped). (~4244 tok)
+- `ai-recommend.ts` — Flatten the scan's free + occupied upgrades into one candidate list (deduped). (~4484 tok)
 - `ai-trade.ts` — Pure: keep only offered cards that are really in the tradable list, and (~1229 tok)
 - `analyze-deck.ts` — Deck analysis: load → score → (optionally) cache the result in co_deck_analyses. (~359 tok)
+- `brackets.ts` — How many Game Changers a deck may hold at a target bracket. (~1148 tok)
 - `buy-suggestions.ts` — A Scryfall exact-name search link — the brief uses Scryfall for card info/pricing. (~1448 tok)
 - `deck-loader.ts` — Pet cards — never propose cutting these. (~2361 tok)
 - `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1716 tok)
 - `mulligan.ts` — Pure sample-hand drawing for the mulligan trainer. The caller supplies the (~203 tok)
-- `power-score.ts` — Tags a player may set a per-deck target for. counterspell/tutor have no (~2979 tok)
-- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4202 tok)
+- `power-score.ts` — Tags a player may set a per-deck target for. counterspell/tutor have no (~3113 tok)
+- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4490 tok)
 
 ## lib/collection/parsers/
 
@@ -351,7 +352,7 @@
 
 ## tests/unit/
 
-- `ai-recommend.test.ts` — AI deck-doctor — the pure grounding helpers. The model call itself is not tested (~830 tok)
+- `ai-recommend.test.ts` — AI deck-doctor — the pure grounding helpers. The model call itself is not tested (~1186 tok)
 - `ai-suite.test.ts` — Pure cores of the premium AI suite: sample-hand drawing (mulligan trainer), (~829 tok)
 - `target-overrides.test.ts` — Per-deck target tuning (mig 384) — the pure engine side: overrides shift the (~741 tok)
 

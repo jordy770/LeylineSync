@@ -68,3 +68,10 @@ test('sanitizeTargetOverrides accepts a fractional curve target and clamps it', 
   assert.deepEqual(sanitizeTargetOverrides({ curve: 4.25 }), { curve: 4.3 })
   assert.deepEqual(sanitizeTargetOverrides({ curve: 99 }), { curve: 8 })
 })
+
+test('bracket override is sanitized and never leaks into the needs map', () => {
+  assert.deepEqual(sanitizeTargetOverrides({ bracket: 3.7 }), { bracket: 4 })
+  assert.deepEqual(sanitizeTargetOverrides({ bracket: 9 }), { bracket: 5 })
+  const scored = computePowerScore([land(37)], { bracket: 2 })
+  assert.ok(!scored.needs.some((n) => (n.tag as string) === 'bracket'), 'bracket is not a tag need')
+})

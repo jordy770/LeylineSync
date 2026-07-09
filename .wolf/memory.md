@@ -7376,3 +7376,21 @@
 | 17:11 | Edited components/collection/DeckDetail.tsx | CSS: onDismiss, oracleId | ~71 |
 | 17:11 | Edited components/collection/DeckDetail.tsx | expanded (+11 lines) | ~241 |
 | 17:12 | Curve-target + kaart-locks: TargetOverrides.curve (1..8, 1 decimaal; curveScore rond eigen target ipv hardcoded 3); mig 385 co_decks.card_locks {locked, excluded} + sanitizeCardLocks (deck-loader); scanner: excluded uit pools, locked uit OUT-kandidaten (inDeck-filter vóór buildFreeUpgrades); suggestBuys: overrides + excluded-filter; Doctor: excluded uit goalPool + lockedCards in context/prompt; PATCH cardLocks; UI: 🔒-toggle op decklijst, ✕ never op free/occupied/buy + 'bring them back', curve-veld in TargetTuner; 3 nieuwe tests | power-score/deck-loader/upgrade-scanner/buy-suggestions/ai-recommend/route/DeckDetail | tsc+build+514 tests groen; mig 385 lokaal | ~40k |
+| 17:23 | Created lib/collection/brackets.ts | — | ~1148 |
+| 17:23 | Edited lib/collection/power-score.ts | 3→4 lines | ~95 |
+| 17:23 | Edited lib/collection/power-score.ts | added 1 condition(s) | ~125 |
+| 17:23 | Edited lib/collection/power-score.ts | 4→5 lines | ~105 |
+| 17:23 | Edited lib/collection/upgrade-scanner.ts | added 2 import(s) | ~76 |
+| 17:23 | Edited lib/collection/upgrade-scanner.ts | 7→11 lines | ~104 |
+| 17:24 | Edited lib/collection/upgrade-scanner.ts | added optional chaining | ~180 |
+| 17:24 | Edited lib/collection/upgrade-scanner.ts | modified if() | ~67 |
+| 17:24 | Edited lib/collection/upgrade-scanner.ts | added 1 condition(s) | ~124 |
+| 17:24 | Edited lib/collection/upgrade-scanner.ts | 5→7 lines | ~39 |
+| 17:24 | Edited lib/collection/ai-recommend.ts | expanded (+7 lines) | ~94 |
+| 17:24 | Edited lib/collection/ai-recommend.ts | modified allowance() | ~197 |
+| 17:24 | Edited components/collection/DeckDetail.tsx | expanded (+8 lines) | ~80 |
+| 17:24 | Edited components/collection/DeckDetail.tsx | CSS: border | ~224 |
+| 17:24 | Edited components/collection/DeckDetail.tsx | 2→3 lines | ~47 |
+| 17:25 | Edited tests/unit/ai-recommend.test.ts | 3→5 lines | ~39 |
+| 17:26 | Edited lib/collection/power-score.ts | 1→2 lines | ~54 |
+| 17:26 | Commander Brackets geïntegreerd: lib/collection/brackets.ts (officiële 53-kaarts Game Changers-lijst per 9-2-2026, via Scryfall is:gamechanger opgehaald 9-7; estimateBracket op GC+tutors, gameChangerAllowance 0/0/3/inf/inf); target_overrides.bracket (1-5); scanner filtert GC-kandidaten boven allowance en levert bracket+targetBracket in scanresult; Doctor krijgt bracket-context + promptregels (GC's cutten bij te laag target); UI: ~B-badge naast power + bracket-veld in TargetTuner; 2 nieuwe tests | brackets.ts, power-score, upgrade-scanner, ai-recommend, DeckDetail | 516 tests groen | ~30k |

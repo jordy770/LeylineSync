@@ -19525,6 +19525,118 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-07-09T15:11:04.106Z"
+    },
+    {
+      "id": "bug-1195",
+      "timestamp": "2026-07-09T15:23:34.481Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/collection/power-score.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 3→4 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:23:34.481Z"
+    },
+    {
+      "id": "bug-1196",
+      "timestamp": "2026-07-09T15:23:51.670Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/collection/upgrade-scanner.ts",
+      "root_cause": "Had './deck-loader'",
+      "fix": "Changed to './brackets'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:23:51.670Z"
+    },
+    {
+      "id": "bug-1197",
+      "timestamp": "2026-07-09T15:24:06.357Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/upgrade-scanner.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:24:06.357Z"
+    },
+    {
+      "id": "bug-1198",
+      "timestamp": "2026-07-09T15:24:09.213Z",
+      "error_message": "Wrong return value",
+      "file": "lib/collection/upgrade-scanner.ts",
+      "root_cause": "Was returning: { result: { deckId, power, free: [], occupied: [],",
+      "fix": "Now returns: { result: { deckId, power, free: [], occupied: [],",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:24:09.213Z"
+    },
+    {
+      "id": "bug-1199",
+      "timestamp": "2026-07-09T15:24:26.707Z",
+      "error_message": "Type error",
+      "file": "lib/collection/ai-recommend.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:24:26.707Z"
+    },
+    {
+      "id": "bug-1200",
+      "timestamp": "2026-07-09T15:24:44.746Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:24:44.746Z"
+    },
+    {
+      "id": "bug-1201",
+      "timestamp": "2026-07-09T15:24:58.492Z",
+      "error_message": "CSS fix: key",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "key: 'curve', label: 'avg mana value', def: 3, min: 1, max: 8, step: 0.1 → 'bracket', label: 'bracket (1-5)', def: null, min: 1, max: 5, step: 1",
+      "fix": "Changed key: 'curve', label: 'avg mana value', def: 3, min: 1, max: 8, step: 0.1 → 'bracket', label: 'bracket (1-5)', def: null, min: 1, max: 5, step: 1",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:24:58.492Z"
     }
   ]
 }

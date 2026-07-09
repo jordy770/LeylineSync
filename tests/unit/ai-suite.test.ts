@@ -79,3 +79,22 @@ test('sanitizeCardLocks keeps only uuid-shaped ids and drops empty results', asy
     excluded: [id],
   })
 })
+
+test('bracket helpers: game changers found (incl. split faces), allowance per bracket', async () => {
+  const { estimateBracket, findGameChangers, gameChangerAllowance } = await import('../../lib/collection/brackets')
+  assert.deepEqual(findGameChangers(['Sol Ring', 'Rhystic Study', 'Tergrid, God of Fright']), [
+    'Rhystic Study',
+    'Tergrid, God of Fright',
+  ])
+  assert.equal(gameChangerAllowance(2), 0)
+  assert.equal(gameChangerAllowance(3), 3)
+  assert.equal(gameChangerAllowance(4), Number.POSITIVE_INFINITY)
+  assert.equal(gameChangerAllowance(null), Number.POSITIVE_INFINITY)
+
+  assert.equal(estimateBracket(['Sol Ring'], 0).bracket, 2)
+  assert.equal(estimateBracket(['Rhystic Study'], 0).bracket, 3)
+  assert.equal(
+    estimateBracket(['Rhystic Study', 'Demonic Tutor', 'Mana Vault', 'The One Ring'], 2).bracket,
+    4,
+  )
+})

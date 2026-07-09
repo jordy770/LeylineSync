@@ -11,6 +11,8 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import { estimateBracket, gameChangerAllowance, isGameChanger } from './brackets'
+import type { BracketEstimate } from './brackets'
 import { IN_CHUNK, loadAvailability, loadBinderNames, loadDeckForScoring, loadOracleMeta, loadTags, oneToOne } from './deck-loader'
 import { computePowerScore } from './power-score'
 import type { DeckNeed, PowerScore } from './power-score'
@@ -279,6 +281,10 @@ export interface UpgradeScanResult {
   free: FreeUpgrade[]
   occupied: OccupiedUpgrade[]
   deckList: DeckListCard[]
+  /** Commander Bracket estimate (Game Changers + tutor density). */
+  bracket: BracketEstimate
+  /** The deck's declared target bracket (target_overrides.bracket), if any. */
+  targetBracket: number | null
 }
 
 export async function scanDeckUpgrades(
@@ -303,8 +309,16 @@ export async function scanDeckUpgrades(
   }))
 
   const power = computePowerScore(scoreCards, targetOverrides)
+
+  // Commander Bracket: estimate from Game Changers + tutors; the declared
+  // target (if any) caps how many Game Changers suggestions may introduce.
+  const bracket = estimateBracket(deckList.map((c) => c.name), power.buckets.tutor ?? 0)
+  const targetBracket = targetOverrides?.bracket ?? null
+  const gcAllowance = gameChangerAllowance(targetBracket)
+  const gcRoom = Math.max(0, gcAllowance - bracket.gameChangers.length)
+
   if (power.needs.length === 0) {
-    return { result: { deckId, power, free: [], occupied: [], deckList } }
+    return { result: { deckId, power, free: [], occupied: [], deckList, bracket, targetBracket } }
   }
   // Commander + theme + curve context, so suggestions are ranked on deck FIT.
   const ctx = buildDeckContext(scoreCards, power.avgMv)
@@ -320,7 +334,7 @@ export async function scanDeckUpgrades(
 
   const ownedOracleIds = avail.map((a) => a.oracleId).filter((id) => !deckOracleIds.has(id))
   if (ownedOracleIds.length === 0) {
-    return { result: { deckId, power, free: [], occupied: [], deckList } }
+    return { result: { deckId, power, free: [], occupied: [], deckList, bracket, targetBracket } }
   }
 
   const meta = await loadOracleMeta(supabase, ownedOracleIds)
@@ -334,6 +348,8 @@ export async function scanDeckUpgrades(
     if (excluded.has(oracleId)) continue // dismissed for this deck — never resuggest
     const m = meta.get(oracleId)
     if (!m || !fitsColorIdentity(m.colorIdentity, deckIdentity)) continue
+    // Target bracket has no Game Changer room left → don't suggest adding one.
+    if (gcRoom === 0 && isGameChanger(m.name)) continue
     const candidate: UpgradeCandidate = {
       oracleId,
       name: m.name,
@@ -377,6 +393,8 @@ export async function scanDeckUpgrades(
       })),
       occupied: buildOccupiedUpgrades(power.needs, occupiedCands, ctx),
       deckList,
+      bracket,
+      targetBracket,
     },
   }
 }

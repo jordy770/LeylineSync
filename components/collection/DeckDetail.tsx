@@ -49,11 +49,19 @@ interface DeckListCard {
   isCommander: boolean
   priceEur: number | null
 }
+interface BracketInfo {
+  bracket: number
+  label: string
+  gameChangers: string[]
+  note: string
+}
 interface ScanResult {
   power: PowerScore
   free: FreeUpgrade[]
   occupied: OccupiedUpgrade[]
   deckList: DeckListCard[]
+  bracket: BracketInfo
+  targetBracket: number | null
 }
 interface PullList {
   groups: { binder: string; cards: { name: string; need: number }[] }[]
@@ -534,6 +542,16 @@ export function DeckDetail({
                 {power.landCount} lands · avg MV {power.avgMv}
                 {deckValueEur > 0 ? ` · ≈€${Math.round(deckValueEur).toLocaleString('en-US')}` : ''}
               </span>
+              {scan.bracket ? (
+                <span
+                  className="rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide"
+                  style={{ color: 'var(--gold-bright)', border: '1px solid rgba(255,212,121,0.4)' }}
+                  title={scan.bracket.note}
+                >
+                  ~B{scan.bracket.bracket} {scan.bracket.label}
+                  {scan.targetBracket != null ? ` → target B${scan.targetBracket}` : ''}
+                </span>
+              ) : null}
             </div>
             <p className="font-rules mt-2 max-w-md text-sm" style={{ color: 'var(--text-dim)' }}>
               {power.explanation}
@@ -1513,6 +1531,7 @@ const TUNABLE_FIELDS: { key: string; label: string; def: number | null; min: num
   { key: 'counterspell', label: 'counterspells', def: null, min: 0, max: 60, step: 1 },
   { key: 'tutor', label: 'tutors', def: null, min: 0, max: 60, step: 1 },
   { key: 'curve', label: 'avg mana value', def: 3, min: 1, max: 8, step: 0.1 },
+  { key: 'bracket', label: 'bracket (1-5)', def: null, min: 1, max: 5, step: 1 },
 ]
 
 function TargetTuner({

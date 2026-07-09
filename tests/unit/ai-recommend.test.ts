@@ -21,6 +21,8 @@ function scan(): UpgradeScanResult {
       { in: { oracleId: 'o-esper', name: 'Esper Sentinel', priceEur: 30 }, tag: 'card_draw', weight: 3, confidence: 60, themeImpact: 'Neutral', commanderSynergy: 0, usedBy: [{ id: 'd2', name: 'Urza' }], action: 'move', reason: '' },
     ],
     deckList: [],
+    bracket: { bracket: 2, label: 'Core', gameChangers: [], tutorCount: 0, note: '' },
+    targetBracket: null,
   }
 }
 
