@@ -7419,3 +7419,19 @@
 | 18:05 | Edited app/page.tsx | CSS: everywhere | ~100 |
 | 18:05 | Edited app/decks/page.tsx | added 1 import(s) | ~160 |
 | 18:06 | Home + Decks in Binder-stijl getrokken: gedeelde components/binder-fonts.ts (Outfit/Karla, ook door Shell gebruikt); beide pagina's wrapper landing-void+ley-grid → binder-shell (CSS-var-override doet de rest, SiteNav rethemet automatisch); game-board/controller behouden eigen chrome | app/page.tsx, app/decks/page.tsx, components/binder-fonts.ts, Shell.tsx | tsc+build+lint groen | ~8k |
+
+## Session: 2026-07-09 18:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| -- | Onderzocht: werkt lifelink? Engine ja (mig 283, damage fns + lifegain triggers), maar printed-keyword loop in register_card_continuous_effects mapt lifelink NIET en BUILDER_KEYWORDS (editor) mist hem ook | supabase/functions_src/register_card_continuous_effects.sql, lib/game/card-behavior-builder.ts | gap gevonden, nog niet gefixt | ~15k |
+| 18:27 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified lifelink() | ~85 |
+| 18:28 | Edited supabase/migrations/202605010386_printed_lifelink.sql | 1→5 lines | ~99 |
+| 18:28 | Edited lib/game/card-behavior-builder.ts | 4→5 lines | ~19 |
+| 18:28 | Edited lib/game/card-behavior-builder.ts | 2→3 lines | ~21 |
+| 18:30 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~126 |
+| 18:30 | Edited tests/harness/seed.ts | 4→7 lines | ~68 |
+| 18:30 | Edited tests/harness/seed.ts | modified stringify() | ~131 |
+| 18:30 | Edited tests/feature/lifelink-taps.test.ts | expanded (+17 lines) | ~245 |
+| 18:31 | Edited scripts/triage-decklist.mjs | 5→5 lines | ~62 |
+| -- | Fix printed lifelink: mig 386 (keyword-loop), BUILDER_KEYWORDS+labels, triage-lijst, LT4-test + seed keywords-kolom | supabase/migrations/202605010386_printed_lifelink.sql, lib/game/card-behavior-builder.ts, tests/feature/lifelink-taps.test.ts, tests/harness/seed.ts, tests/fixtures/test-cards.json, scripts/triage-decklist.mjs | LT1-4 groen, tsc schoon, volle suite draait | ~25k |

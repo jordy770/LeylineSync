@@ -1,7 +1,11 @@
--- supabase/functions_src/register_card_continuous_effects.sql
--- CANONICAL current definition (seeded from 202605010195_intimidate_hexproof.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010386_printed_lifelink
+-- Printed lifelink: the keyword→effect loop never mapped 'lifelink' from the
+-- catalog `cards.keywords` array, so a creature with Lifelink printed on it
+-- gained no life on damage — while granted/scripted lifelink worked since
+-- mig 283. Adds the missing `when 'lifelink'` branch; the damage side
+-- (apply_damage_to_player/creature + card_has_lifelink) is unchanged.
+-- Generated from supabase/functions_src (register_card_continuous_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.register_card_continuous_effects(
   p_session_id uuid, p_source_card_id uuid

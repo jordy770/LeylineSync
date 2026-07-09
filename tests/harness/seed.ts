@@ -17,6 +17,9 @@ type TestCard = {
   power_toughness: string | null
   mana_cost?: string | null
   is_token?: boolean
+  // Printed catalog keywords (cards.keywords) — the register_card_continuous_effects
+  // keyword loop reads these, distinct from script.keywords.
+  keywords?: string[]
   script: unknown
 }
 
@@ -40,10 +43,10 @@ export async function ensureTestCards(): Promise<void> {
     await client.query('select pg_advisory_xact_lock(8675309)')
     for (const c of cards) {
       await client.query(
-        `insert into public.cards (id, name, type_line, oracle_text, power_toughness, mana_cost, is_token, script)
-         select gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7::jsonb
+        `insert into public.cards (id, name, type_line, oracle_text, power_toughness, mana_cost, is_token, keywords, script)
+         select gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7::jsonb, $8::jsonb
          where not exists (select 1 from public.cards where name = $1)`,
-        [c.name, c.type_line, c.oracle_text, c.power_toughness, c.mana_cost ?? null, c.is_token ?? false, JSON.stringify(c.script)],
+        [c.name, c.type_line, c.oracle_text, c.power_toughness, c.mana_cost ?? null, c.is_token ?? false, c.keywords ? JSON.stringify(c.keywords) : null, JSON.stringify(c.script)],
       )
     }
     await client.query('commit')

@@ -33,7 +33,7 @@ const input = path.resolve(root, process.argv[2] ?? 'docs/commander-decks/next-d
 const SUPPORTED_KEYWORDS = new Set([
   'flying', 'reach', 'haste', 'vigilance', 'trample', 'indestructible',
   'first strike', 'double strike', 'deathtouch', 'menace', 'intimidate',
-  'hexproof', 'infect', 'wither',
+  'hexproof', 'infect', 'wither', 'lifelink',
 ])
 
 // ── Parse the decklist ────────────────────────────────────────────────────────

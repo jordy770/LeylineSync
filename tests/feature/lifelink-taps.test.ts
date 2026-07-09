@@ -36,6 +36,23 @@ test('LT1 lifelink pays the controller on combat damage', async () => {
   })
 })
 
+// LT4 (mig 386) — PRINTED lifelink: the catalog `keywords` array alone, no
+// script and no grant, must pay the controller on combat damage.
+test('LT4 printed lifelink keyword pays the controller', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    const cat = await s.spawnCreature('A', 'Lifelink Cat Test') // 2/2, keywords:["Lifelink"]
+    const before = await lifeOf(s, 'A')
+
+    await s.setTurn({ phase: 'combat', step: 'declare_attackers', active: 'A', priority: 'A' })
+    await s.as('A').declareAttacker(cat, 'B')
+    await s.setTurn({ phase: 'combat', step: 'combat_damage', active: 'A', priority: 'A' })
+    await s.resolveCombat()
+
+    assert.equal(await lifeOf(s, 'A'), before + 2) // 2 damage, 2 life
+  })
+})
+
 // LT2 — becomes_tapped: tapping a land for mana fires the card's own trigger
 // (Phyrexian Atlas pattern), gated on corrupted.
 test('LT2 becomes_tapped fires on a mana tap', async () => {

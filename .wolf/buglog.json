@@ -19753,6 +19753,58 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-07-09T16:05:30.090Z"
+    },
+    {
+      "id": "bug-1209",
+      "timestamp": "2026-07-09T16:28:22.998Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-builder.ts",
+      "root_cause": "Had 'Intimidate'",
+      "fix": "Changed to 'Lifelink'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T16:28:22.998Z"
+    },
+    {
+      "id": "bug-1210",
+      "timestamp": "2026-07-09T16:30:31.660Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/lifelink-taps.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T16:30:31.660Z"
+    },
+    {
+      "id": "bug-1209",
+      "timestamp": "2026-07-09T00:00:00Z",
+      "error_message": "Printed lifelink deed niets: creature met Lifelink in cards.keywords gaf de controller geen life bij damage; keyword ontbrak ook in de behavior editor",
+      "file": "supabase/functions_src/register_card_continuous_effects.sql; lib/game/card-behavior-builder.ts; scripts/triage-decklist.mjs",
+      "root_cause": "De keyword→effect case-loop in register_card_continuous_effects mapte lifelink nooit (mig 283 voegde alleen de damage-kant + grants toe, niet de printed-keyword branch). card_has_lifelink leest alleen game_continuous_effects, dus zonder row geen lifegain. Daarnaast miste BUILDER_KEYWORDS de entry, dus de editor kon hem niet tonen — terwijl HANDLED_KEYWORDS in card-behavior.ts lifelink al (onterecht) als engine-handled claimde.",
+      "fix": "Mig 202605010386: when lifelink then lifelink toegevoegd aan de keyword-loop. BUILDER_KEYWORDS + KEYWORD_LABELS uitgebreid met lifelink (editor toont hem nu als keyword én als grant). triage-decklist SUPPORTED_KEYWORDS bijgewerkt. Test LT4 (printed lifelink via fixture Lifelink Cat Test met catalog keywords); seed.ts schrijft nu ook cards.keywords.",
+      "tags": [
+        "lifelink",
+        "keywords",
+        "register_card_continuous_effects",
+        "behavior-editor",
+        "continuous-effects"
+      ],
+      "related_bugs": [
+        "bug-682"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T00:00:00Z"
     }
   ]
 }

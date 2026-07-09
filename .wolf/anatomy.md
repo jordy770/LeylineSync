@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T16:05:30.064Z
-> Files: 57 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T16:31:49.284Z
+> Files: 64 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -304,6 +304,7 @@
 
 ## lib/game/
 
+- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10549 tok)
 
 ## lib/intelligence/
 
@@ -324,6 +325,7 @@
 
 ## scripts/
 
+- `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3818 tok)
 
 ## supabase/
 
@@ -333,6 +335,7 @@
 
 ## supabase/functions_src/
 
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2940 tok)
 
 ## supabase/migrations/
 
@@ -340,6 +343,7 @@
 - `202605010383_player_meta.sql` — Playgroup meta profile (AI personalization). (~204 tok)
 - `202605010384_deck_target_overrides.sql` — Per-deck target tuning. (~187 tok)
 - `202605010385_card_locks.sql` — Card locks per deck. (~124 tok)
+- `202605010386_printed_lifelink.sql` — Printed lifelink: keyword-loop in register_card_continuous_effects mapt nu ook 'lifelink' uit cards.keywords. (~3021 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -350,12 +354,15 @@
 ## tests/feature/
 
 - `ai-quota.test.ts` — Premium AI credits (mig 382). consume_ai_credit is the single server-side (~1236 tok)
+- `lifelink-taps.test.ts` — mig 283 — lifelink and the becomes_tapped event. (~1296 tok)
 
 ## tests/fixtures/
 
+- `test-cards.json` (~49430 tok)
 
 ## tests/harness/
 
+- `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~742 tok)
 
 ## tests/regression/
 

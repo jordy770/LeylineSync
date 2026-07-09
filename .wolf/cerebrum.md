@@ -533,3 +533,6 @@
 ## User Preferences — 2026-07-09 (thema-reikwijdte)
 
 - Het Binder-thema is nu de identiteit van de HELE app-schil: landing (app/page.tsx), decks-pagina én collection dragen allemaal .binder-shell + binderFonts (components/binder-fonts.ts — gedeelde next/font consts; Shell.tsx importeert dezelfde). Alleen de in-game vlakken (board, controller, judge) behouden hun eigen chrome. De eerdere notitie "game-kant onaangeroerd, alleen collection" is hiermee verruimd op verzoek van Jordy.
+
+## Key Learnings — 2026-07-09 (lifelink-status)
+- Lifelink is 3 lagen: (1) damage-afhandeling in apply_damage_to_player/creature + card_has_lifelink accessor — WERKT (mig 283, incl. fire_lifegain_triggers); (2) printed keyword uit cards.keywords → de case-loop in register_card_continuous_effects mapt 'lifelink' NIET (valt op null, wordt geskipt) → vanilla lifelink-creatures gainen géén life; (3) editor: BUILDER_KEYWORDS in lib/game/card-behavior-builder.ts mist 'lifelink' (schema staat het wél toe). Extra vals signaal: HANDLED_KEYWORDS in card-behavior.ts claimt lifelink als 'engine-handled' → deck editor toont zulke kaarten als 'vanilla'.
