@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeylineSync · Collection — stijlconcepten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&family=Karla:wght@400;500;700&family=Inter+Tight:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Nunito+Sans:wght@400;600;800&family=Young+Serif&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#101014; color:#ddd; font-family:'Karla',sans-serif; }
+
+  /* ── concept switcher ─────────────────────────────────────────── */
+  .switch { position:sticky; top:0; z-index:50; display:flex; gap:6px; flex-wrap:wrap; align-items:center;
+    padding:10px 16px; background:#0a0a0dee; backdrop-filter:blur(8px); border-bottom:1px solid #26262e; }
+  .switch .lbl { font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.14em; color:#777; margin-right:8px; }
+  .switch button { font:600 13px 'Karla',sans-serif; padding:7px 14px; border-radius:99px; border:1px solid #33333d;
+    background:transparent; color:#aaa; cursor:pointer; }
+  .switch button.on { background:#e8e4d8; color:#111; border-color:#e8e4d8; }
+  .concept { display:none; } .concept.on { display:block; }
+  .why { max-width:1060px; margin:0 auto; padding:14px 24px 0; font:italic 14px/1.5 'Libre Caslon Text',serif; opacity:.75; }
+
+  /* ══ A · CARD CATALOG — het papieren archief ═══════════════════ */
+  .cA { background:#EDE4CC; color:#2a241a; font-family:'IBM Plex Mono',monospace; min-height:100vh; }
+  .cA .wrap { max-width:1060px; margin:0 auto; padding:28px 24px 80px; }
+  .cA .mast { display:flex; justify-content:space-between; align-items:baseline; border-bottom:3px double #2a241a; padding-bottom:14px; }
+  .cA h1 { font:700 34px 'Libre Caslon Text',serif; letter-spacing:.01em; }
+  .cA .mast nav { font:500 12px 'IBM Plex Mono',monospace; letter-spacing:.12em; text-transform:uppercase; display:flex; gap:18px; }
+  .cA .mast nav a { color:#2a241a; text-decoration:none; } .cA .mast nav a.act { border-bottom:2px solid #B3341F; }
+  .cA .stamp { font:700 11px 'IBM Plex Mono',monospace; letter-spacing:.18em; color:#B3341F; border:2px solid #B3341F;
+    border-radius:4px; padding:4px 10px; transform:rotate(-2deg); display:inline-block; }
+  .cA .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-top:22px; }
+  .cA .idx { background:#F7F0DC; border:1px solid #c9bd9c; border-radius:3px; padding:14px 14px 10px; position:relative;
+    box-shadow:2px 3px 0 #d8cca9; background-image:repeating-linear-gradient(#F7F0DC 0 25px, #e7dcbe 25px 26px); }
+  .cA .idx::before { content:''; position:absolute; top:8px; left:50%; width:9px; height:9px; margin-left:-5px;
+    border-radius:50%; background:#EDE4CC; border:1px solid #c9bd9c; }
+  .cA .idx b { display:block; font:700 24px 'Libre Caslon Text',serif; margin-top:10px; }
+  .cA .idx span { font:500 10px 'IBM Plex Mono',monospace; letter-spacing:.14em; text-transform:uppercase; color:#8a7c58; }
+  .cA h2 { font:700 13px 'IBM Plex Mono',monospace; letter-spacing:.2em; text-transform:uppercase; margin:34px 0 10px;
+    display:flex; align-items:center; gap:12px; }
+  .cA h2::after { content:''; flex:1; border-bottom:1px solid #c9bd9c; }
+  .cA table { width:100%; border-collapse:collapse; font-size:13px; background:#F7F0DC; border:1px solid #c9bd9c; }
+  .cA th { font:600 10px 'IBM Plex Mono',monospace; letter-spacing:.16em; text-transform:uppercase; text-align:left;
+    padding:8px 12px; border-bottom:2px solid #2a241a; color:#8a7c58; }
+  .cA td { padding:9px 12px; border-bottom:1px dashed #d8cca9; font-family:'Libre Caslon Text',serif; font-size:14px; }
+  .cA td.num, .cA th.num { text-align:right; font-family:'IBM Plex Mono',monospace; font-size:12px; }
+  .cA .pw { font:700 13px 'IBM Plex Mono',monospace; color:#B3341F; }
+  .cA .note { margin-top:26px; background:#2a241a; color:#EDE4CC; padding:12px 16px; font-size:12px; display:flex;
+    justify-content:space-between; align-items:center; border-radius:3px; }
+  .cA .note a { color:#f0c96e; }
+
+  /* ══ B · BINDER — visueel, kaarten voorop ══════════════════════ */
+  .cB { background:#1b1d22; color:#e8e8ea; font-family:'Outfit',sans-serif; min-height:100vh;
+    background-image:radial-gradient(#22242b 1px, transparent 1px); background-size:22px 22px; }
+  .cB .wrap { max-width:1060px; margin:0 auto; padding:28px 24px 80px; }
+  .cB .mast { display:flex; justify-content:space-between; align-items:center; }
+  .cB h1 { font:600 26px 'Outfit',sans-serif; letter-spacing:-.02em; }
+  .cB h1 small { display:block; font:400 13px 'Karla',sans-serif; color:#9a9aa4; margin-top:2px; }
+  .cB .mast nav { display:flex; gap:8px; }
+  .cB .mast nav a { font:500 13px 'Karla'; color:#c5c5cd; text-decoration:none; padding:8px 14px; border-radius:10px; }
+  .cB .mast nav a.act { background:#2e313a; color:#fff; }
+  .cB .statbar { display:flex; gap:26px; margin:20px 0 28px; flex-wrap:wrap; }
+  .cB .statbar div b { font:600 22px 'Outfit'; } .cB .statbar div span { display:block; font:400 11px 'Karla'; color:#8a8a94; }
+  .cB h2 { font:600 15px 'Outfit'; margin:30px 0 14px; color:#c9c9d2; }
+  .cB .page { background:#26282f; border-radius:16px; padding:18px; box-shadow:inset 0 0 0 1px #33363f, 0 14px 34px #0007; }
+  .cB .pockets { display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:12px; }
+  .cB .pocket { aspect-ratio:63/88; border-radius:8px; position:relative; overflow:hidden;
+    background:linear-gradient(150deg,#3a2e52,#191722 70%); box-shadow:inset 0 0 0 1px #ffffff14; }
+  .cB .pocket::after { content:''; position:absolute; inset:0; border-radius:8px;
+    background:linear-gradient(115deg, transparent 30%, #ffffff22 44%, transparent 55%); }
+  .cB .pocket i { position:absolute; left:8px; right:8px; bottom:8px; font:500 10px/1.3 'Karla'; font-style:normal; color:#fffc; }
+  .cB .pocket em { position:absolute; top:8px; right:8px; font:600 10px 'Outfit'; font-style:normal;
+    background:#000a; border-radius:6px; padding:2px 6px; color:#ffd479; }
+  .cB .boxes { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; }
+  .cB .deckbox { border-radius:14px; padding:16px 16px 14px; background:linear-gradient(160deg,#2c2f38,#20222a);
+    border-left:10px solid; box-shadow:0 10px 24px #0006; }
+  .cB .deckbox h3 { font:600 16px 'Outfit'; } .cB .deckbox p { font:400 12px 'Karla'; color:#9a9aa4; margin-top:4px; }
+  .cB .deckbox .up { display:inline-block; margin-top:10px; font:600 11px 'Karla'; color:#ffd479;
+    background:#ffd47918; border-radius:8px; padding:3px 8px; }
+  .cB .g { border-color:#4d7c54; } .cB .u { border-color:#3f6f9e; } .cB .b { border-color:#5b4a72; } .cB .r { border-color:#a05540; }
+
+  /* ══ C · PRO TERMINAL — dicht, mono, prijzen voorop ════════════ */
+  .cC { background:#0B0E14; color:#C7D0DC; font-family:'Inter Tight',sans-serif; min-height:100vh; }
+  .cC .ticker { display:flex; gap:34px; overflow:hidden; white-space:nowrap; border-bottom:1px solid #1C2330;
+    padding:8px 16px; font:500 12px 'IBM Plex Mono',monospace; color:#8593A6; }
+  .cC .ticker b { color:#C7D0DC; font-weight:500; } .cC .up { color:#39C88A; } .cC .dn { color:#E0564D; }
+  .cC .wrap { max-width:1060px; margin:0 auto; padding:20px 24px 80px; }
+  .cC .mast { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .cC h1 { font:600 17px 'Inter Tight'; letter-spacing:-.01em; color:#EDF1F6; }
+  .cC .mast nav { display:flex; gap:2px; font:500 12px 'IBM Plex Mono',monospace; }
+  .cC .mast nav a { color:#8593A6; text-decoration:none; padding:6px 12px; border:1px solid transparent; }
+  .cC .mast nav a.act { color:#57B8FF; border-color:#1C2330; background:#101521; }
+  .cC .grid { display:grid; grid-template-columns:repeat(6,1fr); border:1px solid #1C2330; }
+  .cC .cell { padding:12px 14px; border-right:1px solid #1C2330; }
+  .cC .cell:last-child { border-right:0; }
+  .cC .cell b { display:block; font:500 20px 'IBM Plex Mono',monospace; color:#EDF1F6; font-variant-numeric:tabular-nums; }
+  .cC .cell span { font:500 10px 'IBM Plex Mono',monospace; letter-spacing:.12em; color:#5C6A7A; text-transform:uppercase; }
+  .cC .chart { border:1px solid #1C2330; border-top:0; padding:14px; }
+  .cC svg { width:100%; height:70px; display:block; }
+  .cC h2 { font:500 11px 'IBM Plex Mono',monospace; letter-spacing:.18em; text-transform:uppercase; color:#5C6A7A; margin:26px 0 8px; }
+  .cC table { width:100%; border-collapse:collapse; font-size:13px; border:1px solid #1C2330; }
+  .cC th { font:500 10px 'IBM Plex Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:#5C6A7A;
+    text-align:left; padding:7px 12px; background:#101521; border-bottom:1px solid #1C2330; }
+  .cC td { padding:7px 12px; border-bottom:1px solid #141A26; font-variant-numeric:tabular-nums; }
+  .cC td.num, .cC th.num { text-align:right; font-family:'IBM Plex Mono',monospace; font-size:12px; }
+  .cC tr:hover td { background:#101521; }
+  .cC kbd { font:500 10px 'IBM Plex Mono'; border:1px solid #1C2330; border-radius:4px; padding:1px 6px; color:#8593A6; }
+
+  /* ══ D · GAME NIGHT — speelmat, warm, klaar-voor-vanavond ══════ */
+  .cD { min-height:100vh; font-family:'Nunito Sans',sans-serif; color:#F3EEE2;
+    background:#1E3A2F; background-image:radial-gradient(ellipse at 50% -10%, #2C523F 0%, #1E3A2F 55%, #152A22 100%); }
+  .cD .wrap { max-width:1060px; margin:0 auto; padding:30px 24px 80px; }
+  .cD .mast { display:flex; justify-content:space-between; align-items:center; }
+  .cD h1 { font:800 30px 'Bricolage Grotesque',sans-serif; letter-spacing:-.02em; }
+  .cD .mast nav { display:flex; gap:8px; }
+  .cD .mast nav a { font:800 13px 'Nunito Sans'; color:#F3EEE2; text-decoration:none; padding:9px 16px; border-radius:99px;
+    background:#ffffff12; }
+  .cD .mast nav a.act { background:#E8B44C; color:#2A2415; }
+  .cD .chips { display:flex; gap:12px; flex-wrap:wrap; margin:24px 0; }
+  .cD .chip { background:#F3EEE2; color:#2A2415; border-radius:16px; padding:12px 18px 10px; min-width:128px;
+    box-shadow:0 6px 0 #0e1f19, 0 14px 24px #0005; }
+  .cD .chip b { font:800 24px 'Bricolage Grotesque'; display:block; }
+  .cD .chip span { font:700 10px 'Nunito Sans'; letter-spacing:.1em; text-transform:uppercase; color:#8a7c58; }
+  .cD .chip.gold { background:#E8B44C; } .cD .chip.gold span { color:#6b5215; }
+  .cD h2 { font:800 18px 'Bricolage Grotesque'; margin:30px 0 14px; }
+  .cD .stacks { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+  .cD .stack { position:relative; background:#F3EEE2; color:#2A2415; border-radius:14px; padding:16px;
+    box-shadow:0 4px 0 #d9d2bf, 0 8px 0 #c3bca9, 0 20px 30px #0006; }
+  .cD .stack .band { position:absolute; top:0; left:18px; right:18px; height:8px; border-radius:0 0 6px 6px; }
+  .cD .stack h3 { font:800 17px 'Bricolage Grotesque'; margin-top:8px; }
+  .cD .stack p { font:600 12px 'Nunito Sans'; color:#7c7462; margin-top:4px; }
+  .cD .stack .life { position:absolute; right:14px; top:18px; width:46px; height:46px; border-radius:50%;
+    background:#2A2415; color:#E8B44C; display:grid; place-items:center; font:800 17px 'Bricolage Grotesque'; }
+  .cD .stack .cta { display:inline-block; margin-top:12px; font:800 12px 'Nunito Sans'; color:#1E3A2F;
+    background:#B9D9A9; padding:6px 12px; border-radius:99px; }
+  .cD .bandG{background:#5E9B60;} .cD .bandU{background:#5B87C5;} .cD .bandB{background:#7E6A9C;} .cD .bandR{background:#C56B50;}
+
+  /* ══ E · FIVE COLORS — licht, redactioneel, mana als systeem ═══ */
+  .cE { background:#FAFAF7; color:#171715; font-family:'Space Grotesk',sans-serif; min-height:100vh; }
+  .cE .wubrg { height:6px; display:flex; }
+  .cE .wubrg i { flex:1; } .cE .wubrg i:nth-child(1){background:#E9E2C8;} .cE .wubrg i:nth-child(2){background:#4E8AC0;}
+  .cE .wubrg i:nth-child(3){background:#3A3540;} .cE .wubrg i:nth-child(4){background:#C8532E;} .cE .wubrg i:nth-child(5){background:#5E8F53;}
+  .cE .wrap { max-width:1060px; margin:0 auto; padding:30px 24px 80px; }
+  .cE .mast { display:flex; justify-content:space-between; align-items:baseline; }
+  .cE h1 { font:400 40px 'Young Serif',serif; letter-spacing:-.01em; }
+  .cE .mast nav { display:flex; gap:20px; font:500 13px 'Space Grotesk'; }
+  .cE .mast nav a { color:#17171f; text-decoration:none; padding-bottom:3px; }
+  .cE .mast nav a.act { border-bottom:2px solid #C8532E; }
+  .cE .hero { display:grid; grid-template-columns:1.2fr 1fr; gap:34px; margin:30px 0 6px; align-items:end; }
+  .cE .val b { font:400 64px 'Young Serif',serif; display:block; line-height:1; }
+  .cE .val span { font:500 12px 'Space Grotesk'; letter-spacing:.14em; text-transform:uppercase; color:#8a8a82; }
+  .cE .val .delta { color:#5E8F53; font:500 14px 'Space Grotesk'; margin-left:10px; letter-spacing:0; text-transform:none; }
+  .cE svg { width:100%; height:90px; display:block; }
+  .cE .row { display:flex; gap:30px; margin-top:18px; padding-top:14px; border-top:1px solid #e4e4dc; flex-wrap:wrap; }
+  .cE .row div b { font:500 20px 'Space Grotesk'; } .cE .row div span { display:block; font:400 11px; color:#8a8a82; }
+  .cE h2 { font:400 22px 'Young Serif',serif; margin:36px 0 14px; }
+  .cE .decks { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:1px; background:#e4e4dc; border:1px solid #e4e4dc; }
+  .cE .deck { background:#FAFAF7; padding:18px; border-top:6px solid; }
+  .cE .deck h3 { font:500 17px 'Space Grotesk'; } .cE .deck p { font:400 12px; color:#8a8a82; margin-top:4px; }
+  .cE .deck .pw { font:400 30px 'Young Serif',serif; margin-top:10px; display:block; }
+  .cE .deck .up { font:500 11px; color:#C8532E; }
+  .cE .dG{border-color:#5E8F53;} .cE .dU{border-color:#4E8AC0;} .cE .dB{border-color:#3A3540;} .cE .dR{border-color:#C8532E;}
+  .cE .staples li { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #e4e4dc;
+    font:400 15px 'Space Grotesk'; list-style:none; }
+  .cE .staples li span { font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8a8a82; }
+</style>
+</head>
+<body>
+
+<div class="switch">
+  <span class="lbl">COLLECTION — STIJLCONCEPTEN</span>
+  <button data-c="A" class="on">A · Card Catalog</button>
+  <button data-c="B">B · Binder</button>
+  <button data-c="C">C · Pro Terminal</button>
+  <button data-c="D">D · Game Night</button>
+  <button data-c="E">E · Five Colors</button>
+</div>
+
+<!-- ═══════════ A · CARD CATALOG ═══════════ -->
+<section class="concept cA on" id="cA">
+  <p class="why">A — Het papieren archief: alsof je collectie een kaartcatalogus in een stoffige winkel is. Licht, warm, typografisch. Volledig ander gevoel dan de huidige dark-fantasy.</p>
+  <div class="wrap">
+    <div class="mast">
+      <div><h1>Jouw verzameling</h1></div>
+      <nav><a class="act">Overzicht</a><a>Advisor</a><a>Mappen</a><a>Zoek een kaart</a></nav>
+      <span class="stamp">GETAXEERD · 09-07</span>
+    </div>
+    <div class="cards">
+      <div class="idx"><span>Waarde</span><b>€ 2.847</b></div>
+      <div class="idx"><span>Kaarten</span><b>9.660</b></div>
+      <div class="idx"><span>Uniek</span><b>5.451</b></div>
+      <div class="idx"><span>Vrij in map</span><b>1.204</b></div>
+      <div class="idx"><span>Decks</span><b>7</b></div>
+      <div class="idx"><span>Gem. power</span><b>6,4</b></div>
+    </div>
+    <h2>Decks — het register</h2>
+    <table>
+      <tr><th>Deck</th><th>Kleuren</th><th class="num">Power</th><th class="num">Status</th></tr>
+      <tr><td>Meren of Clan Nel Toth</td><td>BG</td><td class="num pw">6.8</td><td class="num">3 upgrades klaar</td></tr>
+      <tr><td>Wilhelt, the Rotcleaver</td><td>UB</td><td class="num pw">7.1</td><td class="num">bijgewerkt ✓</td></tr>
+      <tr><td>Talrand, Sky Summoner</td><td>U</td><td class="num pw">6.2</td><td class="num">5 upgrades klaar</td></tr>
+      <tr><td>Kaalia of the Vast</td><td>WBR</td><td class="num pw">7.4</td><td class="num">bijgewerkt ✓</td></tr>
+    </table>
+    <h2>Sterke kaarten zonder deck</h2>
+    <table>
+      <tr><td>Phyrexian Arena <em style="font-size:11px;color:#8a7c58">· card draw · Map 2</em></td><td class="num">€ 4,60</td></tr>
+      <tr><td>Heroic Intervention <em style="font-size:11px;color:#8a7c58">· protection · Map 1</em></td><td class="num">€ 7,20</td></tr>
+      <tr><td>Reliquary Tower <em style="font-size:11px;color:#8a7c58">· utility land · Map 3</em></td><td class="num">€ 1,10</td></tr>
+    </table>
+    <div class="note"><span>⚠ 3 kaarten worden door meer decks geclaimd dan je bezit.</span><a href="#">Los op →</a></div>
+  </div>
+</section>
+
+<!-- ═══════════ B · BINDER ═══════════ -->
+<section class="concept cB" id="cB">
+  <p class="why" style="color:#9a9aa4">B — De digitale map: kaarten als béélden voorop, decks als fysieke deckboxen. Grootste UX-verschuiving: kijken in plaats van lezen.</p>
+  <div class="wrap">
+    <div class="mast">
+      <h1>Jouw verzameling<small>9.660 kaarten · ≈ €2.847 · 7 decks</small></h1>
+      <nav><a class="act">Overzicht</a><a>Advisor</a><a>Mappen</a><a>Zoeken</a></nav>
+    </div>
+    <div class="statbar">
+      <div><b>€2.847</b><span>waarde</span></div>
+      <div><b>5.451</b><span>uniek</span></div>
+      <div><b>1.204</b><span>vrij</span></div>
+      <div><b>6,4</b><span>gem. power</span></div>
+    </div>
+    <h2>📒 Map 1 — pagina 12 <span style="color:#666;font-weight:400">· sterke kaarten zonder deck</span></h2>
+    <div class="page">
+      <div class="pockets">
+        <div class="pocket"><em>€4,60</em><i>Phyrexian Arena</i></div>
+        <div class="pocket" style="background:linear-gradient(150deg,#2e5237,#141d17 70%)"><em>€7,20</em><i>Heroic Intervention</i></div>
+        <div class="pocket" style="background:linear-gradient(150deg,#4a4a52,#1a1a20 70%)"><em>€1,10</em><i>Reliquary Tower</i></div>
+        <div class="pocket" style="background:linear-gradient(150deg,#54372e,#1d1512 70%)"><em>€2,30</em><i>Goblin Bombardment</i></div>
+        <div class="pocket" style="background:linear-gradient(150deg,#2e4152,#12181d 70%)"><em>€3,80</em><i>Mystic Sanctuary</i></div>
+        <div class="pocket" style="background:linear-gradient(150deg,#524a2e,#1d1a12 70%)"><em>€0,90</em><i>Guardian Idol</i></div>
+      </div>
+    </div>
+    <h2>Deckboxen</h2>
+    <div class="boxes">
+      <div class="deckbox g"><h3>Meren of Clan Nel Toth</h3><p>BG · graveyard value · power 6.8</p><span class="up">✨ 3 upgrades klaar</span></div>
+      <div class="deckbox u"><h3>Talrand, Sky Summoner</h3><p>U · spellslinger · power 6.2</p><span class="up">✨ 5 upgrades klaar</span></div>
+      <div class="deckbox b"><h3>Wilhelt, the Rotcleaver</h3><p>UB · zombies · power 7.1 · bijgewerkt ✓</p></div>
+      <div class="deckbox r"><h3>Kaalia of the Vast</h3><p>WBR · angels &amp; dragons · power 7.4 · bijgewerkt ✓</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ C · PRO TERMINAL ═══════════ -->
+<section class="concept cC" id="cC">
+  <p class="why" style="color:#8593A6">C — De vakhandelaar: dicht, monospaced, prijzen en delta's voorop. Voor de speler die zijn collectie als portfolio runt.</p>
+  <div class="ticker">
+    <span><b>RHYSTIC STUDY</b> 38.50 <span class="up">▲ 4.2%</span></span>
+    <span><b>PHYREXIAN ARENA</b> 4.60 <span class="up">▲ 1.1%</span></span>
+    <span><b>SMOTHERING TITHE</b> 22.00 <span class="dn">▼ 2.3%</span></span>
+    <span><b>HEROIC INTERVENTION</b> 7.20 <span class="up">▲ 0.4%</span></span>
+    <span><b>COLLECTIE</b> 2 847.00 <span class="up">▲ 1.8% / 30d</span></span>
+  </div>
+  <div class="wrap">
+    <div class="mast">
+      <h1>LEYLINE / COLLECTION</h1>
+      <nav><a class="act">OVERVIEW</a><a>ADVISOR</a><a>BINDERS</a><a>SEARCH <kbd>/</kbd></a></nav>
+    </div>
+    <div class="grid">
+      <div class="cell"><span>value eur</span><b>2 847.00</b></div>
+      <div class="cell"><span>cards</span><b>9 660</b></div>
+      <div class="cell"><span>unique</span><b>5 451</b></div>
+      <div class="cell"><span>free</span><b>1 204</b></div>
+      <div class="cell"><span>decks</span><b>7</b></div>
+      <div class="cell"><span>avg pwr</span><b>6.4</b></div>
+    </div>
+    <div class="chart">
+      <svg viewBox="0 0 600 70" preserveAspectRatio="none">
+        <polyline points="0,58 80,54 160,50 240,52 320,40 400,36 480,28 600,22" fill="none" stroke="#57B8FF" stroke-width="2"/>
+        <polyline points="0,58 80,54 160,50 240,52 320,40 400,36 480,28 600,22 600,70 0,70" fill="#57B8FF12" stroke="none"/>
+      </svg>
+    </div>
+    <h2>DECKS</h2>
+    <table>
+      <tr><th>name</th><th>id</th><th class="num">pwr</th><th class="num">free upg</th><th class="num">Δ value 30d</th></tr>
+      <tr><td>Meren of Clan Nel Toth</td><td>BG</td><td class="num">6.8</td><td class="num" style="color:#39C88A">3</td><td class="num up">+2.4%</td></tr>
+      <tr><td>Wilhelt, the Rotcleaver</td><td>UB</td><td class="num">7.1</td><td class="num">0</td><td class="num dn">-0.8%</td></tr>
+      <tr><td>Talrand, Sky Summoner</td><td>U</td><td class="num">6.2</td><td class="num" style="color:#39C88A">5</td><td class="num up">+1.1%</td></tr>
+      <tr><td>Kaalia of the Vast</td><td>WBR</td><td class="num">7.4</td><td class="num">0</td><td class="num up">+5.9%</td></tr>
+    </table>
+    <h2>IDLE STAPLES</h2>
+    <table>
+      <tr><td>Phyrexian Arena</td><td>card_draw</td><td class="num">4.60</td><td class="num up">▲</td></tr>
+      <tr><td>Heroic Intervention</td><td>protection</td><td class="num">7.20</td><td class="num up">▲</td></tr>
+      <tr><td>Reliquary Tower</td><td>utility</td><td class="num">1.10</td><td class="num">—</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════ D · GAME NIGHT ═══════════ -->
+<section class="concept cD" id="cD">
+  <p class="why" style="color:#cfe0c9">D — De huiskamer: speelmat-groen, chunky, warm. Sluit naadloos aan op de couch-play identiteit — je collectie als voorbereiding op vanavond.</p>
+  <div class="wrap">
+    <div class="mast">
+      <h1>Klaar voor vanavond?</h1>
+      <nav><a class="act">Overzicht</a><a>Advisor</a><a>Mappen</a><a>Zoeken</a></nav>
+    </div>
+    <div class="chips">
+      <div class="chip gold"><b>€2.847</b><span>waarde</span></div>
+      <div class="chip"><b>9.660</b><span>kaarten</span></div>
+      <div class="chip"><b>1.204</b><span>vrij in map</span></div>
+      <div class="chip"><b>7</b><span>decks</span></div>
+    </div>
+    <h2>Pak een deck van de stapel</h2>
+    <div class="stacks">
+      <div class="stack"><i class="band bandG"></i><span class="life">6.8</span><h3>Meren</h3><p>BG · graveyard value</p><span class="cta">✨ 3 upgrades klaar</span></div>
+      <div class="stack"><i class="band bandB"></i><span class="life">7.1</span><h3>Wilhelt</h3><p>UB · zombie tribal · bijgewerkt ✓</p><span class="cta" style="background:#E8B44C">▶ Speel vanavond</span></div>
+      <div class="stack"><i class="band bandU"></i><span class="life">6.2</span><h3>Talrand</h3><p>U · spellslinger</p><span class="cta">✨ 5 upgrades klaar</span></div>
+      <div class="stack"><i class="band bandR"></i><span class="life">7.4</span><h3>Kaalia</h3><p>WBR · angels &amp; dragons · bijgewerkt ✓</p><span class="cta" style="background:#E8B44C">▶ Speel vanavond</span></div>
+    </div>
+    <h2>Nog los in je map</h2>
+    <div class="chips">
+      <div class="chip"><b>Phyrexian Arena</b><span>card draw · €4,60</span></div>
+      <div class="chip"><b>Heroic Intervention</b><span>protection · €7,20</span></div>
+      <div class="chip"><b>Reliquary Tower</b><span>utility · €1,10</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ E · FIVE COLORS ═══════════ -->
+<section class="concept cE" id="cE">
+  <div class="wubrg"><i></i><i></i><i></i><i></i><i></i></div>
+  <p class="why" style="color:#8a8a82">E — De galerie: licht, redactioneel, met de vijf mana-kleuren als structureel systeem in plaats van goud-op-zwart. Rustig en volwassen.</p>
+  <div class="wrap">
+    <div class="mast">
+      <h1>Jouw verzameling</h1>
+      <nav><a class="act">Overzicht</a><a>Advisor</a><a>Mappen</a><a>Zoek een kaart</a></nav>
+    </div>
+    <div class="hero">
+      <div class="val"><span>Collectiewaarde</span><b>€2.847<span class="delta">▲ 1,8% deze maand</span></b></div>
+      <svg viewBox="0 0 400 90" preserveAspectRatio="none">
+        <polyline points="0,74 60,70 120,64 180,66 240,50 300,44 360,34 400,28" fill="none" stroke="#17171f" stroke-width="2"/>
+        <circle cx="400" cy="28" r="4" fill="#C8532E"/>
+      </svg>
+    </div>
+    <div class="row">
+      <div><b>9.660</b><span>kaarten</span></div>
+      <div><b>5.451</b><span>uniek</span></div>
+      <div><b>1.204</b><span>vrij in map</span></div>
+      <div><b>7</b><span>decks</span></div>
+      <div><b>6,4</b><span>gem. power</span></div>
+    </div>
+    <h2>Decks</h2>
+    <div class="decks">
+      <div class="deck dG"><h3>Meren of Clan Nel Toth</h3><p>BG · graveyard value</p><span class="pw">6.8</span><span class="up">3 upgrades klaar →</span></div>
+      <div class="deck dB"><h3>Wilhelt, the Rotcleaver</h3><p>UB · zombie tribal</p><span class="pw">7.1</span><span class="up" style="color:#5E8F53">bijgewerkt ✓</span></div>
+      <div class="deck dU"><h3>Talrand, Sky Summoner</h3><p>U · spellslinger</p><span class="pw">6.2</span><span class="up">5 upgrades klaar →</span></div>
+      <div class="deck dR"><h3>Kaalia of the Vast</h3><p>WBR · angels &amp; dragons</p><span class="pw">7.4</span><span class="up" style="color:#5E8F53">bijgewerkt ✓</span></div>
+    </div>
+    <h2>Sterke kaarten zonder deck</h2>
+    <ul class="staples">
+      <li>Phyrexian Arena <span>card draw · Map 2 · €4,60</span></li>
+      <li>Heroic Intervention <span>protection · Map 1 · €7,20</span></li>
+      <li>Reliquary Tower <span>utility land · Map 3 · €1,10</span></li>
+    </ul>
+  </div>
+</section>
+
+<script>
+  const buttons = document.querySelectorAll('.switch button');
+  buttons.forEach(btn => btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.toggle('on', b === btn));
+    document.querySelectorAll('.concept').forEach(c =>
+      c.classList.toggle('on', c.id === 'c' + btn.dataset.c));
+    window.scrollTo({ top: 0 });
+  }));
+</script>
+</body>
+</html>

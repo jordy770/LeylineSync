@@ -7281,3 +7281,7 @@
 | 09:29 | Created components/collection/GameAnalysisList.tsx | — | ~1327 |
 | 09:29 | Created tests/unit/ai-suite.test.ts | — | ~829 |
 | 09:31 | AI-suite (6 features): mig 383 co_player_meta; ai-client.ts (gedeelde askClaudeJson) + ai-gate.ts (requireAiCredit); Doctor kreeg playgroupMeta+targetPower (detune = zwakke pool eerst); ai-combos (groundCombos), ai-mulligan (+pure drawSampleHand), ai-trade (groundTradePackage), ai-game-analysis (game_action_log → coaching); routes combos/mulligan/trade/games-analyze; UI: Combos+Mulligan-tabs, TradeBuilder+games-link op Advisor, /collection/games | 14 nieuwe/gewijzigde bestanden | tsc+build+507 tests groen | ~90k |
+| 16:11 | Created mockups/collection-concepts.html | — | ~7075 |
+| 16:11 | Edited mockups/collection-concepts.html | 3→2 lines | ~31 |
+| 16:11 | Edited mockups/collection-concepts.html | inline fix | ~34 |
+| 16:12 | Vijf stijlconcepten voor het Collection-onderdeel in mockups/collection-concepts.html (switcher): A Card Catalog (papier/archief, licht), B Binder (visueel, 9-pocket + deckboxen), C Pro Terminal (dicht/mono/prijzen), D Game Night (speelmat, couch-DNA), E Five Colors (licht redactioneel, WUBRG-systeem); zelfde echte content per concept | mockups/collection-concepts.html | wacht op keuze Jordy | ~20k |
