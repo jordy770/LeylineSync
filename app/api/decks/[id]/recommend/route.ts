@@ -47,15 +47,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   let budget: number | null = null
+  let goal: string | null = null
   try {
-    const body = (await request.json().catch(() => ({}))) as { budget?: number | null }
+    const body = (await request.json().catch(() => ({}))) as { budget?: number | null; goal?: string | null }
     budget = body.budget ?? null
+    goal = typeof body.goal === 'string' ? body.goal : null
   } catch {
     budget = null
   }
 
   try {
-    const outcome = await recommendDeckUpgrades(supabase, userId, deckId, { budget })
+    const outcome = await recommendDeckUpgrades(supabase, userId, deckId, { budget, goal })
     if (outcome.error) return NextResponse.json({ error: outcome.error }, { status: 404 })
     return NextResponse.json(outcome.result)
   } catch (err) {

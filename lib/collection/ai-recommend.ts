@@ -9,13 +9,15 @@ import { z } from 'zod'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { suggestBuys } from './buy-suggestions'
-import { loadOracleMeta } from './deck-loader'
+import { loadAvailability, loadOracleMeta, loadTags } from './deck-loader'
 import { scanDeckUpgrades } from './upgrade-scanner'
 import type { UpgradeScanResult } from './upgrade-scanner'
 
 const MODEL = 'claude-opus-4-8'
 const OWNED_CAP = 16 // free + occupied candidates shown to the model
 const BUY_CAP = 10 // purchase candidates shown to the model
+const GOAL_POOL_CAP = 100 // wider binder pool shown when the player states a goal
+const GOAL_MAX_LENGTH = 300
 
 export type CandidateSource = 'free' | 'occupied' | 'buy'
 
@@ -95,18 +97,62 @@ export function validatePicks(
   return out
 }
 
+export interface GoalPoolEntry {
+  oracleId: string
+  name: string
+  typeLine: string
+  colorIdentity: string[]
+  priceEur: number | null
+  tags: { tag: string; weight: number }[]
+}
+
+/** Pure: the wider binder pool for goal mode — color-legal free cards the
+ *  scanner didn't already surface, strongest role first. Basic lands and
+ *  untagged chaff rank last, and the pool is capped so the prompt stays sane. */
+export function buildGoalPool(
+  entries: GoalPoolEntry[],
+  deckIdentity: string[],
+  exclude: Set<string>,
+  cap = GOAL_POOL_CAP,
+): RecommendCandidate[] {
+  return entries
+    .filter((e) => !exclude.has(e.oracleId))
+    .filter((e) => !/basic land/i.test(e.typeLine))
+    .filter((e) => e.colorIdentity.every((c) => deckIdentity.includes(c)))
+    .map((e) => {
+      const best = e.tags.reduce<{ tag: string; weight: number } | null>(
+        (a, b) => (b.weight > (a?.weight ?? 0) ? b : a),
+        null,
+      )
+      return {
+        oracleId: e.oracleId,
+        name: e.name,
+        tag: best?.tag ?? 'untagged',
+        weight: best?.weight ?? 0,
+        priceEur: e.priceEur,
+        source: 'free' as const,
+        confidence: 0, // no engine score — the model judges these on the goal
+        themeImpact: 'Neutral',
+        replaces: null,
+      }
+    })
+    .sort((a, b) => b.weight - a.weight || (b.priceEur ?? 0) - (a.priceEur ?? 0))
+    .slice(0, cap)
+}
+
 export class AiNotConfiguredError extends Error {}
 
 export async function recommendDeckUpgrades(
   supabase: SupabaseClient,
   userId: string,
   deckId: string,
-  options: { budget?: number | null; apiKey?: string },
+  options: { budget?: number | null; apiKey?: string; goal?: string | null },
 ): Promise<{ result?: RecommendResult; error?: string }> {
   const apiKey = options.apiKey ?? process.env.ANTHROPIC_API_KEY
   if (!apiKey) throw new AiNotConfiguredError('AI is not configured. Set ANTHROPIC_API_KEY on the server.')
 
   const budget = options.budget ?? null
+  const goal = (options.goal ?? '').trim().slice(0, GOAL_MAX_LENGTH) || null
 
   const scan = await scanDeckUpgrades(supabase, userId, deckId)
   if (scan.error || !scan.result) return { error: scan.error ?? 'Could not analyse this deck.' }
@@ -128,21 +174,48 @@ export async function recommendDeckUpgrades(
       source: 'buy' as const, confidence: b.confidence, themeImpact: b.themeImpact, replaces: null,
     }))
 
-  const candidates = [...owned, ...buyCandidates]
-
-  if (candidates.length === 0) {
-    return { result: { summary: 'No candidate upgrades to evaluate — your deck already covers its needs from the binder, or none fit the budget.', picks: [] } }
-  }
-
   const { data: deck } = await supabase.from('co_decks').select('commander_oracle_id, color_identity').eq('id', deckId).maybeSingle()
+  const deckIdentity = (deck?.color_identity as string[]) ?? []
   let commander: string | null = null
   if (deck?.commander_oracle_id) {
     commander = (await loadOracleMeta(supabase, [deck.commander_oracle_id as string])).get(deck.commander_oracle_id as string)?.name ?? null
   }
 
+  // Goal mode: the player stated a DIRECTION, so the need-based candidates are
+  // not enough — widen the pool to their whole color-legal free binder (capped)
+  // so the model can chase the goal through owned cards FIRST, buys last.
+  let goalPool: RecommendCandidate[] = []
+  if (goal) {
+    const avail = await loadAvailability(supabase, userId)
+    const freeIds = avail.filter((a) => a.freeQty > 0).map((a) => a.oracleId)
+    const [poolMeta, poolTags] = await Promise.all([loadOracleMeta(supabase, freeIds), loadTags(supabase, freeIds)])
+    const exclude = new Set<string>([
+      ...scan.result.deckList.map((c) => c.oracleId),
+      ...owned.map((c) => c.oracleId),
+      ...buyCandidates.map((c) => c.oracleId),
+    ])
+    goalPool = buildGoalPool(
+      freeIds.flatMap((id) => {
+        const m = poolMeta.get(id)
+        return m
+          ? [{ oracleId: id, name: m.name, typeLine: m.typeLine, colorIdentity: m.colorIdentity, priceEur: m.priceEur, tags: poolTags.get(id) ?? [] }]
+          : []
+      }),
+      deckIdentity,
+      exclude,
+    )
+  }
+
+  const candidates = [...owned, ...buyCandidates, ...goalPool]
+
+  if (candidates.length === 0) {
+    return { result: { summary: 'No candidate upgrades to evaluate — your deck already covers its needs from the binder, or none fit the budget.', picks: [] } }
+  }
+
   const context = {
     commander,
-    colorIdentity: (deck?.color_identity as string[]) ?? [],
+    colorIdentity: deckIdentity,
+    playerGoal: goal,
     power: scan.result.power.power,
     deckTheme: scan.result.power.health.find((h) => h.axis === 'Theme')?.explanation ?? null,
     buckets: scan.result.power.buckets,
@@ -183,6 +256,7 @@ Rules:
 - A "Weakens Theme" card should be "consider" or "skip" even if objectively strong — say WHY it doesn't fit.
 - Give CONCRETE, specific reasons, not generic praise. Reference the role gap, the commander's payoff, and — for swaps — why IN beats the named OUT card. Example of the right altitude: "Phyrexian Arena draws every upkeep with no board needed, so it out-values Curiosity, which only triggers when its enchanted creature connects."
 - "include" = clear upgrade now; "consider" = situational / theme tension / optional buy; "skip" = on-list but not worth it.
+Goal mode: when the context has a non-null "playerGoal", it states what the player WANTS this deck to become — judge every candidate primarily on how much it advances that goal (the computed "needs" become secondary), and say in the summary how far the goal can be reached from owned cards alone. In goal mode the list also contains candidates with "confidence": 0 — those come from the player's wider binder without an engine score; evaluate them yourself from the card name and its role. The ownership priority is absolute in goal mode: exhaust "free" candidates that serve the goal before recommending any "buy". Do not restate weak goal-fits as includes just to fill space — a short, on-goal plan beats a long padded one.
 Respond with ONLY a JSON object: {"summary": string, "picks": [{"name": string, "verdict": "include"|"consider"|"skip", "reason": string}]}. No prose, no code fences.`
 
 async function callClaude(apiKey: string, context: unknown): Promise<z.infer<typeof ReplySchema>> {
@@ -191,7 +265,7 @@ async function callClaude(apiKey: string, context: unknown): Promise<z.infer<typ
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: JSON.stringify(context) }]
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
-    const response = await client.messages.create({ model: MODEL, max_tokens: 1600, system, messages })
+    const response = await client.messages.create({ model: MODEL, max_tokens: 2500, system, messages })
     const text = response.content.filter((b): b is Anthropic.TextBlock => b.type === 'text').map((b) => b.text).join('')
     const parsed = extractJson(text)
     const validated = ReplySchema.safeParse(parsed)

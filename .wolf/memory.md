@@ -7223,3 +7223,17 @@
 | 22:33 | Edited tests/feature/ai-quota.test.ts | now() → stub() | ~134 |
 | 22:34 | Edited tests/feature/ai-quota.test.ts | modified values() | ~37 |
 | 22:36 | Premium-laag + AI Deck Doctor: mig 382 (co_entitlements, co_ai_usage, consume_ai_credit security definer met row-lock), recommend-route gated (402 premium_required / 429 quota, 20/maand), Doctor-tab in DeckDetail (plan+include/consider/skip, upsell-paneel), feature-test AQ1-4 groen (4/4), Jordy premium op lokale play-DB (user 0df4a143) | supabase/migrations/202605010382*, app/api/decks/[id]/recommend/route.ts, components/collection/DeckDetail.tsx, tests/feature/ai-quota.test.ts | tsc+build+502 unit+4 feature groen | ~35k |
+| 08:56 | Edited lib/collection/ai-recommend.ts | 8→10 lines | ~146 |
+| 08:56 | Edited lib/collection/ai-recommend.ts | added optional chaining | ~412 |
+| 08:56 | Edited lib/collection/ai-recommend.ts | modified recommendDeckUpgrades() | ~200 |
+| 08:57 | Edited lib/collection/ai-recommend.ts | added 1 condition(s) | ~499 |
+| 08:57 | Edited lib/collection/ai-recommend.ts | 4→5 lines | ~36 |
+| 08:57 | Edited lib/collection/ai-recommend.ts | 2→3 lines | ~291 |
+| 08:57 | Edited lib/collection/ai-recommend.ts | 1600 → 2500 | ~30 |
+| 08:57 | Edited app/api/decks/[id]/recommend/route.ts | 10→12 lines | ~118 |
+| 08:57 | Edited components/collection/DeckDetail.tsx | 1→2 lines | ~35 |
+| 08:57 | Edited components/collection/DeckDetail.tsx | inline fix | ~36 |
+| 08:57 | Edited components/collection/DeckDetail.tsx | 8→10 lines | ~84 |
+| 08:58 | Edited components/collection/DeckDetail.tsx | modified DoctorTab() | ~436 |
+| 08:58 | Edited tests/unit/ai-recommend.test.ts | 2→2 lines | ~55 |
+| 09:00 | Doctor doel-modus: optional goal (max 300 chars) op recommend; buildGoalPool (pure, getest) levert gecapte kleur-legale vrije binderpool (100) met confidence 0 naast de engine-kandidaten; system prompt goal-semantiek statisch (cache-veilig, goal zit in user-context); binder-eerst-dan-kopen absoluut in goal mode; textarea in DoctorTab; max_tokens 1600 naar 2500 | lib/collection/ai-recommend.ts, app/api/decks/[id]/recommend/route.ts, components/collection/DeckDetail.tsx, tests/unit/ai-recommend.test.ts | tsc+build+503 tests groen | ~18k |

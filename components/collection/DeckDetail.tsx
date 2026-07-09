@@ -102,6 +102,7 @@ export function DeckDetail({
   const [doctorBusy, setDoctorBusy] = useState(false)
   const [doctorError, setDoctorError] = useState<{ message: string; code?: string } | null>(null)
   const [doctorBudget, setDoctorBudget] = useState<string>('5')
+  const [doctorGoal, setDoctorGoal] = useState<string>('')
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [buyBudget, setBuyBudget] = useState<string>('5')
@@ -383,7 +384,7 @@ export function DeckDetail({
       const res = await fetch(`/api/decks/${deckId}/recommend`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ budget: doctorBudget === '' ? null : Number(doctorBudget) }),
+        body: JSON.stringify({ budget: doctorBudget === '' ? null : Number(doctorBudget), goal: doctorGoal.trim() || null }),
       })
       const body = await res.json()
       if (!res.ok) setDoctorError({ message: body.error ?? 'The doctor could not run.', code: body.code })
@@ -638,6 +639,8 @@ export function DeckDetail({
             error={doctorError}
             budget={doctorBudget}
             setBudget={setDoctorBudget}
+            goal={doctorGoal}
+            setGoal={setDoctorGoal}
             onRun={runDoctor}
           />
         ) : (
@@ -1172,6 +1175,8 @@ function DoctorTab({
   error,
   budget,
   setBudget,
+  goal,
+  setGoal,
   onRun,
 }: {
   result: DoctorResult | null
@@ -1179,6 +1184,8 @@ function DoctorTab({
   error: { message: string; code?: string } | null
   budget: string
   setBudget: (b: string) => void
+  goal: string
+  setGoal: (g: string) => void
   onRun: () => void
 }) {
   const chips: { label: string; value: string }[] = [
@@ -1190,12 +1197,22 @@ function DoctorTab({
 
   return (
     <div className="space-y-3">
-      <Panel className="p-4">
+      <Panel className="space-y-3 p-4">
+        <p className="font-rules text-sm" style={{ color: 'var(--text-dim)' }}>
+          The doctor turns the scan into one coherent plan — what to swap, what to skip, and why. Tell it where you
+          want the deck to go and it hunts your own binder first, buys last. Grounded in your collection; it never
+          invents cards.
+        </p>
+        <textarea
+          value={goal}
+          onChange={(e) => setGoal(e.target.value)}
+          rows={2}
+          maxLength={300}
+          placeholder="Optional — what do you want this deck to become? e.g. “lean harder into sacrifice payoffs and token swarms” or “more interaction, keep it budget”"
+          className="font-rules w-full rounded-lg bg-transparent px-3 py-2 text-sm"
+          style={{ border: '1px solid rgba(201,154,58,0.3)', color: 'var(--text)' }}
+        />
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-rules mr-auto text-sm" style={{ color: 'var(--text-dim)' }}>
-            The doctor turns the scan into one coherent plan — what to swap, what to skip, and why. Grounded in your
-            own collection; it never invents cards.
-          </p>
           {chips.map((c) => (
             <button
               key={c.value}

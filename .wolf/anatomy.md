@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-08T20:34:25.388Z
-> Files: 4 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T06:58:17.058Z
+> Files: 6 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -95,7 +95,7 @@
 
 ## app/api/decks/[id]/recommend/
 
-- `route.ts` — POST /api/decks/:id/recommend (~752 tok)
+- `route.ts` — POST /api/decks/:id/recommend (~788 tok)
 
 ## app/api/decks/[id]/swaps/
 
@@ -204,7 +204,7 @@
 
 ## components/collection/
 
-- `DeckDetail.tsx` — BUCKET_ORDER (~15425 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~15652 tok)
 
 ## components/controller/
 
@@ -235,6 +235,7 @@
 
 ## lib/collection/
 
+- `ai-recommend.ts` — Flatten the scan's free + occupied upgrades into one candidate list (deduped). (~3908 tok)
 
 ## lib/collection/parsers/
 
@@ -297,6 +298,7 @@
 
 ## tests/unit/
 
+- `ai-recommend.test.ts` — AI deck-doctor — the pure grounding helpers. The model call itself is not tested (~830 tok)
 
 ## vercel/
 

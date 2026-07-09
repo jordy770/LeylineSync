@@ -5,8 +5,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { buildCandidateList, validatePicks } from '../../lib/collection/ai-recommend'
-import type { RecommendCandidate } from '../../lib/collection/ai-recommend'
+import { buildCandidateList, buildGoalPool, validatePicks } from '../../lib/collection/ai-recommend'
+import type { GoalPoolEntry, RecommendCandidate } from '../../lib/collection/ai-recommend'
 import type { UpgradeScanResult } from '../../lib/collection/upgrade-scanner'
 
 function scan(): UpgradeScanResult {
@@ -59,4 +59,25 @@ test('validatePicks DROPS hallucinated cards not in the candidate list', () => {
     picks.map((p) => p.name),
     ['Phyrexian Arena'],
   )
+})
+
+test('buildGoalPool filters to color-legal, excludes deck/basics, ranks by role weight and caps', () => {
+  const entry = (over: Partial<GoalPoolEntry>): GoalPoolEntry => ({
+    oracleId: 'o-x', name: 'X', typeLine: 'Creature', colorIdentity: [], priceEur: null, tags: [], ...over,
+  })
+  const pool = buildGoalPool(
+    [
+      entry({ oracleId: 'o-1', name: 'Blood Artist', colorIdentity: ['B'], tags: [{ tag: 'aristocrats', weight: 4 }] }),
+      entry({ oracleId: 'o-2', name: 'Off-color', colorIdentity: ['W'] }), // not legal in BG
+      entry({ oracleId: 'o-3', name: 'Swamp', typeLine: 'Basic Land — Swamp', colorIdentity: [] }),
+      entry({ oracleId: 'o-4', name: 'Already in deck', colorIdentity: ['G'] }),
+      entry({ oracleId: 'o-5', name: 'Filler', colorIdentity: ['G'], tags: [{ tag: 'ramp', weight: 1 }] }),
+    ],
+    ['B', 'G'],
+    new Set(['o-4']),
+    2,
+  )
+  assert.deepEqual(pool.map((c) => c.name), ['Blood Artist', 'Filler']) // weight order, capped at 2
+  assert.equal(pool[0].confidence, 0) // unscored — the model judges it on the goal
+  assert.equal(pool[0].source, 'free')
 })
