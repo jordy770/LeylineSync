@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { CardName } from './CardName'
 import { CardPocket } from './CardPocket'
+import { DeckScanSkeleton } from './Skeletons'
 import { CombosTab } from './CombosTab'
 import { MulliganTab } from './MulliganTab'
 import { ShopLinks, ShopLinksInline } from './ShopLinks'
@@ -517,13 +518,7 @@ export function DeckDetail({
     )
   }
   if (!scan) {
-    return (
-      <Panel className="p-6">
-        <p className="font-rules animate-pulse" style={{ color: 'var(--text-dim)' }}>
-          Analysing deck — scoring power and scanning your binder for upgrades…
-        </p>
-      </Panel>
-    )
+    return <DeckScanSkeleton />
   }
 
   const { power, free, occupied, deckList } = scan

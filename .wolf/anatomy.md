@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T15:47:06.036Z
-> Files: 47 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T15:58:00.777Z
+> Files: 54 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -158,14 +158,17 @@
 
 ## app/collection/
 
+- `loading.tsx` — Instant skeleton while the dashboard aggregates the collection (value, (~140 tok)
 - `page.tsx` — dynamic — renders form (~3330 tok)
 
 ## app/collection/advisor/
 
+- `loading.tsx` — The Advisor diagnoses every deck server-side — the heaviest collection page, (~134 tok)
 - `page.tsx` — dynamic (~3001 tok)
 
 ## app/collection/binders/
 
+- `loading.tsx` — Works for both views: the shelf (spine-shaped bars) and an opened binder page. (~196 tok)
 - `page.tsx` — dynamic (~2030 tok)
 
 ## app/collection/conflicts/
@@ -173,6 +176,7 @@
 
 ## app/collection/decks/[id]/
 
+- `loading.tsx` — Loading (~65 tok)
 - `page.tsx` — dynamic (~502 tok)
 
 ## app/collection/decks/import/
@@ -180,6 +184,7 @@
 
 ## app/collection/games/
 
+- `loading.tsx` — Loading (~71 tok)
 - `page.tsx` — dynamic (~655 tok)
 
 ## app/collection/import/
@@ -196,6 +201,7 @@
 
 ## app/collection/search/
 
+- `loading.tsx` — Loading (~83 tok)
 
 ## app/controller-style-lab/
 
@@ -233,11 +239,12 @@
 - `AdvisorFits.tsx` — AdvisorFits (~1729 tok)
 - `CardPocket.tsx` — MANA_GRADIENT (~552 tok)
 - `CombosTab.tsx` — CombosTab (~1526 tok)
-- `DeckDetail.tsx` — BUCKET_ORDER (~19982 tok)
+- `DeckDetail.tsx` — BUCKET_ORDER (~19935 tok)
 - `GameAnalysisList.tsx` — GameAnalysisList (~1333 tok)
 - `MulliganTab.tsx` — MulliganTab (~1636 tok)
 - `SearchLive.tsx` — COLORS (~3669 tok)
 - `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1109 tok)
+- `Skeletons.tsx` — Full-page shell for route-level loading.tsx files. (~1134 tok)
 - `TradeBuilder.tsx` — TradeBuilder (~1509 tok)
 - `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~758 tok)
 

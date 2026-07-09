@@ -7401,3 +7401,14 @@
 | 17:46 | Edited lib/collection/upgrade-scanner.ts | inline fix | ~42 |
 | 17:47 | Edited lib/collection/upgrade-scanner.ts | modified for() | ~209 |
 | 17:48 | bug-1117 (perf): trage /collection door 55 sequentiële meta-chunks (gevolg van bug-1116 volledige set); forEachIdChunk met concurrency 8 in deck-loader + scanner loadUsedBy | lib/collection/deck-loader.ts, upgrade-scanner.ts | tsc+build+516 tests groen | ~10k |
+| 17:57 | Created components/collection/Skeletons.tsx | — | ~1134 |
+| 17:57 | Created app/collection/loading.tsx | — | ~140 |
+| 17:57 | Created app/collection/advisor/loading.tsx | — | ~134 |
+| 17:57 | Created app/collection/binders/loading.tsx | — | ~212 |
+| 17:57 | Created app/collection/search/loading.tsx | — | ~83 |
+| 17:57 | Created app/collection/games/loading.tsx | — | ~71 |
+| 17:57 | Created app/collection/decks/[id]/loading.tsx | — | ~65 |
+| 17:57 | Created app/collection/binders/loading.tsx | — | ~196 |
+| 17:57 | Edited components/collection/DeckDetail.tsx | added 1 import(s) | ~63 |
+| 17:58 | Edited components/collection/DeckDetail.tsx | removed 9 lines | ~15 |
+| 17:58 | Skeleton loading: components/collection/Skeletons.tsx (Skel/SkelStatbar/SkelPockets/SkelDeckboxes/SkelRows/PageSkeleton/DeckScanSkeleton, binder-vormen, role=status) + loading.tsx voor /collection, advisor, binders, search, games, decks/[id]; DeckDetail scan-placeholder vervangen door DeckScanSkeleton | app/collection/**/loading.tsx, Skeletons.tsx, DeckDetail.tsx | tsc+build+516 tests groen | ~12k |

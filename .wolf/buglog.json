@@ -19689,6 +19689,22 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-07-09T15:48:26.376Z"
+    },
+    {
+      "id": "bug-1205",
+      "timestamp": "2026-07-09T15:58:00.802Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/DeckDetail.tsx",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 9→3 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T15:58:00.802Z"
     }
   ]
 }
