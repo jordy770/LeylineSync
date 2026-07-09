@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T14:11:43.957Z
-> Files: 26 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T14:18:00.392Z
+> Files: 27 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -289,6 +289,7 @@
 
 ## mockups/
 
+- `collection-binder-screens.html` — LeylineSync · Binder-concept — alle schermen (~6724 tok)
 - `collection-concepts.html` — LeylineSync · Collection — stijlconcepten (~7060 tok)
 
 ## public/

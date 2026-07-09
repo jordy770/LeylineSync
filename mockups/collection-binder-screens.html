@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeylineSync · Binder-concept — alle schermen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═════════ BINDER DESIGN SYSTEM ════════════════════════════════════
+   ink        #17181c  page background (dot grid)
+   surface    #26282f  panels / binder pages
+   surface-2  #2e313a  raised elements
+   line       #383b45  hairlines
+   text       #e8e8ea · dim #9a9aa4 · faint #6c6c76
+   gold       #ffd479  upgrades, premium, focus
+   ok         #8fd6a2 · warn #e9a178 · bad #e07a7a
+   mana       W #cfc7a8 · U #5b87c5 · B #7e6a9c · R #c56b50 · G #5e9b60
+──────────────────────────────────────────────────────────────────── */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#17181c; color:#e8e8ea; font-family:'Karla',sans-serif;
+  background-image:radial-gradient(#1f2127 1px, transparent 1px); background-size:22px 22px; }
+a { color:inherit; text-decoration:none; }
+
+/* screen switcher (prototype chrome, niet onderdeel van het design) */
+.proto { position:sticky; top:0; z-index:90; display:flex; gap:6px; flex-wrap:wrap; align-items:center;
+  padding:9px 16px; background:#0c0d10ee; backdrop-filter:blur(8px); border-bottom:1px solid #26282f; }
+.proto .lbl { font:500 10px 'IBM Plex Mono',monospace; letter-spacing:.16em; color:#6c6c76; margin-right:6px; }
+.proto button { font:600 12px 'Karla'; padding:6px 12px; border-radius:99px; border:1px solid #383b45;
+  background:transparent; color:#9a9aa4; cursor:pointer; }
+.proto button.on { background:#ffd479; color:#241d0a; border-color:#ffd479; }
+.screen { display:none; } .screen.on { display:block; }
+
+/* app chrome */
+.top { display:flex; justify-content:space-between; align-items:center; max-width:1100px; margin:0 auto;
+  padding:20px 24px 0; }
+.brand { font:600 17px 'Outfit'; letter-spacing:-.01em; } .brand i { font-style:normal; color:#ffd479; }
+.nav { display:flex; gap:6px; }
+.nav a { font:500 13px 'Karla'; color:#c5c5cd; padding:8px 14px; border-radius:10px; }
+.nav a.act { background:#2e313a; color:#fff; }
+.wrap { max-width:1100px; margin:0 auto; padding:22px 24px 90px; }
+h1 { font:600 26px 'Outfit'; letter-spacing:-.02em; }
+h1 small { display:block; font:400 13px 'Karla'; color:#9a9aa4; margin-top:3px; }
+h2 { font:600 15px 'Outfit'; margin:30px 0 12px; color:#c9c9d2; display:flex; align-items:baseline; gap:10px; }
+h2 span { font:400 12px 'Karla'; color:#6c6c76; }
+
+/* primitives */
+.panel { background:#26282f; border-radius:16px; padding:18px; box-shadow:inset 0 0 0 1px #ffffff0d, 0 14px 34px #0007; }
+.btn { display:inline-block; font:600 13px 'Karla'; padding:9px 16px; border-radius:10px; cursor:pointer; border:0; }
+.btn.gold { background:#ffd479; color:#241d0a; }
+.btn.ghost { background:transparent; color:#c5c5cd; box-shadow:inset 0 0 0 1px #383b45; }
+.chip { display:inline-block; font:600 11px 'Karla'; color:#ffd479; background:#ffd47916; border-radius:8px; padding:3px 8px; }
+.chip.ok { color:#8fd6a2; background:#8fd6a216; } .chip.dim { color:#9a9aa4; background:#ffffff0a; }
+.statbar { display:flex; gap:28px; margin:18px 0 4px; flex-wrap:wrap; }
+.statbar b { font:600 22px 'Outfit'; } .statbar div span { display:block; font:400 11px 'Karla'; color:#8a8a94; }
+.statbar b.gold { color:#ffd479; }
+
+/* het kaart-pocket — de signatuur */
+.pocket { aspect-ratio:63/88; border-radius:9px; position:relative; overflow:hidden;
+  box-shadow:inset 0 0 0 1px #ffffff17, 0 4px 10px #0006; }
+.pocket .art { position:absolute; inset:0; }
+.pocket::after { content:''; position:absolute; inset:0; border-radius:9px; pointer-events:none;
+  background:linear-gradient(115deg, transparent 32%, #ffffff1f 45%, transparent 56%); }
+.pocket i { position:absolute; left:8px; right:8px; bottom:7px; font:500 10.5px/1.25 'Karla'; font-style:normal;
+  color:#fff; text-shadow:0 1px 3px #000c; }
+.pocket em { position:absolute; top:7px; right:7px; font:600 10px 'Outfit'; font-style:normal;
+  background:#000b; border-radius:6px; padding:2px 6px; color:#ffd479; }
+.pocket em.qty { left:7px; right:auto; color:#e8e8ea; }
+.pockets { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:12px; }
+.pockets.lg { grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); }
+.aW{background:linear-gradient(150deg,#8a8262,#26241c 72%);} .aU{background:linear-gradient(150deg,#2e4152,#12181d 72%);}
+.aB{background:linear-gradient(150deg,#3a2e52,#191722 72%);} .aR{background:linear-gradient(150deg,#54372e,#1d1512 72%);}
+.aG{background:linear-gradient(150deg,#2e5237,#141d17 72%);} .aX{background:linear-gradient(150deg,#4a4a52,#1a1a20 72%);}
+
+/* deckbox */
+.deckbox { border-radius:14px; padding:16px; background:linear-gradient(160deg,#2c2f38,#20222a);
+  border-left:10px solid; box-shadow:inset 0 0 0 1px #ffffff0a, 0 10px 24px #0006; position:relative; }
+.deckbox h3 { font:600 16px 'Outfit'; } .deckbox p { font:400 12px 'Karla'; color:#9a9aa4; margin-top:4px; }
+.deckbox .pow { position:absolute; top:14px; right:14px; width:44px; height:44px; border-radius:50%;
+  display:grid; place-items:center; font:600 14px 'Outfit'; color:#e8e8ea;
+  background:conic-gradient(#ffd479 var(--p,68%), #ffffff14 0); }
+.deckbox .pow b { width:36px; height:36px; border-radius:50%; background:#20222a; display:grid; place-items:center; font-weight:600; }
+.bG{border-color:#5e9b60;} .bU{border-color:#5b87c5;} .bB{border-color:#7e6a9c;} .bR{border-color:#c56b50;} .bW{border-color:#cfc7a8;}
+.boxes { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; }
+
+/* tabs (deckpagina) */
+.tabs { display:flex; gap:6px; flex-wrap:wrap; margin:22px 0 14px; }
+.tabs a { font:600 13px 'Karla'; color:#9a9aa4; padding:8px 14px; border-radius:10px; }
+.tabs a.act { background:#ffd479; color:#241d0a; }
+.tabs a.soon { color:#6c6c76; }
+
+/* swap-rij (free upgrades) */
+.swap { display:grid; grid-template-columns:76px 28px 76px 1fr auto; gap:14px; align-items:center;
+  background:#26282f; border-radius:14px; padding:12px 14px; box-shadow:inset 0 0 0 1px #ffffff0d; }
+.swap .pocket { width:76px; } .swap .arrow { text-align:center; color:#ffd479; font:600 16px 'Outfit'; }
+.swap .out .art { filter:grayscale(.7) brightness(.6); }
+.swap h4 { font:600 14px 'Outfit'; } .swap small { display:block; font:400 12px 'Karla'; color:#9a9aa4; margin-top:2px; }
+
+/* zoekresultaat */
+.hit { display:grid; grid-template-columns:64px 1fr auto; gap:14px; align-items:center;
+  background:#26282f; border-radius:14px; padding:12px 14px; box-shadow:inset 0 0 0 1px #ffffff0d; }
+.hit .pocket { width:64px; }
+.hit h4 { font:600 15px 'Outfit'; } .hit small { display:block; font:400 12px 'Karla'; color:#9a9aa4; margin-top:3px; }
+.hit .free { text-align:right; font:600 18px 'Outfit'; color:#8fd6a2; }
+.hit .free span { display:block; font:400 10px 'Karla'; color:#6c6c76; letter-spacing:.08em; text-transform:uppercase; }
+
+/* binder-planken */
+.shelf { display:flex; gap:10px; align-items:flex-end; padding:0 6px; }
+.spine { width:74px; height:180px; border-radius:8px 8px 3px 3px; position:relative; cursor:pointer;
+  background:linear-gradient(90deg,#2c2f38,#232630 60%,#2c2f38); box-shadow:inset 0 0 0 1px #ffffff0d, 0 12px 20px #0007; border-top:8px solid; }
+.spine i { position:absolute; left:50%; top:52%; transform:translate(-50%,-50%) rotate(90deg); white-space:nowrap;
+  font:600 12px 'Outfit'; font-style:normal; color:#c9c9d2; letter-spacing:.04em; }
+.spine em { position:absolute; bottom:8px; left:0; right:0; text-align:center; font:600 10px 'Outfit'; font-style:normal; color:#6c6c76; }
+.shelfboard { height:10px; border-radius:6px; background:#101116; margin-top:-2px; box-shadow:0 6px 14px #000a; }
+
+/* advisor */
+.contest { display:grid; grid-template-columns:96px 1fr; gap:16px; align-items:start; }
+.rank li { list-style:none; font:500 13px 'Karla'; color:#9a9aa4; padding:5px 0; }
+.rank li.win { color:#8fd6a2; font-weight:700; }
+.fit { display:grid; grid-template-columns:64px 28px 1fr auto; gap:12px; align-items:center;
+  background:#26282f; border-radius:14px; padding:12px 14px; box-shadow:inset 0 0 0 1px #ffffff0d; }
+.fit .pocket { width:64px; } .fit .arrow { color:#ffd479; font:600 16px 'Outfit'; text-align:center; }
+.fit h4 { font:600 14px 'Outfit'; } .fit small { display:block; font:400 12px 'Karla'; color:#9a9aa4; }
+
+/* doctor / AI paneel */
+.ai { border:1px solid #ffd47938; border-radius:16px; padding:18px; background:linear-gradient(170deg,#2b2820,#26282f 55%); }
+.ai h3 { font:600 15px 'Outfit'; color:#ffd479; }
+.ai p { font:400 13px/1.55 'Karla'; color:#c9c9d2; margin-top:8px; }
+.verdict { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.verdict li { list-style:none; font:600 11px 'Karla'; border-radius:8px; padding:4px 9px; }
+.v-in { color:#8fd6a2; background:#8fd6a216; } .v-co { color:#e9a178; background:#e9a17816; } .v-sk { color:#9a9aa4; background:#ffffff0a; }
+
+.banner { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-top:22px;
+  background:#2e2a22; border:1px solid #e9a17840; border-radius:14px; padding:12px 16px; font:500 13px 'Karla'; }
+.banner b { color:#e9a178; font:600 20px 'Outfit'; }
+.mono { font-family:'IBM Plex Mono',monospace; }
+input[type=search], textarea { width:100%; background:#1e2026; border:1px solid #383b45; border-radius:12px;
+  color:#e8e8ea; font:400 14px 'Karla'; padding:12px 14px; outline:none; }
+input[type=search]:focus, textarea:focus { border-color:#ffd479; }
+.filters { display:flex; gap:8px; margin:12px 0 18px; flex-wrap:wrap; }
+.filters span { font:600 11px 'Karla'; color:#9a9aa4; border:1px solid #383b45; border-radius:99px; padding:5px 12px; cursor:pointer; }
+.filters span.on { background:#2e313a; color:#fff; border-color:#2e313a; }
+.stack2 { display:grid; gap:12px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:760px){ .grid2 { grid-template-columns:1fr; } .contest { grid-template-columns:76px 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="proto">
+  <span class="lbl">BINDER-CONCEPT · SCHERMEN</span>
+  <button data-s="s1" class="on">Overzicht</button>
+  <button data-s="s2">Deckpagina</button>
+  <button data-s="s3">Mappen</button>
+  <button data-s="s4">Advisor</button>
+  <button data-s="s5">Zoeken</button>
+  <button data-s="s6">Post-game</button>
+</div>
+
+<!-- ════ 1 · OVERZICHT ════ -->
+<section class="screen s1 on" id="s1">
+  <div class="top">
+    <span class="brand">Leyline<i>Sync</i></span>
+    <nav class="nav"><a class="act">Overzicht</a><a>Advisor</a><a>Mappen</a><a>Zoeken</a></nav>
+  </div>
+  <div class="wrap">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap">
+      <h1>Jouw verzameling<small>Laatste import: gisteren · ManaBox</small></h1>
+      <div><button class="btn gold">⬆ Importeer collectie</button> <button class="btn ghost">+ Importeer deck</button></div>
+    </div>
+    <div class="statbar">
+      <div><b class="gold">€2.847</b><span>waarde · ▲1,8% deze maand</span></div>
+      <div><b>9.660</b><span>kaarten</span></div>
+      <div><b>5.451</b><span>uniek</span></div>
+      <div><b>1.204</b><span>vrij in map</span></div>
+      <div><b>7</b><span>decks</span></div>
+      <div><b>6,4</b><span>gem. power</span></div>
+    </div>
+
+    <div class="banner"><span style="display:flex;align-items:center;gap:12px"><b>3</b> kaarten worden door meer decks geclaimd dan je bezit.</span><button class="btn ghost">Los op →</button></div>
+
+    <h2>Deckboxen <span>tik om te openen</span></h2>
+    <div class="boxes">
+      <div class="deckbox bG"><span class="pow" style="--p:68%"><b>6.8</b></span><h3>Meren</h3><p>BG · graveyard value · ≈€214</p><span class="chip">✨ 3 upgrades klaar</span></div>
+      <div class="deckbox bB"><span class="pow" style="--p:71%"><b>7.1</b></span><h3>Wilhelt</h3><p>UB · zombie tribal · ≈€187</p><span class="chip ok">bijgewerkt ✓</span></div>
+      <div class="deckbox bU"><span class="pow" style="--p:62%"><b>6.2</b></span><h3>Talrand</h3><p>U · spellslinger · ≈€96</p><span class="chip">✨ 5 upgrades klaar</span></div>
+      <div class="deckbox bR"><span class="pow" style="--p:74%"><b>7.4</b></span><h3>Kaalia</h3><p>WBR · angels &amp; dragons · ≈€342</p><span class="chip ok">bijgewerkt ✓</span></div>
+    </div>
+
+    <h2>Sterk &amp; ongebruikt <span>uit je mappen — tik een kaart voor detail</span></h2>
+    <div class="panel">
+      <div class="pockets">
+        <div class="pocket"><span class="art aB"></span><em>€4,60</em><i>Phyrexian Arena</i></div>
+        <div class="pocket"><span class="art aG"></span><em>€7,20</em><i>Heroic Intervention</i></div>
+        <div class="pocket"><span class="art aX"></span><em>€1,10</em><i>Reliquary Tower</i></div>
+        <div class="pocket"><span class="art aR"></span><em>€2,30</em><i>Goblin Bombardment</i></div>
+        <div class="pocket"><span class="art aU"></span><em>€3,80</em><i>Mystic Sanctuary</i></div>
+        <div class="pocket"><span class="art aB"></span><em>€5,40</em><i>Bitterblossom</i></div>
+        <div class="pocket"><span class="art aG"></span><em>€2,90</em><i>Eternal Witness</i></div>
+        <div class="pocket"><span class="art aX"></span><em>€0,90</em><i>Guardian Idol</i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ 2 · DECKPAGINA ════ -->
+<section class="screen s2" id="s2">
+  <div class="top">
+    <span class="brand">Leyline<i>Sync</i></span>
+    <nav class="nav"><a>Overzicht</a><a>Advisor</a><a>Mappen</a><a>Zoeken</a></nav>
+  </div>
+  <div class="wrap">
+    <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap">
+      <div class="deckbox bG" style="min-width:250px"><span class="pow" style="--p:68%"><b>6.8</b></span>
+        <h3>Meren of Clan Nel Toth</h3><p>BG · graveyard value · 100 kaarten · ≈€214</p>
+      </div>
+      <div style="flex:1"></div>
+      <div><button class="btn ghost">Hernoem</button> <button class="btn ghost" style="color:#e07a7a">Verwijder</button> <button class="btn gold">▶ Speel dit deck</button></div>
+    </div>
+
+    <div class="tabs">
+      <a>Decklijst</a><a class="act">Upgrades (3)</a><a>Kopen</a><a>Pull list</a><a>✨ Doctor</a><a>⚡ Combos</a><a>🃏 Mulligan</a>
+    </div>
+
+    <div class="stack2">
+      <div class="swap">
+        <div class="pocket out"><span class="art aG"></span><i>Regrowth</i></div>
+        <div class="arrow">→</div>
+        <div class="pocket"><span class="art aG"></span><em>€2,90</em><i>Eternal Witness</i></div>
+        <div><h4>Eternal Witness <span class="chip dim">recursion</span> <span class="chip ok">82%</span></h4>
+          <small>Een lichaam bij de Regrowth — Meren kan haar eindeloos terughalen. 📒 Map 1</small></div>
+        <button class="btn gold">Wissel</button>
+      </div>
+      <div class="swap">
+        <div class="pocket out"><span class="art aB"></span><i>Diabolic Tutor</i></div>
+        <div class="arrow">→</div>
+        <div class="pocket"><span class="art aB"></span><em>€4,60</em><i>Phyrexian Arena</i></div>
+        <div><h4>Phyrexian Arena <span class="chip dim">card draw</span> <span class="chip ok">78%</span></h4>
+          <small>Elke beurt een kaart zonder mana — meer waarde dan een eenmalige tutor. 📒 Map 2</small></div>
+        <button class="btn gold">Wissel</button>
+      </div>
+      <div class="swap">
+        <div class="pocket out" style="opacity:.35"><span class="art aX"></span><i>—</i></div>
+        <div class="arrow">+</div>
+        <div class="pocket"><span class="art aG"></span><em>€1,60</em><i>Sakura-Tribe Elder</i></div>
+        <div><h4>Sakura-Tribe Elder <span class="chip dim">ramp</span> <span class="chip ok">74%</span></h4>
+          <small>Ramp én een sacrifice-lichaam — precies wat Meren wil offeren. 📒 Map 1</small></div>
+        <button class="btn gold">Voeg toe</button>
+      </div>
+    </div>
+
+    <h2>✨ Doctor <span>premium — jouw doel, jouw meta</span></h2>
+    <div class="ai">
+      <h3>Het plan — “meer sacrifice-synergie, rond de €5”</h3>
+      <p>Je binder dekt dit doel bijna volledig: Eternal Witness en Sakura-Tribe Elder erin, Diabolic Tutor eruit.
+      Tegen jouw treasure-zware pod is Goblin Bombardment de beste gratis toevoeging. Eén aankoop is het overwegen
+      waard: Zulaport Cutthroat (€0,80) maakt elk offer een drain.</p>
+      <ul class="verdict"><li class="v-in">✓ Eternal Witness</li><li class="v-in">✓ Sakura-Tribe Elder</li><li class="v-in">✓ Goblin Bombardment</li><li class="v-co">~ Zulaport Cutthroat (koop)</li><li class="v-sk">— Bitterblossom</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ════ 3 · MAPPEN ════ -->
+<section class="screen s3" id="s3">
+  <div class="top">
+    <span class="brand">Leyline<i>Sync</i></span>
+    <nav class="nav"><a>Overzicht</a><a>Advisor</a><a class="act">Mappen</a><a>Zoeken</a></nav>
+  </div>
+  <div class="wrap">
+    <h1>Mappen<small>zoals ze in je kast staan — tik een rug om te openen</small></h1>
+    <div style="margin-top:26px">
+      <div class="shelf">
+        <div class="spine" style="border-color:#5e9b60"><i>Map 1 · Staples</i><em>412</em></div>
+        <div class="spine" style="border-color:#5b87c5; height:170px"><i>Map 2 · Blauw/zwart</i><em>388</em></div>
+        <div class="spine" style="border-color:#c56b50; height:160px"><i>Map 3 · Rood/artefact</i><em>247</em></div>
+        <div class="spine" style="border-color:#7e6a9c; height:150px"><i>Trade binder</i><em>157</em></div>
+      </div>
+      <div class="shelfboard"></div>
+    </div>
+
+    <h2>📒 Map 1 · Staples <span>412 kaarten · ≈€389 · pagina 12 van 46</span></h2>
+    <div class="filters"><span class="on">Naam</span><span>Prijs</span><span>Type</span><span>Kleur</span></div>
+    <div class="panel">
+      <div class="pockets lg">
+        <div class="pocket"><span class="art aG"></span><em>€2,90</em><i>Eternal Witness</i></div>
+        <div class="pocket"><span class="art aG"></span><em>€7,20</em><i>Heroic Intervention</i></div>
+        <div class="pocket"><span class="art aG"></span><em>€1,60</em><i>Sakura-Tribe Elder</i></div>
+        <div class="pocket"><span class="art aX"></span><em class="qty">×2</em><em>€1,10</em><i>Reliquary Tower</i></div>
+        <div class="pocket"><span class="art aX"></span><em>€0,90</em><i>Guardian Idol</i></div>
+        <div class="pocket"><span class="art aG"></span><em>€0,60</em><i>Farhaven Elf</i></div>
+        <div class="pocket"><span class="art aX"></span><em>€2,10</em><i>Hedron Archive</i></div>
+        <div class="pocket"><span class="art aG"></span><em>€1,20</em><i>Wood Elves</i></div>
+        <div class="pocket"><span class="art aX"></span><em>€0,40</em><i>Worn Powerstone</i></div>
+      </div>
+      <div style="display:flex; justify-content:center; gap:8px; margin-top:16px">
+        <button class="btn ghost">← vorige pagina</button><button class="btn ghost">volgende pagina →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ 4 · ADVISOR ════ -->
+<section class="screen s4" id="s4">
+  <div class="top">
+    <span class="brand">Leyline<i>Sync</i></span>
+    <nav class="nav"><a>Overzicht</a><a class="act">Advisor</a><a>Mappen</a><a>Zoeken</a></nav>
+  </div>
+  <div class="wrap">
+    <h1>Advisor<small>elke conclusie herleidbaar — acties naast de oordelen</small></h1>
+
+    <h2>Betwiste kaarten <span>1</span></h2>
+    <div class="panel">
+      <div class="contest">
+        <div class="pocket" style="width:96px"><span class="art aX"></span><em>1 van 3</em><i>Sol Ring</i></div>
+        <div>
+          <h4 style="font:600 16px 'Outfit'">Sol Ring <span class="chip dim">1 in bezit · 3 gewild</span></h4>
+          <ul class="rank" style="margin-top:8px">
+            <li class="win">★ Kaalia — hoogste curve, mist ramp het hardst (+4)</li>
+            <li>2. Meren — genoeg alternatieven in je map (+1)</li>
+            <li>3. Talrand — laagste curve, minste nood (−1)</li>
+          </ul>
+          <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+            <button class="btn gold">★ Houd in Kaalia</button>
+            <button class="btn ghost">release Meren</button><button class="btn ghost">release Talrand</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Perfecte fits <span>beste gratis upgrade per deck</span></h2>
+    <div class="stack2">
+      <div class="fit">
+        <div class="pocket"><span class="art aB"></span><i>Phyrexian Arena</i></div>
+        <div class="arrow">→</div>
+        <div><h4>Meren <span class="chip ok">78% fit</span></h4><small>card draw · on-theme · 📒 Map 2</small></div>
+        <button class="btn ghost" style="color:#ffd479">Voeg toe</button>
+      </div>
+      <div class="fit">
+        <div class="pocket"><span class="art aU"></span><i>Mystic Sanctuary</i></div>
+        <div class="arrow">→</div>
+        <div><h4>Talrand <span class="chip ok">71% fit</span></h4><small>utility land · 📒 Map 2</small></div>
+        <button class="btn ghost" style="color:#ffd479">Voeg toe</button>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:30px">
+      <div class="ai">
+        <h3>✨ Ruilbouwer</h3>
+        <p>“Ik wil zijn Dockside Extortionist (~€40)” → een eerlijk pakket uit je trade binder, met alternatieven.</p>
+        <div style="margin-top:10px"><input type="search" placeholder="Wat wil je hebben?"></div>
+      </div>
+      <div class="ai">
+        <h3>🎮 Post-game coaching</h3>
+        <p>Analyse van je gespeelde potjes, rechtstreeks uit het actielog van de engine. Laatste potje: gisteren — verloren van het treasure-deck.</p>
+        <button class="btn gold" style="margin-top:10px">Bekijk je potjes →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ 5 · ZOEKEN ════ -->
+<section class="screen s5" id="s5">
+  <div class="top">
+    <span class="brand">Leyline<i>Sync</i></span>
+    <nav class="nav"><a>Overzicht</a><a>Advisor</a><a>Mappen</a><a class="act">Zoeken</a></nav>
+  </div>
+  <div class="wrap">
+    <h1>Waar ligt…<small>zoek door mappen én decks tegelijk</small></h1>
+    <div style="margin-top:18px; max-width:560px"><input type="search" value="etern"></div>
+    <div class="filters"><span class="on">Alles</span><span>Alleen vrij</span><span>W</span><span>U</span><span>B</span><span>R</span><span class="on">G</span><span>creature</span></div>
+    <div class="stack2">
+      <div class="hit">
+        <div class="pocket"><span class="art aG"></span><i>Eternal Witness</i></div>
+        <div>
+          <h4>Eternal Witness</h4>
+          <small>📒 Map 1 (2×) · 🃏 in <u>Meren</u> (1×) · €2,90</small>
+          <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap">
+            <span class="chip dim">+ Talrand</span><span class="chip dim">+ Kaalia</span><span class="chip">+ nieuw deck…</span>
+          </div>
+        </div>
+        <div class="free">2/3<span>vrij / bezit</span></div>
+      </div>
+      <div class="hit">
+        <div class="pocket"><span class="art aG"></span><i>Eternal Wanderer…</i></div>
+        <div><h4>Eternal Wanderer</h4><small>📒 Map 3 (1×) · niet in een deck · €3,10</small></div>
+        <div class="free">1/1<span>vrij / bezit</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ 6 · POST-GAME ════ -->
+<section class="screen s6" id="s6">
+  <div class="top">
+    <span class="brand">Leyline<i>Sync</i></span>
+    <nav class="nav"><a>Overzicht</a><a class="act">Advisor</a><a>Mappen</a><a>Zoeken</a></nav>
+  </div>
+  <div class="wrap">
+    <h1>Post-game coaching<small>uit het echte actielog — geen giswerk</small></h1>
+    <div class="stack2" style="margin-top:20px">
+      <div class="panel" style="display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap">
+        <div><b style="font:600 16px 'Outfit'">gisteren · commander</b>
+          <span class="chip dim" style="margin-left:10px">verloren</span></div>
+        <button class="btn gold">🎮 Analyseer</button>
+      </div>
+      <div class="ai">
+        <h3>Potje van 6 juli — 🏆 gewonnen</h3>
+        <p><b>Samenvatting.</b> Je won via Wilhelt's brede zombie-boards; het kantelpunt was beurt 7, toen je
+        Patriarch's Bidding resolvde nadat twee spelers hun wraths al hadden gebruikt.</p>
+        <p><b>Kantelmomenten.</b> Beurt 4: je hield Counterspell vast voor het juiste doelwit. Beurt 7: Bidding na de wraths.</p>
+        <p><b>Wat beter kan.</b> Je speelde beide moerassen pas ná je spells — land eerst kost niets en houdt opties open.</p>
+        <p style="color:#8fd6a2"><b>Deck-les →</b> “meer instant-speed interactie tegen treasure-decks” — plak dit in het doelveld van de Doctor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const bs = document.querySelectorAll('.proto button');
+  bs.forEach(b => b.addEventListener('click', () => {
+    bs.forEach(x => x.classList.toggle('on', x === b));
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === b.dataset.s));
+    window.scrollTo({ top: 0 });
+  }));
+</script>
+</body>
+</html>

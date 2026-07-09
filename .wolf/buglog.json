@@ -19045,6 +19045,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-09T07:28:03.492Z"
+    },
+    {
+      "id": "bug-1165",
+      "timestamp": "2026-07-09T14:11:42.149Z",
+      "error_message": "Wrong reference: why should be wrap",
+      "file": "mockups/collection-concepts.html",
+      "root_cause": "Used \"why\" instead of \"wrap\"",
+      "fix": "Changed why → wrap",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-09T14:11:42.149Z"
     }
   ]
 }

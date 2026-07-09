@@ -7285,3 +7285,5 @@
 | 16:11 | Edited mockups/collection-concepts.html | 3→2 lines | ~31 |
 | 16:11 | Edited mockups/collection-concepts.html | inline fix | ~34 |
 | 16:12 | Vijf stijlconcepten voor het Collection-onderdeel in mockups/collection-concepts.html (switcher): A Card Catalog (papier/archief, licht), B Binder (visueel, 9-pocket + deckboxen), C Pro Terminal (dicht/mono/prijzen), D Game Night (speelmat, couch-DNA), E Five Colors (licht redactioneel, WUBRG-systeem); zelfde echte content per concept | mockups/collection-concepts.html | wacht op keuze Jordy | ~20k |
+| 16:18 | Created mockups/collection-binder-screens.html | — | ~6724 |
+| 16:18 | Binder-concept (keuze Jordy) uitgewerkt naar alle 6 schermen in mockups/collection-binder-screens.html: Overzicht (deckboxen+pocket-grid), Deckpagina (swap-rijen met kaartthumbs, Doctor-paneel), Mappen (boekenplank-ruggen + 9-pocket pagina's), Advisor (contested met kaart+rank, fits kaart→deck), Zoeken (visuele hits + add-chips), Post-game; designsysteem-tokens in de head gedocumenteerd | mockups/collection-binder-screens.html | wacht op feedback vóór implementatie | ~25k |

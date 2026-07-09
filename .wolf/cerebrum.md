@@ -507,3 +507,7 @@
 - Doctor-uitbreidingen: co_player_meta (mig 383, user mag eigen rij r/w — anders dan entitlements) wordt in ELKE run geïnjecteerd; targetPower onder huidige power flipt buildGoalPool naar weight-ASC (zwakke kaarten zijn de swap-ins bij detunen) en deckCards gaan mee zodat cuts benoemd kunnen worden (deckCards nooit als pick — prompt-regel).
 - Post-game analyse leest game_action_log (description-regels; RLS = session members) met seat-labels You/Opponent N; bij lange games de STAART bewaren (daar valt de beslissing); game_sessions heeft GEEN naam-kolom — label games op finished_at+format+winner_player_id.
 - game_session_players→game_sessions embed met .eq('game_sessions.status','finished') werkt alleen met !inner join-syntax.
+
+## User Preferences — 2026-07-09 (Collection restyle)
+
+- Jordy koos concept B ("Binder") uit vijf stijlconcepten voor het Collection-onderdeel: visueel/kaart-voorop, donker-neutraal (#17181c dot-grid), Outfit+Karla, kaarten als pockets met plastic-sheen (aspect 63/88), decks als deckboxen met gekleurde identity-rug + conic power-dial, mappen als boekenplank-ruggen, goud #ffd479 als upgrade/premium-accent. Volledige tokenset gedocumenteerd bovenin mockups/collection-binder-screens.html. NIET het bestaande Leyline void/goud-arcane thema (dat blijft voor de game-kant); implementatie wacht op akkoord over de schermen-mockup.
