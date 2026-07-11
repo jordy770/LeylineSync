@@ -889,11 +889,18 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   // from matching-colour sources automatically; for the GENERIC part, if more than
   // one colour could pay it the player picks (so auto-tap never spends a colour you
   // were saving). Falls back to planAutoTap for flexible/any sources.
-  const autoPay = async (card: ControllerCard | null) => {
+  const autoPay = async (card: ControllerCard | null, extraCost?: string) => {
     if (!card || !playerId) return
     const manaCost = card.cards?.mana_cost ?? ''
     if (/x/i.test(manaCost)) return
     const parsed = parseManaCost(manaCost)
+    // Optional-cost surcharge (kicker): the server demands printed + kicker in
+    // one payment, so the auto-tap plan must cover both.
+    if (extraCost) {
+      const extra = parseManaCost(extraCost)
+      parsed.generic += extra.generic
+      for (const c of manaColors) parsed.colored[c] += extra.colored[c]
+    }
     const reduction = genericCostReduction(card, costReductions, boardCards, playerId)
     const cost = reduction > 0 ? { ...parsed, generic: Math.max(0, parsed.generic - reduction) } : parsed
 
@@ -972,10 +979,15 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   const actions = {
     passPriority: async () => { ackStackKeyRef.current = currentStackKey; await passPriorityAction(supabase, sessionId); await refresh() },
     advanceStep: async () => { await advanceStep(supabase, sessionId); await refresh() },
-    // Plain cast — permanents and untargeted spells
-    castSpell: async (cardId: string) => {
-      await autoPay(cards.find((c) => c.id === cardId) ?? null)
-      await castCardFromHand(supabase, sessionId, cardId)
+    // Plain cast — permanents and untargeted spells. `kicked` pays the card's
+    // kicker on top (mig 211); the server stamps 'kicked' for ETB conditionals.
+    castSpell: async (cardId: string, opts?: { kicked?: boolean }) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const kicker = opts?.kicked
+        ? normalizeCardBehaviorToV2(card?.copied_script ?? card?.cards?.script ?? null, card?.cards?.type_line)?.kicker ?? null
+        : null
+      await autoPay(card, kicker ?? undefined)
+      await castCardFromHand(supabase, sessionId, cardId, undefined, undefined, null, opts?.kicked ?? false)
       await refresh()
     },
     // Cycling: discard a hand card with a cycling cost, draw one.
@@ -1250,7 +1262,11 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   // ETB "choose one") still surface afterwards via the pending-decision popup.
   const quickPlay = (card: ControllerCard) => {
     const isLand = card.cards?.type_line?.toLowerCase().includes('land') ?? false
-    if (isLand || getSpellPlan(card).kind === 'normal') {
+    // A kicker cost is a cast-time choice too — the sheet must ask kicked-or-not.
+    const hasKicker = !isLand && Boolean(
+      normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)?.kicker,
+    )
+    if (isLand || (getSpellPlan(card).kind === 'normal' && !hasKicker)) {
       actions.castSpell(card.id).catch((e) => reportError(e, 'play'))
     } else {
       setSelectedCard(card)
@@ -1426,7 +1442,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             boardCards={boardCards}
             commanderIdentity={commanderIdentityColors(cards)}
             onTapForMana={async (cardId, color) => { await actions.tapForMana(cardId, color) }}
-            onCastCard={async (cardId) => { await actions.castSpell(cardId) }}
+            onCastCard={async (cardId, opts) => { await actions.castSpell(cardId, opts) }}
             onCycleCard={async (cardId) => { await actions.cycleCard(cardId) }}
             onDealDamageToPlayer={async (cardId, targetPlayerId) => { await actions.dealDamageToPlayer(cardId, targetPlayerId) }}
             onDealDamageToCreature={async (cardId, targetCardId) => { await actions.dealDamageToCreature(cardId, targetCardId) }}

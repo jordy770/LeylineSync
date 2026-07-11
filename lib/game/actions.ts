@@ -66,6 +66,7 @@ export async function castCardFromHand(
   genericPayment?: Record<string, number>,
   targetCardId?: string,
   xValue?: number | null,
+  kicked?: boolean,
 ) {
   const { data, error } = await supabase.rpc('cast_card_from_hand', {
     p_session_id: sessionId,
@@ -73,6 +74,7 @@ export async function castCardFromHand(
     p_generic_payment: genericPayment ?? null,
     p_target_card_id: targetCardId ?? null,
     p_x_value: xValue ?? null,
+    p_kicked: kicked ?? false,
   })
 
   if (error) {

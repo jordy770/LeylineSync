@@ -88,7 +88,7 @@ export function CardActionSheet({
   boardCards: BoardCard[]
   commanderIdentity: ManaColor[]
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
-  onCastCard: (cardId: string) => Promise<void>
+  onCastCard: (cardId: string, opts?: { kicked?: boolean }) => Promise<void>
   onCycleCard: (cardId: string) => Promise<void>
   onDealDamageToPlayer: (cardId: string, targetPlayerId: string) => Promise<void>
   onDealDamageToCreature: (cardId: string, targetCardId: string) => Promise<void>
@@ -346,6 +346,27 @@ export function CardActionSheet({
     }
   }
 
+  // Kicker (mig 211): a hand card with a top-level `kicker` cost gets a second
+  // cast button that pays printed + kicker in one go; the server stamps
+  // 'kicked' so "if it was kicked" ETB conditionals fire (Verix Bladewing).
+  // Only for the plain untargeted cast path — kicked targeted spells later.
+  const kickerCost = script.kicker ?? null
+  const canCastKicked =
+    !!kickerCost &&
+    zone === 'hand' &&
+    canCast &&
+    !adventureMode &&
+    !isAura &&
+    !needsTarget &&
+    spellPlan.kind !== 'draw' &&
+    spellPlan.kind !== 'spell_effect' &&
+    spellPlan.kind !== 'modal'
+
+  const handleCastKicked = () => {
+    void onCastCard(card.id, { kicked: true })
+    onClose()
+  }
+
   const handleFlashback = () => {
     if (spellPlan.kind === 'draw') void onDrawCards(card.id)
     else if (spellPlan.kind === 'modal') void onModalSpell(card.id)
@@ -472,6 +493,22 @@ export function CardActionSheet({
               {isAura ? 'Cast - enchant a creature' : castLabel}
             </span>
             <ManaCostDisplay manaCost={adventureMode ? adventure?.cost : card.cards?.mana_cost} dark={hasRequiredTargets} />
+          </button>
+        )}
+
+        {/* Kicked cast — pay the kicker on top for the card's bonus effect */}
+        {canCastKicked && !picking && !attachPick && (
+          <button
+            type="button"
+            aria-label={`Cast kicked - pay ${kickerCost} extra`}
+            onClick={handleCastKicked}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-amber-400/60 bg-amber-400/15 px-4 py-3 transition active:scale-95"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[9px] font-black uppercase tracking-widest text-amber-300/80">Kicker</span>
+              <span className="font-bold text-amber-100">Cast kicked - extra effect</span>
+            </span>
+            <ManaCostDisplay manaCost={`${card.cards?.mana_cost ?? ''}${kickerCost}`} />
           </button>
         )}
 

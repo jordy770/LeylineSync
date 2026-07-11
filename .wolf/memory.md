@@ -7550,3 +7550,13 @@
 | 20:07 | Edited components/GameBoard.tsx | 1→3 lines | ~42 |
 | 20:07 | Edited app/globals.css | CSS: transform, transform | ~69 |
 | 20:08 | Deep TV perf + sleep fix: board state dedupe (skip 8-way setState when RPC payload unchanged — idle polls no longer re-render the tree), useScreenWakeLock (Wake Lock API + canvas-stream video fallback) on spectator board, 3D transforms flattened in tv-flat | lib/game/use-board-game-state.ts, lib/game/use-screen-wake-lock.ts, components/GameBoard.tsx, app/globals.css | tsc+eslint clean, spectator 200 | ~7k |
+| 21:35 | Released v0.12.1 (TV dedupe+wake lock+turn spotlight): CI green, deploy green, wakeLock verified in live bundle | release v0.12.1 | production updated | ~2k |
+| 21:54 | Edited lib/game/actions.ts | modified castCardFromHand() | ~146 |
+| 21:54 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~161 |
+| 21:54 | Edited components/ControllerListV5.tsx | added optional chaining | ~188 |
+| 21:54 | Edited components/controller/CardActionSheet.tsx | inline fix | ~22 |
+| 21:54 | Edited components/ControllerListV5.tsx | inline fix | ~26 |
+| 21:55 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~209 |
+| 21:55 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~268 |
+| 21:55 | Edited components/ControllerListV5.tsx | 8→12 lines | ~163 |
+| 22:00 | Kicker reachable from the app: castCardFromHand passes p_kicked, castSpell opts.kicked + autoPay extraCost, Cast kicked button in CardActionSheet, quickPlay opens sheet for kicker cards | lib/game/actions.ts, components/ControllerListV5.tsx, components/controller/CardActionSheet.tsx | tsc+eslint clean, 2268/2268 pass | ~9k |

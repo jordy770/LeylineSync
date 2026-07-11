@@ -2,6 +2,25 @@
   "version": 1,
   "bugs": [
     {
+      "id": "bug-1507",
+      "timestamp": "2026-07-11",
+      "error_message": "User: Verix Bladewing has kicker but the option doesn't work / isn't visible in the app.",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Kicker existed only server-side (mig 211: cast_card_from_hand p_kicked, script kicker + kicked-conditional all correct, DR3 test green). The client chain never exposed it: actions.ts castCardFromHand didn't pass p_kicked, and no UI offered the choice — kicker cards were only castable unkicked.",
+      "fix": "Threaded kicked through the chain: castCardFromHand(..., kicked) -> p_kicked; actions.castSpell(cardId, {kicked}) resolves the script's kicker cost and feeds it to autoPay as an extraCost surcharge; CardActionSheet shows a 'Cast kicked — extra effect' button (amber, combined cost) for hand cards with script.kicker on the plain cast path; quickPlay routes kicker cards to the sheet instead of direct-casting (a kicker is a cast-time choice).",
+      "tags": [
+        "kicker",
+        "verix-bladewing",
+        "cast",
+        "controller",
+        "ui-gap",
+        "server-only-feature"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11"
+    },
+    {
       "id": "bug-1506",
       "timestamp": "2026-07-11",
       "error_message": "TvCodePopup: 'Couldn't load the room code — try again in a moment.' Also the original bug-1504 complaint: lobby never showed a tv_code.",
@@ -20136,6 +20155,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-11T18:07:01.623Z"
+    },
+    {
+      "id": "bug-1232",
+      "timestamp": "2026-07-11T19:54:31.932Z",
+      "error_message": "CSS fix: card",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "card: ControllerCard | null) => { → ControllerCard | null, extraCost?: string) => {",
+      "fix": "Changed card: ControllerCard | null) => { → ControllerCard | null, extraCost?: string) => {",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T19:54:31.932Z"
+    },
+    {
+      "id": "bug-1233",
+      "timestamp": "2026-07-11T19:54:36.255Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T19:54:36.255Z"
+    },
+    {
+      "id": "bug-1234",
+      "timestamp": "2026-07-11T19:54:54.483Z",
+      "error_message": "CSS fix: onCastCard",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "onCastCard: (cardId: string) => Promise<void> → (cardId: string, opts?: { kicked?: boolean",
+      "fix": "Changed onCastCard: (cardId: string) => Promise<void> → (cardId: string, opts?: { kicked?: boolean",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T19:54:54.483Z"
+    },
+    {
+      "id": "bug-1235",
+      "timestamp": "2026-07-11T19:55:11.301Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Kicked cast — pay the kicker on top for the card's bonus; {canCastKicked && !picking && !attachPick && (",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-11T19:55:15.495Z"
     }
   ]
 }
