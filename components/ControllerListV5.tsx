@@ -51,6 +51,7 @@ import {
   normalizeCardBehaviorToV2,
   selectFirstManaAbility,
 } from '@/lib/game/card-behavior'
+import { buzz } from '@/lib/game/haptics'
 import { getPowerToughnessLabel } from '@/lib/game/controller-selectors'
 import { decrementPaymentColor, getPaymentTotal, incrementPaymentColor, parseManaCost, type ManaPayment, type ParsedManaCost } from '@/lib/game/mana'
 import { planAutoTap, type ManaSource } from '@/lib/game/auto-tap'
@@ -489,6 +490,26 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   const isMainPhaseStep = turnState?.step === 'precombat_main' || turnState?.step === 'postcombat_main'
   const canCastSorceries = hasPriority && isActivePlayer && isMainPhaseStep && pendingStackItems.length === 0 && !isSessionFinished
   const canCastInstants = hasPriority && !isSessionFinished
+
+  // Priority landing on YOU is the moment the controller exists for — mark it
+  // physically: one gold edge flash (opacity-only, cheap) + a short buzz.
+  // Auto-pass means this only fires at real choices, not every step.
+  const [priorityFlashKey, setPriorityFlashKey] = useState(0)
+  const hadPriorityRef = useRef(false)
+  useEffect(() => {
+    if (hasPriority && !hadPriorityRef.current && !isSessionFinished) {
+      setPriorityFlashKey((k) => k + 1)
+      buzz(15)
+    }
+    hadPriorityRef.current = hasPriority
+  }, [hasPriority, isSessionFinished])
+
+  // A decision popup demands you specifically — a firmer double buzz.
+  const hadDecisionRef = useRef(false)
+  useEffect(() => {
+    if (myPendingDecision && !hadDecisionRef.current) buzz([15, 60, 15])
+    hadDecisionRef.current = Boolean(myPendingDecision)
+  }, [myPendingDecision])
 
   const battlefieldCards = cards.filter((c) => c.zone === 'battlefield')
   const handCards = cards
@@ -988,6 +1009,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         : null
       await autoPay(card, kicker ?? undefined)
       await castCardFromHand(supabase, sessionId, cardId, undefined, undefined, null, opts?.kicked ?? false)
+      buzz()
       await refresh()
     },
     // Cycling: discard a hand card with a cycling cost, draw one.
@@ -1009,6 +1031,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     // Cast the commander from the command zone (cost + commander tax).
     castCommander: async (cardId: string) => {
       await castCommanderAction(supabase, sessionId, cardId)
+      buzz()
       await refresh()
     },
     // Commander-redirect preference: on = back to the command zone, off = graveyard/exile.
@@ -1283,6 +1306,11 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
 
   return (
     <div className="relative h-[100svh] overflow-hidden bg-[#0F1117] text-white">
+      {/* One-shot gold edge flash when priority lands on you (see effect above).
+          Keyed so every landing restarts the CSS animation. */}
+      {priorityFlashKey > 0 && (
+        <div key={priorityFlashKey} className="priority-flash pointer-events-none absolute inset-0 z-[65]" />
+      )}
       <AnimatePresence mode="wait">
         {layoutState === 'declare_attackers' ? (
           <motion.div key="attackers" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -1523,11 +1551,15 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         )}
       </AnimatePresence>
 
+      {/* Shared notification slot — errors, resolution toasts and first-time
+          hints all live at bottom-40, ABOVE the hand fan (bottom-4 covered the
+          exact card you were about to play), and show one at a time:
+          error > resolution > hint. */}
       {(actionError ?? errorMessage) && (
         <button
           type="button"
           onClick={() => { setActionError(null); setErrorMessage(null) }}
-          className="absolute inset-x-3 bottom-4 z-[60] flex items-start gap-2 rounded-lg border border-red-400/20 bg-red-950/90 p-3 text-left text-xs text-red-100 shadow-lg active:scale-[0.99]"
+          className="absolute inset-x-3 bottom-40 z-[60] flex items-start gap-2 rounded-lg border border-red-400/20 bg-red-950/90 p-3 text-left text-xs text-red-100 shadow-lg active:scale-[0.99]"
         >
           <span className="flex-1">{actionError ?? errorMessage}</span>
           <span className="shrink-0 text-red-300/70" aria-label="Dismiss">✕</span>
@@ -1544,7 +1576,8 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
           isSessionFinished ||
           Boolean(myPendingDecision) ||
           Boolean(currentPlayer && playersNotKept.length > 0) ||
-          Boolean(actionError ?? errorMessage)
+          Boolean(actionError ?? errorMessage) ||
+          Boolean(resolutionToast)
         }
       />
 
@@ -1552,7 +1585,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         {resolutionToast && !actionError && !errorMessage && (
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }}
-            className="pointer-events-none absolute inset-x-3 bottom-4 z-[55] flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-950/85 p-2.5 text-xs text-emerald-100 shadow-lg"
+            className="pointer-events-none absolute inset-x-3 bottom-40 z-[55] flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-950/85 p-2.5 text-xs text-emerald-100 shadow-lg"
           >
             <span className="shrink-0 text-emerald-300">✓</span>
             <span className="flex-1 truncate">{resolutionToast}</span>
@@ -1622,6 +1655,26 @@ function StatusBar({
   const currentGroupIdx = stepGroups.findIndex((g) =>
     g.steps.includes(turnState?.step as GameTurnState['step']),
   )
+  // Seven step groups don't fit a phone header — show prev·current·next and
+  // expand the full row on a tap (auto-collapses again).
+  const [showAllSteps, setShowAllSteps] = useState(false)
+  useEffect(() => {
+    if (!showAllSteps) return
+    const t = setTimeout(() => setShowAllSteps(false), 4000)
+    return () => clearTimeout(t)
+  }, [showAllSteps])
+
+  // Fullscreen escape hatch for browser-tab play (the installed PWA is already
+  // standalone, so the button hides there).
+  const [canFullscreen, setCanFullscreen] = useState(false)
+  useEffect(() => {
+    const standalone = window.matchMedia?.('(display-mode: standalone)').matches ?? false
+    setCanFullscreen(Boolean(document.fullscreenEnabled) && !standalone)
+  }, [])
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {})
+    else void document.documentElement.requestFullscreen().catch(() => {})
+  }
 
   return (
     <header className="flex h-11 shrink-0 items-center gap-2 border-b border-[#1E2230] bg-[#0C0E14] px-4">
@@ -1637,25 +1690,32 @@ function StatusBar({
           {turnState?.active_username ?? currentPlayer?.username ?? '—'}
         </span>
         {isActivePlayer && (
-          <span className="shrink-0 rounded bg-amber-400/20 px-1 py-0.5 text-[8px] font-black uppercase tracking-wider text-amber-300">
+          <span className="shrink-0 rounded bg-amber-400/20 px-1 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
             You
           </span>
         )}
-        <span className="shrink-0 text-[10px] text-slate-600">T{turnState?.turn_number ?? '—'}</span>
+        <span className="shrink-0 text-[10px] text-slate-400">T{turnState?.turn_number ?? '—'}</span>
       </div>
 
-      {/* Center: grouped step labels — sliding gold pill + opacity fade */}
-      <div className="flex flex-1 items-center justify-center gap-1">
+      {/* Center: grouped step labels — sliding gold pill + opacity fade.
+          Collapsed to prev·current·next; a tap reveals the whole turn. */}
+      <button
+        type="button"
+        onClick={() => setShowAllSteps((v) => !v)}
+        aria-label={showAllSteps ? 'Collapse turn steps' : 'Show all turn steps'}
+        className="flex flex-1 items-center justify-center gap-1"
+      >
         {stepGroups.map((group, i) => {
           const isActive = i === currentGroupIdx
           const dist = currentGroupIdx < 0 ? 3 : Math.abs(i - currentGroupIdx)
+          if (!showAllSteps && currentGroupIdx >= 0 && dist > 1) return null
           const opacity = isActive ? 1 : dist === 1 ? 0.75 : dist === 2 ? 0.5 : 0.3
           return (
             <motion.span
               key={group.label}
               animate={{ opacity }}
               transition={{ duration: 0.25 }}
-              className={`relative rounded px-2.5 py-1 text-[9px] font-black uppercase tracking-wider ${
+              className={`relative rounded px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${
                 isActive ? 'text-[#0F1117]' : 'text-[#9B9589]'
               }`}
             >
@@ -1670,7 +1730,7 @@ function StatusBar({
             </motion.span>
           )
         })}
-      </div>
+      </button>
 
       {/* Right: mana pool + library count + priority indicator + life */}
       <div className="flex shrink-0 items-center justify-end gap-2">
@@ -1687,8 +1747,8 @@ function StatusBar({
         <RestrictedManaDisplay entries={restrictedMana} />
         <ManaPoolDisplay manaPool={manaPool} />
         <div className="flex flex-col items-center">
-          <span className="text-sm font-black leading-none text-slate-400">{libraryCount}</span>
-          <span className="text-[7px] uppercase tracking-wider text-slate-700">lib</span>
+          <span className="text-sm font-black leading-none text-slate-300">{libraryCount}</span>
+          <span className="text-[10px] uppercase tracking-wider text-slate-400">lib</span>
         </div>
         <span className="text-xl font-black leading-none text-white">{currentPlayer?.life_total ?? '—'}</span>
         <CommanderDamageBadge entries={commanderDamage} />
@@ -1701,12 +1761,13 @@ function StatusBar({
             {kind === 'poison' ? `☠${n}` : `${n} ${kind}`}
           </span>
         ))}
+        {/* 32px targets — the old 20px buttons were unmissable to miss on a couch. */}
         <button
           type="button"
           onClick={onOpenLog}
           aria-label="Game log"
           title="Game log — what's happened"
-          className="ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] transition active:scale-95 hover:bg-white/10"
+          className="ml-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 text-[13px] transition active:scale-95 hover:bg-white/10"
         >
           📜
         </button>
@@ -1715,16 +1776,27 @@ function StatusBar({
           onClick={onOpenTv}
           aria-label="Watch on TV"
           title="Watch on TV — show the room code for leylinesync.com/tv"
-          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] transition active:scale-95 hover:bg-white/10"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 text-[13px] transition active:scale-95 hover:bg-white/10"
         >
           📺
         </button>
+        {canFullscreen && (
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            aria-label="Fullscreen"
+            title="Fullscreen — hide the browser bar (installing the app does this permanently)"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 text-[13px] text-slate-300 transition active:scale-95 hover:bg-white/10"
+          >
+            ⛶
+          </button>
+        )}
         <button
           type="button"
           onClick={onOpenHelp}
           aria-label="How to play"
           title="How to use your controller"
-          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] font-black text-slate-400 transition active:scale-95 hover:text-slate-200"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 text-[13px] font-black text-slate-400 transition active:scale-95 hover:text-slate-200"
         >
           ?
         </button>
@@ -2055,7 +2127,7 @@ function MainArea({
                     .map((t) => (t.mana > 0 ? `pay {${t.mana}} per attacker` : `pay ${t.life} life per attacker`)).join(', ')}
                 >⛔</span>
               )}
-              <span className="flex items-center gap-1 border-l border-white/10 pl-1.5 text-[8px] text-slate-500">
+              <span className="flex items-center gap-1 border-l border-white/10 pl-1.5 text-[8px] text-slate-400">
                 <span title="Cards in hand">✋{counts?.handCount ?? '·'}</span>
                 <span title="Permanents on battlefield">⬡{permanents}</span>
                 <span title="Cards in graveyard">⚰{counts?.graveyard.length ?? '·'}</span>
@@ -2280,7 +2352,7 @@ function MainArea({
               onClick={() => { setMyZoneTab(tab); setMyZoneOpen(true) }}
               className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-1 active:scale-95"
             >
-              <span className="text-[9px] font-black text-slate-500">{label}</span>
+              <span className="text-[9px] font-black text-slate-400">{label}</span>
               <span className={`text-[10px] font-black ${countCls}`}>{count}</span>
             </button>
           ))}
@@ -2505,7 +2577,7 @@ function TargetedTriggerPrompt({
           )}
         </div>
       ) : (
-        <p className="text-[10px] text-slate-500">No legal targets remain. Passing priority will let it fizzle.</p>
+        <p className="text-[10px] text-slate-400">No legal targets remain. Passing priority will let it fizzle.</p>
       )}
     </div>
   )
@@ -2583,7 +2655,7 @@ function PendingDecisionPrompt({
       ) : decision.decision_type === 'pay_x_mana_damage' ? (
         <PayXDamageBody decision={decision} isPending={isPending} onSubmit={submit} />
       ) : (
-        <p className="text-[10px] text-slate-500">Unsupported decision: {decision.decision_type}</p>
+        <p className="text-[10px] text-slate-400">Unsupported decision: {decision.decision_type}</p>
       )}
 
       {zoomed && (
@@ -2692,7 +2764,7 @@ function ChooseModeBody({
               ))}
             </div>
           ) : (
-            <p className="text-[10px] text-slate-500">No creatures on the battlefield to target.</p>
+            <p className="text-[10px] text-slate-400">No creatures on the battlefield to target.</p>
           )}
         </div>
       )}
@@ -3213,7 +3285,7 @@ function PriorityPanel({
             <span className="text-[9px] font-black uppercase tracking-widest text-amber-400/80">Act</span>
           ) : (
             <>
-              <span className="text-[8px] font-black uppercase tracking-widest text-slate-600">Waiting</span>
+              <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Waiting</span>
               <span className="max-w-full truncate text-[10px] font-bold leading-tight text-slate-400" title={priorityUsername ? `Waiting for ${priorityUsername}` : undefined}>
                 {priorityUsername ?? '…'}
               </span>
@@ -3236,7 +3308,7 @@ function PriorityPanel({
               ? 'border-sky-300/60 bg-sky-400/20 text-sky-300'
               : anyAutoOn
                 ? 'border-amber-300/60 bg-amber-400/20 text-amber-300'
-                : 'border-[#1E2230] text-slate-600'
+                : 'border-[#1E2230] text-slate-500'
           }`}
         >
           Auto{isYielding ? ' »' : anyAutoOn ? ' ✓' : ''}
@@ -3250,10 +3322,10 @@ function PriorityPanel({
                 short mobile-landscape height was clipping the lower options. dvh +
                 bottom anchor + scroll keeps every option reachable on any viewport. */}
             <div className="fixed bottom-2 right-24 z-50 max-h-[calc(100dvh-1rem)] w-48 overflow-y-auto overscroll-contain rounded-2xl border border-[#1E2230] bg-[#0C0E14] p-2 shadow-xl">
-              <p className="px-1 pb-1 text-[8px] font-black uppercase tracking-widest text-slate-500">Auto-pass</p>
+              <p className="px-1 pb-1 text-[8px] font-black uppercase tracking-widest text-slate-400">Auto-pass</p>
               {AUTOPASS_GROUPS.map((group) => (
                 <div key={group.title} className="mb-1">
-                  <p className="px-1 pt-1 pb-0.5 text-[7px] font-black uppercase tracking-widest text-slate-600">{group.title}</p>
+                  <p className="px-1 pt-1 pb-0.5 text-[7px] font-black uppercase tracking-widest text-slate-500">{group.title}</p>
                   {group.rows.map((row) => {
                     const on = autoPass[row.key]
                     return (
@@ -3301,7 +3373,7 @@ function PriorityPanel({
             hasPriority ? 'bg-amber-300 shadow-[0_0_8px_rgba(252,211,77,0.7)]' : 'bg-slate-800'
           }`}
         />
-        <span className="max-w-full truncate px-0.5 text-[7px] text-slate-600" title={hasPriority ? 'You have priority' : priorityUsername ? `${priorityUsername} has priority` : undefined}>
+        <span className="max-w-full truncate px-0.5 text-[7px] text-slate-500" title={hasPriority ? 'You have priority' : priorityUsername ? `${priorityUsername} has priority` : undefined}>
           {hasPriority ? '→ YOU' : (priorityUsername ?? '...')}
         </span>
       </div>
@@ -3331,7 +3403,7 @@ function CombatDamageStrip({
           Combat
         </span>
         {canOrderBlockers && assignments.some((a) => (a.blockers?.length ?? 0) >= 2) && (
-          <span className="text-[8px] text-slate-500">· tap ⇅ to order blockers</span>
+          <span className="text-[8px] text-slate-400">· tap ⇅ to order blockers</span>
         )}
       </div>
       <div className="flex items-center gap-3 overflow-x-auto px-3 pb-2">
@@ -3520,7 +3592,7 @@ function BlockerOrderSheet({
             <p className="text-[11px] text-[#D4591A]">Assign {attackerPower} combat damage</p>
           </div>
         </div>
-        <p className="mb-3 text-[10px] text-slate-500">
+        <p className="mb-3 text-[10px] text-slate-400">
           Assign lethal to a blocker before any later blocker (or the player). Over-assigning is allowed.
           {' '}Unassigned: <span className={remaining < 0 ? 'text-red-400' : 'text-slate-300'}>{remaining}</span>
         </p>
@@ -3662,9 +3734,9 @@ function StackStrip({ items, onOpen }: { items: StackItem[]; onOpen: () => void 
                 {item.source_card_name ?? prettyStackAction(item.action_type)}
               </span>
               {(item.controller_username || item.target_username) && (
-                <span className="truncate text-[8px] text-slate-500">
+                <span className="truncate text-[8px] text-slate-400">
                   {item.controller_username}
-                  {item.target_username ? <span className="text-slate-600"> → {item.target_username}</span> : null}
+                  {item.target_username ? <span className="text-slate-500"> → {item.target_username}</span> : null}
                 </span>
               )}
             </div>
@@ -3832,12 +3904,12 @@ function MyZonesSheet({
                 type="button"
                 onClick={() => setTab(key)}
                 className={`relative flex items-center gap-1.5 rounded-t-lg px-3 py-2 text-xs font-bold transition-colors ${
-                  isActive ? 'bg-[#131720] text-white' : 'text-slate-500 hover:text-slate-300'
+                  isActive ? 'bg-[#131720] text-white' : 'text-slate-400 hover:text-slate-300'
                 }`}
               >
                 {label}
                 <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black ${
-                  isActive ? 'bg-white/10 text-white' : 'bg-white/5 text-slate-600'
+                  isActive ? 'bg-white/10 text-white' : 'bg-white/5 text-slate-500'
                 }`}>
                   {count}
                 </span>
@@ -3865,7 +3937,7 @@ function MyZonesSheet({
                 transition={{ duration: 0.15 }}
               >
                 {graveyard.length === 0 ? (
-                  <p className="py-8 text-center text-sm text-slate-700">Graveyard is empty</p>
+                  <p className="py-8 text-center text-sm text-slate-600">Graveyard is empty</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {graveyard.map((card) => {
@@ -3908,7 +3980,7 @@ function MyZonesSheet({
                 transition={{ duration: 0.15 }}
               >
                 {exile.length === 0 ? (
-                  <p className="py-8 text-center text-sm text-slate-700">Nothing in exile</p>
+                  <p className="py-8 text-center text-sm text-slate-600">Nothing in exile</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {exile.map((card) => {
@@ -4005,14 +4077,14 @@ function GameLogSheet({
         </div>
         <div className="flex-1 overflow-y-auto p-3">
           {entries.length === 0 ? (
-            <p className="py-10 text-center text-sm text-slate-600">Nothing has happened yet.</p>
+            <p className="py-10 text-center text-sm text-slate-500">Nothing has happened yet.</p>
           ) : (
             <div className="flex flex-col gap-1">
               {entries.map((e) => (
                 <div key={e.id} className="flex items-baseline gap-2 rounded-lg px-2 py-1.5 text-sm odd:bg-white/[0.02]">
                   <span className="shrink-0 font-bold text-cyan-200">{nameOf(e.actor_player_id)}</span>
                   <span className={`flex-1 ${e.action_type === 'life' ? 'text-rose-300' : e.action_type === 'poison' ? 'text-lime-300' : e.action_type === 'counter' ? 'text-amber-200' : 'text-slate-200'}`}>{e.description}</span>
-                  <span className="shrink-0 font-mono text-[10px] text-slate-600">{logTimeAgo(e.created_at)}</span>
+                  <span className="shrink-0 font-mono text-[10px] text-slate-500">{logTimeAgo(e.created_at)}</span>
                 </div>
               ))}
             </div>
@@ -4272,15 +4344,15 @@ function OpponentRowOverlay({
                         <KeywordIconRow keywords={card.keywords} size={10} max={2} />
                       </div>
                     ))}
-                    {creatures.length > 8 && <span className="self-center px-1 text-[10px] font-bold text-slate-500">+{creatures.length - 8}</span>}
+                    {creatures.length > 8 && <span className="self-center px-1 text-[10px] font-bold text-slate-400">+{creatures.length - 8}</span>}
                   </div>
                 ) : (
-                  <p className="text-[10px] text-slate-600">No creatures</p>
+                  <p className="text-[10px] text-slate-500">No creatures</p>
                 )}
 
                 <div className="flex items-center justify-between gap-2">
                   <ManaAvailabilityBar mana={manaByPlayer[p.player_id] ?? null} />
-                  <span className="flex shrink-0 items-center gap-2 text-[10px] text-slate-500">
+                  <span className="flex shrink-0 items-center gap-2 text-[10px] text-slate-400">
                     <span title="Hand">✋{counts?.handCount ?? '·'}</span>
                     <span title="Graveyard">⚰{counts?.graveyard.length ?? '·'}</span>
                   </span>
@@ -4439,7 +4511,7 @@ function OpponentBoardOverlay({
               <p className="truncate text-sm font-black text-white">
                 {opponent.username ?? `Player ${opponent.seat_number}`}
               </p>
-              <p className="text-[10px] text-slate-500">Life {opponent.life_total}</p>
+              <p className="text-[10px] text-slate-400">Life {opponent.life_total}</p>
               {commanders.length > 0 && (
                 <div className="mt-1 flex items-center gap-1.5">
                   <span className="truncate text-[10px] font-semibold text-amber-200/90">{commanders.map((c) => c.name).join(' & ')}</span>
@@ -4457,7 +4529,7 @@ function OpponentBoardOverlay({
               ].map(({ label, value, color }) => (
                 <div key={label} className="flex flex-col items-center">
                   <span className={`text-sm font-black leading-none ${color}`}>{value}</span>
-                  <span className="text-[8px] uppercase tracking-wider text-slate-700">{label}</span>
+                  <span className="text-[8px] uppercase tracking-wider text-slate-600">{label}</span>
                 </div>
               ))}
             </div>
@@ -4473,7 +4545,7 @@ function OpponentBoardOverlay({
 
         {/* Available-mana bar (untapped sources by colour) */}
         <div className="flex shrink-0 items-center gap-2 border-b border-[#1E2230] px-4 py-2">
-          <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Mana</span>
+          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Mana</span>
           <ManaAvailabilityBar mana={mana} />
         </div>
 
@@ -4489,13 +4561,13 @@ function OpponentBoardOverlay({
                 className={`relative flex items-center gap-1.5 rounded-t-lg px-3 py-2 text-xs font-bold transition-colors ${
                   isActive
                     ? 'bg-[#131720] text-white'
-                    : 'text-slate-500 hover:text-slate-300'
+                    : 'text-slate-400 hover:text-slate-300'
                 }`}
               >
                 {label}
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[9px] font-black ${
-                    isActive ? 'bg-white/10 text-white' : 'bg-white/5 text-slate-600'
+                    isActive ? 'bg-white/10 text-white' : 'bg-white/5 text-slate-500'
                   }`}
                 >
                   {count}
@@ -4586,7 +4658,7 @@ function OpponentBoardOverlay({
                   </ZoneSection>
                 )}
                 {cards.length === 0 && (
-                  <p className="py-8 text-center text-sm text-slate-700">Empty battlefield</p>
+                  <p className="py-8 text-center text-sm text-slate-600">Empty battlefield</p>
                 )}
               </motion.div>
             )}
@@ -4600,7 +4672,7 @@ function OpponentBoardOverlay({
                 transition={{ duration: 0.15 }}
               >
                 {(zoneData?.graveyard.length ?? 0) === 0 ? (
-                  <p className="py-8 text-center text-sm text-slate-700">Graveyard is empty</p>
+                  <p className="py-8 text-center text-sm text-slate-600">Graveyard is empty</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {zoneData!.graveyard.map((card) => (
@@ -4625,16 +4697,16 @@ function OpponentBoardOverlay({
                 transition={{ duration: 0.15 }}
               >
                 {(zoneData?.exile.length ?? 0) === 0 ? (
-                  <p className="py-8 text-center text-sm text-slate-700">Nothing in exile</p>
+                  <p className="py-8 text-center text-sm text-slate-600">Nothing in exile</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {zoneData!.exile.map((card) =>
                       card.is_face_down ? (
                         <div key={card.id} className="flex w-[60px] flex-col items-center gap-1" title="Face-down exile — hidden">
                           <div className="aspect-[5/7] w-full rounded-md border border-white/10 bg-slate-900 flex items-center justify-center">
-                            <span className="text-[9px] font-bold text-slate-600">?</span>
+                            <span className="text-[9px] font-bold text-slate-500">?</span>
                           </div>
-                          <span className="text-[8px] text-slate-700">Hidden</span>
+                          <span className="text-[8px] text-slate-600">Hidden</span>
                         </div>
                       ) : (
                         <button key={card.id} type="button" onClick={() => setZoomCard(toZoomCard(card))} className="block w-[60px] opacity-80 active:scale-95">
@@ -4724,7 +4796,7 @@ function ManaAvailabilityBar({ mana }: { mana: ManaAvailability | null }) {
   const present = (['W', 'U', 'B', 'R', 'G', 'C'] as ManaColor[]).filter((c) => (mana.byColor[c] ?? 0) > 0)
   const pairs = Object.entries(mana.pairs).filter(([, n]) => (n ?? 0) > 0)
   if (present.length === 0 && pairs.length === 0 && mana.flexible === 0) {
-    return <span className="text-[10px] font-semibold text-slate-600">No untapped mana</span>
+    return <span className="text-[10px] font-semibold text-slate-500">No untapped mana</span>
   }
   const pip = (key: string, msClass: string, count: number, title: string) => (
     <span key={key} className="inline-flex items-center gap-0.5" title={title}>
@@ -4755,7 +4827,7 @@ function ZoneSection({
 }) {
   return (
     <section>
-      <p className={`mb-2 border-b pb-1 text-[9px] font-black uppercase tracking-widest text-slate-500 ${accent}`}>
+      <p className={`mb-2 border-b pb-1 text-[9px] font-black uppercase tracking-widest text-slate-400 ${accent}`}>
         {label}
       </p>
       <div className="flex flex-wrap gap-2">{children}</div>
@@ -4976,7 +5048,7 @@ function DeclareAttackersLayout({
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-black uppercase tracking-widest text-[#D4591A]">⚔ Declare Attackers</span>
           {turnState && (
-            <span className="text-[10px] text-slate-500">Combat Phase · Turn {turnState.turn_number}</span>
+            <span className="text-[10px] text-slate-400">Combat Phase · Turn {turnState.turn_number}</span>
           )}
         </div>
         {attackingCount > 0 && (
@@ -4989,7 +5061,7 @@ function DeclareAttackersLayout({
       {/* Attack target — an opponent player or one of their planeswalkers */}
       {targets.length > 0 && (
         <div className="shrink-0 border-b border-[#2A2D38] bg-[#0A0B14] px-3 py-2">
-          <p className="mb-1.5 px-2 text-[9px] uppercase tracking-widest text-slate-500">Attacking</p>
+          <p className="mb-1.5 px-2 text-[9px] uppercase tracking-widest text-slate-400">Attacking</p>
           <div className="flex gap-2 overflow-x-auto">
             {targets.map((t) => {
               const active = t.id === selectedTargetId
@@ -5005,7 +5077,7 @@ function DeclareAttackersLayout({
                       : active ? 'border-[#D4591A] bg-[#D4591A]/10' : 'border-[#2A2D38] bg-[#131720]'
                   }`}
                 >
-                  <span className="text-[8px] uppercase tracking-wider text-slate-500">{t.kind === 'planeswalker' ? 'PW' : 'Player'}</span>
+                  <span className="text-[8px] uppercase tracking-wider text-slate-400">{t.kind === 'planeswalker' ? 'PW' : 'Player'}</span>
                   <span className="text-xs font-black text-white">{t.label}</span>
                   <span className="text-[11px] font-bold text-slate-300">{t.sub}</span>
                   {t.kind === 'player' && (
@@ -5035,7 +5107,7 @@ function DeclareAttackersLayout({
       {/* Creature grid */}
       <div className="flex min-h-0 flex-1 items-center gap-3 overflow-x-auto bg-[#0C0F14] px-5 py-3">
         {untappedCreatures.length === 0 ? (
-          <p className="text-sm text-slate-600">No untapped creatures available.</p>
+          <p className="text-sm text-slate-500">No untapped creatures available.</p>
         ) : (
           untappedCreatures.map((card) => {
             const attackable = isAttackable(card)
@@ -5090,7 +5162,7 @@ function DeclareAttackersLayout({
                 )}
                 <KeywordHints card={card} />
                 {attackable && !isAttacking && (
-                  <span className="text-[8px] text-slate-600">Tap / drag ↑</span>
+                  <span className="text-[8px] text-slate-500">Tap / drag ↑</span>
                 )}
               </motion.button>
             )
@@ -5306,7 +5378,7 @@ function DeclareBlockersLayout({
       <div className="flex min-h-0 flex-1 items-center gap-3 overflow-x-auto bg-[#131720] px-4 py-2">
         {totalMana > 0 && (
           <div className="flex shrink-0 flex-col gap-0.5 border-r border-[#2A2D38] pr-3">
-            <p className="text-[8px] uppercase tracking-widest text-slate-600">Mana</p>
+            <p className="text-[8px] uppercase tracking-widest text-slate-500">Mana</p>
             <p className="text-base font-black text-white">{totalMana}</p>
             <div className="flex gap-0.5">
               {manaColors
@@ -5320,7 +5392,7 @@ function DeclareBlockersLayout({
           </div>
         )}
         {blockableCreatures.length === 0 ? (
-          <p className="text-[10px] text-slate-600">No creatures available to block.</p>
+          <p className="text-[10px] text-slate-500">No creatures available to block.</p>
         ) : (
           blockableCreatures.map((card) => {
             const isBlocking = Boolean(blockAssignments[card.id])

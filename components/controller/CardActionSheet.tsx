@@ -579,7 +579,7 @@ export function CardActionSheet({
         {/* Attachment picker (Aura enchant target / Equipment equip target) */}
         {attachPick && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {attachPick === 'aura' ? 'Enchant which creature' : 'Equip which creature'}
             </p>
             {(attachPick === 'aura' ? enchantTargets : equipTargets).map((c) => (
@@ -598,7 +598,7 @@ export function CardActionSheet({
               </button>
             ))}
             {(attachPick === 'aura' ? enchantTargets : equipTargets).length === 0 && (
-              <p className="px-1 text-xs text-slate-500">No legal creatures.</p>
+              <p className="px-1 text-xs text-slate-400">No legal creatures.</p>
             )}
             <button
               type="button"
@@ -613,7 +613,7 @@ export function CardActionSheet({
         {/* Target picker */}
         {picking && spellPlan.kind === 'damage' && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Deal {spellPlan.amount} damage to
             </p>
             {spellPlan.canTargetPlayer && players.map((p) => (
@@ -625,7 +625,7 @@ export function CardActionSheet({
               >
                 <span className="font-bold text-white">
                   {p.username ?? `Player ${p.seat_number}`}
-                  {p.player_id === playerId && <span className="ml-1 text-[10px] text-slate-500">(you)</span>}
+                  {p.player_id === playerId && <span className="ml-1 text-[10px] text-slate-400">(you)</span>}
                 </span>
                 <span className="text-sm font-black text-[#D4591A]">♥{p.life_total} → {Math.max(0, p.life_total - spellPlan.amount)}</span>
               </button>
@@ -686,7 +686,7 @@ export function CardActionSheet({
           }
           return (
             <div className="mb-3 space-y-2">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Divide {spellPlan.amount} damage — {remaining} left
               </p>
               {spellPlan.canTargetPlayer && players.map((p) => row(`player:${p.player_id}`, p.username ?? `Player ${p.seat_number}`, p.player_id === playerId ? '(you)' : `♥${p.life_total}`))}
@@ -712,7 +712,7 @@ export function CardActionSheet({
 
         {picking && spellPlan.kind === 'pump' && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Give +{spellPlan.power}/+{spellPlan.toughness} to
             </p>
             {targetableCreatures.map((c) => (
@@ -738,7 +738,7 @@ export function CardActionSheet({
 
         {picking && spellPlan.kind === 'set_pt' && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Make a creature {spellPlan.power}/{spellPlan.toughness} until end of turn
             </p>
             {targetableCreatures.map((c) => (
@@ -764,7 +764,7 @@ export function CardActionSheet({
 
         {picking && (spellPlan.kind === 'creature_effect' || spellPlan.kind === 'targeted_spell_effect') && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {spellPlan.label} which creature?
             </p>
             {targetableCreatures.map((c) => (
@@ -794,7 +794,7 @@ export function CardActionSheet({
 
         {picking && spellPlan.kind === 'permanent_effect' && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {spellPlan.label} which permanent?
             </p>
             {targetablePermanents.map((c) => (
@@ -820,7 +820,7 @@ export function CardActionSheet({
 
         {picking && spellPlan.kind === 'multi_creature' && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {spellPlan.label} up to {spellPlan.count} — {multiTargets.length}/{spellPlan.count} chosen
             </p>
             {targetableCreatures.map((c) => {
@@ -874,7 +874,7 @@ export function CardActionSheet({
           <div className="mb-3 space-y-2">
             {fightFighterId === null ? (
               <>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                   Your creature that fights
                 </p>
                 {fightFighters.map((c) => (
@@ -898,7 +898,7 @@ export function CardActionSheet({
               </>
             ) : (
               <>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                   Fights which creature?
                 </p>
                 {fightFoughtFor(fightFighterId).map((c) => (
@@ -926,7 +926,7 @@ export function CardActionSheet({
 
         {picking && spellPlan.kind === 'add_counters' && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Put {spellPlan.amount} +1/+1 counter{spellPlan.amount === 1 ? '' : 's'} on
             </p>
             {targetableCreatures.map((c) => (
@@ -952,7 +952,7 @@ export function CardActionSheet({
 
         {picking && spellPlan.kind === 'counterspell' && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Counter which spell?</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Counter which spell?</p>
             {pendingStackItems
               .slice()
               .sort((a, b) => b.position - a.position)
@@ -1006,8 +1006,8 @@ export function CardActionSheet({
                       isUnavailable ? 'border-white/5 bg-[#0F1117] opacity-30' : 'border-white/10 bg-[#0F1117] hover:border-white/20'
                     }`}
                   >
-                    <span className="shrink-0 text-[10px] font-black text-slate-500">{renderAbilityCost(ability.costs)}</span>
-                    <span className="text-slate-600">→</span>
+                    <span className="shrink-0 text-[10px] font-black text-slate-400">{renderAbilityCost(ability.costs)}</span>
+                    <span className="text-slate-500">→</span>
                     <span className="flex items-center gap-1">
                       {addManaEffects.flatMap((effect) =>
                         Array.from({ length: Math.max(1, effect.amount) }, (_, k) => (
@@ -1041,7 +1041,7 @@ export function CardActionSheet({
                     }`}
                   >
                     {hasTapCost && (
-                      <span className="shrink-0 text-[9px] font-black text-slate-600">{'{T}'}</span>
+                      <span className="shrink-0 text-[9px] font-black text-slate-500">{'{T}'}</span>
                     )}
                     <ManaSymbol color={produced} size="md" />
                     <span className="text-sm font-bold text-white">Add {produced}</span>
@@ -1055,7 +1055,7 @@ export function CardActionSheet({
         {/* Non-mana activated abilities */}
         {otherAbilities.length > 0 && !picking && !abilityPick && !costPick && (
           <div className="space-y-1.5">
-            <p className="mb-1 text-[9px] uppercase tracking-widest text-slate-700">Abilities</p>
+            <p className="mb-1 text-[9px] uppercase tracking-widest text-slate-600">Abilities</p>
             {otherAbilities.map(({ ability, index }) => {
               const eff = getAbilityEffect(ability.effects)
               const hasTap = ability.costs.some((c) => c.type === 'tap_self')
@@ -1125,7 +1125,7 @@ export function CardActionSheet({
                 >
                   <span className="shrink-0 text-[11px] font-bold text-white">{renderAbilityCost(ability.costs)}</span>
                   <span className="text-[10px] text-slate-400">{renderAbilityEffect(ability.effects)}</span>
-                  {!supported && <span className="ml-auto shrink-0 text-[9px] text-slate-700">Soon</span>}
+                  {!supported && <span className="ml-auto shrink-0 text-[9px] text-slate-600">Soon</span>}
                   {supported && hasTap && card.is_tapped && (
                     <span className="ml-auto shrink-0 text-[9px] text-amber-500/70">Tapped</span>
                   )}
@@ -1138,7 +1138,7 @@ export function CardActionSheet({
         {/* Planeswalker loyalty abilities (sorcery speed, once per turn) */}
         {(script.loyalty_abilities?.length ?? 0) > 0 && !picking && !abilityPick && !costPick && (
           <div className="space-y-1.5">
-            <p className="mb-1 flex items-center gap-1.5 text-[9px] uppercase tracking-widest text-slate-700">
+            <p className="mb-1 flex items-center gap-1.5 text-[9px] uppercase tracking-widest text-slate-600">
               Loyalty <span className="text-[11px] font-black text-amber-400">◆ {Number(card.counters?.loyalty ?? 0)}</span>
             </p>
             {(script.loyalty_abilities ?? []).map((ability, index) => {
@@ -1159,7 +1159,7 @@ export function CardActionSheet({
                   <span className="shrink-0 rounded-md bg-amber-400/15 px-1.5 py-0.5 text-[11px] font-black text-amber-300">{sign}</span>
                   <span className="text-[10px] text-slate-400">{ability.label ?? renderAbilityEffect(ability.effects)}</span>
                   {!affordable && <span className="ml-auto shrink-0 text-[9px] text-amber-500/70">Not enough</span>}
-                  {affordable && !canCastSorceries && <span className="ml-auto shrink-0 text-[9px] text-slate-700">Sorcery speed</span>}
+                  {affordable && !canCastSorceries && <span className="ml-auto shrink-0 text-[9px] text-slate-600">Sorcery speed</span>}
                 </button>
               )
             })}
@@ -1169,7 +1169,7 @@ export function CardActionSheet({
         {/* Activated ability target picker */}
         {costPick && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {costPick.label} ({costPick.selected.length}/{costPick.count})
             </p>
             <div className="flex flex-wrap gap-2">
@@ -1215,7 +1215,7 @@ export function CardActionSheet({
         )}
         {abilityPick && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {abilityPick.canTargetGraveyard
                 ? 'Exile which creature card from a graveyard?'
                 : abilityPick.type === 'deal_damage'
@@ -1230,7 +1230,7 @@ export function CardActionSheet({
                 className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
               >
                 <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-[10px] uppercase tracking-wide text-slate-500">graveyard</span>
+                <span className="ml-2 shrink-0 text-[10px] uppercase tracking-wide text-slate-400">graveyard</span>
               </button>
             ))}
             {abilityPick.canTargetPlayer && players.map((p) => (
@@ -1242,7 +1242,7 @@ export function CardActionSheet({
               >
                 <span className="font-bold text-white">
                   {p.username ?? `Player ${p.seat_number}`}
-                  {p.player_id === playerId && <span className="ml-1 text-[10px] text-slate-500">(you)</span>}
+                  {p.player_id === playerId && <span className="ml-1 text-[10px] text-slate-400">(you)</span>}
                 </span>
                 <span className="text-sm font-black text-[#D4591A]">♥{p.life_total} → {Math.max(0, p.life_total - abilityPick.amount)}</span>
               </button>
@@ -1269,7 +1269,7 @@ export function CardActionSheet({
         )}
 
         {!hasActions && (
-          <p className="py-2 text-center text-sm text-slate-700">No actions available</p>
+          <p className="py-2 text-center text-sm text-slate-600">No actions available</p>
         )}
 
         {/* Commander: standing return preference for HAND/LIBRARY bounces only —

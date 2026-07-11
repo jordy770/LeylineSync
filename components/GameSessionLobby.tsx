@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { QRCodeSVG } from 'qrcode.react'
 import { useEffect, useMemo, useState } from 'react'
 import {
   Check,
@@ -50,6 +51,9 @@ export default function GameSessionLobby() {
   const [preconDecks, setPreconDecks] = useState<DeckSummary[]>([])
   const [playerSessions, setPlayerSessions] = useState<GameSession[]>([])
   const [activeSession, setActiveSession] = useState<GameSession | null>(null)
+  // Origin for the join-QR — read after mount so SSR and client markup match.
+  const [joinOrigin, setJoinOrigin] = useState('')
+  useEffect(() => setJoinOrigin(window.location.origin), [])
   const [players, setPlayers] = useState<GameSessionPlayer[]>([])
   // Players that have spawned a deck = "ready" (derived, no DB column). Set on
   // every refreshSession + kept live by the realtime subscription below.
@@ -888,6 +892,21 @@ export default function GameSessionLobby() {
                   spectator link for any smart-TV browser. */}
               <CastShareControls sessionId={activeSession.id} />
             </div>
+            {/* QR join — the fastest way to seat the couch: scan, log in once,
+                land in this game. Only while the table is still open. */}
+            {activeSession.status === 'open' && joinOrigin ? (
+              <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                <span className="shrink-0 rounded-lg bg-white p-1.5">
+                  <QRCodeSVG value={`${joinOrigin}/join/${activeSession.id}`} size={88} />
+                </span>
+                <div className="min-w-0 text-sm text-slate-300">
+                  <p className="font-bold text-white">Scan to join</p>
+                  <p className="mt-0.5 text-xs text-slate-400">
+                    Friends point their phone camera here and land straight at this table — no session ID typing.
+                  </p>
+                </div>
+              </div>
+            ) : null}
             {/* Phones can't cast reliably (Android Chrome won't present URLs to a
                 Chromecast; iOS not at all) — the TV route is the room code. */}
             {activeSession.tv_code ? (

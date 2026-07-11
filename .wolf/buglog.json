@@ -20219,6 +20219,262 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-07-11T19:55:15.495Z"
+    },
+    {
+      "id": "bug-1237",
+      "timestamp": "2026-07-11T20:49:36.766Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "No early return/throw for edge case: !showAllSteps",
+      "fix": "Added guard clause: if (!showAllSteps)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-11T20:49:49.324Z"
+    },
+    {
+      "id": "bug-1238",
+      "timestamp": "2026-07-11T20:50:06.053Z",
+      "error_message": "Wrong condition in logic",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Condition was: if (!showAllSteps && dist > 1)",
+      "fix": "Changed to: if (!showAllSteps && currentGroupIdx >= 0 && dist > 1)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T20:50:06.053Z"
+    },
+    {
+      "id": "bug-1239",
+      "timestamp": "2026-07-11T20:50:33.212Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Had '@/lib/game/controller-selectors'",
+      "fix": "Changed to '@/lib/game/haptics'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-11T20:51:46.877Z"
+    },
+    {
+      "id": "bug-1240",
+      "timestamp": "2026-07-11T20:50:38.773Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T20:50:38.773Z"
+    },
+    {
+      "id": "bug-1241",
+      "timestamp": "2026-07-11T20:51:49.833Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/controller/FirstTimeHints.tsx",
+      "root_cause": "Had \"absolute inset-x-3 bottom-4 z-[54] flex items-sta",
+      "fix": "Changed to \"absolute inset-x-3 bottom-40 z-[54] flex items-st",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T20:51:49.833Z"
+    },
+    {
+      "id": "bug-1242",
+      "timestamp": "2026-07-11T21:07:19.795Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Had 'react'",
+      "fix": "Changed to 'qrcode.react'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T21:07:19.795Z"
+    },
+    {
+      "id": "bug-1243",
+      "timestamp": "2026-07-11T21:07:25.681Z",
+      "error_message": "Type error",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T21:07:25.681Z"
+    },
+    {
+      "id": "bug-1244",
+      "timestamp": "2026-07-11T21:08:37.124Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Turn-change banner — one short callout, opacity-only (TV; {turnBanner && session?.status !== 'finished' && ( | Also: // Stack hero: the spell everyone is deciding about, big — t; // too small to carry the table's main drama moment. Top = r",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-07-11T21:13:19.407Z"
+    },
+    {
+      "id": "bug-1245",
+      "timestamp": "2026-07-11T21:09:07.866Z",
+      "error_message": "Missing guard clause",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "No early return/throw for edge case: !entry",
+      "fix": "Added guard clause: if (!entry)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T21:09:07.866Z"
+    },
+    {
+      "id": "bug-1246",
+      "timestamp": "2026-07-11T21:09:56.387Z",
+      "error_message": "Type error",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T21:09:56.387Z"
+    },
+    {
+      "id": "bug-1247",
+      "timestamp": "2026-07-11T21:10:42.459Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/board/GameFinishedOverlay.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Table stats — the shareable recap of the evening. */}; {(statLine || players.length > 0) && (",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-11T21:10:48.002Z"
+    },
+    {
+      "id": "bug-1248",
+      "timestamp": "2026-07-11T21:11:19.800Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Had `relative rounded px-2.5 py-1 text-[9px] font-blac",
+      "fix": "Changed to `relative rounded px-2.5 py-1 text-[10px] font-bla",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T21:11:19.800Z"
+    },
+    {
+      "id": "bug-1249",
+      "timestamp": "2026-07-11T21:11:36.991Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 27→39 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T21:11:36.991Z"
+    },
+    {
+      "id": "bug-1250",
+      "timestamp": "2026-07-11T21:11:50.470Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T21:11:50.470Z"
+    },
+    {
+      "id": "bug-1251",
+      "timestamp": "2026-07-11T22:02:04.839Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 28→42 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T22:02:04.839Z"
+    },
+    {
+      "id": "bug-1252",
+      "timestamp": "2026-07-11T22:02:23.828Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T22:02:23.828Z"
     }
   ]
 }

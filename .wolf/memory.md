@@ -7560,3 +7560,55 @@
 | 21:55 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~268 |
 | 21:55 | Edited components/ControllerListV5.tsx | 8→12 lines | ~163 |
 | 22:00 | Kicker reachable from the app: castCardFromHand passes p_kicked, castSpell opts.kicked + autoPay extraCost, Cast kicked button in CardActionSheet, quickPlay opens sheet for kicker cards | lib/game/actions.ts, components/ControllerListV5.tsx, components/controller/CardActionSheet.tsx | tsc+eslint clean, 2268/2268 pass | ~9k |
+| 22:18 | Released v0.12.2 (kicker UI): CI green, deploy green (tag checkout); bundle-grep inconclusive because /controller is auth-gated | release v0.12.2 | production updated | ~2k |
+| 22:49 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~166 |
+| 22:49 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~205 |
+| 22:49 | Edited components/ControllerListV5.tsx | 7→7 lines | ~60 |
+| 22:50 | Edited components/ControllerListV5.tsx | inline fix | ~22 |
+| 22:50 | Created lib/game/haptics.ts | — | ~106 |
+| 22:50 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~33 |
+| 22:50 | Edited components/ControllerListV5.tsx | CSS: physically | ~296 |
+| 22:50 | Edited components/ControllerListV5.tsx | 4→5 lines | ~57 |
+| 22:50 | Edited components/ControllerListV5.tsx | 4→5 lines | ~43 |
+| 22:50 | Edited components/ControllerListV5.tsx | 3→8 lines | ~122 |
+| 22:51 | Edited app/globals.css | expanded (+13 lines) | ~144 |
+| 22:51 | Edited components/ControllerListV5.tsx | CSS: time | ~180 |
+| 22:51 | Edited components/ControllerListV5.tsx | "pointer-events-none absol" → "pointer-events-none absol" | ~58 |
+| 22:51 | Edited components/controller/FirstTimeHints.tsx | "absolute inset-x-3 bottom" → "absolute inset-x-3 bottom" | ~56 |
+| 22:51 | Edited components/ControllerListV5.tsx | 7→8 lines | ~79 |
+| 22:56 | Controller UX batch: step pills collapsed to prev-current-next (tap expands, 4s auto-collapse), unified toast slot at bottom-40 above hand fan (error>resolution>hint), buzz() haptics (cast/commander/decision/priority), one-shot gold priority-flash overlay | components/ControllerListV5.tsx, components/controller/FirstTimeHints.tsx, lib/game/haptics.ts, app/globals.css | tsc+eslint clean, full suite green | ~8k |
+| 23:06 | Created app/join/[id]/page.tsx | — | ~238 |
+| 23:06 | Created components/JoinSessionRunner.tsx | — | ~510 |
+| 23:07 | Edited components/GameSessionLobby.tsx | added 1 import(s) | ~35 |
+| 23:07 | Edited components/GameSessionLobby.tsx | CSS: couch | ~320 |
+| 23:07 | Edited components/GameSessionLobby.tsx | 1→4 lines | ~77 |
+| 23:08 | Edited components/GameBoard.tsx | added 4 condition(s) | ~680 |
+| 23:08 | Edited components/GameBoard.tsx | 2→2 lines | ~41 |
+| 23:08 | Edited components/GameBoard.tsx | added optional chaining | ~582 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: delta, key | ~189 |
+| 23:09 | Edited components/GameBoard.tsx | 14→15 lines | ~162 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: delta, key | ~93 |
+| 23:09 | Edited components/GameBoard.tsx | 3→6 lines | ~97 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: delta, key | ~120 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: delta, key | ~82 |
+| 23:09 | Edited components/GameBoard.tsx | CSS: max-height | ~334 |
+| 23:09 | Edited components/GameBoard.tsx | inline fix | ~61 |
+| 23:10 | Edited components/GameBoard.tsx | 9→10 lines | ~152 |
+| 23:10 | Edited components/GameBoard.tsx | 6→7 lines | ~105 |
+| 23:10 | Edited app/globals.css | expanded (+24 lines) | ~222 |
+| 23:10 | Edited components/board/GameFinishedOverlay.tsx | added optional chaining | ~381 |
+| 23:10 | Edited components/board/GameFinishedOverlay.tsx | added optional chaining | ~373 |
+| 23:10 | Edited components/GameBoard.tsx | CSS: turnCount, startedAt, finishedAt | ~114 |
+| 23:11 | Edited components/ControllerListV5.tsx | 6→6 lines | ~90 |
+| 23:11 | Edited components/ControllerListV5.tsx | 3→3 lines | ~54 |
+| 23:11 | Edited components/ControllerListV5.tsx | 4→4 lines | ~73 |
+| 23:11 | Edited components/ControllerListV5.tsx | expanded (+12 lines) | ~486 |
+| 23:11 | Edited components/ControllerListV5.tsx | added optional chaining | ~267 |
+| 23:13 | Edited components/GameBoard.tsx | — | ~0 |
+| 23:13 | Edited components/GameBoard.tsx | added optional chaining | ~117 |
+| 23:23 | UX batch 2: /join/[id] QR route + lobby QR (qrcode.react), board life-deltas + turn banner + stack hero + life on FocusSeatPanel (was missing!), finished-overlay stats (turns/duration/final standings), fullscreen button, 32px header targets, micro-labels >=10px, contrast sweep slate 500/600/700 one step lighter | app/join, components/JoinSessionRunner.tsx, GameSessionLobby, GameBoard, GameFinishedOverlay, ControllerListV5, CardActionSheet, FirstTimeHints, globals.css | tsc clean, 2268/2268 pass, /join 307-redirects anon | ~15k |
+| 00:01 | Edited components/GameBoard.tsx | modified if() | ~290 |
+| 00:02 | Edited components/GameBoard.tsx | expanded (+14 lines) | ~499 |
+| 00:02 | Edited components/GameBoard.tsx | added optional chaining | ~186 |
+| 00:02 | Edited components/GameBoard.tsx | 2→2 lines | ~26 |
+| 00:03 | Spotlight minis + grid quadrants show threats first: minis preview creatures>planeswalkers>other nonlands (lands fallback), +N overflow chip, stats row now Creatures + Lands (with open count, was Battlefield/Seat); quadrant 10-card window sorts lands last | components/GameBoard.tsx | tsc+eslint clean, board 200 | ~4k |

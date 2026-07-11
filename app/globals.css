@@ -306,6 +306,43 @@
   transform: none !important;
 }
 
+/* Controller: one-shot gold edge flash the moment priority lands on you.
+   Opacity-only, so cheap even on weak phones. */
+.priority-flash {
+  box-shadow: inset 0 0 26px 7px rgba(251, 191, 36, 0.55);
+  opacity: 0;
+  animation: priority-flash 0.45s ease-out;
+}
+@keyframes priority-flash {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Board: floating ±N life delta and the turn-change banner. Opacity/transform
+   only — cheap on TVs, unaffected by the tv-flat transform kill (that selector
+   only matches arbitrary [transform:] utility classes). */
+.life-delta {
+  opacity: 0;
+  animation: life-delta 1.25s ease-out;
+}
+@keyframes life-delta {
+  0% { opacity: 0; transform: translateY(6px); }
+  15% { opacity: 1; }
+  70% { opacity: 1; transform: translateY(-10px); }
+  100% { opacity: 0; transform: translateY(-16px); }
+}
+.turn-banner {
+  opacity: 0;
+  animation: turn-banner 1.9s ease-in-out;
+}
+@keyframes turn-banner {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* The card pocket — the theme's signature element. */
 .bnd-pocket { aspect-ratio: 63/88; border-radius: 9px; position: relative; overflow: hidden;
   background: #1e2026;

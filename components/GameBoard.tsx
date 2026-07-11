@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   buildBoardConnections,
   buildBoardSeats,
@@ -63,8 +63,55 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
     seats,
     focusedPlayerId ?? (viewMode === 'spotlight' ? turnState?.active_player_id ?? null : null),
   )
+
+  // Life-change feedback: a floating ±N next to the life total for ~1.2s.
+  // From the couch a silently swapping number is invisible; the delta isn't.
+  const prevLifeRef = useRef<Map<string, number>>(new Map())
+  const [lifeDeltas, setLifeDeltas] = useState<Record<string, { delta: number; key: number }>>({})
+  useEffect(() => {
+    const prev = prevLifeRef.current
+    const changes: Record<string, { delta: number; key: number }> = {}
+    for (const p of players) {
+      const before = prev.get(p.player_id)
+      if (before !== undefined && before !== p.life_total) {
+        changes[p.player_id] = { delta: p.life_total - before, key: Date.now() + Math.random() }
+      }
+      prev.set(p.player_id, p.life_total)
+    }
+    if (Object.keys(changes).length === 0) return
+    setLifeDeltas((cur) => ({ ...cur, ...changes }))
+    const timer = setTimeout(() => {
+      setLifeDeltas((cur) => {
+        const next = { ...cur }
+        for (const id of Object.keys(changes)) {
+          if (next[id]?.key === changes[id].key) delete next[id]
+        }
+        return next
+      })
+    }, 1250)
+    return () => clearTimeout(timer)
+  }, [players])
+
+  // Turn-change banner: one short "whose turn" callout when the active player
+  // changes, so nobody at the table has to ask.
+  const prevActiveRef = useRef<string | null>(null)
+  const [turnBanner, setTurnBanner] = useState<{ name: string; key: number } | null>(null)
+  useEffect(() => {
+    const active = turnState?.active_player_id ?? null
+    const changed = Boolean(active && prevActiveRef.current && active !== prevActiveRef.current)
+    prevActiveRef.current = active
+    if (!changed) return
+    setTurnBanner({ name: turnState?.active_username ?? 'Next player', key: Date.now() })
+    const timer = setTimeout(() => setTurnBanner(null), 1900)
+    return () => clearTimeout(timer)
+  }, [turnState?.active_player_id, turnState?.active_username])
+
   const minimapSeats = seats.filter((seat) => seat.player && seat.player.player_id !== focusSeat.player?.player_id)
   const pendingStackItems = stackItems.filter((item) => item.status === 'pending')
+  // Stack hero: the spell everyone is deciding about, big — the rail alone is
+  // too small to carry the table's main drama moment. Top = resolves next.
+  const topStackItem = pendingStackItems.length > 0 ? pendingStackItems[pendingStackItems.length - 1] : null
+  const waitingOnName = turnState?.priority_username ?? null
   const registerTargetRef = useCallback((playerId: string, element: HTMLElement | null) => {
     if (!playerId) {
       return
@@ -138,7 +185,7 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
             exit={{ opacity: 0, x: 20 }}
             className="relative z-20 grid min-h-[72vh] gap-5 [transform-style:preserve-3d] [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_7.5rem_minmax(9rem,11rem)] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
           >
-            <FocusSeatPanel seat={focusSeat} turnState={turnState} attackTaxes={attackTaxes} commanderDamage={commanderDamage} />
+            <FocusSeatPanel seat={focusSeat} turnState={turnState} attackTaxes={attackTaxes} commanderDamage={commanderDamage} lifeDelta={focusSeat.player ? lifeDeltas[focusSeat.player.player_id] : undefined} />
             <StackRail stackItems={pendingStackItems} />
             <motion.aside layout className="grid content-start gap-3 [@media(max-height:640px)]:gap-2">
               <AnimatePresence initial={false}>
@@ -149,6 +196,7 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
                     turnState={turnState}
                     attackTaxes={attackTaxes}
                     commanderDamage={commanderDamage}
+                    lifeDelta={seat.player ? lifeDeltas[seat.player.player_id] : undefined}
                     registerTargetRef={registerTargetRef}
                     onClick={() => setFocusedPlayerId(seat.player?.player_id ?? null)}
                   />
@@ -173,6 +221,7 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
                     turnState={turnState}
                     attackTaxes={attackTaxes}
                     commanderDamage={commanderDamage}
+                    lifeDelta={seat.player ? lifeDeltas[seat.player.player_id] : undefined}
                     onFocus={() => {
                       setFocusedPlayerId(seat.player?.player_id ?? null)
                       setViewMode('spotlight')
@@ -193,9 +242,50 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
         boardElement={boardRef.current}
         targetElements={targetElements}
       />
+
+      {/* Turn-change banner — one short callout, opacity-only (TV-safe). */}
+      {turnBanner && session?.status !== 'finished' && (
+        <div key={turnBanner.key} className="turn-banner pointer-events-none fixed inset-x-0 top-[18%] z-[70] flex justify-center">
+          <span className="rounded-full border border-amber-300/50 bg-slate-950/90 px-8 py-3 text-2xl font-black text-amber-200 shadow-2xl">
+            ⮕ {turnBanner.name}&apos;s turn
+          </span>
+        </div>
+      )}
+
+      {/* Stack hero — the pending spell, big, plus who the table waits on. */}
+      {topStackItem && session?.status !== 'finished' && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-6 z-[68] flex justify-center">
+          <div className="flex items-center gap-4 rounded-2xl border border-cyan-300/40 bg-slate-950/95 p-4 shadow-2xl">
+            {topStackItem.source_card_image_url ? (
+              // eslint-disable-next-line @next/next/no-img-element -- Scryfall art, same as MotionCard
+              <img
+                src={topStackItem.source_card_image_url}
+                alt={topStackItem.source_card_name ?? 'Spell on the stack'}
+                className="h-36 w-auto rounded-lg"
+              />
+            ) : null}
+            <div className="max-w-xs">
+              <p className="text-[10px] font-black uppercase tracking-widest text-cyan-300">On the stack</p>
+              <p className="truncate text-xl font-black text-white">{topStackItem.source_card_name ?? topStackItem.action_type}</p>
+              <p className="truncate text-sm text-slate-400">by {topStackItem.controller_username ?? 'Unknown'}</p>
+              {waitingOnName ? (
+                <p className="mt-1 text-sm font-bold text-amber-300">Waiting on {waitingOnName}…</p>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
       <AnimatePresence>
         {session?.status === 'finished' ? (
-          <GameFinishedOverlay winnerPlayerId={session.winner_player_id ?? null} players={players} />
+          <GameFinishedOverlay
+            winnerPlayerId={session.winner_player_id ?? null}
+            players={players}
+            stats={{
+              turnCount: turnState?.turn_number ?? null,
+              startedAt: session.locked_at ?? null,
+              finishedAt: session.finished_at ?? null,
+            }}
+          />
         ) : null}
       </AnimatePresence>
     </div>
@@ -208,11 +298,13 @@ function FocusSeatPanel({
   turnState,
   attackTaxes,
   commanderDamage,
+  lifeDelta,
 }: {
   seat: BoardSeat
   turnState: GameTurnState | null
   attackTaxes: AttackTax[]
   commanderDamage: Record<string, CommanderDamageEntry[]>
+  lifeDelta?: { delta: number; key: number }
 }) {
   const { countByHost, nameById } = seatAttachments(seat.cards)
   return (
@@ -243,9 +335,30 @@ function FocusSeatPanel({
             />
           )}
         </div>
-        <div className="rounded-md border border-white/15 bg-slate-950/70 px-3 py-2 text-right">
-          <p className="text-[10px] uppercase text-cyan-200/80">Phase</p>
-          <p className="text-sm font-bold text-white">{formatStepLabel(turnState?.step)}</p>
+        <div className="flex items-center gap-3">
+          {/* The big panel used to omit life entirely — on the TV that hid the
+              spotlighted player's most important number. */}
+          {seat.player ? (
+            <div className="relative text-right">
+              <LifeDeltaFloat entry={lifeDelta} />
+              <p
+                className={`text-4xl font-bold [@media(max-height:640px)]:text-2xl ${
+                  seat.player.life_total > 20
+                    ? 'text-emerald-300'
+                    : seat.player.life_total > 10
+                      ? 'text-amber-300'
+                      : 'text-red-300'
+                }`}
+              >
+                {seat.player.life_total}
+              </p>
+              <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">Life</p>
+            </div>
+          ) : null}
+          <div className="rounded-md border border-white/15 bg-slate-950/70 px-3 py-2 text-right">
+            <p className="text-[10px] uppercase text-cyan-200/80">Phase</p>
+            <p className="text-sm font-bold text-white">{formatStepLabel(turnState?.step)}</p>
+          </div>
         </div>
       </div>
       <motion.div
@@ -291,6 +404,7 @@ function MiniPlayerWidget({
   turnState,
   attackTaxes,
   commanderDamage,
+  lifeDelta,
   registerTargetRef,
   onClick,
 }: {
@@ -298,12 +412,26 @@ function MiniPlayerWidget({
   turnState: GameTurnState | null
   attackTaxes: AttackTax[]
   commanderDamage: Record<string, CommanderDamageEntry[]>
+  lifeDelta?: { delta: number; key: number }
   registerTargetRef: (playerId: string, element: HTMLElement | null) => void
   onClick?: () => void
 }) {
   if (!seat.player) {
     return null
   }
+
+  // The preview used to show the first 4 cards in play order — i.e. lands.
+  // From the couch the interesting part is the THREATS: creatures first, then
+  // other nonland permanents; lands collapse into a count + open-mana chip.
+  const typeOf = (c: BoardCard) => c.type_line?.toLowerCase() ?? ''
+  const lands = seat.cards.filter((c) => typeOf(c).includes('land'))
+  const nonlands = seat.cards.filter((c) => !typeOf(c).includes('land'))
+  const threatRank = (c: BoardCard) =>
+    typeOf(c).includes('creature') ? 0 : typeOf(c).includes('planeswalker') ? 1 : 2
+  const previewPool = nonlands.length > 0 ? [...nonlands].sort((a, b) => threatRank(a) - threatRank(b)) : lands
+  const previewCards = previewPool.slice(0, 4)
+  const previewOverflow = previewPool.length - previewCards.length
+  const untappedLands = lands.filter((c) => !c.is_tapped).length
 
   return (
     <motion.section
@@ -339,22 +467,34 @@ function MiniPlayerWidget({
             commanderDamage={commanderDamage[seat.player.player_id]}
           />
         </div>
-        <p className={seat.isPriority ? 'text-3xl font-bold text-amber-300 [@media(max-height:640px)]:text-xl' : 'text-3xl font-bold text-cyan-200 [@media(max-height:640px)]:text-xl'}>
-          {seat.player.life_total}
-        </p>
+        <span className="relative">
+          <LifeDeltaFloat entry={lifeDelta} />
+          <p className={seat.isPriority ? 'text-3xl font-bold text-amber-300 [@media(max-height:640px)]:text-xl' : 'text-3xl font-bold text-cyan-200 [@media(max-height:640px)]:text-xl'}>
+            {seat.player.life_total}
+          </p>
+        </span>
       </div>
+      {/* Threats (creatures count) + mana posture (lands, open) — the two
+          numbers a table actually reads off an opponent. Seat was redundant
+          with the P# already in the header. */}
       <div className="mb-3 grid grid-cols-2 gap-2 text-xs text-slate-400 [@media(max-height:640px)]:hidden">
         <div>
-          <p className="text-slate-500">Battlefield</p>
-          <p className="font-semibold text-white">{seat.cards.length}</p>
+          <p className="text-slate-500">Creatures</p>
+          <p className="font-semibold text-white">
+            {nonlands.filter((c) => typeOf(c).includes('creature')).length}
+            <span className="text-slate-500"> / {seat.cards.length} total</span>
+          </p>
         </div>
         <div>
-          <p className="text-slate-500">Seat</p>
-          <p className="font-semibold text-white">{seat.player.seat_number}</p>
+          <p className="text-slate-500">Lands</p>
+          <p className="font-semibold text-white">
+            {lands.length}
+            {untappedLands > 0 ? <span className="text-emerald-300"> · {untappedLands} open</span> : null}
+          </p>
         </div>
       </div>
-      <motion.div layout className="flex gap-1 overflow-hidden [@media(max-height:640px)]:hidden">
-        {seat.cards.slice(0, 4).map((card) => (
+      <motion.div layout className="flex items-center gap-1 overflow-hidden [@media(max-height:640px)]:hidden">
+        {previewCards.map((card) => (
           <MotionCard
             key={card.id}
             card={{
@@ -370,6 +510,11 @@ function MiniPlayerWidget({
             visualClassName="border-cyan-200/20"
           />
         ))}
+        {previewOverflow > 0 && (
+          <span className="ml-6 shrink-0 rounded-full border border-white/15 bg-white/5 px-1.5 py-0.5 text-[10px] font-black text-slate-300">
+            +{previewOverflow}
+          </span>
+        )}
       </motion.div>
     </motion.section>
   )
@@ -380,18 +525,28 @@ function PlayerQuadrantPanel({
   turnState,
   attackTaxes,
   commanderDamage,
+  lifeDelta,
   onFocus,
 }: {
   seat: BoardSeat
   turnState: GameTurnState | null
   attackTaxes: AttackTax[]
   commanderDamage: Record<string, CommanderDamageEntry[]>
+  lifeDelta?: { delta: number; key: number }
   onFocus: () => void
 }) {
   const { countByHost, nameById } = seatAttachments(seat.cards)
   if (!seat.player) {
     return null
   }
+
+  // Threats before lands in the 10-card window — play order buried creatures
+  // under the mana base (same fix as the spotlight minis).
+  const quadrantRank = (c: BoardCard) => {
+    const t = c.type_line?.toLowerCase() ?? ''
+    return t.includes('creature') ? 0 : t.includes('land') ? 3 : t.includes('planeswalker') ? 1 : 2
+  }
+  const displayCards = [...seat.cards].sort((a, b) => quadrantRank(a) - quadrantRank(b)).slice(0, 10)
 
   return (
     <motion.section
@@ -437,7 +592,8 @@ function PlayerQuadrantPanel({
             />
           </div>
         </div>
-        <div className="text-right">
+        <div className="relative text-right">
+          <LifeDeltaFloat entry={lifeDelta} />
           <p
             className={`text-3xl font-bold [@media(max-height:640px)]:text-xl ${
               seat.player.life_total > 20
@@ -460,7 +616,7 @@ function PlayerQuadrantPanel({
         {seat.cards.length > 0 ? (
           <motion.div layout className="grid grid-cols-3 gap-2 [@media(max-height:640px)]:grid-cols-4 [@media(max-height:640px)]:gap-1 sm:grid-cols-4 2xl:grid-cols-5">
             <AnimatePresence initial={false}>
-              {seat.cards.slice(0, 10).map((card) => (
+              {displayCards.map((card) => (
                 <motion.div key={card.id} layout className="relative">
                   <MotionCard
                     card={{
@@ -498,6 +654,22 @@ function PlayerQuadrantPanel({
 
 function getPlayerLabel(player: GameSessionPlayer) {
   return player.username || `Player ${player.player_id.slice(0, 8)}`
+}
+
+// Floating ±N next to a life total — keyed so every change replays the CSS
+// animation (opacity/transform only; safe under tv-flat).
+function LifeDeltaFloat({ entry }: { entry?: { delta: number; key: number } }) {
+  if (!entry) return null
+  return (
+    <span
+      key={entry.key}
+      className={`life-delta pointer-events-none absolute -right-1 -top-3 text-xl font-black ${
+        entry.delta < 0 ? 'text-red-400' : 'text-emerald-300'
+      }`}
+    >
+      {entry.delta > 0 ? `+${entry.delta}` : entry.delta}
+    </span>
+  )
 }
 
 function formatStepLabel(step: GameTurnState['step'] | undefined) {

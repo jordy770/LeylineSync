@@ -12,10 +12,13 @@ export default function GameFinishedOverlay({
   winnerPlayerId,
   players,
   currentPlayerId,
+  stats,
 }: {
   winnerPlayerId: string | null
   players: GameSessionPlayer[]
   currentPlayerId?: string | null
+  /** Optional table stats — turns and duration make the curtain worth a photo. */
+  stats?: { turnCount?: number | null; startedAt?: string | null; finishedAt?: string | null }
 }) {
   const winner = winnerPlayerId
     ? players.find((p) => p.player_id === winnerPlayerId) ?? null
@@ -27,6 +30,18 @@ export default function GameFinishedOverlay({
   // Personalised perspective for the controller view.
   const didWin = Boolean(currentPlayerId) && winnerPlayerId === currentPlayerId
   const didLose = Boolean(currentPlayerId) && !isDraw && !didWin
+
+  const durationLabel = (() => {
+    if (!stats?.startedAt || !stats?.finishedAt) return null
+    const ms = new Date(stats.finishedAt).getTime() - new Date(stats.startedAt).getTime()
+    if (!Number.isFinite(ms) || ms <= 0) return null
+    const minutes = Math.round(ms / 60000)
+    return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m`
+  })()
+  const statLine = [
+    stats?.turnCount ? `${stats.turnCount} turns` : null,
+    durationLabel,
+  ].filter(Boolean).join(' · ')
 
   return (
     <motion.div
@@ -90,6 +105,27 @@ export default function GameFinishedOverlay({
               {didWin ? 'You are the last leyliner standing.' : 'is the last leyliner standing.'}
             </p>
           </>
+        )}
+
+        {/* Table stats — the shareable recap of the evening. */}
+        {(statLine || players.length > 0) && (
+          <div className="mt-6 border-t border-white/10 pt-4">
+            {statLine && (
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-500">{statLine}</p>
+            )}
+            <div className="mt-3 flex flex-wrap justify-center gap-2">
+              {players.map((p) => (
+                <span key={p.player_id} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs">
+                  <span className="font-bold text-white">{p.username || `P${p.seat_number}`}</span>{' '}
+                  {p.life_total <= 0 || (p.counters?.poison ?? 0) >= 10 ? (
+                    <span className="text-red-400">💀</span>
+                  ) : (
+                    <span className="text-emerald-300">{p.life_total} ❤</span>
+                  )}
+                </span>
+              ))}
+            </div>
+          </div>
         )}
 
         <Link

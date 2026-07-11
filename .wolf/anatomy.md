@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T19:55:36.944Z
-> Files: 3 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T22:02:24.632Z
+> Files: 1 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -201,6 +201,9 @@
 ## app/decks/
 
 
+## app/join/[id]/
+
+
 ## app/judge/[id]/
 
 
@@ -218,7 +221,7 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~71637 tok)
+- `GameBoard.tsx` — GameBoard (~10221 tok)
 
 ## components/board/
 
@@ -228,7 +231,6 @@
 
 ## components/controller/
 
-- `CardActionSheet.tsx` — CardActionSheet (~20089 tok)
 
 ## components/judge/
 
@@ -265,7 +267,6 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13228 tok)
 
 ## lib/intelligence/
 

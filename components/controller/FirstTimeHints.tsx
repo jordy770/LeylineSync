@@ -70,14 +70,14 @@ export function FirstTimeHints({
           type="button"
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }}
           onClick={() => setActive(null)}
-          className="absolute inset-x-3 bottom-4 z-[54] flex items-start gap-2.5 rounded-xl border border-cyan-300/25 bg-[#0E1B22]/95 p-3 text-left shadow-lg backdrop-blur-sm active:scale-[0.99]"
+          className="absolute inset-x-3 bottom-40 z-[54] flex items-start gap-2.5 rounded-xl border border-cyan-300/25 bg-[#0E1B22]/95 p-3 text-left shadow-lg backdrop-blur-sm active:scale-[0.99]"
         >
           <span className="shrink-0 text-lg leading-none" aria-hidden>{hint.icon}</span>
           <span className="flex-1">
             <span className="block text-xs font-black text-cyan-200">{hint.title}</span>
             <span className="mt-0.5 block text-xs leading-relaxed text-slate-300">{hint.body}</span>
           </span>
-          <span className="shrink-0 text-[10px] font-bold text-slate-500" aria-label="Dismiss">✕</span>
+          <span className="shrink-0 text-[10px] font-bold text-slate-400" aria-label="Dismiss">✕</span>
         </motion.button>
       )}
     </AnimatePresence>
