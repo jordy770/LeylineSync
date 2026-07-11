@@ -144,6 +144,33 @@ export default function GameSessionLobby() {
     }
   }
 
+  // Practice vs CPU — one tap sets up the whole solo table: session + bot,
+  // then straight into the deck picker. Bot games never count toward stats,
+  // so new players can fumble in private before joining the couch.
+  const handleCreatePractice = async () => {
+    setErrorMessage(null)
+    setStatusMessage(null)
+    setIsWorking(true)
+
+    try {
+      const sessionId = await createGameSession(supabase, format)
+      await addBotToSession(supabase, sessionId)
+      setSessionIdInput(sessionId)
+      await refreshSession(sessionId)
+      await refreshPlayerSessions()
+      setIsPickingDeck(true)
+      setStatusMessage(
+        'Practice table ready — pick a deck and play. The CPU takes its own turns, and this game won’t count toward your stats.',
+      )
+    } catch (error) {
+      const message = getErrorMessage(error)
+      console.error('Failed to create practice session:', message, error)
+      setErrorMessage(message)
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
   const handleJoinSession = async () => {
     const sessionId = sessionIdInput.trim()
 
@@ -454,6 +481,17 @@ export default function GameSessionLobby() {
               >
                 <Plus className="h-4 w-4" />
                 Create game
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCreatePractice}
+                disabled={isWorking}
+                title="A private table against the CPU — perfect for learning the controller. Doesn't count toward your stats."
+                className="inline-flex items-center gap-2 rounded-lg border border-sky-400/30 bg-sky-500/10 px-5 py-2.5 text-sm font-bold text-sky-300 transition hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Gamepad2 className="h-4 w-4" />
+                Practice vs CPU
               </button>
             </div>
           </div>

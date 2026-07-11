@@ -2,6 +2,43 @@
   "version": 1,
   "bugs": [
     {
+      "id": "bug-1505",
+      "timestamp": "2026-07-11",
+      "error_message": "User: can't test locally anymore 'because of the variables' — app unreachable/failing against Supabase in local dev.",
+      "file": ".env.local",
+      "root_cause": "NEXT_PUBLIC_SUPABASE_URL pointed at the cloudflared tunnel (supabase.dweemo.nl) but cloudflared wasn't running (Cloudflare 530 origin-unreachable). Local Supabase itself was up on :54321 the whole time. The env vars were fine; the tunnel they pointed at was down.",
+      "fix": "Swapped .env.local to the localhost line (http://127.0.0.1:54321) for desktop dev; for phone testing start the tunnel first (cloudflared tunnel run 28b93d77-5d4f-49f1-9d4d-f82ed4637961) and swap back to supabase.dweemo.nl. Diagnostic: curl kong :54321 (200?) vs tunnel host (530 = tunnel down).",
+      "tags": [
+        "env",
+        "cloudflared",
+        "tunnel",
+        "local-dev",
+        "supabase",
+        "530"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11"
+    },
+    {
+      "id": "bug-1504",
+      "timestamp": "2026-07-11",
+      "error_message": "User: on leylinesync.com/tv the input seems to accept max 5 characters, and the app never shows a TV code to enter.",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Not a backend failure (mig 379 applied on hosted Supabase, RPC get_board_access_by_code live, deployed bundle current). The tv_code is only rendered as a tiny text-xs footnote inside the session-detail modal on the home lobby, below the Open controller/board buttons — never on the controller or board views. Secondary: the /tv input has maxLength=6 but its w-56 box at text-4xl + tracking-[0.4em] only shows ~5 characters, so it *looks* capped at 5 (codes are 4 hex chars, so entry itself works).",
+      "fix": "Added components/board/TvCodePopup.tsx (fetches tv_code via getGameSession, shows leylinesync.com/tv + the 4-char code huge) + a 📺 button in the controller StatusBar header next to the log/help buttons. Also set the /tv input maxLength 6→4 to match the 4-hex code space, killing the 'max 5 chars' visual clipping.",
+      "tags": [
+        "tv-code",
+        "couch-play",
+        "ux-discoverability",
+        "lobby",
+        "spectator"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11"
+    },
+    {
       "id": "bug-1503",
       "timestamp": "2026-06-29",
       "error_message": "Runtime: 'Oracle meta load failed: URI too long' in loadOracleMeta, triggered by getDashboard with a real (large) collection.",
@@ -16703,7 +16740,7 @@
       "error_message": "OpenWolf auto-scanner gutted .wolf/anatomy.md again: emitted a 6-file scan replacing the 247-file index (recurrence of the 4-file gut fixed in commit 49f84d6)",
       "file": ".wolf/anatomy.md",
       "root_cause": "The auto-scanner triggers on new files (Dockerfile/compose.yml etc.) but writes only the files it saw change, discarding the rest of the index",
-      "fix": "Restored via git show HEAD:.wolf/anatomy.md, then re-applied the new entries by hand (and pruned stale _*_tmp.mjs entries). Workaround only — scanner itself not fixed.",
+      "fix": "Added components/board/TvCodePopup.tsx (fetches tv_code via getGameSession, shows leylinesync.com/tv + the 4-char code huge) + a 📺 button in the controller StatusBar header next to the log/help buttons. Also set the /tv input maxLength 6→4 to match the 4-hex code space, killing the 'max 5 chars' visual clipping.",
       "tags": [
         "openwolf",
         "anatomy",
@@ -16713,7 +16750,7 @@
       ],
       "related_bugs": [],
       "occurrences": 2,
-      "last_seen": "2026-07-06T12:30:00+02:00"
+      "last_seen": "2026-07-11"
     },
     {
       "id": "bug-1021",
@@ -19871,6 +19908,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-10T00:00:00Z"
+    },
+    {
+      "id": "bug-1217",
+      "timestamp": "2026-07-11T11:41:05.667Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T11:41:05.667Z"
+    },
+    {
+      "id": "bug-1218",
+      "timestamp": "2026-07-11T11:41:14.181Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T11:41:14.181Z"
+    },
+    {
+      "id": "bug-1219",
+      "timestamp": "2026-07-11T11:42:02.180Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T11:42:02.180Z"
+    },
+    {
+      "id": "bug-1220",
+      "timestamp": "2026-07-11T11:42:34.012Z",
+      "error_message": "CSS fix: hover",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "hover: bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50\" → bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50\"",
+      "fix": "Changed hover: bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50\" → bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T11:42:34.012Z"
     }
   ]
 }

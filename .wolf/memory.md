@@ -7458,3 +7458,66 @@
 | 00:22 | Created tests/feature/game-log.test.ts | — | ~746 |
 | 00:22 | Edited tests/feature/game-log.test.ts | 2→2 lines | ~37 |
 | -- | Coaching-bug: botseats onder user-id vervuilden games-lijst → is_bot-filter + analyse-guard; mig 387 verrijkt game log (turns/attacks/blocks/deaths/winner) + tests GL1-2 | app/collection/games/page.tsx, lib/collection/ai-game-analysis.ts, supabase/migrations/202605010387_game_log_combat_turns.sql, tests/feature/game-log.test.ts | GL1-2 groen, tsc schoon, suite draait | ~40k |
+| -- | Release v0.10.0 live: deploy-workflow groen (eerste run met checkout@v7/setup-cli@v3), mig 387 op hosted, VPS op tag, site 200 | github releases, VPS | ManaBox-deckimport + coaching-fix in prod | ~5k |
+
+## Session: 2026-07-10 10:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:58 | Checked claim "only first 24 binder cards get previews" — no such limit; binder pages=12/pg, CardPocket per-card Scryfall API call is the fragile bit | app/collection/binders/page.tsx, components/collection/CardPocket.tsx | answered, no code change | ~8k |
+| 12:09 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/6cbaf238-ecfd-454f-9738-19dff50029e0/scratchpad/scions-spellcraft-build.lf.js | inline fix | ~68 |
+| 12:09 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/6cbaf238-ecfd-454f-9738-19dff50029e0/scratchpad/scions-spellcraft-build.lf.js | inline fix | ~54 |
+| 12:10 | Launched card-scripting workflow (80 needs-build deck cards, author+verify); triage over full collection: 4792/5451 unscripted | scratchpad/deck-uniques.triage.md, .claude/workflows/scions-spellcraft-build.js | running (wf_79945b60-0a7) | ~30k |
+| 12:13 | Scripted 'Conduit of Ruin' (partial: ETB-approximated cast trigger, tutor-to-top, nth_spell:1 creature discount) | docs/commander-decks/card-scripts.json (proposed) | ok | ~200 |
+| 12:16 | scripted "It That Heralds the End" (partial: anthem only, cost-reduction half unsupported) | docs/commander-decks/card-scripts.json (proposal via StructuredOutput) | ok | ~9k |
+| 12:18 | Scripted "It That Betrays" (partial: annihilator-2 edict via attacks trigger; steal-on-sacrifice needs engine) | docs/commander-decks/card-scripts.json (analysis only) | ok | ~200 |
+
+## Session: 2026-07-10 13:03
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-10 13:03
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-11 12:51
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:58 | Diagnosed "no TV code visible in app": server-side all fine (mig 379 on prod, RPC live, deploy current); code only rendered as tiny footnote inside home-page session modal, nowhere on controller/board; /tv input maxLength=6 but w-56 box shows ~5 chars | components/GameSessionLobby.tsx, components/board/TvCodeEntry.tsx | diagnosis only, no fix yet | ~8k |
+| 13:23 | Created components/board/TvCodePopup.tsx | — | ~903 |
+| 13:24 | Edited components/ControllerListV5.tsx | 1→2 lines | ~27 |
+| 13:24 | Edited components/ControllerListV5.tsx | 3→4 lines | ~47 |
+| 13:24 | Edited components/ControllerListV5.tsx | CSS: onOpenTv | ~30 |
+| 13:24 | Edited components/ControllerListV5.tsx | 4→5 lines | ~21 |
+| 13:24 | Edited components/ControllerListV5.tsx | CSS: active, hover | ~139 |
+| 13:24 | Edited components/ControllerListV5.tsx | 6→11 lines | ~138 |
+| 13:24 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~42 |
+| 13:24 | Edited components/board/TvCodeEntry.tsx | 6 → 4 | ~7 |
+| 13:27 | Built TvCodePopup (room code front-and-center): new popup component, 📺 button in controller StatusBar header, /tv input maxLength 6→4 to match the 4-hex code | components/board/TvCodePopup.tsx, components/ControllerListV5.tsx, components/board/TvCodeEntry.tsx | tsc clean, eslint clean (only pre-existing img warnings), /tv serves maxLength=4 | ~6k |
+| 13:40 | Created components/controller/FirstTimeHints.tsx | — | ~948 |
+| 13:40 | Edited components/controller/FirstTimeHints.tsx | inline fix | ~17 |
+| 13:40 | Edited components/ControllerListV5.tsx | added 1 import(s) | ~52 |
+| 13:41 | Edited components/ControllerListV5.tsx | CSS: hintCandidate | ~142 |
+| 13:41 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~170 |
+| 13:42 | Edited components/GameSessionLobby.tsx | added error handling | ~296 |
+| 13:42 | Edited components/GameSessionLobby.tsx | expanded (+11 lines) | ~322 |
+| 13:49 | Built tutorial pair: FirstTimeHints (just-in-time one-shot hint cards keyed on layoutState: cast/attack/block/stack, localStorage flags) mounted in controller + "Practice vs CPU" lobby button (create session + addBot + straight into deck picker) | components/controller/FirstTimeHints.tsx, components/ControllerListV5.tsx, components/GameSessionLobby.tsx | tsc clean (outside .next), eslint clean, 2266/2266 tests pass | ~12k |
+
+## Session: 2026-07-11 14:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-11 14:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-11 14:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:13 | Unblocked local testing: supabase.dweemo.nl tunnel was down (530), local kong :54321 fine; swapped .env.local to localhost, dev server up on :3000 | .env.local | verified home 200 + GoTrue healthy | ~2k |

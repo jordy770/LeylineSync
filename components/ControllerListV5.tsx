@@ -78,6 +78,8 @@ import type {
 } from '@/lib/game/types'
 import MotionCard from './MotionCard'
 import GameFinishedOverlay from './board/GameFinishedOverlay'
+import TvCodePopup from './board/TvCodePopup'
+import { FirstTimeHints, type HintKey } from './controller/FirstTimeHints'
 import { KeywordIconRow } from './controller/KeywordIcon'
 import HandFan from './controller/HandFan'
 import { CardActionSheet, CardZoomOverlay } from './controller/CardActionSheet'
@@ -337,6 +339,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   const [genericPrompt, setGenericPrompt] = useState<{ cardName: string; need: number; options: { color: ManaColor; available: number }[] } | null>(null)
   const genericResolveRef = useRef<((alloc: ManaPayment | null) => void) | null>(null)
   const [logOpen, setLogOpen] = useState(false)
+  const [tvOpen, setTvOpen] = useState(false)
   // Tracks the last resolved combat damage pass ('first_strike' | 'regular') so the
   // resolve button knows whether a second (regular) pass is still pending.
   const [combatDamageStage, setCombatDamageStage] = useState<string | null>(null)
@@ -636,6 +639,14 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       return 'main_phase'
     return 'default'
   }, [pendingStackItems, turnState, hasPriority, playerId, hasBlockDecision, incomingAttackers, autoPass.blk, myDeclaredAttackers])
+
+  // First-time hint for the current game moment (null once all are seen).
+  const hintCandidate: HintKey | null =
+    layoutState === 'declare_attackers' ? 'attack'
+    : layoutState === 'declare_blockers' ? 'block'
+    : layoutState === 'stack_active' && hasPriority ? 'stack'
+    : layoutState === 'main_phase' && isActivePlayer && hasPriority ? 'cast'
+    : null
 
   const maxHandSize = 7
   const mustDiscard = isActivePlayer && turnState?.step === 'cleanup' && handCards.length > maxHandSize
@@ -1303,6 +1314,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
               commanderDamage={playerId ? commanderDamage[playerId] : undefined}
               onResetMana={() => { void actions.resetMana() }}
               onOpenLog={() => setLogOpen(true)}
+              onOpenTv={() => setTvOpen(true)}
               onOpenHelp={() => setCoachOpen(true)}
             />
             {/* Command zone — cast your commander (sorcery speed) with live tax.
@@ -1477,6 +1489,11 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         )}
       </AnimatePresence>
 
+      {/* TV room code — put the board on any TV via leylinesync.com/tv (mig 379) */}
+      <AnimatePresence>
+        {tvOpen && <TvCodePopup sessionId={sessionId} onClose={() => setTvOpen(false)} />}
+      </AnimatePresence>
+
       {/* Generic-mana picker (auto-pay awaits this when {generic} has a colour choice) */}
       <AnimatePresence>
         {genericPrompt && (
@@ -1500,6 +1517,20 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
           <span className="shrink-0 text-red-300/70" aria-label="Dismiss">✕</span>
         </button>
       )}
+
+      {/* Just-in-time onboarding — one-time hint at the first real cast/attack/
+          block/stack moment. Complements the coach slides (which nobody recalls
+          by the time they must block). */}
+      <FirstTimeHints
+        candidate={hintCandidate}
+        suppressed={
+          coachOpen ||
+          isSessionFinished ||
+          Boolean(myPendingDecision) ||
+          Boolean(currentPlayer && playersNotKept.length > 0) ||
+          Boolean(actionError ?? errorMessage)
+        }
+      />
 
       <AnimatePresence>
         {resolutionToast && !actionError && !errorMessage && (
@@ -1556,6 +1587,7 @@ function StatusBar({
   commanderDamage,
   onResetMana,
   onOpenLog,
+  onOpenTv,
   onOpenHelp,
 }: {
   currentPlayer: GameSessionPlayer | null
@@ -1567,6 +1599,7 @@ function StatusBar({
   commanderDamage: CommanderDamageEntry[] | undefined
   onResetMana: () => void
   onOpenLog: () => void
+  onOpenTv: () => void
   onOpenHelp: () => void
 }) {
   const hasFloatingMana = manaColors.some((c) => (manaPool[c] ?? 0) > 0) || restrictedMana.length > 0
@@ -1660,6 +1693,15 @@ function StatusBar({
           className="ml-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] transition active:scale-95 hover:bg-white/10"
         >
           📜
+        </button>
+        <button
+          type="button"
+          onClick={onOpenTv}
+          aria-label="Watch on TV"
+          title="Watch on TV — show the room code for leylinesync.com/tv"
+          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] transition active:scale-95 hover:bg-white/10"
+        >
+          📺
         </button>
         <button
           type="button"

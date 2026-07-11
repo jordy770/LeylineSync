@@ -48,7 +48,7 @@ export default function TvCodeEntry() {
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           autoFocus
-          maxLength={6}
+          maxLength={4}
           placeholder="CODE"
           aria-label="Room code"
           className="w-56 rounded-2xl border border-amber-400/40 bg-slate-950/70 px-4 py-4 text-center font-mono text-4xl font-black tracking-[0.4em] text-amber-200 outline-none placeholder:text-slate-700 focus:border-amber-300"

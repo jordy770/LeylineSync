@@ -1,11 +1,10 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-09T22:22:49.931Z
-> Files: 73 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T11:42:33.984Z
+> Files: 3 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
-- `verify-deck-containers.mts` — End-to-end verify of the ManaBox deck-container import against the LOCAL dev (~1120 tok)
 
 ## ../../.claude/plans/
 
@@ -23,6 +22,9 @@
 
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/5705253f-fa3a-4781-b264-b9ec72069b46/scratchpad/
+
+
+## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/6cbaf238-ecfd-454f-9738-19dff50029e0/scratchpad/
 
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/
@@ -51,22 +53,18 @@
 
 ## .github/workflows/
 
-- `ci.yml` — CI — every push/PR: types, lint, and the FULL engine suite (~1900 tests) (~717 tok)
-- `deploy.yml` — CD — publishing a GitHub Release IS the production go: first the pending (~435 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
 
 ## app/
 
-- `page.tsx` — The five colours of mana, used as a structural device throughout the landing. (~1645 tok)
 
 ## app/api/cards/generate-behavior/
 
 
 ## app/api/collection/deck-containers/
 
-- `route.ts` — GET  /api/collection/deck-containers (~669 tok)
 
 ## app/api/collection/import/
 
@@ -85,7 +83,6 @@
 
 ## app/api/decks/[id]/
 
-- `route.ts` — PATCH  /api/decks/:id  { name? , targetOverrides? } (~987 tok)
 
 ## app/api/decks/[id]/analysis/
 
@@ -95,14 +92,12 @@
 
 ## app/api/decks/[id]/combos/
 
-- `route.ts` — POST /api/decks/:id/combos — premium: which combo lines does this deck (and (~441 tok)
 
 ## app/api/decks/[id]/commander/
 
 
 ## app/api/decks/[id]/mulligan/
 
-- `route.ts` — POST /api/decks/:id/mulligan  { hand: string[], choice: 'keep'|'mulligan' } (~562 tok)
 
 ## app/api/decks/[id]/play/
 
@@ -112,7 +107,6 @@
 
 ## app/api/decks/[id]/recommend/
 
-- `route.ts` — POST /api/decks/:id/recommend (~665 tok)
 
 ## app/api/decks/[id]/swaps/
 
@@ -128,14 +122,12 @@
 
 ## app/api/games/[id]/analyze/
 
-- `route.ts` — POST /api/games/:id/analyze — premium post-game coaching from the engine's (~444 tok)
 
 ## app/api/intelligence/classify/
 
 
 ## app/api/trade/
 
-- `route.ts` — POST /api/trade  { want: string, targetValueEur?: number } (~546 tok)
 
 ## app/auth/confirm/
 
@@ -166,34 +158,24 @@
 
 ## app/collection/
 
-- `loading.tsx` — Instant skeleton while the dashboard aggregates the collection (value, (~140 tok)
-- `page.tsx` — dynamic — renders form (~3330 tok)
 
 ## app/collection/advisor/
 
-- `loading.tsx` — The Advisor diagnoses every deck server-side — the heaviest collection page, (~134 tok)
-- `page.tsx` — dynamic (~3001 tok)
 
 ## app/collection/binders/
 
-- `loading.tsx` — Works for both views: the shelf (spine-shaped bars) and an opened binder page. (~196 tok)
-- `page.tsx` — dynamic (~2030 tok)
 
 ## app/collection/conflicts/
 
 
 ## app/collection/decks/[id]/
 
-- `loading.tsx` — Loading (~65 tok)
-- `page.tsx` — dynamic (~502 tok)
 
 ## app/collection/decks/import/
 
 
 ## app/collection/games/
 
-- `loading.tsx` — Loading (~71 tok)
-- `page.tsx` — dynamic (~704 tok)
 
 ## app/collection/import/
 
@@ -209,7 +191,6 @@
 
 ## app/collection/search/
 
-- `loading.tsx` — Loading (~83 tok)
 
 ## app/controller-style-lab/
 
@@ -219,7 +200,6 @@
 
 ## app/decks/
 
-- `page.tsx` — DecksPage (~707 tok)
 
 ## app/judge/[id]/
 
@@ -238,30 +218,20 @@
 
 ## components/
 
-- `binder-fonts.ts` — The binder theme's typography (Outfit for display, Karla for body), shared (~161 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~71340 tok)
+- `GameSessionLobby.tsx` — GameSessionLobby (~12800 tok)
 
 ## components/board/
 
 
 ## components/collection/
 
-- `AdvisorContested.tsx` — AdvisorContested (~2457 tok)
-- `AdvisorFits.tsx` — AdvisorFits (~1729 tok)
-- `CardPocket.tsx` — MANA_GRADIENT (~552 tok)
-- `CombosTab.tsx` — CombosTab (~1526 tok)
-- `DeckContainersPanel.tsx` — Bump to refetch — the wizard raises this after a fresh collection import. (~2006 tok)
-- `DeckDetail.tsx` — BUCKET_ORDER (~19935 tok)
-- `GameAnalysisList.tsx` — GameAnalysisList (~1333 tok)
-- `ImportWizard.tsx` — ImportWizard (~2390 tok)
-- `MulliganTab.tsx` — MulliganTab (~1636 tok)
-- `SearchLive.tsx` — COLORS (~3669 tok)
-- `Shell.tsx` — Which section to highlight in the sub-nav. Omit on nested pages (deck detail). (~1018 tok)
-- `Skeletons.tsx` — Full-page shell for route-level loading.tsx files. (~1134 tok)
-- `TradeBuilder.tsx` — TradeBuilder (~1509 tok)
-- `ui.tsx` — Color-identity pips rendered as small mana-coloured dots. (~758 tok)
 
 ## components/controller/
 
+- `FirstTimeHints.tsx` — Just-in-time onboarding: one-time dismissible hint card at the first real cast/attack/block/stack moment; localStorage flags, candidate derived from controller layoutState (~900 tok)
+
+- `FirstTimeHints.tsx` — Which hint the current game state calls for, or null. The parent derives this. (~950 tok)
 
 ## components/judge/
 
@@ -289,22 +259,6 @@
 
 ## lib/collection/
 
-- `ai-client.ts` — One JSON-shaped exchange: cached static system prompt, JSON context in the (~673 tok)
-- `ai-combos.ts` — A card completing the line that the player does NOT own (buy target). (~1595 tok)
-- `ai-game-analysis.ts` — Post-game analysis — the feature only LeylineSync can build: the app IS the (~1268 tok)
-- `ai-gate.ts` — The one paywall/quota gate every premium AI route calls before touching the (~350 tok)
-- `ai-mulligan.ts` — Mulligan trainer — the player judges a sample hand from their own deck, the (~944 tok)
-- `ai-recommend.ts` — Flatten the scan's free + occupied upgrades into one candidate list (deduped). (~4484 tok)
-- `ai-trade.ts` — Pure: keep only offered cards that are really in the tradable list, and (~1229 tok)
-- `analyze-deck.ts` — Deck analysis: load → score → (optionally) cache the result in co_deck_analyses. (~359 tok)
-- `brackets.ts` — How many Game Changers a deck may hold at a target bracket. (~1148 tok)
-- `buy-suggestions.ts` — A Scryfall exact-name search link — the brief uses Scryfall for card info/pricing. (~1448 tok)
-- `deck-containers.ts` — Legendary creatures in the container — the plausible commanders. (~2040 tok)
-- `deck-loader.ts` — Pet cards — never propose cutting these. (~2536 tok)
-- `insights.ts` — Pure: rank the binder candidates that fit ONE deck (colour-legal, fills a need), (~1716 tok)
-- `mulligan.ts` — Pure sample-hand drawing for the mulligan trainer. The caller supplies the (~203 tok)
-- `power-score.ts` — Tags a player may set a per-deck target for. counterspell/tutor have no (~3113 tok)
-- `upgrade-scanner.ts` — colorIdentity ⊆ deckIdentity (~4482 tok)
 
 ## lib/collection/parsers/
 
@@ -314,7 +268,6 @@
 
 ## lib/game/
 
-- `card-behavior-builder.ts` — Guided card-behavior form model: a structured representation of the subset of (~10549 tok)
 
 ## lib/intelligence/
 
@@ -327,15 +280,12 @@
 
 ## mockups/
 
-- `collection-binder-screens.html` — LeylineSync · Binder-concept — alle schermen (~6724 tok)
-- `collection-concepts.html` — LeylineSync · Collection — stijlconcepten (~7060 tok)
 
 ## public/
 
 
 ## scripts/
 
-- `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3818 tok)
 
 ## supabase/
 
@@ -345,16 +295,9 @@
 
 ## supabase/functions_src/
 
-- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~2940 tok)
 
 ## supabase/migrations/
 
-- `202605010382_premium_ai_credits.sql` — Premium entitlements + AI usage quota (Collection Optimizer monetization). (~893 tok)
-- `202605010383_player_meta.sql` — Playgroup meta profile (AI personalization). (~204 tok)
-- `202605010384_deck_target_overrides.sql` — Per-deck target tuning. (~187 tok)
-- `202605010385_card_locks.sql` — Card locks per deck. (~124 tok)
-- `202605010386_printed_lifelink.sql` — Printed lifelink: keyword-loop in register_card_continuous_effects mapt nu ook 'lifelink' uit cards.keywords. (~3021 tok)
-- `202605010387_game_log_combat_turns.sql` — 202605010387_game_log_combat_turns (~1673 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -364,26 +307,18 @@
 
 ## tests/feature/
 
-- `ai-quota.test.ts` — Premium AI credits (mig 382). consume_ai_credit is the single server-side (~1236 tok)
-- `game-log.test.ts` — mig 387 — the game log grows turn/combat/death/winner context. (~749 tok)
-- `lifelink-taps.test.ts` — mig 283 — lifelink and the becomes_tapped event. (~1296 tok)
 
 ## tests/fixtures/
 
-- `test-cards.json` (~49430 tok)
 
 ## tests/harness/
 
-- `seed.ts` — Seeds the `% Test` cards into public.cards for the local test DB. (~742 tok)
 
 ## tests/regression/
 
 
 ## tests/unit/
 
-- `ai-recommend.test.ts` — AI deck-doctor — the pure grounding helpers. The model call itself is not tested (~1186 tok)
-- `ai-suite.test.ts` — Pure cores of the premium AI suite: sample-hand drawing (mulligan trainer), (~829 tok)
-- `target-overrides.test.ts` — Per-deck target tuning (mig 384) — the pure engine side: overrides shift the (~741 tok)
 
 ## vercel/
 
