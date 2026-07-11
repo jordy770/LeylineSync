@@ -55,7 +55,7 @@ export default function BoardViewChrome({
           onClick={onToggleFocus}
           className="rounded-lg border border-slate-700 bg-slate-900/85 px-4 py-2 text-sm font-semibold text-slate-200 shadow-lg shadow-black/20 transition-colors hover:border-cyan-300/40 hover:bg-slate-800 [@media(max-height:640px)]:px-3 [@media(max-height:640px)]:py-1.5 [@media(max-height:640px)]:text-xs"
         >
-          {isFocusMode ? 'Grid View' : 'Focus Priority'}
+          {isFocusMode ? 'Grid View' : 'Spotlight'}
         </button>
       </div>
     </div>

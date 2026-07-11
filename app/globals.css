@@ -301,6 +301,10 @@
   animation: none;
   border-color: rgba(251, 191, 36, 0.85);
 }
+/* The tilted-table 3D transforms force extra compositor layers; flat on TV. */
+.tv-flat [class*='[transform:'] {
+  transform: none !important;
+}
 
 /* The card pocket — the theme's signature element. */
 .bnd-pocket { aspect-ratio: 63/88; border-radius: 9px; position: relative; overflow: hidden;

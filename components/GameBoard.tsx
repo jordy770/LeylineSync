@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import {
   buildBoardConnections,
   buildBoardSeats,
@@ -10,6 +10,7 @@ import {
   type BoardSeat,
 } from '@/lib/game/board-selectors'
 import { useBoardGameState } from '@/lib/game/use-board-game-state'
+import { useScreenWakeLock } from '@/lib/game/use-screen-wake-lock'
 import type { CommanderDamageEntry } from '@/lib/game/data'
 import type {
   BoardCard,
@@ -31,9 +32,11 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
   // TV mode (spectator link / room code): weak TV browsers drop frames on
   // backdrop blur and transform/layout animations, so both get switched off.
   const tvMode = Boolean(shareToken)
-  // Spotlight = the focus layout FOLLOWING whoever holds priority (the big
-  // field). Clicking a player pins them instead; the toggle returns to grid.
-  // The TV starts in spotlight — that's the couch's "whose moment is it" view.
+  // The TV must not doze off mid-game; wake lock (or a silent-video fallback).
+  useScreenWakeLock(tvMode)
+  // Spotlight = the focus layout following the active (turn) player as the big
+  // field. Clicking a player pins them instead; the toggle returns to grid.
+  // The TV starts in spotlight — that's the couch's "whose turn is it" view.
   const [viewMode, setViewMode] = useState<'grid' | 'spotlight'>(tvMode ? 'spotlight' : 'grid')
   const [focusedPlayerId, setFocusedPlayerId] = useState<string | null>(null)
   const [logOpen, setLogOpen] = useState(false)
@@ -53,19 +56,12 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
     () => buildBoardConnections(combatAssignments, stackItems),
     [combatAssignments, stackItems],
   )
-  // Debounce the followed priority holder: priority ping-pongs during a
-  // resolution cycle, and re-aiming the big panel on every pass would make the
-  // board thrash. Only move the spotlight once priority has settled a moment.
-  const priorityPlayerId = turnState?.priority_player_id ?? null
-  const [settledPriorityId, setSettledPriorityId] = useState<string | null>(null)
-  useEffect(() => {
-    const timer = setTimeout(() => setSettledPriorityId(priorityPlayerId), 800)
-    return () => clearTimeout(timer)
-  }, [priorityPlayerId])
-
+  // The spotlight tracks the ACTIVE player — stable for the whole turn — while
+  // the gold priority border keeps hopping to whoever holds priority. Following
+  // priority itself made the big panel jump on every pass.
   const focusSeat = getFocusSeat(
     seats,
-    focusedPlayerId ?? (viewMode === 'spotlight' ? settledPriorityId : null),
+    focusedPlayerId ?? (viewMode === 'spotlight' ? turnState?.active_player_id ?? null : null),
   )
   const minimapSeats = seats.filter((seat) => seat.player && seat.player.player_id !== focusSeat.player?.player_id)
   const pendingStackItems = stackItems.filter((item) => item.status === 'pending')

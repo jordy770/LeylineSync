@@ -7537,3 +7537,16 @@
 | 17:55 | Edited components/GameBoard.tsx | 7→3 lines | ~65 |
 | 17:55 | Edited app/globals.css | CSS: backdrop-filter, animation, border-color | ~190 |
 | 17:57 | Board TV work: spotlight viewMode follows priority holder (debounced 800ms, default on spectator), pin by clicking a player; tv-flat perf mode (no backdrop-filter, no border pulse, no blur washes, MotionConfig reducedMotion) | components/GameBoard.tsx, app/globals.css | tsc+eslint clean, spectator SSR shows tv-flat + spotlight default | ~9k |
+| 18:17 | Released v0.12.0 (board spotlight + tv-flat): CI green, deploy green, tv-flat verified in live bundle | release v0.12.0 | production updated | ~2k |
+| 20:01 | Edited components/GameBoard.tsx | CSS: null | ~105 |
+| 20:01 | Edited components/GameBoard.tsx | inline fix | ~18 |
+| 20:01 | Edited components/GameBoard.tsx | priority() → active() | ~67 |
+| 20:01 | Edited components/board/BoardViewChrome.tsx | inline fix | ~15 |
+| 20:02 | Spotlight retargeted per user feedback: follows active_player_id (stable per turn), priority stays border-only; debounce removed; toggle label Focus Priority -> Spotlight | components/GameBoard.tsx, components/board/BoardViewChrome.tsx | tsc+eslint clean, spectator smoke OK | ~3k |
+| 20:06 | Edited lib/game/use-board-game-state.ts | inline fix | ~21 |
+| 20:07 | Edited lib/game/use-board-game-state.ts | added 1 condition(s) | ~323 |
+| 20:07 | Created lib/game/use-screen-wake-lock.ts | — | ~719 |
+| 20:07 | Edited components/GameBoard.tsx | added 1 import(s) | ~39 |
+| 20:07 | Edited components/GameBoard.tsx | 1→3 lines | ~42 |
+| 20:07 | Edited app/globals.css | CSS: transform, transform | ~69 |
+| 20:08 | Deep TV perf + sleep fix: board state dedupe (skip 8-way setState when RPC payload unchanged — idle polls no longer re-render the tree), useScreenWakeLock (Wake Lock API + canvas-stream video fallback) on spectator board, 3D transforms flattened in tv-flat | lib/game/use-board-game-state.ts, lib/game/use-screen-wake-lock.ts, components/GameBoard.tsx, app/globals.css | tsc+eslint clean, spectator 200 | ~7k |

@@ -6,6 +6,8 @@
 
 ## User Preferences
 
+- 2026-07-11 — Board spotlight: the big field must follow the ACTIVE (turn) player and stay put for the whole turn; priority is signalled only by the moving gold border. Jordy rejected priority-following (too jumpy) after trying v0.12.0.
+
 <!-- How the user likes things done. Code style, tools, patterns, communication. -->
 
 - **App is landscape-only.** Design/layout decisions can assume a wide viewport; do not optimize the controller UI for narrow portrait.

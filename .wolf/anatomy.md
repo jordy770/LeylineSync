@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T15:55:20.901Z
-> Files: 4 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T18:07:53.808Z
+> Files: 7 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -59,7 +59,7 @@
 
 ## app/
 
-- `globals.css` — Styles: 28 rules, 80 vars (~3512 tok)
+- `globals.css` — Styles: 28 rules, 80 vars (~3555 tok)
 
 ## app/api/cards/generate-behavior/
 
@@ -219,10 +219,11 @@
 
 ## components/
 
-- `GameBoard.tsx` — GameBoard (~7823 tok)
+- `GameBoard.tsx` — GameBoard (~7782 tok)
 
 ## components/board/
 
+- `BoardViewChrome.tsx` — BoardViewChrome (~961 tok)
 
 ## components/collection/
 
@@ -253,6 +254,8 @@
 
 ## lib/
 
+- `game/use-screen-wake-lock.ts` — Keeps the TV awake on the spectator board: Wake Lock API, falls back to an invisible 2×2 canvas-stream video (~600 tok)
+
 
 ## lib/collection/
 
@@ -266,6 +269,8 @@
 ## lib/game/
 
 - `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 4 more (~13594 tok)
+- `use-board-game-state.ts` — Exports useBoardGameState (~2413 tok)
+- `use-screen-wake-lock.ts` — Exports useScreenWakeLock (~719 tok)
 
 ## lib/intelligence/
 

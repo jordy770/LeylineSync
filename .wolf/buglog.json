@@ -20072,6 +20072,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-11T15:55:20.915Z"
+    },
+    {
+      "id": "bug-1228",
+      "timestamp": "2026-07-11T18:01:30.236Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "10 lines replaced/restructured",
+      "fix": "Rewrote 14→7 lines (10 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T18:01:30.236Z"
+    },
+    {
+      "id": "bug-1229",
+      "timestamp": "2026-07-11T18:01:43.292Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Had \"whose moment is it\"",
+      "fix": "Changed to \"whose turn is it\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T18:01:43.292Z"
+    },
+    {
+      "id": "bug-1230",
+      "timestamp": "2026-07-11T18:01:44.902Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/board/BoardViewChrome.tsx",
+      "root_cause": "Had 'Focus Priority'",
+      "fix": "Changed to 'Spotlight'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T18:01:44.902Z"
+    },
+    {
+      "id": "bug-1231",
+      "timestamp": "2026-07-11T18:07:01.623Z",
+      "error_message": "Missing guard clause",
+      "file": "lib/game/use-board-game-state.ts",
+      "root_cause": "No early return/throw for edge case: payloadKey === lastPayloadRef.current",
+      "fix": "Added guard clause: if (payloadKey === lastPayloadRef.current)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T18:07:01.623Z"
     }
   ]
 }

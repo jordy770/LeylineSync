@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getBoardState } from './data'
 import type { CommanderDamageEntry } from './data'
@@ -29,6 +29,7 @@ export function useBoardGameState(sessionId: string, shareToken?: string | null)
   const [attackTaxes, setAttackTaxes] = useState<{ playerId: string; mana: number; life: number }[]>([])
   const [commanderDamage, setCommanderDamage] = useState<Record<string, CommanderDamageEntry[]>>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const lastPayloadRef = useRef('')
 
   const refresh = useCallback(async () => {
     try {
@@ -37,6 +38,17 @@ export function useBoardGameState(sessionId: string, shareToken?: string | null)
         await getBoardState(supabase, sessionId, shareToken)
 
       setErrorMessage(null)
+      // Skip the setState fan-out when nothing changed. The spectator board
+      // polls on an interval, and every poll used to install 8 fresh arrays —
+      // a full re-render of hundreds of nodes per tick even on an idle board,
+      // which is exactly what a TV CPU can't keep up with.
+      const payloadKey = JSON.stringify([
+        nextSession, boardCards, sessionPlayers, nextTurnState, nextCombatAssignments,
+        nextStackItems, status.taxes, Array.from(status.animatedIds), nextCommanderDamage,
+      ])
+      if (payloadKey === lastPayloadRef.current) return
+      lastPayloadRef.current = payloadKey
+
       setSession(nextSession)
       // Fold the 'animated' status (mig 277) onto each card so the board can
       // badge animated lands without a second lookup.
