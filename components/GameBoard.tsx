@@ -1,7 +1,7 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   buildBoardConnections,
   buildBoardSeats,
@@ -28,6 +28,13 @@ import CombatManager from './CombatManager'
 
 export default function GameBoard({ sessionId, shareToken }: { sessionId: string; shareToken?: string | null }) {
   const { cards, session, players, turnState, combatAssignments, stackItems, attackTaxes, commanderDamage, errorMessage } = useBoardGameState(sessionId, shareToken)
+  // TV mode (spectator link / room code): weak TV browsers drop frames on
+  // backdrop blur and transform/layout animations, so both get switched off.
+  const tvMode = Boolean(shareToken)
+  // Spotlight = the focus layout FOLLOWING whoever holds priority (the big
+  // field). Clicking a player pins them instead; the toggle returns to grid.
+  // The TV starts in spotlight — that's the couch's "whose moment is it" view.
+  const [viewMode, setViewMode] = useState<'grid' | 'spotlight'>(tvMode ? 'spotlight' : 'grid')
   const [focusedPlayerId, setFocusedPlayerId] = useState<string | null>(null)
   const [logOpen, setLogOpen] = useState(false)
   const boardRef = useRef<HTMLDivElement | null>(null)
@@ -46,7 +53,20 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
     () => buildBoardConnections(combatAssignments, stackItems),
     [combatAssignments, stackItems],
   )
-  const focusSeat = getFocusSeat(seats, focusedPlayerId)
+  // Debounce the followed priority holder: priority ping-pongs during a
+  // resolution cycle, and re-aiming the big panel on every pass would make the
+  // board thrash. Only move the spotlight once priority has settled a moment.
+  const priorityPlayerId = turnState?.priority_player_id ?? null
+  const [settledPriorityId, setSettledPriorityId] = useState<string | null>(null)
+  useEffect(() => {
+    const timer = setTimeout(() => setSettledPriorityId(priorityPlayerId), 800)
+    return () => clearTimeout(timer)
+  }, [priorityPlayerId])
+
+  const focusSeat = getFocusSeat(
+    seats,
+    focusedPlayerId ?? (viewMode === 'spotlight' ? settledPriorityId : null),
+  )
   const minimapSeats = seats.filter((seat) => seat.player && seat.player.player_id !== focusSeat.player?.player_id)
   const pendingStackItems = stackItems.filter((item) => item.status === 'pending')
   const registerTargetRef = useCallback((playerId: string, element: HTMLElement | null) => {
@@ -82,21 +102,30 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
   }
 
   return (
-    <div ref={boardRef} className="relative isolate min-h-[calc(100vh-5.75rem)] overflow-hidden p-4 [perspective:1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6">
+    <MotionConfig reducedMotion={tvMode ? 'always' : 'user'}>
+    <div ref={boardRef} className={`relative isolate min-h-[calc(100vh-5.75rem)] overflow-hidden p-4 [perspective:1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6 ${tvMode ? 'tv-flat' : ''}`}>
       <div className="pointer-events-none absolute inset-0 opacity-40">
         <div className="leyline-table-grid absolute inset-0 opacity-10" />
         <div className="absolute inset-x-8 top-1/2 h-px bg-cyan-200/20 [transform:rotateX(62deg)_translateZ(-70px)]" />
-        <div className="absolute bottom-0 left-10 right-10 top-28 bg-[linear-gradient(90deg,transparent,rgba(103,232,249,0.12),transparent)] blur-2xl [transform:rotateX(66deg)_translateZ(-100px)]" />
         <div className="absolute bottom-12 left-16 right-16 h-px bg-cyan-200/10 [transform:rotateX(66deg)_translateZ(-90px)]" />
         <div className="absolute bottom-32 left-24 right-24 h-px bg-cyan-200/10 [transform:rotateX(66deg)_translateZ(-90px)]" />
-        <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
-        <div className="absolute -right-16 top-0 h-60 w-60 rounded-full bg-red-500/10 blur-3xl" />
+        {/* The big blur washes cost real GPU on a TV — decorative only, so skip them there. */}
+        {!tvMode && (
+          <>
+            <div className="absolute bottom-0 left-10 right-10 top-28 bg-[linear-gradient(90deg,transparent,rgba(103,232,249,0.12),transparent)] blur-2xl [transform:rotateX(66deg)_translateZ(-100px)]" />
+            <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+            <div className="absolute -right-16 top-0 h-60 w-60 rounded-full bg-red-500/10 blur-3xl" />
+          </>
+        )}
       </div>
       <BoardConnectionOverlay connections={connections} />
       <BoardViewChrome
         turnState={turnState}
-        isFocusMode={Boolean(focusedPlayerId)}
-        onToggleFocus={() => setFocusedPlayerId((current) => (current ? null : focusSeat.player?.player_id ?? null))}
+        isFocusMode={viewMode === 'spotlight'}
+        onToggleFocus={() => {
+          setFocusedPlayerId(null)
+          setViewMode((current) => (current === 'spotlight' ? 'grid' : 'spotlight'))
+        }}
         onOpenLog={shareToken ? undefined : () => setLogOpen(true)}
         castControls={shareToken ? null : <CastShareControls sessionId={sessionId} />}
       />
@@ -104,7 +133,7 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
         <GameLogPanel sessionId={sessionId} players={players} open={logOpen} onClose={() => setLogOpen(false)} />
       )}
       <AnimatePresence mode="wait">
-        {focusedPlayerId ? (
+        {viewMode === 'spotlight' ? (
           <motion.div
             key="focus-board"
             layout
@@ -148,7 +177,10 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
                     turnState={turnState}
                     attackTaxes={attackTaxes}
                     commanderDamage={commanderDamage}
-                    onFocus={() => setFocusedPlayerId(seat.player?.player_id ?? null)}
+                    onFocus={() => {
+                      setFocusedPlayerId(seat.player?.player_id ?? null)
+                      setViewMode('spotlight')
+                    }}
                   />
                 ))
               ) : (
@@ -171,6 +203,7 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
         ) : null}
       </AnimatePresence>
     </div>
+    </MotionConfig>
   )
 }
 
@@ -385,13 +418,9 @@ function PlayerQuadrantPanel({
       whileTap={{ scale: 0.99 }}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(34,211,238,0.12),transparent_34%),radial-gradient(circle_at_100%_100%,rgba(245,158,11,0.08),transparent_32%)]" />
-      {seat.isPriority ? (
-        <motion.div
-          className="pointer-events-none absolute inset-0 rounded-lg border-2 border-amber-300"
-          animate={{ opacity: [0.45, 1, 0.45] }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-        />
-      ) : null}
+      {/* The pulsing highlight is the mtg-priority-border CSS animation on the
+          panel itself — the earlier extra framer-motion infinite pulse doubled
+          the same signal and burned frames, especially on TVs. */}
       <div className="relative z-10 mb-3 flex items-center justify-between gap-3 border-b border-white/10 pb-3 [@media(max-height:640px)]:mb-2 [@media(max-height:640px)]:gap-2 [@media(max-height:640px)]:pb-2">
         <div className="flex min-w-0 items-center gap-3">
           <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-base font-bold text-white [@media(max-height:640px)]:h-8 [@media(max-height:640px)]:w-8 [@media(max-height:640px)]:text-sm ${

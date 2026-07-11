@@ -7525,3 +7525,15 @@
 | 16:03 | Edited lib/game/data.ts | 3→4 lines | ~29 |
 | 16:03 | Created tests/unit/normalize-game-session.test.ts | — | ~221 |
 | 16:08 | Real cause of missing TV code: normalizeGameSession dropped tv_code (allowlist); added field + regression test | lib/game/data.ts, tests/unit/normalize-game-session.test.ts | 2268/2268 pass | ~7k |
+| 16:15 | Released v0.11.1 (normalizer fix): CI green, deploy green, live bundle verified to map tv_code | release v0.11.1 | production fixed | ~2k |
+| 17:53 | Edited components/GameBoard.tsx | 2→2 lines | ~41 |
+| 17:53 | Edited components/GameBoard.tsx | modified mode() | ~232 |
+| 17:54 | Edited components/GameBoard.tsx | added nullish coalescing | ~224 |
+| 17:54 | Edited components/GameBoard.tsx | expanded (+6 lines) | ~408 |
+| 17:54 | Edited components/GameBoard.tsx | Boolean() → setViewMode() | ~122 |
+| 17:54 | Edited components/GameBoard.tsx | 4→4 lines | ~36 |
+| 17:54 | Edited components/GameBoard.tsx | 6→9 lines | ~107 |
+| 17:55 | Edited components/GameBoard.tsx | 8→9 lines | ~72 |
+| 17:55 | Edited components/GameBoard.tsx | 7→3 lines | ~65 |
+| 17:55 | Edited app/globals.css | CSS: backdrop-filter, animation, border-color | ~190 |
+| 17:57 | Board TV work: spotlight viewMode follows priority holder (debounced 800ms, default on spectator), pin by clicking a player; tv-flat perf mode (no backdrop-filter, no border pulse, no blur washes, MotionConfig reducedMotion) | components/GameBoard.tsx, app/globals.css | tsc+eslint clean, spectator SSR shows tv-flat + spotlight default | ~9k |

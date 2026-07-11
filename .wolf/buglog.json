@@ -19992,6 +19992,86 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-11T11:42:34.012Z"
+    },
+    {
+      "id": "bug-1223",
+      "timestamp": "2026-07-11T15:53:56.888Z",
+      "error_message": "Type error",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T15:53:56.888Z"
+    },
+    {
+      "id": "bug-1224",
+      "timestamp": "2026-07-11T15:54:09.470Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T15:54:09.470Z"
+    },
+    {
+      "id": "bug-1225",
+      "timestamp": "2026-07-11T15:54:28.500Z",
+      "error_message": "CSS fix: perspective, transform",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "perspective: 1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6\"> → 1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6 ${tvMode ? 'tv-flat' : ''; transform: rotateX(66deg)_translateZ(-90px)]\" /> → rotateX(66deg)_translateZ(-100px)]\" />",
+      "fix": "Changed perspective: 1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6\"> → 1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6 ${tvMode ? 'tv-flat' : ''; transform: rotateX(66deg)_translateZ(-90px)]\" /> → rotateX(66deg)_translateZ(-100px)]\" />",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T15:54:28.500Z"
+    },
+    {
+      "id": "bug-1226",
+      "timestamp": "2026-07-11T15:54:41.353Z",
+      "error_message": "Wrong operator: ?? should be ===",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Used \"??\" instead of \"===\"",
+      "fix": "Changed operator ?? → ===",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T15:54:41.353Z"
+    },
+    {
+      "id": "bug-1227",
+      "timestamp": "2026-07-11T15:55:20.915Z",
+      "error_message": "CSS fix: background",
+      "file": "app/globals.css",
+      "root_cause": "background: #26282f → rgba(21, 17, 31, 0.92)",
+      "fix": "Changed background: #26282f → rgba(21, 17, 31, 0.92)",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "css"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T15:55:20.915Z"
     }
   ]
 }

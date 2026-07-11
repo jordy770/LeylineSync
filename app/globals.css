@@ -289,6 +289,19 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 14px 34px rgba(0, 0, 0, 0.45);
 }
 
+/* TV / spectator board (.tv-flat): TV browsers drop frames on per-frame
+   effects. Backdrop blur re-samples everything beneath it on every repaint and
+   the border pulse forces a repaint per frame — both off; a slightly more
+   opaque panel + steady gold border keep the look. */
+.tv-flat .leyline-glass-panel {
+  backdrop-filter: none;
+  background: rgba(21, 17, 31, 0.92);
+}
+.tv-flat .mtg-priority-border {
+  animation: none;
+  border-color: rgba(251, 191, 36, 0.85);
+}
+
 /* The card pocket — the theme's signature element. */
 .bnd-pocket { aspect-ratio: 63/88; border-radius: 9px; position: relative; overflow: hidden;
   background: #1e2026;

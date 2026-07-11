@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T14:03:49.338Z
-> Files: 2 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T15:55:20.901Z
+> Files: 4 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -59,6 +59,7 @@
 
 ## app/
 
+- `globals.css` — Styles: 28 rules, 80 vars (~3512 tok)
 
 ## app/api/cards/generate-behavior/
 
@@ -218,6 +219,7 @@
 
 ## components/
 
+- `GameBoard.tsx` — GameBoard (~7823 tok)
 
 ## components/board/
 
