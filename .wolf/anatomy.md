@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T11:42:33.984Z
-> Files: 3 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T14:03:49.338Z
+> Files: 2 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -218,8 +218,6 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~71340 tok)
-- `GameSessionLobby.tsx` — GameSessionLobby (~12800 tok)
 
 ## components/board/
 
@@ -229,9 +227,6 @@
 
 ## components/controller/
 
-- `FirstTimeHints.tsx` — Just-in-time onboarding: one-time dismissible hint card at the first real cast/attack/block/stack moment; localStorage flags, candidate derived from controller layoutState (~900 tok)
-
-- `FirstTimeHints.tsx` — Which hint the current game state calls for, or null. The parent derives this. (~950 tok)
 
 ## components/judge/
 
@@ -268,6 +263,7 @@
 
 ## lib/game/
 
+- `data.ts` — Exports emptyManaPool, gameZones, gameSessionStatuses, turnPhases + 4 more (~13594 tok)
 
 ## lib/intelligence/
 
@@ -319,6 +315,7 @@
 
 ## tests/unit/
 
+- `normalize-game-session.test.ts` — normalizeGameSession rebuilds the session object field by field — a column (~221 tok)
 
 ## vercel/
 

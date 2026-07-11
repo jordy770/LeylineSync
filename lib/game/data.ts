@@ -1284,6 +1284,7 @@ export function normalizeGameSession(session: Partial<GameSession>): GameSession
     locked_at: session.locked_at ?? null,
     finished_at: session.finished_at ?? null,
     winner_player_id: session.winner_player_id ?? null,
+    tv_code: session.tv_code ?? null,
   }
 }
 

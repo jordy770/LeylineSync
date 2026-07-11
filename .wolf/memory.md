@@ -7521,3 +7521,7 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 15:13 | Unblocked local testing: supabase.dweemo.nl tunnel was down (530), local kong :54321 fine; swapped .env.local to localhost, dev server up on :3000 | .env.local | verified home 200 + GoTrue healthy | ~2k |
+| 15:47 | Released v0.11.0: commit 0212ff6 pushed, CI green, GitHub release published -> deploy.yml ran migrations + VPS rebuild; verified live (/tv maxLength=4, Practice vs CPU in bundle) | release v0.11.0 | production updated | ~3k |
+| 16:03 | Edited lib/game/data.ts | 3→4 lines | ~29 |
+| 16:03 | Created tests/unit/normalize-game-session.test.ts | — | ~221 |
+| 16:08 | Real cause of missing TV code: normalizeGameSession dropped tv_code (allowlist); added field + regression test | lib/game/data.ts, tests/unit/normalize-game-session.test.ts | 2268/2268 pass | ~7k |

@@ -2,6 +2,26 @@
   "version": 1,
   "bugs": [
     {
+      "id": "bug-1506",
+      "timestamp": "2026-07-11",
+      "error_message": "TvCodePopup: 'Couldn't load the room code — try again in a moment.' Also the original bug-1504 complaint: lobby never showed a tv_code.",
+      "file": "lib/game/data.ts",
+      "root_cause": "normalizeGameSession rebuilds the session object from an explicit field list and didn't include tv_code — the SELECT fetched it, the normalizer silently dropped it. Verified the REST layer returned tv_code fine on both local and prod; the loss was purely client-side mapping. This was the real cause behind bug-1504 (mis-diagnosed as discoverability-only).",
+      "fix": "Added tv_code: session.tv_code ?? null to normalizeGameSession + regression test tests/unit/normalize-game-session.test.ts. Pattern to watch: any column added to a game_sessions SELECT must also be added to the normalizer or it vanishes.",
+      "tags": [
+        "tv-code",
+        "normalizer",
+        "allowlist",
+        "silent-drop",
+        "game-sessions"
+      ],
+      "related_bugs": [
+        "bug-1504"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-11"
+    },
+    {
       "id": "bug-1505",
       "timestamp": "2026-07-11",
       "error_message": "User: can't test locally anymore 'because of the variables' — app unreachable/failing against Supabase in local dev.",
