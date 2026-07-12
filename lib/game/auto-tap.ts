@@ -70,3 +70,72 @@ export function planAutoTap(
 
   return plan
 }
+
+/**
+ * A tappable mana source that may offer a colour CHOICE: an explicit list
+ * (dual/triome lands) or 'any' (Command Tower — `commander` marks sources the
+ * engine validates against the commander's colour identity).
+ */
+export type FlexManaSource = {
+  id: string
+  colors: ManaColor[] | 'any'
+  amount: number
+  commander?: boolean
+}
+
+/** A planned tap with the colour chosen for it. */
+export type PlannedTap = { id: string; color: ManaColor; amount: number; commander?: boolean }
+
+/**
+ * Flex-aware auto-tap plan (bug-1509: a Commander mana base is mostly duals and
+ * Command Towers, which the single-colour planner couldn't use — auto-pay bailed
+ * whenever a pip needed one of them).
+ *
+ * Strategy, safe-greedy:
+ *  - a shortfall COLOURED pip taps the most-constrained source able to produce
+ *    it (fixed colour first, then the narrowest dual, 'any'/'commander' last);
+ *  - the GENERIC remainder only taps sources with a known colour list — a
+ *    colour-choice 'any'/'commander' source is never burned on generic, since
+ *    the deck's identity isn't known here (a chosen pip colour always is: any
+ *    pip you're paying is a colour in your own spell).
+ */
+export function planAutoTapFlex(
+  cost: ParsedManaCost,
+  pool: ManaPool,
+  sources: FlexManaSource[],
+): PlannedTap[] | null {
+  const working = poolToCounts(pool)
+  const available = [...sources]
+  const plan: PlannedTap[] = []
+
+  while (!affordable(working, cost)) {
+    const short = shortColor(working, cost)
+    let pick = -1
+    let color: ManaColor | null = null
+
+    if (short !== null) {
+      let bestFlexibility = Infinity
+      for (let i = 0; i < available.length; i++) {
+        const s = available[i]
+        const producible = s.colors === 'any' || s.colors.includes(short)
+        if (!producible) continue
+        const flexibility = s.colors === 'any' ? Number.MAX_SAFE_INTEGER : s.colors.length
+        if (flexibility < bestFlexibility) {
+          bestFlexibility = flexibility
+          pick = i
+        }
+      }
+      color = short
+    } else {
+      pick = available.findIndex((s) => s.colors !== 'any')
+      if (pick >= 0) color = (available[pick].colors as ManaColor[])[0]
+    }
+
+    if (pick < 0 || color === null) return null
+    const [src] = available.splice(pick, 1)
+    working[color] += src.amount
+    plan.push({ id: src.id, color, amount: src.amount, commander: src.commander })
+  }
+
+  return plan
+}

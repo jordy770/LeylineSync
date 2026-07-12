@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { DamageAllocation, TargetController } from '@/lib/game/actions'
 import { isAddManaBehaviorAction, normalizeCardBehaviorToV2 } from '@/lib/game/card-behavior'
@@ -35,6 +35,49 @@ import {
 
 // ─── Card Action Sheet ────────────────────────────────────────────────────────
 
+// Target rows grouped per controller — opponents first (seat order), your own
+// cards last — so every picker says WHOSE permanent you're about to hit
+// instead of one unsorted pile.
+function GroupedTargets({
+  items,
+  players,
+  playerId,
+  render,
+}: {
+  items: BoardCard[]
+  players: GameSessionPlayer[]
+  playerId: string | null
+  render: (c: BoardCard) => ReactNode
+}) {
+  const order = [...players].sort((a, b) => {
+    const aOwn = a.player_id === playerId ? 1 : 0
+    const bOwn = b.player_id === playerId ? 1 : 0
+    return aOwn - bOwn || a.seat_number - b.seat_number
+  })
+  const groups: { id: string; label: string; items: BoardCard[] }[] = []
+  for (const p of order) {
+    const theirs = items.filter((c) => c.controller_player_id === p.player_id)
+    if (theirs.length === 0) continue
+    groups.push({
+      id: p.player_id,
+      label: p.player_id === playerId ? 'Yours' : p.username ?? `Player ${p.seat_number}`,
+      items: theirs,
+    })
+  }
+  const unowned = items.filter((c) => !players.some((p) => p.player_id === c.controller_player_id))
+  if (unowned.length > 0) groups.push({ id: 'other', label: 'Other', items: unowned })
+  return (
+    <>
+      {groups.map((g) => (
+        <div key={g.id} className="space-y-2">
+          <p className="pt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">{g.label}</p>
+          {g.items.map(render)}
+        </div>
+      ))}
+    </>
+  )
+}
+
 export function CardActionSheet({
   card,
   playableFromExile = false,
@@ -48,6 +91,8 @@ export function CardActionSheet({
   commanderIdentity,
   onTapForMana,
   onCastCard,
+  canAffordCost,
+  openManaCount,
   onCycleCard,
   onDealDamageToPlayer,
   onDealDamageToCreature,
@@ -89,6 +134,9 @@ export function CardActionSheet({
   commanderIdentity: ManaColor[]
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
   onCastCard: (cardId: string, opts?: { kicked?: boolean }) => Promise<void>
+  /** Colour-aware "can I pay this right now" (pool + untapped lands) for the mana warning. */
+  canAffordCost?: (costStr?: string | null) => boolean
+  openManaCount?: number
   onCycleCard: (cardId: string) => Promise<void>
   onDealDamageToPlayer: (cardId: string, targetPlayerId: string) => Promise<void>
   onDealDamageToCreature: (cardId: string, targetCardId: string) => Promise<void>
@@ -189,14 +237,17 @@ export function CardActionSheet({
   // Base the plan on a hand-zoned clone when casting from exile so the spell
   // plan's `zone === 'hand'` timing check passes (canCastHandSpell).
   const planBase = castableFromExile ? ({ ...card, zone: 'hand' } as ControllerCard) : card
-  const planCard = adventureMode && adventure
+  // The adventure half as a castable plan card — built up-front (not only in
+  // adventure mode) so both halves can be offered side by side.
+  const adventurePlanCard = adventure
     ? ({
         ...planBase,
         copied_script: { schema_version: 2, spell_effect: adventure.spell_effect },
         // Adventures are instant-speed here; force the timing accordingly.
         cards: { ...(card.cards ?? {}), type_line: 'Instant' },
       } as ControllerCard)
-    : planBase
+    : null
+  const planCard = adventureMode && adventurePlanCard ? adventurePlanCard : planBase
   const spellPlan = getSpellPlan(planCard)
   // Controller restriction for the chosen creature target ("an opponent controls"
   // / "you control"), relative to the caster. Defaults to any for untargeted plans.
@@ -264,6 +315,24 @@ export function CardActionSheet({
   const canCast = canCastHandSpell(planCard, canCastSorceries, canCastInstants, pendingStackCount)
   // The adventure half can be entered whenever the creature is in hand.
   const canEnterAdventure = !!adventure && zone === 'hand' && !adventureMode
+  // Whether the adventure half is castable RIGHT NOW — drives the button's
+  // enabled state so both halves always show with honest availability.
+  const canCastAdventure = adventurePlanCard
+    ? canCastHandSpell(adventurePlanCard, canCastSorceries, canCastInstants, pendingStackCount)
+    : false
+  // Mana honesty (bug-1511): timing said "castable" while the player's lands
+  // were already tapped — surface a warning instead of a silent server bounce.
+  const affordCreature = canAffordCost ? canAffordCost(card.cards?.mana_cost) : true
+  const affordAdventure = adventure && canAffordCost ? canAffordCost(adventure.cost) : true
+  // Name the exact gate that blocks a sorcery-speed cast — "your main phase"
+  // covered three different causes and made stale-state bugs undiagnosable.
+  const sorceryBlockReason = canCastSorceries
+    ? null
+    : pendingStackCount > 0
+      ? 'stack must be empty'
+      : canCastInstants
+        ? 'your turn, main phase only'
+        : 'waiting for priority'
   // Flashback: a card in the graveyard carrying a `flashback` cost can be re-cast
   // from there for that cost (the server then exiles it). Supported here for the
   // untargeted programs Army of the Damned-style cards use.
@@ -376,6 +445,19 @@ export function CardActionSheet({
 
   const handleCycle = () => { void onCycleCard(card.id); onClose() }
 
+  // One-tap adventure cast: the button flips to adventure mode AND immediately
+  // runs the cast flow (target picker opens right away when the half needs one)
+  // — no second Cast press. The effect fires on the render where the adventure
+  // spellPlan/needsTarget are live.
+  const autoAdventureCastRef = useRef(false)
+  useEffect(() => {
+    if (!adventureMode || !autoAdventureCastRef.current) return
+    autoAdventureCastRef.current = false
+    handleCast()
+    // handleCast is re-created every render; this must run exactly once per flip.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adventureMode])
+
   const hasActions = canCast || canEnterAdventure || canFlashback || canCycle || isEquipment || manaAbilities.length > 0 || otherAbilities.length > 0 || (script.loyalty_abilities?.length ?? 0) > 0
 
   return (
@@ -479,20 +561,25 @@ export function CardActionSheet({
           </button>
         )}
 
-        {canCast && !picking && !attachPick && (
+        {/* On an adventure card BOTH halves are always offered side by side —
+            each greys out (with the reason) instead of disappearing, so the
+            choice itself is always visible. */}
+        {(canCast || canEnterAdventure) && !picking && !attachPick && (
           <button
             type="button"
             aria-label={isAura ? 'Cast - enchant a creature' : castLabel}
-            disabled={!hasRequiredTargets}
+            disabled={!canCast || !hasRequiredTargets}
             onClick={handleCast}
             className={`mb-3 flex w-full items-center justify-between rounded-2xl px-4 py-3.5 transition active:scale-95 ${
-              hasRequiredTargets ? 'bg-amber-400' : 'cursor-not-allowed bg-slate-700 opacity-70'
+              canCast && hasRequiredTargets ? 'bg-amber-400' : 'cursor-not-allowed bg-slate-700 opacity-70'
             }`}
           >
-            <span className={`font-black ${hasRequiredTargets ? 'text-amber-950' : 'text-slate-300'}`}>
-              {isAura ? 'Cast - enchant a creature' : castLabel}
+            <span className={`font-black ${canCast && hasRequiredTargets ? 'text-amber-950' : 'text-slate-300'}`}>
+              {canEnterAdventure
+                ? canCast ? 'Cast creature' : `Creature - ${sorceryBlockReason ?? 'not castable now'}`
+                : isAura ? 'Cast - enchant a creature' : castLabel}
             </span>
-            <ManaCostDisplay manaCost={adventureMode ? adventure?.cost : card.cards?.mana_cost} dark={hasRequiredTargets} />
+            <ManaCostDisplay manaCost={adventureMode ? adventure?.cost : card.cards?.mana_cost} dark={canCast && hasRequiredTargets} />
           </button>
         )}
 
@@ -512,20 +599,45 @@ export function CardActionSheet({
           </button>
         )}
 
-        {/* Adventure entry — switch the cast UI to the card's adventure half */}
+        {/* Adventure half — casts in ONE tap (the target picker opens straight
+            away when the spell needs one). */}
         {canEnterAdventure && !picking && !attachPick && (
           <button
             type="button"
-            aria-label={`Adventure${adventure?.name ? ` - ${adventure.name}` : ''}`}
-            onClick={() => setAdventureMode(true)}
-            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-violet-400/50 bg-violet-400/15 px-4 py-3 transition active:scale-95"
+            aria-label={`Cast adventure${adventure?.name ? ` - ${adventure.name}` : ''}`}
+            disabled={!canCastAdventure}
+            onClick={() => {
+              autoAdventureCastRef.current = true
+              setAdventureMode(true)
+            }}
+            className={`mb-3 flex w-full items-center justify-between rounded-2xl border px-4 py-3 transition active:scale-95 ${
+              canCastAdventure
+                ? 'border-violet-400/50 bg-violet-400/15'
+                : 'cursor-not-allowed border-white/10 bg-slate-700 opacity-70'
+            }`}
           >
             <span className="flex flex-col text-left">
-              <span className="text-[9px] font-black uppercase tracking-widest text-violet-300/80">Adventure</span>
-              <span className="font-bold text-violet-100">{adventure?.name ?? 'Cast adventure'}</span>
+              <span className={`text-[9px] font-black uppercase tracking-widest ${canCastAdventure ? 'text-violet-300/80' : 'text-slate-400'}`}>
+                Adventure
+              </span>
+              <span className={`font-bold ${canCastAdventure ? 'text-violet-100' : 'text-slate-300'}`}>
+                {canCastAdventure ? `Cast ${adventure?.name ?? 'adventure'}` : `${adventure?.name ?? 'Adventure'} - needs priority`}
+              </span>
             </span>
             <ManaCostDisplay manaCost={adventure?.cost} />
           </button>
+        )}
+
+        {/* Mana warning — the cast buttons gate on TIMING; when the mana isn't
+            there the server would bounce the cast, so say so up front. */}
+        {!picking && !attachPick && ((canCast && !affordCreature) || (canEnterAdventure && canCastAdventure && !affordAdventure)) && (
+          <p className="mb-3 flex items-start gap-1.5 text-xs text-amber-300/90">
+            <span aria-hidden>⚠</span>
+            <span>
+              Probably not payable right now — {openManaCount ?? 0} mana open.
+              Mana from rocks/abilities isn&apos;t counted here; tapping by hand may still work.
+            </span>
+          </p>
         )}
 
         {/* Cycling button (hand card with a cycling cost) */}
@@ -582,7 +694,7 @@ export function CardActionSheet({
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {attachPick === 'aura' ? 'Enchant which creature' : 'Equip which creature'}
             </p>
-            {(attachPick === 'aura' ? enchantTargets : equipTargets).map((c) => (
+            <GroupedTargets items={attachPick === 'aura' ? enchantTargets : equipTargets} players={players} playerId={playerId} render={(c) => (
               <button
                 key={c.id}
                 type="button"
@@ -596,7 +708,7 @@ export function CardActionSheet({
                 <span className="truncate font-bold text-white">{c.name}</span>
                 <span className="ml-2 shrink-0 text-xs font-black text-slate-300">{effectiveBoardPT(c)}</span>
               </button>
-            ))}
+            )} />
             {(attachPick === 'aura' ? enchantTargets : equipTargets).length === 0 && (
               <p className="px-1 text-xs text-slate-400">No legal creatures.</p>
             )}
@@ -630,19 +742,21 @@ export function CardActionSheet({
                 <span className="text-sm font-black text-[#D4591A]">♥{p.life_total} → {Math.max(0, p.life_total - spellPlan.amount)}</span>
               </button>
             ))}
-            {spellPlan.canTargetCreature && targetableCreatures.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { void onDealDamageToCreature(card.id, c.id); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-slate-300">
-                  {effectiveBoardPT(c)}
-                </span>
-              </button>
-            ))}
+            {spellPlan.canTargetCreature && (
+              <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => { void onDealDamageToCreature(card.id, c.id); onClose() }}
+                  className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
+                >
+                  <span className="truncate font-bold text-white">{c.name}</span>
+                  <span className="ml-2 shrink-0 text-xs font-black text-slate-300">
+                    {effectiveBoardPT(c)}
+                  </span>
+                </button>
+              )} />
+            )}
             <button
               type="button"
               onClick={() => setPicking(false)}
@@ -690,7 +804,9 @@ export function CardActionSheet({
                 Divide {spellPlan.amount} damage — {remaining} left
               </p>
               {spellPlan.canTargetPlayer && players.map((p) => row(`player:${p.player_id}`, p.username ?? `Player ${p.seat_number}`, p.player_id === playerId ? '(you)' : `♥${p.life_total}`))}
-              {spellPlan.canTargetCreature && targetableCreatures.map((c) => row(`card:${c.id}`, c.name, effectiveBoardPT(c)))}
+              {spellPlan.canTargetCreature && (
+                <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => row(`card:${c.id}`, c.name, effectiveBoardPT(c))} />
+              )}
               <button
                 type="button"
                 disabled={remaining !== 0}
@@ -715,7 +831,7 @@ export function CardActionSheet({
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Give +{spellPlan.power}/+{spellPlan.toughness} to
             </p>
-            {targetableCreatures.map((c) => (
+            <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => (
               <button
                 key={c.id}
                 type="button"
@@ -725,7 +841,7 @@ export function CardActionSheet({
                 <span className="truncate font-bold text-white">{c.name}</span>
                 <span className="ml-2 shrink-0 text-xs font-black text-emerald-300">{effectiveBoardPT(c)}</span>
               </button>
-            ))}
+            )} />
             <button
               type="button"
               onClick={() => setPicking(false)}
@@ -741,7 +857,7 @@ export function CardActionSheet({
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Make a creature {spellPlan.power}/{spellPlan.toughness} until end of turn
             </p>
-            {targetableCreatures.map((c) => (
+            <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => (
               <button
                 key={c.id}
                 type="button"
@@ -751,7 +867,7 @@ export function CardActionSheet({
                 <span className="truncate font-bold text-white">{c.name}</span>
                 <span className="ml-2 shrink-0 text-xs font-black text-sky-300">{effectiveBoardPT(c)} → {spellPlan.power}/{spellPlan.toughness}</span>
               </button>
-            ))}
+            )} />
             <button
               type="button"
               onClick={() => setPicking(false)}
@@ -767,7 +883,7 @@ export function CardActionSheet({
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {spellPlan.label} which creature?
             </p>
-            {targetableCreatures.map((c) => (
+            <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => (
               <button
                 key={c.id}
                 type="button"
@@ -781,7 +897,7 @@ export function CardActionSheet({
                 <span className="truncate font-bold text-white">{c.name}</span>
                 <span className="ml-2 shrink-0 text-xs font-black text-violet-300">{effectiveBoardPT(c)}</span>
               </button>
-            ))}
+            )} />
             <button
               type="button"
               onClick={() => setPicking(false)}
@@ -797,7 +913,7 @@ export function CardActionSheet({
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {spellPlan.label} which permanent?
             </p>
-            {targetablePermanents.map((c) => (
+            <GroupedTargets items={targetablePermanents} players={players} playerId={playerId} render={(c) => (
               <button
                 key={c.id}
                 type="button"
@@ -807,7 +923,7 @@ export function CardActionSheet({
                 <span className="truncate font-bold text-white">{c.name}</span>
                 <span className="ml-2 shrink-0 text-[10px] font-bold uppercase text-amber-300/80">{c.type_line}</span>
               </button>
-            ))}
+            )} />
             <button
               type="button"
               onClick={() => setPicking(false)}
@@ -823,7 +939,7 @@ export function CardActionSheet({
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {spellPlan.label} up to {spellPlan.count} — {multiTargets.length}/{spellPlan.count} chosen
             </p>
-            {targetableCreatures.map((c) => {
+            <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => {
               const chosen = multiTargets.includes(c.id)
               const atCap = multiTargets.length >= spellPlan.count
               return (
@@ -851,7 +967,7 @@ export function CardActionSheet({
                   <span className="ml-2 shrink-0 text-xs font-black text-violet-300">{effectiveBoardPT(c)}</span>
                 </button>
               )
-            })}
+            }} />
             <button
               type="button"
               disabled={multiTargets.length === 0}
@@ -901,7 +1017,7 @@ export function CardActionSheet({
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                   Fights which creature?
                 </p>
-                {fightFoughtFor(fightFighterId).map((c) => (
+                <GroupedTargets items={fightFoughtFor(fightFighterId)} players={players} playerId={playerId} render={(c) => (
                   <button
                     key={c.id}
                     type="button"
@@ -911,7 +1027,7 @@ export function CardActionSheet({
                     <span className="truncate font-bold text-white">{c.name}</span>
                     <span className="ml-2 shrink-0 text-xs font-black text-rose-300">{effectiveBoardPT(c)}</span>
                   </button>
-                ))}
+                )} />
                 <button
                   type="button"
                   onClick={() => setFightFighterId(null)}
@@ -929,7 +1045,7 @@ export function CardActionSheet({
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Put {spellPlan.amount} +1/+1 counter{spellPlan.amount === 1 ? '' : 's'} on
             </p>
-            {targetableCreatures.map((c) => (
+            <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => (
               <button
                 key={c.id}
                 type="button"
@@ -939,7 +1055,7 @@ export function CardActionSheet({
                 <span className="truncate font-bold text-white">{c.name}</span>
                 <span className="ml-2 shrink-0 text-xs font-black text-emerald-300">{effectiveBoardPT(c)}</span>
               </button>
-            ))}
+            )} />
             <button
               type="button"
               onClick={() => setPicking(false)}
@@ -1247,17 +1363,19 @@ export function CardActionSheet({
                 <span className="text-sm font-black text-[#D4591A]">♥{p.life_total} → {Math.max(0, p.life_total - abilityPick.amount)}</span>
               </button>
             ))}
-            {abilityPick.canTargetCreature && targetableCreatures.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetCardId: c.id, costCardIds: abilityPick.costCardIds ?? null }); onClose() }}
-                className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
-              >
-                <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-slate-300">{effectiveBoardPT(c)}</span>
-              </button>
-            ))}
+            {abilityPick.canTargetCreature && (
+              <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => { void onActivateAbility(card.id, abilityPick.index, { targetCardId: c.id, costCardIds: abilityPick.costCardIds ?? null }); onClose() }}
+                  className="flex w-full items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-4 py-2.5 transition active:scale-95"
+                >
+                  <span className="truncate font-bold text-white">{c.name}</span>
+                  <span className="ml-2 shrink-0 text-xs font-black text-slate-300">{effectiveBoardPT(c)}</span>
+                </button>
+              )} />
+            )}
             <button
               type="button"
               onClick={() => setAbilityPick(null)}

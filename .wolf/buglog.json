@@ -2,6 +2,133 @@
   "version": 1,
   "bugs": [
     {
+      "id": "bug-1513",
+      "timestamp": "2026-07-12",
+      "error_message": "User: casting Swift End didn't trigger Y'shtola, Night's Blessed (noncreature spell MV>=3 watcher).",
+      "file": "supabase/migrations/202605010388_adventure_spell_cast_face.sql",
+      "root_cause": "fire_watcher_triggers matched spell_cast filters against the FULL dual type_line — 'Creature — Zombie Knight // Instant — Adventure' contains 'Creature', so exclude_type:Creature skipped the adventure cast. FOURTH dual-type-line bug (1019/1508/1512). Test-writing also exposed a second server bug: cast_spell_effect charged the PRINTED cost for adventure casts (unnoticed because Rider's two costs match; Stomp would cost {2}{R} instead of {1}{R}).",
+      "fix": "Mig 388: fire_watcher_triggers resolves the cast face for spell_cast/cast_from_exile (p_extra.adventure_face -> back face type + adventure cost MV/mana-cost; otherwise front face), cast_spell_effect passes the flag and pays the adventure's own cost with the back-face type_line in the pay context. Fixtures Spellcraft Watcher/Removal Adventurer/Cheap Adventurer + tests AST1-3 (fires on adventure, not on creature, MV reads the cast face). NOTE: leyline_test is a separate DB — migrations must reach it via npm run test:db:setup, not supabase migration up.",
+      "tags": [
+        "adventure",
+        "dual-type-line",
+        "spell-cast-trigger",
+        "yshtola",
+        "mana-cost",
+        "migration-388"
+      ],
+      "related_bugs": [
+        "bug-1019",
+        "bug-1508",
+        "bug-1512"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-12"
+    },
+    {
+      "id": "bug-1512",
+      "timestamp": "2026-07-12",
+      "error_message": "User: both Rider buttons stayed grey with perfect server state — 'Creature - not castable now' + 'Swift End - needs priority'. That label pair is mathematically impossible unless doesCardRequireStackTarget fires.",
+      "file": "lib/game/controller-selectors.ts",
+      "root_cause": "doesCardRequireStackTarget checked the FULL dual type_line ('… // Instant — Adventure' contains 'instant') AND the oracle text contains 'target' (Destroy target creature…) → the whole card classified as a counterspell, castable only with a non-empty stack. Both faces were therefore permanently grey on an empty stack. THIRD member of the dual-type-line bug family (bug-1019 server, bug-1508 client timing). My earlier gating probe passed because its fixture lacked oracle_text — incomplete fixtures lie.",
+      "fix": "Front-face split in doesCardRequireStackTarget; canCastHandSpell's counterspell-heuristic bypass list extended with permanent_effect/multi_creature/divided_damage/fight (board-targeting programs are not stack responses). Regression test now uses the real oracle_text and asserts empty-stack castability of both faces; end-to-end probe on the live catalog row confirms.",
+      "tags": [
+        "adventure",
+        "dual-type-line",
+        "counterspell-heuristic",
+        "oracle-text",
+        "cast-gating",
+        "murderous-rider"
+      ],
+      "related_bugs": [
+        "bug-1019",
+        "bug-1508"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-12"
+    },
+    {
+      "id": "bug-1511",
+      "timestamp": "2026-07-12",
+      "error_message": "User: 'I have enough mana but can't play Murderous Rider/Swift.' Live-session inspection: only Command Tower + Island untapped (2 mana, max 1 B) vs a {1}{B}{B} cost — Swamp/Chapel were tapped earlier that turn (Breya cast, Y'shtola activations).",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Not a bug in the cast chain — genuinely unpayable. The UX gap: the sheet's cast buttons gate on TIMING only, so everything looked castable and the failure surfaced as a server bounce; players don't track that earlier casts drained their lands.",
+      "fix": "CardActionSheet now shows an up-front mana warning ('Probably not payable right now — N mana open') when a cast button is timing-enabled but the colour-aware afford check (pool + untapped lands, flex lands as wildcards, generic reductions applied) fails. Buttons stay enabled — rocks/abilities aren't counted, so a legal cast is never blocked.",
+      "tags": [
+        "ux",
+        "mana",
+        "affordability",
+        "card-action-sheet",
+        "not-a-bug"
+      ],
+      "related_bugs": [
+        "bug-1508",
+        "bug-1509"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-12"
+    },
+    {
+      "id": "bug-1510",
+      "timestamp": "2026-07-12",
+      "error_message": "Next dev: 'Jest worker encountered 2 child process exceptions, exceeding retry limit' — surfaced as 'Failed to generate static paths for /board/[id]', every page broken.",
+      "file": ".next (dev cache)",
+      "root_cause": "Environmental, not app code: the dev server had been running for a day through heavy hot-reload churn + three full test-suite runs; Next's internal static-paths jest-worker died and stayed dead. Fresh server + fresh .next reproduces nothing.",
+      "fix": "Kill dev server, rm -rf .next, npm run dev. All routes 200/307 again. Note: the hydration-mismatch warnings in the dev log are the Dashlane extension injecting data-dashlane-* attributes — noise, not ours.",
+      "tags": [
+        "nextjs",
+        "dev-server",
+        "jest-worker",
+        "dev-cache",
+        "environment"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-12"
+    },
+    {
+      "id": "bug-1509",
+      "timestamp": "2026-07-12",
+      "error_message": "User: Murderous Rider still doesn't work on localhost after bug-1508. Server probe in the live session: 'Not enough B mana to pay {1}{B}{B}' — auto-pay never tapped.",
+      "file": "lib/game/auto-tap.ts",
+      "root_cause": "getAutoTapMana/planAutoTap only handle SINGLE fixed-colour cost-free sources. The player's board had one Swamp untapped; the second B pip needed Isolated Chapel (two mana abilities) or Command Tower (color 'commander') — both invisible to the planner, so autoPay silently bailed ('leave to manual tapping') and the cast bounced. A Commander mana base is mostly duals/Tower, so auto-pay failed on-colour casts routinely; bug-1508's adventure autoPay hit the same wall.",
+      "fix": "planAutoTapFlex + FlexManaSource in auto-tap.ts: coloured pips tap the most-constrained capable source (fixed < dual < any/commander), generic remainder only taps explicit-colour sources (an any/commander source is never burned on generic — identity unknown; a pip colour is always in your own spell). getFlexTapMana in ControllerListV5 recognises duals (all-tap mana abilities), 'any' and 'commander' (flag → addManaFromCard commanderIdentity). autoPay fallback now uses it. 4 regression tests.",
+      "tags": [
+        "auto-tap",
+        "auto-pay",
+        "dual-lands",
+        "command-tower",
+        "commander",
+        "mana"
+      ],
+      "related_bugs": [
+        "bug-1508"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-12"
+    },
+    {
+      "id": "bug-1508",
+      "timestamp": "2026-07-12",
+      "error_message": "User: Murderous Rider // Swift End's adventure ability doesn't work, and only the adventure is selectable (creature Cast missing).",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Two client bugs. (1) actions.castAdventure never called autoPay — unlike every other cast path — so an adventure cast without floating mana always bounced off the server. (2) getCanQuickCast/canCardRespond/canCastHandSpell matched 'instant' against the FULL dual type_line ('Creature — Zombie Knight // Instant — Adventure'), so the CREATURE face was gated on instant timing; outside a priority window Cast hid while the (untimed) Adventure entry stayed visible → 'only adventure selectable'. Client twin of server bug-1019 (mig 373 split the front face server-side; the client never got the same fix).",
+      "fix": "castAdventure now autoPays the adventure's own cost (autoPay gained {override} next to the kicker {extra}); front-face split (' // ')[0] applied in getCanQuickCast, canCardRespond and canCastHandSpell's sorcery check. Regression tests in tests/unit/adventure-cast-gating.test.ts.",
+      "tags": [
+        "adventure",
+        "murderous-rider",
+        "autopay",
+        "dual-type-line",
+        "front-face",
+        "cast-timing"
+      ],
+      "related_bugs": [
+        "bug-1019",
+        "bug-1015"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-12"
+    },
+    {
       "id": "bug-1507",
       "timestamp": "2026-07-11",
       "error_message": "User: Verix Bladewing has kicker but the option doesn't work / isn't visible in the app.",
@@ -20475,6 +20602,310 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-11T22:02:23.828Z"
+    },
+    {
+      "id": "bug-1253",
+      "timestamp": "2026-07-11T22:41:09.114Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/controller/shared.ts",
+      "root_cause": "Had 'sorcery'",
+      "fix": "Changed to \"Creature // Sorcery — Adventure\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T22:41:09.114Z"
+    },
+    {
+      "id": "bug-1254",
+      "timestamp": "2026-07-11T22:41:26.211Z",
+      "error_message": "Type error",
+      "file": "lib/game/controller-selectors.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T22:41:26.211Z"
+    },
+    {
+      "id": "bug-1255",
+      "timestamp": "2026-07-11T22:42:12.742Z",
+      "error_message": "CSS fix: card",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "card: ControllerCard | null, extraCost?: string) => { → ControllerCard | null, opts?: { extra?: string",
+      "fix": "Changed card: ControllerCard | null, extraCost?: string) => { → ControllerCard | null, opts?: { extra?: string",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T22:42:12.742Z"
+    },
+    {
+      "id": "bug-1256",
+      "timestamp": "2026-07-11T22:42:25.512Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T22:42:25.512Z"
+    },
+    {
+      "id": "bug-1258",
+      "timestamp": "2026-07-11T23:10:13.168Z",
+      "error_message": "Type error",
+      "file": "lib/game/auto-tap.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T23:10:13.168Z"
+    },
+    {
+      "id": "bug-1259",
+      "timestamp": "2026-07-11T23:10:46.587Z",
+      "error_message": "Missing guard clause",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "No early return/throw for edge case: card.is_tapped",
+      "fix": "Added guard clause: if (card.is_tapped)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T23:10:46.587Z"
+    },
+    {
+      "id": "bug-1260",
+      "timestamp": "2026-07-11T23:11:00.856Z",
+      "error_message": "CSS fix: id, cardId",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "id: c.id, color: m.color, amount: m.amount → c.id, colors: [fixed.color], amount: fixed.amount; cardId: tap.id, sessionId, playerId, color: tap.color, amount: tap.amount, shouldTapCard: true → tap.id, sessionId, playerId,",
+      "fix": "Changed id: c.id, color: m.color, amount: m.amount → c.id, colors: [fixed.color], amount: fixed.amount; cardId: tap.id, sessionId, playerId, color: tap.color, amount: tap.amount, shouldTapCard: true → tap.id, sessionId, playerId,",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T23:11:00.856Z"
+    },
+    {
+      "id": "bug-1263",
+      "timestamp": "2026-07-11T23:34:32.811Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 11→14 lines (2 removed) | Also: {canCast && !picking && !attachPick && (; disabled={!hasRequiredTargets}",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-11T23:35:49.929Z"
+    },
+    {
+      "id": "bug-1264",
+      "timestamp": "2026-07-11T23:34:43.191Z",
+      "error_message": "Type error",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T23:34:43.191Z"
+    },
+    {
+      "id": "bug-1265",
+      "timestamp": "2026-07-11T23:34:53.546Z",
+      "error_message": "Missing guard clause",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "No early return/throw for edge case: !adventureMode || !autoAdventureCastRef.current",
+      "fix": "Added guard clause: if (!adventureMode || !autoAdventureCastRef.)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T23:34:53.546Z"
+    },
+    {
+      "id": "bug-1266",
+      "timestamp": "2026-07-11T23:35:57.666Z",
+      "error_message": "CSS fix: active",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "active: scale-95\" → scale-95 ${",
+      "fix": "Changed active: scale-95\" → scale-95 ${",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-11T23:35:57.666Z"
+    },
+    {
+      "id": "bug-1267",
+      "timestamp": "2026-07-11T23:48:53.543Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Mana warning — the cast buttons gate on TIMING; when the; there the server would bounce the cast, so say so up front. ",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-11T23:49:04.176Z"
+    },
+    {
+      "id": "bug-1269",
+      "timestamp": "2026-07-12T00:14:39.606Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-12T00:14:39.606Z"
+    },
+    {
+      "id": "bug-1270",
+      "timestamp": "2026-07-12T00:14:42.168Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-12T00:14:42.168Z"
+    },
+    {
+      "id": "bug-1271",
+      "timestamp": "2026-07-12T00:19:22.293Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/controller-selectors.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-12T00:19:22.293Z"
+    },
+    {
+      "id": "bug-1272",
+      "timestamp": "2026-07-12T00:19:39.758Z",
+      "error_message": "Type error",
+      "file": "tests/unit/adventure-cast-gating.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: test('adventure halves are castable on an EMPTY stack (not c; // bug-1512: doesCardRequireStackTarget saw instant+target i",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-12T00:19:45.824Z"
+    },
+    {
+      "id": "bug-1274",
+      "timestamp": "2026-07-12T00:28:43.337Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-12T00:28:43.337Z"
+    },
+    {
+      "id": "bug-1275",
+      "timestamp": "2026-07-12T00:29:01.756Z",
+      "error_message": "Wrong reference: React should be ReactNode",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Used \"React\" instead of \"ReactNode\"",
+      "fix": "Changed React → ReactNode",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-12T00:29:01.756Z"
+    },
+    {
+      "id": "bug-1276",
+      "timestamp": "2026-07-12T00:31:28.917Z",
+      "error_message": "CSS fix: enchantTargets",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "enchantTargets: equipTargets).map((c) => ( → equipTargets",
+      "fix": "Changed enchantTargets: equipTargets).map((c) => ( → equipTargets",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-12T00:31:28.917Z"
     }
   ]
 }

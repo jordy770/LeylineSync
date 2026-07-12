@@ -4,7 +4,7 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { planAutoTap, type ManaSource } from '../../lib/game/auto-tap'
+import { planAutoTap, planAutoTapFlex, type ManaSource } from '../../lib/game/auto-tap'
 import { parseManaCost } from '../../lib/game/mana'
 
 const EMPTY = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }
@@ -63,4 +63,54 @@ test('pool partially covers, taps only the remainder', () => {
   const plan = planAutoTap(parseManaCost('{2}{R}'), { ...EMPTY, R: 1, G: 1 }, [land('a', 'C'), land('b', 'C')])
   assert.ok(plan)
   assert.equal(plan!.length, 1)
+})
+
+// ── planAutoTapFlex (bug-1509) ────────────────────────────────────────────────
+// Colour-choice sources: duals get a colour assigned, 'any'/'commander' sources
+// cover coloured pips only (never the generic remainder — identity unknown).
+
+test('flex: second B pip comes from a dual, most-constrained first', () => {
+  // Swift End {1}{B}{B} with the exact board that surfaced the bug: one Swamp,
+  // a dual Chapel, Command Tower, and fixed off-colour sources for generic.
+  const plan = planAutoTapFlex(parseManaCost('{1}{B}{B}'), { ...EMPTY }, [
+    { id: 'swamp', colors: ['B'], amount: 1 },
+    { id: 'island', colors: ['U'], amount: 1 },
+    { id: 'chapel', colors: ['W', 'B'], amount: 1 },
+    { id: 'tower', colors: 'any', amount: 1, commander: true },
+    { id: 'grounds', colors: ['C'], amount: 1 },
+  ])
+  assert.ok(plan, 'plan found')
+  const black = plan!.filter((t) => t.color === 'B')
+  assert.equal(black.length, 2, 'both B pips covered')
+  assert.ok(black.some((t) => t.id === 'swamp'), 'fixed source used first')
+  assert.ok(black.some((t) => t.id === 'chapel'), 'dual covers the second pip (not the any-source)')
+  assert.ok(!plan!.some((t) => t.id === 'tower'), 'Command Tower saved when a dual suffices')
+})
+
+test('flex: commander source covers a pip and carries the flag', () => {
+  const plan = planAutoTapFlex(parseManaCost('{1}{B}{B}'), { ...EMPTY }, [
+    { id: 'swamp', colors: ['B'], amount: 1 },
+    { id: 'tower', colors: 'any', amount: 1, commander: true },
+    { id: 'island', colors: ['U'], amount: 1 },
+  ])
+  assert.ok(plan, 'plan found')
+  const tower = plan!.find((t) => t.id === 'tower')
+  assert.ok(tower, 'tower tapped for the second pip')
+  assert.equal(tower!.color, 'B')
+  assert.equal(tower!.commander, true)
+})
+
+test('flex: generic remainder never burns an any/commander source', () => {
+  const plan = planAutoTapFlex(parseManaCost('{2}'), { ...EMPTY }, [
+    { id: 'tower', colors: 'any', amount: 1, commander: true },
+    { id: 'tower2', colors: 'any', amount: 1, commander: true },
+  ])
+  assert.equal(plan, null)
+})
+
+test('flex: unmeetable pip still fails cleanly', () => {
+  const plan = planAutoTapFlex(parseManaCost('{G}{G}'), { ...EMPTY }, [
+    { id: 'swamp', colors: ['B'], amount: 1 },
+  ])
+  assert.equal(plan, null)
 })

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-11T22:02:24.632Z
-> Files: 1 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-12T00:49:48.425Z
+> Files: 9 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -221,6 +221,7 @@
 
 ## components/
 
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~72054 tok)
 - `GameBoard.tsx` — GameBoard (~10221 tok)
 
 ## components/board/
@@ -231,6 +232,8 @@
 
 ## components/controller/
 
+- `CardActionSheet.tsx` — Colour-aware "can I pay this right now" (pool + untapped lands) for the mana warning. (~21408 tok)
+- `shared.ts` — Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. (~10649 tok)
 
 ## components/judge/
 
@@ -267,6 +270,8 @@
 
 ## lib/game/
 
+- `auto-tap.ts` — An untapped, single-colour, cost-free mana source the auto-tapper may use: (~1404 tok)
+- `controller-selectors.ts` — Exports selectControllerViewModel, getCanQuickCast, canCardRespond, doesCardRequireStackTarget + 2 m (~1637 tok)
 
 ## lib/intelligence/
 
@@ -297,6 +302,7 @@
 
 ## supabase/migrations/
 
+- `202605010388_adventure_spell_cast_face.sql` — Adventure spells trigger as their CAST FACE (bug-1513). (~7269 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -306,6 +312,7 @@
 
 ## tests/feature/
 
+- `adventure-spell-triggers.test.ts` — Adventure casts and spell-cast watchers (mig 388, bug-1513). A spell on the (~934 tok)
 
 ## tests/fixtures/
 
@@ -318,6 +325,7 @@
 
 ## tests/unit/
 
+- `adventure-cast-gating.test.ts` — Adventure dual type_lines ("Creature — X // Instant — Adventure") must not (~940 tok)
 
 ## vercel/
 

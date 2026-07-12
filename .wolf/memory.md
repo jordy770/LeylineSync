@@ -7612,3 +7612,62 @@
 | 00:02 | Edited components/GameBoard.tsx | added optional chaining | ~186 |
 | 00:02 | Edited components/GameBoard.tsx | 2→2 lines | ~26 |
 | 00:03 | Spotlight minis + grid quadrants show threats first: minis preview creatures>planeswalkers>other nonlands (lands fallback), +N overflow chip, stats row now Creatures + Lands (with open count, was Battlefield/Seat); quadrant 10-card window sorts lands last | components/GameBoard.tsx | tsc+eslint clean, board 200 | ~4k |
+| 00:14 | Released v0.13.0 (couch update, 13 files): CI green, deploy green, live /join redirects anon correctly | release v0.13.0 | production updated | ~2k |
+| 00:41 | Edited components/controller/shared.ts | 2→3 lines | ~80 |
+| 00:41 | Edited lib/game/controller-selectors.ts | 12→15 lines | ~144 |
+| 00:41 | Edited lib/game/controller-selectors.ts | 3→5 lines | ~86 |
+| 00:42 | Edited components/ControllerListV5.tsx | modified if() | ~172 |
+| 00:42 | Edited components/ControllerListV5.tsx | CSS: extra | ~50 |
+| 00:42 | Edited components/ControllerListV5.tsx | CSS: override | ~241 |
+| 00:43 | Created tests/unit/adventure-cast-gating.test.ts | — | ~565 |
+| 00:46 | Adventure fixes: castAdventure autoPays the adventure cost (autoPay {extra|override}), dual type_line front-face split in getCanQuickCast/canCardRespond/canCastHandSpell + regression tests | ControllerListV5, shared.ts, controller-selectors.ts, tests/unit/adventure-cast-gating.test.ts | 2271/2271 pass | ~9k |
+| 01:10 | Edited lib/game/auto-tap.ts | added 5 condition(s) | ~877 |
+| 01:10 | Edited components/ControllerListV5.tsx | added 9 condition(s) | ~525 |
+| 01:10 | Edited components/ControllerListV5.tsx | inline fix | ~22 |
+| 01:11 | Edited components/ControllerListV5.tsx | added 2 condition(s) | ~274 |
+| 01:17 | Flex auto-tap (bug-1509): planAutoTapFlex taps duals + any/commander sources for coloured pips (generic only from explicit-colour sources); getFlexTapMana + autoPay fallback wired; probe on live session proved server path fine, payment was the gap | lib/game/auto-tap.ts, components/ControllerListV5.tsx, tests/unit/auto-tap.test.ts | 2275/2275 pass | ~12k |
+| 01:21 | Dev-server worker crash (Failed to generate static paths /board/[id]): killed server, cleared .next, fresh dev up — all routes healthy | .next | environmental, no code change | ~2k |
+| 01:34 | Edited components/controller/CardActionSheet.tsx | inline fix | ~15 |
+| 01:34 | Edited components/controller/CardActionSheet.tsx | CSS: adventurePlanCard | ~228 |
+| 01:34 | Edited components/controller/CardActionSheet.tsx | modified canCastHandSpell() | ~157 |
+| 01:34 | Edited components/controller/CardActionSheet.tsx | CSS: cast | ~200 |
+| 01:35 | Edited components/controller/CardActionSheet.tsx | 16→21 lines | ~349 |
+| 01:35 | Edited components/controller/CardActionSheet.tsx | expanded (+13 lines) | ~410 |
+| 01:36 | Edited components/ControllerListV5.tsx | CSS: null | ~165 |
+| 01:42 | Adventure dual-cast UX (user pref): both halves always visible side by side — creature button greys out with reason outside sorcery speed, adventure button one-tap casts (auto-enters mode + opens target picker via autoAdventureCastRef effect), quickPlay routes adventure cards to the sheet | components/controller/CardActionSheet.tsx, components/ControllerListV5.tsx | tsc+eslint clean, 2275/2275 pass | ~6k |
+| 01:48 | Edited components/ControllerListV5.tsx | CSS: warning, generic | ~299 |
+| 01:48 | Edited components/controller/CardActionSheet.tsx | 1→4 lines | ~72 |
+| 01:48 | Edited components/controller/CardActionSheet.tsx | 4→6 lines | ~29 |
+| 01:48 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~182 |
+| 01:49 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~205 |
+| 01:49 | Mana honesty in CardActionSheet: afford warning when timing-castable but likely unpayable (canAffordCost prop + openManaCount); user report was real mana shortage (2 open vs {1}{B}{B}) | CardActionSheet.tsx, ControllerListV5.tsx | tsc+eslint clean, targeted tests 15/15 | ~5k |
+| 02:14 | Edited components/controller/CardActionSheet.tsx | CSS: null | ~200 |
+| 02:14 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~58 |
+| 02:14 | Edited components/ControllerListV5.tsx | CSS: act | ~101 |
+| 02:15 | Stale-tab self-heal + gate diagnosis (bug-1512 open): onCardTap now refresh()es before gating, disabled creature button names the exact blocker (stack/priority/main-phase) | CardActionSheet.tsx, ControllerListV5.tsx | tsc+eslint clean; user tab showed main-phase gate false while server said true | ~4k |
+| 02:19 | Edited lib/game/controller-selectors.ts | added nullish coalescing | ~108 |
+| 02:19 | Edited components/controller/shared.ts | expanded (+7 lines) | ~202 |
+| 02:19 | Edited tests/unit/adventure-cast-gating.test.ts | 8→13 lines | ~153 |
+| 02:19 | Edited tests/unit/adventure-cast-gating.test.ts | modified half() | ~292 |
+| 02:20 | Edited tests/unit/adventure-cast-gating.test.ts | inline fix | ~38 |
+| 02:24 | ROOT CAUSE Rider grey buttons (bug-1512): doesCardRequireStackTarget classified the dual-face card as counterspell (full type_line instant + target in oracle text) -> front-face split + bypass list extended (permanent_effect/multi_creature/divided_damage/fight); real-row probe green | controller-selectors.ts, shared.ts, adventure-cast-gating.test.ts | 2276/2276 pass, live-row probe: both faces castable | ~10k |
+| 02:28 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~419 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | inline fix | ~20 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | inline fix | ~11 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | 13→15 lines | ~233 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | 1→3 lines | ~66 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | 11→11 lines | ~197 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | 11→11 lines | ~206 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | 15→15 lines | ~244 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | modified void() | ~219 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | 4→4 lines | ~74 |
+| 02:29 | Edited components/controller/CardActionSheet.tsx | 8→8 lines | ~111 |
+| 02:30 | Edited components/controller/CardActionSheet.tsx | 11→11 lines | ~213 |
+| 02:30 | Edited components/controller/CardActionSheet.tsx | 11→11 lines | ~199 |
+| 02:30 | Edited components/controller/CardActionSheet.tsx | 11→13 lines | ~244 |
+| 02:31 | Edited components/controller/CardActionSheet.tsx | 15→15 lines | ~241 |
+| 02:35 | Target pickers grouped per controller: GroupedTargets helper (opponents first in seat order, own cards last, name headers) applied to all 11 flat target lists in CardActionSheet | components/controller/CardActionSheet.tsx | tsc+eslint clean, 2276/2276 pass | ~6k |
+| 02:45 | Created tests/feature/adventure-spell-triggers.test.ts | — | ~934 |
+| 02:49 | Edited supabase/migrations/202605010388_adventure_spell_cast_face.sql | added 1 condition(s) | ~177 |
+| 02:54 | Mig 388 (bug-1513): adventure casts trigger/pay as their CAST FACE — fire_watcher_triggers face-aware (adventure_face payload), cast_spell_effect pays adventure cost; fixtures + AST1-3; test-writing exposed the printed-cost payment bug | mig 388, test-cards.json, adventure-spell-triggers.test.ts | 2279/2279 pass | ~14k |
+| 03:03 | User confirmed in-game: Swift End casts, pays, and triggers Y'shtola — the full adventure saga (bug-1508 t/m 1513) verified live | session cd99ba86 | working | ~1k |

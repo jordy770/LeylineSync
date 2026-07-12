@@ -83,7 +83,10 @@ export function getCanQuickCast(
     return canUseInstantActions && pendingStackCount > 0
   }
 
-  const typeLine = card.cards?.type_line?.toLowerCase() ?? ''
+  // Front face only: an Adventure creature's type_line is
+  // "Creature — X // Instant — Adventure" — the back half must not make the
+  // CREATURE cast at instant speed (client twin of the mig 373 server fix).
+  const typeLine = (card.cards?.type_line ?? '').split(' // ')[0].toLowerCase()
 
   if (typeLine.includes('instant')) {
     return canUseInstantActions
@@ -101,12 +104,17 @@ export function canCardRespond(card: ControllerCard, hasPendingStackItems: boole
     return false
   }
 
-  const typeLine = card.cards?.type_line?.toLowerCase() ?? ''
+  // Front face only — see getCanQuickCast: the Adventure back half is not a
+  // response the creature card can make.
+  const typeLine = (card.cards?.type_line ?? '').split(' // ')[0].toLowerCase()
   return typeLine.includes('instant') || (hasPendingStackItems && doesCardRequireStackTarget(card))
 }
 
 export function doesCardRequireStackTarget(card: ControllerCard) {
-  const typeLine = card.cards?.type_line?.toLowerCase() || ''
+  // Front face only (bug-1512, third member of the dual-type-line family):
+  // "Creature — X // Instant — Adventure" + 'target' in the oracle text made
+  // the whole card read as a counterspell — uncastable on an empty stack.
+  const typeLine = (card.cards?.type_line ?? '').split(' // ')[0].toLowerCase()
   const linkedCardWithText = card.cards as ({ oracle_text?: string | null } & NonNullable<ControllerCard['cards']>) | null
   const text = linkedCardWithText?.oracle_text?.toLowerCase() || ''
   const actions = card.cards?.script?.actions ?? []

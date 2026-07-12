@@ -6,6 +6,8 @@
 
 ## User Preferences
 
+- 2026-07-12 — Cast-time choices (adventure creature-vs-instant, kicker) must ALWAYS be presented side by side as direct one-tap buttons; an unavailable option greys out with the reason instead of disappearing. No mode-switch + second Cast press.
+
 - 2026-07-11 — Board spotlight: the big field must follow the ACTIVE (turn) player and stay put for the whole turn; priority is signalled only by the moving gold border. Jordy rejected priority-following (too jumpy) after trying v0.12.0.
 
 <!-- How the user likes things done. Code style, tools, patterns, communication. -->
@@ -19,6 +21,8 @@
 - **Card interaction = tap to open a bottom sheet** (`CardActionSheet` in components/ControllerListV4.tsx), shared by hand AND played cards via single `selectedCard` state. Prefers this over drag (drag in v1/v2 felt bad). Sheet layout: pinned card preview on the LEFT, scrollable actions/abilities/target-pickers on the RIGHT, so the card stays visible while picking targets. Actions are behavior-engine-derived per card+zone, not hardcoded.
 
 ## Key Learnings
+
+- Test DB vs dev DB: the harness runs against `leyline_test` (rebuilt via `npm run test:db:setup` from local-bootstrap + all migrations); `npx supabase migration up` only touches the dev `postgres` DB. A new migration must be applied to BOTH before feature tests can see it.
 
 - Board/TV performance: TV browsers choke on per-frame GPU effects. The spectator board (shareToken) gets `.tv-flat` (kills `backdrop-filter: blur` on leyline-glass-panel + the priority border pulse) and `MotionConfig reducedMotion='always'` (kills transform/layout animations, keeps opacity). Decorative blur-2xl/3xl washes are skipped in tvMode. Don't add per-frame effects to GameBoard without gating them on `!tvMode`.
 
@@ -202,6 +206,10 @@
 - **(2026-06-27) Reusable "choose an opponent, then hand them a permanent" hook (mig 363).** The first donate cut picked the recipient deterministically (lowest-seat opponent) — an approximation in multiplayer. Replaced with a real choice built on the EXISTING `choose_player` decision infra (no new front-end: the controller already renders `choose_player` via `ChoosePlayerBody`, ControllerListV5:2482). Pattern: `handle_permanent_effect`, for kind=gain_control `to:opponent`, counts LIVING opponents — **1 opponent (1v1) → apply directly, no prompt**; **>1 → park a `choose_player` decision** (options = living opponents) whose `params.apply_permanent_effect` carries the permanent_effect payload (with `to` stripped). `submit_decision`'s choose_player branch: when `params ? 'apply_permanent_effect'`, runs `apply_creature_effect(kind, target_card_id, payload || {acting_controller: chosen})` then `resume_or_finalize`. Generalizes to any future "target opponent gains/receives this permanent" cast — park a choose_player with `apply_permanent_effect`. NOTE `resume_or_finalize` only FINALIZES a `permanent_effect` item (it re-runs the program only for triggered_ability/spell_effect), so `then`/search/graveyard riders AFTER the apply in handle_permanent_effect are SKIPPED on the deferred (choose_player) path — fine for gain_control donate (no riders), but a donate-with-riders card would need the riders moved into the resume. [[bug-1487]] Verified OK (already castable): Reanimate/Animate Dead (return_from_graveyard → spell_effect program via DECISION path), Olivia's Wrath/Languish (pump_all → spell_effect), Vandalblast/Bedevil (destroy permanent → permanent_effect), Abrade (modal), Blasphemous Edict (sacrifice → spell_effect), Deadly Rollick/Terminate/Crib Swap/New Blood (exile/destroy creature → creature_effect). [[bug-1486]] [[bug-1487]]
 
 ## Do-Not-Repeat
+
+- 2026-07-12 — (b) Dual-type-line strikes THREE times now (bug-1019/1508/1512): grep for EVERY `type_line` string-includes check when touching cast logic — doesCardRequireStackTarget was missed twice. (c) Gating-probe fixtures MUST mirror the full real catalog row (oracle_text included) — a fixture without oracle_text green-lit broken gating.
+
+- 2026-07-12 — Dual type_lines ('Creature — X // Instant — Adventure') have now caused the SAME bug class twice: server (bug-1019, mig 373) and client (bug-1508). Any `type_line.includes('instant'/'sorcery'/...)` check MUST split the front face first: `type_line.split(' // ')[0]`. Also: every cast path needs autoPay — castAdventure shipped without it and silently only worked with floating mana.
 
 - 2026-07-11 — normalize* functions in lib/game/data.ts are field allowlists: adding a column to a SELECT without adding it to the matching normalizer silently drops it client-side (bug-1506, tv_code). Also: don't declare a data path healthy from DB/REST checks alone — walk the mapping layer to the component before concluding 'it's just UX'.
 - (2026-06-27) **The app is LANDSCAPE-ONLY (cerebrum User-Pref line 11) — never key responsive layout off `max-height`/portrait-vs-landscape; key off WIDTH.** When making the controller opponent-row (`OpponentRowOverlay` in ControllerListV5) lay out as a grid, I first copied StackRail's `[@media(max-height:640px)]` pattern with `grid-cols-1` as default. WRONG: StackRail's height-gate is about *compacting for short screens*, a different concern; a height-gate gives a wide landscape tablet/TV (height >640px) only 1 column. Correct = width-scaled (`grid-cols-2 lg:grid-cols-3`, with a `grid-cols-1` guard for a 1-opponent heads-up game so the lone card isn't half-width). ROOT CAUSE: I generated the layout change BEFORE reading cerebrum's User Preferences (OpenWolf rule: check cerebrum first) — cerebrum is 336KB so I'd deferred it; grep the specific section (`## User Preferences`) instead of skipping. [[app-is-landscape-only]]

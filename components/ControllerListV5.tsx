@@ -54,7 +54,7 @@ import {
 import { buzz } from '@/lib/game/haptics'
 import { getPowerToughnessLabel } from '@/lib/game/controller-selectors'
 import { decrementPaymentColor, getPaymentTotal, incrementPaymentColor, parseManaCost, type ManaPayment, type ParsedManaCost } from '@/lib/game/mana'
-import { planAutoTap, type ManaSource } from '@/lib/game/auto-tap'
+import { planAutoTapFlex, type FlexManaSource } from '@/lib/game/auto-tap'
 import { emptyManaAvailability, producibleColorsFromScript, type ManaAvailability } from '@/lib/game/mana-sources'
 import { shouldAutoPass, type AutoPassSettings } from '@/lib/game/auto-pass'
 import { getGameLog, getOpponentManaSources, getOpponentZoneData, getSessionCommanders, getTurnState } from '@/lib/game/data'
@@ -202,6 +202,43 @@ function getAutoTapMana(card: ControllerCard): { color: ManaColor; amount: numbe
 /** Returns the single mana color to auto-produce when a card has exactly one simple tap ability. */
 function getAutoTapColor(card: ControllerCard): ManaColor | null {
   return getAutoTapMana(card)?.color ?? null
+}
+
+/**
+ * A colour-CHOICE tap source for the flex auto-tap planner (bug-1509): duals
+ * (explicit colour set), 'any' sources, and 'commander' sources (flagged so the
+ * engine validates the chosen colour against the commander's identity). Only
+ * when every tap ability is a cost-free mana ability, so the tap is unambiguous.
+ */
+function getFlexTapMana(card: ControllerCard): FlexManaSource | null {
+  if (card.is_tapped) return null
+  const script = normalizeCardBehaviorToV2(
+    card.copied_script ?? card.cards?.script ?? null,
+    card.cards?.type_line,
+  )
+  const abilities = script.activated_abilities ?? []
+  const manaAbilities = abilities.filter((a) => a.is_mana_ability)
+  if (manaAbilities.length === 0) return null
+  const tapAbilities = abilities.filter((a) => (a.costs ?? []).some((c) => c.type === 'tap_self'))
+  if (tapAbilities.some((a) => !a.is_mana_ability)) return null
+  if (manaAbilities.some((a) => a.costs.length !== 1 || a.costs[0].type !== 'tap_self')) return null
+
+  const colors = new Set<ManaColor>()
+  let any = false
+  let commander = false
+  let amount = 1
+  for (const ability of manaAbilities) {
+    const adds = ability.effects.filter(isAddManaBehaviorAction)
+    if (adds.length !== 1) return null
+    const add = adds[0]
+    amount = Math.max(1, add.amount ?? 1)
+    if (add.color === 'any') any = true
+    else if (add.color === 'commander') { any = true; commander = true }
+    else colors.add(add.color as ManaColor)
+  }
+  if (any) return { id: card.id, colors: 'any', amount, commander }
+  if (colors.size === 0) return null
+  return { id: card.id, colors: [...colors], amount }
 }
 
 // Combat keyword hints shown on creatures during the combat layouts — short
@@ -910,15 +947,15 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   // from matching-colour sources automatically; for the GENERIC part, if more than
   // one colour could pay it the player picks (so auto-tap never spends a colour you
   // were saving). Falls back to planAutoTap for flexible/any sources.
-  const autoPay = async (card: ControllerCard | null, extraCost?: string) => {
+  const autoPay = async (card: ControllerCard | null, opts?: { extra?: string; override?: string }) => {
     if (!card || !playerId) return
-    const manaCost = card.cards?.mana_cost ?? ''
+    // `override` pays a different cost than the printed one (an Adventure half);
+    // `extra` is a surcharge on top (kicker).
+    const manaCost = opts?.override ?? card.cards?.mana_cost ?? ''
     if (/x/i.test(manaCost)) return
     const parsed = parseManaCost(manaCost)
-    // Optional-cost surcharge (kicker): the server demands printed + kicker in
-    // one payment, so the auto-tap plan must cover both.
-    if (extraCost) {
-      const extra = parseManaCost(extraCost)
+    if (opts?.extra) {
+      const extra = parseManaCost(opts.extra)
       parsed.generic += extra.generic
       for (const c of manaColors) parsed.colored[c] += extra.colored[c]
     }
@@ -950,15 +987,24 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       if (!pipsCovered) break
     }
     if (!pipsCovered) {
-      // Flexible/any or not enough simple sources — defer to the original planner.
-      const sources: ManaSource[] = battlefieldCards.flatMap((c) => {
-        const m = getAutoTapMana(c)
-        return m ? [{ id: c.id, color: m.color, amount: m.amount }] : []
+      // Not enough simple single-colour sources — the flex planner also taps
+      // duals and 'any'/'commander' sources, choosing a colour per tap
+      // (bug-1509: a Commander mana base is mostly these).
+      const flexSources: FlexManaSource[] = battlefieldCards.flatMap((c) => {
+        if (c.is_tapped) return []
+        const fixed = getAutoTapMana(c)
+        if (fixed) return [{ id: c.id, colors: [fixed.color], amount: fixed.amount }]
+        const flex = getFlexTapMana(c)
+        return flex ? [flex] : []
       })
-      const plan = planAutoTap(cost, manaPool, sources)
+      const plan = planAutoTapFlex(cost, manaPool, flexSources)
       if (!plan || plan.length === 0) return
       for (const tap of plan) {
-        await addManaFromCard({ supabase, cardId: tap.id, sessionId, playerId, color: tap.color, amount: tap.amount, shouldTapCard: true })
+        await addManaFromCard({
+          supabase, cardId: tap.id, sessionId, playerId,
+          color: tap.color, amount: tap.amount, shouldTapCard: true,
+          commanderIdentity: tap.commander,
+        })
       }
       await refresh()
       return
@@ -1007,7 +1053,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       const kicker = opts?.kicked
         ? normalizeCardBehaviorToV2(card?.copied_script ?? card?.cards?.script ?? null, card?.cards?.type_line)?.kicker ?? null
         : null
-      await autoPay(card, kicker ?? undefined)
+      await autoPay(card, kicker ? { extra: kicker } : undefined)
       await castCardFromHand(supabase, sessionId, cardId, undefined, undefined, null, opts?.kicked ?? false)
       buzz()
       await refresh()
@@ -1200,12 +1246,18 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       const script = card ? normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line) : null
       const actions = script?.adventure?.spell_effect?.actions
       if (!actions || actions.length === 0) return
+      // Pay the ADVENTURE cost (it can differ from the printed creature cost) —
+      // this path never auto-paid, so every adventure cast without floating
+      // mana bounced off the server (bug-1508).
+      const advCost = script?.adventure?.cost
+      await autoPay(card, advCost ? { override: advCost } : undefined)
       const isCounter = actions.some((a) => (a as { type?: string }).type === 'counter')
       if (isCounter && opts.stackItemId) {
         await putCounterSpellOnStack(supabase, sessionId, opts.stackItemId, cardId, undefined, true)
       } else {
         await castSpellEffect(supabase, sessionId, actions, cardId, null, opts.targetCardId ?? null, true)
       }
+      buzz()
       await refresh()
     },
     activateAbility: async (
@@ -1285,11 +1337,13 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   // ETB "choose one") still surface afterwards via the pending-decision popup.
   const quickPlay = (card: ControllerCard) => {
     const isLand = card.cards?.type_line?.toLowerCase().includes('land') ?? false
-    // A kicker cost is a cast-time choice too — the sheet must ask kicked-or-not.
-    const hasKicker = !isLand && Boolean(
-      normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)?.kicker,
-    )
-    if (isLand || (getSpellPlan(card).kind === 'normal' && !hasKicker)) {
+    // Kicker and adventure are cast-time choices — the sheet must ask
+    // (kicked-or-not / creature-or-adventure) instead of silently picking one.
+    const script = isLand
+      ? null
+      : normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)
+    const hasCastChoice = Boolean(script?.kicker || script?.adventure)
+    if (isLand || (getSpellPlan(card).kind === 'normal' && !hasCastChoice)) {
       actions.castSpell(card.id).catch((e) => reportError(e, 'play'))
     } else {
       setSelectedCard(card)
@@ -1417,7 +1471,13 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
                 commanderDamage={commanderDamage}
                 turnState={turnState}
                 canOrderBlockers={canOrderBlockers}
-                onCardTap={setSelectedCard}
+                onCardTap={(card) => {
+                  // Opening a card = intent to act: re-sync the game state so a
+                  // tab with stale turn/stack data heals itself before gating
+                  // the cast buttons on that data (bug-1512).
+                  setSelectedCard(card)
+                  void refresh()
+                }}
                 onQuickPlay={quickPlay}
                 topLibraryCard={topLibraryCard}
                 canCastTopNow={canCastTopNow}
@@ -1461,6 +1521,16 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
           <CardActionSheet
             card={selectedCardLive}
             playableFromExile={playableFromExileIds.has(selectedCardLive.id)}
+            canAffordCost={(costStr) => {
+              // Colour-aware "can I pay this right now" for the sheet's mana
+              // warning: floating pool + untapped lands (flex lands = wildcards).
+              const parsed = parseManaCost(costStr)
+              const reduction = genericCostReduction(selectedCardLive, costReductions, boardCards, playerId)
+              const cost = reduction > 0 ? { ...parsed, generic: Math.max(0, parsed.generic - reduction) } : parsed
+              const total = cost.generic + manaColors.reduce((s, col) => s + cost.colored[col], 0)
+              return total === 0 || canAffordCost(cost, availableByColor, flexibleMana)
+            }}
+            openManaCount={availableMana}
             canCastSorceries={canCastSorceries}
             canCastInstants={canCastInstants}
             pendingStackCount={pendingStackItems.length}

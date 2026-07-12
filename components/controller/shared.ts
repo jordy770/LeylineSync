@@ -586,11 +586,19 @@ export function canCastHandSpell(
     plan.kind === 'add_counters' ||
     plan.kind === 'creature_effect' ||
     plan.kind === 'targeted_spell_effect' ||
+    // Permanent/creature-targeting programs (Swift End's destroy, fights,
+    // divided damage) target the BOARD, not the stack — they must bypass the
+    // counterspell heuristic like the kinds above (bug-1512).
+    plan.kind === 'permanent_effect' ||
+    plan.kind === 'multi_creature' ||
+    plan.kind === 'divided_damage' ||
+    plan.kind === 'fight' ||
     plan.kind === 'draw' ||
     plan.kind === 'spell_effect' ||
     plan.kind === 'modal'
   ) {
-    const isSorcerySpeed = card.cards?.type_line?.toLowerCase().includes('sorcery') ?? false
+    // Front face only ("Creature // Sorcery — Adventure" must not flip timing).
+    const isSorcerySpeed = (card.cards?.type_line ?? '').split(' // ')[0].toLowerCase().includes('sorcery')
     return card.zone === 'hand' && (isSorcerySpeed ? canCastSorceries : canCastInstants)
   }
   return getCanQuickCast(card, canCastSorceries, canCastInstants, pendingStackCount)
