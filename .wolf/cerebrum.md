@@ -22,6 +22,12 @@
 
 ## Key Learnings
 
+- (2026-07-12) **CDA count extension pattern (mig 389, Wight of Precinct Six):** reproduce the LATEST `card_cda_value` (was mig 268 — no later redefinitions, grep migrations to confirm) verbatim, add one `when '<count>'` branch, and extend the `CdaValueSchema` count enum in lib/game/card-behavior-schema.ts. New count `creature_cards_in_opponents_graveyards` counts creature cards (`cards.is_token = false AND game_cards.is_token = false`, mig 239 convention) in every other player's graveyard. "Gets +1/+1 for each X" on a printed 1/1 = `cda: { power/toughness: { count, plus: 1 } }`.
+
+- (2026-07-12) **Sacrifice-ONLY mana abilities work out of the box** via the mig 226 (Treasure) cost parser — `costs: [{type:'sacrifice_self'}]` with no `tap_self` is valid (Eldrazi Scion/Spawn tokens, proven in tests/feature/eldrazi-spawn-tokens.test.ts).
+
+- (2026-07-12) **deck:upsert "DIFFERS (kept)" can mean the DB script is OLDER, not hand-improved.** Edgar Markov had 4 differing cards; in all 4 the curated card-scripts.json version was richer (DB missed the Etchings/Banner anthem; Sanctum Seeker only triggered on itself instead of any attacking Vampire). Diff DB-vs-curated before deciding, then `--force` if curated wins.
+
 - Test DB vs dev DB: the harness runs against `leyline_test` (rebuilt via `npm run test:db:setup` from local-bootstrap + all migrations); `npx supabase migration up` only touches the dev `postgres` DB. A new migration must be applied to BOTH before feature tests can see it.
 
 - Board/TV performance: TV browsers choke on per-frame GPU effects. The spectator board (shareToken) gets `.tv-flat` (kills `backdrop-filter: blur` on leyline-glass-panel + the priority border pulse) and `MotionConfig reducedMotion='always'` (kills transform/layout animations, keeps opacity). Decorative blur-2xl/3xl washes are skipped in tvMode. Don't add per-frame effects to GameBoard without gating them on `!tvMode`.

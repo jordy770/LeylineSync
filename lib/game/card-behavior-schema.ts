@@ -89,7 +89,7 @@ export const CardActionSchema = z.union([
 // read straight from the script by card_cda_value — version-agnostic, so both
 // the V1 and V2 schemas accept it. (Caught missing by validate:fixtures.)
 const CdaValueSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'artifacts_you_control']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'artifacts_you_control', 'creature_cards_in_opponents_graveyards']),
   type_line: z.string().optional(),
   plus: z.number().int().optional(),
 })

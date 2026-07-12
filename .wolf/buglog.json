@@ -20906,6 +20906,39 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-12T00:31:28.917Z"
+    },
+    {
+      "id": "bug-1277",
+      "timestamp": "2026-07-12T00:00:00Z",
+      "error_message": "Awakening Zone (Meren deck, marked implemented) creates 'Eldrazi Spawn Token' but no such token existed in fixtures or catalog — trigger would silently make nothing in a real game",
+      "file": "tests/fixtures/test-cards.json",
+      "root_cause": "curated script referenced a token by name that was never added as an is_token fixture; deck:upsert's token-dep scan only creates tokens it can find fixture stats for, and the deck was never upserted after Awakening Zone was scripted",
+      "fix": "added 'Eldrazi Spawn Token' (0/1) and 'Eldrazi Scion Token' (1/1) fixtures with the sac-only {C} mana ability; deck:upsert --apply created both catalog rows; engine-proved in tests/feature/eldrazi-spawn-tokens.test.ts",
+      "tags": [
+        "token-catalog",
+        "create_token",
+        "deck-upsert",
+        "meren"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-12T00:00:00Z"
+    },
+    {
+      "id": "bug-1278",
+      "timestamp": "2026-07-12T00:00:00Z",
+      "error_message": "deck:triage reports labeled EVERY needs-building card '(COMMANDER)' in decks using '# Creatures'-style comment section headers",
+      "file": "scripts/triage-decklist.mjs",
+      "root_cause": "the parser skipped blank/comment lines BEFORE evaluating section headers, so inCommander stayed true from the 'Commander' header to end of file (curated lists only use comment headers after it)",
+      "fix": "blank and comment lines now also reset inCommander; verified prosper-treasures.triage.md shows 0 stray labels",
+      "tags": [
+        "deck-triage",
+        "parser",
+        "cosmetic"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-12T00:00:00Z"
     }
   ]
 }

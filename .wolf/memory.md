@@ -7671,3 +7671,16 @@
 | 02:49 | Edited supabase/migrations/202605010388_adventure_spell_cast_face.sql | added 1 condition(s) | ~177 |
 | 02:54 | Mig 388 (bug-1513): adventure casts trigger/pay as their CAST FACE — fire_watcher_triggers face-aware (adventure_face payload), cast_spell_effect pays adventure cost; fixtures + AST1-3; test-writing exposed the printed-cost payment bug | mig 388, test-cards.json, adventure-spell-triggers.test.ts | 2279/2279 pass | ~14k |
 | 03:03 | User confirmed in-game: Swift End casts, pays, and triggers Y'shtola — the full adventure saga (bug-1508 t/m 1513) verified live | session cd99ba86 | working | ~1k |
+| 03:10 | Released v0.13.1 (adventure saga, 14 files + mig 388): CI green, deploy green, deploy log confirms mig 388 applied to hosted Supabase | release v0.13.1 | production updated | ~3k |
+
+## Session: 2026-07-12 15:48
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:53 | Triage-audit alle precons: 8/10 selecteerbare precons 100% speelbaar; Atraxa (34) en Krenko (43) needs-build | docs/commander-decks/*.triage.md | ok | ~3k |
+| 16:16 | Created supabase/migrations/202605010389_wight_opponents_graveyard_cda.sql | — | ~967 |
+| 16:16 | Edited lib/game/card-behavior-schema.ts | inline fix | ~44 |
+| 16:18 | Created tests/feature/wight-opponents-graveyard-cda.test.ts | — | ~428 |
+| 16:19 | Created tests/feature/eldrazi-spawn-tokens.test.ts | — | ~335 |
+| 16:25 | Edited scripts/triage-decklist.mjs | expanded (+6 lines) | ~91 |
+| 16:26 | Stap 1 uitgevoerd: mig 389 (CDA opponents-graveyards) + Wight/Sifter/Pawn scripts + Eldrazi tokens; suite 2284 groen; Edgar+Wilhelt+Meren geseed → 13 precons, 11 volledig speelbaar | mig 389, card-scripts.json, test-cards.json, 2 tests, triage-fix | ok | ~25k |

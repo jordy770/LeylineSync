@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-12T00:49:48.425Z
-> Files: 9 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-12T14:25:07.791Z
+> Files: 14 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -271,6 +271,7 @@
 ## lib/game/
 
 - `auto-tap.ts` — An untapped, single-colour, cost-free mana source the auto-tapper may use: (~1404 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~21623 tok)
 - `controller-selectors.ts` — Exports selectControllerViewModel, getCanQuickCast, canCardRespond, doesCardRequireStackTarget + 2 m (~1637 tok)
 
 ## lib/intelligence/
@@ -290,6 +291,7 @@
 
 ## scripts/
 
+- `triage-decklist.mjs` — Decklist triage — the planning step before implementing a deck's cards. (~3882 tok)
 
 ## supabase/
 
@@ -303,6 +305,7 @@
 ## supabase/migrations/
 
 - `202605010388_adventure_spell_cast_face.sql` — Adventure spells trigger as their CAST FACE (bug-1513). (~7269 tok)
+- `202605010389_wight_opponents_graveyard_cda.sql` — Wight of Precinct Six (Wilhelt precon) — new CDA count (mig 149 layer 7a): (~967 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -313,6 +316,8 @@
 ## tests/feature/
 
 - `adventure-spell-triggers.test.ts` — Adventure casts and spell-cast watchers (mig 388, bug-1513). A spell on the (~934 tok)
+- `eldrazi-spawn-tokens.test.ts` — Eldrazi Scion/Spawn tokens (Sifter of Skulls / Pawn of Ulamog, Meren precon): (~335 tok)
+- `wight-opponents-graveyard-cda.test.ts` — mig 389 — CDA count 'creature_cards_in_opponents_graveyards' (Wight of (~428 tok)
 
 ## tests/fixtures/
 

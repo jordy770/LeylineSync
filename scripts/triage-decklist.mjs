@@ -45,7 +45,13 @@ const cards = []
 let inCommander = false
 for (const rawLine of lines) {
   const line = rawLine.trim()
-  if (line === '' || line.startsWith('#') || line.startsWith('//')) continue
+  if (line === '' || line.startsWith('#') || line.startsWith('//')) {
+    // A blank/comment line ends the Commander section too — the curated lists
+    // use "# Creatures"-style comment headers, which must not leave every
+    // subsequent card flagged (COMMANDER).
+    inCommander = false
+    continue
+  }
   const m = line.match(/^(\d+)x?\s+(.+)$/)
   if (!m) {
     inCommander = line.toLowerCase() === 'commander'

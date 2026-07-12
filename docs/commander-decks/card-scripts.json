@@ -23767,5 +23767,63 @@
         ]
       }
     ]
+  },
+  "Wight of Precinct Six": {
+    "schema_version": 2,
+    "cda": {
+      "power": {
+        "count": "creature_cards_in_opponents_graveyards",
+        "plus": 1
+      },
+      "toughness": {
+        "count": "creature_cards_in_opponents_graveyards",
+        "plus": 1
+      }
+    }
+  },
+  "Sifter of Skulls": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "controller": "you",
+          "exclude_self": true,
+          "nontoken": true
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Eldrazi Scion Token",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Pawn of Ulamog": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "creature_died",
+        "filter": {
+          "controller": "you",
+          "nontoken": true
+        },
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Create a 0/1 Eldrazi Spawn?",
+            "effects": [
+              {
+                "type": "create_token",
+                "token": "Eldrazi Spawn Token",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }
