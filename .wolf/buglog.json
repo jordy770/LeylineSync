@@ -21448,6 +21448,39 @@
    ],
    "occurrences": 1,
    "last_seen": "2026-07-15T00:00:00Z"
+  },
+  {
+   "id": "bug-1310",
+   "timestamp": "2026-07-15T09:46:52.975Z",
+   "error_message": "Significant refactor of ",
+   "file": "lib/game/card-behavior-schema.ts",
+   "root_cause": "2 lines replaced/restructured",
+   "fix": "Rewrote 3→9 lines (2 removed)",
+   "tags": [
+    "auto-detected",
+    "refactor",
+    "ts"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T09:46:52.975Z"
+  },
+  {
+   "id": "bug-2690",
+   "timestamp": "2026-07-15T00:00:00Z",
+   "error_message": "Target is not a legal creature for this spell — Kalitas' counters aimed at the sacrificed creature",
+   "file": "supabase/functions_src/activate_ability.sql",
+   "root_cause": "p_target_card_id is a dual-role field: the sacrifice_creature cost consumed it but did NOT clear it (the discard cost did), so the effect dispatch re-used the dead creature as effect target",
+   "fix": "mig 402: p_target_card_id := null after paying the sacrifice_creature cost (mirrors the discard pattern). Cards needing BOTH a sac pick and an effect target (Etchings, Goblin Bombardment creature-mode) need two-pick support — shortlisted",
+   "tags": [
+    "activate_ability",
+    "dual-role-param",
+    "sacrifice",
+    "cost"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T00:00:00Z"
   }
  ]
 }

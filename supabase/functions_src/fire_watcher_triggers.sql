@@ -195,6 +195,9 @@ begin
                         -- token_created (mig 399, Mirkwood Bats): any token —
                         -- Treasures/Clues are artifacts, not creatures.
                         when 'token_created' then ''
+                        -- card_drawn (mig 401): the subject is the DRAWN card
+                        -- (hidden info!) — never type-gate it.
+                        when 'card_drawn' then ''
                         else 'creature' end) || '%' then
         continue;
       end if;
@@ -280,6 +283,26 @@ begin
          and public.resolve_count_amount(p_session_id, p_changed_controller,
                '{"count":"spells_cast_this_turn"}'::jsonb)
              <> (v_filter ->> 'spell_number')::integer then
+        continue;
+      end if;
+
+      -- "your SECOND/THIRD card each turn" (mig 401, Ethereal Investigator /
+      -- Astrologian's Planisphere): the draw site passes the 1-based per-turn
+      -- index as p_extra.draw_number; fire only on the exact Nth draw.
+      if v_filter ? 'draw_number'
+         and coalesce((p_extra ->> 'draw_number')::integer, 0)
+             <> (v_filter ->> 'draw_number')::integer then
+        continue;
+      end if;
+
+      -- "if it isn't that player's turn" (mig 401, Tataru Taru's Scions'
+      -- Secretary): the event's subject player must not be the active player.
+      if coalesce((v_filter ->> 'off_turn')::boolean, false)
+         and exists (
+           select 1 from public.game_turn_state ts
+           where ts.session_id = p_session_id
+             and ts.active_player_id = p_changed_controller
+         ) then
         continue;
       end if;
 

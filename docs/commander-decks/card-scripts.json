@@ -11208,6 +11208,20 @@
             }
           }
         ]
+      },
+      {
+        "event": "card_drawn",
+        "filter": {
+          "controller": "you",
+          "draw_number": 2
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Spirit Token",
+            "count": 1
+          }
+        ]
       }
     ]
   },
@@ -13723,6 +13737,23 @@
             ]
           }
         ]
+      },
+      {
+        "id": "tataru_scions_secretary",
+        "event": "card_drawn",
+        "once_per_turn": true,
+        "filter": {
+          "controller": "opponent",
+          "off_turn": true
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Treasure Token",
+            "count": 1,
+            "tapped": true
+          }
+        ]
       }
     ]
   },
@@ -14153,6 +14184,28 @@
             "filter": {
               "controller": "you",
               "exclude_type": "Creature"
+            },
+            "effects": [
+              {
+                "type": "add_counters",
+                "amount": 1,
+                "counter_type": "plus_one_one"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "granted_ability",
+        "affected": "equipped",
+        "payload": {
+          "kind": "triggered",
+          "ability": {
+            "id": "planisphere_third_draw",
+            "event": "card_drawn",
+            "filter": {
+              "controller": "you",
+              "draw_number": 3
             },
             "effects": [
               {
@@ -15400,7 +15453,12 @@
             "amount": "{2}{B}"
           },
           {
-            "type": "sacrifice_creature"
+            "type": "sacrifice_creature",
+            "type_line_any": [
+              "Vampire",
+              "Zombie"
+            ],
+            "another": true
           }
         ],
         "effects": [
@@ -17012,6 +17070,28 @@
             "type": "create_token",
             "token": "Treasure Token",
             "count": 1
+          }
+        ]
+      }
+    ],
+    "activated_abilities": [
+      {
+        "label": "Sacrifice a Treasure: exile the top card, play it this turn",
+        "costs": [
+          {
+            "type": "sacrifice_artifacts",
+            "count": 1,
+            "type_line": "Treasure"
+          }
+        ],
+        "effects": [
+          {
+            "type": "impulse",
+            "count": 1
+          },
+          {
+            "type": "gain_life",
+            "amount": 0
           }
         ]
       }
@@ -23816,7 +23896,8 @@
         "effects": [
           {
             "type": "tap",
-            "target_type": "permanent"
+            "target_type": "permanent",
+            "stun": true
           }
         ]
       },
@@ -23825,7 +23906,8 @@
         "effects": [
           {
             "type": "tap",
-            "target_type": "permanent"
+            "target_type": "permanent",
+            "stun": true
           }
         ]
       }

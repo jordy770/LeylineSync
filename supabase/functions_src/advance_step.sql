@@ -164,7 +164,19 @@ begin
         and owner_id = v_current_state.active_player_id
         and zone = 'battlefield'
         and is_tapped = true
-        and coalesce((counters ->> 'exerted')::integer, 0) = 0;
+        and coalesce((counters ->> 'exerted')::integer, 0) = 0
+        -- Stun (mig 403, Frost Titan): a stunned permanent skips this untap.
+        and coalesce((counters ->> 'stun')::integer, 0) = 0;
+
+      -- Each skipped untap consumes ONE stun counter (a multi-stunned permanent
+      -- stays down for that many of its untap steps).
+      update public.game_cards
+      set counters = public.adjust_counter_bag(counters, 'stun', -1)
+      where session_id = p_session_id
+        and owner_id = v_current_state.active_player_id
+        and zone = 'battlefield'
+        and is_tapped = true
+        and coalesce((counters ->> 'stun')::integer, 0) > 0;
 
       update public.game_cards
       set counters = counters - 'exerted'
@@ -215,6 +227,13 @@ begin
           is_tapped = false,
           damage_marked = 0
         where id = v_drawn_card_id;
+
+        -- card_drawn watcher (mig 401): tally + broadcast with the 1-based
+        -- draw index (Ethereal Investigator's "second card each turn").
+        perform public.fire_watcher_triggers(
+          p_session_id, v_drawn_card_id, v_current_state.active_player_id, 'card_drawn',
+          jsonb_build_object('draw_number',
+            public.note_card_drawn(p_session_id, v_current_state.active_player_id)));
       end if;
 
       v_next_phase := 'main_1';

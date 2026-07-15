@@ -156,8 +156,14 @@ const CardBehaviorCostSchema = z.union([
   z.object({ type: z.literal('pay_life'), amount: z.number() }),
   z.object({ type: z.literal('sacrifice_self') }),
   // "Sacrifice a creature" as a cost (Spark Reaper, Vampiric Rites) — the chosen
-  // creature you control is passed at activation.
-  z.object({ type: z.literal('sacrifice_creature') }),
+  // creature you control is passed at activation. type_line_any (mig 402,
+  // Kalitas: "another Vampire or Zombie") restricts the pick to matching type
+  // words; another:true forbids sacrificing the source itself.
+  z.object({
+    type: z.literal('sacrifice_creature'),
+    type_line_any: z.array(z.string()).optional(),
+    another: z.boolean().optional(),
+  }),
   z.object({ type: z.literal('discard'), amount: z.number() }),
   z.object({ type: z.literal('exile_self'), from_zone: BehaviorZoneSchema.optional() }),
   // "Exile a creature card from a graveyard" (Cemetery Reaper). type_line filters
@@ -169,7 +175,9 @@ const CardBehaviorCostSchema = z.union([
   z.object({ type: z.literal('tap_creatures'), count: z.number().int().positive(), type_line: z.string().optional() }),
   // "Sacrifice N artifacts" as a cost (Breya / Thopter Foundry, mig 264). The
   // engine auto-picks the cheapest-MV matching artifacts (source excluded).
-  z.object({ type: z.literal('sacrifice_artifacts'), count: z.number().int().positive().optional(), nontoken: z.boolean().optional() }),
+  // type_line (mig 402, Professional Face-Breaker: "Sacrifice a Treasure")
+  // narrows the pick to a subtype.
+  z.object({ type: z.literal('sacrifice_artifacts'), count: z.number().int().positive().optional(), nontoken: z.boolean().optional(), type_line: z.string().optional() }),
   // 'Return a land you control to its owner's hand' as a cost (Mina and Denn, mig 277).
   z.object({ type: z.literal('return_land'), count: z.number().int().positive().optional() }),
   // "Remove N <kind> counters from this permanent" as a cost (Grimoire of the
@@ -1094,6 +1102,10 @@ const CardBehaviorActionSchema = z.union([
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
     targets: z.number().optional(),
+    // tap only (mig 403, Frost Titan): "…it doesn't untap during its
+    // controller's next untap step" — adds a 'stun' bag counter consumed by
+    // advance_step's untap.
+    stun: z.boolean().optional(),
     // Optional self-rider ("…and you lose 3 life"): applied to the caster on
     // resolution. Single-target only (not with `targets` > 1).
     then: ThenRiderSchema,
@@ -1363,6 +1375,13 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     // controller has cast this turn; pairs with the spells_cast_this_turn counter
     // (mig 369, note_spell_cast).
     spell_number: z.number().int().positive().optional(),
+    // "whenever you draw your SECOND/THIRD card each turn" (mig 401 — Ethereal
+    // Investigator, Astrologian's Planisphere) on the card_drawn event; the
+    // draw sites stamp the per-turn index via note_card_drawn.
+    draw_number: z.number().int().positive().optional(),
+    // "if it isn't that player's turn" (mig 401 — Tataru Taru): the event's
+    // subject player must not be the active player.
+    off_turn: z.boolean().optional(),
   }).optional(),
   targets: z.array(CardBehaviorTargetSchema).optional(),
   effects: z.array(CardBehaviorActionSchema),

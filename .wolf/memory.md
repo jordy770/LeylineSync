@@ -7866,3 +7866,24 @@
 | 00:04 | Edited lib/game/card-behavior-schema.ts | 6→9 lines | ~108 |
 | 00:06 | Created tests/feature/search-max-mana-value.test.ts | — | ~407 |
 | 2026-07-15 | Engine-batch 2: mig 398 flash-timing (server+client), 399 token_created watcher + tokens_created_this_turn, 400 search max_mana_value; 6 nieuwe tests; 5 kaartscripts geupgraded; bug-2689 stale functions_src gebackfilled | supabase/migrations/2026050103{98-100}*, lib/game/, components/, card-scripts.json | suite-run bezig; typecheck + lint schoon; speel-DB bij | ~110k |
+| 11:42 | Created supabase/functions_src/note_card_drawn.sql | — | ~349 |
+| 11:42 | Edited supabase/functions_src/advance_step.sql | modified watcher() | ~190 |
+| 11:43 | Edited supabase/functions_src/cycle_card.sql | modified draw() | ~161 |
+| 11:43 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified watcher() | ~287 |
+| 11:43 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified coalesce() | ~300 |
+| 11:43 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified token_created() | ~122 |
+| 11:43 | Edited lib/game/card-behavior-schema.ts | expanded (+7 lines) | ~224 |
+| 11:45 | Created tests/feature/card-drawn-watcher.test.ts | — | ~1076 |
+| 11:46 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~129 |
+| 11:46 | Edited lib/game/card-behavior-schema.ts | 3→5 lines | ~126 |
+| 11:47 | Edited supabase/functions_src/activate_ability.sql | 3→6 lines | ~59 |
+| 11:47 | Edited supabase/functions_src/activate_ability.sql | modified coalesce() | ~125 |
+| 11:47 | Edited supabase/functions_src/activate_ability.sql | modified greatest() | ~119 |
+| 11:47 | Edited supabase/functions_src/activate_ability.sql | 8→12 lines | ~183 |
+| 11:47 | Edited supabase/functions_src/activate_ability.sql | 25→27 lines | ~388 |
+| 11:48 | Edited supabase/functions_src/apply_creature_effect.sql | modified coalesce() | ~185 |
+| 11:48 | Edited supabase/functions_src/advance_step.sql | modified coalesce() | ~295 |
+| 11:49 | Edited lib/game/card-behavior-schema.ts | modified only() | ~146 |
+| 11:51 | Created tests/feature/sacrifice-filters-and-stun.test.ts | — | ~1215 |
+| 11:53 | Edited supabase/functions_src/activate_ability.sql | 4→8 lines | ~123 |
+| 2026-07-15 | Engine-batch 3: mig 401 card_drawn watcher (+draw_number/off_turn), 402 sacrifice-kostfilters (+cost-target-lek fix), 403 stun; 5 tests; 6 kaartscripts geupgraded | supabase/migrations/2026050104{01-03}*, tests/feature/ | suite 2332/2332 groen; speel-DB bij; prod-push wacht op permissie | ~100k |

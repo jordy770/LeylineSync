@@ -180,6 +180,17 @@ Bijvangst: `functions_src/fire_watcher_triggers.sql` bleek stale t.o.v. mig 388 
 
 Nog open van de shortlist: draw-count watchers (Nth kaart per beurt), per-opponent herhaling, linked exile, subtype-sacrifice-kosten, stun, replacement effects, type-changing layer.
 
+
+## Engine-batch 3 — uitgevoerd (mig 401–403, 15 juli)
+
+| Mig | Feature | Ontgrendeld |
+|---|---|---|
+| 401 | **`card_drawn` watcher** met per-turn index (`note_card_drawn`, spell_number-patroon) + filters `draw_number` en `off_turn`; alle echte draw-sites geïnstrumenteerd (natural draw, draw-effect, cycling) | **Ethereal Investigator** (Spirit op je tweede draw), **Astrologian's Planisphere** (counter op je derde draw, via tweede granted ability), **Tataru Taru** (Scions' Secretary: tapped Treasure bij off-turn opponent-draws, once per turn) |
+| 402 | **Subtype/another-filters op sacrifice-kosten** (`sacrifice_artifacts.type_line`, `sacrifice_creature.type_line_any`+`another`) + fix: de kost-keuze lekte door als effect-target | **Professional Face-Breaker** (Sacrifice a Treasure → impulse werkt volledig), **Kalitas** (alleen nog een andere Vampire/Zombie als voer) |
+| 403 | **Stun** — `tap` met `stun:true` legt een stun-counter; de untap-stap slaat het permanent één keer per counter over (exert-patroon, decrementerend) | **Frost Titan**'s tap-rider ("doesn't untap during its controller's next untap step") op ETB én attack |
+
+Bekende randjes: Etchings of the Chosen's sac-ability geeft nu een eerlijke "target required"-fout i.p.v. de grant op het geofferde lijk te richten (twee-picks-support voor sac-kost + targeted effect staat op de shortlist); Goblin Bombardment's creature-mode heeft hetzelfde dubbelrol-probleem. Nieuwe tests: card-drawn-watcher (2), sacrifice-filters-and-stun (3); fixtures Second Draw Spirit / Off Turn Secretary / Treasure Cracker / Tribal Butcher.
+
 ## Schema-achterstand (bevinding, geen blokker)
 
 `optional`, `target_filter` en `targets` op trigger-effecten worden door de SQL-runtime gehonoreerd (enqueue_triggered_ability, mig 310, mig 116) maar door de Zod-parse gestript. Het corpus bevat al ±15 kaarten die deze velden gebruiken (o.a. Opportunistic Dragon — nota bene het mig 310-voorbeeld). De upsert/seed-flow slaat het rúwe script op, dus runtime-gedrag klopt; maar elk toekomstig gereedschap dat via de Zod-parse round-tript verliest ze stilletjes (bug-1484-klasse). Kandidaat-fix: velden toevoegen aan de betreffende Zod-varianten, met de registry-variant-matching gotcha (cerebrum 2026-06-07) in het achterhoofd.

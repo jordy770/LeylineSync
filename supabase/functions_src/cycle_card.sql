@@ -79,6 +79,10 @@ begin
     update public.game_cards
     set zone = 'hand', zone_position = v_next_hand, is_tapped = false
     where id = v_drawn;
+    -- Cycling's replacement draw is a real draw (mig 401): tally + broadcast.
+    perform public.fire_watcher_triggers(
+      p_session_id, v_drawn, auth.uid(), 'card_drawn',
+      jsonb_build_object('draw_number', public.note_card_drawn(p_session_id, auth.uid())));
   end if;
 
   return v_drawn;

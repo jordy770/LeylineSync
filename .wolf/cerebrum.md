@@ -615,3 +615,9 @@
 - fire_watcher_triggers default-typefilter is 'creature' voor onbekende events — een nieuw watcher-event voor non-creatures MOET een eigen case in de default-lijst krijgen (token_created ging hierop stuk in de eerste testrun).
 - fire_watcher_triggers was stale in functions_src (mig 388 herdefinieerde direct; bug-2689) — de verplichte pre-migratie diff ving het; backfill eerst, dan pas editen.
 - Activated-ability `condition` loopt via resolve_dynamic_amount: een nieuwe count in resolve_count_amount is meteen een activatie-gate (Idol). De conditie-schema-enum (regel ~1296) moet wel apart bijgewerkt worden.
+
+## Key Learnings — 2026-07-15 (engine-batch 3, mig 401-403)
+
+- card_drawn watcher: draw-sites zijn ALLEEN advance_step (natural), de draw-branch in apply_triggered_ability_effects en cycle_card — andere zone→hand moves zijn puts/bounces, géén draws. note_card_drawn geeft de 1-based per-turn index terug; filter draw_number matcht exact de Nde.
+- **activate_ability: p_target_card_id is een DUBBELROL-veld** — pick-able kosten (sacrifice_creature, discard, exile_from_graveyard) consumeren hem; de discard-kost clearde hem al na betaling, sacrifice_creature nu ook (mig 402 — Kalitas richtte anders zijn counters op het geofferde lijk). Kaarten met een sac-kost ÉN een targeted effect (Etchings, Goblin Bombardment creature-mode) hebben twee picks nodig — nog niet ondersteund, shortlist.
+- Stun = exert-patroon maar decrementerend: 'stun' bag-counter, untap-skip verbruikt er één per untap-stap (meerdere counters = meerdere gemiste untaps).
