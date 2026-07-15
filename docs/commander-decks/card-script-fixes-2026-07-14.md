@@ -242,12 +242,23 @@ Dit "voltooit" de type-laag naast de string-adds/overrides van batch 7. Nieuwe t
 
 **Resteert:** changeling nog routen door **tribal anthems** (pump met creature_type) en **sac/tutor-kosten** (Kalitas "Vampire or Zombie" accepteert een changeling) — nu alleen triggers. En Mirror Entity's tweede ability ({X}: creatures worden X/X + alle types) is een aparte mass-set-P/T-brok.
 
+
+## Engine-batch 9 — uitgevoerd (mig 409, 15 juli)
+
+| Mig | Feature | Ontgrendeld |
+|---|---|---|
+| 409 | **Changeling door anthems + sac/tutor-kosten** — herbruikbare `card_has_creature_type(session,card,type)` (concrete match via effective_type_line + changeling-tak met de stabiele negatieve niet-creature-lijst), geroute in `card_layered_power/toughness` (tribal-anthem P/T-fold) en `activate_ability` (sacrifice_creature `type_line_any`) | Een changeling krijgt nu élke tribal-lord-pump (Mirror Entity onder een Zombie-lord = +1/+1) én kan een "sacrifice a Vampire or Zombie"-kost betalen (Kalitas). De granted_type-adds van batch 7 tellen hier ook mee |
+
+Daarmee telt de type-laag door de drie plekken waar creature-type in de praktijk toe doet: triggers (batch 8), anthems en kosten. Nieuwe test: changeling-anthems-costs (2). Geen nieuwe fixtures (Zombie King / Tribal Butcher / Changeling bestonden al).
+
+**Resteert nog** (kleiner): changeling door **targeting-filters** (bv. "target Elf"), animate-MV (Sydri), ability-strip (Imprisoned in the Moon), Mirror Entity's {X}-ability.
+
 ## Nog open — grote subsystemen (aparte scope aanbevolen)
 
 De resterende auditkaarten hangen elk aan een substantieel nieuw subsysteem, niet aan een losse veldtoevoeging:
 
 - **Replacement effects**: ✅ death-replacement gedaan (mig 406, Kalitas). Resteert: damage-replacement (Gisela) en draw-replacement (Abundance) — aparte pijplijnen.
-- **Type-changing / layer-systeem**: ✅ fundament (mig 407) + changeling voor triggers (mig 408, Mirror Entity). Resteert: changeling door anthems/sac-costs routen, animate-MV (Sydri), ability-strip (Imprisoned), Mirror Entity's {X}-ability.
+- **Type-changing / layer-systeem**: ✅ fundament (mig 407) + changeling door triggers/anthems/sac-costs (mig 408-409). Resteert: changeling door targeting-filters, animate-MV (Sydri), ability-strip (Imprisoned), Mirror Entity's {X}-ability.
 - **Graveyard-targeting voor triggers**: ✅ Trove Warden gedaan (mig 405). Resteert: Angel of Serenity graveyard-helft (vergt mixed battlefield+graveyard targeting).
 - **Twee-picks abilities** (sac-kost ÉN effect-target): Etchings of the Chosen, Goblin Bombardment creature-mode — geven nu een eerlijke fout i.p.v. mis-targeting (bug-2690); volledige fix vergt client-side twee picks.
 - **Per-opponent dynamische target-count** + **mana-spent-to-cast** amount: Bronzebeak Foragers (exile per opponent), Wurmquake (token-grootte = betaalde mana).

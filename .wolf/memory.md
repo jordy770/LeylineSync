@@ -7929,3 +7929,9 @@
 | 15:25 | Edited supabase/functions_src/fire_watcher_triggers.sql | expanded (+6 lines) | ~458 |
 | 15:26 | Created tests/feature/changeling.test.ts | — | ~751 |
 | 2026-07-15 | Engine-batch 8: mig 408 changeling (fire_watcher_triggers matcht elk creature-type via granted_type changeling / catalog keyword + stabiele negatieve niet-creature-lijst); Mirror Entity | supabase/migrations/202605010408*, tests/feature/changeling.test.ts | suite-run bezig; 1 kaart | ~55k |
+| 15:53 | Created supabase/functions_src/card_has_creature_type.sql | — | ~732 |
+| 15:53 | Edited supabase/functions_src/activate_ability.sql | modified layer() | ~128 |
+| 15:53 | Edited supabase/functions_src/card_layered_power.sql | modified layer() | ~166 |
+| 15:54 | Edited supabase/functions_src/card_layered_toughness.sql | modified layer() | ~166 |
+| 15:55 | Created tests/feature/changeling-anthems-costs.test.ts | — | ~702 |
+| 2026-07-15 | Engine-batch 9: mig 409 changeling door anthems (card_layered_power/toughness) + sac-costs (activate_ability) via herbruikbare card_has_creature_type; type-laag telt nu door triggers+anthems+kosten | supabase/migrations/202605010409*, supabase/functions_src/card_has_creature_type.sql, tests/feature/changeling-anthems-costs.test.ts | suite-run bezig | ~55k |

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T13:26:57.998Z
-> Files: 26 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T13:55:41.338Z
+> Files: 30 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -315,11 +315,14 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9712 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9760 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~4215 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7485 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24439 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14411 tok)
+- `card_has_creature_type.sql` — supabase/functions_src/card_has_creature_type.sql (~732 tok)
+- `card_layered_power.sql` — supabase/functions_src/card_layered_power.sql (~1711 tok)
+- `card_layered_toughness.sql` — supabase/functions_src/card_layered_toughness.sql (~1724 tok)
 - `choose_triggered_ability_targets.sql` — supabase/functions_src/choose_triggered_ability_targets.sql (~893 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~911 tok)
 - `effective_type_line.sql` — supabase/functions_src/effective_type_line.sql (~763 tok)
@@ -342,6 +345,7 @@
 ## tests/feature/
 
 - `card-drawn-watcher.test.ts` — mig 401 — card_drawn watcher: every real draw (draw effect, natural draw, (~1076 tok)
+- `changeling-anthems-costs.test.ts` — mig 409 — changeling / granted types now flow through the tribal ANTHEM P/T (~702 tok)
 - `changeling.test.ts` — mig 408 — changeling (Mirror Entity): "is every creature type". Since ~250 (~751 tok)
 - `dies-replacement.test.ts` — mig 406 — death replacement (Kalitas, Traitor of Ghet): "Whenever a nontoken (~1004 tok)
 - `exile-until-leaves-return-to.test.ts` — mig 404 — exile_until_leaves gains multi-target ("up to three") + a (~784 tok)

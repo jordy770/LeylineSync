@@ -51,10 +51,12 @@ as $$
                or effects.affected_player_id = coalesce(game_cards.controller_player_id, game_cards.owner_id))
           and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
           and cards.type_line ilike '%creature%'
+          -- Tribal anthem type filter honors the type-changing layer (mig 409):
+          -- a changeling / granted-type creature gets a lord's bonus.
           and (effects.payload ->> 'creature_type' is null
                or case when coalesce((effects.payload ->> 'exclude_type')::boolean, false)
-                    then cards.type_line not ilike '%' || (effects.payload ->> 'creature_type') || '%'
-                    else cards.type_line ilike '%' || (effects.payload ->> 'creature_type') || '%'
+                    then not public.card_has_creature_type(p_session_id, game_cards.id, effects.payload ->> 'creature_type')
+                    else public.card_has_creature_type(p_session_id, game_cards.id, effects.payload ->> 'creature_type')
                   end)
           and (coalesce((effects.payload ->> 'exclude_source')::boolean, false) = false
                or game_cards.id <> effects.source_card_id)

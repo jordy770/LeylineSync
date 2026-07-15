@@ -21636,6 +21636,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-15T13:25:17.799Z"
+    },
+    {
+      "id": "bug-1321",
+      "timestamp": "2026-07-15T13:53:42.071Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/card_layered_power.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→8 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-15T13:53:42.071Z"
+    },
+    {
+      "id": "bug-1322",
+      "timestamp": "2026-07-15T13:54:12.782Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/card_layered_toughness.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→8 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-15T13:54:12.782Z"
     }
   ]
 }
