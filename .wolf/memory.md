@@ -7684,3 +7684,185 @@
 | 16:19 | Created tests/feature/eldrazi-spawn-tokens.test.ts | — | ~335 |
 | 16:25 | Edited scripts/triage-decklist.mjs | expanded (+6 lines) | ~91 |
 | 16:26 | Stap 1 uitgevoerd: mig 389 (CDA opponents-graveyards) + Wight/Sifter/Pawn scripts + Eldrazi tokens; suite 2284 groen; Edgar+Wilhelt+Meren geseed → 13 precons, 11 volledig speelbaar | mig 389, card-scripts.json, test-cards.json, 2 tests, triage-fix | ok | ~25k |
+| 09:41 | Verified Mana Leak card script (partial: hard counter, unless-pays flagged) | docs/commander-decks/card-scripts.json | approved as proposed | ~1k |
+| 09:44 | Edited tests/fixtures/test-cards.json | 1→2 lines | ~142 |
+| 13:00 | Scripted Ophiomancer (partial: your-upkeep create Deathtouch Snake Token; no each-upkeep, no 'control no Snakes' gate) + added Deathtouch Snake Token fixture | tests/fixtures/test-cards.json | ok | ~200 |
+| 2026-07-13 | Verified Terror of the Peaks script: confirmed 3 missing engine features, corrected needs_engine->partial (flying keyword survives) | docs/commander-decks/card-scripts.json (proposal only) | ok | ~9k |
+| 13:xx | Verified card script (adversarial): Shivan Devastator -> needs_engine confirmed; ewc amount has no X path, V5 cast sends xValue null | docs/commander-decks/card-scripts.json | verified | ~9k |
+| 09:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/e378a9bd-21e1-45b0-8890-278da934081a/scratchpad/validate-diff.mjs | — | ~451 |
+| 09:51 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/e378a9bd-21e1-45b0-8890-278da934081a/scratchpad/validate-diff.mjs | "../../../../../../dev/Ley" → "file:///C:/Users/Jordy/de" | ~37 |
+| 09:53 | Edited supabase/functions_src/resolve_count_amount.sql | modified Extortionist() | ~247 |
+| 09:53 | Edited supabase/functions_src/card_cda_value.sql | modified then() | ~240 |
+| 09:54 | Edited lib/game/card-behavior-schema.ts | inline fix | ~187 |
+| 09:54 | Edited lib/game/card-behavior-schema.ts | 2→5 lines | ~92 |
+| 09:54 | Edited supabase/migrations/202605010390_dockside_chain_reaction_counts.sql | modified counts() | ~135 |
+| 09:55 | Created tests/feature/dockside-chain-reaction-counts.test.ts | — | ~958 |
+| 09:56 | Edited tests/feature/dockside-chain-reaction-counts.test.ts | 23→22 lines | ~307 |
+| 09:58 | Created tests/feature/debug-dockside.test.ts | — | ~483 |
+| 09:59 | Edited tests/feature/dockside-chain-reaction-counts.test.ts | triggers() → pendingCount() | ~74 |
+| 10:00 | Edited supabase/functions_src/reduced_mana_cost.sql | 17→18 lines | ~132 |
+| 10:00 | Edited supabase/functions_src/reduced_mana_cost.sql | modified nth_spell() | ~198 |
+| 10:00 | Created tests/feature/color-cost-reduction.test.ts | — | ~701 |
+| 10:02 | Edited lib/game/card-behavior-schema.ts | 8→12 lines | ~142 |
+| 10:02 | Edited lib/game/card-behavior-schema.ts | 4→4 lines | ~74 |
+| 10:02 | Created tests/feature/shivan-devastator-x.test.ts | — | ~515 |
+| 10:04 | Edited tests/feature/shivan-devastator-x.test.ts | expanded (+6 lines) | ~257 |
+| 10:06 | Edited components/ControllerListV5.tsx | CSS: x | ~262 |
+| 10:13 | Bulk-pipeline prosper+talrand: 8 scripts geverifieerd, migs 390/391 + Shivan schema+UI-X, 8 token-fixtures (audit), Prosper geseed (12 precons); Talrand wacht op Snapcaster | card-scripts.json, migs 390-391, 4 tests, ControllerListV5 | ok | ~1.2M subagent + ~60k | 
+| 10:21 | Edited supabase/functions_src/cast_spell_effect.sql | added 1 condition(s) | ~204 |
+| 10:22 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Mage() | ~428 |
+| 10:22 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~105 |
+| 10:22 | Edited supabase/functions_src/submit_decision.sql | modified Mage() | ~289 |
+| 10:24 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~339 |
+| 10:24 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Bridge() | ~363 |
+| 10:24 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Brainstorm() | ~425 |
+| 10:24 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~24 |
+| 10:24 | Edited supabase/functions_src/submit_decision.sql | modified Brainstorm() | ~272 |
+| 10:26 | Edited supabase/functions_src/handle_counter_spell.sql | 7→9 lines | ~63 |
+| 10:27 | Edited supabase/functions_src/handle_counter_spell.sql | added 1 condition(s) | ~502 |
+| 10:27 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~478 |
+| 10:27 | Edited supabase/functions_src/submit_decision.sql | 3→4 lines | ~30 |
+| 10:28 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~24 |
+| 10:28 | Edited lib/game/card-behavior-schema.ts | modified Leak() | ~126 |
+| 10:28 | Edited lib/game/card-behavior-schema.ts | modified hideaway() | ~241 |
+| 10:28 | Edited lib/game/card-behavior-schema.ts | inline fix | ~31 |
+| 10:29 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~116 |
+| 10:29 | Edited components/ControllerListV5.tsx | 6→7 lines | ~121 |
+| 10:29 | Edited components/ControllerListV5.tsx | inline fix | ~58 |
+| 10:30 | Edited components/controller/CardActionSheet.tsx | 5→6 lines | ~32 |
+| 10:30 | Edited components/controller/CardActionSheet.tsx | 4→6 lines | ~62 |
+| 10:30 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~196 |
+| 10:30 | Edited components/ControllerListV5.tsx | added optional chaining | ~53 |
+| 10:30 | Edited components/ControllerListV5.tsx | 6→9 lines | ~192 |
+| 10:31 | Edited components/ControllerListV5.tsx | modified MyZonesSheet() | ~185 |
+| 10:31 | Edited components/ControllerListV5.tsx | 3→3 lines | ~61 |
+| 10:32 | Edited components/ControllerListV5.tsx | 8→9 lines | ~90 |
+| 10:32 | Edited components/ControllerListV5.tsx | added optional chaining | ~24 |
+| 10:35 | Created tests/feature/talrand-finishers.test.ts | — | ~2645 |
+| 10:36 | Edited tests/feature/talrand-finishers.test.ts | 6→7 lines | ~76 |
+| 10:37 | Edited tests/feature/talrand-finishers.test.ts | 6→7 lines | ~95 |
+| 10:45 | Edited supabase/functions_src/cast_spell_effect.sql | added 1 condition(s) | ~177 |
+| 10:45 | Edited supabase/functions_src/cast_spell_effect.sql | 1→2 lines | ~51 |
+| 10:45 | Edited supabase/functions_src/cast_spell_effect.sql | 1→2 lines | ~54 |
+| 10:51 | Snapcaster + benaderingen gefixt (mig 392: grant_flashback, hand_to_library_top, unless_pays, power_of triggering, hideaway->hand); Talrand geseed → 13 precons 100%; bug-1280 stale functions_src | mig 392, 4 functions_src, schema, UI, talrand-finishers.test | ok | ~90k |
+
+## Session: 2026-07-13 13:20
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:28 | Audit niet-100%-accurate kaartscripts: ~70 zekere compromissen (4 kern-approx FoF/Hoarding Ogre/Ophiomancer/Terror of the Peaks, 8 inerte placeholders, 4 Breya-tail, ~17 Scions-riders, ~34 handdeck-partials, 3 nooit gemerged) + grijze zone ~174 auto-gescripte kaarten zonder per-kaart log | card-scripts.json, .wolf/memory.md | read-only audit | ~45k |
+| 13:36 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/cbab7504-eb67-46c3-a9ec-5892512d9617/scratchpad/prep-audit-chunks.mjs | — | ~508 |
+| 13:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/cbab7504-eb67-46c3-a9ec-5892512d9617/scratchpad/audit-chunks/engine-vocab.md | — | ~4396 |
+| 13:41 | Built engine-vocab cheat sheet for card-script audit (schema V2 + trigger SQL semantics) | scratchpad/audit-chunks/engine-vocab.md | done | ~40k |
+
+## Session: 2026-07-13 13:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:44 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/cbab7504-eb67-46c3-a9ec-5892512d9617/workflows/scripts/card-script-oracle-audit-wf_78bf6d09-6bf.js | 1→2 lines | ~79 |
+
+## Session: 2026-07-13 13:50
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-13 13:52
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-13 13:52
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-13 00:12
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:20 | Created ../../.claude/jobs/ca267fb9/tmp/card-script-audit-finish.js | — | ~2390 |
+
+## Session: 2026-07-14 (audit afronden)
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| -- | Audit hervat: journal wf_78bf6d09 uitgelezen (13/48 chunks klaar, verify nooit gedraaid); 44 lege oracle_texts in chunk-files gepatcht via Scryfall (prep-bug gelogd); vervolg-workflow wf_67df3c64 gestart (35 audit + 13 re-verify, Opus) | audit-chunks/*, buglog.json, tmp/card-script-audit-finish.js | running | ~30k |
+| -- | Audit afgerond: run1 (81/82 agents) + resume voor chunk-26 + losse verify-agent; alles gemerged met de 13 chunks uit wf_78bf6d09 -> 956 kaarten: 463 accurate, 473 partial (83 high/256 med/154 low), 7 wrong, 9 inert, 4 uncertain; rapport naar docs/commander-decks/card-script-audit-2026-07-14.{json,md} | audit-final, rapport, anatomy | done | ~60k |
+
+## Session: 2026-07-14 10:06
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:12 | Created ../../.claude/jobs/ca267fb9/tmp/fix-agent-prompt.txt | — | ~1047 |
+| 10:13 | Created ../../.claude/jobs/ca267fb9/tmp/validate-fixes.mjs | — | ~632 |
+| 10:13 | Edited ../../.claude/jobs/ca267fb9/tmp/validate-fixes.mjs | inline fix | ~36 |
+| 10:18 | fix-batch batch-05: authored fixes for 10 audited card scripts (Juri fix; Kaalia/Kami/Passage approximations; 6 engine-blocked) | .claude/jobs/ca267fb9 | ok | ~30k |
+| 10:18 | Created ../../.claude/jobs/ca267fb9/tmp/fixdrafts/batch-06.json | — | ~2004 |
+| 10:19 | Created ../../.claude/jobs/ca267fb9/tmp/fixdrafts/batch-05.json | — | ~2271 |
+| 10:20 | Created ../../.claude/jobs/ca267fb9/tmp/fixdrafts/batch-03.json | — | ~2257 |
+| 00:00 | fix-batch-09: verified engine paths (granted_ability/copy_self mig357-358, nonland exile_until_leaves mig377, grant_keyword creature-only validation) and authored 7 script fixes | supabase/functions_src/*, lib/game/card-behavior-schema.ts (read-only) | ok | ~30k |
+| 10:25 | Created ../../.claude/jobs/ca267fb9/tmp/fixdrafts/batch-08.json | — | ~2088 |
+| 10:25 | Fix-batch 01 audit repair (10 cards: Abundance..Caress) — authored replacement scripts vs engine vocab | docs/commander-decks/card-scripts.json (analysis only) | ok | ~25k |
+| 10:26 | fix-batch-04: scripted fixes for 10 audited cards (Godo watcher gate, Hellkite activated pump, Hraesvelgr noncreature trigger, Pilferer partial, Idol degate) — schema-validated | .claude/jobs/ca267fb9 batch-04 | ok | ~30k |
+| 10:26 | Created ../../.claude/jobs/ca267fb9/tmp/fixdrafts/batch-09.json | — | ~2030 |
+| 10:27 | Created ../../.claude/jobs/ca267fb9/tmp/fixdrafts/batch-01.json | — | ~2656 |
+| 10:28 | Created ../../.claude/jobs/ca267fb9/tmp/fixdrafts/batch-04.json | — | ~2231 |
+| 10:29 | Created ../../.claude/jobs/ca267fb9/tmp/fixdrafts/batch-02.json | — | ~2298 |
+| 14:20 | Fix-batch 07: audited 10 card scripts vs engine (destroy_all types branch ignores scope; shared_type_attackers count exists since mig 340; saga chapters run in void resolver) | .claude/jobs/ca267fb9 batch-07 | JSON verdicts returned | ~40k |
+| 10:31 | Created ../../.claude/jobs/ca267fb9/tmp/fixdrafts/batch-07.json | — | ~2718 |
+| 17:31 | Edited supabase/functions_src/effective_script.sql | coalesce() → jsonb_typeof() | ~164 |
+| 17:31 | Edited tests/feature/deck-smoke.test.ts | added 1 condition(s) | ~209 |
+
+| 2026-07-14 | Fix-lijst audit: 9 parallel triage-agents over 87 kaarten (wrong/inert/high) | .claude/jobs/ca267fb9/tmp/fixdrafts/ | 12 fix / 72 engine / 3 blocked; 3 audit-false-positives | ~1.0M |
+| 2026-07-14 | 45 card-scripts gewijzigd + gevalideerd (Zod+deep-diff) + lokaal geseed | docs/commander-decks/card-scripts.json | validatie OK; seed 1079 overschreven | ~60k |
+| 2026-07-14 | mig 393 effective_script scalar-guard (bug-2687) + smoke-driver target_filter fix (bug-2688) | supabase/migrations/202605010393*, tests/feature/deck-smoke.test.ts | suite 2311/2311 groen | ~40k |
+| 2026-07-14 | Fix-rapport + engine-shortlist (16 features) geschreven | docs/commander-decks/card-script-fixes-2026-07-14.md | klaar; hosted push bewust handmatig | ~15k |
+| 22:09 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+15 lines) | ~509 |
+| 22:10 | Edited components/controller/shared.ts | added 1 condition(s) | ~222 |
+| 22:11 | Created tests/feature/draw-recipient.test.ts | — | ~868 |
+| 22:13 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+8 lines) | ~370 |
+| 22:14 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | added 1 condition(s) | ~563 |
+| 22:14 | Edited supabase/functions_src/apply_mass_pump_until_eot.sql | modified coalesce() | ~470 |
+| 22:15 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~204 |
+| 22:15 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~46 |
+| 22:15 | Edited lib/game/card-behavior-schema.ts | 6→8 lines | ~136 |
+| 22:16 | Edited lib/game/card-behavior-schema.ts | expanded (+8 lines) | ~229 |
+| 22:17 | Created tests/feature/mass-effect-opponent-scope.test.ts | — | ~1512 |
+| 22:18 | Edited tests/feature/mass-effect-opponent-scope.test.ts | modified query() | ~363 |
+| 22:19 | Edited supabase/functions_src/fire_turn_step_triggers.sql | expanded (+7 lines) | ~268 |
+| 22:20 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | expanded (+6 lines) | ~291 |
+| 22:22 | Created tests/feature/broadcast-turn-step-events.test.ts | — | ~920 |
+| 22:23 | Edited tests/feature/broadcast-turn-step-events.test.ts | 7→10 lines | ~182 |
+| 22:23 | Edited tests/feature/broadcast-turn-step-events.test.ts | 9→11 lines | ~215 |
+| 22:25 | Created supabase/functions_src/card_has_unblockable.sql | — | ~509 |
+| 22:25 | Edited supabase/functions_src/apply_creature_effect.sql | modified 285() | ~114 |
+| 22:26 | Edited supabase/functions_src/declare_blocker.sql | expanded (+6 lines) | ~125 |
+| 22:26 | Edited lib/game/card-behavior-schema.ts | 5→8 lines | ~111 |
+| 22:28 | Created tests/feature/unblockable-grant.test.ts | — | ~446 |
+| 2026-07-14 | Engine-batch 1: mig 394 draw.recipient, 395 mass-effect opponent-scope, 396 broadcast each-upkeep/draw-step, 397 unblockable-grant; 10 nieuwe feature-tests; 8 kaartscripts geupgraded | supabase/migrations/2026050103{94-97}*, tests/feature/, card-scripts.json | suite 2321/2321 groen; ook op speel-DB | ~120k |
+| 23:47 | Created supabase/functions_src/card_has_flash.sql | — | ~609 |
+| 23:48 | Edited supabase/functions_src/cast_card_from_hand.sql | 2→3 lines | ~28 |
+| 23:48 | Edited supabase/functions_src/cast_card_from_hand.sql | modified Flash() | ~292 |
+| 23:48 | Edited supabase/functions_src/cast_card_from_hand.sql | 5→5 lines | ~52 |
+| 23:48 | Edited supabase/functions_src/register_card_continuous_effects.sql | 5→9 lines | ~99 |
+| 23:49 | Edited lib/game/controller-selectors.ts | added 1 condition(s) | ~418 |
+| 23:49 | Edited lib/game/controller-selectors.ts | 4→6 lines | ~105 |
+| 23:51 | Edited components/controller/shared.ts | inline fix | ~40 |
+| 23:51 | Edited components/controller/shared.ts | added optional chaining | ~444 |
+| 23:51 | Edited components/ControllerListV5.tsx | modified Flash() | ~167 |
+| 23:51 | Edited components/ControllerListV5.tsx | 3→4 lines | ~21 |
+| 23:53 | Created tests/feature/flash-timing.test.ts | — | ~647 |
+| 23:53 | Edited tests/feature/flash-timing.test.ts | 5→6 lines | ~92 |
+| 23:54 | Edited tests/feature/flash-timing.test.ts | modified LAST() | ~171 |
+| 23:56 | Created supabase/functions_src/fire_token_created.sql | — | ~435 |
+| 23:57 | Edited supabase/functions_src/resolve_count_amount.sql | expanded (+9 lines) | ~229 |
+| 23:58 | Edited lib/game/card-behavior-schema.ts | inline fix | ~195 |
+| 23:58 | Edited lib/game/card-behavior-schema.ts | 3→6 lines | ~100 |
+| 23:59 | Edited lib/game/card-behavior-schema.ts | 7→9 lines | ~142 |
+| 00:00 | Created tests/feature/token-created-watcher.test.ts | — | ~878 |
+| 00:03 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified faces() | ~327 |
+| 00:03 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified coalesce() | ~184 |
+| 00:04 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~240 |
+| 00:04 | Edited lib/game/card-behavior-schema.ts | 6→9 lines | ~108 |
+| 00:06 | Created tests/feature/search-max-mana-value.test.ts | — | ~407 |
+| 2026-07-15 | Engine-batch 2: mig 398 flash-timing (server+client), 399 token_created watcher + tokens_created_this_turn, 400 search max_mana_value; 6 nieuwe tests; 5 kaartscripts geupgraded; bug-2689 stale functions_src gebackfilled | supabase/migrations/2026050103{98-100}*, lib/game/, components/, card-scripts.json | suite-run bezig; typecheck + lint schoon; speel-DB bij | ~110k |
