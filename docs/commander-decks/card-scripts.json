@@ -10625,6 +10625,23 @@
         "affected": "source",
         "source_zone_required": "battlefield"
       }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "land_entered",
+        "filter": {
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "exile_graveyard_until_leaves",
+            "filter": {
+              "permanent": true,
+              "max_mana_value": 3
+            }
+          }
+        ]
+      }
     ]
   },
   "Satyr Wayfinder": {

@@ -200,13 +200,22 @@ Bekende randjes: Etchings of the Chosen's sac-ability geeft nu een eerlijke "tar
 
 Resteert voor Angel: de graveyard-helft ("and/or creature cards from graveyards") — dat vergt graveyard-targeting voor triggers (zie hieronder). Nieuwe test: exile-until-leaves-return-to (2); fixture Serenity Angel.
 
+
+## Engine-batch 5 — uitgevoerd (mig 405, 15 juli)
+
+| Mig | Feature | Ontgrendeld |
+|---|---|---|
+| 405 | **Graveyard-target triggers** — nieuw effect `exile_graveyard_until_leaves`: parkt een pick over je eigen graveyard (permanent-kaarten, `max_mana_value`-filter, patroon van return_from_graveyard) en ankert de gekozen kaart via `exiled_until_leaves`, zodat hij terugkeert naar het battlefield als de bron sterft | **Trove Warden** volledig: landfall exilet een graveyard-permanent MV≤3, dies-trigger zet 'm terug (was vigilance-only) |
+
+Dit sluit het "graveyard-targeting voor triggers"-gat uit de shortlist. Nieuwe test: graveyard-exile-until-leaves (3); fixtures Grave Warden / Warden Relic / Warden Colossus / Warden Bolt. Angel of Serenity's graveyard-helft kan hier later op voortbouwen (mixed battlefield+graveyard targeting is nog een extra stap).
+
 ## Nog open — grote subsystemen (aparte scope aanbevolen)
 
 De resterende auditkaarten hangen elk aan een substantieel nieuw subsysteem, niet aan een losse veldtoevoeging:
 
 - **Replacement effects** (generiek raamwerk): Kalitas (would-die → exile + Zombie), Gisela (schade verdubbelen/halveren), Abundance (draw-replacement). Grootste brok; raakt de schade- en zone-change-pijplijn breed.
 - **Type-changing / layer-systeem**: Mirror Entity (changeling + X/X), Sydri (animate met P/T = mana value), Multiversal Passage (land wordt gekozen type), Imprisoned in the Moon (word land, strip abilities), Reaper's Scythe (Assassin + counter-schaal).
-- **Graveyard-targeting voor triggers**: Trove Warden (landfall exile uit je graveyard, terug bij dood — de terugkeer-helft werkt al via exiled_until_leaves), Angel of Serenity graveyard-helft.
+- **Graveyard-targeting voor triggers**: ✅ Trove Warden gedaan (mig 405). Resteert: Angel of Serenity graveyard-helft (vergt mixed battlefield+graveyard targeting).
 - **Twee-picks abilities** (sac-kost ÉN effect-target): Etchings of the Chosen, Goblin Bombardment creature-mode — geven nu een eerlijke fout i.p.v. mis-targeting (bug-2690); volledige fix vergt client-side twee picks.
 - **Per-opponent dynamische target-count** + **mana-spent-to-cast** amount: Bronzebeak Foragers (exile per opponent), Wurmquake (token-grootte = betaalde mana).
 

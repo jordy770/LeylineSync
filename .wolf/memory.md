@@ -7894,3 +7894,11 @@
 | 12:18 | Edited tests/feature/exile-until-leaves-return-to.test.ts | 12→9 lines | ~125 |
 | 12:19 | Edited supabase/functions_src/choose_triggered_ability_targets.sql | modified not() | ~145 |
 | 2026-07-15 | Engine-batch 4: mig 404 exile_until_leaves return_to + optionele multi-target (bug-2691, choose_triggered_ability_targets gebackfilld); Angel of Serenity battlefield-helft; report bevat status grote resterende subsystemen | supabase/migrations/202605010404*, tests/feature/exile-until-leaves-return-to.test.ts | suite-run bezig; 1 kaart | ~50k |
+| 12:46 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~34 |
+| 12:46 | Edited lib/game/card-behavior-schema.ts | expanded (+13 lines) | ~258 |
+| 12:47 | Edited supabase/functions_src/apply_trigger_effects.sql | added 2 condition(s) | ~669 |
+| 12:47 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~121 |
+| 12:47 | Edited supabase/functions_src/submit_decision.sql | modified Warden() | ~534 |
+| 12:49 | Created tests/feature/graveyard-exile-until-leaves.test.ts | — | ~1057 |
+| 2026-07-15 | Engine-batch 5: mig 405 graveyard-target triggers (exile_graveyard_until_leaves, park-patroon + exiled_until_leaves-anker); Trove Warden volledig | supabase/migrations/202605010405*, tests/feature/graveyard-exile-until-leaves.test.ts | suite-run bezig; 1 kaart | ~55k |
+| 12:54 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~100 |

@@ -207,6 +207,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
   'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
   'job_select', 'advance_saga', 'grant_flashback', 'hand_to_library_top',
+  'exile_graveyard_until_leaves',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -736,6 +737,19 @@ const CardBehaviorActionSchema = z.union([
     // 'battlefield' (Bronzebeak Foragers); 'hand' returns to owners' hands
     // (Angel of Serenity: "return the exiled cards to their owners' hands").
     return_to: z.enum(['battlefield', 'hand']).optional(),
+  }),
+  // "Exile TARGET permanent card ... from your graveyard until this leaves"
+  // (mig 405, Trove Warden's landfall). Parks a graveyard pick (permanent
+  // cards, max_mana_value filter); on submit the chosen card is exiled and
+  // anchored to the source, so it returns to the battlefield when the source
+  // dies (via the same exiled_until_leaves mechanism).
+  z.object({
+    type: z.literal('exile_graveyard_until_leaves'),
+    filter: z.object({
+      max_mana_value: z.number().int().optional(),
+      type_line: z.string().optional(),
+      permanent: z.boolean().optional(),
+    }).optional(),
   }),
   // Living weapon (mig 267, Bonehoard / Grip of Phyresis): Germ token +
   // attach the target Equipment (or the source itself) to it.

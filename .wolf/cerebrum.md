@@ -627,3 +627,9 @@
 - exiled_until_leaves (Bronzebeak/Angel): de terugkeer zit in fire_zone_change_triggers (AFTER UPDATE → LTB-pad), keert standaard terug naar battlefield onder eigenaar; payload.return_to='hand' stuurt naar de hand. acting_source wordt al doorgegeven via apply_targeted_triggered_ability_effects, dus multi-target exile_until_leaves ankert per doel automatisch.
 - choose_triggered_ability_targets (multi-target picker) stond ALLEEN in mig 116, niet in functions_src (bug-2691, bug-1280-klasse) — nu gebackfilld. Guard accepteert nu target_required OF target_optional (optionele "up to N" triggers zoals Angel).
 - RESTERENDE grote items zijn subsystemen, geen losse velden: replacement effects (Kalitas/Gisela/Abundance), type-changing layer (Mirror Entity/Sydri/Multiversal Passage/Imprisoned), graveyard-targeting voor triggers (Trove Warden landfall), twee-picks abilities (Etchings/Goblin Bombardment, bug-2690). Elk apart scopen; niet batch-shippen.
+
+## Key Learnings — 2026-07-15 (engine-batch 5, mig 405)
+
+- Graveyard-targeting voor TRIGGERS gaat NIET via de battlefield-target-picker (trigger_effect_target_type) maar via het parked-decision-patroon (zoals return_from_graveyard / graveyard_exile_pick): apply_trigger_effects bouwt options uit de graveyard + parkt een game_pending_decisions rij; submit_decision verwerkt de pick. Nieuw effect exile_graveyard_until_leaves parkt 'graveyard_exile_until_leaves_pick' en ankert via een exiled_until_leaves continuous effect (source = de trigger-bron) → terugkeer bij dood gratis via fire_zone_change_triggers.
+- Nieuwe decision_types MOETEN in de parse-lijst bovenaan submit_decision (regel ~110, de 'these read v_top as card-id array'-groep) én een eigen handler-branch krijgen.
+- Landfall (land_entered) vuurt op spawn van een land op het battlefield (fire_zone_change_triggers INSERT-pad). In tests: het is een STACK-trigger — eerst resolveStack() draaien vóór je de geparkte decision checkt.

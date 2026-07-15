@@ -107,7 +107,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick', 'grant_flashback', 'hand_to_library_top') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick', 'graveyard_exile_until_leaves_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick', 'grant_flashback', 'hand_to_library_top') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -482,6 +482,39 @@ begin
             coalesce((v_decision.params ->> 'pump_if_noncreature')::integer, 1),
             coalesce((v_decision.params ->> 'pump_if_noncreature')::integer, 1));
         end if;
+      end if;
+    end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'graveyard_exile_until_leaves_pick' then
+    -- Trove Warden (mig 405): exile the chosen permanent card from the
+    -- controller's graveyard AND anchor it to the source permanent, so
+    -- fire_zone_change_triggers returns it to the battlefield when the source
+    -- leaves (dies). Reuses the exiled_until_leaves mechanism (mig 262/404).
+    select source_card_id into v_src_card
+    from public.game_stack_items where id = v_decision.source_stack_item_id;
+    for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
+    loop
+      select coalesce(max(zone_position), -1) + 1 into v_pos
+      from public.game_cards
+      where session_id = v_decision.session_id
+        and owner_id = (select owner_id from public.game_cards where id = v_card)
+        and zone = 'exile';
+      update public.game_cards
+      set zone = 'exile', zone_position = v_pos, controller_player_id = owner_id,
+          is_tapped = false, damage_marked = 0, plus_one_counters = 0
+      where id = v_card and session_id = v_decision.session_id and zone = 'graveyard';
+      -- Only anchor when the source is still on the battlefield (else the card
+      -- would never return — and a dead source can't hold linked exiles).
+      if v_src_card is not null and exists (
+        select 1 from public.game_cards
+        where id = v_src_card and session_id = v_decision.session_id and zone = 'battlefield'
+      ) then
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+        ) values (
+          v_decision.session_id, v_src_card, v_card, 'exiled_until_leaves', '{}'::jsonb, 'battlefield'
+        );
       end if;
     end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);

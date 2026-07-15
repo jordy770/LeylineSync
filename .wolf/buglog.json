@@ -21517,6 +21517,39 @@
    ],
    "occurrences": 1,
    "last_seen": "2026-07-15T00:00:00Z"
+  },
+  {
+   "id": "bug-1314",
+   "timestamp": "2026-07-15T10:47:36.714Z",
+   "error_message": "Incorrect value in code",
+   "file": "supabase/functions_src/submit_decision.sql",
+   "root_cause": "Had 'fight_pick'",
+   "fix": "Changed to 'graveyard_exile_until_leaves_pick'",
+   "tags": [
+    "auto-detected",
+    "wrong-value",
+    "sql"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T10:47:36.714Z"
+  },
+  {
+   "id": "bug-2692",
+   "timestamp": "2026-07-15T00:00:00Z",
+   "error_message": "Trove Warden's landfall parked no graveyard decision (test: 'landfall parked a graveyard pick')",
+   "file": "tests/feature/graveyard-exile-until-leaves.test.ts",
+   "root_cause": "A landfall (land_entered) trigger is a STACK item; the parked decision only appears after it RESOLVES. The test checked pendingDecision() before resolving the stack",
+   "fix": "resolveStack() the landfall trigger before asserting the parked decision (test-only; the engine was correct)",
+   "tags": [
+    "test-harness",
+    "landfall",
+    "parked-decision",
+    "stack-resolution"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T00:00:00Z"
   }
  ]
 }
