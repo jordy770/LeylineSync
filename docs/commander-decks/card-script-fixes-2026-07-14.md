@@ -209,11 +209,22 @@ Resteert voor Angel: de graveyard-helft ("and/or creature cards from graveyards"
 
 Dit sluit het "graveyard-targeting voor triggers"-gat uit de shortlist. Nieuwe test: graveyard-exile-until-leaves (3); fixtures Grave Warden / Warden Relic / Warden Colossus / Warden Bolt. Angel of Serenity's graveyard-helft kan hier later op voortbouwen (mixed battlefield+graveyard targeting is nog een extra stap).
 
+
+## Engine-batch 6 — uitgevoerd (mig 406, 15 juli)
+
+| Mig | Feature | Ontgrendeld |
+|---|---|---|
+| 406 | **Death-replacement subsysteem** — nieuw `dies_replacement` continuous effect; een check bovenaan `put_in_graveyard` (DÉ chokepoint: combat-SBA, destroy, sacrifice én dies gaan er allemaal doorheen, mig 084) exilet de stervende creature i.p.v. 'm te laten sterven, vuurt een token-rider, en slaat dies-triggers + death-tally over (hij stierf niet) | **Kalitas, Traitor of Ghet** volledig: opponents' nontoken creatures worden geëxileerd i.p.v. te sterven en jij maakt een 2/2 Zombie |
+
+Dit is het eerste stuk van het "replacement effects"-subsysteem uit de shortlist, en meteen een herbruikbaar fundament: Rest in Peace / Leyline of the Void / Anafenza-klasse ("would go to a graveyard → exile instead") kunnen hierop voortbouwen. Nieuwe test: dies-replacement (3); fixture Kalitas Test.
+
+Resteert van replacement effects: **damage-replacement** (Gisela: schade ×2 / halveren) en **draw-replacement** (Abundance) — andere pijplijnen, aparte subsystemen. En het **type-changing layer-systeem** blijft de andere grote brok.
+
 ## Nog open — grote subsystemen (aparte scope aanbevolen)
 
 De resterende auditkaarten hangen elk aan een substantieel nieuw subsysteem, niet aan een losse veldtoevoeging:
 
-- **Replacement effects** (generiek raamwerk): Kalitas (would-die → exile + Zombie), Gisela (schade verdubbelen/halveren), Abundance (draw-replacement). Grootste brok; raakt de schade- en zone-change-pijplijn breed.
+- **Replacement effects**: ✅ death-replacement gedaan (mig 406, Kalitas). Resteert: damage-replacement (Gisela) en draw-replacement (Abundance) — aparte pijplijnen.
 - **Type-changing / layer-systeem**: Mirror Entity (changeling + X/X), Sydri (animate met P/T = mana value), Multiversal Passage (land wordt gekozen type), Imprisoned in the Moon (word land, strip abilities), Reaper's Scythe (Assassin + counter-schaal).
 - **Graveyard-targeting voor triggers**: ✅ Trove Warden gedaan (mig 405). Resteert: Angel of Serenity graveyard-helft (vergt mixed battlefield+graveyard targeting).
 - **Twee-picks abilities** (sac-kost ÉN effect-target): Etchings of the Chosen, Goblin Bombardment creature-mode — geven nu een eerlijke fout i.p.v. mis-targeting (bug-2690); volledige fix vergt client-side twee picks.

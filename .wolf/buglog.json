@@ -21602,6 +21602,24 @@
    ],
    "occurrences": 1,
    "last_seen": "2026-07-15T00:00:00Z"
+  },
+  {
+   "id": "bug-2695",
+   "timestamp": "2026-07-15T00:00:00Z",
+   "error_message": "22P02 invalid input syntax for type json — DR1 dies-replacement test, in register_card_continuous_effects",
+   "file": "tests/feature/dies-replacement.test.ts",
+   "root_cause": "The test called client.query('apply_creature_effect...') directly WITHOUT auth context. The exile+token rider creates a Zombie, which calls register_card_continuous_effects → auth.uid() parses request.jwt.claims; with no JWT set that setting is an empty string → ''::json fails. Production always runs this via an authenticated RPC, so auth.uid() works — this is a test-only artifact",
+   "fix": "Wrapped the destroy queries in asPlayer(s.client, s.players.A, ...) so the JWT claim (auth.uid()) is set during the register chain. DR2/DR3 passed anyway because they create no token (no register call)",
+   "tags": [
+    "test-harness",
+    "auth.uid",
+    "jwt-claims",
+    "create_token",
+    "register_card_continuous_effects"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T00:00:00Z"
   }
  ]
 }

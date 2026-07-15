@@ -15486,6 +15486,19 @@
           }
         ]
       }
+    ],
+    "continuous_effects": [
+      {
+        "type": "dies_replacement",
+        "affected": "controller",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "scope": "opponent",
+          "nontoken": true,
+          "exile": true,
+          "create_token": "Zombie Token"
+        }
+      }
     ]
   },
   "Kindred Dominance": {

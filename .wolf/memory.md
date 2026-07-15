@@ -7904,3 +7904,10 @@
 | 12:54 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~100 |
 | 13:05 | Edited lib/game/types.ts | 5→8 lines | ~81 |
 | 13:08 | Edited tests/feature/exile-until-leaves-return-to.test.ts | 2→2 lines | ~35 |
+| 13:57 | Created ../../.claude/jobs/ca267fb9/tmp/release-v0.14.0.md | — | ~479 |
+| 2026-07-15 | PRODUCTIE-DEPLOY v0.14.0: migraties 389-405 → hosted Supabase (db push, geverifieerd), card-scripts gesynct (deck:upsert --apply --force, alleen Beanstalk Giant restte), GitHub Release v0.14.0 gepubliceerd → deploy.yml groen → VPS rebuild; leylinesync.com HTTP 200 | supabase/migrations/, docs/commander-decks/card-scripts.json | LIVE; engine + client volledig uitgerold | ~30k |
+| 14:12 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified REPLACEMENT() | ~158 |
+| 14:12 | Edited supabase/functions_src/put_in_graveyard.sql | 5→7 lines | ~47 |
+| 14:13 | Edited supabase/functions_src/put_in_graveyard.sql | added 1 condition(s) | ~774 |
+| 14:15 | Created tests/feature/dies-replacement.test.ts | — | ~1004 |
+| 2026-07-15 | Engine-batch 6: mig 406 death-replacement subsysteem (dies_replacement continuous effect + check in put_in_graveyard-chokepoint); Kalitas volledig | supabase/migrations/202605010406*, tests/feature/dies-replacement.test.ts | suite-run bezig; 1 kaart; fundament voor Rest in Peace/Leyline-klasse | ~70k |

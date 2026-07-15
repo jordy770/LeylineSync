@@ -1,7 +1,208 @@
--- supabase/functions_src/register_card_continuous_effects.sql
--- CANONICAL current definition (seeded from 202605010195_intimidate_hexproof.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010406_dies_replacement
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (put_in_graveyard, register_card_continuous_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+-- 'dies_replacement' joins the continuous-effect CHECK list (rebuilt from the
+-- mig 398 definition + the new value — bug-283 rule: never from the baseline).
+alter table public.game_continuous_effects
+  drop constraint if exists game_continuous_effects_effect_type_check;
+alter table public.game_continuous_effects
+  add constraint game_continuous_effects_effect_type_check
+  check (effect_type = any (array[
+    'mana_does_not_empty', 'additional_land_plays', 'haste', 'vigilance',
+    'indestructible', 'trample', 'first_strike', 'double_strike', 'flying',
+    'reach', 'deathtouch', 'pump', 'control', 'set_pt', 'protection', 'switch_pt',
+    'infect', 'wither', 'toxic', 'cast_from_graveyard', 'menace',
+    'intimidate', 'hexproof', 'curse_attacked', 'play_from_exile', 'cost_reduction',
+    'cast_from_library_top', 'goaded', 'creatures_enter_tapped', 'damage_cap',
+    'exiled_until_leaves', 'attack_tax', 'animated', 'lifelink',
+    'cant_attack', 'cant_block', 'defender', 'fear', 'granted_dies_effect', 'granted_ability',
+    'unblockable', 'flash_permission', 'dies_replacement'
+  ]));
+
+create or replace function public.put_in_graveyard(p_session_id uuid, p_game_card_id uuid)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_owner_id uuid;
+  v_controller_id uuid;
+  v_is_creature boolean;
+  v_is_token boolean;
+  v_turn integer;
+  v_next_graveyard_position integer;
+  v_had_counters integer;
+  v_undying boolean := false;
+  v_next_bf_position integer;
+  v_rider record;
+  v_rider_payloads jsonb := '[]'::jsonb;
+  v_repl record;
+  v_next_exile_position integer;
+begin
+  select g.owner_id, coalesce(g.controller_player_id, g.owner_id), (c.type_line ilike '%creature%'),
+         -- Token at either level: catalog tokens (cards.is_token) or copy
+         -- tokens (game_cards.is_token, mig 239).
+         coalesce(c.is_token, false) or coalesce(g.is_token, false), coalesce(g.plus_one_counters, 0)
+  into v_owner_id, v_controller_id, v_is_creature, v_is_token, v_had_counters
+  from public.game_cards g
+  join public.cards c on c.id = g.card_id
+  where g.id = p_game_card_id
+    and g.session_id = p_session_id
+    and g.zone = 'battlefield';
+
+  if not found then
+    return false;
+  end if;
+
+  -- Death replacement (mig 406, Kalitas, Traitor of Ghet): "Whenever a nontoken
+  -- creature an opponent controls would die, exile it instead. If you do, create
+  -- a 2/2 black Zombie." A 'dies_replacement' continuous effect on a battlefield
+  -- source intercepts the death HERE (put_in_graveyard is THE chokepoint —
+  -- combat SBA, destroy, sacrifice and dies all funnel through it, mig 084).
+  -- The creature is EXILED, so it never dies: no dies-triggers and no death
+  -- tally fire. First applicable replacement wins.
+  if v_is_creature then
+    for v_repl in
+      select ce.source_card_id, ce.payload,
+             coalesce(src.controller_player_id, src.owner_id) as repl_controller
+      from public.game_continuous_effects ce
+      join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+      where ce.session_id = p_session_id
+        and ce.effect_type = 'dies_replacement'
+        and src.zone = 'battlefield'
+      order by ce.id
+    loop
+      -- scope 'opponent' (default): the dying creature's controller must be an
+      -- opponent of the replacement's controller. nontoken:true skips tokens.
+      continue when lower(coalesce(v_repl.payload ->> 'scope', 'opponent')) = 'opponent'
+                    and v_controller_id is not distinct from v_repl.repl_controller;
+      continue when coalesce((v_repl.payload ->> 'nontoken')::boolean, true) and v_is_token;
+
+      -- Exile instead of dying. The zone-change trigger fires leaves-the-
+      -- battlefield (correct — it did leave), but NOT the dies block (that keys
+      -- on NEW.zone = 'graveyard').
+      delete from public.game_continuous_effects
+      where session_id = p_session_id and effect_type = 'granted_dies_effect'
+        and affected_card_id = p_game_card_id;
+      select coalesce(max(zone_position), -1) + 1 into v_next_exile_position
+      from public.game_cards
+      where session_id = p_session_id and owner_id = v_owner_id and zone = 'exile';
+      update public.game_cards
+      set zone = 'exile', zone_position = v_next_exile_position, controller_player_id = owner_id,
+          is_tapped = false, damage_marked = 0, dealt_deathtouch_damage = false, plus_one_counters = 0
+      where id = p_game_card_id;
+
+      -- Rider: the replacement's controller creates the token (Kalitas's Zombie).
+      if nullif(v_repl.payload ->> 'create_token', '') is not null then
+        perform public.apply_triggered_ability_effects(
+          p_session_id, v_repl.repl_controller, v_repl.source_card_id,
+          jsonb_build_array(jsonb_build_object(
+            'type', 'create_token',
+            'token', v_repl.payload ->> 'create_token',
+            'count', coalesce((v_repl.payload ->> 'token_count')::integer, 1))));
+      end if;
+
+      return true;
+    end loop;
+  end if;
+
+  -- Undying (mig 219, Geralf's Mindcrusher): "When this creature dies, if it
+  -- had no +1/+1 counters on it, return it under its owner's control with a
+  -- +1/+1 counter." Captured BEFORE the move (the move resets counters).
+  if v_is_creature and v_had_counters = 0 then
+    v_undying := coalesce(
+      (public.effective_script(p_session_id, p_game_card_id) ->> 'undying')::boolean, false);
+  end if;
+
+  select coalesce(max(zone_position), -1) + 1
+  into v_next_graveyard_position
+  from public.game_cards
+  where session_id = p_session_id
+    and owner_id = v_owner_id
+    and zone = 'graveyard';
+
+  -- Granted dies-trigger (Clavileño / Jaxis / Feign Death, migs 344-349): a
+  -- creature given "when this dies, <effects>" carries a granted_dies_effect.
+  -- CAPTURE the payloads BEFORE the zone move — a TOKEN's cease trigger fires on
+  -- that move and would delete the rows (and the token) first. Consume them too.
+  if v_is_creature then
+    select coalesce(jsonb_agg(payload), '[]'::jsonb) into v_rider_payloads
+    from public.game_continuous_effects
+    where session_id = p_session_id and effect_type = 'granted_dies_effect'
+      and affected_card_id = p_game_card_id;
+    delete from public.game_continuous_effects
+    where session_id = p_session_id and effect_type = 'granted_dies_effect'
+      and affected_card_id = p_game_card_id;
+  end if;
+
+  update public.game_cards
+  set
+    zone = 'graveyard',
+    zone_position = v_next_graveyard_position,
+    controller_player_id = owner_id,
+    is_tapped = false,
+    damage_marked = 0,
+    dealt_deathtouch_damage = false,
+    plus_one_counters = 0
+  where id = p_game_card_id;
+
+  -- Fire the captured dies-triggers AFTER the move so a return_self_to_battlefield
+  -- effect finds the card in its graveyard. (For tokens the card has already
+  -- ceased, but the effects — draw, make a token — are player-level.)
+  for v_rider in select value as payload from jsonb_array_elements(v_rider_payloads)
+  loop
+    perform public.apply_triggered_ability_effects(
+      p_session_id, v_controller_id, p_game_card_id,
+      coalesce(v_rider.payload -> 'effects', '[]'::jsonb));
+  end loop;
+
+  -- Tally "creatures that died under your control this turn" (turn-stamped: the
+  -- count belongs to the stored turn, so it reads as 0 once the turn changes).
+  if v_is_creature and v_controller_id is not null then
+    select turn_number into v_turn from public.game_turn_state where session_id = p_session_id;
+    update public.game_session_players
+    set turn_creatures_died = case when turn_creatures_died_turn = coalesce(v_turn, 0)
+                                   then turn_creatures_died + 1 else 1 end,
+        turn_creatures_died_turn = coalesce(v_turn, 0),
+        -- Nontoken-only tally (Gadrak): summed game-wide by resolve_count_amount.
+        turn_nontoken_creatures_died = case
+          when not v_is_token then
+            case when turn_nontoken_creatures_died_turn = coalesce(v_turn, 0)
+                 then turn_nontoken_creatures_died + 1 else 1 end
+          when turn_nontoken_creatures_died_turn = coalesce(v_turn, 0)
+            then turn_nontoken_creatures_died else 0 end,
+        turn_nontoken_creatures_died_turn = case
+          when not v_is_token then coalesce(v_turn, 0)
+          else turn_nontoken_creatures_died_turn end
+    where session_id = p_session_id and player_id = v_controller_id;
+  end if;
+
+  -- Undying return: AFTER the graveyard move (so dies triggers and the death
+  -- tally fired normally), bring the card back under its OWNER's control with
+  -- one +1/+1 counter. It then has a counter, so dying again stays dead.
+  if v_undying then
+    select turn_number into v_turn from public.game_turn_state where session_id = p_session_id;
+    select coalesce(max(zone_position), -1) + 1
+    into v_next_bf_position
+    from public.game_cards
+    where session_id = p_session_id and owner_id = v_owner_id and zone = 'battlefield';
+
+    update public.game_cards
+    set zone = 'battlefield',
+        zone_position = v_next_bf_position,
+        controller_player_id = owner_id,
+        is_tapped = false,
+        plus_one_counters = 1,
+        entered_battlefield_turn_number = coalesce(v_turn, 0)
+    where id = p_game_card_id and session_id = p_session_id;
+  end if;
+
+  return true;
+end;
+$$;
 
 create or replace function public.register_card_continuous_effects(
   p_session_id uuid, p_source_card_id uuid

@@ -21,6 +21,8 @@ declare
   v_next_bf_position integer;
   v_rider record;
   v_rider_payloads jsonb := '[]'::jsonb;
+  v_repl record;
+  v_next_exile_position integer;
 begin
   select g.owner_id, coalesce(g.controller_player_id, g.owner_id), (c.type_line ilike '%creature%'),
          -- Token at either level: catalog tokens (cards.is_token) or copy
@@ -35,6 +37,58 @@ begin
 
   if not found then
     return false;
+  end if;
+
+  -- Death replacement (mig 406, Kalitas, Traitor of Ghet): "Whenever a nontoken
+  -- creature an opponent controls would die, exile it instead. If you do, create
+  -- a 2/2 black Zombie." A 'dies_replacement' continuous effect on a battlefield
+  -- source intercepts the death HERE (put_in_graveyard is THE chokepoint —
+  -- combat SBA, destroy, sacrifice and dies all funnel through it, mig 084).
+  -- The creature is EXILED, so it never dies: no dies-triggers and no death
+  -- tally fire. First applicable replacement wins.
+  if v_is_creature then
+    for v_repl in
+      select ce.source_card_id, ce.payload,
+             coalesce(src.controller_player_id, src.owner_id) as repl_controller
+      from public.game_continuous_effects ce
+      join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+      where ce.session_id = p_session_id
+        and ce.effect_type = 'dies_replacement'
+        and src.zone = 'battlefield'
+      order by ce.id
+    loop
+      -- scope 'opponent' (default): the dying creature's controller must be an
+      -- opponent of the replacement's controller. nontoken:true skips tokens.
+      continue when lower(coalesce(v_repl.payload ->> 'scope', 'opponent')) = 'opponent'
+                    and v_controller_id is not distinct from v_repl.repl_controller;
+      continue when coalesce((v_repl.payload ->> 'nontoken')::boolean, true) and v_is_token;
+
+      -- Exile instead of dying. The zone-change trigger fires leaves-the-
+      -- battlefield (correct — it did leave), but NOT the dies block (that keys
+      -- on NEW.zone = 'graveyard').
+      delete from public.game_continuous_effects
+      where session_id = p_session_id and effect_type = 'granted_dies_effect'
+        and affected_card_id = p_game_card_id;
+      select coalesce(max(zone_position), -1) + 1 into v_next_exile_position
+      from public.game_cards
+      where session_id = p_session_id and owner_id = v_owner_id and zone = 'exile';
+      update public.game_cards
+      set zone = 'exile', zone_position = v_next_exile_position, controller_player_id = owner_id,
+          is_tapped = false, damage_marked = 0, dealt_deathtouch_damage = false, plus_one_counters = 0
+      where id = p_game_card_id;
+
+      -- Rider: the replacement's controller creates the token (Kalitas's Zombie).
+      if nullif(v_repl.payload ->> 'create_token', '') is not null then
+        perform public.apply_triggered_ability_effects(
+          p_session_id, v_repl.repl_controller, v_repl.source_card_id,
+          jsonb_build_array(jsonb_build_object(
+            'type', 'create_token',
+            'token', v_repl.payload ->> 'create_token',
+            'count', coalesce((v_repl.payload ->> 'token_count')::integer, 1))));
+      end if;
+
+      return true;
+    end loop;
   end if;
 
   -- Undying (mig 219, Geralf's Mindcrusher): "When this creature dies, if it
