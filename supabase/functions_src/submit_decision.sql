@@ -9,6 +9,7 @@ set search_path = public
 as $$
 declare
   v_decision public.game_pending_decisions;
+  v_target_item public.game_stack_items;
   v_chosen jsonb;
   v_count integer;
   v_option_count integer;
@@ -106,7 +107,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick', 'grant_flashback', 'hand_to_library_top') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -396,6 +397,39 @@ begin
     end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
+  elsif v_decision.decision_type = 'hand_to_library_top' then
+    -- Brainstorm (mig 392): each chosen hand card goes to the top of its
+    -- owner's library (top = lowest zone_position); iterating the chosen array
+    -- in order means the LAST pick ends on top — "in any order" is the
+    -- player's pick order.
+    for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
+    loop
+      select coalesce(min(zone_position), 0) - 1 into v_pos
+      from public.game_cards
+      where session_id = v_decision.session_id
+        and owner_id = (select owner_id from public.game_cards where id = v_card)
+        and zone = 'library';
+      update public.game_cards
+      set zone = 'library', zone_position = v_pos, is_tapped = false, damage_marked = 0
+      where id = v_card and session_id = v_decision.session_id and zone = 'hand';
+    end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'grant_flashback' then
+    -- Snapcaster Mage (mig 392): the chosen instant/sorcery card in the
+    -- decider's graveyard gains flashback until end of turn. The grant is a
+    -- turn-stamped counter; cast_spell_effect's graveyard branch accepts it
+    -- this turn only (cost = the card's own mana cost) and exiles on cast.
+    for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
+    loop
+      update public.game_cards
+      set counters = coalesce(counters, '{}'::jsonb) || jsonb_build_object(
+        'flashback_until_turn',
+        (select turn_number from public.game_turn_state where session_id = v_decision.session_id))
+      where id = v_card and session_id = v_decision.session_id and zone = 'graveyard';
+    end loop;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
   elsif v_decision.decision_type = 'graveyard_to_top_pick' then
     -- Noxious Revival (mig 275): the chosen graveyard card goes to the TOP of
     -- its owner's library (top = lowest zone_position).
@@ -523,6 +557,38 @@ begin
       where id = v_card;
     end loop;
     perform public.rebuild_scripted_continuous_effects(v_decision.session_id);
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'pay_or_be_countered' then
+    -- Mana Leak (mig 392): "counter target spell unless its controller pays
+    -- {3}." Confirmed → pay the escape cost from the decider's pool (raises if
+    -- unaffordable, so declining stays an explicit choice) and the spell
+    -- stands. Declined → counter it (same moves as handle_counter_spell).
+    if coalesce((v_decision.result ->> 'confirmed')::boolean, false) then
+      perform public.pay_mana_cost(
+        v_decision.session_id, auth.uid(), v_decision.params ->> 'cost', null, 0);
+    else
+      select * into v_target_item
+      from public.game_stack_items
+      where id = nullif(v_decision.params ->> 'target_stack_item_id', '')::uuid
+        and session_id = v_decision.session_id and status = 'pending'
+      for update;
+      if found then
+        if v_target_item.action_type = 'cast_permanent' and v_target_item.source_card_id is not null then
+          select coalesce(max(zone_position), -1) + 1 into v_pos
+          from public.game_cards
+          where session_id = v_decision.session_id
+            and owner_id = v_target_item.controller_player_id and zone = 'graveyard';
+          update public.game_cards
+          set zone = 'graveyard', zone_position = v_pos, is_tapped = false, damage_marked = 0
+          where id = v_target_item.source_card_id and session_id = v_decision.session_id
+            and owner_id = v_target_item.controller_player_id and zone = 'stack';
+        end if;
+        update public.game_stack_items
+        set status = 'cancelled', resolved_at = now()
+        where id = v_target_item.id;
+      end if;
+    end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
   elsif v_decision.decision_type = 'pay_life_untap' then

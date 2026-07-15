@@ -17,6 +17,8 @@ declare
   v_cant_be_countered boolean := false;
   v_life_loss integer := 0;
   v_surveil integer := 0;
+  v_unless_pays text;
+  v_decision_id uuid;
 begin
   select *
   into v_target_stack_item
@@ -39,6 +41,32 @@ begin
       join public.cards on cards.id = game_cards.card_id
       where game_cards.id = v_target_stack_item.source_card_id
         and game_cards.session_id = p_session_id;
+    end if;
+
+    -- unless_pays escape (mig 392, Mana Leak: "unless its controller pays {3}"):
+    -- park a pay-or-be-countered decision for the TARGET spell's controller
+    -- instead of countering outright; submit_decision pays (spell stands) or
+    -- counters on decline. Note: unless_pays does not combine with the
+    -- life-loss/surveil riders below (no card in the curated set needs both).
+    if not coalesce(v_cant_be_countered, false) and p_stack_item.source_card_id is not null then
+      select nullif(btrim(max(act ->> 'unless_pays')), '')
+      into v_unless_pays
+      from public.game_cards gc
+      join public.cards c on c.id = gc.card_id
+      cross join lateral jsonb_array_elements(coalesce(c.script -> 'spell_effect' -> 'actions', '[]'::jsonb)) as act
+      where gc.id = p_stack_item.source_card_id
+        and gc.session_id = p_session_id
+        and lower(act ->> 'type') = 'counter';
+    end if;
+    if v_unless_pays is not null and v_target_stack_item.controller_player_id is not null then
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_target_stack_item.controller_player_id, p_stack_item.id, 'pay_or_be_countered',
+        'Pay ' || v_unless_pays || ' or your spell is countered',
+        '[]'::jsonb, 0, 0,
+        jsonb_build_object('cost', v_unless_pays, 'target_stack_item_id', v_target_stack_item.id))
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision' where id = p_stack_item.id;
+      return jsonb_build_object('awaiting_decision', v_decision_id);
     end if;
 
     if not coalesce(v_cant_be_countered, false) then

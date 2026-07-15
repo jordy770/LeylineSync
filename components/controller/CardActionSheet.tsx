@@ -83,6 +83,7 @@ export function CardActionSheet({
   playableFromExile = false,
   canCastSorceries,
   canCastInstants,
+  turnNumber,
   pendingStackCount,
   players,
   playerId,
@@ -126,6 +127,8 @@ export function CardActionSheet({
   playableFromExile?: boolean
   canCastSorceries: boolean
   canCastInstants: boolean
+  /** Current turn number — gates a GRANTED flashback (Snapcaster, mig 392). */
+  turnNumber?: number
   pendingStackCount: number
   players: GameSessionPlayer[]
   playerId: string | null
@@ -336,7 +339,13 @@ export function CardActionSheet({
   // Flashback: a card in the graveyard carrying a `flashback` cost can be re-cast
   // from there for that cost (the server then exiles it). Supported here for the
   // untargeted programs Army of the Damned-style cards use.
-  const flashbackCost = script.flashback ?? null
+  // GRANTED flashback (Snapcaster Mage, mig 392): a turn-stamped counter on the
+  // graveyard card; the cost is the card's own mana cost. Same-turn only.
+  const grantedFlashback =
+    zone === 'graveyard' &&
+    turnNumber !== undefined &&
+    Number((card.counters as Record<string, unknown> | null)?.flashback_until_turn ?? Number.NaN) === turnNumber
+  const flashbackCost = script.flashback ?? (grantedFlashback ? (card.cards?.mana_cost ?? '') : null)
   // Additional "Pay N life" flashback cost (Deep Analysis); the server charges it.
   const flashbackLife = script.flashback_life ?? 0
   // Cycling: a card in hand carrying a `cycling` cost can be discarded to draw.

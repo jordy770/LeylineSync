@@ -61,6 +61,19 @@ as $$
               and g.owner_id = (select owner_id from spec)
               and g.zone = 'graveyard'
           )
+          when 'creature_cards_in_opponents_graveyards' then (
+            -- Wight of Precinct Six (mig 389): creature CARDS in every other
+            -- player's graveyard (tokens are not cards).
+            select count(*)::integer
+            from public.game_cards g
+            join public.cards c on c.id = g.card_id
+            where g.session_id = p_session_id
+              and g.owner_id <> (select controller_id from spec)
+              and g.zone = 'graveyard'
+              and c.type_line ilike '%creature%'
+              and c.is_token = false
+              and g.is_token = false
+          )
           else 0
         end
   end;

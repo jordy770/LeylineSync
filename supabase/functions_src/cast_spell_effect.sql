@@ -156,6 +156,14 @@ begin
   -- pays that instead, and marks the card for exile (below). No-op when the source is
   -- sourceless or free (the free-cast test fixtures).
   if p_source_card_id is not null and v_source_zone in ('hand', 'exile') then
+    -- Adventure half (mig 388): the spell being cast is the ADVENTURE, which
+    -- has its OWN mana cost (Stomp is {1}{R}, not Bonecrusher's {2}{R}). The
+    -- printed cost was charged before — unnoticed only because Murderous
+    -- Rider's two costs happen to match.
+    if p_adventure then
+      v_source_mana_cost := coalesce(v_source_script -> 'adventure' ->> 'cost', v_source_mana_cost);
+      v_source_type_line := nullif(split_part(coalesce(v_source_type_line, ''), ' // ', 2), '');
+    end if;
     if v_source_mana_cost is not null and btrim(v_source_mana_cost) <> '' then
       -- Cost reduction (mig 231, Draconic Lore: "costs {2} less if you control a
       -- Dragon"). Generic mana is auto-paid here (null generic payment), so the
@@ -170,6 +178,16 @@ begin
     end if;
   elsif p_source_card_id is not null and v_source_zone = 'graveyard' then
     v_flashback_cost := v_source_script ->> 'flashback';
+    -- GRANTED flashback (mig 392, Snapcaster Mage): a turn-stamped counter on
+    -- the graveyard card ("gains flashback until end of turn"); the flashback
+    -- cost is the card's own mana cost.
+    if v_flashback_cost is null then
+      if (select (counters ->> 'flashback_until_turn')::integer
+          from public.game_cards
+          where id = p_source_card_id and session_id = p_session_id) = v_turn.turn_number then
+        v_flashback_cost := coalesce(v_source_mana_cost, '');
+      end if;
+    end if;
     if v_flashback_cost is null then
       raise exception 'This card cannot be cast from your graveyard';
     end if;
@@ -217,10 +235,12 @@ begin
   -- "Whenever you/an opponent cast a spell" (mig 234, Taurean Mauler): broadcast
   -- the cast to spell_cast watchers. The caster is the source's controller.
   if p_source_card_id is not null then
-    perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'spell_cast');
+    perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'spell_cast',
+      case when p_adventure then jsonb_build_object('adventure_face', true) else null end);
     -- "Whenever you cast a spell from exile" (mig 307, Urianger Augurelt).
     if v_source_zone = 'exile' then
-      perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'cast_from_exile');
+      perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'cast_from_exile',
+        case when p_adventure then jsonb_build_object('adventure_face', true) else null end);
     end if;
   end if;
 

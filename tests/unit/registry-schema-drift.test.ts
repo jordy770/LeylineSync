@@ -24,6 +24,8 @@ import { KNOWN_V2_ACTION_TYPES } from '../../lib/game/card-behavior-schema'
 // needs a reason; "haven't gotten to it" is a valid reason as long as it is
 // written down here on purpose.
 const JSON_ONLY: Record<string, string> = {
+  grant_flashback: 'parked graveyard pick that stamps a turn-scoped flashback grant (Snapcaster Mage, mig 392); JSON/AI-authored',
+  hand_to_library_top: 'parked hand pick placed on the library top in pick order (Brainstorm, mig 392); JSON/AI-authored',
   add_mana: 'mana abilities are authored via the dedicated mana-variant form path, not the effect registry',
   counter: 'counterspells are JSON/AI-authored; the cast path (counter_spell stack action) has no form surface (mig 190)',
   set_pt: '"becomes X/Y" is engine-complete (migs 128-130) but was never given a registry entry — JSON-only by precedent',
