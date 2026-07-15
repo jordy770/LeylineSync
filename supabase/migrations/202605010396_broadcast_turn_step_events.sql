@@ -1,7 +1,80 @@
--- supabase/functions_src/apply_triggered_ability_effects.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
+-- 202605010396_broadcast_turn_step_events
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (fire_turn_step_triggers, apply_triggered_ability_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+-- supabase/functions_src/fire_turn_step_triggers.sql
+-- CANONICAL current definition (seeded from 00_baseline.sql).
 -- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
 -- never re-extract from past migrations.
+
+CREATE OR REPLACE FUNCTION "public"."fire_turn_step_triggers"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+declare
+  v_card uuid;
+  v_events text[];
+begin
+  if NEW.step is not distinct from OLD.step then
+    return null;
+  end if;
+
+  v_events := case NEW.step
+    when 'upkeep' then array['beginning_of_upkeep', 'upkeep']
+    when 'draw' then array['beginning_of_draw_step', 'draw_step']
+    -- "At the beginning of combat on your turn" (mig 205, Loyal Subordinate).
+    -- The controller filter below already scopes to the ACTIVE player's permanents.
+    when 'beginning_of_combat' then array['beginning_of_combat', 'begin_combat']
+    -- "At the beginning of each of your main phases" (mig 245, Frontier Siege
+    -- Khans mode): both main steps broadcast beginning_of_main.
+    when 'precombat_main' then array['beginning_of_main', 'precombat_main']
+    when 'postcombat_main' then array['beginning_of_main', 'postcombat_main']
+    when 'end' then array['beginning_of_end_step', 'end_step', 'beginning_of_end']
+    else null
+  end;
+
+  if v_events is null then
+    return null;
+  end if;
+
+  for v_card in
+    select game_cards.id
+    from public.game_cards
+    where game_cards.session_id = NEW.session_id
+      and game_cards.zone = 'battlefield'
+      and coalesce(game_cards.controller_player_id, game_cards.owner_id) = NEW.active_player_id
+    order by game_cards.zone_position, game_cards.id
+  loop
+    perform public.fire_card_triggers(NEW.session_id, v_card, v_events);
+  end loop;
+
+  -- Broadcast turn-step events: fire for EVERY battlefield permanent regardless
+  -- of controller — unlike the events above, which are "your <step>" (active
+  -- player's permanents only). End step since mig 206 (Laboratory Drudge);
+  -- mig 396 adds each-upkeep (Ophiomancer, Midnight Clock) and each-draw-step
+  -- (Kami of the Crescent Moon).
+  v_events := case NEW.step
+    when 'end' then array['beginning_of_each_end_step', 'each_end_step']
+    when 'upkeep' then array['beginning_of_each_upkeep', 'each_upkeep']
+    when 'draw' then array['beginning_of_each_draw_step', 'each_draw_step']
+    else null
+  end;
+  if v_events is not null then
+    for v_card in
+      select game_cards.id
+      from public.game_cards
+      where game_cards.session_id = NEW.session_id
+        and game_cards.zone = 'battlefield'
+      order by game_cards.zone_position, game_cards.id
+    loop
+      perform public.fire_card_triggers(NEW.session_id, v_card, v_events);
+    end loop;
+  end if;
+
+  return null;
+end;
+$$;
 
 create or replace function public.apply_triggered_ability_effects(
   p_session_id uuid,

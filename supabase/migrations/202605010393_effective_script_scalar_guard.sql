@@ -1,12 +1,7 @@
--- supabase/functions_src/effective_script.sql
--- CANONICAL current definition (seeded from 00_baseline.sql; canonicalised in
--- 202605010357_granted_ability.sql to merge granted abilities).
---
--- A card's behaviour script: copied_script (a copy/baked override) if present,
--- else the catalog script. PLUS any granted_ability continuous effects on the
--- card (Splinter Twin / Blade of Selves / Mirage Phalanx) — their payload.ability
--- is appended to activated_abilities (kind:'activated') or triggered_abilities
--- (kind:'triggered'), so fire_card_triggers / activate_ability see the grant.
+-- 202605010393_effective_script_scalar_guard
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (effective_script) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.effective_script(p_session_id uuid, p_game_card_id uuid)
 returns jsonb

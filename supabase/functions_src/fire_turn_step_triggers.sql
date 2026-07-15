@@ -44,10 +44,18 @@ begin
     perform public.fire_card_triggers(NEW.session_id, v_card, v_events);
   end loop;
 
-  -- "At the beginning of EACH end step" (mig 206, Laboratory Drudge): fires for
-  -- EVERY battlefield permanent regardless of controller — unlike the events
-  -- above, which are "your <step>" (active player's permanents only).
-  if NEW.step = 'end' then
+  -- Broadcast turn-step events: fire for EVERY battlefield permanent regardless
+  -- of controller — unlike the events above, which are "your <step>" (active
+  -- player's permanents only). End step since mig 206 (Laboratory Drudge);
+  -- mig 396 adds each-upkeep (Ophiomancer, Midnight Clock) and each-draw-step
+  -- (Kami of the Crescent Moon).
+  v_events := case NEW.step
+    when 'end' then array['beginning_of_each_end_step', 'each_end_step']
+    when 'upkeep' then array['beginning_of_each_upkeep', 'each_upkeep']
+    when 'draw' then array['beginning_of_each_draw_step', 'each_draw_step']
+    else null
+  end;
+  if v_events is not null then
     for v_card in
       select game_cards.id
       from public.game_cards
@@ -55,8 +63,7 @@ begin
         and game_cards.zone = 'battlefield'
       order by game_cards.zone_position, game_cards.id
     loop
-      perform public.fire_card_triggers(
-        NEW.session_id, v_card, array['beginning_of_each_end_step', 'each_end_step']);
+      perform public.fire_card_triggers(NEW.session_id, v_card, v_events);
     end loop;
   end if;
 

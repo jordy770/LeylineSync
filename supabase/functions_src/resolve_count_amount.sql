@@ -160,6 +160,26 @@ begin
     where sp.session_id = p_session_id
       and sp.player_id is distinct from p_controller_id;
 
+  elsif v_count = 'opponent_artifacts_and_enchantments' then
+    -- Dockside Extortionist (mig 390): "artifacts and enchantments your
+    -- opponents control".
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and coalesce(g.controller_player_id, g.owner_id) is distinct from p_controller_id
+      and g.zone = 'battlefield'
+      and (c.type_line ilike '%artifact%' or c.type_line ilike '%enchantment%');
+
+  elsif v_count = 'creatures_on_battlefield' then
+    -- Chain Reaction (mig 390): every creature on the battlefield, all players.
+    select count(*)::integer into v_n
+    from public.game_cards g
+    join public.cards c on c.id = g.card_id
+    where g.session_id = p_session_id
+      and g.zone = 'battlefield'
+      and c.type_line ilike '%creature%';
+
   elsif v_count = 'creature_cards_all_graveyards' then
     -- Bonehoard (mig 267): 'equal to the number of creature cards in ALL
     -- graveyards' — every player's, not just yours.
@@ -240,6 +260,15 @@ begin
     -- Spells you have ALREADY cast this turn (mig 369, Alisaie's Dualcast). The
     -- spell being cast now is index (this + 1). Turn-stamped via note_spell_cast.
     select case when sp.turn_spells_cast_turn = ts.turn_number then sp.turn_spells_cast else 0 end
+    into v_n
+    from public.game_session_players sp
+    join public.game_turn_state ts on ts.session_id = sp.session_id
+    where sp.session_id = p_session_id and sp.player_id = p_controller_id;
+
+  elsif v_count = 'tokens_created_this_turn' then
+    -- Tokens you created this turn (mig 399, Idol of Oblivion's "activate only
+    -- if you created a token this turn"). Turn-stamped by fire_token_created.
+    select case when sp.turn_tokens_created_turn = ts.turn_number then sp.turn_tokens_created else 0 end
     into v_n
     from public.game_session_players sp
     join public.game_turn_state ts on ts.session_id = sp.session_id

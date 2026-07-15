@@ -1,7 +1,60 @@
--- supabase/functions_src/cast_card_from_hand.sql
--- CANONICAL current definition (seeded from 202605010173_cast_from_graveyard.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010398_flash_timing
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (card_has_flash, cast_card_from_hand, register_card_continuous_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+-- 'flash_permission' joins the continuous-effect CHECK list (rebuilt from the
+-- mig 397 definition + the new value — bug-283 rule).
+alter table public.game_continuous_effects
+  drop constraint if exists game_continuous_effects_effect_type_check;
+alter table public.game_continuous_effects
+  add constraint game_continuous_effects_effect_type_check
+  check (effect_type = any (array[
+    'mana_does_not_empty', 'additional_land_plays', 'haste', 'vigilance',
+    'indestructible', 'trample', 'first_strike', 'double_strike', 'flying',
+    'reach', 'deathtouch', 'pump', 'control', 'set_pt', 'protection', 'switch_pt',
+    'infect', 'wither', 'toxic', 'cast_from_graveyard', 'menace',
+    'intimidate', 'hexproof', 'curse_attacked', 'play_from_exile', 'cost_reduction',
+    'cast_from_library_top', 'goaded', 'creatures_enter_tapped', 'damage_cap',
+    'exiled_until_leaves', 'attack_tax', 'animated', 'lifelink',
+    'cant_attack', 'cant_block', 'defender', 'fear', 'granted_dies_effect', 'granted_ability',
+    'unblockable', 'flash_permission'
+  ]));
+
+create or replace function public.card_has_flash(
+  p_session_id uuid,
+  p_game_card_id uuid,
+  p_player_id uuid
+) returns boolean language sql security definer set search_path = public as $$
+  select
+    exists (
+      select 1
+      from public.game_cards gc
+      join public.cards c on c.id = gc.card_id
+      where gc.id = p_game_card_id and gc.session_id = p_session_id
+        and (
+          exists (select 1 from jsonb_array_elements_text(coalesce(c.keywords, '[]'::jsonb)) k
+                  where lower(k.value) = 'flash')
+          or exists (select 1 from jsonb_array_elements_text(coalesce(c.script -> 'keywords', '[]'::jsonb)) k
+                     where lower(k.value) = 'flash')
+        )
+    )
+    or exists (
+      select 1
+      from public.game_continuous_effects effects
+      left join public.game_cards source_card on source_card.id = effects.source_card_id
+      join public.game_cards tc on tc.id = p_game_card_id
+      join public.cards tcard on tcard.id = tc.card_id
+      where effects.session_id = p_session_id
+        and effects.effect_type = 'flash_permission'
+        and (effects.affected_player_id is null or effects.affected_player_id = p_player_id)
+        and (effects.payload ->> 'type_line' is null
+             or split_part(coalesce(tcard.type_line, ''), ' // ', 1)
+                ilike '%' || (effects.payload ->> 'type_line') || '%')
+        and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
+    );
+$$;
+grant execute on function public.card_has_flash(uuid, uuid, uuid) to authenticated, service_role;
 
 create or replace function public.cast_card_from_hand(
   p_session_id uuid,
@@ -535,3 +588,314 @@ begin
 end;
 $$;
 grant execute on function public.cast_card_from_hand(uuid, uuid, jsonb, uuid, boolean, uuid[], integer) to authenticated;
+
+create or replace function public.register_card_continuous_effects(
+  p_session_id uuid, p_source_card_id uuid
+) returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_source_card public.game_cards;
+  v_script jsonb;
+  v_keywords jsonb;
+  v_keyword text;
+  v_keyword_effect_type text;
+  v_effect jsonb;
+  v_effect_type text;
+  v_affected text;
+  v_affected_player_id uuid;
+  v_affected_card_id uuid;
+  v_source_zone_required text;
+  v_payload jsonb;
+  v_registered_count integer := 0;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select game_cards.*
+  into v_source_card
+  from public.game_cards
+  where game_cards.id = p_source_card_id
+    and game_cards.session_id = p_session_id;
+
+  if not found then
+    raise exception 'Source card not found';
+  end if;
+
+  delete from public.game_continuous_effects
+  where session_id = p_session_id
+    and source_card_id = p_source_card_id
+    and payload ->> 'registered_from_card_script' = 'true';
+
+  if v_source_card.zone <> 'battlefield' or v_source_card.static_effects_suppressed then
+    return 0;
+  end if;
+
+  -- A manifested (face-down) card has no abilities and no printed keywords
+  -- (mig 251, Reality Shift); its 2/2 set_pt row is not script-flagged, so
+  -- the delete above leaves it alone.
+  if coalesce(v_source_card.counters, '{}'::jsonb) ? 'manifested' then
+    return 0;
+  end if;
+
+  v_script := public.effective_script(p_session_id, p_source_card_id);
+
+  select coalesce(cards.keywords, '[]'::jsonb)
+  into v_keywords
+  from public.cards
+  where cards.id = v_source_card.card_id;
+
+  for v_effect in
+    select value
+    from jsonb_array_elements(coalesce(v_script -> 'continuous_effects', '[]'::jsonb))
+  loop
+    v_effect_type := coalesce(v_effect ->> 'effect_type', v_effect ->> 'type');
+
+    if v_effect_type not in (
+      'mana_does_not_empty',
+      'additional_land_plays',
+      'haste',
+      'vigilance',
+      'indestructible',
+      'trample',
+      'first_strike',
+      'double_strike',
+      'flying',
+      'reach',
+      'deathtouch',
+      'protection',
+      'pump',
+      'infect',
+      'wither',
+      'toxic',
+      'menace',
+      'lifelink',
+      'intimidate',
+      'hexproof',
+      -- Fear (mig 338, Cover of Darkness): "can't be blocked except by artifact
+      -- and/or black creatures"; declare_blocker enforces it via card_has_fear.
+      'fear',
+      -- Granted ability (mig 357, Blade of Selves / Splinter Twin / Mirage Phalanx):
+      -- payload {kind, ability}; effective_script merges it onto the affected card.
+      'granted_ability',
+      -- Defender (mig 323): "this creature can't attack"; declare_attacker rejects it.
+      'defender',
+      -- STATIC cast-from-graveyard permission (mig 207, Gisa and Geralf): a
+      -- script-registered row, swept by rebuild when the source leaves — unlike
+      -- the until-EOT grant_cast_from_graveyard effect rows (mig 173).
+      'cast_from_graveyard',
+      -- STATIC cost reduction (mig 231, Dragonlord's Servant / Sarkhan): payload
+      -- {type_line, amount}; reduced_mana_cost sums these for the caster. Defaults
+      -- to affected:'controller' (not a source-keyword), so affected_player_id is
+      -- the controller.
+      'cost_reduction',
+      -- STATIC cast-from-the-top-of-your-library permission (mig 244,
+      -- Thundermane Dragon): payload {creature, min_power, grant_haste};
+      -- cast_card_from_hand's library gate consumes it.
+      'cast_from_library_top',
+      -- STATIC "creatures your opponents control enter tapped" (mig 258,
+      -- Kinjalli's Sunwing): fire_zone_change_triggers taps creatures entering
+      -- under any OTHER player's control while this row's source is fielded.
+      'creatures_enter_tapped',
+      -- STATIC damage cap (mig 259, Temple Altisaur): payload {type_line, cap};
+      -- apply_damage_to_creature caps damage to OTHER matching creatures the
+      -- source's controller controls.
+      'damage_cap',
+      -- STATIC base-P/T override via aura (mig 279, Darksteel Mutation:
+      -- 'enchanted creature is 0/1'). affected:'enchanted' lands it on the
+      -- host; losing abilities/types is NOT modelled.
+      'set_pt',
+      -- STATIC attack tax (mig 275, Ghostly Prison / Norn's Annex / Windborn
+      -- Muse): payload {mana:N} or {life:N}; declare_attacker auto-pays per
+      -- attacker against the protected (controller) player.
+      'attack_tax',
+      -- PACIFY (mig 303, Observed Stasis): affected:'enchanted' rows that forbid
+      -- the host from attacking / blocking; declare_attacker / declare_blocker
+      -- reject the action while the source (Aura) stays fielded.
+      'cant_attack',
+      'cant_block',
+      -- STATIC "you may cast <filter> spells as though they had flash"
+      -- (mig 398, Shimmer Myr): payload {type_line}; card_has_flash consumes it
+      -- for the caster (affected:'controller').
+      'flash_permission'
+    ) then
+      raise exception 'Unsupported continuous effect type: %', v_effect_type;
+    end if;
+
+    -- commander_only anthem (Dancer's Chakrams): the "other commanders you
+    -- control" buff is an ability GRANTED to the equipped creature, so it exists
+    -- only while a creature is equipped. Skip it when this Equipment is unattached.
+    if coalesce((v_effect -> 'payload' ->> 'commander_only')::boolean, false)
+       and v_source_card.attached_to is null then
+      continue;
+    end if;
+
+    v_affected := coalesce(
+      v_effect ->> 'affected',
+      case
+        when v_effect_type in (
+          'haste',
+          'vigilance',
+          'indestructible',
+          'trample',
+          'first_strike',
+          'double_strike',
+          'flying',
+          'reach',
+          'deathtouch',
+          'protection',
+          'infect',
+          'wither',
+          'toxic',
+          'menace',
+          'lifelink',
+          'intimidate',
+          'hexproof',
+          'defender'
+        ) then 'source'
+        else 'controller'
+      end
+    );
+    v_affected_player_id := null;
+    v_affected_card_id := null;
+
+    if v_affected in ('all', 'all_players') then
+      v_affected_player_id := null;
+    elsif v_affected in ('controller', 'self') then
+      v_affected_player_id := coalesce(v_source_card.controller_player_id, v_source_card.owner_id);
+    elsif v_affected in ('source', 'this') then
+      v_affected_card_id := p_source_card_id;
+    elsif v_affected in ('attached', 'host', 'enchanted', 'equipped') then
+      -- Aura/Equipment: the effect lands on the host. Unattached → grants nothing.
+      v_affected_card_id := v_source_card.attached_to;
+      if v_affected_card_id is null then
+        continue;
+      end if;
+    else
+      raise exception 'Unsupported continuous effect affected value: %', v_affected;
+    end if;
+
+    v_source_zone_required := coalesce(v_effect ->> 'source_zone_required', 'battlefield');
+
+    if v_source_zone_required not in ('library', 'hand', 'stack', 'battlefield', 'graveyard', 'exile') then
+      raise exception 'Unsupported source zone requirement: %', v_source_zone_required;
+    end if;
+
+    if v_effect_type = 'additional_land_plays' then
+      v_payload := jsonb_build_object(
+        'amount',
+        coalesce((v_effect ->> 'amount')::integer, 1)
+      );
+    elsif v_effect_type = 'mana_does_not_empty' then
+      v_payload := jsonb_build_object(
+        'colors',
+        coalesce(v_effect -> 'colors', '[]'::jsonb)
+      );
+    elsif v_effect_type = 'protection' then
+      v_payload := jsonb_build_object(
+        'from',
+        lower(coalesce(v_effect ->> 'from', v_effect ->> 'color'))
+      );
+    elsif v_effect_type = 'toxic' then
+      v_payload := jsonb_build_object(
+        'amount',
+        greatest(1, coalesce((v_effect ->> 'amount')::integer, 1))
+      );
+    else
+      v_payload := '{}'::jsonb;
+    end if;
+
+    v_payload := coalesce(v_effect -> 'payload', v_payload)
+      || jsonb_build_object('registered_from_card_script', true);
+
+    insert into public.game_continuous_effects (
+      session_id,
+      source_card_id,
+      affected_player_id,
+      affected_card_id,
+      effect_type,
+      payload,
+      source_zone_required,
+      expires_at_turn_number,
+      expires_at_phase,
+      expires_at_step
+    )
+    values (
+      p_session_id,
+      p_source_card_id,
+      v_affected_player_id,
+      v_affected_card_id,
+      v_effect_type,
+      v_payload,
+      v_source_zone_required,
+      nullif(v_effect ->> 'expires_at_turn_number', '')::integer,
+      nullif(v_effect ->> 'expires_at_phase', ''),
+      nullif(v_effect ->> 'expires_at_step', '')
+    );
+
+    v_registered_count := v_registered_count + 1;
+  end loop;
+
+  for v_keyword in
+    select lower(replace(replace(keyword, ' ', '_'), '-', '_'))
+    from jsonb_array_elements_text(v_keywords) as keyword
+  loop
+    v_keyword_effect_type := case v_keyword
+      when 'haste'         then 'haste'
+      when 'vigilance'     then 'vigilance'
+      when 'indestructible' then 'indestructible'
+      when 'trample'       then 'trample'
+      when 'first_strike'  then 'first_strike'
+      when 'double_strike' then 'double_strike'
+      when 'flying'        then 'flying'
+      when 'reach'         then 'reach'
+      when 'deathtouch'    then 'deathtouch'
+      when 'infect'        then 'infect'
+      when 'wither'        then 'wither'
+      when 'menace'        then 'menace'
+      -- Printed lifelink (mig 386): grants and scripts worked since mig 283,
+      -- but this loop never mapped the catalog keyword — vanilla lifelink
+      -- creatures gained no life.
+      when 'lifelink'      then 'lifelink'
+      when 'intimidate'    then 'intimidate'
+      when 'fear'          then 'fear'
+      when 'hexproof'      then 'hexproof'
+      when 'defender'      then 'defender'
+      else null
+    end;
+
+    if v_keyword_effect_type is null then
+      continue;
+    end if;
+
+    insert into public.game_continuous_effects (
+      session_id,
+      source_card_id,
+      affected_card_id,
+      effect_type,
+      payload,
+      source_zone_required
+    )
+    values (
+      p_session_id,
+      p_source_card_id,
+      p_source_card_id,
+      v_keyword_effect_type,
+      jsonb_build_object('registered_from_card_script', true, 'registered_from_keywords', true),
+      'battlefield'
+    );
+
+    v_registered_count := v_registered_count + 1;
+  end loop;
+
+  return v_registered_count;
+end;
+$$;
+grant execute on function public.register_card_continuous_effects(uuid, uuid) to authenticated, service_role;

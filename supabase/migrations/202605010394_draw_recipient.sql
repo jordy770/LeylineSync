@@ -1,7 +1,7 @@
--- supabase/functions_src/apply_triggered_ability_effects.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010394_draw_recipient
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (apply_triggered_ability_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_triggered_ability_effects(
   p_session_id uuid,
@@ -166,12 +166,6 @@ begin
       elsif v_recipient in ('each_player', 'all_players') then
         select array_agg(player_id) into v_recipients
         from public.game_session_players where session_id = p_session_id;
-      elsif v_recipient = 'active_player' then
-        -- The TURN player draws (mig 396, Kami of the Crescent Moon on the
-        -- broadcast each-draw-step event: "each player draws an additional
-        -- card" = whoever's draw step is happening).
-        select array[active_player_id] into v_recipients
-        from public.game_turn_state where session_id = p_session_id;
       else
         select array_agg(player_id) into v_recipients
         from public.game_session_players
@@ -315,22 +309,9 @@ begin
             -- exclude_type (mig 268, Whipflare: "each NONARTIFACT creature").
             and (nullif(v_effect -> 'filter' ->> 'exclude_type', '') is null
                  or c.type_line not ilike '%' || (v_effect -> 'filter' ->> 'exclude_type') || '%')
-            -- filter.controller (mig 395, Thundermaw Hellkite: "each creature
-            -- with flying your OPPONENTS control"): 'you' / 'opponent',
-            -- relative to the effect's controller. Absent = any controller.
-            and (nullif(v_effect -> 'filter' ->> 'controller', '') is null
-                 or (lower(v_effect -> 'filter' ->> 'controller') = 'you'
-                     and coalesce(gc.controller_player_id, gc.owner_id) = p_controller_id)
-                 or (lower(v_effect -> 'filter' ->> 'controller') = 'opponent'
-                     and coalesce(gc.controller_player_id, gc.owner_id) is distinct from p_controller_id))
         loop
           perform public.apply_damage_to_creature(
             p_session_id, v_dmg_target, v_eff_amount, p_source_card_id, false, false, false);
-          -- tap_damaged (mig 395, Thundermaw: "…Tap those creatures.")
-          if coalesce((v_effect ->> 'tap_damaged')::boolean, false) then
-            update public.game_cards set is_tapped = true
-            where id = v_dmg_target and session_id = p_session_id;
-          end if;
         end loop;
 
         if lower(coalesce(v_effect ->> 'targets', 'creatures')) = 'creatures_planeswalkers' then
@@ -372,19 +353,11 @@ begin
         elsif jsonb_typeof(v_effect -> 'types') = 'array' then
           -- "Destroy all artifacts, creatures, and enchantments" (mig 268,
           -- Nevinyrral's Disk). Any-type match; indestructible survives.
-          -- mig 395: the types branch honors `scope` like the creature branch
-          -- (Ruinous Ultimatum: 'destroy all nonland permanents your OPPONENTS
-          -- control' — scope 'opponent'); default 'all' keeps Disk behavior.
           for v_dmg_target in
             select gc.id from public.game_cards gc join public.cards c on c.id = gc.card_id
             where gc.session_id = p_session_id and gc.zone = 'battlefield'
               and exists (select 1 from jsonb_array_elements_text(v_effect -> 'types') t
                           where c.type_line ilike '%' || t.value || '%')
-              and (lower(coalesce(v_effect ->> 'scope', 'all')) = 'all'
-                   or (lower(v_effect ->> 'scope') = 'you'
-                       and coalesce(gc.controller_player_id, gc.owner_id) = p_controller_id)
-                   or (lower(v_effect ->> 'scope') = 'opponent'
-                       and coalesce(gc.controller_player_id, gc.owner_id) is distinct from p_controller_id))
               and not public.card_has_indestructible(p_session_id, gc.id)
           loop
             perform public.put_in_graveyard(p_session_id, v_dmg_target);

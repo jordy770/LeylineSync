@@ -34,22 +34,45 @@ begin
   end if;
 
   -- scope 'controller' => only that player's creatures (affected_player_id set);
-  -- 'all' (default) => every creature, any controller (affected_player_id null).
-  insert into public.game_continuous_effects (
-    session_id, source_card_id, affected_player_id, effect_type, payload,
-    expires_at_phase, expires_at_step
-  ) values (
-    p_session_id, p_source_card_id,
-    case when lower(coalesce(p_effect ->> 'scope', 'all')) = 'controller' then p_controller_id else null end,
-    'pump',
-    jsonb_build_object(
-      'power', coalesce(v_power, 0),
-      'toughness', coalesce(v_tough, 0),
-      'creature_type', p_effect ->> 'creature_type',
-      'exclude_type', coalesce((p_effect ->> 'exclude_type')::boolean, false)
-    ),
-    'ending', 'cleanup'
-  );
+  -- 'all' (default) => every creature, any controller (affected_player_id null);
+  -- 'opponent' (mig 395, Phyresis Outbreak: "creatures your opponents control
+  -- get -1/-1…") => one 'pump' row PER OPPONENT, so the layered P/T fold
+  -- (which matches on affected_player_id) needs no reader changes.
+  if lower(coalesce(p_effect ->> 'scope', 'all')) = 'opponent' then
+    insert into public.game_continuous_effects (
+      session_id, source_card_id, affected_player_id, effect_type, payload,
+      expires_at_phase, expires_at_step
+    )
+    select
+      p_session_id, p_source_card_id, sp.player_id,
+      'pump',
+      jsonb_build_object(
+        'power', coalesce(v_power, 0),
+        'toughness', coalesce(v_tough, 0),
+        'creature_type', p_effect ->> 'creature_type',
+        'exclude_type', coalesce((p_effect ->> 'exclude_type')::boolean, false)
+      ),
+      'ending', 'cleanup'
+    from public.game_session_players sp
+    where sp.session_id = p_session_id
+      and sp.player_id is distinct from p_controller_id;
+  else
+    insert into public.game_continuous_effects (
+      session_id, source_card_id, affected_player_id, effect_type, payload,
+      expires_at_phase, expires_at_step
+    ) values (
+      p_session_id, p_source_card_id,
+      case when lower(coalesce(p_effect ->> 'scope', 'all')) = 'controller' then p_controller_id else null end,
+      'pump',
+      jsonb_build_object(
+        'power', coalesce(v_power, 0),
+        'toughness', coalesce(v_tough, 0),
+        'creature_type', p_effect ->> 'creature_type',
+        'exclude_type', coalesce((p_effect ->> 'exclude_type')::boolean, false)
+      ),
+      'ending', 'cleanup'
+    );
+  end if;
   -- A -X/-X can drop creatures to 0 toughness; the SBA reads effective toughness.
   perform public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
 end;

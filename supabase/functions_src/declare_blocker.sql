@@ -138,6 +138,12 @@ begin
     raise exception 'Attacker has protection from this blocker''s colour and cannot be blocked by it';
   end if;
 
+  -- "Can't be blocked this turn" (mig 397, Rogue's Passage): an until-EOT
+  -- 'unblockable' grant on the attacker forbids every block.
+  if public.card_has_unblockable(p_session_id, p_attacker_card_id) then
+    raise exception 'This creature can''t be blocked this turn';
+  end if;
+
   -- Intimidate: only artifact creatures and/or creatures sharing a colour with the
   -- attacker can block it.
   if public.card_has_intimidate(p_session_id, p_attacker_card_id) then

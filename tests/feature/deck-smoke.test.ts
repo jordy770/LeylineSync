@@ -121,6 +121,15 @@ async function drive(s: Scenario, victims: { theirs: string; mine: string }, lab
       typeof t === 'string' || (Array.isArray(t) && new Set(t).size === 1)
     const targetedFx = fx.find((e) => e.target_type && singleKind(e.target_type) && TARGETED.has(e.type as string))
     if (top.action_type === 'triggered_ability' && targetedFx
+        && targetedFx.target_filter && targetedFx.optional
+        && !payload.target_card_id && !payload.target_card_ids) {
+      // A type-line-restricted (mig 310) OPTIONAL pick: the stocked victims may
+      // not match the filter (Thancred Waters wants a Legendary), and an illegal
+      // pick raises. Decline instead — optional triggers resolve as a no-op.
+      await s.as('A').resolveStack()
+      continue
+    }
+    if (top.action_type === 'triggered_ability' && targetedFx
         && !payload.target_card_id && !payload.target_card_ids) {
       await s.as('A').chooseTriggerTarget(
         top.id, targetedFx.target_controller === 'you' ? victims.mine : victims.theirs)

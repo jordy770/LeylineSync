@@ -21,7 +21,24 @@
       "unless": {
         "pay_life": 2
       }
-    }
+    },
+    "activated_abilities": [
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "any",
+            "amount": 1
+          }
+        ]
+      }
+    ]
   },
   "Breeding Pool": {
     "schema_version": 2,
@@ -1379,6 +1396,24 @@
             "target": "triggering_creature"
           }
         ]
+      },
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "type_line": "Dragon"
+        },
+        "effects": [
+          {
+            "type": "deal_damage",
+            "target_type": "creature",
+            "optional": true,
+            "amount": {
+              "count": "creatures_you_control",
+              "type_line": "Dragon"
+            }
+          }
+        ]
       }
     ]
   },
@@ -1546,11 +1581,7 @@
           {
             "type": "add_mana",
             "color": "any",
-            "amount": 1,
-            "restriction": {
-              "spell_type_line": "Dinosaur",
-              "ability_source_type_line": "Dinosaur"
-            }
+            "amount": 1
           }
         ]
       }
@@ -3617,6 +3648,25 @@
             "amount": 1
           }
         ]
+      },
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{4}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "grant_keyword",
+            "keyword": "unblockable",
+            "target_type": "creature",
+            "target_controller": "any"
+          }
+        ]
       }
     ]
   },
@@ -4874,18 +4924,23 @@
     "schema_version": 2,
     "triggered_abilities": [
       {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "myriad"
+          }
+        ]
+      },
+      {
         "event": "dealt_combat_damage_to_player",
         "effects": [
           {
-            "type": "destroy_up_to",
-            "count": 1,
-            "target_filter": {
-              "controller": "opponent",
-              "types": [
-                "artifact",
-                "enchantment"
-              ]
-            }
+            "type": "destroy",
+            "target_type": [
+              "artifact",
+              "enchantment"
+            ],
+            "target_controller": "opponent"
           }
         ]
       }
@@ -4953,7 +5008,7 @@
         "effects": [
           {
             "type": "exile_until_leaves",
-            "target_type": "creature",
+            "target_type": "nonland_permanent",
             "target_controller": "opponent"
           }
         ]
@@ -5804,8 +5859,10 @@
             "type": "search_library",
             "count": 1,
             "to": "hand",
+            "reveal": true,
             "filter": {
-              "type_line": "artifact"
+              "type_line": "artifact",
+              "max_mana_value": 1
             }
           }
         ]
@@ -5911,15 +5968,25 @@
         "source_zone_required": "battlefield"
       }
     ],
-    "triggered_abilities": [
+    "activated_abilities": [
       {
-        "event": "attacks",
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}{R}"
+          }
+        ],
         "effects": [
           {
             "type": "pump",
             "power": {
               "count": "artifacts_you_control"
             },
+            "toughness": 0
+          },
+          {
+            "type": "pump",
+            "power": 0,
             "toughness": 0
           }
         ]
@@ -5954,7 +6021,20 @@
     ]
   },
   "Shimmer Myr": {
-    "schema_version": 2
+    "schema_version": 2,
+    "keywords": [
+      "flash"
+    ],
+    "continuous_effects": [
+      {
+        "type": "flash_permission",
+        "affected": "controller",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "type_line": "artifact"
+        }
+      }
+    ]
   },
   "Swiftfoot Boots": {
     "schema_version": 2,
@@ -6443,8 +6523,13 @@
         ]
       },
       {
-        "event": "attacks",
+        "id": "godo_first_attack",
+        "event": "creature_attacks",
         "once_per_turn": true,
+        "filter": {
+          "controller": "you",
+          "type_line": "Barbarian"
+        },
         "effects": [
           {
             "type": "untap_all_attackers"
@@ -6628,8 +6713,8 @@
           {
             "type": "grant_keyword",
             "keyword": "indestructible",
-            "target_type": "creature",
-            "target_controller": "you"
+            "target_type": "artifact",
+            "target_controller": "any"
           }
         ]
       }
@@ -6708,7 +6793,7 @@
         "costs": [
           {
             "type": "mana",
-            "amount": "{2}{W}{B}"
+            "amount": "{1}{W}{B}"
           },
           {
             "type": "tap_self"
@@ -6734,7 +6819,8 @@
         "effects": [
           {
             "type": "untap",
-            "target_type": "permanent"
+            "target_type": "creature",
+            "target_controller": "you"
           }
         ]
       }
@@ -6824,14 +6910,12 @@
           {
             "type": "grant_keyword",
             "keyword": "deathtouch",
-            "target_type": "creature",
-            "target_controller": "you"
+            "target_type": "creature"
           },
           {
             "type": "grant_keyword",
             "keyword": "lifelink",
-            "target_type": "creature",
-            "target_controller": "you"
+            "target_type": "creature"
           }
         ]
       }
@@ -6839,13 +6923,22 @@
   },
   "Everflowing Chalice": {
     "schema_version": 2,
+    "kicker": "{2}",
     "enters_with_counters": {
-      "amount": 1,
+      "amount": {
+        "counters": "kicked",
+        "of": "self"
+      },
       "counter_type": "charge"
     },
     "activated_abilities": [
       {
         "is_mana_ability": true,
+        "condition": {
+          "counters": "charge",
+          "of": "self",
+          "at_least": 1
+        },
         "costs": [
           {
             "type": "tap_self"
@@ -6877,7 +6970,7 @@
     "spell_effect": {
       "actions": [
         {
-          "type": "counter_spell",
+          "type": "counter",
           "target_type": "spell"
         }
       ]
@@ -7177,14 +7270,22 @@
     "spell_effect": {
       "actions": [
         {
-          "type": "lose_life",
-          "amount": 3,
-          "recipient": "each_opponent"
-        },
-        {
-          "type": "add_poison",
-          "amount": 3,
-          "recipient": "each_opponent"
+          "type": "choose_player",
+          "filter": "any",
+          "effects": [
+            {
+              "type": "draw",
+              "amount": 3
+            },
+            {
+              "type": "lose_life",
+              "amount": 3
+            },
+            {
+              "type": "add_poison",
+              "amount": 3
+            }
+          ]
         }
       ]
     }
@@ -7925,9 +8026,15 @@
         },
         {
           "type": "pump_all",
-          "power": -1,
-          "toughness": -1,
-          "scope": "all"
+          "scope": "opponent",
+          "power": {
+            "count": "opponent_poison_counters",
+            "negate": true
+          },
+          "toughness": {
+            "count": "opponent_poison_counters",
+            "negate": true
+          }
         }
       ]
     }
@@ -8709,7 +8816,8 @@
         {
           "type": "create_token",
           "token": "Phyrexian Wurm Token",
-          "count": 1
+          "count": 1,
+          "set_pt": 4
         },
         {
           "type": "conditional",
@@ -8721,7 +8829,34 @@
             {
               "type": "create_token",
               "token": "Phyrexian Wurm Token",
-              "count": 1
+              "count": 1,
+              "set_pt": 4
+            }
+          ]
+        }
+      ]
+    },
+    "flashback": "{8}{G}{G}",
+    "flashback_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Phyrexian Wurm Token",
+          "count": 1,
+          "set_pt": 10
+        },
+        {
+          "type": "conditional",
+          "condition": {
+            "count": "opponent_poison_counters",
+            "at_least": 3
+          },
+          "effects": [
+            {
+              "type": "create_token",
+              "token": "Phyrexian Wurm Token",
+              "count": 1,
+              "set_pt": 10
             }
           ]
         }
@@ -9196,6 +9331,7 @@
     "schema_version": 2,
     "activated_abilities": [
       {
+        "label": "Outlast {W}",
         "costs": [
           {
             "type": "mana",
@@ -9209,9 +9345,7 @@
           {
             "type": "add_counters",
             "amount": 1,
-            "counter_type": "plus_one_one",
-            "target_type": "creature",
-            "target_controller": "you"
+            "counter_type": "plus_one_one"
           }
         ]
       }
@@ -9221,6 +9355,8 @@
     "schema_version": 2,
     "activated_abilities": [
       {
+        "label": "Outlast",
+        "timing": "sorcery",
         "costs": [
           {
             "type": "mana",
@@ -9234,9 +9370,7 @@
           {
             "type": "add_counters",
             "amount": 1,
-            "counter_type": "plus_one_one",
-            "target_type": "creature",
-            "target_controller": "you"
+            "counter_type": "plus_one_one"
           }
         ]
       }
@@ -10404,21 +10538,48 @@
   },
   "The Mending of Dominaria": {
     "schema_version": 2,
+    "saga_chapters": [
+      {
+        "chapter": [
+          1,
+          2
+        ],
+        "effects": [
+          {
+            "type": "mill",
+            "amount": 2
+          }
+        ]
+      },
+      {
+        "chapter": [
+          3
+        ],
+        "effects": [
+          {
+            "type": "return_all_from_graveyard",
+            "to": "battlefield",
+            "types": [
+              "land"
+            ]
+          }
+        ]
+      }
+    ],
     "triggered_abilities": [
       {
         "event": "enters_the_battlefield",
         "effects": [
           {
-            "type": "mill",
-            "amount": 2
-          },
+            "type": "advance_saga"
+          }
+        ]
+      },
+      {
+        "event": "draw_step",
+        "effects": [
           {
-            "type": "return_from_graveyard",
-            "count": 1,
-            "to": "hand",
-            "filter": {
-              "type_line": "creature"
-            }
+            "type": "advance_saga"
           }
         ]
       }
@@ -10432,10 +10593,10 @@
         "effects": [
           {
             "type": "add_counters",
-            "amount": 2,
+            "amount": 1,
             "counter_type": "plus_one_one",
             "target_type": "creature",
-            "target_controller": "you"
+            "targets": 2
           }
         ]
       }
@@ -10877,7 +11038,17 @@
     }
   },
   "Breath of the Sleepless": {
-    "schema_version": 2
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flash_permission",
+        "affected": "controller",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "type_line": "Spirit"
+        }
+      }
+    ]
   },
   "Custodi Soulbinders": {
     "schema_version": 2,
@@ -11032,7 +11203,9 @@
           {
             "type": "create_token",
             "token": "Clue Token",
-            "count": 1
+            "count": {
+              "count": "num_opponents"
+            }
           }
         ]
       }
@@ -11057,7 +11230,21 @@
     }
   },
   "Ghostly Pilferer": {
-    "schema_version": 2
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "cast_from_exile",
+        "filter": {
+          "controller": "opponent"
+        },
+        "effects": [
+          {
+            "type": "draw",
+            "amount": 1
+          }
+        ]
+      }
+    ]
   },
   "Haunted Library": {
     "schema_version": 2,
@@ -11079,20 +11266,14 @@
   },
   "Kami of the Crescent Moon": {
     "schema_version": 2,
-    "continuous_effects": [
-      {
-        "type": "flying",
-        "affected": "source",
-        "source_zone_required": "battlefield"
-      }
-    ],
     "triggered_abilities": [
       {
-        "event": "upkeep",
+        "event": "beginning_of_each_draw_step",
         "effects": [
           {
             "type": "draw",
-            "amount": 1
+            "amount": 1,
+            "recipient": "active_player"
           }
         ]
       }
@@ -11649,7 +11830,7 @@
         {
           "type": "create_token",
           "token": "Clue Token",
-          "count": 2
+          "count": "X"
         }
       ]
     }
@@ -11717,7 +11898,7 @@
     ],
     "triggered_abilities": [
       {
-        "event": "upkeep",
+        "event": "beginning_of_each_upkeep",
         "effects": [
           {
             "type": "add_counters",
@@ -11737,7 +11918,7 @@
       "actions": [
         {
           "type": "draw",
-          "amount": 2
+          "amount": "X"
         },
         {
           "type": "discard",
@@ -12596,8 +12777,14 @@
       "actions": [
         {
           "type": "draw",
-          "amount": 1,
-          "recipient": "each_opponent"
+          "recipient": "each_opponent",
+          "amount": 1
+        },
+        {
+          "type": "draw",
+          "amount": {
+            "count": "num_opponents"
+          }
         }
       ]
     }
@@ -12905,6 +13092,68 @@
             "amount": 1
           }
         ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{W/B}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "W",
+            "amount": 2
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{W/B}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "W",
+            "amount": 1
+          },
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "is_mana_ability": true,
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{W/B}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_mana",
+            "color": "B",
+            "amount": 2
+          }
+        ]
       }
     ]
   },
@@ -13001,7 +13250,8 @@
     "schema_version": 2,
     "keywords": [
       "flying",
-      "vigilance"
+      "vigilance",
+      "ward {2}"
     ],
     "triggered_abilities": [
       {
@@ -13011,7 +13261,31 @@
             "type": "pump",
             "power": 1,
             "toughness": 0,
-            "until_end_of_turn": true,
+            "target_type": "creature"
+          },
+          {
+            "type": "grant_keyword",
+            "keyword": "unblockable",
+            "target_type": "creature"
+          }
+        ]
+      },
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "exclude_type": "Creature"
+        },
+        "effects": [
+          {
+            "type": "pump",
+            "power": 1,
+            "toughness": 0,
+            "target_type": "creature"
+          },
+          {
+            "type": "grant_keyword",
+            "keyword": "unblockable",
             "target_type": "creature"
           }
         ]
@@ -13437,6 +13711,16 @@
           {
             "type": "draw",
             "amount": 1
+          },
+          {
+            "type": "choose_player",
+            "filter": "opponent",
+            "effects": [
+              {
+                "type": "draw",
+                "amount": 1
+              }
+            ]
           }
         ]
       }
@@ -13444,7 +13728,25 @@
   },
   "Thancred Waters": {
     "schema_version": 2,
+    "keywords": [
+      "flash"
+    ],
     "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "grant_keyword",
+            "keyword": "indestructible",
+            "target_type": "creature",
+            "target_controller": "you",
+            "target_filter": {
+              "type_line": "Legendary"
+            },
+            "optional": true
+          }
+        ]
+      },
       {
         "event": "spell_cast",
         "filter": {
@@ -13545,6 +13847,16 @@
     "schema_version": 2,
     "keywords": [
       "Flash"
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "grant_flashback"
+          }
+        ]
+      }
     ]
   },
   "Transpose": {
@@ -13558,13 +13870,18 @@
         },
         {
           "type": "discard",
-          "recipient": "controller",
-          "amount": 1
+          "count": 1,
+          "who": "you"
         },
         {
           "type": "lose_life",
           "recipient": "controller",
           "amount": 1
+        },
+        {
+          "type": "create_token",
+          "token": "Wizard Token",
+          "count": 1
         }
       ]
     }
@@ -13656,6 +13973,18 @@
   },
   "White Auracite": {
     "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "exile_until_leaves",
+            "target_type": "nonland_permanent",
+            "target_controller": "opponent"
+          }
+        ]
+      }
+    ],
     "activated_abilities": [
       {
         "is_mana_ability": true,
@@ -13810,6 +14139,30 @@
             "type": "job_select"
           }
         ]
+      }
+    ],
+    "continuous_effects": [
+      {
+        "type": "granted_ability",
+        "affected": "equipped",
+        "payload": {
+          "kind": "triggered",
+          "ability": {
+            "id": "planisphere_noncreature_cast",
+            "event": "spell_cast",
+            "filter": {
+              "controller": "you",
+              "exclude_type": "Creature"
+            },
+            "effects": [
+              {
+                "type": "add_counters",
+                "amount": 1,
+                "counter_type": "plus_one_one"
+              }
+            ]
+          }
+        }
       }
     ]
   },
@@ -14421,6 +14774,24 @@
     "schema_version": 2,
     "keywords": [
       "lifelink"
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "return_from_graveyard",
+            "to": "battlefield",
+            "count": 1,
+            "filter": {
+              "types": [
+                "Vampire",
+                "Wizard"
+              ]
+            }
+          }
+        ]
+      }
     ]
   },
   "Boros Signet": {
@@ -14765,6 +15136,18 @@
     "keywords": [
       "flying",
       "first strike"
+    ],
+    "triggered_abilities": [
+      {
+        "event": "dealt_combat_damage_to_player",
+        "effects": [
+          {
+            "type": "add_counters",
+            "amount": 1,
+            "counter_type": "plus_one_one"
+          }
+        ]
+      }
     ]
   },
   "Dusk Legion Sergeant": {
@@ -14937,6 +15320,10 @@
     "schema_version": 2,
     "activated_abilities": [
       {
+        "condition": {
+          "count": "tokens_created_this_turn",
+          "at_least": 1
+        },
         "costs": [
           {
             "type": "tap_self"
@@ -15186,7 +15573,13 @@
       "actions": [
         {
           "type": "destroy_all",
-          "scope": "opponent"
+          "scope": "opponent",
+          "types": [
+            "creature",
+            "artifact",
+            "enchantment",
+            "planeswalker"
+          ]
         }
       ]
     }
@@ -15529,6 +15922,27 @@
     "schema_version": 2,
     "keywords": [
       "flying"
+    ],
+    "triggered_abilities": [
+      {
+        "event": "beginning_of_upkeep",
+        "effects": [
+          {
+            "type": "conditional",
+            "condition": {
+              "count": "permanents_you_control",
+              "at_least": 10
+            },
+            "effects": [
+              {
+                "type": "draw",
+                "amount": 1,
+                "recipient": "controller"
+              }
+            ]
+          }
+        ]
+      }
     ]
   },
   "Vanquisher's Banner": {
@@ -16471,8 +16885,41 @@
   },
   "Mirkwood Bats": {
     "schema_version": 2,
-    "keywords": [
-      "flying"
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "token_created",
+        "filter": {
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "each_opponent"
+          }
+        ]
+      },
+      {
+        "event": "permanent_sacrificed",
+        "filter": {
+          "controller": "you",
+          "token": true
+        },
+        "effects": [
+          {
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "each_opponent"
+          }
+        ]
+      }
     ]
   },
   "Mirror Box": {
@@ -16552,6 +16999,22 @@
     "schema_version": 2,
     "keywords": [
       "menace"
+    ],
+    "triggered_abilities": [
+      {
+        "event": "creature_damaged_player",
+        "filter": {
+          "controller": "you"
+        },
+        "once_per_turn": true,
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Treasure Token",
+            "count": 1
+          }
+        ]
+      }
     ]
   },
   "Rakdos Charm": {
@@ -17961,7 +18424,24 @@
         "effects": [
           {
             "type": "add_counters",
+            "counter_type": "plus_one_one",
             "amount": 1
+          }
+        ]
+      },
+      {
+        "event": "dies",
+        "effects": [
+          {
+            "type": "deal_damage",
+            "amount": {
+              "power_of": "source"
+            },
+            "target_type": [
+              "creature",
+              "player"
+            ],
+            "target_controller": "any"
           }
         ]
       }
@@ -18617,6 +19097,18 @@
   "Gadwick, the Wizened": {
     "schema_version": 2,
     "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "draw",
+            "amount": {
+              "counters": "x",
+              "of": "self"
+            }
+          }
+        ]
+      },
       {
         "event": "spell_cast",
         "filter": {
@@ -19990,11 +20482,46 @@
         "event": "attacks",
         "effects": [
           {
-            "type": "put_from_hand",
-            "count": 1,
-            "filter": {
-              "type_line": "creature"
-            }
+            "type": "choose_one",
+            "prompt": "Put an Angel, Demon, or Dragon creature card from your hand onto the battlefield",
+            "modes": [
+              {
+                "label": "Angel",
+                "actions": [
+                  {
+                    "type": "put_from_hand",
+                    "count": 1,
+                    "filter": {
+                      "type_line": "Angel"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "Demon",
+                "actions": [
+                  {
+                    "type": "put_from_hand",
+                    "count": 1,
+                    "filter": {
+                      "type_line": "Demon"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "Dragon",
+                "actions": [
+                  {
+                    "type": "put_from_hand",
+                    "count": 1,
+                    "filter": {
+                      "type_line": "Dragon"
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
@@ -20102,6 +20629,22 @@
         "affected": "source",
         "source_zone_required": "battlefield"
       }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "deal_damage_all",
+            "amount": 1,
+            "tap_damaged": true,
+            "filter": {
+              "with_keyword": "flying",
+              "controller": "opponent"
+            }
+          }
+        ]
+      }
     ]
   },
   "Bloodgift Demon": {
@@ -20198,8 +20741,13 @@
     ],
     "triggered_abilities": [
       {
-        "event": "attacks",
+        "id": "aurelia_first_attack",
+        "event": "creature_attacks",
         "once_per_turn": true,
+        "filter": {
+          "controller": "you",
+          "type_line": "Angel"
+        },
         "effects": [
           {
             "type": "untap_all",
@@ -20806,11 +21354,38 @@
   },
   "Wildborn Preserver": {
     "schema_version": 2,
+    "keywords": [
+      "flash"
+    ],
     "continuous_effects": [
       {
         "type": "reach",
         "affected": "source",
         "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "exclude_self": true,
+          "exclude_type": "Human"
+        },
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Pay {1} to put a +1/+1 counter on Wildborn Preserver",
+            "cost": "{1}",
+            "effects": [
+              {
+                "type": "add_counters",
+                "amount": 1,
+                "counter_type": "plus_one_one"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -21195,6 +21770,105 @@
             "type": "add_mana",
             "color": "any",
             "amount": 1
+          }
+        ]
+      },
+      {
+        "label": "Put a charge counter on Coalition Relic",
+        "costs": [
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_counters",
+            "amount": 1,
+            "counter_type": "charge"
+          }
+        ]
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "precombat_main",
+        "effects": [
+          {
+            "type": "choose_one",
+            "prompt": "Choose a color — add one mana of that color for each charge counter removed",
+            "modes": [
+              {
+                "label": "White",
+                "actions": [
+                  {
+                    "type": "add_mana",
+                    "color": "W",
+                    "amount": {
+                      "counters": "charge",
+                      "of": "self"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "Blue",
+                "actions": [
+                  {
+                    "type": "add_mana",
+                    "color": "U",
+                    "amount": {
+                      "counters": "charge",
+                      "of": "self"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "Black",
+                "actions": [
+                  {
+                    "type": "add_mana",
+                    "color": "B",
+                    "amount": {
+                      "counters": "charge",
+                      "of": "self"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "Red",
+                "actions": [
+                  {
+                    "type": "add_mana",
+                    "color": "R",
+                    "amount": {
+                      "counters": "charge",
+                      "of": "self"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "Green",
+                "actions": [
+                  {
+                    "type": "add_mana",
+                    "color": "G",
+                    "amount": {
+                      "counters": "charge",
+                      "of": "self"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "add_counters",
+            "counter_type": "charge",
+            "amount": 0,
+            "all": true
           }
         ]
       }
@@ -23821,6 +24495,263 @@
                 "count": 1
               }
             ]
+          }
+        ]
+      }
+    ]
+  },
+  "Terror of the Peaks": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "creature_entered",
+        "filter": {
+          "controller": "you",
+          "exclude_self": true
+        },
+        "effects": [
+          {
+            "type": "deal_damage",
+            "target_type": "creature",
+            "amount": {
+              "power_of": "triggering_creature"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Ophiomancer": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "beginning_of_each_upkeep",
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Create a 1/1 black deathtouch Snake? (Only if you control no Snakes)",
+            "effects": [
+              {
+                "type": "create_token",
+                "token": "Deathtouch Snake Token",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Hoarding Ogre": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "attacks",
+        "effects": [
+          {
+            "type": "choose_one",
+            "prompt": "Roll a d20 and pick the result",
+            "modes": [
+              {
+                "label": "1-9: Create a Treasure token",
+                "actions": [
+                  {
+                    "type": "create_token",
+                    "token": "Treasure Token",
+                    "count": 1
+                  }
+                ]
+              },
+              {
+                "label": "10-19: Create two Treasure tokens",
+                "actions": [
+                  {
+                    "type": "create_token",
+                    "token": "Treasure Token",
+                    "count": 2
+                  }
+                ]
+              },
+              {
+                "label": "20: Create three Treasure tokens",
+                "actions": [
+                  {
+                    "type": "create_token",
+                    "token": "Treasure Token",
+                    "count": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Watcher for Tomorrow": {
+    "schema_version": 2,
+    "enters_tapped": true,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "look_top",
+            "count": 4,
+            "to": "exile",
+            "min_picks": 1
+          }
+        ]
+      },
+      {
+        "event": "leaves_the_battlefield",
+        "effects": [
+          {
+            "type": "play_hideaway",
+            "to": "hand"
+          }
+        ]
+      }
+    ]
+  },
+  "Sea Gate Oracle": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "look_top",
+            "count": 2,
+            "to": "hand",
+            "picks": 1,
+            "min_picks": 1
+          }
+        ]
+      }
+    ]
+  },
+  "Brainstorm": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "draw",
+          "amount": 3
+        },
+        {
+          "type": "hand_to_library_top",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "Fact or Fiction": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "surveil",
+          "amount": 5
+        },
+        {
+          "type": "draw",
+          "amount": 2
+        }
+      ]
+    }
+  },
+  "Mana Leak": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell",
+          "unless_pays": "{3}"
+        }
+      ]
+    }
+  },
+  "Dockside Extortionist": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Treasure Token",
+            "count": {
+              "count": "opponent_artifacts_and_enchantments"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "Chain Reaction": {
+    "schema_version": 2,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "deal_damage_all",
+          "amount": {
+            "count": "creatures_on_battlefield"
+          }
+        }
+      ]
+    }
+  },
+  "Sapphire Medallion": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "cost_reduction",
+        "affected": "controller",
+        "payload": {
+          "color": "blue",
+          "amount": 1
+        }
+      }
+    ]
+  },
+  "Shivan Devastator": {
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "flying",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "haste",
+        "affected": "source",
+        "source_zone_required": "battlefield"
+      }
+    ],
+    "enters_with_counters": {
+      "amount": {
+        "counters": "x",
+        "of": "self"
+      }
+    }
+  },
+  "Snapcaster Mage": {
+    "schema_version": 2,
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "grant_flashback"
           }
         ]
       }

@@ -198,7 +198,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'living_weapon', 'attach_all_equipment', 'gain_control_all', 'bounce_all', 'destroy_all_creatures_token',
   'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
   'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
-  'job_select', 'advance_saga',
+  'job_select', 'advance_saga', 'grant_flashback', 'hand_to_library_top',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -228,7 +228,7 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters', 'countered_creatures_you_control', 'opponent_hand_excess', 'lands_and_graveyard_lands', 'opponent_lands', 'max_life_lost_this_turn', 'players_lost_life_this_turn', 'num_opponents']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters', 'countered_creatures_you_control', 'opponent_hand_excess', 'lands_and_graveyard_lands', 'opponent_lands', 'max_life_lost_this_turn', 'players_lost_life_this_turn', 'num_opponents', 'opponent_artifacts_and_enchantments', 'creatures_on_battlefield', 'tokens_created_this_turn']),
   // times (mig 268, Filigree Angel / Benevolent Offering): the resolved count
   // is multiplied by this. Re-added in the mig 281 cleanup — the original
   // edit silently no-opped on a CRLF regex; the hosted upsert validator
@@ -263,7 +263,7 @@ const PumpValueSchema = z.object({
 // cast time, paid as {X} generic mana, substituted server-side), or a dynamic
 // counter- / count-referencing amount.
 // "Damage equal to <permanent>'s power" (Eshki — its own power).
-const PowerOfSchema = z.object({ power_of: z.enum(['source', 'target']) }).strict()
+const PowerOfSchema = z.object({ power_of: z.enum(['source', 'target', 'triggering_creature']) }).strict()
 
 // "gain life equal to that creature's TOUGHNESS" (Verdant Sun's Avatar,
 // mig 256) — resolved against the trigger's event subject.
@@ -318,6 +318,10 @@ const CardBehaviorActionSchema = z.union([
     // Sinister Sabotage: "…Surveil N." The counter's CASTER surveils after the
     // counter resolves (applied even if the target can't be countered).
     surveil: z.number().int().nonnegative().optional(),
+    // Mana Leak (mig 392): "…unless its controller pays {3}." The countered
+    // spell's controller gets a pay-or-be-countered decision; does not combine
+    // with the riders above.
+    unless_pays: z.string().optional(),
   }),
   z.object({
     type: z.literal('gain_life'),
@@ -365,6 +369,9 @@ const CardBehaviorActionSchema = z.union([
       type_line: z.string().optional(),
       type_line_any: z.array(z.string()).optional(),
       name: z.string().optional(),
+      // "with mana value N or less" (mig 400, Trinket Mage) — the options
+      // query drops costlier cards, so the cap is mechanically enforced.
+      max_mana_value: z.number().int().optional(),
     }).optional(),
   }),
   // Discard `count` cards. `who` is the discarding player — 'you' (controller,
@@ -662,9 +669,22 @@ const CardBehaviorActionSchema = z.union([
   }),
   // Play the card this source hid with hideaway (Mosswort Bridge, mig 248):
   // a permanent card enters the battlefield free; the activation gate is the
-  // ability's `condition` (total power 10+).
+  // ability's `condition` (total power 10+). to:'hand' (mig 392, Watcher for
+  // Tomorrow): the hidden card goes to its owner's hand instead — any type.
   z.object({
     type: z.literal('play_hideaway'),
+    to: z.literal('hand').optional(),
+  }),
+  // Snapcaster Mage (mig 392): pick an instant/sorcery card in your graveyard —
+  // it gains flashback (cost = its mana cost) until end of turn.
+  z.object({
+    type: z.literal('grant_flashback'),
+  }),
+  // Brainstorm (mig 392): put `count` cards from your hand on top of your
+  // library (the last pick ends on top).
+  z.object({
+    type: z.literal('hand_to_library_top'),
+    count: z.number().int().positive().optional(),
   }),
   // "Destroy target <filter>" via a parked pick that may be declined
   // (Parapet Thrasher mode, mig 247).
@@ -946,7 +966,9 @@ const CardBehaviorActionSchema = z.union([
     // where X = cards in your hand) resolved at apply time.
     power: z.union([z.number(), CountAmountSchema]),
     toughness: z.union([z.number(), CountAmountSchema]),
-    scope: z.enum(['all', 'controller']).optional(),
+    // 'opponent' (mig 395, Phyresis Outbreak): only creatures your opponents
+    // control — applied as one pump row per opponent.
+    scope: z.enum(['all', 'controller', 'opponent']).optional(),
     creature_type: z.string().optional(),
     exclude_type: z.boolean().optional(),
   }),
@@ -959,12 +981,21 @@ const CardBehaviorActionSchema = z.union([
   // matching the filter (Blasphemous Act, Storm's Wrath, Harbinger of the Hunt).
   z.object({
     type: z.literal('deal_damage_all'),
-    amount: z.number().int().positive(),
+    // Fixed N, or a live count (mig 390, Chain Reaction: "X damage to each
+    // creature, where X is the number of creatures") — the runtime already
+    // resolves the amount through resolve_dynamic_amount.
+    amount: z.union([z.number().int().positive(), CountAmountSchema]),
     targets: z.enum(['creatures', 'creatures_planeswalkers']).optional(),
+    // "…Tap those creatures." (mig 395, Thundermaw Hellkite): every creature
+    // the sweep damaged is also tapped.
+    tap_damaged: z.boolean().optional(),
     filter: z.object({
       with_keyword: z.literal('flying').optional(),
       without_keyword: z.literal('flying').optional(),
       exclude_source: z.boolean().optional(),
+      // 'opponent' / 'you' relative to the effect's controller (mig 395,
+      // Thundermaw: "each creature with flying your opponents control").
+      controller: z.enum(['you', 'opponent']).optional(),
     }).optional(),
   }),
   // Ureni (mig 223) — "Look at the top N cards of your library, you may put a
@@ -1029,6 +1060,14 @@ const CardBehaviorActionSchema = z.union([
     creature_type: z.string().optional(),
     // "Destroy all NON-<type> creatures" (Wakening Sun's Avatar, mig 256).
     exclude_type: z.string().optional(),
+    // Any-type match ("destroy all artifacts, creatures, and enchantments" —
+    // Nevinyrral's Disk, mig 268). Schema catch-up in mig 395: the SQL honored
+    // this all along; since 395 the types branch also honors `scope`
+    // (Ruinous Ultimatum: opponents' nonland permanents only).
+    types: z.array(z.string()).optional(),
+    // "Destroy all creatures with power N or greater" (Fell the Mighty,
+    // mig 281) — fixed threshold; schema catch-up, SQL honored it already.
+    min_power: z.number().int().optional(),
   }),
   // Mass reanimate — return ALL matching creature cards from your graveyard.
   z.object({
@@ -1087,6 +1126,9 @@ const CardBehaviorActionSchema = z.union([
       // list supported both; the enum lagged (mig 281 cleanup).
       // lifelink: first-class since mig 283.
       'hexproof', 'menace', 'lifelink',
+      // "can't be blocked this turn" (mig 397, Rogue's Passage) — enforced by
+      // declare_blocker via card_has_unblockable.
+      'unblockable',
     ]),
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
@@ -1254,7 +1296,9 @@ const CardBehaviorActivatedAbilitySchema = z.object({
       at_least: z.number().int().positive(),
     }).strict(),
     z.object({
-      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'commanders_you_control', 'total_power_you_control', 'permanents_you_control']),
+      // tokens_created_this_turn (mig 399, Idol of Oblivion: "Activate only if
+      // you created a token this turn") — turn-stamped by fire_token_created.
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'commanders_you_control', 'total_power_you_control', 'permanents_you_control', 'tokens_created_this_turn']),
       type_line: z.string().optional(),
       at_least: z.number().int().positive(),
     }).strict(),
@@ -1296,6 +1340,9 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
     // "a NONTOKEN creature …" (Midnight Reaper, Open the Graves) — the watcher
     // ignores token creatures entering/dying.
     nontoken: z.boolean().optional(),
+    // Positive twin (mig 399, Mirkwood Bats: "whenever you ... sacrifice a
+    // TOKEN"). fire_watcher_triggers already honored it; schema catch-up.
+    token: z.boolean().optional(),
     // "a creature with power N or greater …" (mig 225 — Elemental Bond, Temur
     // Ascendancy). Fires only when the entering creature's power is >= N.
     min_power: z.number().int().optional(),
@@ -1358,6 +1405,10 @@ export const CardBehaviorScriptV2Schema = z.object({
     amount: z.union([
       z.number().int().positive(),
       CountAmountSchema,
+      // {counters:'x', of:'self'} (Shivan Devastator): "enters with X +1/+1
+      // counters" — reads the counters.x stamped at cast (mig 300). Schema-only
+      // unlock: the runtime already resolves object amounts dynamically.
+      DynamicAmountSchema,
       z.array(CountAmountSchema).nonempty(),
     ]),
     counter_type: PermanentCounterTypeSchema,

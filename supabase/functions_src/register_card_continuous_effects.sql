@@ -134,7 +134,11 @@ begin
       -- the host from attacking / blocking; declare_attacker / declare_blocker
       -- reject the action while the source (Aura) stays fielded.
       'cant_attack',
-      'cant_block'
+      'cant_block',
+      -- STATIC "you may cast <filter> spells as though they had flash"
+      -- (mig 398, Shimmer Myr): payload {type_line}; card_has_flash consumes it
+      -- for the caster (affected:'controller').
+      'flash_permission'
     ) then
       raise exception 'Unsupported continuous effect type: %', v_effect_type;
     end if;

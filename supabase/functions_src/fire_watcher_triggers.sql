@@ -46,6 +46,25 @@ begin
   join public.cards on cards.id = gc.card_id
   where gc.id = p_changed_card_id and gc.session_id = p_session_id;
 
+  -- Adventure faces (mig 388, bug-1513): a spell on the stack has ONLY the cast
+  -- face's characteristics. The full dual type_line ("Creature - X // Instant -
+  -- Adventure") made Swift End count as a CREATURE spell, so noncreature
+  -- watchers (Y'shtola) never fired; and the printed mana value leaked into
+  -- adventure casts (Stomp is MV 2, not Bonecrusher's 3).
+  if p_event in ('spell_cast', 'cast_from_exile') and v_changed_type like '% // %' then
+    if coalesce(p_extra ->> 'adventure_face', 'false') = 'true' then
+      select split_part(c.type_line, ' // ', 2),
+             coalesce(public.mana_value(c.script -> 'adventure' ->> 'cost'), v_changed_mv),
+             coalesce(c.script -> 'adventure' ->> 'cost', v_changed_mana_cost)
+        into v_changed_type, v_changed_mv, v_changed_mana_cost
+        from public.game_cards gc
+        join public.cards c on c.id = gc.card_id
+       where gc.id = p_changed_card_id and gc.session_id = p_session_id;
+    else
+      v_changed_type := split_part(v_changed_type, ' // ', 1);
+    end if;
+  end if;
+
   for v_watcher in
     select gc.id, coalesce(gc.controller_player_id, gc.owner_id) as controller, c.name as card_name,
            gc.attached_to
@@ -173,6 +192,9 @@ begin
                         when 'ability_activated' then ''
                         -- permanent_sacrificed (mig 341, Carmen): any permanent.
                         when 'permanent_sacrificed' then ''
+                        -- token_created (mig 399, Mirkwood Bats): any token —
+                        -- Treasures/Clues are artifacts, not creatures.
+                        when 'token_created' then ''
                         else 'creature' end) || '%' then
         continue;
       end if;

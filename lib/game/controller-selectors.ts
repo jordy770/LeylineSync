@@ -69,6 +69,16 @@ export function selectControllerViewModel({
   }
 }
 
+// Printed Scryfall keyword or script keyword 'flash' — the card itself may be
+// cast at instant speed (mig 398; the server's card_has_flash also honors
+// board-wide flash_permission statics, which need board context: see
+// CardActionSheet's boardGrantsFlash).
+export function cardHasFlashKeyword(card: ControllerCard): boolean {
+  const printed = (card.cards?.keywords ?? []) as string[]
+  const scripted = (card.cards?.script?.keywords ?? []) as string[]
+  return [...printed, ...scripted].some((k) => String(k).toLowerCase() === 'flash')
+}
+
 export function getCanQuickCast(
   card: ControllerCard,
   canUseSorceryActions: boolean,
@@ -92,6 +102,11 @@ export function getCanQuickCast(
     return canUseInstantActions
   }
 
+  // Flash (mig 398): a nonland permanent with flash casts at instant speed.
+  if (!typeLine.includes('land') && cardHasFlashKeyword(card)) {
+    return canUseSorceryActions || canUseInstantActions
+  }
+
   return canUseSorceryActions
 }
 
@@ -107,7 +122,9 @@ export function canCardRespond(card: ControllerCard, hasPendingStackItems: boole
   // Front face only — see getCanQuickCast: the Adventure back half is not a
   // response the creature card can make.
   const typeLine = (card.cards?.type_line ?? '').split(' // ')[0].toLowerCase()
-  return typeLine.includes('instant') || (hasPendingStackItems && doesCardRequireStackTarget(card))
+  return typeLine.includes('instant')
+    || (!typeLine.includes('land') && cardHasFlashKeyword(card))
+    || (hasPendingStackItems && doesCardRequireStackTarget(card))
 }
 
 export function doesCardRequireStackTarget(card: ControllerCard) {

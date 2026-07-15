@@ -89,6 +89,7 @@ import { ControllerCoachOverlay } from './controller/ControllerCoachOverlay'
 import { ManaCostDisplay, ManaPoolDisplay, RestrictedManaDisplay } from './controller/CardDisplay'
 import {
   canCastHandSpell,
+  cardCanFlashCast,
   cardMatchesTargetType,
   creatureMatchesController,
   effectiveBoardPT,
@@ -1053,8 +1054,16 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       const kicker = opts?.kicked
         ? normalizeCardBehaviorToV2(card?.copied_script ?? card?.cards?.script ?? null, card?.cards?.type_line)?.kicker ?? null
         : null
+      // An {X} cost (Shivan Devastator): ask X up front so the engine can stamp
+      // counters.x and pay the real {X} generic. autoPay already skips {X}
+      // costs (line above its parse) — the player taps mana by hand first.
+      let x: number | null = null
+      if (/\{x\}/i.test(card?.cards?.mana_cost ?? '')) {
+        x = promptForXValue()
+        if (x == null) return
+      }
       await autoPay(card, kicker ? { extra: kicker } : undefined)
-      await castCardFromHand(supabase, sessionId, cardId, undefined, undefined, null, opts?.kicked ?? false)
+      await castCardFromHand(supabase, sessionId, cardId, undefined, undefined, x, opts?.kicked ?? false)
       buzz()
       await refresh()
     },
@@ -1531,8 +1540,14 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
               return total === 0 || canAffordCost(cost, availableByColor, flexibleMana)
             }}
             openManaCount={availableMana}
-            canCastSorceries={canCastSorceries}
+            // Flash (mig 398): a hand card with keyword flash — or covered by a
+            // flash_permission static on your board (Shimmer Myr) — casts at
+            // instant speed, so the sheet treats sorcery-speed as allowed
+            // whenever you merely hold priority.
+            canCastSorceries={canCastSorceries
+              || (canCastInstants && selectedCardLive.zone === 'hand' && cardCanFlashCast(selectedCardLive, cards))}
             canCastInstants={canCastInstants}
+            turnNumber={turnState?.turn_number}
             pendingStackCount={pendingStackItems.length}
             players={players}
             playerId={playerId}
@@ -2437,6 +2452,7 @@ function MainArea({
             exile={ownExile}
             playableFromExileIds={playableFromExileIds}
             initialTab={myZoneTab}
+            turnNumber={turnState?.turn_number}
             onClose={() => setMyZoneOpen(false)}
             onCardTap={onCardTap}
           />
@@ -2710,7 +2726,7 @@ function PendingDecisionPrompt({
         <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
       ) : CARD_PICK_DECISIONS.has(decision.decision_type) ? (
         <CardPickBody decision={decision} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
-      ) : decision.decision_type === 'confirm' || decision.decision_type === 'pay_life_untap' || decision.decision_type === 'commander_zone_return' ? (
+      ) : decision.decision_type === 'confirm' || decision.decision_type === 'pay_life_untap' || decision.decision_type === 'commander_zone_return' || decision.decision_type === 'pay_or_be_countered' ? (
         <ConfirmBody isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'choose_player' ? (
         <ChoosePlayerBody decision={decision} isPending={isPending} onSubmit={submit} />
@@ -2942,6 +2958,7 @@ const CARD_PICK_DECISIONS = new Set([
   'reanimate_destroyed', 'look_top', 'copy_permanent', 'become_copy', 'bounce_pick',
   'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick',
   'graveyard_exile_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick',
+  'grant_flashback', 'hand_to_library_top',
 ])
 
 function CardPickBody({
@@ -3914,6 +3931,7 @@ function MyZonesSheet({
   exile,
   playableFromExileIds,
   initialTab,
+  turnNumber,
   onClose,
   onCardTap,
 }: {
@@ -3922,6 +3940,8 @@ function MyZonesSheet({
   // Exile cards the player may currently cast (mig 230 impulse, adventure faces).
   playableFromExileIds: Set<string>
   initialTab: MyZoneTab
+  // Current turn number — gates a GRANTED flashback badge (Snapcaster, mig 392).
+  turnNumber?: number
   onClose: () => void
   // Tapping a graveyard card with an action (e.g. flashback) opens its action
   // sheet; closes this zone sheet so the action sheet is visible.
@@ -4012,11 +4032,14 @@ function MyZonesSheet({
                   <div className="flex flex-wrap gap-2">
                     {graveyard.map((card) => {
                       // A card with a flashback cost is castable from here — make it
-                      // tappable (opens its action sheet) and badge it.
+                      // tappable (opens its action sheet) and badge it. A GRANTED
+                      // flashback (Snapcaster, mig 392) is a turn-stamped counter.
                       const hasFlashback = !!normalizeCardBehaviorToV2(
                         card.copied_script ?? card.cards?.script ?? null,
                         card.cards?.type_line,
-                      ).flashback
+                      ).flashback ||
+                        Number((card.counters as Record<string, unknown> | null)?.flashback_until_turn ?? Number.NaN) ===
+                          (turnNumber ?? Number.NaN)
                       return (
                         <div key={card.id} className="w-[60px]">
                           <button

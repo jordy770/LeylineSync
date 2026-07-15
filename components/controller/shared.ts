@@ -4,7 +4,7 @@ import {
   isAddManaBehaviorAction,
   normalizeCardBehaviorToV2,
 } from '@/lib/game/card-behavior'
-import { doesCardRequireStackTarget, getCanQuickCast, getPowerToughnessLabel } from '@/lib/game/controller-selectors'
+import { cardHasFlashKeyword, doesCardRequireStackTarget, getCanQuickCast, getPowerToughnessLabel } from '@/lib/game/controller-selectors'
 import { parseManaCost } from '@/lib/game/mana'
 import type { BoardCard, ControllerCard, ManaColor } from '@/lib/game/types'
 
@@ -81,6 +81,34 @@ export const cardIsEquipment = (typeLine?: string | null) => (typeLine ?? '').to
 export function creatureProtectedFrom(card: BoardCard, sourceColors: string[]): boolean {
   const prot = card.protection_colors ?? []
   return sourceColors.some((c) => prot.includes(c))
+}
+
+/**
+ * Whether one of YOUR battlefield permanents grants this hand card flash via a
+ * 'flash_permission' continuous effect ("You may cast artifact spells as though
+ * they had flash" — Shimmer Myr, mig 398). Client twin of card_has_flash's
+ * static half; payload.type_line filters on the card's FRONT face, absent = all.
+ */
+export function flashPermissionCovers(card: ControllerCard, ownCards: ControllerCard[]): boolean {
+  const front = (card.cards?.type_line ?? '').split(' // ')[0].toLowerCase()
+  if (!front || front.includes('land')) return false
+  return ownCards.some((c) => {
+    if (c.zone !== 'battlefield') return false
+    const fx = (c.copied_script ?? c.cards?.script)?.continuous_effects ?? []
+    return fx.some((e) => {
+      const eff = e as { type?: string; payload?: { type_line?: string } }
+      if (eff.type !== 'flash_permission') return false
+      const filter = eff.payload?.type_line
+      return !filter || front.includes(String(filter).toLowerCase())
+    })
+  })
+}
+
+/** A hand card the server would let you flash in: keyword flash or a board permission. */
+export function cardCanFlashCast(card: ControllerCard, ownCards: ControllerCard[]): boolean {
+  const front = (card.cards?.type_line ?? '').split(' // ')[0].toLowerCase()
+  if (front.includes('land')) return false
+  return cardHasFlashKeyword(card) || flashPermissionCovers(card, ownCards)
 }
 
 /** Collects displayable keywords for a card from Scryfall keywords + scripted continuous effects. */
@@ -534,9 +562,15 @@ export function getSpellPlan(card: ControllerCard): SpellPlan {
   }
 
   const draw = actions.find((a) => a.type === 'draw') as
-    | (CardBehaviorAction & { amount?: number | 'X' })
+    | (CardBehaviorAction & { amount?: number | 'X' | Record<string, unknown>; recipient?: string })
     | undefined
   if (draw) {
+    // A dynamic amount ({count:'num_opponents'}) or a non-controller recipient
+    // (each_opponent, Cut a Deal) can only resolve via the program path — the
+    // dedicated draw kind would flatten the amount to 1 and drop the recipient.
+    if (typeof draw.amount === 'object' || (draw.recipient && draw.recipient !== 'controller')) {
+      return { kind: 'spell_effect', actions, timing, xRequired: false }
+    }
     const xRequired = draw.amount === 'X'
     return { kind: 'draw', amount: xRequired ? 0 : (typeof draw.amount === 'number' ? draw.amount : 1), timing, xRequired }
   }
