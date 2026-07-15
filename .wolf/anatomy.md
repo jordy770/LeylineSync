@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T12:15:50.930Z
-> Files: 22 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T12:51:37.878Z
+> Files: 24 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -285,7 +285,7 @@
 
 ## lib/game/
 
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23213 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23300 tok)
 - `types.ts` — Short room code for the /tv spectator flow (mig 379). (~3095 tok)
 
 ## lib/intelligence/
@@ -317,16 +317,17 @@
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9712 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~4215 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7485 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24163 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24439 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14411 tok)
 - `choose_triggered_ability_targets.sql` — supabase/functions_src/choose_triggered_ability_targets.sql (~893 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~911 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~4347 tok)
+- `effective_type_line.sql` — supabase/functions_src/effective_type_line.sql (~763 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~4500 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1832 tok)
 - `note_card_drawn.sql` — supabase/functions_src/note_card_drawn.sql (~349 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~2318 tok)
-- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3072 tok)
-- `submit_decision.sql` — Declares public (~16554 tok)
+- `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3159 tok)
+- `submit_decision.sql` — Declares public (~17148 tok)
 
 ## supabase/migrations/
 
@@ -344,6 +345,7 @@
 - `exile-until-leaves-return-to.test.ts` — mig 404 — exile_until_leaves gains multi-target ("up to three") + a (~784 tok)
 - `graveyard-exile-until-leaves.test.ts` — mig 405 — graveyard-target triggers (exile_graveyard_until_leaves), the (~1057 tok)
 - `sacrifice-filters-and-stun.test.ts` — mig 402 — subtype/another filters on sacrifice costs (Professional (~1215 tok)
+- `type-changing-layer.test.ts` — mig 407 — the type-changing layer: a granted_type continuous effect adds (or (~1172 tok)
 
 ## tests/fixtures/
 
@@ -356,7 +358,7 @@
 
 ## tests/unit/
 
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3356 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3403 tok)
 
 ## vercel/
 

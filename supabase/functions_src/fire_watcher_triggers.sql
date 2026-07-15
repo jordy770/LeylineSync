@@ -46,6 +46,15 @@ begin
   join public.cards on cards.id = gc.card_id
   where gc.id = p_changed_card_id and gc.session_id = p_session_id;
 
+  -- Type-changing layer (mig 407): fold granted_type continuous effects into
+  -- the changed permanent's type for tribal/type-specific watchers (a permanent
+  -- that "is an Assassin" / became a Land counts as such). Only for permanent
+  -- events — a spell on the stack (cast events) has no battlefield granted types,
+  -- and effective_type_line returns the base type there anyway.
+  if p_event not in ('spell_cast', 'cast_from_exile') then
+    v_changed_type := coalesce(public.effective_type_line(p_session_id, p_changed_card_id), v_changed_type);
+  end if;
+
   -- Adventure faces (mig 388, bug-1513): a spell on the stack has ONLY the cast
   -- face's characteristics. The full dual type_line ("Creature - X // Instant -
   -- Adventure") made Swift End count as a CREATURE spell, so noncreature

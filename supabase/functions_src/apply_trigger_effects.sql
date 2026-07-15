@@ -622,6 +622,20 @@ begin
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
 
+    elsif v_type = 'choose_land_type' then
+      -- Multiversal Passage (mig 407): "As this enters, choose a basic land
+      -- type. This land is the chosen type." Parks a five-type pick; submit
+      -- registers a granted_type (so effective_type_line includes it) and bakes
+      -- the matching {T}: add <color> mana ability into the land's copied_script.
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'choose_land_type',
+        'Choose a basic land type',
+        '[{"value":"Plains"},{"value":"Island"},{"value":"Swamp"},{"value":"Mountain"},{"value":"Forest"}]'::jsonb,
+        1, 1, '{}'::jsonb)
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
     elsif v_type = 'mass_destroy_reanimate_one' then
       -- Necromantic Selection (mig 208): "Destroy all creatures, then return a
       -- creature card put into a graveyard this way to the battlefield under

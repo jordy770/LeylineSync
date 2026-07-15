@@ -22,19 +22,12 @@
         "pay_life": 2
       }
     },
-    "activated_abilities": [
+    "triggered_abilities": [
       {
-        "is_mana_ability": true,
-        "costs": [
-          {
-            "type": "tap_self"
-          }
-        ],
+        "event": "enters_the_battlefield",
         "effects": [
           {
-            "type": "add_mana",
-            "color": "any",
-            "amount": 1
+            "type": "choose_land_type"
           }
         ]
       }

@@ -74,6 +74,7 @@ const JSON_ONLY: Record<string, string> = {
   exile_tops_cast: 'exile each player\'s library top, free-cast pick over the permanents (Etali, mig 262); JSON/AI-authored',
   exile_until_leaves: 'exile the target until the trigger source leaves the battlefield (Bronzebeak Foragers, mig 262); JSON/AI-authored',
   exile_graveyard_until_leaves: 'park a graveyard pick (permanent, max_mana_value) and exile it anchored to the source, returning it on the source\'s death (Trove Warden landfall, mig 405); JSON/AI-authored',
+  choose_land_type: 'as-enters basic-land-type pick; registers a granted_type and bakes the matching mana ability (Multiversal Passage, mig 407); JSON/AI-authored',
   become_monarch: 'you become the monarch (Regal Behemoth, mig 262); JSON/AI-authored',
   equip: 'attach this Equipment to target creature you control (Breya Equipment cluster, mig 266); JSON/AI-authored',
   living_weapon: 'Germ token + attach the Equipment to it (Bonehoard / Grip of Phyresis, mig 267); JSON/AI-authored',

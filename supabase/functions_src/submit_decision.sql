@@ -137,6 +137,10 @@ begin
     if lower(coalesce(p_result ->> 'color', '')) not in ('white', 'blue', 'black', 'red', 'green') then
       raise exception 'A color must be chosen';
     end if;
+  elsif v_decision.decision_type = 'choose_land_type' then
+    if (p_result ->> 'type') not in ('Plains', 'Island', 'Swamp', 'Mountain', 'Forest') then
+      raise exception 'A basic land type must be chosen';
+    end if;
   end if;
 
   update public.game_pending_decisions
@@ -983,6 +987,40 @@ begin
           'toughness', coalesce((v_decision.params -> 'anthem' ->> 'toughness')::integer, 0),
           'color', lower(v_decision.result ->> 'color')),
         'battlefield');
+    end if;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'choose_land_type' then
+    -- Multiversal Passage (mig 407): the land BECOMES the chosen basic type.
+    -- (1) register a granted_type so effective_type_line includes it (Domain /
+    -- type-matters); (2) bake the matching {T}: add <color> mana ability into
+    -- copied_script so the land taps for that colour. Both keyed to the source,
+    -- swept when it leaves.
+    v_chosen_type := v_decision.result ->> 'type';
+    select source_card_id into v_src_card from public.game_stack_items where id = v_decision.source_stack_item_id;
+    if v_src_card is not null and v_chosen_type is not null then
+      insert into public.game_continuous_effects (
+        session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required)
+      values (
+        v_decision.session_id, v_src_card, v_src_card, 'granted_type',
+        jsonb_build_object('add', v_chosen_type), 'battlefield');
+
+      v_eff_script := public.effective_script(v_decision.session_id, v_src_card);
+      update public.game_cards
+      set copied_script = jsonb_set(
+            coalesce(v_eff_script, '{"schema_version":2}'::jsonb),
+            '{activated_abilities}',
+            coalesce(v_eff_script -> 'activated_abilities', '[]'::jsonb)
+              || jsonb_build_array(jsonb_build_object(
+                   'is_mana_ability', true,
+                   'costs', jsonb_build_array(jsonb_build_object('type', 'tap_self')),
+                   'effects', jsonb_build_array(jsonb_build_object(
+                     'type', 'add_mana', 'amount', 1,
+                     'color', case v_chosen_type
+                                when 'Plains' then 'W' when 'Island' then 'U'
+                                when 'Swamp' then 'B' when 'Mountain' then 'R'
+                                else 'G' end)))))
+      where id = v_src_card and session_id = v_decision.session_id;
     end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 

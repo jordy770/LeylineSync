@@ -220,12 +220,23 @@ Dit is het eerste stuk van het "replacement effects"-subsysteem uit de shortlist
 
 Resteert van replacement effects: **damage-replacement** (Gisela: schade ×2 / halveren) en **draw-replacement** (Abundance) — andere pijplijnen, aparte subsystemen. En het **type-changing layer-systeem** blijft de andere grote brok.
 
+
+## Engine-batch 7 — uitgevoerd (mig 407, 15 juli)
+
+| Mig | Feature | Ontgrendeld |
+|---|---|---|
+| 407 | **Type-changing layer (eerste laag)** — nieuw `granted_type` continuous effect (`{add}` voegt een (sub)type toe, `{override}` vervangt alle types) + `effective_type_line(session,card)` die deze invouwt; geroute door de trigger-type-matcher (`fire_watcher_triggers`) zodat toegevoegde/gewijzigde types zichtbaar zijn voor tribal/type-triggers. Plus `choose_land_type` (parked pick) die een granted_type registreert én de bijpassende `{T}: add <color>` mana-ability in `copied_script` bakt | **Multiversal Passage** volledig: kies een basic land type → wórdt dat type (Domain e.d.) én tapt voor die kleur mana |
+
+Dit legt het fundament voor de type-changing brok: concrete toegevoegde subtypes (Reaper's Scythe "is an Assassin") en volledige overrides (Imprisoned in the Moon "wordt een colorless land") kunnen nu op `granted_type` + `effective_type_line` bouwen. Nieuwe tests: type-changing-layer (3); fixtures Multiversal Passage / Faux Zombie / Zombie Attack Watcher.
+
+**Resteert van type-changing:** changeling-álle-types (Mirror Entity) — dat kan niet als string want ~250 subtypes, en vergt een `card_has_creature_type()`-functie i.p.v. ilike-string-matching; animate-met-mana-value (Sydri); ability-strip bij override (Imprisoned in the Moon volledig). En breder moet `effective_type_line` nog door meer type-checks geroute worden (sac-kosten, anthems, targeting) voordat de laag overal telt — nu alleen de trigger-matcher.
+
 ## Nog open — grote subsystemen (aparte scope aanbevolen)
 
 De resterende auditkaarten hangen elk aan een substantieel nieuw subsysteem, niet aan een losse veldtoevoeging:
 
 - **Replacement effects**: ✅ death-replacement gedaan (mig 406, Kalitas). Resteert: damage-replacement (Gisela) en draw-replacement (Abundance) — aparte pijplijnen.
-- **Type-changing / layer-systeem**: Mirror Entity (changeling + X/X), Sydri (animate met P/T = mana value), Multiversal Passage (land wordt gekozen type), Imprisoned in the Moon (word land, strip abilities), Reaper's Scythe (Assassin + counter-schaal).
+- **Type-changing / layer-systeem**: ✅ fundament + Multiversal Passage gedaan (mig 407: granted_type + effective_type_line). Resteert: changeling-alle-types (Mirror Entity, vergt card_has_creature_type-fn), animate-MV (Sydri), ability-strip (Imprisoned), en effective_type_line breder routen.
 - **Graveyard-targeting voor triggers**: ✅ Trove Warden gedaan (mig 405). Resteert: Angel of Serenity graveyard-helft (vergt mixed battlefield+graveyard targeting).
 - **Twee-picks abilities** (sac-kost ÉN effect-target): Etchings of the Chosen, Goblin Bombardment creature-mode — geven nu een eerlijke fout i.p.v. mis-targeting (bug-2690); volledige fix vergt client-side twee picks.
 - **Per-opponent dynamische target-count** + **mana-spent-to-cast** amount: Bronzebeak Foragers (exile per opponent), Wurmquake (token-grootte = betaalde mana).

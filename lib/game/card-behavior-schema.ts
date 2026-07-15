@@ -207,7 +207,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
   'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
   'job_select', 'advance_saga', 'grant_flashback', 'hand_to_library_top',
-  'exile_graveyard_until_leaves',
+  'exile_graveyard_until_leaves', 'choose_land_type',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -1288,6 +1288,10 @@ const CardBehaviorActionSchema = z.union([
   // `saga_chapters`, sacrifice after the final chapter. Driven by the saga's
   // enters_the_battlefield + draw_step triggers.
   z.object({ type: z.literal('advance_saga') }),
+  // "As this enters, choose a basic land type; this land is the chosen type"
+  // (mig 407, Multiversal Passage). Parks a five-type pick; submit registers a
+  // granted_type + bakes the matching {T}: add <color> mana ability.
+  z.object({ type: z.literal('choose_land_type') }),
   UnknownV2ActionSchema,
 ])
 

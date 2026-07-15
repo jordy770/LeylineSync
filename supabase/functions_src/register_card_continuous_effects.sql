@@ -142,7 +142,12 @@ begin
       -- DEATH REPLACEMENT (mig 406, Kalitas): "a nontoken creature an opponent
       -- controls would die → exile it instead; you create a token." payload
       -- {scope, nontoken, exile, create_token}; put_in_graveyard consumes it.
-      'dies_replacement'
+      'dies_replacement',
+      -- TYPE-CHANGING LAYER (mig 407): payload {add:'Assassin'} adds a type,
+      -- {override:'Land'} replaces all types. effective_type_line folds these
+      -- (Reaper's Scythe "is an Assassin"; Multiversal Passage's chosen basic
+      -- type is registered dynamically by choose_land_type).
+      'granted_type'
     ) then
       raise exception 'Unsupported continuous effect type: %', v_effect_type;
     end if;

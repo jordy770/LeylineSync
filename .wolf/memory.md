@@ -7911,3 +7911,14 @@
 | 14:13 | Edited supabase/functions_src/put_in_graveyard.sql | added 1 condition(s) | ~774 |
 | 14:15 | Created tests/feature/dies-replacement.test.ts | — | ~1004 |
 | 2026-07-15 | Engine-batch 6: mig 406 death-replacement subsysteem (dies_replacement continuous effect + check in put_in_graveyard-chokepoint); Kalitas volledig | supabase/migrations/202605010406*, tests/feature/dies-replacement.test.ts | suite-run bezig; 1 kaart; fundament voor Rest in Peace/Leyline-klasse | ~70k |
+| 14:46 | Created supabase/functions_src/effective_type_line.sql | — | ~763 |
+| 14:46 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified REPLACEMENT() | ~182 |
+| 14:47 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified layer() | ~274 |
+| 14:47 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Passage() | ~338 |
+| 14:47 | Edited supabase/functions_src/submit_decision.sql | added 1 condition(s) | ~120 |
+| 14:48 | Edited supabase/functions_src/submit_decision.sql | modified Passage() | ~599 |
+| 14:48 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~40 |
+| 14:49 | Edited lib/game/card-behavior-schema.ts | 3→7 lines | ~102 |
+| 14:50 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~107 |
+| 14:51 | Created tests/feature/type-changing-layer.test.ts | — | ~1172 |
+| 2026-07-15 | Engine-batch 7: mig 407 type-changing layer (granted_type + effective_type_line, geroute door fire_watcher_triggers; choose_land_type bakt mana+type); Multiversal Passage volledig | supabase/migrations/202605010407*, supabase/functions_src/effective_type_line.sql, tests/feature/type-changing-layer.test.ts | suite-run bezig; 1 kaart + fundament | ~90k |
