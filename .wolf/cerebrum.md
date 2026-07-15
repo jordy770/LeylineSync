@@ -661,3 +661,9 @@
 
 - card_has_creature_type(session,card,type) is nu DE herbruikbare type-laag-primitive: concrete match (effective_type_line ilike) + changeling-tak (negatieve niet-creature-lijst, catalog-onafhankelijk). Geroute in card_layered_power/toughness (anthem creature_type-filter, ook de exclude_type-tak) en activate_ability (sacrifice_creature type_line_any). fire_watcher_triggers houdt z'n EIGEN inline changeling-match (moet adventure-face-aware blijven voor spell-events — card_has_creature_type recomputet effective_type_line zonder adventure-split).
 - Nieuw plekken waar creature-type telt (targeting, tribal counts) kunnen dezelfde card_has_creature_type-call krijgen i.p.v. type_line ilike. card_layered_power is een hot path maar de fn wordt alleen aangeroepen voor pump-effecten MET creature_type (zeldzaam), dus overhead is beperkt.
+
+## Key Learnings — 2026-07-15 (engine-batch 10, mig 410)
+
+- Type-override + ability-strip: granted_type payload {override:'Land', strip_abilities:true}. effective_type_line vervangt het type (override, al sinds mig 407); effective_script blankt de basis-script tot {schema_version:2} wanneer een granted_type met strip_abilities actief is (bron op battlefield) VÓÓR de granted_ability-merge, zodat alleen gegeven abilities (Imprisoned's {T}:Add {C}) overblijven.
+- declare_attacker/declare_blocker lezen nu coalesce(effective_type_line(...), raw type_line) voor de creature-check -> een override-naar-noncreature kan niet aanvallen/blocken, en de type-laag is combat-correct. De 'animated'-escape blijft (Obuun). Kleine fn-call per attacker/blocker-declaratie (geen tight loop).
+- Aura-fixtures in tests: spawn de aura in hand, setMana, castPermanent(aura, {target: victim}), resolveStack -> affected:'enchanted' continuous effects registreren op attached_to. Patroon uit observed-stasis.test.ts. [[type-changing-layer]]

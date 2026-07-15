@@ -108,7 +108,9 @@ begin
     raise exception 'Blocker card not found, not on battlefield, not controlled by defending player, or already tapped';
   end if;
 
-  if coalesce(v_blocker_type_line, '') not ilike '%creature%'
+  -- Creature-ness via the type-changing layer (mig 410): a permanent turned
+  -- into a noncreature (Imprisoned in the Moon) can't block.
+  if coalesce(public.effective_type_line(p_session_id, p_blocker_card_id), v_blocker_type_line, '') not ilike '%creature%'
      -- Animated lands (mig 277) can block too.
      and not exists (
        select 1 from public.game_continuous_effects ce

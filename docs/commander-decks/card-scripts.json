@@ -11877,11 +11877,35 @@
     "schema_version": 2,
     "continuous_effects": [
       {
-        "type": "set_pt",
+        "type": "granted_type",
         "affected": "enchanted",
+        "source_zone_required": "battlefield",
         "payload": {
-          "power": 0,
-          "toughness": 1
+          "override": "Land",
+          "strip_abilities": true
+        }
+      },
+      {
+        "type": "granted_ability",
+        "affected": "enchanted",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "kind": "activated",
+          "ability": {
+            "is_mana_ability": true,
+            "costs": [
+              {
+                "type": "tap_self"
+              }
+            ],
+            "effects": [
+              {
+                "type": "add_mana",
+                "color": "C",
+                "amount": 1
+              }
+            ]
+          }
         }
       }
     ]

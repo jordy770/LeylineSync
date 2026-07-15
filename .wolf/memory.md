@@ -7935,3 +7935,8 @@
 | 15:54 | Edited supabase/functions_src/card_layered_toughness.sql | modified layer() | ~166 |
 | 15:55 | Created tests/feature/changeling-anthems-costs.test.ts | — | ~702 |
 | 2026-07-15 | Engine-batch 9: mig 409 changeling door anthems (card_layered_power/toughness) + sac-costs (activate_ability) via herbruikbare card_has_creature_type; type-laag telt nu door triggers+anthems+kosten | supabase/migrations/202605010409*, supabase/functions_src/card_has_creature_type.sql, tests/feature/changeling-anthems-costs.test.ts | suite-run bezig | ~55k |
+| 16:07 | Edited supabase/functions_src/effective_script.sql | modified strip() | ~280 |
+| 16:07 | Edited supabase/functions_src/declare_attacker.sql | modified layer() | ~186 |
+| 16:08 | Edited supabase/functions_src/declare_blocker.sql | modified layer() | ~139 |
+| 16:10 | Created tests/feature/imprisoned-in-the-moon.test.ts | — | ~1130 |
+| 2026-07-15 | Engine-batch 10: mig 410 Imprisoned in the Moon (granted_type override Land + strip_abilities in effective_script + granted mana; declare_attacker/blocker lezen effective_type_line -> combat type-change-correct) | supabase/migrations/202605010410*, tests/feature/imprisoned-in-the-moon.test.ts | suite-run bezig; 1 kaart + combat-routing | ~65k |

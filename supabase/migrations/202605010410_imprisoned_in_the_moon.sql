@@ -1,7 +1,70 @@
--- supabase/functions_src/declare_attacker.sql
--- CANONICAL current definition (seeded from 202605010199_curse_of_disturbance.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010410_imprisoned_in_the_moon
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (effective_script, declare_attacker, declare_blocker) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+create or replace function public.effective_script(p_session_id uuid, p_game_card_id uuid)
+returns jsonb
+language plpgsql stable security definer set search_path = public
+as $$
+declare
+  v_script jsonb;
+  v_granted record;
+  v_ability jsonb;
+begin
+  select coalesce(game_cards.copied_script, cards.script)
+  into v_script
+  from public.game_cards
+  join public.cards on cards.id = game_cards.card_id
+  where game_cards.id = p_game_card_id
+    and game_cards.session_id = p_session_id;
+
+  -- Ability strip (mig 410, Imprisoned in the Moon): a granted_type carrying
+  -- strip_abilities blanks the enchanted permanent's OWN abilities — it keeps
+  -- only what other effects grant it (Imprisoned's "{T}: Add {C}"). Applied
+  -- before the granted-ability merge so the grant survives.
+  if exists (
+    select 1 from public.game_continuous_effects ce
+    join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+    where ce.session_id = p_session_id and ce.effect_type = 'granted_type'
+      and ce.affected_card_id = p_game_card_id and src.zone = 'battlefield'
+      and coalesce((ce.payload ->> 'strip_abilities')::boolean, false)) then
+    v_script := '{"schema_version":2}'::jsonb;
+  end if;
+
+  -- Merge granted abilities (one continuous-effect row per grant).
+  if exists (select 1 from public.game_continuous_effects
+             where session_id = p_session_id and effect_type = 'granted_ability'
+               and affected_card_id = p_game_card_id) then
+    -- Guard against scalar catalog scripts: token rows may carry jsonb 'null'
+    -- (not SQL null — coalesce passes it), and jsonb_set on a scalar raises
+    -- "cannot set path in scalar" (bug-2687: job_select's Hero token receiving
+    -- Astrologian's Planisphere's granted trigger).
+    if v_script is null or jsonb_typeof(v_script) <> 'object' then
+      v_script := '{"schema_version":2}'::jsonb;
+    end if;
+    for v_granted in
+      select payload from public.game_continuous_effects
+      where session_id = p_session_id and effect_type = 'granted_ability'
+        and affected_card_id = p_game_card_id
+      order by id
+    loop
+      v_ability := v_granted.payload -> 'ability';
+      if v_ability is null then continue; end if;
+      if lower(coalesce(v_granted.payload ->> 'kind', 'triggered')) = 'activated' then
+        v_script := jsonb_set(v_script, '{activated_abilities}',
+          coalesce(v_script -> 'activated_abilities', '[]'::jsonb) || jsonb_build_array(v_ability));
+      else
+        v_script := jsonb_set(v_script, '{triggered_abilities}',
+          coalesce(v_script -> 'triggered_abilities', '[]'::jsonb) || jsonb_build_array(v_ability));
+      end if;
+    end loop;
+  end if;
+
+  return v_script;
+end;
+$$;
+grant execute on function public.effective_script(uuid, uuid) to anon, authenticated, service_role;
 
 create or replace function public.declare_attacker(
   p_session_id uuid,
@@ -315,3 +378,208 @@ end;
 $$;
 grant execute on function public.declare_attacker(uuid, uuid, uuid, uuid, boolean) to authenticated;
 grant execute on function public.declare_attacker(uuid, uuid, uuid, uuid, boolean) to service_role;
+
+create or replace function public.declare_blocker(
+  p_session_id uuid, p_blocker_card_id uuid, p_attacker_card_id uuid
+) returns public.game_combat_assignments
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_session_status text;
+  v_turn_state public.game_turn_state;
+  v_assignment public.game_combat_assignments;
+  v_blocker_type_line text;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select status
+  into v_session_status
+  from public.game_sessions
+  where id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Game session not found';
+  end if;
+
+  if v_session_status = 'finished' then
+    raise exception 'Cannot declare blockers in a finished game session';
+  end if;
+
+  select *
+  into v_turn_state
+  from public.game_turn_state
+  where session_id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Turn state not found';
+  end if;
+
+  if v_turn_state.step <> 'declare_blockers' then
+    raise exception 'Blockers can only be declared during Declare Blockers Step';
+  end if;
+
+  if coalesce(v_turn_state.priority_player_id, v_turn_state.active_player_id) <> auth.uid() then
+    raise exception 'Only the priority player can declare blockers';
+  end if;
+
+  select *
+  into v_assignment
+  from public.game_combat_assignments
+  where session_id = p_session_id
+    and turn_number = v_turn_state.turn_number
+    and attacker_card_id = p_attacker_card_id
+  for update;
+
+  if not found then
+    raise exception 'Attacker assignment not found';
+  end if;
+
+  if v_assignment.defending_player_id <> auth.uid() then
+    raise exception 'Only the defending player can block this attacker';
+  end if;
+
+  perform 1
+  from public.game_combat_blockers
+  where session_id = p_session_id
+    and turn_number = v_turn_state.turn_number
+    and blocker_card_id = p_blocker_card_id;
+
+  if found then
+    raise exception 'This blocker is already assigned';
+  end if;
+
+  -- Pacify (mig 303, Observed Stasis): a 'cant_block' continuous effect on the
+  -- creature (e.g. from an Aura that "can't attack or block") forbids blocking.
+  if exists (
+    select 1 from public.game_continuous_effects ce
+    join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+    where ce.session_id = p_session_id and ce.effect_type = 'cant_block'
+      and ce.affected_card_id = p_blocker_card_id and src.zone = 'battlefield'
+  ) then
+    raise exception 'This creature cannot block';
+  end if;
+
+  select cards.type_line
+  into v_blocker_type_line
+  from public.game_cards
+  join public.cards
+    on cards.id = game_cards.card_id
+  where game_cards.id = p_blocker_card_id
+    and game_cards.session_id = p_session_id
+    and coalesce(game_cards.controller_player_id, game_cards.owner_id) = auth.uid()
+    and game_cards.zone = 'battlefield'
+    and game_cards.is_tapped = false;
+
+  if not found then
+    raise exception 'Blocker card not found, not on battlefield, not controlled by defending player, or already tapped';
+  end if;
+
+  -- Creature-ness via the type-changing layer (mig 410): a permanent turned
+  -- into a noncreature (Imprisoned in the Moon) can't block.
+  if coalesce(public.effective_type_line(p_session_id, p_blocker_card_id), v_blocker_type_line, '') not ilike '%creature%'
+     -- Animated lands (mig 277) can block too.
+     and not exists (
+       select 1 from public.game_continuous_effects ce
+       where ce.session_id = p_session_id and ce.effect_type = 'animated'
+         and ce.affected_card_id = p_blocker_card_id
+     )
+  then
+    raise exception 'Only creatures can be declared as blockers';
+  end if;
+
+  -- Flying legality: only flying or reach creatures can block a flying attacker.
+  if public.card_has_flying(p_session_id, p_attacker_card_id) then
+    if not (
+      public.card_has_flying(p_session_id, p_blocker_card_id) or
+      public.card_has_reach(p_session_id, p_blocker_card_id)
+    ) then
+      raise exception 'Only creatures with flying or reach can block a flying creature';
+    end if;
+  end if;
+
+  -- Protection: an attacker with protection from the blocker's colour can't be
+  -- blocked by it.
+  if public.card_has_protection_from_any(
+       p_session_id, p_attacker_card_id,
+       public.game_card_color_set(p_session_id, p_blocker_card_id)
+     ) then
+    raise exception 'Attacker has protection from this blocker''s colour and cannot be blocked by it';
+  end if;
+
+  -- "Can't be blocked this turn" (mig 397, Rogue's Passage): an until-EOT
+  -- 'unblockable' grant on the attacker forbids every block.
+  if public.card_has_unblockable(p_session_id, p_attacker_card_id) then
+    raise exception 'This creature can''t be blocked this turn';
+  end if;
+
+  -- Intimidate: only artifact creatures and/or creatures sharing a colour with the
+  -- attacker can block it.
+  if public.card_has_intimidate(p_session_id, p_attacker_card_id) then
+    if not (
+      exists (
+        select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.id = p_blocker_card_id and gc.session_id = p_session_id and c.type_line ilike '%artifact%'
+      )
+      or public.game_card_color_set(p_session_id, p_blocker_card_id)
+         && public.game_card_color_set(p_session_id, p_attacker_card_id)
+    ) then
+      raise exception 'An intimidating creature can only be blocked by artifact creatures or creatures that share a colour with it';
+    end if;
+  end if;
+
+  -- Fear (mig 338, Cover of Darkness): only artifact and/or black creatures can
+  -- block a creature with fear.
+  if public.card_has_fear(p_session_id, p_attacker_card_id) then
+    if not (
+      exists (
+        select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.id = p_blocker_card_id and gc.session_id = p_session_id and c.type_line ilike '%artifact%'
+      )
+      or 'black' = any(public.game_card_color_set(p_session_id, p_blocker_card_id))
+    ) then
+      raise exception 'A creature with fear can only be blocked by artifact creatures and/or black creatures';
+    end if;
+  end if;
+
+  insert into public.game_combat_blockers (
+    assignment_id,
+    session_id,
+    turn_number,
+    attacker_card_id,
+    blocker_card_id,
+    blocking_player_id
+  )
+  values (
+    v_assignment.id,
+    p_session_id,
+    v_turn_state.turn_number,
+    p_attacker_card_id,
+    p_blocker_card_id,
+    auth.uid()
+  );
+
+  update public.game_combat_assignments
+  set blocker_card_id = coalesce(blocker_card_id, p_blocker_card_id)
+  where id = v_assignment.id
+  returning * into v_assignment;
+
+  -- "Whenever this creature becomes blocked" (mig 273, Ichorclaw Myr): fired
+  -- once per block declaration against the ATTACKER. (Multi-blocker combats
+  -- fire once per blocker — approximation; the real event fires once.)
+  perform public.fire_card_triggers(
+    p_session_id, p_attacker_card_id, array['becomes_blocked']);
+
+  return v_assignment;
+end;
+$$;
+grant execute on function public.declare_blocker(uuid, uuid, uuid) to anon, authenticated, service_role;

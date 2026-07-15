@@ -253,12 +253,23 @@ Daarmee telt de type-laag door de drie plekken waar creature-type in de praktijk
 
 **Resteert nog** (kleiner): changeling door **targeting-filters** (bv. "target Elf"), animate-MV (Sydri), ability-strip (Imprisoned in the Moon), Mirror Entity's {X}-ability.
 
+
+## Engine-batch 10 — uitgevoerd (mig 410, 15 juli)
+
+| Mig | Feature | Ontgrendeld |
+|---|---|---|
+| 410 | **Imprisoned in the Moon** (type-override + ability-strip + combat-gate routing) — granted_type `override:'Land'` + `strip_abilities` (effective_script blankt de basis vóór de granted_ability-merge) + granted mana-ability `{T}: Add {C}`; en `declare_attacker`/`declare_blocker` lezen nu `effective_type_line` i.p.v. het rauwe type_line | **Imprisoned in the Moon** volledig: de betoverde permanent wordt een colorless land dat niet kan aanvallen/blocken, tapt voor {C}, en verliest z'n eigen abilities. Combat is nu type-change-correct voor de hele laag (changeling/overrides) |
+
+Dit maakt de type-laag combat-compleet (de gates respecteren nu type-changes). Nieuwe test: imprisoned-in-the-moon (3); fixture Imprisoned Aura.
+
+**Resteert van type-changing** (klein): changeling door targeting-filters, animate-MV (Sydri, vergt client-animate-targeting), Mirror Entity's {X}-ability, Reaper's Scythe Assassin (triviale granted_type add).
+
 ## Nog open — grote subsystemen (aparte scope aanbevolen)
 
 De resterende auditkaarten hangen elk aan een substantieel nieuw subsysteem, niet aan een losse veldtoevoeging:
 
 - **Replacement effects**: ✅ death-replacement gedaan (mig 406, Kalitas). Resteert: damage-replacement (Gisela) en draw-replacement (Abundance) — aparte pijplijnen.
-- **Type-changing / layer-systeem**: ✅ fundament (mig 407) + changeling door triggers/anthems/sac-costs (mig 408-409). Resteert: changeling door targeting-filters, animate-MV (Sydri), ability-strip (Imprisoned), Mirror Entity's {X}-ability.
+- **Type-changing / layer-systeem**: ✅ fundament + changeling (mig 407-409) + Imprisoned in de Moon / combat-correct (mig 410). Resteert (klein): changeling door targeting-filters, animate-MV (Sydri), Mirror Entity's {X}-ability.
 - **Graveyard-targeting voor triggers**: ✅ Trove Warden gedaan (mig 405). Resteert: Angel of Serenity graveyard-helft (vergt mixed battlefield+graveyard targeting).
 - **Twee-picks abilities** (sac-kost ÉN effect-target): Etchings of the Chosen, Goblin Bombardment creature-mode — geven nu een eerlijke fout i.p.v. mis-targeting (bug-2690); volledige fix vergt client-side twee picks.
 - **Per-opponent dynamische target-count** + **mana-spent-to-cast** amount: Bronzebeak Foragers (exile per opponent), Wurmquake (token-grootte = betaalde mana).

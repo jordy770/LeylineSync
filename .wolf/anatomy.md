@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T13:55:41.338Z
-> Files: 30 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T14:10:11.696Z
+> Files: 34 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -325,6 +325,9 @@
 - `card_layered_toughness.sql` — supabase/functions_src/card_layered_toughness.sql (~1724 tok)
 - `choose_triggered_ability_targets.sql` — supabase/functions_src/choose_triggered_ability_targets.sql (~893 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~911 tok)
+- `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3516 tok)
+- `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~2039 tok)
+- `effective_script.sql` — supabase/functions_src/effective_script.sql (~935 tok)
 - `effective_type_line.sql` — supabase/functions_src/effective_type_line.sql (~763 tok)
 - `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~4907 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1832 tok)
@@ -350,6 +353,7 @@
 - `dies-replacement.test.ts` — mig 406 — death replacement (Kalitas, Traitor of Ghet): "Whenever a nontoken (~1004 tok)
 - `exile-until-leaves-return-to.test.ts` — mig 404 — exile_until_leaves gains multi-target ("up to three") + a (~784 tok)
 - `graveyard-exile-until-leaves.test.ts` — mig 405 — graveyard-target triggers (exile_graveyard_until_leaves), the (~1057 tok)
+- `imprisoned-in-the-moon.test.ts` — mig 410 — Imprisoned in the Moon: an Aura that turns the enchanted permanent (~1130 tok)
 - `sacrifice-filters-and-stun.test.ts` — mig 402 — subtype/another filters on sacrifice costs (Professional (~1215 tok)
 - `type-changing-layer.test.ts` — mig 407 — the type-changing layer: a granted_type continuous effect adds (or (~1172 tok)
 

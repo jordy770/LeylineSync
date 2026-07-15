@@ -24,6 +24,19 @@ begin
   where game_cards.id = p_game_card_id
     and game_cards.session_id = p_session_id;
 
+  -- Ability strip (mig 410, Imprisoned in the Moon): a granted_type carrying
+  -- strip_abilities blanks the enchanted permanent's OWN abilities — it keeps
+  -- only what other effects grant it (Imprisoned's "{T}: Add {C}"). Applied
+  -- before the granted-ability merge so the grant survives.
+  if exists (
+    select 1 from public.game_continuous_effects ce
+    join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+    where ce.session_id = p_session_id and ce.effect_type = 'granted_type'
+      and ce.affected_card_id = p_game_card_id and src.zone = 'battlefield'
+      and coalesce((ce.payload ->> 'strip_abilities')::boolean, false)) then
+    v_script := '{"schema_version":2}'::jsonb;
+  end if;
+
   -- Merge granted abilities (one continuous-effect row per grant).
   if exists (select 1 from public.game_continuous_effects
              where session_id = p_session_id and effect_type = 'granted_ability'
