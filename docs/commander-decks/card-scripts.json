@@ -1501,7 +1501,11 @@
             "to": "battlefield",
             "tapped": true,
             "filter": {
-              "type_line": "Basic Land"
+              "type_line_any": [
+                "Forest",
+                "Island",
+                "Mountain"
+              ]
             }
           }
         ]
@@ -1823,6 +1827,16 @@
   },
   "Taurean Mauler": {
     "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "granted_type",
+        "affected": "source",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "changeling": true
+        }
+      }
+    ],
     "triggered_abilities": [
       {
         "event": "spell_cast",
@@ -2089,7 +2103,7 @@
         "effects": [
           {
             "type": "add_mana",
-            "color": "any",
+            "color": "commander",
             "amount": 1
           }
         ]
@@ -2236,12 +2250,7 @@
             "type": "become_copy",
             "target": "triggering_creature",
             "optional": true,
-            "until_end_of_turn": true,
-            "except": {
-              "keywords": [
-                "haste"
-              ]
-            }
+            "until_end_of_turn": true
           }
         ]
       }
@@ -2254,6 +2263,14 @@
         "type": "flying",
         "affected": "source",
         "source_zone_required": "battlefield"
+      },
+      {
+        "type": "granted_type",
+        "affected": "source",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "add": "Dragon"
+        }
       }
     ],
     "triggered_abilities": [
@@ -2653,10 +2670,16 @@
         },
         "effects": [
           {
-            "type": "fight",
-            "fighter": "triggering_creature",
-            "target_type": "creature",
-            "target_controller": "opponent"
+            "type": "may",
+            "program": true,
+            "effects": [
+              {
+                "type": "fight",
+                "fighter": "triggering_creature",
+                "target_type": "creature",
+                "target_controller": "opponent"
+              }
+            ]
           }
         ]
       }
@@ -2899,7 +2922,7 @@
           {
             "type": "goad",
             "target_type": "creature",
-            "target_controller": "opponent"
+            "target_controller": "any"
           }
         ]
       },
@@ -2909,7 +2932,7 @@
           {
             "type": "goad",
             "target_type": "creature",
-            "target_controller": "opponent"
+            "target_controller": "any"
           }
         ]
       },
@@ -3063,13 +3086,18 @@
         "event": "enrage",
         "effects": [
           {
-            "type": "search_library",
-            "count": 1,
-            "to": "battlefield",
-            "tapped": true,
-            "filter": {
-              "type_line": "Basic Land"
-            }
+            "type": "may",
+            "effects": [
+              {
+                "type": "search_library",
+                "count": 1,
+                "to": "battlefield",
+                "tapped": true,
+                "filter": {
+                  "type_line": "Basic Land"
+                }
+              }
+            ]
           }
         ]
       }
@@ -3603,7 +3631,8 @@
             "color": "any",
             "amount": 1,
             "restriction": {
-              "spell_type_line": "$chosen"
+              "spell_type_line": "$chosen",
+              "ability_source_type_line": "$chosen"
             }
           }
         ]
@@ -4017,7 +4046,8 @@
       "actions": [
         {
           "type": "exile",
-          "target_type": "creature"
+          "target_type": "creature",
+          "controller_searches_basic_land": true
         }
       ]
     }
@@ -4126,7 +4156,8 @@
               "controller": "any",
               "types": [
                 "creature",
-                "player"
+                "player",
+                "planeswalker"
               ]
             }
           }
@@ -5795,12 +5826,18 @@
         "event": "enters_the_battlefield",
         "effects": [
           {
-            "type": "return_from_graveyard",
-            "count": 1,
-            "to": "battlefield",
-            "filter": {
-              "type_line": "artifact"
-            }
+            "type": "may",
+            "prompt": "Return an artifact card from your graveyard to the battlefield?",
+            "effects": [
+              {
+                "type": "return_from_graveyard",
+                "count": 1,
+                "to": "battlefield",
+                "filter": {
+                  "type_line": "artifact"
+                }
+              }
+            ]
           }
         ]
       }
@@ -6249,6 +6286,21 @@
           {
             "type": "mana",
             "amount": "{1}"
+          }
+        ],
+        "effects": [
+          {
+            "type": "equip",
+            "target_type": "creature",
+            "target_controller": "you"
+          }
+        ]
+      },
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{B}{B}"
           }
         ],
         "effects": [
@@ -8639,7 +8691,14 @@
         "event": "enters_the_battlefield",
         "effects": [
           {
-            "type": "proliferate"
+            "type": "may",
+            "prompt": "Pay {1}{G} to proliferate?",
+            "cost": "{1}{G}",
+            "effects": [
+              {
+                "type": "proliferate"
+              }
+            ]
           }
         ]
       }
@@ -9192,7 +9251,10 @@
           "to": "battlefield",
           "tapped": true,
           "filter": {
-            "type_line": "basic land"
+            "type_line_any": [
+              "basic land",
+              "Gate"
+            ]
           }
         }
       ]
@@ -9674,7 +9736,12 @@
             "to": "battlefield",
             "tapped": true,
             "filter": {
-              "type_line": "basic land"
+              "type_line": "Basic Land",
+              "type_line_any": [
+                "Mountain",
+                "Forest",
+                "Plains"
+              ]
             }
           }
         ]
@@ -9765,7 +9832,8 @@
             "amount": 3,
             "target_type": [
               "creature",
-              "player"
+              "player",
+              "planeswalker"
             ],
             "target_controller": "any"
           }
@@ -9859,7 +9927,7 @@
                     "amount": 1,
                     "counter_type": "plus_one_one",
                     "target_type": "creature",
-                    "target_controller": "you"
+                    "target_controller": "any"
                   }
                 ]
               },
@@ -10141,6 +10209,18 @@
         "payload": {
           "power": 2,
           "toughness": 2,
+          "condition_count": "lands_you_control",
+          "condition_at_least": 6
+        }
+      },
+      {
+        "type": "pump",
+        "affected": "controller",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "power": 2,
+          "toughness": 2,
+          "creature_type": "Land",
           "condition_count": "lands_you_control",
           "condition_at_least": 6
         }
@@ -11024,7 +11104,7 @@
         "costs": [
           {
             "type": "mana",
-            "amount": "{4}"
+            "amount": "{W/U}{W/U}{W/U}{W/U}"
           },
           {
             "type": "tap_self"
@@ -11800,6 +11880,9 @@
   },
   "Nebelgast Herald": {
     "schema_version": 2,
+    "keywords": [
+      "flash"
+    ],
     "continuous_effects": [
       {
         "type": "flying",
@@ -11839,6 +11922,20 @@
         "filter": {
           "controller": "you",
           "type_line": "Spirit"
+        },
+        "effects": [
+          {
+            "type": "create_token",
+            "token": "Greater Spirit Token",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "event": "spell_cast",
+        "filter": {
+          "controller": "you",
+          "type_line": "Arcane"
         },
         "effects": [
           {
@@ -12076,6 +12173,9 @@
   },
   "Spectral Sailor": {
     "schema_version": 2,
+    "keywords": [
+      "flash"
+    ],
     "continuous_effects": [
       {
         "type": "flying",
@@ -12377,8 +12477,13 @@
         },
         "effects": [
           {
-            "type": "draw",
-            "amount": 1
+            "type": "may",
+            "effects": [
+              {
+                "type": "draw",
+                "amount": 1
+              }
+            ]
           }
         ]
       }
@@ -12652,11 +12757,30 @@
   },
   "Whirlwing Stormbrood": {
     "schema_version": 2,
+    "keywords": [
+      "flash"
+    ],
     "continuous_effects": [
       {
         "type": "flying",
         "affected": "source",
         "source_zone_required": "battlefield"
+      },
+      {
+        "type": "flash_permission",
+        "affected": "controller",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "type_line": "Sorcery"
+        }
+      },
+      {
+        "type": "flash_permission",
+        "affected": "controller",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "type_line": "Dragon"
+        }
       }
     ],
     "activated_abilities": [
@@ -12741,11 +12865,30 @@
   },
   "Whirlwing Stormbrood // Dynamic Soar": {
     "schema_version": 2,
+    "keywords": [
+      "flash"
+    ],
     "continuous_effects": [
       {
         "type": "flying",
         "affected": "source",
         "source_zone_required": "battlefield"
+      },
+      {
+        "type": "flash_permission",
+        "affected": "controller",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "type_line": "Sorcery"
+        }
+      },
+      {
+        "type": "flash_permission",
+        "affected": "controller",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "type_line": "Dragon"
+        }
       }
     ],
     "activated_abilities": [
@@ -14128,17 +14271,16 @@
         "costs": [
           {
             "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
           }
         ],
         "effects": [
           {
             "type": "add_mana",
             "color": "W",
-            "amount": 1
-          },
-          {
-            "type": "deal_damage",
-            "target": "controller",
             "amount": 1
           }
         ]
@@ -14148,17 +14290,16 @@
         "costs": [
           {
             "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
           }
         ],
         "effects": [
           {
             "type": "add_mana",
             "color": "B",
-            "amount": 1
-          },
-          {
-            "type": "deal_damage",
-            "target": "controller",
             "amount": 1
           }
         ]
@@ -14188,6 +14329,10 @@
         "costs": [
           {
             "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
           }
         ],
         "effects": [
@@ -14203,6 +14348,10 @@
         "costs": [
           {
             "type": "tap_self"
+          },
+          {
+            "type": "pay_life",
+            "amount": 1
           }
         ],
         "effects": [
@@ -15297,7 +15446,7 @@
             "amount": 1
           },
           {
-            "type": "lose_life",
+            "type": "deal_damage",
             "amount": 1,
             "recipient": "controller"
           }
@@ -15317,7 +15466,7 @@
             "amount": 1
           },
           {
-            "type": "lose_life",
+            "type": "deal_damage",
             "amount": 1,
             "recipient": "controller"
           }
@@ -15837,7 +15986,10 @@
             "amount": "{1}"
           },
           {
-            "type": "sacrifice_creature"
+            "type": "sacrifice_creature",
+            "type_line_any": [
+              "$chosen"
+            ]
           }
         ],
         "effects": [
@@ -16916,12 +17068,9 @@
                 "count": 1
               },
               {
-                "type": "destroy_up_to",
-                "count": 1,
-                "target_filter": {
-                  "controller": "any",
-                  "nonland": true
-                }
+                "type": "destroy",
+                "target_type": "nonland_permanent",
+                "target_controller": "any"
               }
             ]
           }
@@ -17860,6 +18009,12 @@
     "spell_effect": {
       "actions": [
         {
+          "type": "pump",
+          "power": 2,
+          "toughness": 0,
+          "target_type": "creature"
+        },
+        {
           "type": "grant_dies_effect",
           "target_type": "creature",
           "effects": [
@@ -18307,7 +18462,8 @@
           {
             "type": "blink",
             "target_type": "creature",
-            "target_controller": "you"
+            "target_controller": "you",
+            "optional": true
           }
         ]
       }
@@ -19318,7 +19474,7 @@
         "effects": [
           {
             "type": "destroy",
-            "target_type": "permanent",
+            "target_type": "nonland_permanent",
             "target_controller": "opponent"
           }
         ]
@@ -19334,7 +19490,8 @@
           "amount": 3,
           "target_type": [
             "creature",
-            "player"
+            "player",
+            "planeswalker"
           ]
         }
       ]
@@ -20001,6 +20158,10 @@
         {
           "type": "counter",
           "target_type": "spell"
+        },
+        {
+          "type": "scry",
+          "amount": 1
         }
       ]
     }
@@ -20683,11 +20844,14 @@
         "event": "enters_the_battlefield",
         "effects": [
           {
-            "type": "destroy",
-            "target_type": [
-              "artifact",
-              "enchantment"
-            ]
+            "type": "destroy_up_to",
+            "count": 1,
+            "target_filter": {
+              "types": [
+                "artifact",
+                "enchantment"
+              ]
+            }
           }
         ]
       }
@@ -20700,20 +20864,25 @@
         "event": "enters_the_battlefield",
         "effects": [
           {
-            "type": "return_from_graveyard",
-            "count": 1,
-            "to": "hand",
-            "filter": {
-              "types": [
-                "creature",
-                "artifact",
-                "enchantment",
-                "land",
-                "planeswalker",
-                "instant",
-                "sorcery"
-              ]
-            }
+            "type": "may",
+            "effects": [
+              {
+                "type": "return_from_graveyard",
+                "count": 1,
+                "to": "hand",
+                "filter": {
+                  "types": [
+                    "creature",
+                    "artifact",
+                    "enchantment",
+                    "land",
+                    "planeswalker",
+                    "instant",
+                    "sorcery"
+                  ]
+                }
+              }
+            ]
           }
         ]
       }

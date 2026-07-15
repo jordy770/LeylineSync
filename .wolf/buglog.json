@@ -21668,6 +21668,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-15T13:54:12.782Z"
+    },
+    {
+      "id": "bug-2696",
+      "timestamp": "2026-07-15T00:00:00Z",
+      "error_message": "OC1 Flush Out casts from hand and shuffles itself away — test failed after low-severity sweep",
+      "file": "docs/commander-decks/card-scripts.json",
+      "root_cause": "Low-fix batch-08 moved Stormshriek Feral // Flush Out discard from an EFFECT (count:1, parks a choose_cards decision during resolution) to a COST (paid at activation). omen-casts.test.ts asserts the choose_cards discard decision appears AFTER resolveStack, so cost-timing discard broke it.",
+      "fix": "Reverted both Stormshriek Feral and Stormshriek Feral // Flush Out to committed HEAD scripts, which already model discard as an effect then draw 2 then shuffle_self_into_library.",
+      "tags": [
+        "card-scripts",
+        "discard",
+        "cost-vs-effect",
+        "regression",
+        "omen",
+        "stormshriek",
+        "audit-low-severity"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-15T00:00:00Z"
     }
   ]
 }

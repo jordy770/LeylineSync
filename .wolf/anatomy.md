@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T16:32:38.704Z
-> Files: 40 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T17:43:26.956Z
+> Files: 52 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -11,14 +11,29 @@
 - `all-med-fixes-2.json` (~2508 tok)
 - `all-med-fixes-3.json` (~1576 tok)
 - `all-med-fixes.json` (~5411 tok)
+- `apply-lowfix.py` (~310 tok)
 - `engine-additions.md` — Engine additions since the oracle audit (mig 393–410) — USE THESE (~1199 tok)
 - `med-fix-prompt.txt` — Declares enums (~800 tok)
+- `merge-lowfix.mjs` — Merge all lowfix/b*.json into one flat {name: script} file for validation. (~216 tok)
 - `release-v0.14.0.md` — Cards that were bluffing — now honest (~449 tok)
 - `release-v0.15.0.md` — Death, redirected (~321 tok)
 - `release-v0.16.0.md` — Everything, or nothing (~250 tok)
 
 ## ../../.claude/jobs/ca267fb9/tmp/fixdrafts/
 
+
+## ../../.claude/jobs/ca267fb9/tmp/lowfix/
+
+- `b01.json` (~385 tok)
+- `b02.json` (~402 tok)
+- `b03.json` (~409 tok)
+- `b04.json` (~45 tok)
+- `b05.json` (~529 tok)
+- `b06.json` (~354 tok)
+- `b07.json` (~489 tok)
+- `b08.json` (~744 tok)
+- `b09.json` (~378 tok)
+- `b10.json` (~638 tok)
 
 ## ../../.claude/plans/
 

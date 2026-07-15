@@ -292,3 +292,37 @@ Aanbeveling: elk hiervan als eigen mini-project scopen; replacement effects en h
 - Validatie: Zod-parse + deep-diff + unknown-action-type sweep op alle 45; getSpellPlan-dekking gecheckt voor de gewijzigde instants/sorceries.
 - Testsuite: volledige suite groen na de fixes — 2311/2311 (incl. deck-smoke: alle 954 curated scripts draaien op ETB/dies/cast).
 - Hosted push gebeurt bewust NIET automatisch: draai `node --import tsx scripts/upsert-deck-scripts.mjs --apply --force` wanneer je de fixes live wil.
+
+---
+
+## Audit VOLLEDIG afgerond — 2026-07-15
+
+Alle 957 kaarten in `card-scripts.json` zijn nu getrieerd (high → medium → low). Totaal **181 script-fixes** toegepast; de rest is gedocumenteerd engine-geblokkeerd of een bevestigde false-positive.
+
+### Rondes
+| Ronde | Kaarten getrieerd | Fixes toegepast |
+|---|---|---|
+| High (wrong/inert/high-sev) | 99 | 45 |
+| Medium (na engine mig 393-410) | 256 | 98 |
+| Low | 156 | 38 |
+| **Totaal** | **511 geflagged** | **181** |
+
+### Low-severity ronde (38 fixes)
+Parallel getrieerd in 10 batches; per kaart Zod + deep-diff + unknown-type gevalideerd. Voorbeelden:
+- **Targeting-verfijning**: Lightning Bolt / Omnath (planeswalker toegevoegd aan "any target"), Meteor Golem (permanent → nonland_permanent, opponent-only), Retreat to Kazandu (counter-mode target 'any').
+- **Fetch-restrictie**: Bountiful Landscape / Naya Panorama / Circuitous Route (type_line_any zodat alleen de juiste basics/Gates fetchbaar zijn).
+- **Flash als cast-timing**: Nebelgast Herald, Spectral Sailor (keywords:['flash'], mig 398).
+- **Changeling / granted_type**: Taurean Mauler (changeling true), Deceptive Frostkite / Sylvan Advocate (granted_type add / land-anthem).
+- **Optioneel maken**: Conjurer's Closet, Eternal Witness, Sharuum (may{}-gate).
+- **Mana-drawback**: Battlefield Forge (lose_life → deal_damage recipient:controller), Talisman of Hierarchy/Progress (ontbrekende pay_life-kost toegevoegd).
+- **Overig**: Etchings ($chosen sac-kost), Frontier Siege (Dragons-mode fight via may+program), Vengeful Ancestor (goad + creature_attacks-rider), Whirlwing Stormbrood ×2 (flash_permission voor Sorcery/Dragon), Path to Exile, Reclamation Sage, e.a.
+
+### Regressie onderweg (bug-2696)
+Batch-08 verplaatste Stormshriek Feral // Flush Out's discard van effect → kost, wat `omen-casts.test.ts` brak (die de choose_cards-discard NA resolveStack verwacht). Beide Stormshriek-entries teruggezet naar hun gecommitte scripts (al correct: discard-effect → draw 2 → shuffle). Zie cerebrum: discard cost-vs-effect is gedragsbepalend.
+
+### Blijvend engine-geblokkeerd (niet fixbaar zonder nieuwe primitives)
+Alt-cost (evoke/spectacle/blitz/buyback/convoke/undaunted), morph, regenerate, split-second, finality counter, damage/draw-replacement, per-opponent dynamische targets, mana-spent-to-cast amount, target-player library search, kleur-lock landen (Temple/Thriving), max-hand-size, `deal_damage exclude_type_line`, single-target activated `deal_damage` naar planeswalker, name-uniqueness gates, `deal_damage==lose_life` voor player-recipients (audit-premisse false positive).
+
+### Verificatie
+- Lokaal geseed (326 migraties) + volledige suite: **2350/2350 groen** (incl. deck-smoke: alle scripts op ETB/dies/cast).
+- Hosted push NIET automatisch — draai de upsert + release wanneer je medium+low live wil.

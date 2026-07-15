@@ -7948,3 +7948,21 @@
 | 18:31 | Created ../../.claude/jobs/ca267fb9/tmp/all-med-fixes-2.json | — | ~2508 |
 | 18:32 | Created ../../.claude/jobs/ca267fb9/tmp/all-med-fixes-3.json | — | ~1576 |
 | 2026-07-15 | Medium-severity ronde: 256 kaarten getrieerd tegen de gegroeide engine (16 agents); 98 gefixt (gain_life/target-arrays/choose_player/broadcast-events/granted_type/flash/adventure/filterlands/...) | docs/commander-decks/card-scripts.json | suite-run bezig; rest engine/nochange | ~1.3M |
+| 19:34 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b06.json | — | ~354 |
+| 19:34 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b10.json | — | ~638 |
+
+## Session: 2026-07-15 19:36
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 19:36 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b01.json | — | ~385 |
+| 19:37 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b02.json | — | ~402 |
+| 19:37 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b04.json | — | ~45 |
+| 19:37 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b05.json | — | ~529 |
+| 19:37 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b07.json | — | ~489 |
+| 19:37 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b09.json | — | ~378 |
+| 19:38 | Created ../../.claude/jobs/ca267fb9/tmp/merge-lowfix.mjs | — | ~216 |
+| 19:41 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b08.json | — | ~744 |
+| 19:42 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b03.json | — | ~409 |
+| 19:43 | Created ../../.claude/jobs/ca267fb9/tmp/apply-lowfix.py | — | ~310 |
+| 00:30 | Low-severity audit sweep: 40 fixes triaged/validated, 38 applied (Stormshriek x2 reverted as regression) — audit VOLLEDIG afgewerkt | card-scripts.json | 2350/2350 tests green | ~120k |
