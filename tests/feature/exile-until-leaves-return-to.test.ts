@@ -51,7 +51,7 @@ test('EL2 exile_until_leaves accepts fewer than the max', async () => {
     await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
     const theirs = await s.spawnCreature('B', 'Air Elemental Test')
     const other = await s.spawnCreature('B', 'Goblin Raider Test')
-    const angel = await s.spawnCreature('A', 'Serenity Angel Test')
+    await s.spawnCreature('A', 'Serenity Angel Test')
 
     const trigger = await s.topStackItem()
     await s.as('A').chooseTriggerTargets(trigger!.id, [theirs])

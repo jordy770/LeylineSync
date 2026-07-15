@@ -21550,6 +21550,58 @@
    "related_bugs": [],
    "occurrences": 1,
    "last_seen": "2026-07-15T00:00:00Z"
+  },
+  {
+   "id": "bug-1316",
+   "timestamp": "2026-07-15T11:08:14.327Z",
+   "error_message": "Incorrect value in code",
+   "file": "tests/feature/exile-until-leaves-return-to.test.ts",
+   "root_cause": "Had ')\n    const angel = await s.spawnCreature('",
+   "fix": "Changed to ')\n    await s.spawnCreature('",
+   "tags": [
+    "auto-detected",
+    "wrong-value",
+    "ts"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T11:08:14.327Z"
+  },
+  {
+   "id": "bug-2693",
+   "timestamp": "2026-07-15T00:00:00Z",
+   "error_message": "CI Types step failed: lib/game/controller-selectors.ts(78,41): TS2339 Property 'keywords' does not exist on type 'CardScript'",
+   "file": "lib/game/types.ts",
+   "root_cause": "CardScript type lacked a keywords field; cardHasFlashKeyword (mig 398, batch 2) read script.keywords. Local `npx tsc --noEmit` PASSED because of the incremental build cache (tsconfig.tsbuildinfo) skipping the unchanged-looking file; CI does a clean checkout and re-typechecks everything. Broke CI on every push since batch 2",
+   "fix": "Added keywords?: string[] to the CardScript type. PREVENTION: verify typecheck with `rm -f tsconfig.tsbuildinfo && npx tsc --noEmit` (clean) OR `npm run build` before declaring green — incremental tsc hides errors in files it thinks are unchanged",
+   "tags": [
+    "ci",
+    "typecheck",
+    "tsbuildinfo",
+    "incremental",
+    "stale-cache"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T00:00:00Z"
+  },
+  {
+   "id": "bug-2694",
+   "timestamp": "2026-07-15T00:00:00Z",
+   "error_message": "CI Lint step: 'angel' is assigned a value but never used (exile-until-leaves-return-to.test.ts:54)",
+   "file": "tests/feature/exile-until-leaves-return-to.test.ts",
+   "root_cause": "EL2 spawned the Angel to a const it never read (@typescript-eslint/no-unused-vars is an ERROR in this repo). Masked locally because CI failed earlier at the Types step and I only linted specific files with a pipe that hid eslint's exit code",
+   "fix": "Dropped the unused binding (kept the spawn). PREVENTION: run `npx eslint .` and read its real exit code (not the piped tail's) before pushing",
+   "tags": [
+    "ci",
+    "lint",
+    "no-unused-vars"
+   ],
+   "related_bugs": [
+    "bug-2693"
+   ],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T00:00:00Z"
   }
  ]
 }

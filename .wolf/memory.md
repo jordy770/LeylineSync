@@ -7902,3 +7902,5 @@
 | 12:49 | Created tests/feature/graveyard-exile-until-leaves.test.ts | — | ~1057 |
 | 2026-07-15 | Engine-batch 5: mig 405 graveyard-target triggers (exile_graveyard_until_leaves, park-patroon + exiled_until_leaves-anker); Trove Warden volledig | supabase/migrations/202605010405*, tests/feature/graveyard-exile-until-leaves.test.ts | suite-run bezig; 1 kaart | ~55k |
 | 12:54 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~100 |
+| 13:05 | Edited lib/game/types.ts | 5→8 lines | ~81 |
+| 13:08 | Edited tests/feature/exile-until-leaves-return-to.test.ts | 2→2 lines | ~35 |

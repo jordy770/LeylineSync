@@ -256,6 +256,9 @@ export type CardScript = {
   actions?: CardAction[]
   continuous_effects?: CardContinuousEffect[]
   triggers?: string[]
+  // A v2 script's keyword list (e.g. {"keywords":["flash"]}). Read by the
+  // client's flash-cast check (mig 398, cardHasFlashKeyword).
+  keywords?: string[]
 }
 
 export type LinkedCard = {
