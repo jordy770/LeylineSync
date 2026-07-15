@@ -7940,3 +7940,11 @@
 | 16:08 | Edited supabase/functions_src/declare_blocker.sql | modified layer() | ~139 |
 | 16:10 | Created tests/feature/imprisoned-in-the-moon.test.ts | — | ~1130 |
 | 2026-07-15 | Engine-batch 10: mig 410 Imprisoned in the Moon (granted_type override Land + strip_abilities in effective_script + granted mana; declare_attacker/blocker lezen effective_type_line -> combat type-change-correct) | supabase/migrations/202605010410*, tests/feature/imprisoned-in-the-moon.test.ts | suite-run bezig; 1 kaart + combat-routing | ~65k |
+| 17:51 | Created ../../.claude/jobs/ca267fb9/tmp/release-v0.16.0.md | — | ~267 |
+| 2026-07-15 | PRODUCTIE-DEPLOY v0.16.0: migraties 408-410 -> hosted (db push), card-scripts al current, Release v0.16.0 -> deploy.yml groen -> VPS rebuild; leylinesync.com HTTP 200, card_has_creature_type live | supabase/migrations/ | LIVE: changeling volledig (triggers/anthems/kosten) + Imprisoned in the Moon; type-laag combat-correct | ~20k |
+| 18:20 | Created ../../.claude/jobs/ca267fb9/tmp/engine-additions.md | — | ~1279 |
+| 18:21 | Created ../../.claude/jobs/ca267fb9/tmp/med-fix-prompt.txt | — | ~853 |
+| 18:29 | Created ../../.claude/jobs/ca267fb9/tmp/all-med-fixes.json | — | ~5411 |
+| 18:31 | Created ../../.claude/jobs/ca267fb9/tmp/all-med-fixes-2.json | — | ~2508 |
+| 18:32 | Created ../../.claude/jobs/ca267fb9/tmp/all-med-fixes-3.json | — | ~1576 |
+| 2026-07-15 | Medium-severity ronde: 256 kaarten getrieerd tegen de gegroeide engine (16 agents); 98 gefixt (gain_life/target-arrays/choose_player/broadcast-events/granted_type/flash/adventure/filterlands/...) | docs/commander-decks/card-scripts.json | suite-run bezig; rest engine/nochange | ~1.3M |

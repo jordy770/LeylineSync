@@ -264,6 +264,11 @@ Dit maakt de type-laag combat-compleet (de gates respecteren nu type-changes). N
 
 **Resteert van type-changing** (klein): changeling door targeting-filters, animate-MV (Sydri, vergt client-animate-targeting), Mirror Entity's {X}-ability, Reaper's Scythe Assassin (triviale granted_type add).
 
+
+## Medium-severity ronde — 98 kaarten gefixt (15 juli, na de engine-batches)
+
+Na de 18 engine-features (mig 393-410) zijn de 256 medium-severity audit-kaarten opnieuw getrieerd (16 parallelle Opus-agents met een addendum van alle nieuwe capabilities). **98 kaarten zijn nu gefixt** — clausules die bij de audit "engine nodig" waren, konden nu wél. Voorbeelden: Lightning Helix / Absorb (gain_life-helft), Bedevil / Rip Apart / Lethal Scheme (target_type-array), Blood Artist / Benevolent Offering / Stroke of Genius (choose_player single-target), Rites of Flourishing (broadcast draw-step), Darksteel Mutation / Reprobation (granted_type override+strip), Snapcaster / Rattlechains (flash), Elvish Archdruid / Lathliss / Drogskol Captain (tribal via granted_type-laag), Beanstalk Giant (adventure), Sunken Ruins (filterland), en tientallen meer. De rest blijft "engine" (ontbrekende capability: cascade, convoke, echo, delve, transform, replacement effects, per-opponent targeting, voting, …) of "nochange" (audit-false-positives tegen de huidige engine). Elke fix is Zod+deep-diff gevalideerd; de deck-smoke-suite draait ze allemaal op ETB/dies/cast.
+
 ## Nog open — grote subsystemen (aparte scope aanbevolen)
 
 De resterende auditkaarten hangen elk aan een substantieel nieuw subsysteem, niet aan een losse veldtoevoeging:

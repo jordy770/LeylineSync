@@ -1,15 +1,21 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T14:10:11.696Z
-> Files: 34 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T16:32:38.704Z
+> Files: 40 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
 
 ## ../../.claude/jobs/ca267fb9/tmp/
 
+- `all-med-fixes-2.json` (~2508 tok)
+- `all-med-fixes-3.json` (~1576 tok)
+- `all-med-fixes.json` (~5411 tok)
+- `engine-additions.md` — Engine additions since the oracle audit (mig 393–410) — USE THESE (~1199 tok)
+- `med-fix-prompt.txt` — Declares enums (~800 tok)
 - `release-v0.14.0.md` — Cards that were bluffing — now honest (~449 tok)
 - `release-v0.15.0.md` — Death, redirected (~321 tok)
+- `release-v0.16.0.md` — Everything, or nothing (~250 tok)
 
 ## ../../.claude/jobs/ca267fb9/tmp/fixdrafts/
 
