@@ -11934,7 +11934,17 @@
     ]
   },
   "Mirror Entity": {
-    "schema_version": 2
+    "schema_version": 2,
+    "continuous_effects": [
+      {
+        "type": "granted_type",
+        "affected": "source",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "changeling": true
+        }
+      }
+    ]
   },
   "Occult Epiphany": {
     "schema_version": 2,

@@ -231,12 +231,23 @@ Dit legt het fundament voor de type-changing brok: concrete toegevoegde subtypes
 
 **Resteert van type-changing:** changeling-álle-types (Mirror Entity) — dat kan niet als string want ~250 subtypes, en vergt een `card_has_creature_type()`-functie i.p.v. ilike-string-matching; animate-met-mana-value (Sydri); ability-strip bij override (Imprisoned in the Moon volledig). En breder moet `effective_type_line` nog door meer type-checks geroute worden (sac-kosten, anthems, targeting) voordat de laag overal telt — nu alleen de trigger-matcher.
 
+
+## Engine-batch 8 — uitgevoerd (mig 408, 15 juli)
+
+| Mig | Feature | Ontgrendeld |
+|---|---|---|
+| 408 | **Changeling** — een permanent dat "élk creature-type is" kan niet als string (~250 subtypes); daarom matcht `fire_watcher_triggers` een changeling nu tegen ELK creature-type-filter (via granted_type `{changeling:true}` of de catalog-Changeling-keyword). Stabiele negatieve lijst (changeling matcht een filter tenzij het een bekend niet-creature-type is — artifact/land/enchantment/vehicle/aura/…), catalog-onafhankelijk en adventure-veilig (alleen battlefield-permanents) | **Mirror Entity** changeling: telt als elk creature-type voor tribal-triggers |
+
+Dit "voltooit" de type-laag naast de string-adds/overrides van batch 7. Nieuwe test: changeling (2); fixtures Changeling / Elf Attack Watcher.
+
+**Resteert:** changeling nog routen door **tribal anthems** (pump met creature_type) en **sac/tutor-kosten** (Kalitas "Vampire or Zombie" accepteert een changeling) — nu alleen triggers. En Mirror Entity's tweede ability ({X}: creatures worden X/X + alle types) is een aparte mass-set-P/T-brok.
+
 ## Nog open — grote subsystemen (aparte scope aanbevolen)
 
 De resterende auditkaarten hangen elk aan een substantieel nieuw subsysteem, niet aan een losse veldtoevoeging:
 
 - **Replacement effects**: ✅ death-replacement gedaan (mig 406, Kalitas). Resteert: damage-replacement (Gisela) en draw-replacement (Abundance) — aparte pijplijnen.
-- **Type-changing / layer-systeem**: ✅ fundament + Multiversal Passage gedaan (mig 407: granted_type + effective_type_line). Resteert: changeling-alle-types (Mirror Entity, vergt card_has_creature_type-fn), animate-MV (Sydri), ability-strip (Imprisoned), en effective_type_line breder routen.
+- **Type-changing / layer-systeem**: ✅ fundament (mig 407) + changeling voor triggers (mig 408, Mirror Entity). Resteert: changeling door anthems/sac-costs routen, animate-MV (Sydri), ability-strip (Imprisoned), Mirror Entity's {X}-ability.
 - **Graveyard-targeting voor triggers**: ✅ Trove Warden gedaan (mig 405). Resteert: Angel of Serenity graveyard-helft (vergt mixed battlefield+graveyard targeting).
 - **Twee-picks abilities** (sac-kost ÉN effect-target): Etchings of the Chosen, Goblin Bombardment creature-mode — geven nu een eerlijke fout i.p.v. mis-targeting (bug-2690); volledige fix vergt client-side twee picks.
 - **Per-opponent dynamische target-count** + **mana-spent-to-cast** amount: Bronzebeak Foragers (exile per opponent), Wurmquake (token-grootte = betaalde mana).

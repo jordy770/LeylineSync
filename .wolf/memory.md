@@ -7922,3 +7922,10 @@
 | 14:50 | Edited tests/unit/registry-schema-drift.test.ts | 1→2 lines | ~107 |
 | 14:51 | Created tests/feature/type-changing-layer.test.ts | — | ~1172 |
 | 2026-07-15 | Engine-batch 7: mig 407 type-changing layer (granted_type + effective_type_line, geroute door fire_watcher_triggers; choose_land_type bakt mana+type); Multiversal Passage volledig | supabase/migrations/202605010407*, supabase/functions_src/effective_type_line.sql, tests/feature/type-changing-layer.test.ts | suite-run bezig; 1 kaart + fundament | ~90k |
+| 15:17 | Created ../../.claude/jobs/ca267fb9/tmp/release-v0.15.0.md | — | ~342 |
+| 2026-07-15 | PRODUCTIE-DEPLOY v0.15.0: migraties 406-407 -> hosted (db push), card-scripts al current, Release v0.15.0 -> deploy.yml groen -> VPS rebuild; leylinesync.com HTTP 200, effective_type_line live | supabase/migrations/ | LIVE: death-replacement (Kalitas) + type-changing layer (Multiversal Passage) | ~25k |
+| 15:24 | Edited supabase/functions_src/fire_watcher_triggers.sql | 5→7 lines | ~50 |
+| 15:24 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified Changeling() | ~305 |
+| 15:25 | Edited supabase/functions_src/fire_watcher_triggers.sql | expanded (+6 lines) | ~458 |
+| 15:26 | Created tests/feature/changeling.test.ts | — | ~751 |
+| 2026-07-15 | Engine-batch 8: mig 408 changeling (fire_watcher_triggers matcht elk creature-type via granted_type changeling / catalog keyword + stabiele negatieve niet-creature-lijst); Mirror Entity | supabase/migrations/202605010408*, tests/feature/changeling.test.ts | suite-run bezig; 1 kaart | ~55k |

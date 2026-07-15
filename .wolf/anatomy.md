@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T12:51:37.878Z
-> Files: 24 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T13:26:57.998Z
+> Files: 26 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -9,6 +9,7 @@
 ## ../../.claude/jobs/ca267fb9/tmp/
 
 - `release-v0.14.0.md` — Cards that were bluffing — now honest (~449 tok)
+- `release-v0.15.0.md` — Death, redirected (~321 tok)
 
 ## ../../.claude/jobs/ca267fb9/tmp/fixdrafts/
 
@@ -322,7 +323,7 @@
 - `choose_triggered_ability_targets.sql` — supabase/functions_src/choose_triggered_ability_targets.sql (~893 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~911 tok)
 - `effective_type_line.sql` — supabase/functions_src/effective_type_line.sql (~763 tok)
-- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~4500 tok)
+- `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~4907 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1832 tok)
 - `note_card_drawn.sql` — supabase/functions_src/note_card_drawn.sql (~349 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~2318 tok)
@@ -341,6 +342,7 @@
 ## tests/feature/
 
 - `card-drawn-watcher.test.ts` — mig 401 — card_drawn watcher: every real draw (draw effect, natural draw, (~1076 tok)
+- `changeling.test.ts` — mig 408 — changeling (Mirror Entity): "is every creature type". Since ~250 (~751 tok)
 - `dies-replacement.test.ts` — mig 406 — death replacement (Kalitas, Traitor of Ghet): "Whenever a nontoken (~1004 tok)
 - `exile-until-leaves-return-to.test.ts` — mig 404 — exile_until_leaves gains multi-target ("up to three") + a (~784 tok)
 - `graveyard-exile-until-leaves.test.ts` — mig 405 — graveyard-target triggers (exile_graveyard_until_leaves), the (~1057 tok)
