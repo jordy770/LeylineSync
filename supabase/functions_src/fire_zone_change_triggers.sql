@@ -97,7 +97,8 @@ begin
       and ce.source_card_id = NEW.id;
 
     -- Exile-until-leaves returns (mig 262, Bronzebeak Foragers): everything
-    -- this card exiled comes back to the battlefield under its owner.
+    -- this card exiled comes back under its owner. Default → battlefield;
+    -- payload.return_to = 'hand' (mig 404, Angel of Serenity) → owners' hands.
     update public.game_cards gc
     set zone = 'battlefield', controller_player_id = gc.owner_id, is_tapped = false,
         damage_marked = 0, plus_one_counters = 0,
@@ -114,7 +115,25 @@ begin
       and ce.source_card_id = NEW.id
       and ce.affected_card_id = gc.id
       and gc.session_id = NEW.session_id
-      and gc.zone = 'exile';
+      and gc.zone = 'exile'
+      and lower(coalesce(ce.payload ->> 'return_to', 'battlefield')) <> 'hand';
+
+    update public.game_cards gc
+    set zone = 'hand', controller_player_id = gc.owner_id, is_tapped = false,
+        damage_marked = 0, plus_one_counters = 0,
+        zone_position = (select coalesce(max(x.zone_position), -1) + 1
+                         from public.game_cards x
+                         where x.session_id = NEW.session_id
+                           and x.owner_id = gc.owner_id and x.zone = 'hand')
+    from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'exiled_until_leaves'
+      and ce.source_card_id = NEW.id
+      and ce.affected_card_id = gc.id
+      and gc.session_id = NEW.session_id
+      and gc.zone = 'exile'
+      and lower(coalesce(ce.payload ->> 'return_to', 'battlefield')) = 'hand';
+
     delete from public.game_continuous_effects ce
     where ce.session_id = NEW.session_id
       and ce.effect_type = 'exiled_until_leaves'

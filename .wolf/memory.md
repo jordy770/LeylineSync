@@ -7887,3 +7887,10 @@
 | 11:51 | Created tests/feature/sacrifice-filters-and-stun.test.ts | — | ~1215 |
 | 11:53 | Edited supabase/functions_src/activate_ability.sql | 4→8 lines | ~123 |
 | 2026-07-15 | Engine-batch 3: mig 401 card_drawn watcher (+draw_number/off_turn), 402 sacrifice-kostfilters (+cost-target-lek fix), 403 stun; 5 tests; 6 kaartscripts geupgraded | supabase/migrations/2026050104{01-03}*, tests/feature/ | suite 2332/2332 groen; speel-DB bij; prod-push wacht op permissie | ~100k |
+| 12:16 | Edited lib/game/card-behavior-schema.ts | expanded (+8 lines) | ~224 |
+| 12:16 | Edited supabase/functions_src/apply_creature_effect.sql | modified values() | ~185 |
+| 12:16 | Edited supabase/functions_src/fire_zone_change_triggers.sql | modified returns() | ~573 |
+| 12:17 | Created tests/feature/exile-until-leaves-return-to.test.ts | — | ~834 |
+| 12:18 | Edited tests/feature/exile-until-leaves-return-to.test.ts | 12→9 lines | ~125 |
+| 12:19 | Edited supabase/functions_src/choose_triggered_ability_targets.sql | modified not() | ~145 |
+| 2026-07-15 | Engine-batch 4: mig 404 exile_until_leaves return_to + optionele multi-target (bug-2691, choose_triggered_ability_targets gebackfilld); Angel of Serenity battlefield-helft; report bevat status grote resterende subsystemen | supabase/migrations/202605010404*, tests/feature/exile-until-leaves-return-to.test.ts | suite-run bezig; 1 kaart | ~50k |

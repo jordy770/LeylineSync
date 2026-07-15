@@ -621,3 +621,9 @@
 - card_drawn watcher: draw-sites zijn ALLEEN advance_step (natural), de draw-branch in apply_triggered_ability_effects en cycle_card — andere zone→hand moves zijn puts/bounces, géén draws. note_card_drawn geeft de 1-based per-turn index terug; filter draw_number matcht exact de Nde.
 - **activate_ability: p_target_card_id is een DUBBELROL-veld** — pick-able kosten (sacrifice_creature, discard, exile_from_graveyard) consumeren hem; de discard-kost clearde hem al na betaling, sacrifice_creature nu ook (mig 402 — Kalitas richtte anders zijn counters op het geofferde lijk). Kaarten met een sac-kost ÉN een targeted effect (Etchings, Goblin Bombardment creature-mode) hebben twee picks nodig — nog niet ondersteund, shortlist.
 - Stun = exert-patroon maar decrementerend: 'stun' bag-counter, untap-skip verbruikt er één per untap-stap (meerdere counters = meerdere gemiste untaps).
+
+## Key Learnings — 2026-07-15 (engine-batch 4, mig 404)
+
+- exiled_until_leaves (Bronzebeak/Angel): de terugkeer zit in fire_zone_change_triggers (AFTER UPDATE → LTB-pad), keert standaard terug naar battlefield onder eigenaar; payload.return_to='hand' stuurt naar de hand. acting_source wordt al doorgegeven via apply_targeted_triggered_ability_effects, dus multi-target exile_until_leaves ankert per doel automatisch.
+- choose_triggered_ability_targets (multi-target picker) stond ALLEEN in mig 116, niet in functions_src (bug-2691, bug-1280-klasse) — nu gebackfilld. Guard accepteert nu target_required OF target_optional (optionele "up to N" triggers zoals Angel).
+- RESTERENDE grote items zijn subsystemen, geen losse velden: replacement effects (Kalitas/Gisela/Abundance), type-changing layer (Mirror Entity/Sydri/Multiversal Passage/Imprisoned), graveyard-targeting voor triggers (Trove Warden landfall), twee-picks abilities (Etchings/Goblin Bombardment, bug-2690). Elk apart scopen; niet batch-shippen.

@@ -1,7 +1,7 @@
--- supabase/functions_src/apply_creature_effect.sql
--- CANONICAL current definition (seeded from 202605010172_dynamic_pump_loyalty_target.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010404_exile_until_leaves_return_to
+-- TODO: describe the change.
+-- Generated from supabase/functions_src (apply_creature_effect, fire_zone_change_triggers, choose_triggered_ability_targets) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_creature_effect(
   p_session_id uuid,
@@ -533,3 +533,236 @@ begin
 end;
 $$;
 grant execute on function public.apply_creature_effect(uuid, text, uuid, jsonb) to authenticated;
+
+create or replace function public.fire_zone_change_triggers() returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- Enters the battlefield.
+  if NEW.zone = 'battlefield'
+    and (TG_OP = 'INSERT' or OLD.zone is distinct from 'battlefield')
+  then
+    -- "Creatures your opponents control enter tapped" (mig 258, Kinjalli's
+    -- Sunwing): a battlefield source with a creatures_enter_tapped row taps
+    -- every creature entering under another player's control. The is_tapped
+    -- update re-fires this trigger with zone unchanged, so it skips this block.
+    if exists (
+      select 1
+      from public.game_continuous_effects ce
+      join public.game_cards src
+        on src.id = ce.source_card_id and src.session_id = ce.session_id
+      where ce.session_id = NEW.session_id
+        and ce.effect_type = 'creatures_enter_tapped'
+        and src.zone = 'battlefield'
+        and coalesce(src.controller_player_id, src.owner_id)
+            is distinct from coalesce(NEW.controller_player_id, NEW.owner_id)
+    ) and exists (
+      select 1 from public.cards c
+      where c.id = NEW.card_id and c.type_line ilike '%creature%'
+    ) then
+      update public.game_cards
+      set is_tapped = true
+      where id = NEW.id and session_id = NEW.session_id and is_tapped = false;
+    end if;
+
+    perform public.fire_card_triggers(
+      NEW.session_id, NEW.id,
+      array['enters_the_battlefield', 'etb', 'enters']
+    );
+    perform public.fire_watcher_triggers(
+      NEW.session_id, NEW.id,
+      coalesce(NEW.controller_player_id, NEW.owner_id), 'creature_entered'
+    );
+    -- Landfall (mig 238, Nesting Dragon): "whenever a land you control enters."
+    -- Fired for every entry; the watcher's type filter defaults to 'land' for
+    -- this event, so only land entries actually match.
+    perform public.fire_watcher_triggers(
+      NEW.session_id, NEW.id,
+      coalesce(NEW.controller_player_id, NEW.owner_id), 'land_entered'
+    );
+  end if;
+
+  -- Dies (moves from the battlefield to the graveyard).
+  if TG_OP = 'UPDATE'
+    and OLD.zone = 'battlefield'
+    and NEW.zone = 'graveyard'
+  then
+    perform public.fire_card_triggers(
+      NEW.session_id, NEW.id,
+      array['dies', 'death']
+    );
+    -- OLD.controller = the creature's controller while it was alive.
+    perform public.fire_watcher_triggers(
+      NEW.session_id, NEW.id,
+      coalesce(OLD.controller_player_id, OLD.owner_id), 'creature_died'
+    );
+  end if;
+
+  -- Leaves the battlefield (to any other zone, including graveyard/hand/exile).
+  if TG_OP = 'UPDATE'
+    and OLD.zone = 'battlefield'
+    and NEW.zone is distinct from 'battlefield'
+  then
+    -- "For as long as ~ remains on the battlefield" steals (mig 246,
+    -- Opportunistic Dragon): the thief leaving reverts control of everything
+    -- it stole (and restores a blanked script).
+    update public.game_cards gc
+    set controller_player_id = nullif(ce.payload ->> 'original_controller', '')::uuid,
+        copied_script = case when coalesce((ce.payload ->> 'lose_abilities')::boolean, false)
+                             then null else gc.copied_script end
+    from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'control'
+      and coalesce((ce.payload ->> 'while_source')::boolean, false)
+      and ce.source_card_id = NEW.id
+      and ce.affected_card_id = gc.id
+      and gc.session_id = NEW.session_id
+      and gc.zone = 'battlefield'
+      and nullif(ce.payload ->> 'original_controller', '') is not null;
+    delete from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'control'
+      and coalesce((ce.payload ->> 'while_source')::boolean, false)
+      and ce.source_card_id = NEW.id;
+
+    -- Exile-until-leaves returns (mig 262, Bronzebeak Foragers): everything
+    -- this card exiled comes back under its owner. Default → battlefield;
+    -- payload.return_to = 'hand' (mig 404, Angel of Serenity) → owners' hands.
+    update public.game_cards gc
+    set zone = 'battlefield', controller_player_id = gc.owner_id, is_tapped = false,
+        damage_marked = 0, plus_one_counters = 0,
+        entered_battlefield_turn_number = coalesce(
+          (select ts.turn_number from public.game_turn_state ts
+           where ts.session_id = NEW.session_id), 0),
+        zone_position = (select coalesce(max(x.zone_position), -1) + 1
+                         from public.game_cards x
+                         where x.session_id = NEW.session_id
+                           and x.owner_id = gc.owner_id and x.zone = 'battlefield')
+    from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'exiled_until_leaves'
+      and ce.source_card_id = NEW.id
+      and ce.affected_card_id = gc.id
+      and gc.session_id = NEW.session_id
+      and gc.zone = 'exile'
+      and lower(coalesce(ce.payload ->> 'return_to', 'battlefield')) <> 'hand';
+
+    update public.game_cards gc
+    set zone = 'hand', controller_player_id = gc.owner_id, is_tapped = false,
+        damage_marked = 0, plus_one_counters = 0,
+        zone_position = (select coalesce(max(x.zone_position), -1) + 1
+                         from public.game_cards x
+                         where x.session_id = NEW.session_id
+                           and x.owner_id = gc.owner_id and x.zone = 'hand')
+    from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'exiled_until_leaves'
+      and ce.source_card_id = NEW.id
+      and ce.affected_card_id = gc.id
+      and gc.session_id = NEW.session_id
+      and gc.zone = 'exile'
+      and lower(coalesce(ce.payload ->> 'return_to', 'battlefield')) = 'hand';
+
+    delete from public.game_continuous_effects ce
+    where ce.session_id = NEW.session_id
+      and ce.effect_type = 'exiled_until_leaves'
+      and ce.source_card_id = NEW.id;
+
+    perform public.fire_card_triggers(
+      NEW.session_id, NEW.id,
+      array['leaves_the_battlefield', 'ltb', 'leaves']
+    );
+    -- Watcher broadcast (mig 201): "whenever a creature you control leaves the
+    -- battlefield" (Vela the Night-Clad). OLD.controller = controller while it
+    -- was on the battlefield.
+    perform public.fire_watcher_triggers(
+      NEW.session_id, NEW.id,
+      coalesce(OLD.controller_player_id, OLD.owner_id), 'creature_left'
+    );
+  end if;
+
+  return null;
+end;
+$$;
+
+create or replace function public.choose_triggered_ability_targets(
+  p_session_id uuid, p_stack_item_id uuid, p_target_card_ids uuid[]
+) returns public.game_stack_items
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_stack_item public.game_stack_items;
+  v_target_type jsonb;
+  v_count integer;
+  v_max integer;
+  v_id uuid;
+  v_seen uuid[] := array[]::uuid[];
+  v_ok boolean;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select *
+  into v_stack_item
+  from public.game_stack_items
+  where id = p_stack_item_id and session_id = p_session_id and status = 'pending'
+  for update;
+
+  if not found then
+    raise exception 'Triggered ability stack item not found';
+  end if;
+  -- The trigger must be able to target — required OR optional (mig 404, Angel
+  -- of Serenity: "you may exile up to three OTHER target creatures" is an
+  -- optional multi-target, so target_required is false but target_optional true).
+  if v_stack_item.action_type <> 'triggered_ability'
+    or not (coalesce((v_stack_item.payload ->> 'target_required')::boolean, false)
+            or coalesce((v_stack_item.payload ->> 'target_optional')::boolean, false)) then
+    raise exception 'Stack item does not require a trigger target';
+  end if;
+  if v_stack_item.controller_player_id <> auth.uid() then
+    raise exception 'Only the trigger controller can choose its target';
+  end if;
+
+  v_count := coalesce(array_length(p_target_card_ids, 1), 0);
+  v_max := greatest(1, coalesce((v_stack_item.payload ->> 'target_count')::integer, 1));
+  if v_count < 1 or v_count > v_max then
+    raise exception 'Choose between 1 and % target(s)', v_max;
+  end if;
+
+  v_target_type := v_stack_item.payload -> 'target_type';
+
+  foreach v_id in array p_target_card_ids loop
+    if v_id = any(v_seen) then
+      raise exception 'A target may not be chosen more than once';
+    end if;
+    v_seen := array_append(v_seen, v_id);
+
+    if v_target_type is null or public.behavior_target_type_is_creature_only(v_target_type) then
+      v_ok := public.creature_target_controller_ok(
+        p_session_id, v_id, v_stack_item.controller_player_id,
+        coalesce(v_stack_item.payload ->> 'target_controller', 'any'));
+    else
+      v_ok := public.permanent_target_controller_ok(
+        p_session_id, v_id, v_stack_item.controller_player_id,
+        coalesce(v_stack_item.payload ->> 'target_controller', 'any'), v_target_type);
+    end if;
+    if not v_ok then
+      raise exception 'Target is not a legal target for this ability';
+    end if;
+  end loop;
+
+  update public.game_stack_items
+  set payload = payload || jsonb_build_object('target_card_ids', to_jsonb(p_target_card_ids), 'target_chosen', true)
+  where id = v_stack_item.id
+  returning * into v_stack_item;
+
+  return v_stack_item;
+end;
+$$;
+grant execute on function public.choose_triggered_ability_targets(uuid, uuid, uuid[]) to authenticated;

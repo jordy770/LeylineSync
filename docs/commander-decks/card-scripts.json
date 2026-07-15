@@ -20794,7 +20794,11 @@
         "effects": [
           {
             "type": "exile_until_leaves",
-            "target_type": "creature"
+            "target_type": "creature",
+            "target_controller": "any",
+            "targets": 3,
+            "optional": true,
+            "return_to": "hand"
           }
         ]
       }

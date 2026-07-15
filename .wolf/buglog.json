@@ -21481,6 +21481,42 @@
    "related_bugs": [],
    "occurrences": 1,
    "last_seen": "2026-07-15T00:00:00Z"
+  },
+  {
+   "id": "bug-1312",
+   "timestamp": "2026-07-15T10:16:37.092Z",
+   "error_message": "Significant refactor of ",
+   "file": "supabase/functions_src/fire_zone_change_triggers.sql",
+   "root_cause": "2 lines replaced/restructured",
+   "fix": "Rewrote 23→42 lines (2 removed)",
+   "tags": [
+    "auto-detected",
+    "refactor",
+    "sql"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T10:16:37.092Z"
+  },
+  {
+   "id": "bug-2691",
+   "timestamp": "2026-07-15T00:00:00Z",
+   "error_message": "'Stack item does not require a trigger target' — Angel of Serenity's optional up-to-3 exile could not be picked",
+   "file": "supabase/functions_src/choose_triggered_ability_targets.sql",
+   "root_cause": "choose_triggered_ability_targets only allowed target_required triggers; an OPTIONAL multi-target ('you may exile up to three target creatures') has target_required=false. The fn also lived only in mig 116, not functions_src (bug-1280 class stale source)",
+   "fix": "mig 404: backfilled the fn into functions_src and relaxed the guard to accept target_required OR target_optional",
+   "tags": [
+    "choose_triggered_ability_targets",
+    "optional-target",
+    "stale-source",
+    "multi-target"
+   ],
+   "related_bugs": [
+    "bug-1280",
+    "bug-2689"
+   ],
+   "occurrences": 1,
+   "last_seen": "2026-07-15T00:00:00Z"
   }
  ]
 }

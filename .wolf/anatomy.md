@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T09:53:08.539Z
-> Files: 10 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T10:19:46.338Z
+> Files: 13 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -269,6 +269,10 @@
 
 ## docs/commander-decks/
 
+- **card-scripts.json** — de curated behavior-scripts per kaartnaam (bron van waarheid; deck:upsert/seed-scripts-local lezen dit). ~200k+ tokens — NOOIT integraal lezen; jq/grep/python per kaartnaam.
+- **card-script-audit-2026-07-14.json** — volledige oracle-audit (956 kaarten, verdict/issues/severity). ~200k tokens — NOOIT integraal lezen.
+- **card-script-audit-2026-07-14.md** — leesbaar auditrapport (463 accurate / 473 partial / 7 wrong / 9 inert / 4 uncertain). ~8k tokens.
+- **card-script-fixes-2026-07-14.md** — fix-rapport + engine-batches 1-4 (mig 393-404): 59 scripts gewijzigd, per-batch tabel, en status van de grote resterende subsystemen (replacement effects, type-changing layer, graveyard-target triggers). ~9k tokens.
 
 ## lib/
 
@@ -284,7 +288,7 @@
 
 ## lib/game/
 
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~22871 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23026 tok)
 
 ## lib/intelligence/
 
@@ -314,10 +318,12 @@
 
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9712 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~4215 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7406 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7485 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14411 tok)
+- `choose_triggered_ability_targets.sql` — supabase/functions_src/choose_triggered_ability_targets.sql (~893 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~911 tok)
 - `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~4347 tok)
+- `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1832 tok)
 - `note_card_drawn.sql` — supabase/functions_src/note_card_drawn.sql (~349 tok)
 
 ## supabase/migrations/
@@ -332,6 +338,7 @@
 ## tests/feature/
 
 - `card-drawn-watcher.test.ts` — mig 401 — card_drawn watcher: every real draw (draw effect, natural draw, (~1076 tok)
+- `exile-until-leaves-return-to.test.ts` — mig 404 — exile_until_leaves gains multi-target ("up to three") + a (~788 tok)
 - `sacrifice-filters-and-stun.test.ts` — mig 402 — subtype/another filters on sacrifice costs (Professional (~1215 tok)
 
 ## tests/fixtures/

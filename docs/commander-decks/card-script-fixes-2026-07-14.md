@@ -191,6 +191,27 @@ Nog open van de shortlist: draw-count watchers (Nth kaart per beurt), per-oppone
 
 Bekende randjes: Etchings of the Chosen's sac-ability geeft nu een eerlijke "target required"-fout i.p.v. de grant op het geofferde lijk te richten (twee-picks-support voor sac-kost + targeted effect staat op de shortlist); Goblin Bombardment's creature-mode heeft hetzelfde dubbelrol-probleem. Nieuwe tests: card-drawn-watcher (2), sacrifice-filters-and-stun (3); fixtures Second Draw Spirit / Off Turn Secretary / Treasure Cracker / Tribal Butcher.
 
+
+## Engine-batch 4 — uitgevoerd (mig 404, 15 juli)
+
+| Mig | Feature | Ontgrendeld |
+|---|---|---|
+| 404 | **exile_until_leaves: multi-target + `return_to`** — de `exiled_until_leaves`-terugkeer splitst nu op payload.return_to (battlefield default / hand), en de optionele multi-target-picker (`choose_triggered_ability_targets`) accepteert nu ook optionele "up to N"-triggers (was required-only; bug-2691, tevens uit mig 116 naar functions_src gebackfilld) | **Angel of Serenity** (battlefield-helft volledig: exile up to three, keer terug naar de handen van de eigenaars bij vertrek) |
+
+Resteert voor Angel: de graveyard-helft ("and/or creature cards from graveyards") — dat vergt graveyard-targeting voor triggers (zie hieronder). Nieuwe test: exile-until-leaves-return-to (2); fixture Serenity Angel.
+
+## Nog open — grote subsystemen (aparte scope aanbevolen)
+
+De resterende auditkaarten hangen elk aan een substantieel nieuw subsysteem, niet aan een losse veldtoevoeging:
+
+- **Replacement effects** (generiek raamwerk): Kalitas (would-die → exile + Zombie), Gisela (schade verdubbelen/halveren), Abundance (draw-replacement). Grootste brok; raakt de schade- en zone-change-pijplijn breed.
+- **Type-changing / layer-systeem**: Mirror Entity (changeling + X/X), Sydri (animate met P/T = mana value), Multiversal Passage (land wordt gekozen type), Imprisoned in the Moon (word land, strip abilities), Reaper's Scythe (Assassin + counter-schaal).
+- **Graveyard-targeting voor triggers**: Trove Warden (landfall exile uit je graveyard, terug bij dood — de terugkeer-helft werkt al via exiled_until_leaves), Angel of Serenity graveyard-helft.
+- **Twee-picks abilities** (sac-kost ÉN effect-target): Etchings of the Chosen, Goblin Bombardment creature-mode — geven nu een eerlijke fout i.p.v. mis-targeting (bug-2690); volledige fix vergt client-side twee picks.
+- **Per-opponent dynamische target-count** + **mana-spent-to-cast** amount: Bronzebeak Foragers (exile per opponent), Wurmquake (token-grootte = betaalde mana).
+
+Aanbeveling: elk hiervan als eigen mini-project scopen; replacement effects en het layer-systeem zijn de duurste en het risicovolst voor regressies.
+
 ## Schema-achterstand (bevinding, geen blokker)
 
 `optional`, `target_filter` en `targets` op trigger-effecten worden door de SQL-runtime gehonoreerd (enqueue_triggered_ability, mig 310, mig 116) maar door de Zod-parse gestript. Het corpus bevat al ±15 kaarten die deze velden gebruiken (o.a. Opportunistic Dragon — nota bene het mig 310-voorbeeld). De upsert/seed-flow slaat het rúwe script op, dus runtime-gedrag klopt; maar elk toekomstig gereedschap dat via de Zod-parse round-tript verliest ze stilletjes (bug-1484-klasse). Kandidaat-fix: velden toevoegen aan de betreffende Zod-varianten, met de registry-variant-matching gotcha (cerebrum 2026-06-07) in het achterhoofd.

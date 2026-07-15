@@ -728,6 +728,14 @@ const CardBehaviorActionSchema = z.union([
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+    // "up to three OTHER target creatures" (mig 404, Angel of Serenity):
+    // targets>1 makes it a multi-pick; optional lets the controller take fewer.
+    targets: z.number().int().positive().optional(),
+    optional: z.boolean().optional(),
+    // Where the exiled cards go when the source leaves (mig 404). Default
+    // 'battlefield' (Bronzebeak Foragers); 'hand' returns to owners' hands
+    // (Angel of Serenity: "return the exiled cards to their owners' hands").
+    return_to: z.enum(['battlefield', 'hand']).optional(),
   }),
   // Living weapon (mig 267, Bonehoard / Grip of Phyresis): Germ token +
   // attach the target Equipment (or the source itself) to it.
