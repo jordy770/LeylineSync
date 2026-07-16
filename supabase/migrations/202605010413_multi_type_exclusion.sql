@@ -1,7 +1,10 @@
--- supabase/functions_src/build_stack_payload_permanent_simple.sql
--- CANONICAL current definition (seeded from 202605010152_assassins_trophy_rider.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- multi_type_exclusion
+-- exclude_type_line on a targeted removal (destroy/exile/bounce/tap/gain_control)
+-- now also accepts a JSON ARRAY of excluded types: the target may match none of
+-- them. Victim of Night: "destroy target creature that isn't a Vampire, Werewolf,
+-- or Zombie". A plain string still works (Cruel Revival's single "Zombie").
+-- Generated from supabase/functions_src (build_stack_payload_permanent_simple) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.build_stack_payload_permanent_simple(
   p_session_id uuid, p_actor uuid, p_payload jsonb, p_timing text, p_target_controller text

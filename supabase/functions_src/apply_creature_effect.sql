@@ -29,6 +29,7 @@ declare
   v_top_type text;
   v_turn integer;
   v_goad_players integer;
+  v_is_pw boolean;
 begin
   if p_target_card_id is null then
     return;
@@ -44,10 +45,22 @@ begin
 
   if p_kind = 'deal_damage' then
     if v_amount > 0 then
-      perform public.apply_damage_to_creature(
-        p_session_id, p_target_card_id, v_amount, null, false,
-        coalesce((p_params ->> 'deathtouch')::boolean, false)
-      );
+      -- Planeswalker targets take loyalty loss, not marked damage (mig 412).
+      -- Single-target deal_damage (spell / trigger / activated all funnel here)
+      -- can now hit a planeswalker, mirroring divide_damage / combat damage
+      -- (apply_damage_allocations). SBA then sweeps any 0-loyalty walker.
+      select c.type_line ilike '%planeswalker%' into v_is_pw
+      from public.game_cards g join public.cards c on c.id = g.card_id
+      where g.id = p_target_card_id and g.session_id = p_session_id;
+      if coalesce(v_is_pw, false) then
+        perform public.apply_damage_to_planeswalker(p_session_id, p_target_card_id, v_amount);
+        perform public.move_zero_loyalty_planeswalkers_to_graveyard(p_session_id);
+      else
+        perform public.apply_damage_to_creature(
+          p_session_id, p_target_card_id, v_amount, null, false,
+          coalesce((p_params ->> 'deathtouch')::boolean, false)
+        );
+      end if;
     end if;
 
   elsif p_kind = 'destroy' then

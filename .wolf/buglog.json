@@ -21688,6 +21688,124 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-15T00:00:00Z"
+    },
+    {
+      "id": "bug-1324",
+      "timestamp": "2026-07-16T10:18:37.681Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/apply_trigger_effects.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→14 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-16T10:18:37.681Z"
+    },
+    {
+      "id": "bug-1325",
+      "timestamp": "2026-07-16T10:20:41.386Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/breya-manabase.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-16T10:20:41.386Z"
+    },
+    {
+      "id": "bug-1326",
+      "timestamp": "2026-07-16T10:27:21.142Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/activate_ability.sql",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 20→24 lines (4 removed) | Also: perform public.put_in_graveyard(p_session_id, p_ta; perform public.fire_watcher_triggers(p_session_id,",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-16T10:27:30.218Z"
+    },
+    {
+      "id": "bug-2697",
+      "timestamp": "2026-07-16T00:00:00Z",
+      "error_message": "invalid input syntax for type integer: \"X\" — X1/X3 Fireball + DA7 failed after redefining build_stack_payload_deal_damage_creature",
+      "file": "supabase/migrations/202605010412_planeswalker_damage_target.sql",
+      "root_cause": "When loosening build_stack_payload_deal_damage_creature (migration-only fn) to accept planeswalkers, I copied its body from the ORIGINAL mig 105 instead of the LATEST definition (mig 162), reverting the X/dynamic-amount handling (resolve_effect_amount/resolve_dynamic_amount) back to a naive (amount)::integer cast. Fireball casts through this builder with amount=\"X\".",
+      "fix": "Rebased the builder redefinition on mig 162: object amount -> resolve_dynamic_amount; scalar -> resolve_effect_amount(amount, x_value). Kept the new planeswalker-target acceptance.",
+      "tags": [
+        "bug-1280",
+        "stale-migration-source",
+        "migration-only-function",
+        "deal_damage",
+        "x-spells",
+        "fireball",
+        "planeswalker"
+      ],
+      "related_bugs": [
+        "bug-1280"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-16T00:00:00Z"
+    },
+    {
+      "id": "bug-1328",
+      "timestamp": "2026-07-16T10:50:42.394Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/build_stack_payload_permanent_simple.sql",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 10→19 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-16T10:50:42.394Z"
+    },
+    {
+      "id": "bug-1329",
+      "timestamp": "2026-07-16T10:50:55.040Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-16T10:50:55.040Z"
+    },
+    {
+      "id": "bug-1330",
+      "timestamp": "2026-07-16T10:52:08.451Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/cruel-revival.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-16T10:52:08.451Z"
     }
   ]
 }

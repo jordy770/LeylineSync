@@ -1,7 +1,10 @@
--- supabase/functions_src/apply_trigger_effects.sql
--- CANONICAL current definition (seeded from 202605010198_each_player_sacrifice.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- karoo_mandatory_land_bounce
+-- bounce_up_to now honors a `mandatory` flag: when true, the bounce_pick decision
+-- forces exactly `count` picks (clamped to legal options) and drops "up to" from
+-- the prompt. Karoo lands (Azorius Chancery et al.) set it so "return a land you
+-- control" can no longer be declined. Default stays declinable (min_choices 0).
+-- Generated from supabase/functions_src (apply_trigger_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.apply_trigger_effects(
   p_session_id uuid,

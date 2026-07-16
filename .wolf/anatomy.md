@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-16T07:21:27.687Z
-> Files: 53 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-16T10:57:06.689Z
+> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -293,10 +293,6 @@
 
 ## docs/commander-decks/
 
-- `card-scripts.json` — bron van waarheid: per-kaartnaam behavior-script (957 kaarten), gevalideerd door CardBehaviorScriptV2Schema. ~500k tokens; NOOIT volledig lezen, altijd via Grep/Python.
-- `card-script-fixes-2026-07-14.md` — fix-rapport van de oracle-audit (high/medium/low rondes, 181 fixes, engine-batches, engine-blocked overzicht).
-- `engine-blocked-backlog-2026-07-16.md` — per-kaart backlog van 298 flagged-but-unfixed kaarten, gegroepeerd op ontbrekende engine-primitive; de "wat rest er nog"-lijst voor toekomstig engine-werk.
-
 
 ## lib/
 
@@ -312,7 +308,7 @@
 
 ## lib/game/
 
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23300 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23413 tok)
 - `types.ts` — Short room code for the /tv spectator flow (mig 379). (~3095 tok)
 
 ## lib/intelligence/
@@ -341,11 +337,12 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9760 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9935 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~4215 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7485 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24439 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7697 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24610 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14411 tok)
+- `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~927 tok)
 - `card_has_creature_type.sql` — supabase/functions_src/card_has_creature_type.sql (~732 tok)
 - `card_layered_power.sql` — supabase/functions_src/card_layered_power.sql (~1711 tok)
 - `card_layered_toughness.sql` — supabase/functions_src/card_layered_toughness.sql (~1724 tok)
@@ -364,6 +361,9 @@
 
 ## supabase/migrations/
 
+- `202605010411_karoo_mandatory_land_bounce.sql` — karoo_mandatory_land_bounce (~24678 tok)
+- `202605010412_planeswalker_damage_target.sql` — planeswalker_damage_target (~18362 tok)
+- `202605010413_multi_type_exclusion.sql` — multi_type_exclusion (~992 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -373,13 +373,16 @@
 
 ## tests/feature/
 
+- `breya-manabase.test.ts` — mig 263 — Breya mana base. Engine touch: bounce_up_to type_line filter (~928 tok)
 - `card-drawn-watcher.test.ts` — mig 401 — card_drawn watcher: every real draw (draw effect, natural draw, (~1076 tok)
 - `changeling-anthems-costs.test.ts` — mig 409 — changeling / granted types now flow through the tribal ANTHEM P/T (~702 tok)
 - `changeling.test.ts` — mig 408 — changeling (Mirror Entity): "is every creature type". Since ~250 (~751 tok)
+- `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~1429 tok)
 - `dies-replacement.test.ts` — mig 406 — death replacement (Kalitas, Traitor of Ghet): "Whenever a nontoken (~1004 tok)
 - `exile-until-leaves-return-to.test.ts` — mig 404 — exile_until_leaves gains multi-target ("up to three") + a (~784 tok)
 - `graveyard-exile-until-leaves.test.ts` — mig 405 — graveyard-target triggers (exile_graveyard_until_leaves), the (~1057 tok)
 - `imprisoned-in-the-moon.test.ts` — mig 410 — Imprisoned in the Moon: an Aura that turns the enchanted permanent (~1130 tok)
+- `planeswalker-damage.test.ts` — mig 412 — single-target deal_damage can hit a planeswalker (loyalty loss), and (~832 tok)
 - `sacrifice-filters-and-stun.test.ts` — mig 402 — subtype/another filters on sacrifice costs (Professional (~1215 tok)
 - `type-changing-layer.test.ts` — mig 407 — the type-changing layer: a granted_type continuous effect adds (or (~1172 tok)
 

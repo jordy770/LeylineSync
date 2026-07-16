@@ -77,7 +77,39 @@ test('CR3 a Zombie cannot be targeted', async () => {
         target_controller: 'any',
         exclude_type_line: 'Zombie',
       }),
-      /may not be a Zombie/i,
+      /excluded type/i,
+    )
+  })
+})
+
+// CR4 (mig 413) — array exclude_type_line: a creature matching none of the listed
+// types is a legal target (Victim of Night: "that isn't a Vampire, Werewolf, or Zombie").
+test('CR4 multi-type exclusion allows a non-listed creature', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    const goblin = await s.spawnCreature('B', 'Goblin Raider Test') // not V/W/Z
+    await s.as('A').putOnStack('permanent_effect', {
+      kind: 'destroy', target_card_id: goblin, target_type: 'creature', target_controller: 'any',
+      exclude_type_line: ['Vampire', 'Werewolf', 'Zombie'],
+    })
+    await s.as('A').resolveStack()
+    assert.equal(await s.zoneOf(goblin), 'graveyard')
+  })
+})
+
+// CR5 — a creature matching ANY listed type (Zombie) is rejected.
+test('CR5 multi-type exclusion rejects a listed type', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    const zombie = await s.spawnCreature('B', 'Grave Shambler Test') // Zombie
+    await assert.rejects(
+      () => s.as('A').putOnStack('permanent_effect', {
+        kind: 'destroy', target_card_id: zombie, target_type: 'creature', target_controller: 'any',
+        exclude_type_line: ['Vampire', 'Werewolf', 'Zombie'],
+      }),
+      /excluded type/i,
     )
   })
 })

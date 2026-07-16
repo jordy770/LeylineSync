@@ -39,3 +39,31 @@ test('BM1 karoo land bounce and double mana', async () => {
     assert.equal(pool.U, 1)
   })
 })
+
+// BM2 (mig 411) — the karoo bounce is MANDATORY: with a land available the
+// decision forces exactly one pick (min_choices = 1) and declining is rejected.
+test('BM2 mandatory karoo bounce cannot be declined', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    const forest = await s.spawn('A', 'Forest Test', 'battlefield')
+
+    await s.spawn('A', 'Azorius Chancery Test', 'battlefield')
+    await s.as('A').resolveStack() // the ETB bounce trigger
+    const d = await s.pendingDecision()
+    assert.equal(d!.decision_type, 'bounce_pick')
+
+    const row = await s.client.query<{ min_choices: number; max_choices: number }>(
+      'select min_choices, max_choices from public.game_pending_decisions where id = $1', [d!.id])
+    assert.equal(row.rows[0]!.min_choices, 1) // forced — not "up to"
+    assert.equal(row.rows[0]!.max_choices, 1)
+    void forest
+
+    // Declining (empty pick) must be rejected by min_choices enforcement. This
+    // raises inside the DB, aborting the tx, so it is the last DB action here —
+    // BM1 already proves the mandatory fixture resolves a real pick to hand.
+    await assert.rejects(
+      s.as('A').submitDecision(d!.id, { chosen: [] }),
+      /choose|choices|at least|min/i)
+  })
+})

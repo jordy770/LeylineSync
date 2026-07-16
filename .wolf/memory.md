@@ -7966,3 +7966,28 @@
 | 19:42 | Created ../../.claude/jobs/ca267fb9/tmp/lowfix/b03.json | — | ~409 |
 | 19:43 | Created ../../.claude/jobs/ca267fb9/tmp/apply-lowfix.py | — | ~310 |
 | 00:30 | Low-severity audit sweep: 40 fixes triaged/validated, 38 applied (Stormshriek x2 reverted as regression) — audit VOLLEDIG afgewerkt | card-scripts.json | 2350/2350 tests green | ~120k |
+| 09:20 | Created ../../.claude/jobs/ca267fb9/tmp/classify-backlog.py | — | ~1648 |
+| 09:21 | Edited ../../.claude/jobs/ca267fb9/tmp/classify-backlog.py | expanded (+7 lines) | ~314 |
+| 12:18 | Edited supabase/functions_src/apply_trigger_effects.sql | modified mandatory() | ~293 |
+| 12:19 | Edited lib/game/card-behavior-schema.ts | modified lands() | ~93 |
+| 12:19 | Edited supabase/migrations/202605010411_karoo_mandatory_land_bounce.sql | 2→5 lines | ~96 |
+| 12:20 | Edited tests/feature/breya-manabase.test.ts | expanded (+31 lines) | ~464 |
+| 12:21 | Edited tests/feature/breya-manabase.test.ts | 17→14 lines | ~195 |
+| 12:23 | Edited supabase/functions_src/apply_creature_effect.sql | 6→7 lines | ~33 |
+| 12:23 | Edited supabase/functions_src/apply_creature_effect.sql | modified apply_damage_to_creature() | ~270 |
+| 12:23 | Edited supabase/migrations/202605010412_planeswalker_damage_target.sql | 2→7 lines | ~134 |
+| 12:27 | Edited supabase/functions_src/activate_ability.sql | 3→4 lines | ~35 |
+| 12:27 | Edited supabase/functions_src/activate_ability.sql | modified picks() | ~412 |
+| 12:27 | Edited supabase/functions_src/activate_ability.sql | 9→13 lines | ~195 |
+| 12:28 | Edited supabase/migrations/202605010412_planeswalker_damage_target.sql | expanded (+8 lines) | ~208 |
+| 12:29 | Created tests/feature/planeswalker-damage.test.ts | — | ~787 |
+| 12:29 | Edited tests/feature/planeswalker-damage.test.ts | 3→4 lines | ~63 |
+| 12:29 | Edited tests/feature/planeswalker-damage.test.ts | 3→4 lines | ~66 |
+| 12:42 | Edited supabase/migrations/202605010412_planeswalker_damage_target.sql | modified nullif() | ~186 |
+| 12:50 | Edited supabase/functions_src/build_stack_payload_permanent_simple.sql | modified restriction() | ~294 |
+| 12:50 | Edited lib/game/card-behavior-schema.ts | modified restriction() | ~107 |
+| 12:51 | Edited supabase/migrations/202605010413_multi_type_exclusion.sql | 2→5 lines | ~93 |
+| 12:51 | Edited tests/feature/cruel-revival.test.ts | 4→4 lines | ~22 |
+| 12:52 | Edited tests/feature/cruel-revival.test.ts | expanded (+32 lines) | ~445 |
+| 12:57 | Edited tests/feature/breya-manabase.test.ts | 8→8 lines | ~105 |
+| 10:45 | Engine: 3 primitives — karoo mandatory bounce (mig 411), planeswalker deal_damage + sac two-picks (mig 412), multi-type exclude_type_line (mig 413) | functions_src, migs 411-413, card-scripts.json | 2355/2355 groen | ~140k |

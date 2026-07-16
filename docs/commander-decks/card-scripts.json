@@ -5345,7 +5345,8 @@
             "target_filter": {
               "controller": "you",
               "type_line": "land"
-            }
+            },
+            "mandatory": true
           }
         ]
       }
@@ -5386,7 +5387,8 @@
             "target_filter": {
               "controller": "you",
               "type_line": "land"
-            }
+            },
+            "mandatory": true
           }
         ]
       }
@@ -5427,7 +5429,8 @@
             "target_filter": {
               "controller": "you",
               "type_line": "land"
-            }
+            },
+            "mandatory": true
           }
         ]
       }
@@ -5468,7 +5471,8 @@
             "target_filter": {
               "controller": "you",
               "type_line": "land"
-            }
+            },
+            "mandatory": true
           }
         ]
       }
@@ -9477,7 +9481,8 @@
             "target_filter": {
               "controller": "you",
               "type_line": "land"
-            }
+            },
+            "mandatory": true
           }
         ]
       }
@@ -10041,7 +10046,8 @@
             "target_filter": {
               "controller": "you",
               "type_line": "land"
-            }
+            },
+            "mandatory": true
           }
         ]
       }
@@ -19714,6 +19720,7 @@
             "amount": 1,
             "target_type": [
               "creature",
+              "planeswalker",
               "player"
             ]
           }
@@ -21189,7 +21196,8 @@
             "target_filter": {
               "controller": "you",
               "type_line": "land"
-            }
+            },
+            "mandatory": true
           }
         ]
       }
@@ -23541,7 +23549,11 @@
         {
           "type": "destroy",
           "target_type": "creature",
-          "exclude_type_line": "Vampire"
+          "exclude_type_line": [
+            "Vampire",
+            "Werewolf",
+            "Zombie"
+          ]
         }
       ]
     }

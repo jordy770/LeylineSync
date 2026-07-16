@@ -841,6 +841,9 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('bounce_up_to'),
     count: z.number().int().positive().optional(),
+    // Karoo lands (Azorius Chancery et al.): the ETB bounce is MANDATORY ("return
+    // a land you control"), not the default "up to". Forces exactly `count` picks.
+    mandatory: z.boolean().optional(),
     target_filter: z.object({
       controller: z.enum(['any', 'opponent', 'you']).optional(),
       nonland: z.boolean().optional(),
@@ -1135,8 +1138,10 @@ const CardBehaviorActionSchema = z.union([
     // library for a basic land, put it onto the battlefield, then shuffle.
     controller_searches_basic_land: z.boolean().optional(),
     // NEGATIVE type restriction (mig 220, Cruel Revival "Destroy target
-    // NON-Zombie creature"): the target may not match this type line.
-    exclude_type_line: z.string().optional(),
+    // NON-Zombie creature"): the target may not match this type line. mig 412
+    // also accepts an ARRAY of types (Victim of Night: "that isn't a Vampire,
+    // Werewolf, or Zombie") — the target may match none of them.
+    exclude_type_line: z.union([z.string(), z.array(z.string())]).optional(),
     // Caster graveyard-return rider (mig 220, Cruel Revival "Return up to one
     // target Zombie card from your graveyard to your hand"): parks a pick for
     // the caster after the removal resolves.
