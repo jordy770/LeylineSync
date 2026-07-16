@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-15T17:43:26.956Z
-> Files: 52 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-16T07:21:27.687Z
+> Files: 53 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -12,6 +12,7 @@
 - `all-med-fixes-3.json` (~1576 tok)
 - `all-med-fixes.json` (~5411 tok)
 - `apply-lowfix.py` (~310 tok)
+- `classify-backlog.py` — classify (~1929 tok)
 - `engine-additions.md` — Engine additions since the oracle audit (mig 393–410) — USE THESE (~1199 tok)
 - `med-fix-prompt.txt` — Declares enums (~800 tok)
 - `merge-lowfix.mjs` — Merge all lowfix/b*.json into one flat {name: script} file for validation. (~216 tok)
@@ -291,6 +292,10 @@
 
 
 ## docs/commander-decks/
+
+- `card-scripts.json` — bron van waarheid: per-kaartnaam behavior-script (957 kaarten), gevalideerd door CardBehaviorScriptV2Schema. ~500k tokens; NOOIT volledig lezen, altijd via Grep/Python.
+- `card-script-fixes-2026-07-14.md` — fix-rapport van de oracle-audit (high/medium/low rondes, 181 fixes, engine-batches, engine-blocked overzicht).
+- `engine-blocked-backlog-2026-07-16.md` — per-kaart backlog van 298 flagged-but-unfixed kaarten, gegroepeerd op ontbrekende engine-primitive; de "wat rest er nog"-lijst voor toekomstig engine-werk.
 
 
 ## lib/
