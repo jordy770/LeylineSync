@@ -324,7 +324,8 @@ begin
       v_decision.session_id, v_decision.source_stack_item_id,
       coalesce((v_decision.params ->> 'count')::integer, 1),
       v_decision.params ->> 'filter',
-      coalesce(v_decision.params -> 'edict_queue', '[]'::jsonb)
+      coalesce(v_decision.params -> 'edict_queue', '[]'::jsonb),
+      v_decision.params -> 'filter_any'  -- OR-types carried across the edict chain (mig 417)
     );
     if v_decision_id is null then
       perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);

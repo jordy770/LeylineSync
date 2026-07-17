@@ -469,7 +469,13 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('sacrifice'),
     who: z.enum(['you', 'opponent', 'each_opponent', 'each_player']).optional(),
     count: z.number().optional(),
-    filter: z.object({ type_line: z.string().optional() }).optional(),
+    // type_line = a single required type; type_line_any (mig 417) = OR over
+    // several ("sacrifice an artifact or creature" — Deadly Dispute, Costly
+    // Plunder), so a Treasure or a creature can pay the additional cost.
+    filter: z.object({
+      type_line: z.string().optional(),
+      type_line_any: z.array(z.string()).optional(),
+    }).optional(),
   }),
   // Return up to `count` cards from your graveyard (default creatures) to your
   // hand (Raise Dead) or the battlefield (Reanimate). The controller chooses.

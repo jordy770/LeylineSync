@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-17T15:33:25.908Z
-> Files: 69 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-17T16:09:24.722Z
+> Files: 71 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -308,7 +308,7 @@
 
 ## lib/game/
 
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23759 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23844 tok)
 - `types.ts` — Short room code for the /tv spectator flow (mig 379). (~3095 tok)
 
 ## lib/intelligence/
@@ -340,7 +340,7 @@
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~10102 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~4215 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7932 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24610 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24238 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14411 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~927 tok)
 - `card_has_creature_type.sql` — supabase/functions_src/card_has_creature_type.sql (~732 tok)
@@ -359,7 +359,7 @@
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~2318 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~1417 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3159 tok)
-- `submit_decision.sql` — Declares public (~17148 tok)
+- `submit_decision.sql` — Declares public (~17174 tok)
 
 ## supabase/migrations/
 
@@ -369,6 +369,7 @@
 - `202605010414_color_exclusion.sql` — color_exclusion (~18552 tok)
 - `202605010415_per_opponent_targets.sql` — per_opponent_targets (~3140 tok)
 - `202605010416_scaling_cost_reduction.sql` — scaling_cost_reduction (~1295 tok)
+- `202605010417_sacrifice_or_filter.sql` — sacrifice_or_filter (~41502 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -392,6 +393,7 @@
 - `per-opponent-targets.test.ts` — mig 415 — "for each opponent, exile up to one target … that player controls" (~972 tok)
 - `planeswalker-damage.test.ts` — mig 412 — single-target deal_damage can hit a planeswalker (loyalty loss), and (~832 tok)
 - `sacrifice-filters-and-stun.test.ts` — mig 402 — subtype/another filters on sacrifice costs (Professional (~1215 tok)
+- `sacrifice-or-filter.test.ts` — mig 417 — the sacrifice effect filter accepts type_line_any ("sacrifice an (~613 tok)
 - `scaling-cost-reduction.test.ts` — mig 416 — count-scaled self cost reduction: cost_reduction {amount, per:{count}} (~944 tok)
 - `type-changing-layer.test.ts` — mig 407 — the type-changing layer: a granted_type continuous effect adds (or (~1172 tok)
 

@@ -8022,3 +8022,9 @@
 | 17:32 | Created tests/feature/directed-player-draw.test.ts | — | ~743 |
 | 17:33 | Edited tests/feature/directed-player-draw.test.ts | resolveStack() → opponent() | ~55 |
 | 13:50 | Card-fix ronde: directed target-player (choose_player) — Blue Sun's Zenith, Damnable Pact, Compulsive Research kunnen nu een speler targeten | card-scripts.json | 2367/2367 groen, geen engine-wijziging | ~30k |
+| 18:05 | Edited lib/game/card-behavior-schema.ts | expanded (+6 lines) | ~148 |
+| 18:06 | Edited supabase/functions_src/apply_trigger_effects.sql | modified park_edict_sacrifice() | ~70 |
+| 18:06 | Edited supabase/functions_src/submit_decision.sql | modified park_edict_sacrifice() | ~101 |
+| 18:08 | Edited supabase/migrations/202605010417_sacrifice_or_filter.sql | modified type_line_any() | ~114 |
+| 18:09 | Created tests/feature/sacrifice-or-filter.test.ts | — | ~613 |
+| 14:30 | Engine: sacrifice type_line_any (mig 417) — Deadly Dispute + Costly Plunder kunnen artifact OF creature offeren; park_edict_sacrifice optional p_filter_any | functions_src, mig 417, 2 scripts | 2368/2368 groen | ~50k |

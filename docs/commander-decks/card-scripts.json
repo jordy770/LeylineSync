@@ -24289,7 +24289,10 @@
           "who": "you",
           "count": 1,
           "filter": {
-            "type_line": "creature"
+            "type_line_any": [
+              "artifact",
+              "creature"
+            ]
           }
         },
         {
@@ -24313,7 +24316,10 @@
           "who": "you",
           "count": 1,
           "filter": {
-            "type_line": "creature"
+            "type_line_any": [
+              "artifact",
+              "creature"
+            ]
           }
         },
         {
