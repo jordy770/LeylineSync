@@ -8018,3 +8018,7 @@
 | 13:19 | Edited supabase/migrations/202605010416_scaling_cost_reduction.sql | 2→5 lines | ~92 |
 | 13:21 | Created tests/feature/scaling-cost-reduction.test.ts | — | ~944 |
 | 13:15 | Engine: scaling cost_reduction (mig 416) — cost_reduction.per{count} × amount; Blasphemous Act + Coastal Breach/Undaunted | functions_src, mig 416, 2 scripts | 2366/2366 groen | ~45k |
+| 12:05 | PROD deploy v0.18.0: migs 414-416 db-pushed + 8 card-scripts geupsert (--force) + VPS rebuild; kleur-exclusie/per-opponent/scaling-cost live | release v0.18.0 | deploy groen, site 200, 0 diffs | ~12k |
+| 17:32 | Created tests/feature/directed-player-draw.test.ts | — | ~743 |
+| 17:33 | Edited tests/feature/directed-player-draw.test.ts | resolveStack() → opponent() | ~55 |
+| 13:50 | Card-fix ronde: directed target-player (choose_player) — Blue Sun's Zenith, Damnable Pact, Compulsive Research kunnen nu een speler targeten | card-scripts.json | 2367/2367 groen, geen engine-wijziging | ~30k |

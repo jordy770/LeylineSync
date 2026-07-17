@@ -20376,13 +20376,19 @@
     "spell_effect": {
       "actions": [
         {
-          "type": "draw",
-          "amount": 3
-        },
-        {
-          "type": "discard",
-          "count": 2,
-          "who": "you"
+          "type": "choose_player",
+          "filter": "any",
+          "effects": [
+            {
+              "type": "draw",
+              "amount": 3
+            },
+            {
+              "type": "discard",
+              "count": 2,
+              "who": "you"
+            }
+          ]
         }
       ]
     }
@@ -24121,8 +24127,14 @@
     "spell_effect": {
       "actions": [
         {
-          "type": "draw",
-          "amount": "X"
+          "type": "choose_player",
+          "filter": "any",
+          "effects": [
+            {
+              "type": "draw",
+              "amount": "X"
+            }
+          ]
         },
         {
           "type": "shuffle_self_into_library"
@@ -24252,13 +24264,18 @@
     "spell_effect": {
       "actions": [
         {
-          "type": "draw",
-          "amount": "X"
-        },
-        {
-          "type": "lose_life",
-          "amount": "X",
-          "recipient": "controller"
+          "type": "choose_player",
+          "filter": "any",
+          "effects": [
+            {
+              "type": "draw",
+              "amount": "X"
+            },
+            {
+              "type": "lose_life",
+              "amount": "X"
+            }
+          ]
         }
       ]
     }

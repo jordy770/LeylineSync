@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-17T11:21:14.537Z
-> Files: 68 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-17T15:33:25.908Z
+> Files: 69 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -385,6 +385,7 @@
 - `color-exclusion.test.ts` — mig 414 — negative COLOUR restriction on removal ("Destroy target nonblack (~1310 tok)
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~1429 tok)
 - `dies-replacement.test.ts` — mig 406 — death replacement (Kalitas, Traitor of Ghet): "Whenever a nontoken (~1004 tok)
+- `directed-player-draw.test.ts` — Directed target-player effects — "Target player draws X …" (Blue Sun's Zenith, (~739 tok)
 - `exile-until-leaves-return-to.test.ts` — mig 404 — exile_until_leaves gains multi-target ("up to three") + a (~784 tok)
 - `graveyard-exile-until-leaves.test.ts` — mig 405 — graveyard-target triggers (exile_graveyard_until_leaves), the (~1057 tok)
 - `imprisoned-in-the-moon.test.ts` — mig 410 — Imprisoned in the Moon: an Aura that turns the enchanted permanent (~1130 tok)
