@@ -1,18 +1,10 @@
--- supabase/functions_src/reduced_mana_cost.sql
--- CANONICAL current definition (new in 202605010231_cost_reduction.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
---
--- Returns p_cost with its GENERIC portion reduced by all cost reductions that
--- apply to p_caster casting p_card_id:
---   • SELF reduction — the card's own top-level `cost_reduction` script prop
---     ({amount} or {amount, if:{count,type_line?,at_least}} — Draconic Lore:
---     "this spell costs {2} less if you control a Dragon").
---   • STATIC reduction — `cost_reduction` continuous effects the caster controls
---     whose payload.type_line matches the cast card (Dragonlord's Servant /
---     Sarkhan: "Dragon spells you cast cost {1} less").
--- Only generic mana is reduced (coloured/hybrid pips are never removed), floored
--- at zero. A cost with no generic token is returned unchanged.
+-- scaling_cost_reduction
+-- Count-scaled self cost reduction: cost_reduction {amount, per:{count}} reduces
+-- the generic cost by amount × resolve_count_amount(per). Blasphemous Act ("{1}
+-- less for each creature on the battlefield") and Coastal Breach / Undaunted
+-- ("{1} less for each opponent"). Fixed and if-conditional forms unchanged.
+-- Generated from supabase/functions_src (reduced_mana_cost) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.reduced_mana_cost(
   p_session_id uuid,

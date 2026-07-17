@@ -1123,6 +1123,12 @@
           "amount": 13
         }
       ]
+    },
+    "cost_reduction": {
+      "amount": 1,
+      "per": {
+        "count": "creatures_on_battlefield"
+      }
     }
   },
   "Storm's Wrath": {
@@ -6745,6 +6751,12 @@
           "nonland": true
         }
       ]
+    },
+    "cost_reduction": {
+      "amount": 1,
+      "per": {
+        "count": "num_opponents"
+      }
     }
   },
   "Trading Post": {

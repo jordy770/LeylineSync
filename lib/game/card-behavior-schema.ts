@@ -1449,6 +1449,15 @@ export const CardBehaviorScriptV2Schema = z.object({
       type_line: z.string().optional(),
       at_least: z.number().int().positive(),
     }).strict().optional(),
+    // Count-scaled reduction (mig 416): `amount` less PER counted thing.
+    // Blasphemous Act ("{1} less for each creature on the battlefield" →
+    // amount 1, per creatures_on_battlefield); Coastal Breach / Undaunted
+    // ("{1} less for each opponent" → per num_opponents). `count` is a
+    // resolve_count_amount key (looser than `if.count`).
+    per: z.object({
+      count: z.string(),
+      type_line: z.string().optional(),
+    }).strict().optional(),
   }).strict().optional(),
   // "You may exert this creature as it attacks. When you do, <effects>." Applied
   // by declare_attacker when the player exerts (Glorybringer).

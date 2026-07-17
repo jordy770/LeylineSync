@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-17T09:59:07.690Z
-> Files: 65 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-17T11:21:14.537Z
+> Files: 68 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -308,7 +308,7 @@
 
 ## lib/game/
 
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23624 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23759 tok)
 - `types.ts` — Short room code for the /tv spectator flow (mig 379). (~3095 tok)
 
 ## lib/intelligence/
@@ -357,6 +357,7 @@
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1832 tok)
 - `note_card_drawn.sql` — supabase/functions_src/note_card_drawn.sql (~349 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~2318 tok)
+- `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~1417 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3159 tok)
 - `submit_decision.sql` — Declares public (~17148 tok)
 
@@ -367,6 +368,7 @@
 - `202605010413_multi_type_exclusion.sql` — multi_type_exclusion (~992 tok)
 - `202605010414_color_exclusion.sql` — color_exclusion (~18552 tok)
 - `202605010415_per_opponent_targets.sql` — per_opponent_targets (~3140 tok)
+- `202605010416_scaling_cost_reduction.sql` — scaling_cost_reduction (~1295 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -389,6 +391,7 @@
 - `per-opponent-targets.test.ts` — mig 415 — "for each opponent, exile up to one target … that player controls" (~972 tok)
 - `planeswalker-damage.test.ts` — mig 412 — single-target deal_damage can hit a planeswalker (loyalty loss), and (~832 tok)
 - `sacrifice-filters-and-stun.test.ts` — mig 402 — subtype/another filters on sacrifice costs (Professional (~1215 tok)
+- `scaling-cost-reduction.test.ts` — mig 416 — count-scaled self cost reduction: cost_reduction {amount, per:{count}} (~944 tok)
 - `type-changing-layer.test.ts` — mig 407 — the type-changing layer: a granted_type continuous effect adds (or (~1172 tok)
 
 ## tests/fixtures/

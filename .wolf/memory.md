@@ -8013,3 +8013,8 @@
 |------|--------|---------|---------|--------|
 | 11:59 | Created tests/feature/per-opponent-targets.test.ts | — | ~972 |
 | 12:30 | Engine: per_opponent target-count (mig 415) — Bronzebeak/Grasp of Fate; enqueue zet count=#living-opponents, picker enforced one-per-opponent | functions_src, mig 415, 2 scripts | 2363/2363 groen | ~45k |
+| 13:19 | Edited lib/game/card-behavior-schema.ts | modified reduction() | ~225 |
+| 13:19 | Edited supabase/functions_src/reduced_mana_cost.sql | modified reduction() | ~255 |
+| 13:19 | Edited supabase/migrations/202605010416_scaling_cost_reduction.sql | 2→5 lines | ~92 |
+| 13:21 | Created tests/feature/scaling-cost-reduction.test.ts | — | ~944 |
+| 13:15 | Engine: scaling cost_reduction (mig 416) — cost_reduction.per{count} × amount; Blasphemous Act + Coastal Breach/Undaunted | functions_src, mig 416, 2 scripts | 2366/2366 groen | ~45k |
