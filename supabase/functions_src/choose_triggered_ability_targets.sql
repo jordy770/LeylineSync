@@ -16,6 +16,9 @@ declare
   v_id uuid;
   v_seen uuid[] := array[]::uuid[];
   v_ok boolean;
+  v_per_opponent boolean;
+  v_ctrl uuid;
+  v_seen_controllers uuid[] := array[]::uuid[];
 begin
   if auth.uid() is null then
     raise exception 'Authentication required';
@@ -52,6 +55,7 @@ begin
   end if;
 
   v_target_type := v_stack_item.payload -> 'target_type';
+  v_per_opponent := coalesce((v_stack_item.payload ->> 'per_opponent')::boolean, false);
 
   foreach v_id in array p_target_card_ids loop
     if v_id = any(v_seen) then
@@ -70,6 +74,17 @@ begin
     end if;
     if not v_ok then
       raise exception 'Target is not a legal target for this ability';
+    end if;
+
+    -- per_opponent (mig 415): "for each opponent, up to one … that player
+    -- controls" — at most one target may come from each opponent.
+    if v_per_opponent then
+      select coalesce(gc.controller_player_id, gc.owner_id) into v_ctrl
+      from public.game_cards gc where gc.id = v_id and gc.session_id = p_session_id;
+      if v_ctrl = any(v_seen_controllers) then
+        raise exception 'At most one target may be chosen per opponent';
+      end if;
+      v_seen_controllers := array_append(v_seen_controllers, v_ctrl);
     end if;
   end loop;
 

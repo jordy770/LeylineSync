@@ -12407,5 +12407,28 @@
         }
       ]
     }
+  },
+  {
+    "name": "Foragers Test",
+    "type_line": "Creature — Bird Soldier",
+    "oracle_text": "When Foragers Test enters, for each opponent, exile up to one target nonland permanent that player controls until Foragers Test leaves.",
+    "power_toughness": "3/3",
+    "mana_cost": "{2}{W}",
+    "script": {
+      "schema_version": 2,
+      "triggered_abilities": [
+        {
+          "event": "enters_the_battlefield",
+          "effects": [
+            {
+              "type": "exile_until_leaves",
+              "target_type": "nonland_permanent",
+              "target_controller": "opponent",
+              "per_opponent": true
+            }
+          ]
+        }
+      ]
+    }
   }
 ]

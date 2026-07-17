@@ -733,6 +733,11 @@ const CardBehaviorActionSchema = z.union([
     // targets>1 makes it a multi-pick; optional lets the controller take fewer.
     targets: z.number().int().positive().optional(),
     optional: z.boolean().optional(),
+    // "for each opponent, exile up to one target … that player controls"
+    // (mig 415, Bronzebeak Foragers / Grasp of Fate): the target COUNT scales to
+    // the number of living opponents and at most one target may come from each.
+    // Implies optional. Use with target_controller 'opponent'.
+    per_opponent: z.boolean().optional(),
     // Where the exiled cards go when the source leaves (mig 404). Default
     // 'battlefield' (Bronzebeak Foragers); 'hand' returns to owners' hands
     // (Angel of Serenity: "return the exiled cards to their owners' hands").

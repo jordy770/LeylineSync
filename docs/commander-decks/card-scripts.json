@@ -5122,7 +5122,8 @@
           {
             "type": "exile_until_leaves",
             "target_type": "nonland_permanent",
-            "target_controller": "opponent"
+            "target_controller": "opponent",
+            "per_opponent": true
           }
         ]
       }
@@ -23882,7 +23883,8 @@
             "type": "exile_until_leaves",
             "target_type": "nonland_permanent",
             "target_controller": "opponent",
-            "optional": true
+            "optional": true,
+            "per_opponent": true
           }
         ]
       }

@@ -7999,3 +7999,17 @@
 | 11:23 | Created tests/feature/color-exclusion.test.ts | — | ~1321 |
 | 11:23 | Edited tests/feature/color-exclusion.test.ts | 6→6 lines | ~95 |
 | 11:30 | Engine: exclude_color primitive (mig 414) — nonblack removal; apply_creature_effect enforcement + activate_ability plumbing; ook exclude_type_line-op-triggers gefixt | functions_src, mig 414, 4 scripts | 2360/2360 groen | ~55k |
+| 11:56 | Edited lib/game/card-behavior-schema.ts | 4→9 lines | ~168 |
+| 11:56 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 6→8 lines | ~52 |
+| 11:56 | Edited supabase/functions_src/enqueue_triggered_ability.sql | modified per_opponent() | ~265 |
+| 11:56 | Edited supabase/functions_src/enqueue_triggered_ability.sql | 2→5 lines | ~103 |
+| 11:56 | Edited supabase/functions_src/choose_triggered_ability_targets.sql | 4→7 lines | ~43 |
+| 11:57 | Edited supabase/functions_src/choose_triggered_ability_targets.sql | modified coalesce() | ~404 |
+| 11:58 | Edited supabase/migrations/202605010415_per_opponent_targets.sql | 2→7 lines | ~134 |
+
+## Session: 2026-07-17 11:58
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:59 | Created tests/feature/per-opponent-targets.test.ts | — | ~972 |
+| 12:30 | Engine: per_opponent target-count (mig 415) — Bronzebeak/Grasp of Fate; enqueue zet count=#living-opponents, picker enforced one-per-opponent | functions_src, mig 415, 2 scripts | 2363/2363 groen | ~45k |
