@@ -1142,6 +1142,11 @@ const CardBehaviorActionSchema = z.union([
     // also accepts an ARRAY of types (Victim of Night: "that isn't a Vampire,
     // Werewolf, or Zombie") — the target may match none of them.
     exclude_type_line: z.union([z.string(), z.array(z.string())]).optional(),
+    // NEGATIVE colour restriction (mig 414, "Destroy target NONBLACK creature":
+    // exclude_color 'black'). String or array; colours are derived from the
+    // target's mana cost (card_color_set), so colourless targets are never
+    // excluded. Enforced in apply_creature_effect for every removal path.
+    exclude_color: z.union([z.string(), z.array(z.string())]).optional(),
     // Caster graveyard-return rider (mig 220, Cruel Revival "Return up to one
     // target Zombie card from your graveyard to your hand"): parks a pick for
     // the caster after the removal resolves.

@@ -12359,5 +12359,53 @@
         }
       ]
     }
+  },
+  {
+    "name": "Capsule Test",
+    "type_line": "Artifact",
+    "oracle_text": "Sacrifice Capsule Test: Destroy target nonblack creature.",
+    "power_toughness": null,
+    "mana_cost": null,
+    "script": {
+      "schema_version": 2,
+      "activated_abilities": [
+        {
+          "costs": [
+            {
+              "type": "sacrifice_self"
+            }
+          ],
+          "effects": [
+            {
+              "type": "destroy",
+              "target_type": "creature",
+              "exclude_color": "black"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Bone Shred Test",
+    "type_line": "Creature — Insect",
+    "oracle_text": "When Bone Shred Test enters, destroy target nonblack creature.",
+    "power_toughness": "1/1",
+    "mana_cost": "{2}{B}",
+    "script": {
+      "schema_version": 2,
+      "triggered_abilities": [
+        {
+          "event": "enters_the_battlefield",
+          "effects": [
+            {
+              "type": "destroy",
+              "target_type": "creature",
+              "exclude_color": "black"
+            }
+          ]
+        }
+      ]
+    }
   }
 ]

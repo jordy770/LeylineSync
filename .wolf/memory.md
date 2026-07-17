@@ -7991,3 +7991,11 @@
 | 12:52 | Edited tests/feature/cruel-revival.test.ts | expanded (+32 lines) | ~445 |
 | 12:57 | Edited tests/feature/breya-manabase.test.ts | 8→8 lines | ~105 |
 | 10:45 | Engine: 3 primitives — karoo mandatory bounce (mig 411), planeswalker deal_damage + sac two-picks (mig 412), multi-type exclude_type_line (mig 413) | functions_src, migs 411-413, card-scripts.json | 2355/2355 groen | ~140k |
+| 09:10 | PROD deploy v0.17.0: migs 411-413 db-pushed naar hosted + 144 card-scripts geüpsert (--force) + VPS rebuild; medium+low+these live | release v0.17.0 | deploy groen, site 200, 0 diffs | ~15k |
+| 11:19 | Edited supabase/functions_src/apply_creature_effect.sql | modified restriction() | ~270 |
+| 11:20 | Edited supabase/functions_src/activate_ability.sql | expanded (+9 lines) | ~411 |
+| 11:20 | Edited lib/game/card-behavior-schema.ts | 2→7 lines | ~154 |
+| 11:21 | Edited supabase/migrations/202605010414_color_exclusion.sql | added 1 condition(s) | ~661 |
+| 11:23 | Created tests/feature/color-exclusion.test.ts | — | ~1321 |
+| 11:23 | Edited tests/feature/color-exclusion.test.ts | 6→6 lines | ~95 |
+| 11:30 | Engine: exclude_color primitive (mig 414) — nonblack removal; apply_creature_effect enforcement + activate_ability plumbing; ook exclude_type_line-op-triggers gefixt | functions_src, mig 414, 4 scripts | 2360/2360 groen | ~55k |

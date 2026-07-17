@@ -35,6 +35,21 @@ begin
     return;
   end if;
 
+  -- Negative target restriction (mig 414): "destroy target NONBLACK creature"
+  -- (exclude_color) / "…that isn't a Vampire, Werewolf, or Zombie"
+  -- (exclude_type_line). If the chosen target matches, the removal simply does
+  -- nothing to it. Only the removal kinds honour it; the effect JSON carries the
+  -- fields for spell + triggered paths, and activate_ability threads them for the
+  -- activated path. (This is also what finally enforces exclude_type_line on the
+  -- triggered/activated paths, which the target pickers never checked.)
+  if p_kind in ('destroy', 'exile', 'bounce', 'tap', 'untap')
+     and (p_params ? 'exclude_type_line' or p_params ? 'exclude_color')
+     and public.card_matches_exclusion(
+           p_session_id, p_target_card_id,
+           p_params -> 'exclude_type_line', p_params -> 'exclude_color') then
+    return;
+  end if;
+
   -- Amount may be a number, "X" (→0), or { counters, of } resolved against game state.
   -- of:"you" → the acting controller; of:"target" → this target permanent.
   v_amount := public.resolve_dynamic_amount(

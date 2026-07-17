@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-16T10:57:06.689Z
-> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-17T09:23:56.971Z
+> Files: 62 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -308,7 +308,7 @@
 
 ## lib/game/
 
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23413 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23524 tok)
 - `types.ts` — Short room code for the /tv spectator flow (mig 379). (~3095 tok)
 
 ## lib/intelligence/
@@ -337,9 +337,9 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~9935 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~10102 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~4215 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7697 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7932 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24610 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14411 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~927 tok)
@@ -364,6 +364,7 @@
 - `202605010411_karoo_mandatory_land_bounce.sql` — karoo_mandatory_land_bounce (~24678 tok)
 - `202605010412_planeswalker_damage_target.sql` — planeswalker_damage_target (~18362 tok)
 - `202605010413_multi_type_exclusion.sql` — multi_type_exclusion (~992 tok)
+- `202605010414_color_exclusion.sql` — color_exclusion (~18552 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -377,6 +378,7 @@
 - `card-drawn-watcher.test.ts` — mig 401 — card_drawn watcher: every real draw (draw effect, natural draw, (~1076 tok)
 - `changeling-anthems-costs.test.ts` — mig 409 — changeling / granted types now flow through the tribal ANTHEM P/T (~702 tok)
 - `changeling.test.ts` — mig 408 — changeling (Mirror Entity): "is every creature type". Since ~250 (~751 tok)
+- `color-exclusion.test.ts` — mig 414 — negative COLOUR restriction on removal ("Destroy target nonblack (~1310 tok)
 - `cruel-revival.test.ts` — Cruel Revival (mig 220) — "Destroy target non-Zombie creature. Return up to (~1429 tok)
 - `dies-replacement.test.ts` — mig 406 — death replacement (Kalitas, Traitor of Ghet): "Whenever a nontoken (~1004 tok)
 - `exile-until-leaves-return-to.test.ts` — mig 404 — exile_until_leaves gains multi-target ("up to three") + a (~784 tok)

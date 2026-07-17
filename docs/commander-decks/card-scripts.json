@@ -6031,7 +6031,8 @@
         "effects": [
           {
             "type": "destroy",
-            "target_type": "creature"
+            "target_type": "creature",
+            "exclude_color": "black"
           }
         ]
       }
@@ -14131,7 +14132,8 @@
       "actions": [
         {
           "type": "destroy",
-          "target_type": "creature"
+          "target_type": "creature",
+          "exclude_color": "black"
         }
       ]
     }
@@ -19419,7 +19421,8 @@
         "effects": [
           {
             "type": "destroy",
-            "target_type": "creature"
+            "target_type": "creature",
+            "exclude_color": "black"
           }
         ]
       }
@@ -20813,7 +20816,8 @@
           {
             "type": "destroy",
             "target_type": "creature",
-            "exclude_type_line": "Artifact"
+            "exclude_type_line": "Artifact",
+            "exclude_color": "black"
           }
         ]
       }
