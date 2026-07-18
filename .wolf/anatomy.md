@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-17T16:09:24.722Z
-> Files: 71 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-18T12:32:00.838Z
+> Files: 73 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -12,7 +12,7 @@
 - `all-med-fixes-3.json` (~1576 tok)
 - `all-med-fixes.json` (~5411 tok)
 - `apply-lowfix.py` (~310 tok)
-- `classify-backlog.py` — classify (~1929 tok)
+- `classify-backlog.py` — classify (~2180 tok)
 - `engine-additions.md` — Engine additions since the oracle audit (mig 393–410) — USE THESE (~1199 tok)
 - `med-fix-prompt.txt` — Declares enums (~800 tok)
 - `merge-lowfix.mjs` — Merge all lowfix/b*.json into one flat {name: script} file for validation. (~216 tok)
@@ -47,6 +47,8 @@
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
+- `engine-primitive-rounds.md` (~684 tok)
+- `MEMORY.md` (~501 tok)
 
 ## ../../.cloudflared/
 

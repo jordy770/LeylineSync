@@ -8028,3 +8028,8 @@
 | 18:08 | Edited supabase/migrations/202605010417_sacrifice_or_filter.sql | modified type_line_any() | ~114 |
 | 18:09 | Created tests/feature/sacrifice-or-filter.test.ts | — | ~613 |
 | 14:30 | Engine: sacrifice type_line_any (mig 417) — Deadly Dispute + Costly Plunder kunnen artifact OF creature offeren; park_edict_sacrifice optional p_filter_any | functions_src, mig 417, 2 scripts | 2368/2368 groen | ~50k |
+| 11:00 | PROD deploy v0.19.0: mig 417 db-pushed + 5 card-scripts geupsert; directed-player draw + sacrifice OR-filter live | release v0.19.0 | deploy groen, site 200, 0 diffs | ~10k |
+| 14:30 | Edited ../../.claude/jobs/ca267fb9/tmp/classify-backlog.py | expanded (+10 lines) | ~394 |
+| 14:30 | Edited ../../.claude/jobs/ca267fb9/tmp/classify-backlog.py | "docs\commander-decks\engi" → "docs\commander-decks\engi" | ~35 |
+| 14:31 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/engine-primitive-rounds.md | — | ~708 |
+| 14:32 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | inline fix | ~53 |

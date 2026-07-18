@@ -1,24 +1,26 @@
 # Engine-blocked backlog — flagged-but-unfixed kaarten
 
-Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix kregen (script ongewijzigd t.o.v. baseline `8e3f123`). Dit is de eerlijke "wat rest er nog"-lijst: grotendeels engine-geblokkeerd, met een residu van bevestigde false-positives en best-available benaderingen. Gegroepeerd op de ontbrekende engine-primitive.
+Ververst 2026-07-18. **280 kaarten** die de audit flagde maar die géén fix kregen (script ongewijzigd t.o.v. baseline `8e3f123`). Dit is de eerlijke "wat rest er nog"-lijst: grotendeels engine-geblokkeerd, met een residu van bevestigde false-positives en best-available benaderingen. Gegroepeerd op de ontbrekende engine-primitive.
+
+> Was 298 op 2026-07-16. Sindsdien gebouwd + gedeployed (v0.17.0–v0.19.0), dus NIET meer openstaand: **karoo mandatory land-bounce** (mig 411), **planeswalker als damage-doel + sac two-picks** (412), **multi-type exclude_type_line** (413), **kleur-exclusie op removal** (414, + fixte de latente exclude_type_line-op-triggers), **per-opponent target-count** (415), **scaling cost_reduction `per`** (416), **sacrifice `type_line_any`** (417), en de **directed target-player** draw/discard script-fixes. Groepen hieronder kunnen dus nog kaarten noemen die je met díe primitives al kunt afvinken — verifieer per kaart tegen de huidige scripts vóór je iets herbouwt (meerdere eerdere 'gaten' bleken al gedekt).
 
 | # | Ontbrekende primitive | Kaarten |
 |---|---|---|
-| 1 | Other / misc (no clean bucket) | 140 |
-| 2 | Alternative / additional casting cost | 33 |
+| 1 | Other / misc (no clean bucket) | 136 |
+| 2 | Alternative / additional casting cost | 31 |
 | 3 | Per-opponent / dynamic target count | 12 |
-| 4 | Cost reduction — situational / undaunted / target-based | 10 |
-| 5 | Mandatory filtered land-bounce (karoo) | 10 |
-| 6 | Planeswalker as damage target | 10 |
-| 7 | Damage replacement / prevention / redirection | 9 |
-| 8 | Copy: self-exclusion / ability retention / name override | 8 |
-| 9 | deal_damage type/colour exclusion | 8 |
-| 10 | Mana-ability rider (damage/effect on tap) | 6 |
-| 11 | Reflexive 'when you do' / conditional sub-trigger | 5 |
-| 12 | Colour-lock lands (choose a colour) | 4 |
-| 13 | Conditional block-restriction | 4 |
-| 14 | Temporary / trigger-target type grant | 4 |
-| 15 | Draw replacement | 3 |
+| 4 | Cost reduction — situational / undaunted / target-based | 9 |
+| 5 | Damage replacement / prevention / redirection | 9 |
+| 6 | Planeswalker as damage target | 9 |
+| 7 | Copy: self-exclusion / ability retention / name override | 8 |
+| 8 | Mana-ability rider (damage/effect on tap) | 6 |
+| 9 | Reflexive 'when you do' / conditional sub-trigger | 5 |
+| 10 | deal_damage type/colour exclusion | 5 |
+| 11 | Colour-lock lands (choose a colour) | 4 |
+| 12 | Conditional block-restriction | 4 |
+| 13 | Temporary / trigger-target type grant | 4 |
+| 14 | Draw replacement | 3 |
+| 15 | Mandatory filtered land-bounce (karoo) | 3 |
 | 16 | Maximum hand size | 3 |
 | 17 | Name-uniqueness / same-name gate | 3 |
 | 18 | Amount = mana/value of triggering spell | 2 |
@@ -41,7 +43,7 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 
 ---
 
-## Other / misc (no clean bucket)  (140)
+## Other / misc (no clean bucket)  (136)
 
 - **Abrupt Decay** _(med/medium)_ — 'with mana value 3 or less' restriction is not enforced — plain destroy on nonland_permanent has no mana-value target filter, so it can destroy any nonland permanent
 - **Akroma's Will** _(med/medium)_ — Mode 2 is missing 'protection from each color' — grant_keyword_all has no protection support, so only indestructible + lifelink are granted
@@ -61,14 +63,10 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 - **Bygone Bishop** _(med/medium)_ — The 'mana value 3 or less' gate is not enforced — the spell_cast filter supports only min_mana_value, not a max, so it investigates on every creature spell you cast regardless o…
 - **Chart a Course** _(med/medium)_ — The discard is unconditional; the "unless you attacked this turn" gate is not implemented (no attacked-this-turn count exists), so the caster always discards even after attacking.
 - **Chromatic Lantern** _(high/high)_ — The signature clause — "Lands you control have '{T}: Add one mana of any color'" (mana fixing for all your lands) — is not implemented. Only the Lantern's own {T}: add any color…
-- **Compulsive Research** _(med/medium)_ — 'Target player' is not implemented — draw (no recipient) and discard (who:'you') both default to the controller, wrong when targeting an opponent
 - **Concealed Courtyard** _(med/medium)_ — 'This land enters tapped unless you control two or fewer other lands' is entirely absent (no enters_tapped flag) — the land always enters untapped. The engine's enters_tapped.un…
 - **Condemn** _(med/medium)_ — Uses shuffle_into_library instead of putting the card on the bottom of its owner's library (random position vs bottom; engine has no bottom-of-library action)
-- **Costly Plunder** _(med/medium)_ — Additional-cost sacrifice filter is type_line 'creature' only; the card allows sacrificing an artifact OR a creature, so an artifact (e.g. a Treasure) cannot be paid — the card …
 - **Culling Ritual** _(low/low)_ — Card says 'Add {B} or {G} for each permanent destroyed' (player's choice) but the script hardcodes mana_per_destroyed 'B' — only black is produced, the green option is unavailab…
 - **Curse of Vengeance** _(high/high)_ — Script is only {schema_version:2} — enchant player, the spite-counter-per-spell-cast trigger, and the loses-the-game payoff are all unimplemented; the card does nothing.
-- **Damnable Pact** _(med/medium)_ — No target player is defined — draw X (default recipient) and lose_life X are both pinned to the controller, so it can never be aimed at an opponent.
-- **Deadly Dispute** _(med/medium)_ — Additional-cost sacrifice filter is restricted to type_line 'creature' — oracle allows sacrificing an artifact OR a creature, so you cannot pay the cost with a Treasure/artifact…
 - **Deadly Tempest** _(med/medium)_ — The rider 'Each player loses life equal to the number of creatures they controlled that were destroyed this way' is missing — script only does destroy_all.
 - **Deadpool, Trading Card** _(med/medium)_ — ETB "you may exchange his text box and another creature's" is unimplemented and has no engine equivalent. Upkeep lose-3 and {3},Sac edict-draw are both correct.
 - **Descendants' Path** _(low/low)_ — reveal_top_cast_shared runs on your upkeep with correct player scope, but its free cast is non-optional per engine semantics, whereas the oracle says "you may cast it" (otherwis…
@@ -184,14 +182,13 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 - **Wirewood Lodge** _(low/low)_ — '{G},{T}: Untap target Elf' targets target_type:creature with no Elf restriction (untap has no positive type_line include filter), so it can untap any creature rather than only …
 - **Zacama, Primal Calamity** _(low/low)_ — The ETB 'if you cast it' intervening condition is not gated (no cast-condition mechanism exists; top-level trigger conditions are dead fields), so Zacama untaps all lands even w…
 
-## Alternative / additional casting cost  (33)
+## Alternative / additional casting cost  (31)
 
 - **Ancient Excavation** _(med/medium)_ — Discard is hardcoded to 2 instead of 'a card for each card drawn this way' (should equal cards drawn)
 - **Ash Barrens** _(med/medium)_ — Basic landcycling {1} ({1}, discard this card: search library for a basic land to hand) is not implemented — only the {T}: Add {C} mana ability is present
 - **Blasphemous Edict** _(low/low)_ — The alternative cost 'pay {B} rather than mana cost if there are 13+ creatures' is not implemented (engine has no alternative-cost feature); the each-player-sacrifices-13 effect…
 - **Blinkmoth Urn** _(med/medium)_ — beginning_of_main fires only for the active player's own permanents, so it never fires on other players' main phases — the defining symmetric 'each player's' behavior is lost
 - **Chief Engineer** _(med/medium)_ — Convoke is approximated as an automatic flat {1} cost reduction on artifact spells. Real convoke lets you tap creatures to pay {1}/colored mana each (variable, potentially much …
-- **Coastal Breach** _(low/low)_ — Undaunted ({1} less per opponent) is not implemented; cost_reduction only supports a fixed amount with an optional count gate, not per-opponent scaling. The bounce-all-nonland e…
 - **Counterflux** _(med/medium)_ — counter uses inline target_type 'spell' with no controller restriction; card reads 'target spell you don't control', so as scripted it can target your own spells.
 - **Cyclonic Rift** _(med/medium)_ — Overload {6}{U} is not implemented — the signature one-sided mass bounce is absent; only the single-target nonland bounce (which is correctly scoped to permanents you don't cont…
 - **Deadly Rollick** _(med/medium)_ — 'If you control a commander, you may cast this spell without paying its mana cost' (the free-cast alternative cost) is not implemented — only the base exile-target-creature work…
@@ -211,7 +208,6 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 - **New Blood** _(med/medium)_ — Additional cost 'tap an untapped Vampire you control' is not modeled, so the spell is castable with no Vampire.
 - **Ragavan, Nimble Pilferer** _(high/high)_ — Only the Treasure creation on combat damage (dealt_combat_damage_to_player) is implemented; the 'exile the top card of that player's library, you may cast it until end of turn' …
 - **Regal Behemoth** _(low/low)_ — monarch_land_bonus is a documented approximation (vocab §5): it adds the color of mana just produced rather than 'one mana of any color' the controller chooses. Minor divergence…
-- **Snuff Out** _(med/medium)_ — destroy has no target filter (creature only) — can hit black creatures, but oracle restricts to nonblack.
 - **Sylvan Reclamation** _(med/medium)_ — Uses destroy_up_to but oracle says EXILE (no exile_up_to in vocab); destroy differs materially re: indestructible/recursion
 - **Thunderherd Migration** _(low/low)_ — Additional cost 'reveal a Dinosaur card from your hand or pay {1}' not enforced; the ramp resolves for its base cost only
 - **Treacherous Terrain** _(med/medium)_ — 'Basic landcycling {2}' is modeled as generic cycling (draw a card) instead of searching the library for a basic land card.
@@ -235,11 +231,10 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 - **Struggle // Survive** _(med/medium)_ — Only the Struggle half (deal_damage = lands_you_control to target creature) is scripted; the Survive/Aftermath half ('Each player shuffles their graveyard into their library') i…
 - **Vito, Thorn of the Dusk Rose** _(med/medium)_ — Oracle 'target opponent loses that much life' (one chosen opponent); script uses recipient each_opponent, draining ALL opponents in multiplayer each lifegain event instead of on…
 
-## Cost reduction — situational / undaunted / target-based  (10)
+## Cost reduction — situational / undaunted / target-based  (9)
 
 - **Alisaie Leveilleur** _(med/medium)_ — Dualcast reduction uses a cost_reduction continuous_effect with an undocumented {amount, nth_spell} payload that no known engine reader consumes; 'second spell each turn costs {…
 - **Baral, Chief of Compliance** _(low/low)_ — Cost-reduction (first ability) is correctly encoded for Instant and Sorcery. Missing second ability: 'Whenever a spell or ability you control counters a spell, you may draw a ca…
-- **Blasphemous Act** _(med/medium)_ — The '{1} less to cast for each creature on the battlefield' cost reduction is not implemented — cost_reduction.amount is a fixed positive integer in the schema and cannot expres…
 - **Into the Story** _(med/medium)_ — Missing the {3} cost reduction when an opponent has 7+ cards in graveyard; no cost_reduction present and opponent-graveyard count is not in the supported count subset, so the sp…
 - **Lyse Hext** _(med/medium)_ — 'Noncreature spells you cast cost {1} less' cost reduction not implemented
 - **Marauding Raptor** _(med/medium)_ — cost_reduction amount is 2 but oracle is {1} less — wrong reduction amount
@@ -247,32 +242,6 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 - **Savage Stomp** _(low/low)_ — Missing the '{2} less if it targets a Dinosaur you control' cost reduction — no cost_reduction is encoded (and cost_reduction.if only reads board-state counts, not target proper…
 - **Undead Warchief** _(med/medium)_ — Cost reduction missing: 'Zombie spells you cast cost {1} less' is not implemented (cost_reduction only reduces the card's own cost); only the +2/+1 Zombie anthem is scripted.
 - **Wayta, Trainer Prodigy** _(med/medium)_ — Static ability 'If a creature you control being dealt damage causes a triggered ability to trigger, that ability triggers an additional time' is unimplemented — no engine suppor…
-
-## Mandatory filtered land-bounce (karoo)  (10)
-
-- **Acidic Slime** _(med/medium)_ — ETB destroys only artifact or enchantment; the 'or land' option is unreachable (no 'land' target type, and destroy has no type_line path)
-- **Azorius Chancery** _(low/low)_ — 'return a land you control' is mandatory (exactly one), but bounce_up_to (count 1) is declinable, so a controller could return zero. Best available encoding since there is no 'l…
-- **Boros Garrison** _(med/medium)_ — Oracle 'return a land you control' is mandatory, but bounce_up_to is declinable ('up to'), so the card's drawback can be skipped entirely
-- **Dimir Aqueduct** _(low/low)_ — enters_tapped and {T}: Add {U}{B} are correct. ETB uses bounce_up_to (declinable) but the oracle "return a land you control" is mandatory, so the script lets a player decline wh…
-- **Frantic Search** _(med/medium)_ — Untap uses target_type 'permanent' with fixed count 3; engine has no 'land' target type (vocab §1), so oracle's land restriction can't be honored — it can untap any permanent.
-- **Golgari Rot Farm** _(low/low)_ — ETB return-a-land is mandatory on the card, but bounce_up_to (count 1) is a declinable/optional parked pick — the player could choose to return nothing, skipping the intended dr…
-- **Gruul Turf** _(low/low)_ — The bounce is modeled as bounce_up_to (declinable 'up to one'), but oracle 'return a land you control' is mandatory — making the drawback optional is a small buff (bounce_up_to …
-- **Rakdos Carnarium** _(low/low)_ — Uses bounce_up_to (count 1), a declinable parked pick, but the oracle 'return a land you control to its owner's hand' is mandatory, so the Karoo drawback can be skipped. ('land'…
-- **Rewind** _(med/medium)_ — 'Untap up to four lands' is unmodellable (no 'land' target type in the enum) and is dropped, so the mana-neutral free-counter upside is lost — script only counters.
-- **Selesnya Sanctuary** _(low/low)_ — bounce_up_to makes the land return declinable; the oracle bounce ('return a land you control') is mandatory (Karoo drawback) when you control a land, and you always control at l…
-
-## Planeswalker as damage target  (10)
-
-- **Banishing Light** _(med/medium)_ — Target narrowed to target_type 'creature'; oracle allows any target nonland permanent. The 'nonland_permanent' target type exists and should be used — as written it cannot exile…
-- **Demon's Disciple** _(low/low)_ — The each-player edict is correctly split into you + each_opponent, but the sacrifice actions have no filter — the oracle's "creature or planeswalker" restriction is not enforced.
-- **Goblin Bombardment** _(low/low)_ — 'Any target' should include planeswalkers; target_type is only [creature, player], so planeswalkers can't be hit.
-- **Haven of the Spirit Dragon** _(low/low)_ — Graveyard-return ability filters type_line 'Dragon'; the 'or Ugin planeswalker card' half is not implemented (Ugin's type_line carries the 'Ugin' subtype, not 'Dragon', so it wo…
-- **Hour of Revelation** _(low/low)_ — The '{3} less if ten or more nonland permanents on the battlefield' cost reduction is absent and unmodelable (no all-battlefield nonland-permanent count). Destroy all nonland pe…
-- **Myr Battlesphere** _(med/medium)_ — The attack trigger (may tap X untapped Myr you control to give +X/+0 and deal X damage to the attacked player/planeswalker) is entirely missing; only the ETB four-Myr-token crea…
-- **Norn's Annex** _(low/low)_ — CORRECTION: 'attack_tax' IS a mechanically-enforced continuous effect — declare_attacker.sql auto-pays it and mig 275 names this exact card, so it does NOT no-op (auditor's 'unc…
-- **Plaguecrafter** _(med/medium)_ — Sacrifice has no filter, and park_edict_sacrifice defaults eligibility to '%creature%' only — a player with only planeswalkers has no eligible permanent and is skipped, so they …
-- **Sorin, Imperious Bloodlord** _(med/medium)_ — First +1 omits the 'If it's a Vampire, put a +1/+1 counter on it' rider entirely (no add_counters step).
-- **Xantcha, Sleeper Agent** _(med/medium)_ — 'Attacks each combat if able' forced-attack requirement is not modeled (engine cannot enforce forced attacks).
 
 ## Damage replacement / prevention / redirection  (9)
 
@@ -286,6 +255,18 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 - **Talisman of Resilience** _(low/low)_ — The 'deals 1 damage to you' clause is approximated as a pay_life cost rather than a deal_damage effect (differs re: damage prevention and dealt-damage triggers)
 - **Underground River** _(low/low)_ — 'This land deals 1 damage to you' is modeled as a pay_life cost (life loss), which differs from damage for prevention/redirection and damage-triggered effects; edge-case only.
 
+## Planeswalker as damage target  (9)
+
+- **Banishing Light** _(med/medium)_ — Target narrowed to target_type 'creature'; oracle allows any target nonland permanent. The 'nonland_permanent' target type exists and should be used — as written it cannot exile…
+- **Demon's Disciple** _(low/low)_ — The each-player edict is correctly split into you + each_opponent, but the sacrifice actions have no filter — the oracle's "creature or planeswalker" restriction is not enforced.
+- **Haven of the Spirit Dragon** _(low/low)_ — Graveyard-return ability filters type_line 'Dragon'; the 'or Ugin planeswalker card' half is not implemented (Ugin's type_line carries the 'Ugin' subtype, not 'Dragon', so it wo…
+- **Hour of Revelation** _(low/low)_ — The '{3} less if ten or more nonland permanents on the battlefield' cost reduction is absent and unmodelable (no all-battlefield nonland-permanent count). Destroy all nonland pe…
+- **Myr Battlesphere** _(med/medium)_ — The attack trigger (may tap X untapped Myr you control to give +X/+0 and deal X damage to the attacked player/planeswalker) is entirely missing; only the ETB four-Myr-token crea…
+- **Norn's Annex** _(low/low)_ — CORRECTION: 'attack_tax' IS a mechanically-enforced continuous effect — declare_attacker.sql auto-pays it and mig 275 names this exact card, so it does NOT no-op (auditor's 'unc…
+- **Plaguecrafter** _(med/medium)_ — Sacrifice has no filter, and park_edict_sacrifice defaults eligibility to '%creature%' only — a player with only planeswalkers has no eligible permanent and is skipped, so they …
+- **Sorin, Imperious Bloodlord** _(med/medium)_ — First +1 omits the 'If it's a Vampire, put a +1/+1 counter on it' rider entirely (no add_counters step).
+- **Xantcha, Sleeper Agent** _(med/medium)_ — 'Attacks each combat if able' forced-attack requirement is not modeled (engine cannot enforce forced attacks).
+
 ## Copy: self-exclusion / ability retention / name override  (8)
 
 - **End-Raze Forerunners** _(low/low)_ — ETB pump_all/grant_keyword_all use scope 'controller', which includes the source (pump_all has no exclude_self), but the oracle says 'other creatures you control', so Forerunner…
@@ -296,17 +277,6 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 - **Sunfrill Imitator** _(low/low)_ — become_copy target_filter lacks exclude_self, so 'another target Dinosaur' isn't enforced (it could target itself).
 - **The Master, Multiplied** _(med/medium)_ — Static 'legend rule doesn't apply to your creature tokens' not implemented (no engine flag)
 - **Xenagos, God of Revels** _(med/medium)_ — 'Another target creature' — the pump/grant_keyword targets lack an exclude_self flag (pump schema has no exclude_self field), so when Xenagos is a creature it could illegally ta…
-
-## deal_damage type/colour exclusion  (8)
-
-- **Arbor Elf** _(med/medium)_ — target_type is 'permanent' with no filter — can untap ANY tapped permanent rather than only a Forest; engine has no 'land' target type and untap exposes only exclude_type_line (…
-- **Bone Shredder** _(med/medium)_ — Missing Echo {2}{B} — no upkeep sacrifice-unless-pay drawback is enforced (Echo is unsupported by the engine), making the card strictly better than printed
-- **Circle of Power** _(low/low)_ — The token's own triggered ability ('whenever you cast a noncreature spell, this token deals 1 damage to each opponent') is not defined in this script — it relies on an external …
-- **Estinien Varlineau** _(high/high)_ — Re-derived against the now-populated oracle: the first ability (noncreature-spell -> +1/+1 counter + flying) is correctly modeled via spell_cast + exclude_type 'Creature'. The e…
-- **Executioner's Capsule** _(low/low)_ — Missing the 'nonblack' restriction — destroy targets any creature, so it can destroy black creatures it shouldn't (no color filter on destroy in the engine, but the deviation is…
-- **Glorybringer** _(low/low)_ — Exert damage target lacks the 'non-Dragon' restriction (no exclude_type_line) — it can hit any creature an opponent controls, including Dragons.
-- **Reckless Fireweaver** _(high/high)_ — Uses the creature_entered watcher event with a type_line:artifact filter. Per the engine's watcher list there is no artifact/permanent-entered event, and creature_entered only f…
-- **Victim of Night** _(low/low)_ — exclude_type_line only excludes 'Vampire'; the non-Werewolf and non-Zombie restrictions are absent, so Werewolves and Zombies can be wrongly targeted for destruction.
 
 ## Mana-ability rider (damage/effect on tap)  (6)
 
@@ -324,6 +294,14 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 - **Oblation** _(med/medium)_ — Missing 'then draws two cards' — the owner's card draw is not encoded (shuffle_into_library has no draw rider).
 - **Stormshriek Feral** _(low/low)_ — Firebreathing {1}{R} scripted as pump target_type:creature/target_controller:you — over-broad vs oracle 'This creature gets +1/+0' (self only); it can pump any creature you cont…
 - **Stormshriek Feral // Flush Out** _(low/low)_ — Firebreathing {1}{R} scripted as pump target_type:creature/target_controller:you — over-broad vs 'This creature gets +1/+0' (self only).
+
+## deal_damage type/colour exclusion  (5)
+
+- **Arbor Elf** _(med/medium)_ — target_type is 'permanent' with no filter — can untap ANY tapped permanent rather than only a Forest; engine has no 'land' target type and untap exposes only exclude_type_line (…
+- **Circle of Power** _(low/low)_ — The token's own triggered ability ('whenever you cast a noncreature spell, this token deals 1 damage to each opponent') is not defined in this script — it relies on an external …
+- **Estinien Varlineau** _(high/high)_ — Re-derived against the now-populated oracle: the first ability (noncreature-spell -> +1/+1 counter + flying) is correctly modeled via spell_cast + exclude_type 'Creature'. The e…
+- **Glorybringer** _(low/low)_ — Exert damage target lacks the 'non-Dragon' restriction (no exclude_type_line) — it can hit any creature an opponent controls, including Dragons.
+- **Reckless Fireweaver** _(high/high)_ — Uses the creature_entered watcher event with a type_line:artifact filter. Per the engine's watcher list there is no artifact/permanent-entered event, and creature_entered only f…
 
 ## Colour-lock lands (choose a colour)  (4)
 
@@ -351,6 +329,12 @@ Gegenereerd 2026-07-16. **298 kaarten** die de audit flagde maar die géén fix 
 - **Abundance** _(high/high)_ — Script is only {schema_version:2}; the draw-replacement effect (reveal until land/nonland) is entirely unimplemented and has no engine primitive
 - **Etched Oracle** _(med/medium)_ — Sunburst is hardcoded to enters_with_counters amount 4 instead of one +1/+1 counter per color of mana spent (0-4), so it always enters with the max and guarantees the draw abili…
 - **Remand** _(med/medium)_ — counter{} exposes only unless_pays/controller_loses_life/surveil — no return-to-hand option, so the defining 'put it into its owner's hand instead of the graveyard' rider is dro…
+
+## Mandatory filtered land-bounce (karoo)  (3)
+
+- **Acidic Slime** _(med/medium)_ — ETB destroys only artifact or enchantment; the 'or land' option is unreachable (no 'land' target type, and destroy has no type_line path)
+- **Frantic Search** _(med/medium)_ — Untap uses target_type 'permanent' with fixed count 3; engine has no 'land' target type (vocab §1), so oracle's land restriction can't be honored — it can untap any permanent.
+- **Rewind** _(med/medium)_ — 'Untap up to four lands' is unmodellable (no 'land' target type in the enum) and is dropped, so the mana-neutral free-counter upside is lost — script only counters.
 
 ## Maximum hand size  (3)
 
