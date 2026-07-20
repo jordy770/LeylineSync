@@ -1,7 +1,18 @@
--- supabase/functions_src/cast_spell_effect.sql
--- CANONICAL current definition (seeded from 202605010177_flashback_alternate_effect.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- free_cast_flag
+-- cast_spell_effect gains a p_free boolean (default false, new last param). When
+-- true, both payment branches (hand/exile mana cost, graveyard/flashback cost +
+-- life) are skipped entirely — no mana charged, no flashback cost paid — while the
+-- source card still moves zones and watchers still fire. Groundwork for cascade /
+-- generalized nested-cast (a later migration will call this with p_free := true).
+-- Generated from supabase/functions_src (cast_spell_effect) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+-- A new trailing default param changes the function's identity arguments, so
+-- `create or replace` below would ADD a second overload rather than replace the
+-- old one — any caller passing 6 or fewer args becomes ambiguous between the two
+-- default-filling overloads. Drop the old 6-arg signature first (same pattern as
+-- migration 202605010295_adventures.sql when p_adventure was added).
+drop function if exists public.cast_spell_effect(uuid, jsonb, uuid, integer, uuid, boolean);
 
 create or replace function public.cast_spell_effect(
   p_session_id uuid,

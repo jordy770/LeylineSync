@@ -12502,5 +12502,13 @@
         ]
       }
     }
+  },
+  {
+    "name": "Free Probe Bolt Test",
+    "type_line": "Instant",
+    "oracle_text": "Free Probe Bolt Test deals 3 damage to any target.",
+    "power_toughness": null,
+    "mana_cost": "{2}{R}",
+    "script": { "schema_version": 2, "spell_effect": { "actions": [ { "type": "deal_damage", "amount": 3, "target_type": ["creature", "player"] } ] } }
   }
 ]
