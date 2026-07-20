@@ -44,7 +44,7 @@ begin
       jsonb_build_object('timing', 'sorcery', 'card_id', v_card_id, 'type_line', v_type_line, 'free', true),
       v_next_position);
 
-    -- perform public.enqueue_cast_triggers(p_session_id, p_game_card_id, p_controller); -- enabled in Task 5
+    perform public.enqueue_cast_triggers(p_session_id, p_game_card_id, p_controller); -- enabled in Task 5
     return null;
   end if;
 

@@ -244,6 +244,11 @@ begin
   if p_source_card_id is not null then
     perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'spell_cast',
       case when p_adventure then jsonb_build_object('adventure_face', true) else null end);
+
+    -- Cascade (mig 423): covers instants/sorceries, and gives recursion when a
+    -- cascaded spell itself has cascade.
+    perform public.enqueue_cast_triggers(p_session_id, p_source_card_id, auth.uid());
+
     -- "Whenever you cast a spell from exile" (mig 307, Urianger Augurelt).
     if v_source_zone = 'exile' then
       perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'cast_from_exile',

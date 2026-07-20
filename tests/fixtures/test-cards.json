@@ -12580,5 +12580,16 @@
     "script": {
       "schema_version": 2
     }
+  },
+  {
+    "name": "Cascade Wurm Test",
+    "type_line": "Creature - Wurm",
+    "oracle_text": "Cascade",
+    "power_toughness": "5/5",
+    "mana_cost": "{4}{G}",
+    "script": {
+      "schema_version": 2,
+      "cascade": { "count": 1 }
+    }
   }
 ]
