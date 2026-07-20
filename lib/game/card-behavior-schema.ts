@@ -1437,6 +1437,11 @@ const CardBehaviorTriggeredAbilitySchema = z.object({
 export const CardBehaviorScriptV2Schema = z.object({
   schema_version: z.literal(2),
   keywords: z.array(z.string()).optional(),
+  // Cascade (mig 418-424): a cast-time self-trigger. `true` = one instance;
+  // `{count}` for multi-cascade (Apex Devastator 4, Maelstrom Wanderer 2).
+  // enqueue_cast_triggers reads this when the card is cast and fires the
+  // cascade effect (exile-until-lesser-MV → may-cast-for-free).
+  cascade: z.union([z.literal(true), z.object({ count: z.number().int().positive() }).strict()]).optional(),
   // "This spell can't be countered." A static property read at counter-resolution
   // time: an uncounterable spell's counter resolves but fails to cancel it.
   cant_be_countered: z.boolean().optional(),
