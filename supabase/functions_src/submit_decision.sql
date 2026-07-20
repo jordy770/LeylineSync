@@ -107,7 +107,7 @@ begin
     if (select count(distinct e) from unnest(v_chosen_ids) e) <> cardinality(v_option_ids) then raise exception 'Surveil placed a card more than once'; end if;
     if exists (select 1 from unnest(v_chosen_ids) e where e <> all(v_option_ids)) then raise exception 'Surveil placed a card that was not revealed'; end if;
 
-  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick', 'graveyard_exile_until_leaves_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick', 'grant_flashback', 'hand_to_library_top') then
+  elsif v_decision.decision_type in ('search_library', 'choose_cards', 'sacrifice', 'return_from_graveyard', 'reanimate_destroyed', 'look_top', 'proliferate', 'copy_permanent', 'become_copy', 'bounce_pick', 'cast_exiled_free', 'cascade_cast', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick', 'graveyard_exile_pick', 'graveyard_exile_until_leaves_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick', 'grant_flashback', 'hand_to_library_top') then
     v_top := case when jsonb_typeof(p_result -> 'chosen') = 'array' then p_result -> 'chosen' else '[]'::jsonb end;
     select array_agg((value ->> 'game_card_id')::uuid) into v_option_ids from jsonb_array_elements(v_decision.options);
     select array_agg((value)::uuid) into v_chosen_ids from jsonb_array_elements_text(v_top);
@@ -748,6 +748,23 @@ begin
                            where x.session_id = v_decision.session_id
                              and x.owner_id = gc.owner_id and x.zone = 'hand')
       where gc.id = v_card;
+    end if;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'cascade_cast' then
+    -- Cascade "you may cast it." Cast → cast_card_free (true nested cast). An
+    -- unsupported spell shape returns the sentinel → bottom it instead. Decline /
+    -- empty → the found card bottoms with the rest (never to hand — cascade RAW).
+    if cardinality(v_chosen_ids) > 0 then
+      v_card := public.cast_card_free(v_decision.session_id,
+        (v_decision.params ->> 'found_card_id')::uuid, v_decision.deciding_player_id);
+      if v_card = '00000000-0000-0000-0000-000000000000'::uuid then
+        perform public.bottom_cards_random(v_decision.session_id, v_decision.deciding_player_id,
+          array[(v_decision.params ->> 'found_card_id')::uuid]);
+      end if;
+    else
+      perform public.bottom_cards_random(v_decision.session_id, v_decision.deciding_player_id,
+        array[(v_decision.params ->> 'found_card_id')::uuid]);
     end if;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
