@@ -12625,5 +12625,26 @@
       "schema_version": 2,
       "cascade": true
     }
+  },
+  {
+    "name": "Cascade Chain Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Cascade. Draw a card.",
+    "power_toughness": null,
+    "mana_cost": "{2}{U}",
+    "script": {
+      "schema_version": 2,
+      "cascade": {
+        "count": 1
+      },
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
   }
 ]

@@ -1,7 +1,8 @@
--- supabase/functions_src/cast_spell_effect.sql
--- CANONICAL current definition (seeded from 202605010177_flashback_alternate_effect.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- free_cast_sorcery_timing
+-- A free (p_free) cast bypasses sorcery timing so cascade can nested-cast a found
+-- sorcery mid-resolution (off-turn, non-empty stack).
+-- Generated from supabase/functions_src (cast_spell_effect) — those files are
+-- the canonical current definitions; edit them, not past migrations.
 
 create or replace function public.cast_spell_effect(
   p_session_id uuid,
