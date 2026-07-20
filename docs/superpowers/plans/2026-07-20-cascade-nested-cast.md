@@ -17,7 +17,8 @@
 - Test cards are added to `tests/fixtures/test-cards.json` (array of `{name, type_line, oracle_text, power_toughness, mana_cost, keywords, script}`). Reference them by exact name in tests.
 - Fallback rule (RAW-honest): whenever a found card cannot be truly cast, it goes to the **bottom of the library in random order — never to hand**.
 - Cascade threshold is strict `<` the cast spell's mana value. Since MV is a non-negative integer, implement as `<= castMV - 1`.
-- After each task: `node scripts/run-tests.mjs` (full suite — hot-path changes), `rm -f tsconfig.tsbuildinfo && npx tsc --noEmit`, eslint. Commit per task.
+- **Loading a new/changed migration into the test DB (REQUIRED before tests see SQL changes):** tests run against the separate `leyline_test` DB, which is built from `supabase/local-bootstrap/*` + `supabase/migrations/*`. After creating or editing any migration, run `npm run test:db:setup` (rebuilds the test DB from bootstrap + all migrations) BEFORE `node scripts/run-tests.mjs`. Requires Docker + `npx supabase start` already running (verified up at plan time — existing suite green). If `test:db:setup` fails to connect, STOP and report BLOCKED (the local stack is down); do not fabricate a pass.
+- After each task: `npm run test:db:setup` (if the task changed SQL), then `node scripts/run-tests.mjs` (full suite — hot-path changes), `rm -f tsconfig.tsbuildinfo && npx tsc --noEmit`, eslint. Commit per task.
 - Do not commit to `master` without confirming with Jordy; branch first if he wants isolation. (This repo currently commits directly to `master` per its history — confirm his preference at execution start.)
 
 ## Reference anchors (read before implementing)
