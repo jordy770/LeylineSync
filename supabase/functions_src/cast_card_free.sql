@@ -53,18 +53,6 @@ begin
     return '00000000-0000-0000-0000-000000000000'::uuid;
   end if;
 
-  -- cast_spell_effect gates any exile-zone source on a play_from_exile
-  -- permission (checked unconditionally, ahead of the p_free-guarded payment
-  -- block — see cast_spell_effect.sql:94-104). cast_card_free is an
-  -- engine-authorized cast (cascade / free nested-cast), so grant it here
-  -- rather than requiring every caller to pre-arrange it.
-  insert into public.game_continuous_effects (
-    session_id, source_card_id, affected_player_id, effect_type, payload
-  ) values (
-    p_session_id, p_game_card_id, auth.uid(), 'play_from_exile',
-    jsonb_build_object('card_ids', jsonb_build_array(p_game_card_id), 'permanent', true)
-  );
-
   perform public.cast_spell_effect(p_session_id, v_actions, p_game_card_id, 0, null, false, true);
   return null;
 end;

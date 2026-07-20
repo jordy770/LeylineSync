@@ -91,7 +91,10 @@ begin
   -- An EXILE source (mig 230 impulse, mig 295 adventure) requires a
   -- play_from_exile permission listing this card. Mirrors cast_card_from_hand;
   -- the card pays its printed cost (below) and goes to the graveyard on cast.
-  if p_source_card_id is not null and v_source_zone = 'exile' then
+  -- A free cast (mig 419, cascade / generalized nested-cast) is engine-authorized
+  -- and self-authorizing: it needs no play_from_exile permission row, mirroring
+  -- the p_free guard on the payment block below.
+  if not p_free and p_source_card_id is not null and v_source_zone = 'exile' then
     if not exists (
       select 1 from public.game_continuous_effects ce
       where ce.session_id = p_session_id
