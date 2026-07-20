@@ -39,7 +39,11 @@ begin
   -- The trigger must be able to target — required OR optional (mig 404, Angel
   -- of Serenity: "you may exile up to three OTHER target creatures" is an
   -- optional multi-target, so target_required is false but target_optional true).
-  if v_stack_item.action_type <> 'triggered_ability'
+  -- 'spell_effect' (mig 420): a free nested-cast (cast_card_free) parks its found
+  -- spell in this same target shape. The target_required/optional gate below still
+  -- scopes this to free-cast items — a normal cast-from-hand spell_effect carries
+  -- neither flag, so it is still rejected here.
+  if v_stack_item.action_type not in ('triggered_ability', 'spell_effect')
     or not (coalesce((v_stack_item.payload ->> 'target_required')::boolean, false)
             or coalesce((v_stack_item.payload ->> 'target_optional')::boolean, false)) then
     raise exception 'Stack item does not require a trigger target';

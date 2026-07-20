@@ -16,6 +16,8 @@ declare
   v_actions jsonb;
   v_next_position integer;
   v_is_permanent boolean;
+  v_spec jsonb;
+  v_stack_item_id uuid;
 begin
   select gc.card_id, c.type_line, public.effective_script(p_session_id, p_game_card_id)
     into v_card_id, v_type_line, v_script
@@ -46,11 +48,44 @@ begin
     return null;
   end if;
 
-  -- Instant / sorcery. Task 3 inserts the targeted branch ABOVE this line.
+  -- Instant / sorcery.
   v_actions := v_script -> 'spell_effect' -> 'actions';
   if v_actions is null or jsonb_typeof(v_actions) <> 'array' then
     -- Unsupported shape → caller bottoms it (fallback). Signal with a sentinel.
     return '00000000-0000-0000-0000-000000000000'::uuid;
+  end if;
+
+  -- Does the spell need a cast-time target? If so, park it in the triggered-ability
+  -- target shape and let choose_triggered_ability_(creature_)target set the target
+  -- (guards relaxed to accept 'spell_effect'); apply_trigger_effects resolves the
+  -- effects against the chosen target when the item resolves.
+  v_spec := public.spell_free_cast_target_spec(v_actions);
+  if coalesce((v_spec ->> 'required')::boolean, false) then
+    select coalesce(max(position), -1) + 1 into v_next_position
+    from public.game_stack_items where session_id = p_session_id;
+    insert into public.game_stack_items (
+      session_id, controller_player_id, source_card_id, action_type, payload, position, status)
+    values (
+      p_session_id, p_controller, p_game_card_id, 'spell_effect',
+      jsonb_build_object(
+        'effects', v_actions, 'controller_player_id', p_controller, 'timing', 'instant',
+        'free_cast', true, 'target_required', true,
+        'target_type', v_spec -> 'target_type',
+        'target_controller', v_spec ->> 'target_controller',
+        'target_count', (v_spec ->> 'target_count')::integer),
+      v_next_position, 'pending')
+    returning id into v_stack_item_id;
+    -- The instant/sorcery leaves exile for the graveyard on cast (mirrors
+    -- cast_spell_effect's cast-time zone move). A permanent spell reaches this
+    -- branch only as an Aura (targets); Auras are out of scope for now.
+    if v_type_line ilike '%instant%' or v_type_line ilike '%sorcery%' then
+      update public.game_cards
+      set zone = 'graveyard',
+          zone_position = (select coalesce(max(zone_position), -1) + 1 from public.game_cards x
+                           where x.session_id = p_session_id and x.owner_id = game_cards.owner_id and x.zone = 'graveyard')
+      where id = p_game_card_id and session_id = p_session_id;
+    end if;
+    return v_stack_item_id;
   end if;
 
   perform public.cast_spell_effect(p_session_id, v_actions, p_game_card_id, 0, null, false, true);

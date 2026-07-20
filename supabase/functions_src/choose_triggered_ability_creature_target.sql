@@ -34,7 +34,9 @@ begin
     raise exception 'Triggered ability stack item not found';
   end if;
 
-  if v_stack_item.action_type <> 'triggered_ability'
+  -- 'spell_effect' (mig 420): a free nested-cast parks its found spell in the same
+  -- target shape; the target_required/optional gate still scopes this to free casts.
+  if v_stack_item.action_type not in ('triggered_ability', 'spell_effect')
     or (coalesce((v_stack_item.payload ->> 'target_required')::boolean, false) is not true
         and coalesce((v_stack_item.payload ->> 'target_optional')::boolean, false) is not true)
   then
