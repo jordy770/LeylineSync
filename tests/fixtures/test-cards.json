@@ -12589,7 +12589,41 @@
     "mana_cost": "{4}{G}",
     "script": {
       "schema_version": 2,
-      "cascade": { "count": 1 }
+      "cascade": {
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Cascade Targeted Test",
+    "type_line": "Instant",
+    "oracle_text": "Cascade. Destroy target creature.",
+    "power_toughness": null,
+    "mana_cost": "{2}{B}{R}",
+    "script": {
+      "schema_version": 2,
+      "cascade": {
+        "count": 1
+      },
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "destroy",
+            "target_type": "creature"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Cascade Bool Test",
+    "type_line": "Creature - Elemental",
+    "oracle_text": "Cascade",
+    "power_toughness": "5/5",
+    "mana_cost": "{4}{G}",
+    "script": {
+      "schema_version": 2,
+      "cascade": true
     }
   }
 ]

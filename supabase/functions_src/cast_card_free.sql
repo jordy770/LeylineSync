@@ -86,6 +86,10 @@ begin
                            where x.session_id = p_session_id and x.owner_id = game_cards.owner_id and x.zone = 'graveyard')
       where id = p_game_card_id and session_id = p_session_id;
     end if;
+    -- Fire this spell's own cast triggers (e.g. a cascade card found by cascade —
+    -- Bituminous Blast). The no-target branch below gets this via cast_spell_effect;
+    -- the targeted branch parks its own stack item, so fire it here.
+    perform public.enqueue_cast_triggers(p_session_id, p_game_card_id, p_controller);
     return v_stack_item_id;
   end if;
 

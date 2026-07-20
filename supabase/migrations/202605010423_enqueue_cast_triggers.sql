@@ -1,9 +1,7 @@
 -- enqueue_cast_triggers
--- Cascade & generalized nested-cast, Task 5: adds enqueue_cast_triggers, which
--- reads a just-cast card's script.cascade and enqueues N cascade triggered
--- abilities, and wires it into every cast path (cast_card_from_hand for
--- permanents, cast_spell_effect for instants/sorceries, cast_card_free's
--- permanent branch for free-cast recursion) so a cascade card actually fires.
+-- Fire cascade from every cast path: shared enqueue_cast_triggers reads script.cascade
+-- and enqueues N cascade triggers; wired into cast_card_from_hand, cast_spell_effect,
+-- and cast_card_free (incl. its targeted-spell branch).
 -- Generated from supabase/functions_src (enqueue_cast_triggers, cast_card_from_hand, cast_spell_effect, cast_card_free) — those files are
 -- the canonical current definitions; edit them, not past migrations.
 
@@ -958,6 +956,10 @@ begin
                            where x.session_id = p_session_id and x.owner_id = game_cards.owner_id and x.zone = 'graveyard')
       where id = p_game_card_id and session_id = p_session_id;
     end if;
+    -- Fire this spell's own cast triggers (e.g. a cascade card found by cascade —
+    -- Bituminous Blast). The no-target branch below gets this via cast_spell_effect;
+    -- the targeted branch parks its own stack item, so fire it here.
+    perform public.enqueue_cast_triggers(p_session_id, p_game_card_id, p_controller);
     return v_stack_item_id;
   end if;
 
