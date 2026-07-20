@@ -12570,5 +12570,15 @@
         ]
       }
     }
+  },
+  {
+    "name": "Cascade Blank Instant Test",
+    "type_line": "Instant",
+    "oracle_text": "(An unsupported/no-actions shape for the cascade fallback test.)",
+    "power_toughness": null,
+    "mana_cost": "{U}",
+    "script": {
+      "schema_version": 2
+    }
   }
 ]

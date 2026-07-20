@@ -1,5 +1,6 @@
 -- cascade_handler
--- TODO: describe the change.
+-- Cascade effect handler + shared exile_until_cheaper helper (discover refactored
+-- onto it) + the cascade_cast "may cast it for free" decision.
 -- Generated from supabase/functions_src (exile_until_cheaper, apply_trigger_effects, submit_decision) — those files are
 -- the canonical current definitions; edit them, not past migrations.
 

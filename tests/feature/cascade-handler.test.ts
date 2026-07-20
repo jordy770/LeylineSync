@@ -68,6 +68,22 @@ test('CH3 threshold is strict: a card at exactly the cast MV is skipped', async 
   })
 })
 
+test('CH5 accepting an unsupported-shape spell bottoms it (sentinel fallback, never to hand)', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    // A nonland whose script has no spell_effect.actions → cast_card_free returns the sentinel.
+    const blank = await s.spawn('A', 'Cascade Blank Instant Test', 'library') // {U} = MV 1 < 5
+    await enqueueCascade(s, 5)
+    await s.as('A').resolveStack()
+    const dec = await s.pendingDecision()
+    assert.equal(dec!.decision_type, 'cascade_cast')
+    await s.as('A').submitDecision(dec!.id, { chosen: [blank] }) // accept, but it can't be cast
+    assert.equal(await s.zoneOf(blank), 'library') // bottomed, not cast, not to hand
+    assert.equal(await s.zoneCount('A', 'hand'), 0)
+  })
+})
+
 test('CH4 cascade finds a no-target spell and truly casts it', async () => {
   await withRolledBackTx(async (client) => {
     const s = await Scenario.create(client)
