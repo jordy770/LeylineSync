@@ -53,6 +53,20 @@ test('CFT3 resolving a targeted free-cast before its target is chosen raises (no
   })
 })
 
+test('CFT4 no legal target left → resolves (fizzles) instead of soft-locking', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    // No creature anywhere → "destroy target creature" has no legal target.
+    const terminate = await s.spawn('A', 'Cascade Terminate Test', 'exile')
+    await asPlayer(client, s.playerId('A'), () =>
+      client.query('select public.cast_card_free($1, $2, $3)', [s.sessionId, terminate, s.playerId('A')]))
+    // Must NOT raise (no legal target to choose) — the spell fizzles and the stack clears.
+    await s.as('A').resolveStack()
+    assert.equal(await s.pendingCount(), 0)
+  })
+})
+
 test('CFT2 the target-shape relaxation still rejects a normal (non-free) cast spell_effect', async () => {
   await withRolledBackTx(async (client) => {
     const s = await Scenario.create(client)
