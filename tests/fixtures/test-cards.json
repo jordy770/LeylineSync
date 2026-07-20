@@ -12510,5 +12510,21 @@
     "power_toughness": null,
     "mana_cost": "{2}{R}",
     "script": { "schema_version": 2, "spell_effect": { "actions": [ { "type": "deal_damage", "amount": 3, "target_type": ["creature", "player"] } ] } }
+  },
+  {
+    "name": "Cascade Bear Test",
+    "type_line": "Creature - Bear",
+    "oracle_text": "",
+    "power_toughness": "2/2",
+    "mana_cost": "{1}{G}",
+    "script": { "schema_version": 2 }
+  },
+  {
+    "name": "Cascade Draw Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Draw a card.",
+    "power_toughness": null,
+    "mana_cost": "{1}{U}",
+    "script": { "schema_version": 2, "spell_effect": { "actions": [ { "type": "draw", "count": 1 } ] } }
   }
 ]
