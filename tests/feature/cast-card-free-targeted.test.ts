@@ -37,6 +37,22 @@ test('CFT1 free-cast of a targeted instant parks a target on the spell, resolves
   })
 })
 
+test('CFT3 resolving a targeted free-cast before its target is chosen raises (no silent fizzle)', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
+    await s.spawnCreature('B', 'Grave Shambler Test')
+    const terminate = await s.spawn('A', 'Cascade Terminate Test', 'exile')
+    await asPlayer(client, s.playerId('A'), () =>
+      client.query('select public.cast_card_free($1, $2, $3)', [s.sessionId, terminate, s.playerId('A')]))
+    // handle_spell_effect must refuse to resolve the item until a target is set,
+    // rather than fizzling the effect (the source is already in the graveyard).
+    await assert.rejects(
+      () => s.as('A').resolveStack() as Promise<unknown>,
+      /requires a target to be chosen first/i)
+  })
+})
+
 test('CFT2 the target-shape relaxation still rejects a normal (non-free) cast spell_effect', async () => {
   await withRolledBackTx(async (client) => {
     const s = await Scenario.create(client)

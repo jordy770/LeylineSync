@@ -76,8 +76,9 @@ begin
       v_next_position, 'pending')
     returning id into v_stack_item_id;
     -- The instant/sorcery leaves exile for the graveyard on cast (mirrors
-    -- cast_spell_effect's cast-time zone move). A permanent spell reaches this
-    -- branch only as an Aura (targets); Auras are out of scope for now.
+    -- cast_spell_effect's cast-time zone move). Only instants/sorceries reach the
+    -- spell branch here — targeted permanents (Auras) are caught by v_is_permanent
+    -- above and go through the cast_permanent push; their targeting is a later gap.
     if v_type_line ilike '%instant%' or v_type_line ilike '%sorcery%' then
       update public.game_cards
       set zone = 'graveyard',
