@@ -10,7 +10,7 @@ test('CX1 casting a cascade permanent enqueues a cascade trigger', async () => {
   await withRolledBackTx(async (client) => {
     const s = await Scenario.create(client)
     await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
-    const bear = await s.spawn('A', 'Cascade Bear Test', 'library') // MV 2 < 5 window
+    await s.spawn('A', 'Cascade Bear Test', 'library') // MV 2 < 5 window (a cheaper cascade target)
     const wurm = await s.spawn('A', 'Cascade Wurm Test', 'hand')    // {4}{G} = MV 5
     await s.setMana('A', { G: 1, C: 4 })
     await s.as('A').castPermanent(wurm)
