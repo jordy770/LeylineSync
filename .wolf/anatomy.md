@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-18T12:32:00.838Z
-> Files: 73 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-21T08:02:12.970Z
+> Files: 105 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -12,6 +12,10 @@
 - `all-med-fixes-3.json` (~1576 tok)
 - `all-med-fixes.json` (~5411 tok)
 - `apply-lowfix.py` (~310 tok)
+- `cascade-batch-A.json` (~218 tok)
+- `cascade-batch-B.json` (~395 tok)
+- `cascade-batch-C.json` (~227 tok)
+- `cascade-batch-D.json` (~553 tok)
 - `classify-backlog.py` — classify (~2180 tok)
 - `engine-additions.md` — Engine additions since the oracle audit (mig 393–410) — USE THESE (~1199 tok)
 - `med-fix-prompt.txt` — Declares enums (~800 tok)
@@ -79,6 +83,9 @@
 
 ## ./
 
+- `checksig.mjs` — Declares client (~116 tok)
+- `CLAUDE_JOB_TMP_PLACEHOLDER.json` (~4 tok)
+- `debugtest.mjs` — Declares castFromExile (~280 tok)
 
 ## .claude/
 
@@ -97,6 +104,11 @@
 
 ## .github/workflows/
 
+
+## .superpowers/sdd/
+
+- `task-2-report.md` — Task 2 Report: `cast_card_free` (~2024 tok)
+- `task-5-report.md` — Task 5 report: `enqueue_cast_triggers` + wire into cast paths (~1811 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -265,6 +277,7 @@
 
 ## components/
 
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~72555 tok)
 
 ## components/board/
 
@@ -296,6 +309,15 @@
 ## docs/commander-decks/
 
 
+## docs/superpowers/plans/
+
+- `2026-07-20-cascade-nested-cast.md` — Cascade & Generalized Free Nested-Cast — Implementation Plan (~12760 tok)
+
+## docs/superpowers/specs/
+
+- `2026-07-20-cascade-nested-cast-design.md` — Design spec: cascade + generalized free nested-cast (cast_card_free, target-parking reuse, fallback taxonomy); ~34 v1 cards, 21 deferred (~1600 tok)
+- `2026-07-20-cascade-nested-cast-design.md` — Cascade & Generalized Free Nested-Cast — Design Spec (~3133 tok)
+
 ## lib/
 
 
@@ -310,7 +332,7 @@
 
 ## lib/game/
 
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23844 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23960 tok)
 - `types.ts` — Short room code for the /tv spectator flow (mig 379). (~3095 tok)
 
 ## lib/intelligence/
@@ -342,26 +364,33 @@
 - `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~10102 tok)
 - `advance_step.sql` — supabase/functions_src/advance_step.sql (~4215 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~7932 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24238 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24286 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14411 tok)
 - `build_stack_payload_permanent_simple.sql` — supabase/functions_src/build_stack_payload_permanent_simple.sql (~927 tok)
 - `card_has_creature_type.sql` — supabase/functions_src/card_has_creature_type.sql (~732 tok)
 - `card_layered_power.sql` — supabase/functions_src/card_layered_power.sql (~1711 tok)
 - `card_layered_toughness.sql` — supabase/functions_src/card_layered_toughness.sql (~1724 tok)
-- `choose_triggered_ability_targets.sql` — supabase/functions_src/choose_triggered_ability_targets.sql (~1086 tok)
+- `cast_card_free.sql` — supabase/functions_src/cast_card_free.sql (~1540 tok)
+- `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~6290 tok)
+- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~3897 tok)
+- `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1157 tok)
+- `choose_triggered_ability_targets.sql` — supabase/functions_src/choose_triggered_ability_targets.sql (~1171 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~911 tok)
 - `declare_attacker.sql` — supabase/functions_src/declare_attacker.sql (~3516 tok)
 - `declare_blocker.sql` — supabase/functions_src/declare_blocker.sql (~2039 tok)
 - `effective_script.sql` — supabase/functions_src/effective_script.sql (~935 tok)
 - `effective_type_line.sql` — supabase/functions_src/effective_type_line.sql (~763 tok)
+- `enqueue_cast_triggers.sql` — supabase/functions_src/enqueue_cast_triggers.sql (~435 tok)
 - `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~1985 tok)
+- `exile_until_cheaper.sql` — supabase/functions_src/exile_until_cheaper.sql (~582 tok)
 - `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~4907 tok)
 - `fire_zone_change_triggers.sql` — supabase/functions_src/fire_zone_change_triggers.sql (~1832 tok)
 - `note_card_drawn.sql` — supabase/functions_src/note_card_drawn.sql (~349 tok)
 - `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~2318 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~1417 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3159 tok)
-- `submit_decision.sql` — Declares public (~17174 tok)
+- `spell_free_cast_target_spec.sql` — supabase/functions_src/spell_free_cast_target_spec.sql (~350 tok)
+- `submit_decision.sql` — Declares public (~17447 tok)
 
 ## supabase/migrations/
 
@@ -372,6 +401,11 @@
 - `202605010415_per_opponent_targets.sql` — per_opponent_targets (~3140 tok)
 - `202605010416_scaling_cost_reduction.sql` — scaling_cost_reduction (~1295 tok)
 - `202605010417_sacrifice_or_filter.sql` — sacrifice_or_filter (~41502 tok)
+- `202605010418_free_cast_flag.sql` — free_cast_flag (~3870 tok)
+- `202605010419_cast_card_free.sql` — cast_card_free (~4445 tok)
+- `202605010421_free_cast_resolve_guard.sql` — 202605010421_free_cast_resolve_guard.sql (~776 tok)
+- `202605010422_cascade_handler.sql` — cascade_handler (~42230 tok)
+- `202605010423_enqueue_cast_triggers.sql` — enqueue_cast_triggers (~11551 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -383,6 +417,11 @@
 
 - `breya-manabase.test.ts` — mig 263 — Breya mana base. Engine touch: bounce_up_to type_line filter (~928 tok)
 - `card-drawn-watcher.test.ts` — mig 401 — card_drawn watcher: every real draw (draw effect, natural draw, (~1076 tok)
+- `cascade-cast-hook.test.ts` — s: hasCascadeTrigger (~801 tok)
+- `cascade-e2e.test.ts` — mig 418-423 — cascade end-to-end: cast a cascade card from hand → the cast hook (~900 tok)
+- `cascade-handler.test.ts` — mig 422 — the cascade effect handler: exile-until-lesser-MV (shared (~1495 tok)
+- `cast-card-free-targeted.test.ts` — mig 420 — cast_card_free's targeted-spell path: a found instant that needs a (~1344 tok)
+- `cast-card-free.test.ts` — Declares castFree (~593 tok)
 - `changeling-anthems-costs.test.ts` — mig 409 — changeling / granted types now flow through the tribal ANTHEM P/T (~702 tok)
 - `changeling.test.ts` — mig 408 — changeling (Mirror Entity): "is every creature type". Since ~250 (~751 tok)
 - `color-exclusion.test.ts` — mig 414 — negative COLOUR restriction on removal ("Destroy target nonblack (~1310 tok)
@@ -390,6 +429,7 @@
 - `dies-replacement.test.ts` — mig 406 — death replacement (Kalitas, Traitor of Ghet): "Whenever a nontoken (~1004 tok)
 - `directed-player-draw.test.ts` — Directed target-player effects — "Target player draws X …" (Blue Sun's Zenith, (~739 tok)
 - `exile-until-leaves-return-to.test.ts` — mig 404 — exile_until_leaves gains multi-target ("up to three") + a (~784 tok)
+- `free-cast-flag.test.ts` — Verifies p_free skips the payment block: a {2}{R} instant cast from exile with (~1127 tok)
 - `graveyard-exile-until-leaves.test.ts` — mig 405 — graveyard-target triggers (exile_graveyard_until_leaves), the (~1057 tok)
 - `imprisoned-in-the-moon.test.ts` — mig 410 — Imprisoned in the Moon: an Aura that turns the enchanted permanent (~1130 tok)
 - `per-opponent-targets.test.ts` — mig 415 — "for each opponent, exile up to one target … that player controls" (~972 tok)
@@ -401,6 +441,7 @@
 
 ## tests/fixtures/
 
+- `test-cards.json` (~90549 tok)
 
 ## tests/harness/
 
