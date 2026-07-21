@@ -8033,3 +8033,92 @@
 | 14:30 | Edited ../../.claude/jobs/ca267fb9/tmp/classify-backlog.py | "docs\commander-decks\engi" → "docs\commander-decks\engi" | ~35 |
 | 14:31 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/engine-primitive-rounds.md | — | ~708 |
 | 14:32 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | inline fix | ~53 |
+
+## Session: 2026-07-18 15:31
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-20 09:50
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:49 | Created docs/superpowers/specs/2026-07-20-cascade-nested-cast-design.md | — | ~3342 |
+| 12:50 | Brainstormed cascade / generalized free nested-cast; wrote design spec | docs/superpowers/specs/2026-07-20-cascade-nested-cast-design.md | spec approved, pre-plan | ~9k |
+| 13:55 | Created docs/superpowers/plans/2026-07-20-cascade-nested-cast.md | — | ~12943 |
+| 14:55 | Edited docs/superpowers/plans/2026-07-20-cascade-nested-cast.md | 9→11 lines | ~368 |
+| 14:55 | Edited docs/superpowers/plans/2026-07-20-cascade-nested-cast.md | modified public() | ~1163 |
+| 14:55 | Edited docs/superpowers/plans/2026-07-20-cascade-nested-cast.md | 3→4 lines | ~92 |
+| 14:56 | Edited docs/superpowers/plans/2026-07-20-cascade-nested-cast.md | modified feat() | ~95 |
+| 14:57 | Edited docs/superpowers/plans/2026-07-20-cascade-nested-cast.md | modified DB() | ~217 |
+| 15:00 | Edited tests/fixtures/test-cards.json | expanded (+8 lines) | ~144 |
+| 15:00 | Created tests/feature/free-cast-flag.test.ts | — | ~428 |
+| 15:01 | Edited supabase/functions_src/cast_spell_effect.sql | modified cast() | ~81 |
+| 15:01 | Edited supabase/functions_src/cast_spell_effect.sql | 2→2 lines | ~34 |
+| 15:01 | Edited supabase/functions_src/cast_spell_effect.sql | inline fix | ~24 |
+| 15:01 | Edited supabase/functions_src/cast_spell_effect.sql | inline fix | ~32 |
+| 15:02 | Edited supabase/migrations/202605010418_free_cast_flag.sql | 4→8 lines | ~155 |
+| 15:03 | Created debugtest.mjs | — | ~156 |
+| 15:03 | Created debugtest.mjs | — | ~280 |
+| 15:05 | Edited tests/feature/free-cast-flag.test.ts | modified castFromExile() | ~256 |
+| 15:05 | Edited tests/feature/free-cast-flag.test.ts | 4→3 lines | ~21 |
+| 15:06 | Edited tests/feature/free-cast-flag.test.ts | expanded (+8 lines) | ~219 |
+| 15:07 | Edited tests/feature/free-cast-flag.test.ts | 3→6 lines | ~118 |
+| 15:14 | Created checksig.mjs | — | ~116 |
+| 15:15 | Edited supabase/migrations/202605010418_free_cast_flag.sql | modified if() | ~184 |
+| 15:31 | Edited tests/fixtures/test-cards.json | expanded (+16 lines) | ~234 |
+| 15:35 | Created tests/feature/cast-card-free.test.ts | — | ~481 |
+| 15:35 | Created supabase/functions_src/cast_card_free.sql | — | ~707 |
+| 15:36 | Edited tests/feature/cast-card-free.test.ts | modified castFree() | ~221 |
+| 15:37 | Edited supabase/functions_src/cast_card_free.sql | expanded (+13 lines) | ~295 |
+| 15:43 | Created .superpowers/sdd/task-2-report.md | — | ~2159 |
+| 15:50 | Edited supabase/functions_src/cast_spell_effect.sql | 4→7 lines | ~140 |
+| 15:51 | Edited supabase/functions_src/cast_card_free.sql | removed 13 lines | ~27 |
+| 15:52 | Created supabase/migrations/202605010419_cast_card_free.sql | — | ~4445 |
+| 16:07 | Created supabase/functions_src/spell_free_cast_target_spec.sql | — | ~350 |
+| 16:07 | Edited supabase/functions_src/cast_card_free.sql | 8→10 lines | ~49 |
+| 16:07 | Edited supabase/functions_src/cast_card_free.sql | modified coalesce() | ~615 |
+| 16:07 | Edited supabase/functions_src/choose_triggered_ability_targets.sql | modified not() | ~165 |
+| 16:07 | Edited supabase/functions_src/choose_triggered_ability_creature_target.sql | modified or() | ~115 |
+| 16:08 | Created tests/feature/cast-card-free-targeted.test.ts | — | ~786 |
+| 16:22 | Created supabase/migrations/202605010421_free_cast_resolve_guard.sql | — | ~513 |
+| 16:22 | Edited supabase/functions_src/cast_card_free.sql | Aura() → permanents() | ~107 |
+| 16:22 | Edited tests/feature/cast-card-free-targeted.test.ts | expanded (+16 lines) | ~283 |
+| 16:30 | Edited supabase/migrations/202605010421_free_cast_resolve_guard.sql | added 2 condition(s) | ~428 |
+| 16:30 | Edited tests/feature/cast-card-free-targeted.test.ts | expanded (+14 lines) | ~249 |
+| 16:40 | Created supabase/functions_src/exile_until_cheaper.sql | — | ~582 |
+| 16:40 | Edited supabase/functions_src/apply_trigger_effects.sql | modified loop() | ~678 |
+| 16:41 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~125 |
+| 16:41 | Edited supabase/functions_src/submit_decision.sql | modified cast_card_free() | ~318 |
+| 16:42 | Created tests/feature/cascade-handler.test.ts | — | ~1227 |
+| 16:42 | Edited tests/feature/cascade-handler.test.ts | 8→8 lines | ~168 |
+| 16:43 | Edited tests/feature/cascade-handler.test.ts | 3→3 lines | ~65 |
+| 16:56 | Edited components/ControllerListV5.tsx | inline fix | ~28 |
+| 16:56 | Edited supabase/migrations/202605010422_cascade_handler.sql | 2→3 lines | ~44 |
+| 16:57 | Edited tests/feature/cascade-handler.test.ts | expanded (+16 lines) | ~276 |
+| 17:04 | Edited tests/fixtures/test-cards.json | expanded (+11 lines) | ~147 |
+| 17:04 | Created tests/feature/cascade-cast-hook.test.ts | — | ~320 |
+| 17:04 | Created supabase/functions_src/enqueue_cast_triggers.sql | — | ~435 |
+| 17:04 | Edited supabase/functions_src/cast_card_from_hand.sql | modified Cascade() | ~91 |
+| 17:05 | Edited supabase/functions_src/cast_spell_effect.sql | modified Cascade() | ~127 |
+| 17:05 | Edited supabase/functions_src/cast_card_free.sql | inline fix | ~29 |
+| 17:05 | Edited supabase/migrations/202605010423_enqueue_cast_triggers.sql | 4→8 lines | ~164 |
+| 17:07 | Created .superpowers/sdd/task-5-report.md | — | ~1932 |
+| 17:19 | Edited supabase/functions_src/cast_card_free.sql | 7→11 lines | ~148 |
+| 17:20 | Edited tests/feature/cascade-cast-hook.test.ts | modified hasCascadeTrigger() | ~574 |
+| 17:26 | Created tests/feature/cascade-e2e.test.ts | — | ~900 |
+| 17:26 | Edited supabase/functions_src/cast_spell_effect.sql | 14→16 lines | ~208 |
+| 17:32 | Edited lib/game/card-behavior-schema.ts | modified Cascade() | ~160 |
+| 09:40 | Created ../../.claude/jobs/ca267fb9/tmp/cascade-batch-A.json | — | ~218 |
+| 09:42 | Created ../../.claude/jobs/ca267fb9/tmp/cascade-batch-B.json | — | ~395 |
+| 09:43 | Created CLAUDE_JOB_TMP_PLACEHOLDER.json | — | ~4 |
+| 09:43 | Created ../../.claude/jobs/ca267fb9/tmp/cascade-batch-C.json | — | ~227 |
+| 09:45 | Created ../../.claude/jobs/ca267fb9/tmp/cascade-batch-D.json | — | ~553 |
+| 10:00 | Edited components/ControllerListV5.tsx | 6→8 lines | ~139 |
+| 10:00 | Edited components/ControllerListV5.tsx | 7→8 lines | ~106 |
+| 10:01 | Edited supabase/functions_src/cast_spell_effect.sql | 3→6 lines | ~108 |
+| 10:01 | Edited supabase/functions_src/cast_spell_effect.sql | 3→3 lines | ~64 |
+| 10:01 | Edited supabase/functions_src/cast_card_free.sql | modified coalesce() | ~286 |
+| 10:02 | Edited tests/feature/cast-card-free-targeted.test.ts | 13→16 lines | ~306 |
+| 10:02 | Edited tests/feature/free-cast-flag.test.ts | expanded (+19 lines) | ~371 |
+| 10:08 | Built cascade: generalized free nested-cast (migs 418-425) + 32 card scripts; whole-branch reviewed | functions_src/*, card-scripts.json, ControllerListV5 | complete, 2417 tests green, branch feat/cascade-nested-cast | ~300k |

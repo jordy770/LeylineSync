@@ -21870,6 +21870,314 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-18T12:32:00.860Z"
+    },
+    {
+      "id": "bug-1335",
+      "timestamp": "2026-07-20T12:55:11.077Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/superpowers/plans/2026-07-20-cascade-nested-cast.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 9→11 lines (3 removed) | Also: - [ ] **Step 3: Implement the `cascade` branch** i; Adapt the `discover` block (lines 839–891): read `",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-20T12:55:46.181Z"
+    },
+    {
+      "id": "bug-1336",
+      "timestamp": "2026-07-20T12:56:00.749Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/superpowers/plans/2026-07-20-cascade-nested-cast.md",
+      "root_cause": "Had \"feat(engine): cascade effect handler + cascade_ca",
+      "fix": "Changed to \"feat(engine): cascade effect handler + shared exi",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-20T12:57:30.593Z"
+    },
+    {
+      "id": "bug-1337",
+      "timestamp": "2026-07-20T13:05:29.068Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/free-cast-flag.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 11→17 lines (3 removed) | Also: // free = true → succeeds; assert.equal(await s.zoneOf(probeFree), 'stack')",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-20T13:07:00.296Z"
+    },
+    {
+      "id": "bug-1338",
+      "timestamp": "2026-07-20T13:06:01.850Z",
+      "error_message": "Type error",
+      "file": "tests/feature/free-cast-flag.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T13:06:01.850Z"
+    },
+    {
+      "id": "bug-1339",
+      "timestamp": "2026-07-20T13:36:47.084Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/cast-card-free.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 10→16 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T13:36:47.084Z"
+    },
+    {
+      "id": "bug-1340",
+      "timestamp": "2026-07-20T14:22:45.385Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/cast_card_free.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T14:22:45.385Z"
+    },
+    {
+      "id": "bug-1341",
+      "timestamp": "2026-07-20T14:22:54.119Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/cast-card-free-targeted.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T14:22:54.119Z"
+    },
+    {
+      "id": "bug-1342",
+      "timestamp": "2026-07-20T14:30:56.899Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/cast-card-free-targeted.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T14:30:56.899Z"
+    },
+    {
+      "id": "bug-1343",
+      "timestamp": "2026-07-20T14:41:15.448Z",
+      "error_message": "Incorrect value in code",
+      "file": "supabase/functions_src/submit_decision.sql",
+      "root_cause": "Had 'put_from_hand_pick'",
+      "fix": "Changed to 'cascade_cast'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T14:41:15.448Z"
+    },
+    {
+      "id": "bug-1344",
+      "timestamp": "2026-07-20T14:43:14.554Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/feature/cascade-handler.test.ts",
+      "root_cause": "Had ') // a card to draw\n    const draw = await s.spaw",
+      "fix": "Changed to ') // top: {1}{U} sorcery MV 2 < 5\n    await s.spa",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T14:43:14.554Z"
+    },
+    {
+      "id": "bug-1345",
+      "timestamp": "2026-07-20T14:56:47.452Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Had 'put_from_hand_pick'",
+      "fix": "Changed to 'cascade_cast'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T14:56:47.452Z"
+    },
+    {
+      "id": "bug-1346",
+      "timestamp": "2026-07-20T14:57:10.066Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/cascade-handler.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T14:57:10.066Z"
+    },
+    {
+      "id": "bug-1347",
+      "timestamp": "2026-07-20T15:20:19.923Z",
+      "error_message": "Function not marked async",
+      "file": "tests/feature/cascade-cast-hook.test.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-20T15:20:19.923Z"
+    },
+    {
+      "id": "bug-1348",
+      "timestamp": "2026-07-21T08:02:02.932Z",
+      "error_message": "Type error",
+      "file": "tests/feature/cast-card-free-targeted.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-21T08:02:02.932Z"
+    },
+    {
+      "id": "bug-1349",
+      "timestamp": "2026-07-21T08:02:12.992Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/free-cast-flag.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-21T08:02:12.992Z"
+    },
+    {
+      "id": "bug-350",
+      "timestamp": "2026-07-21",
+      "error_message": "free-cast from exile inserted a permanent play_from_exile permission row that never expires (leak)",
+      "file": "cast_card_free.sql",
+      "root_cause": "worked around cast_spell_effect exile-permission gate by granting a permission instead of bypassing it; advance_step never deletes permanent:true rows",
+      "fix": "guard the exile-permission gate with not p_free; removed the insert",
+      "tags": [
+        "cascade",
+        "p_free",
+        "leak",
+        "review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-21"
+    },
+    {
+      "id": "bug-352",
+      "timestamp": "2026-07-21",
+      "error_message": "targeted free-cast spell could resolve before its target was chosen and silently fizzle (source already in graveyard)",
+      "file": "handle_spell_effect (mig 421)",
+      "root_cause": "handle_spell_effect lacked the premature-resolution guard handle_triggered_ability has",
+      "fix": "raise when target_required and no target chosen AND a legal target exists; else fall through to fizzle",
+      "tags": [
+        "cascade",
+        "soft-lock",
+        "resolve-guard",
+        "review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-21"
+    },
+    {
+      "id": "bug-354",
+      "timestamp": "2026-07-21",
+      "error_message": "free cast of a found sorcery hit sorcery-timing / priority gates during cascade resolution (off-turn, non-empty stack)",
+      "file": "cast_spell_effect.sql",
+      "root_cause": "p_free bypassed payment but not timing/priority gates",
+      "fix": "guard sorcery-timing and priority-player gates with not p_free",
+      "tags": [
+        "cascade",
+        "p_free",
+        "timing",
+        "review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-21"
+    },
+    {
+      "id": "bug-356",
+      "timestamp": "2026-07-21",
+      "error_message": "cascade into a targeted spell was un-targetable in the controller UI → live soft-lock",
+      "file": "ControllerListV5.tsx",
+      "root_cause": "target prompt gated on action_type triggered_ability only, not spell_effect+target_required",
+      "fix": "accept spell_effect items in both target-prompt gates",
+      "tags": [
+        "cascade",
+        "frontend",
+        "soft-lock",
+        "review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-21"
     }
   ]
 }
