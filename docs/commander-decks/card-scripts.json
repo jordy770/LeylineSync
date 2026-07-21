@@ -23802,6 +23802,7 @@
   },
   "Bituminous Blast": {
     "schema_version": 2,
+    "cascade": true,
     "spell_effect": {
       "actions": [
         {
@@ -25812,5 +25813,262 @@
         ]
       }
     ]
+  },
+  "Annoyed Altisaur": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Boarding Party": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Enlisted Wurm": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Heralds of Tzeentch": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Maelstrom Colossus": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Shardless Agent": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Bloodbraid Elf": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Captured Sunlight": {
+    "schema_version": 2,
+    "cascade": true,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "gain_life",
+          "amount": 4
+        }
+      ]
+    }
+  },
+  "Deny Reality": {
+    "schema_version": 2,
+    "cascade": true,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "bounce",
+          "target_type": "permanent"
+        }
+      ]
+    }
+  },
+  "Natural Reclamation": {
+    "schema_version": 2,
+    "cascade": true,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "destroy",
+          "target_type": [
+            "artifact",
+            "enchantment"
+          ]
+        }
+      ]
+    }
+  },
+  "Forceful Denial": {
+    "schema_version": 2,
+    "cascade": true,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "counter",
+          "target_type": "spell"
+        }
+      ]
+    }
+  },
+  "Violent Outburst": {
+    "schema_version": 2,
+    "cascade": true,
+    "spell_effect": {
+      "actions": [
+        {
+          "type": "pump_all",
+          "power": 1,
+          "toughness": 0,
+          "scope": "controller"
+        }
+      ]
+    }
+  },
+  "Demonic Dread": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Let the Galaxy Burn": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Volcanic Torrent": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Apex Devastator": {
+    "schema_version": 2,
+    "cascade": {
+      "count": 4
+    }
+  },
+  "Maelstrom Wanderer": {
+    "schema_version": 2,
+    "cascade": {
+      "count": 2
+    }
+  },
+  "Call Forth the Tempest": {
+    "schema_version": 2,
+    "cascade": {
+      "count": 2
+    }
+  },
+  "Ardent Plea": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Ethersworn Sphinx": {
+    "schema_version": 2,
+    "keywords": [
+      "flying"
+    ],
+    "cascade": true,
+    "cost_reduction": {
+      "amount": 1,
+      "per": {
+        "count": "artifacts_you_control"
+      }
+    }
+  },
+  "Noise Marine": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Garbage Elemental": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Enigma Sphinx": {
+    "schema_version": 2,
+    "keywords": [
+      "flying"
+    ],
+    "cascade": true
+  },
+  "Etherium-Horn Sorcerer": {
+    "schema_version": 2,
+    "cascade": true,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}{U}{R}"
+          }
+        ],
+        "effects": [
+          {
+            "type": "return_self_to_hand"
+          }
+        ]
+      }
+    ]
+  },
+  "Ingenuity Engine": {
+    "schema_version": 2,
+    "cascade": true,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{1}"
+          },
+          {
+            "type": "tap_self"
+          },
+          {
+            "type": "sacrifice_artifacts",
+            "count": 1
+          }
+        ],
+        "effects": [
+          {
+            "type": "bounce",
+            "target_type": "artifact",
+            "target_controller": "you"
+          }
+        ]
+      }
+    ]
+  },
+  "Into the Time Vortex": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Kathari Remnant": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Meteoric Mace": {
+    "schema_version": 2,
+    "cascade": true,
+    "equip_cost": "{4}",
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "equipped",
+        "payload": {
+          "power": 4,
+          "toughness": 0
+        }
+      },
+      {
+        "type": "trample",
+        "affected": "equipped"
+      }
+    ]
+  },
+  "Sakashima's Protege": {
+    "schema_version": 2,
+    "cascade": true
+  },
+  "Stormcaller's Boon": {
+    "schema_version": 2,
+    "cascade": true,
+    "activated_abilities": [
+      {
+        "costs": [
+          {
+            "type": "sacrifice_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "grant_keyword_all",
+            "keyword": "flying",
+            "scope": "controller"
+          }
+        ]
+      }
+    ]
+  },
+  "Throes of Chaos": {
+    "schema_version": 2,
+    "cascade": true
   }
 }
