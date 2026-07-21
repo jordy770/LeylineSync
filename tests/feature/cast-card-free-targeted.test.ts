@@ -53,17 +53,20 @@ test('CFT3 resolving a targeted free-cast before its target is chosen raises (no
   })
 })
 
-test('CFT4 no legal target left → resolves (fizzles) instead of soft-locking', async () => {
+test('CFT4 no legal target → cast_card_free returns the sentinel and parks nothing (caller bottoms, no graveyard)', async () => {
   await withRolledBackTx(async (client) => {
     const s = await Scenario.create(client)
     await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'A', priority: 'A' })
     // No creature anywhere → "destroy target creature" has no legal target.
     const terminate = await s.spawn('A', 'Cascade Terminate Test', 'exile')
-    await asPlayer(client, s.playerId('A'), () =>
-      client.query('select public.cast_card_free($1, $2, $3)', [s.sessionId, terminate, s.playerId('A')]))
-    // Must NOT raise (no legal target to choose) — the spell fizzles and the stack clears.
-    await s.as('A').resolveStack()
+    const r = await asPlayer(client, s.playerId('A'), () =>
+      client.query<{ cast_card_free: string }>(
+        'select public.cast_card_free($1, $2, $3) as cast_card_free', [s.sessionId, terminate, s.playerId('A')]))
+    // Sentinel → the cascade_cast handler bottoms it; nothing is parked and the card
+    // stays in exile (NOT moved to the graveyard). Design §6: bottom, never leave the library to graveyard.
+    assert.equal(r.rows[0].cast_card_free, '00000000-0000-0000-0000-000000000000')
     assert.equal(await s.pendingCount(), 0)
+    assert.equal(await s.zoneOf(terminate), 'exile')
   })
 })
 

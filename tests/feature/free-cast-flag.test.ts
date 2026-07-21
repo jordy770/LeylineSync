@@ -20,6 +20,25 @@ async function castFromExile(s: Scenario, cardId: string, free: boolean) {
       [s.sessionId, JSON.stringify([{ type: 'deal_damage', amount: 3, target_type: ['creature', 'player'] }]), cardId, free]))
 }
 
+test('FC2 free cast bypasses priority + sorcery timing (off-turn, non-empty stack)', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    // It is B's turn and B holds priority; the stack is non-empty (a dummy item).
+    await s.setTurn({ phase: 'main_1', step: 'precombat_main', active: 'B', priority: 'B' })
+    const sorcery = await s.spawn('A', 'Cascade Draw Test', 'exile') // {1}{U} SORCERY
+    await s.spawn('A', 'Grave Shambler Test', 'library') // a card for the draw
+    await client.query(
+      `insert into public.game_stack_items (session_id, controller_player_id, action_type, payload, position, status)
+       values ($1::uuid, $2::uuid, 'triggered_ability', '{"label":"dummy"}'::jsonb, 0, 'pending')`,
+      [s.sessionId, s.playerId('B')])
+    // A free-casts its sorcery mid-resolution off-turn — must NOT raise priority/timing.
+    await asPlayer(client, s.playerId('A'), () =>
+      client.query(`select public.cast_spell_effect($1, $2::jsonb, $3, 0, null, false, true)`,
+        [s.sessionId, JSON.stringify([{ type: 'draw', count: 1 }]), sorcery]))
+    assert.equal(await s.zoneOf(sorcery), 'graveyard') // cast succeeded
+  })
+})
+
 test('FC1 free cast from exile skips payment; non-free raises on empty pool', async () => {
   await withRolledBackTx(async (client) => {
     const s = await Scenario.create(client)

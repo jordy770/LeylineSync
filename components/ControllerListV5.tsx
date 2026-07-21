@@ -637,7 +637,9 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   const topStackItem = pendingStackItems.slice().sort((a, b) => b.position - a.position)[0] ?? null
   const mustChooseTriggerTarget = Boolean(
     playerId &&
-    topStackItem?.action_type === 'triggered_ability' &&
+    // 'spell_effect': a free nested-cast (cascade) parks its found targeted spell in
+    // the same target-required shape and is targeted via the same chooser RPC.
+    (topStackItem?.action_type === 'triggered_ability' || topStackItem?.action_type === 'spell_effect') &&
     topStackItem.controller_player_id === playerId &&
     topStackItem.payload?.target_required === true &&
     !topStackItem.payload?.target_card_id &&
@@ -2553,7 +2555,8 @@ function TargetedTriggerPrompt({
   const isOptional = topItem?.payload?.target_optional === true
   const needsMyTarget = Boolean(
     playerId &&
-    topItem?.action_type === 'triggered_ability' &&
+    // 'spell_effect': free nested-cast (cascade) parks its found targeted spell here.
+    (topItem?.action_type === 'triggered_ability' || topItem?.action_type === 'spell_effect') &&
     topItem.controller_player_id === playerId &&
     (topItem.payload?.target_required === true || isOptional) &&
     !alreadyChosen,

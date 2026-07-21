@@ -61,6 +61,19 @@ begin
   -- effects against the chosen target when the item resolves.
   v_spec := public.spell_free_cast_target_spec(v_actions);
   if coalesce((v_spec ->> 'required')::boolean, false) then
+    -- No legal target exists (all vanished, or an untargetable-here type like a
+    -- counterspell's 'spell') → the spell can't be cast; return the sentinel so the
+    -- caller bottoms it (design §6: never leave the library), rather than parking a
+    -- dead item that would fizzle to the graveyard.
+    if not (case
+          when public.behavior_target_type_is_creature_only(v_spec -> 'target_type')
+            then public.session_has_targetable_creature(p_session_id, p_controller,
+                   coalesce(v_spec ->> 'target_controller', 'any'))
+          else public.session_has_targetable_permanent(p_session_id, p_controller,
+                   coalesce(v_spec ->> 'target_controller', 'any'), v_spec -> 'target_type')
+        end) then
+      return '00000000-0000-0000-0000-000000000000'::uuid;
+    end if;
     select coalesce(max(position), -1) + 1 into v_next_position
     from public.game_stack_items where session_id = p_session_id;
     insert into public.game_stack_items (
