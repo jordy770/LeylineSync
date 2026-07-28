@@ -8161,4 +8161,15 @@
 | 11:23 | designqc: captured 2 screenshots (35KB, ~5000 tok) | /board/a87d18b5-4f76-456e-bbdf-a8839477565b?key=6edbc1fb-02f0-432c-b4b3-cd0b1ecca70d | ready for eval | ~0 |
 | 11:24 | designqc: captured 2 screenshots (52KB, ~5000 tok) | /board/cd99ba86-37cd-4d35-8842-48153040f8c0?key=18e6d83c-40a0-4600-a6f8-36e684bed6f9 | ready for eval | ~0 |
 | 11:28 | designqc: captured 1 screenshots (119KB, ~2500 tok) | /board/cd99ba86-37cd-4d35-8842-48153040f8c0?key=18e6d83c-40a0-4600-a6f8-36e684bed6f9 | ready for eval | ~0 |
+| 12:02 | Task 4 re-check of fix ba4e2c1: xl(1440px) confirmed still correct (852px panel, 747px card zone, all cards visible); sub-xl(1200px) only PARTIALLY fixed — page now scrolls (no hard clip) but card zone DOM-measures 10.7px tall (6 imgs present but invisible sliver), not the "cards visible" outcome expected; wrote puppeteer-core diagnostic script for ground truth since screenshots alone were ambiguous | components/GameBoard.tsx | DONE_WITH_CONCERNS — sub-xl fix incomplete, documented with DOM measurements | ~3k |
 | 11:30 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | modified up() | ~2968 |
+| 11:33 | Edited components/GameBoard.tsx | CSS: xl, xl | ~100 |
+| 11:33 | Edited components/GameBoard.tsx | "relative min-h-0 flex-1" → "relative min-h-0 flex-aut" | ~18 |
+| 11:35 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-3-report.md | modified Finding() | ~963 |
+| 11:38 | designqc: captured 1 screenshots (119KB, ~2500 tok) | /board/cd99ba86-37cd-4d35-8842-48153040f8c0?key=18e6d83c-40a0-4600-a6f8-36e684bed6f9 | ready for eval | ~0 |
+| 11:38 | designqc: captured 2 screenshots (63KB, ~5000 tok) | /board/cd99ba86-37cd-4d35-8842-48153040f8c0?key=18e6d83c-40a0-4600-a6f8-36e684bed6f9 | ready for eval | ~0 |
+| 11:39 | designqc: captured 1 screenshots (119KB, ~2500 tok) | /board/cd99ba86-37cd-4d35-8842-48153040f8c0?key=18e6d83c-40a0-4600-a6f8-36e684bed6f9 | ready for eval | ~0 |
+| 11:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/inspect-spotlight.mjs | — | ~660 |
+| 11:41 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/inspect-spotlight.mjs | "C:/Users/Jordy/AppData/Ro" → "file:///C:/Users/Jordy/Ap" | ~41 |
+| 11:43 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | modified fix() | ~1366 |
+| 11:43 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | 1→2 lines | ~227 |
