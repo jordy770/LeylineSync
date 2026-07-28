@@ -8184,3 +8184,7 @@
 | 11:58 | Edited docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md | expanded (+15 lines) | ~287 |
 | 11:59 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-3-report.md | added 1 condition(s) | ~844 |
 | 12:01 | SDD run spotlight viewport-fit compleet: 4 taken + 3 fixrounds + final review clean; branch feature/spotlight-viewport-fit ready | components/GameBoard.tsx, lib/game/spotlight-fit.ts | verified (DOM rects 3 viewports) | ~40k |
+| 12:29 | Edited tests/unit/spotlight-fit.test.ts | expanded (+13 lines) | ~225 |
+| 12:30 | Edited lib/game/spotlight-fit.ts | modified for() | ~193 |
+| 12:30 | Edited docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md | 3→5 lines | ~89 |
+| 12:30 | Ruling toegepast: counter-dragende lands blijven tegel (TDD, 14/14) | lib/game/spotlight-fit.ts, tests, spec | groen, gecommit | ~2k |

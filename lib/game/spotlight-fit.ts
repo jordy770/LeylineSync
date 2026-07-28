@@ -32,10 +32,11 @@ export function partitionSpotlightCards(cards: BoardCard[]): SpotlightPartition 
   const hostIds = new Set(cards.filter((c) => c.attached_to).map((c) => c.attached_to as string))
   const hasBadge = (c: BoardCard) =>
     Boolean(c.animated) || Boolean(c.attached_to) || hostIds.has(c.id) || (c.damage_marked ?? 0) > 0
+  const hasCounters = (c: BoardCard) =>
+    (c.plus_one_counters ?? 0) > 0 || Object.values(c.counters ?? {}).some((n) => n > 0)
   const isPlain = (c: BoardCard) =>
     !hasBadge(c) &&
-    (c.plus_one_counters ?? 0) === 0 &&
-    !Object.values(c.counters ?? {}).some((n) => n > 0) &&
+    !hasCounters(c) &&
     !c.is_face_down &&
     !typeOf(c).includes('legendary')
 
@@ -43,7 +44,9 @@ export function partitionSpotlightCards(cards: BoardCard[]): SpotlightPartition 
   const tiles: SpotlightTile[] = []
   const stackByKey = new Map<string, SpotlightTile>()
   for (const c of cards) {
-    if (typeOf(c).includes('land') && !hasBadge(c)) continue // → chip
+    // Counter-bearing lands (Gemstone Mine, storage lands) stay visible: the
+    // counters ARE the information the chip would hide.
+    if (typeOf(c).includes('land') && !hasBadge(c) && !hasCounters(c)) continue // → chip
     if (!isPlain(c)) {
       tiles.push({ card: c, count: 1 })
       continue

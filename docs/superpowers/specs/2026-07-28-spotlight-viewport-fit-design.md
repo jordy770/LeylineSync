@@ -54,8 +54,10 @@ should not remove the media gate in `useFitColumns`.
   in the panel header next to the Phase box: **"Lands 12 · 3 open"** (count +
   untapped count), mirroring the numbers `MiniPlayerWidget` already shows.
 - **Exceptions — a land stays as a tile when it is:** animated (`card.animated`,
-  can attack), has attachments, is attached to something, or has damage marked.
-  Those are exactly the lands the table needs to see.
+  can attack), has attachments, is attached to something, has damage marked, or
+  carries counters (+1/+1 or any counter-bag value > 0 — Gemstone Mine, storage
+  lands; Jordy's ruling 2026-07-28). Those are exactly the lands the table
+  needs to see.
 
 ### Duplicate stacking (×N)
 

@@ -93,6 +93,19 @@ test('badged lands stay as tiles but still count in the chip', () => {
   assert.equal(p.landTotal, 4)
 })
 
+test('counter-bearing lands stay as tiles but still count in the chip', () => {
+  // Gemstone Mine / storage lands: the counters ARE the information — folding
+  // them into the chip would hide them (Jordy's ruling 2026-07-28).
+  const mine = land({ name: 'Gemstone Mine', type_line: 'Land', counters: { mining: 2 } })
+  const pumped = land({ plus_one_counters: 1 })
+  const zeroed = land({ counters: { storage: 0 } })
+  const p = partitionSpotlightCards([mine, pumped, zeroed, land()])
+  // zero-valued counter keys count as no counters (same ruling as stacking).
+  assert.deepEqual(p.tiles.map((t) => t.card.id), [mine.id, pumped.id])
+  assert.equal(p.landTotal, 4)
+  assert.equal(p.landOpen, 4)
+})
+
 test('identical plain duplicates stack with a count, split by tapped state', () => {
   const a = card({ name: 'Soldier Token', is_token: true })
   const b = card({ name: 'Soldier Token', is_token: true })
