@@ -22178,6 +22178,210 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-21"
+    },
+    {
+      "id": "bug-1354",
+      "timestamp": "2026-07-21T08:58:07.784Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/feature/cascade-cast-hook.test.ts",
+      "root_cause": "Had ') // MV 2 < 5 window\n    const wurm = await s.spa",
+      "fix": "Changed to ') // MV 2 < 5 window (a cheaper cascade target)\n ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-21T08:58:07.784Z"
+    },
+    {
+      "id": "bug-1355",
+      "timestamp": "2026-07-28T07:49:19.874Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→6 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T07:49:19.874Z"
+    },
+    {
+      "id": "bug-1356",
+      "timestamp": "2026-07-28T08:32:38.188Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/superpowers/plans/2026-07-28-spotlight-viewport-fit.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 9→6 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T08:32:38.188Z"
+    },
+    {
+      "id": "bug-1357",
+      "timestamp": "2026-07-28T08:32:40.164Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/superpowers/plans/2026-07-28-spotlight-viewport-fit.md",
+      "root_cause": "Had `SpotlightTile`",
+      "fix": "Changed to `@/lib/game/spotlight-fit`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T08:32:40.164Z"
+    },
+    {
+      "id": "bug-1358",
+      "timestamp": "2026-07-28T08:42:43.769Z",
+      "error_message": "Type error",
+      "file": "tests/unit/spotlight-fit.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T08:42:43.769Z"
+    },
+    {
+      "id": "bug-1359",
+      "timestamp": "2026-07-28T08:43:06.236Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/spotlight-fit.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T08:43:06.236Z"
+    },
+    {
+      "id": "bug-1360",
+      "timestamp": "2026-07-28T08:56:40.842Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/superpowers/plans/2026-07-28-spotlight-viewport-fit.md",
+      "root_cause": "Had `, no non-empty `",
+      "fix": "Changed to `, no counter in the `",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T08:56:40.842Z"
+    },
+    {
+      "id": "bug-1361",
+      "timestamp": "2026-07-28T08:57:52.941Z",
+      "error_message": "Missing guard clause",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "No early return/throw for edge case: !el || count === 0",
+      "fix": "Added guard clause: if (!el || count === 0)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T08:57:52.941Z"
+    },
+    {
+      "id": "bug-1362",
+      "timestamp": "2026-07-28T08:57:58.186Z",
+      "error_message": "CSS fix: perspective",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "perspective: 1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6 ${tvMode ? 'tv-flat' : '' → 1600px] [@media(max-height:640px)]:p-2 sm:p-6 ${",
+      "fix": "Changed perspective: 1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6 ${tvMode ? 'tv-flat' : '' → 1600px] [@media(max-height:640px)]:p-2 sm:p-6 ${",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-07-28T08:58:11.985Z"
+    },
+    {
+      "id": "bug-1363",
+      "timestamp": "2026-07-28T08:58:25.440Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "13 lines replaced/restructured",
+      "fix": "Rewrote 36→56 lines (13 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T08:58:25.440Z"
+    },
+    {
+      "id": "bug-1364",
+      "timestamp": "2026-07-28T09:33:13.338Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T09:33:13.338Z"
+    },
+    {
+      "id": "bug-1365",
+      "timestamp": "2026-07-28T09:33:16.868Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Had \"relative min-h-0 flex-1\"",
+      "fix": "Changed to \"relative min-h-0 flex-auto\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T09:33:16.868Z"
+    },
+    {
+      "id": "bug-2698",
+      "timestamp": "2026-07-28T09:40:00.000Z",
+      "error_message": "Sub-xl spotlight board renders 0 cards: in spotlight mode below Tailwind `xl` (1280px) with normal viewport height, the focused player's card grid shows no permanents. Confirmed by A/B screenshot capture at 1200px vs 1440px.",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "The spotlight branch's outer grid (key=\"focus-board\" motion.div) only defines grid-template-columns under `[@media(max-height:640px)]`, `xl:`, and `2xl:` — below `xl` at normal height it is a single-column stack of auto rows. Task 3's height-lock (root div `h-[calc(100svh-5.75rem)]` unconditional on any breakpoint) plus `FocusSeatPanel`'s `h-full` plus the card zone's `flex-1` (flex-basis 0%) chained through ancestors that were actually auto-height below xl, collapsing the card zone to 0 height.",
+      "fix": "Two changes in components/GameBoard.tsx: (1) root div height ternary now only locks height (`h-[...]`) at `xl:` and in the `[@media(max-height:640px)]` short mode, keeping `min-h-[calc(100vh-5.75rem)]` (member) / `min-h-[100svh]` (TV) as the base so sub-xl spotlight reverts to the pre-existing scrollable stack; (2) FocusSeatPanel's card-zone wrapper changed from `flex-1` to `flex-auto` (flex: 1 1 auto) so with a definite-height xl parent it still grows/shrinks to fill leftover space (fit math stable), but with an auto-height sub-xl parent its flex-basis is auto instead of 0%, so it sizes by content instead of collapsing.",
+      "tags": ["board", "spotlight", "css", "viewport-fit"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T09:40:00.000Z"
     }
   ]
 }

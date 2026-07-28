@@ -175,8 +175,8 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
     <div ref={boardRef} className={`relative isolate overflow-hidden p-4 [perspective:1600px] [@media(max-height:640px)]:p-2 sm:p-6 ${
       viewMode === 'spotlight'
         ? (tvMode
-            ? 'h-[100svh]'
-            : 'h-[calc(100svh-5.75rem)] [@media(max-height:640px)]:h-[calc(100svh-4.5rem)]')
+            ? 'min-h-[100svh] xl:h-[100svh] [@media(max-height:640px)]:h-[100svh]'
+            : 'min-h-[calc(100vh-5.75rem)] xl:h-[calc(100svh-5.75rem)] [@media(max-height:640px)]:h-[calc(100svh-4.5rem)]')
         : 'min-h-[calc(100vh-5.75rem)] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)]'
     } ${tvMode ? 'tv-flat' : ''}`}>
       <div className="pointer-events-none absolute inset-0 opacity-40">
@@ -404,7 +404,7 @@ function FocusSeatPanel({
           </div>
         </div>
       </div>
-      <div ref={fitRef} className="relative min-h-0 flex-1">
+      <div ref={fitRef} className="relative min-h-0 flex-auto">
         <motion.div
           layout
           className="grid gap-3 justify-items-center [transform:translateZ(34px)]"
