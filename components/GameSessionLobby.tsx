@@ -66,6 +66,8 @@ export default function GameSessionLobby() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   // When set, the "pick your deck" step is shown before the game actually starts.
   const [isPickingDeck, setIsPickingDeck] = useState(false)
+  // Deck the next Add CPU seats the bot with ('' = server picks a random precon).
+  const [botDeckId, setBotDeckId] = useState('')
 
   const refreshSession = async (sessionId: string) => {
     const [session, sessionPlayers, readyIds] = await Promise.all([
@@ -250,11 +252,14 @@ export default function GameSessionLobby() {
     setIsWorking(true)
 
     try {
-      await addBotToSession(supabase, activeSession.id)
+      await addBotToSession(supabase, activeSession.id, botDeckId || null)
       await refreshSession(activeSession.id)
+      const botDeckName = botDeckId
+        ? [...userDecks, ...preconDecks].find((d) => d.id === botDeckId)?.name ?? 'chosen deck'
+        : 'a random precon'
       setStatusMessage(
-        'CPU seated. It takes its turns automatically once the game starts (the bot service is ' +
-          'always on in production; for local dev run `npm run bot -- --watch`).',
+        `CPU seated with ${botDeckName}. It takes its turns automatically once the game starts ` +
+          '(the bot service is always on in production; for local dev run `npm run bot -- --watch`).',
       )
     } catch (error) {
       const message = getErrorMessage(error)
@@ -684,6 +689,26 @@ export default function GameSessionLobby() {
             </div>
 
             <div className="flex flex-wrap gap-2">
+              {/* Host picks the CPU's deck: own decks + shared precons; in a
+                  commander session only decks with a designated commander seat
+                  legally. '' = server picks a random precon. */}
+              <select
+                value={botDeckId}
+                onChange={(event) => setBotDeckId(event.target.value)}
+                disabled={isWorking || activeSession.status !== 'open'}
+                aria-label="CPU deck"
+                title="Deck the next CPU opponent plays"
+                className="rounded-lg border border-sky-400/30 bg-slate-950/70 px-3 py-2 text-sm font-semibold text-sky-300 transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <option value="">CPU deck: random precon</option>
+                {[...userDecks, ...preconDecks.filter((p) => !userDecks.some((d) => d.id === p.id))]
+                  .filter((deck) => activeSession.format !== 'commander' || deck.commander_card_id)
+                  .map((deck) => (
+                    <option key={deck.id} value={deck.id}>
+                      {deck.name ?? `Deck ${deck.id.slice(0, 8)}`} ({deck.card_count})
+                    </option>
+                  ))}
+              </select>
               <button
                 type="button"
                 onClick={handleAddBot}

@@ -1122,7 +1122,7 @@ export async function getUserDecks(supabase: SupabaseClient) {
 
   const { data, error } = await supabase
     .from('decks')
-    .select('id, name, list_data, created_at')
+    .select('id, name, list_data, created_at, commander_card_id')
     .or(`created_by.eq.${playerId},owner_id.eq.${playerId}`)
     .order('created_at', { ascending: false })
 
@@ -1135,6 +1135,7 @@ export async function getUserDecks(supabase: SupabaseClient) {
     name: deck.name ?? null,
     card_count: Array.isArray(deck.list_data) ? deck.list_data.length : 0,
     created_at: deck.created_at ?? null,
+    commander_card_id: deck.commander_card_id ?? null,
   })) as DeckSummary[]
 }
 
@@ -1143,7 +1144,7 @@ export async function getUserDecks(supabase: SupabaseClient) {
 export async function getPreconDecks(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('decks')
-    .select('id, name, list_data, created_at')
+    .select('id, name, list_data, created_at, commander_card_id')
     .eq('is_precon', true)
     .order('name', { ascending: true })
 
@@ -1156,6 +1157,7 @@ export async function getPreconDecks(supabase: SupabaseClient) {
     name: deck.name ?? null,
     card_count: Array.isArray(deck.list_data) ? deck.list_data.length : 0,
     created_at: deck.created_at ?? null,
+    commander_card_id: deck.commander_card_id ?? null,
   })) as DeckSummary[]
 }
 

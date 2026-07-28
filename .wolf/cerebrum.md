@@ -731,3 +731,9 @@
 ## User Preferences — 2026-07-28 (board chrome)
 
 - Board view start voor IEDEREEN in spotlight (niet alleen TV); de Focus/Grid-toggle in BoardViewChrome blijft de weg terug naar grid. De Controller/Board/Judge-switcher is op de board-view verborgen (GameViewHeader showViewSwitcher={false}) — het grote scherm is geen navigatie-oppervlak; de judge-view houdt de switcher.
+
+## Key Learnings — 2026-07-28 (bot/catalog)
+
+- Catalog-queries met `order by name limit 1` zijn niet meer veilig nu users custom kaarten kunnen toevoegen — altijd whitelisten of op is-custom filteren (bug-2699, add_bot_to_session vanilla-fallback pakte "Barry's Land").
+- functions_src kan STALE zijn t.o.v. latere migraties (add_bot_to_session miste mig 375/376-profielseating; eerder bug-1280 met cast_spell_effect). Vóór het schrijven van een functie-migratie: diff functions_src tegen de laatste migratie die de functie herdefinieert.
+- Feature-tests draaien tegen een EIGEN leyline_test-DB (tests/harness/db.ts) — `supabase migration up` raakt alleen de play-DB; na nieuwe migraties eerst `npm run test:db:setup`.

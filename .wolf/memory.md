@@ -8194,3 +8194,20 @@
 | 13:08 | Edited components/layout/GameViewHeader.tsx | 6→7 lines | ~24 |
 | 13:08 | Edited app/board/[id]/page.tsx | inline fix | ~34 |
 | 13:08 | Spotlight standaard voor iedereen + Controller/Board/Judge-switcher verborgen op board | components/GameBoard.tsx, components/layout/GameViewHeader.tsx, app/board/[id]/page.tsx | tsc+eslint groen, gecommit | ~1k |
+| 13:19 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/hosting-ovhcloud.md | 1→2 lines | ~151 |
+| 13:19 | Diagnose live-bots-spelen-alleen-lands: Barry's Land leeg script -> geen manabron; bug-2699 | VPS logs + live DB (SELECT) | root cause gevonden, fix-keuze bij Jordy | ~5k |
+| 13:23 | Origine gevonden: add_bot_to_session vanilla-fallback order-by-name pakt custom "Barrys Land" als bot-land | supabase/functions_src/add_bot_to_session.sql | bug-2699 aangevuld | ~2k |
+| 13:29 | Created tests/unit/mana-sources.test.ts | — | ~518 |
+| 13:29 | Edited tests/unit/mana-sources.test.ts | 5→5 lines | ~51 |
+| 13:30 | Edited lib/game/mana-sources.ts | added 1 condition(s) | ~155 |
+| 13:30 | Edited tests/feature/bot-seat.test.ts | modified query() | ~462 |
+| 13:32 | Edited tests/feature/bot-seat.test.ts | 4→9 lines | ~124 |
+| 13:34 | Edited lib/game/types.ts | 6→9 lines | ~84 |
+| 13:34 | Edited lib/game/data.ts | modified if() | ~158 |
+| 13:34 | Edited lib/game/data.ts | modified if() | ~146 |
+| 13:34 | Edited lib/game/actions.ts | added nullish coalescing | ~146 |
+| 13:34 | Edited components/GameSessionLobby.tsx | 2→4 lines | ~79 |
+| 13:34 | Edited components/GameSessionLobby.tsx | added optional chaining | ~150 |
+| 13:34 | Edited components/GameSessionLobby.tsx | added nullish coalescing | ~532 |
+| 13:34 | Edited components/GameSessionLobby.tsx | 2→2 lines | ~58 |
+| 13:39 | Bot-fixes: mig 426 echte basics, mana-fallback custom basics, lobby bot-deckkeuze | migrations/426, mana-sources.ts, GameSessionLobby.tsx | 2437/2437 groen | ~8k |

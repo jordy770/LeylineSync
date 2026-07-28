@@ -61,6 +61,9 @@ export type DeckSummary = {
   name: string | null
   card_count: number
   created_at?: string | null
+  // Set when the deck has a designated commander — the lobby's bot-deck picker
+  // uses it to offer only legal seats in commander sessions.
+  commander_card_id?: string | null
 }
 
 export type DeckCardLine = {

@@ -1,13 +1,9 @@
--- supabase/functions_src/add_bot_to_session.sql
--- CANONICAL current definition (synced with mig 426; was stale pre-375 — see
--- buglog bug-1280 for this failure class). Edit THIS file, then generate a
--- migration — never re-extract from past migrations.
---
--- Seats an AI CPU opponent flagged is_bot in an OPEN session. Seat id: a free
--- provisioned CPU auth-user (hosted FKs), bare-UUID fallback for local dev.
--- Deck: explicit p_deck_id (caller-owned or precon) > random precon (Commander:
--- with commander) > vanilla pile of 22 REAL basics + 18 cheap creatures.
--- Turns driven by scripts/bot-runner.mjs --watch.
+-- bug-2699: the vanilla-fallback bot deck picked its land with a bare
+-- "order by name limit 1" over every 'Basic Land%' row — a custom basic
+-- ("Barry's Land", subtype Cloud, empty script) sorts before all real basics
+-- and handed fallback bots 22 dead lands. Restrict the pick to the six real
+-- basics; the '%land%' second fallback stays as a last resort for bare test
+-- catalogs. Function body otherwise identical to mig 376 (bot fleet).
 create or replace function public.add_bot_to_session(
   p_session_id uuid,
   p_deck_id uuid default null

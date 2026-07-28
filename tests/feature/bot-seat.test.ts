@@ -77,6 +77,43 @@ test('BOT4 a fleet of CPU profiles seats distinct bots until it runs dry (mig 37
   })
 })
 
+test('BOT5 the vanilla fallback deck only uses real basics, never custom basics (bug-2699)', async () => {
+  await withRolledBackTx(async (client) => {
+    const s = await Scenario.create(client)
+    // A homebrew basic that sorts alphabetically before every real basic —
+    // "order by name limit 1" used to hand every fallback bot 22 copies of it.
+    await client.query(
+      "insert into public.cards (id, name, type_line, script) values ($1, 'Aaa Custom Land', 'Basic Land — Cloud', '{}'::jsonb)",
+      [randomUUID()],
+    )
+    // The bare test catalog has no real basics — seed one, like any real catalog.
+    await client.query(
+      "insert into public.cards (id, name, type_line, script) values ($1, 'Forest', 'Basic Land — Forest', null)",
+      [randomUUID()],
+    )
+    // No precons available → the RPC must take the vanilla-fallback path.
+    await client.query('update public.decks set is_precon = false where is_precon = true')
+
+    const botId = await asPlayer(client, s.playerId('A'), () =>
+      rpc<string>(client, 'add_bot_to_session', { p_session_id: s.sessionId }),
+    )
+
+    const custom = await client.query(
+      `select count(*)::int as n from public.game_cards gc join public.cards c on c.id = gc.card_id
+       where gc.session_id = $1 and gc.owner_id = $2 and c.name = 'Aaa Custom Land'`,
+      [s.sessionId, botId],
+    )
+    assert.equal(custom.rows[0].n, 0)
+    const realBasics = await client.query(
+      `select count(*)::int as n from public.game_cards gc join public.cards c on c.id = gc.card_id
+       where gc.session_id = $1 and gc.owner_id = $2
+         and c.name in ('Plains', 'Island', 'Swamp', 'Mountain', 'Forest', 'Wastes')`,
+      [s.sessionId, botId],
+    )
+    assert.equal(realBasics.rows[0].n, 22)
+  })
+})
+
 test('BOT3 without a provisioned profile the bare-UUID fallback still seats a bot', async () => {
   await withRolledBackTx(async (client) => {
     const s = await Scenario.create(client)

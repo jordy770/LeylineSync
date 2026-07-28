@@ -22467,6 +22467,136 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-28T09:59:10.351Z"
+    },
+    {
+      "id": "bug-1372",
+      "timestamp": "2026-07-28T10:29:42.849Z",
+      "error_message": "Type error",
+      "file": "tests/unit/spotlight-fit.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T10:29:42.849Z"
+    },
+    {
+      "id": "bug-1373",
+      "timestamp": "2026-07-28T10:30:13.951Z",
+      "error_message": "Wrong operator: === should be ||",
+      "file": "lib/game/spotlight-fit.ts",
+      "root_cause": "Used \"===\" instead of \"||\"",
+      "fix": "Changed operator === → ||",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T10:30:13.951Z"
+    },
+    {
+      "id": "bug-1374",
+      "timestamp": "2026-07-28T10:30:29.627Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T10:30:29.627Z"
+    },
+    {
+      "id": "bug-1375",
+      "timestamp": "2026-07-28T11:08:00.053Z",
+      "error_message": "Type error",
+      "file": "components/layout/GameViewHeader.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T11:08:00.053Z"
+    },
+    {
+      "id": "bug-2699",
+      "timestamp": "2026-07-28T12:30:00.000Z",
+      "error_message": "Live: bots spelen alleen lands, geen spells (log: 'skipped a spell (not enough mana)' elke main phase)",
+      "file": "lib/game/mana-sources.ts / scripts/bot-runner.mjs (diagnose; nog niet gefixt)",
+      "root_cause": "Custom kaart \"Barry's Land\" (type 'Basic Land — Cloud') heeft een LEEG script ({}) in de live catalog. manaSourceColors herkent mana alleen via script-mana-abilities of de zes echte basic-subtypes; 'Cloud' matcht niets -> land is geen manabron voor payFor. De bot-brain telt budget echter met ilike '%land%', dus de bot WIL casten maar payFor kan geen bron tappen -> elke spell geskipt. Sessie f16751c8 (2 bots, veld vol onaangetapte Barry's Lands). In sessies met normale lands (87a536a0) casten bots wel. Prod-schema is actueel (mig 425) — geen schema-mismatch. ORIGINE: add_bot_to_session.sql's vanilla-fallback kiest het land met `where type_line ilike 'Basic Land%' order by name limit 1` — de custom kaart \"Barry's Land\" sorteert alfabetisch vóór alle echte basics, dus elke fallback-bot krijgt 22x Barry's Land. De fallback draait wanneer geen expliciete p_deck_id is meegegeven én geen geschikte precon bestaat (commander-format eist een precon mét commander_card_id).",
+      "fix": "GEFIXT (2026-07-28): (1) mig 202605010426 + functions_src: vanilla-fallback kiest alleen nog de zes echte basics (feature-test BOT5); functions_src/add_bot_to_session.sql was bovendien STALE t.o.v. mig 375/376 (zelfde klasse als bug-1280) en is opnieuw gesynct. (2) lib/game/mana-sources.ts: scriptloze 'Basic Land' met onbekend subtype tapt nu voor any (unit-tests mana-sources); server-side geen blokkade (add_mana_from_card valideert niet tegen het kaartscript; identity-guard alleen bij p_commander_identity). (3) Lobby: host kiest per Add CPU een deck (eigen decks + precons, commander-format filtert op commander_card_id) -> p_deck_id.",
+      "tags": [
+        "bot",
+        "mana",
+        "custom-cards",
+        "live",
+        "diagnose"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T14:00:00.000Z"
+    },
+    {
+      "id": "bug-1377",
+      "timestamp": "2026-07-28T11:30:47.345Z",
+      "error_message": "Missing await",
+      "file": "tests/feature/bot-seat.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T11:30:47.345Z"
+    },
+    {
+      "id": "bug-1378",
+      "timestamp": "2026-07-28T11:34:18.411Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T11:34:18.411Z"
+    },
+    {
+      "id": "bug-1379",
+      "timestamp": "2026-07-28T11:34:35.539Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/GameSessionLobby.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Host picks the CPU's deck: own decks + shared precons; i; commander session only decks with a designated commander sea",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-28T11:34:47.456Z"
     }
   ]
 }

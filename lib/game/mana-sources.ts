@@ -36,6 +36,10 @@ export function manaSourceColors(
   const tl = (typeLine ?? '').toLowerCase()
   const basics = Object.entries(BASIC_LAND_COLOR).filter(([sub]) => tl.includes(sub)).map(([, c]) => c)
   if (basics.length > 0) return { colors: basics, any: false, amount: 1 }
+  // Custom/homebrew basics (bug-2699: "Basic Land — Cloud" with an empty
+  // script): a scriptless BASIC land with an unknown subtype taps for any
+  // colour rather than being dead weight. Nonbasics still require a script.
+  if (tl.includes('basic land')) return { colors: [], any: true, amount: 1 }
   return null
 }
 

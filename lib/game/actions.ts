@@ -1190,11 +1190,14 @@ export async function joinGameSession(supabase: SupabaseClient, sessionId: strin
   return data as number
 }
 
-// Seat an AI CPU opponent (local testing). Its turns are driven by
-// `scripts/bot-runner.mjs --watch`. Returns the bot's player id.
-export async function addBotToSession(supabase: SupabaseClient, sessionId: string) {
+// Seat an AI CPU opponent. Its turns are driven by `scripts/bot-runner.mjs
+// --watch`. `deckId` (caller-owned deck or shared precon) picks the bot's deck;
+// omitted → the server picks a random precon (vanilla-basics fallback last).
+// Returns the bot's player id.
+export async function addBotToSession(supabase: SupabaseClient, sessionId: string, deckId?: string | null) {
   const { data, error } = await supabase.rpc('add_bot_to_session', {
     p_session_id: sessionId,
+    p_deck_id: deckId ?? null,
   })
 
   if (error) {
