@@ -8173,3 +8173,10 @@
 | 11:41 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/inspect-spotlight.mjs | "C:/Users/Jordy/AppData/Ro" → "file:///C:/Users/Jordy/Ap" | ~41 |
 | 11:43 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | modified fix() | ~1366 |
 | 11:43 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | 1→2 lines | ~227 |
+| 11:46 | Edited components/GameBoard.tsx | added optional chaining | ~446 |
+| 11:46 | Edited components/GameBoard.tsx | CSS: sm, xl, max-height | ~90 |
+| 11:47 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-3-report.md | modified Finding() | ~990 |
+| 11:48 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/inspect-spotlight.mjs | modified main() | ~55 |
+| 11:49 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/inspect-spotlight-2.mjs | — | ~543 |
+| 11:50 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | modified working() | ~1692 |
+| 11:51 | Task 4 re-check of fix round 2 (7d17c7f, matchMedia-gated useFitColumns + static grid-cols ladder fallback): DOM-verified PASS at all 3 requested viewports — xl(1440) 747px card zone/no scroll, sub-xl(1200 normal height) 741px card zone/3 cols/page scrolls as intended, short(1100x600) 497px card zone/5 cols/no scroll; all 7 permanents visible+natural size everywhere; only xN stacking remains unverified (no dupes in test data) | components/GameBoard.tsx | PASS — spotlight viewport fit fully verified across tested range | ~3k |
