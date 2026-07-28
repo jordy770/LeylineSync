@@ -24,7 +24,6 @@ import CastShareControls from './board/CastShareControls'
 import GameLogPanel from './GameLogPanel'
 import EmptyBoardPanel from './board/EmptyBoardPanel'
 import GameFinishedOverlay from './board/GameFinishedOverlay'
-import StackRail from './board/StackRail'
 import MotionCard from './MotionCard'
 import CombatManager from './CombatManager'
 
@@ -219,7 +218,7 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
     {/* The board page renders no header (member and TV alike), so both modes
         get the full viewport: spotlight locks to it (xl / short screens),
         grid grows from it. */}
-    <div ref={boardRef} className={`relative isolate overflow-hidden p-4 [perspective:1600px] [@media(max-height:640px)]:p-2 sm:p-6 ${
+    <div ref={boardRef} className={`relative isolate flex flex-col overflow-hidden p-4 [perspective:1600px] [@media(max-height:640px)]:p-2 sm:p-6 ${
       viewMode === 'spotlight'
         ? 'min-h-[100svh] xl:h-[100svh] [@media(max-height:640px)]:h-[100svh]'
         : 'min-h-[100svh]'
@@ -260,10 +259,9 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="relative z-20 grid h-full min-h-0 gap-5 [transform-style:preserve-3d] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_7.5rem_minmax(9rem,11rem)] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
+            className="relative z-20 grid min-h-0 grow gap-5 [transform-style:preserve-3d] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_minmax(9rem,11rem)] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]"
           >
             <FocusSeatPanel seat={focusSeat} turnState={turnState} attackTaxes={attackTaxes} commanderDamage={commanderDamage} lifeDelta={focusSeat.player ? lifeDeltas[focusSeat.player.player_id] : undefined} />
-            <StackRail stackItems={pendingStackItems} />
             <motion.aside layout className="grid min-h-0 content-start gap-3 overflow-hidden [@media(max-height:640px)]:gap-2">
               <AnimatePresence initial={false}>
                 {minimapSeats.map((seat) => (
@@ -287,7 +285,7 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="relative z-20 grid min-h-[72vh] gap-4 [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_7.5rem] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_10.5rem] 2xl:gap-6"
+            className="relative z-20 grid min-h-[72vh] gap-4 [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:gap-2 2xl:gap-6"
           >
             <div className="grid min-h-[72vh] grid-cols-1 gap-4 [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:grid-cols-2 [@media(max-height:640px)]:gap-2 md:grid-cols-2">
               {seats.length > 0 ? (
@@ -309,7 +307,6 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
                 <EmptyBoardPanel />
               )}
             </div>
-            <StackRail stackItems={pendingStackItems} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -329,26 +326,46 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
         </div>
       )}
 
-      {/* Stack hero — the pending spell, big, plus who the table waits on. */}
+      {/* Stack modal — replaces the old always-there rail column. Appears only
+          while something is pending: the top item big (resolves next), the rest
+          of the stack as a compact queue beneath it. No blur (TV-safe). */}
       {topStackItem && session?.status !== 'finished' && (
         <div className="pointer-events-none fixed inset-x-0 bottom-6 z-[68] flex justify-center">
-          <div className="flex items-center gap-4 rounded-2xl border border-cyan-300/40 bg-slate-950/95 p-4 shadow-2xl">
-            {topStackItem.source_card_image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element -- Scryfall art, same as MotionCard
-              <img
-                src={topStackItem.source_card_image_url}
-                alt={topStackItem.source_card_name ?? 'Spell on the stack'}
-                className="h-36 w-auto rounded-lg"
-              />
-            ) : null}
-            <div className="max-w-xs">
-              <p className="text-[10px] font-black uppercase tracking-widest text-cyan-300">On the stack</p>
-              <p className="truncate text-xl font-black text-white">{topStackItem.source_card_name ?? topStackItem.action_type}</p>
-              <p className="truncate text-sm text-slate-400">by {topStackItem.controller_username ?? 'Unknown'}</p>
-              {waitingOnName ? (
-                <p className="mt-1 text-sm font-bold text-amber-300">Waiting on {waitingOnName}…</p>
+          <div className="max-w-lg rounded-2xl border border-cyan-300/40 bg-slate-950/95 p-4 shadow-2xl">
+            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-cyan-300">
+              The Stack{pendingStackItems.length > 1 ? ` (${pendingStackItems.length})` : ''}
+            </p>
+            <div className="flex items-center gap-4">
+              {topStackItem.source_card_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element -- Scryfall art, same as MotionCard
+                <img
+                  src={topStackItem.source_card_image_url}
+                  alt={topStackItem.source_card_name ?? 'Spell on the stack'}
+                  className="h-36 w-auto rounded-lg"
+                />
               ) : null}
+              <div className="max-w-xs">
+                <p className="truncate text-xl font-black text-white">{topStackItem.source_card_name ?? topStackItem.action_type}</p>
+                <p className="truncate text-sm text-slate-400">by {topStackItem.controller_username ?? 'Unknown'}</p>
+                {waitingOnName ? (
+                  <p className="mt-1 text-sm font-bold text-amber-300">Waiting on {waitingOnName}…</p>
+                ) : null}
+              </div>
             </div>
+            {pendingStackItems.length > 1 && (
+              <div className="mt-3 grid gap-1 border-t border-white/10 pt-2">
+                {/* Below the top: next-to-resolve first (stack order, top → bottom). */}
+                {pendingStackItems.slice(0, -1).reverse().slice(0, 3).map((item) => (
+                  <p key={item.id} className="truncate text-xs text-slate-300">
+                    <span className="font-semibold text-white">{item.source_card_name ?? item.action_type}</span>
+                    <span className="text-slate-500"> — {item.controller_username ?? 'Unknown'}</span>
+                  </p>
+                ))}
+                {pendingStackItems.length > 4 && (
+                  <p className="text-[10px] font-bold text-slate-500">+{pendingStackItems.length - 4} more beneath</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

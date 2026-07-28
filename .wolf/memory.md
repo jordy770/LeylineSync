@@ -8219,3 +8219,12 @@
 | 14:00 | Edited components/layout/GameViewHeader.tsx | 3→2 lines | ~54 |
 | 14:00 | Edited components/layout/GameViewHeader.tsx | 7→6 lines | ~19 |
 | 14:01 | Board header volledig verwijderd (member = TV: volle viewport); showViewSwitcher-prop weer opgeruimd | app/board/[id]/page.tsx, GameBoard.tsx, GameViewHeader.tsx | tsc+eslint groen | ~1k |
+| 16:22 | designqc: captured 6 screenshots (49KB, ~15000 tok) | /, /manifest, /page, /ServiceWorkerRegister, /collection/loading, /collection, /controller-style-lab, /decks, /style-guide, /tv | ready for eval | ~0 |
+| 16:24 | designqc: captured 6 screenshots (49KB, ~15000 tok) | /, /manifest, /page, /ServiceWorkerRegister, /collection/loading, /collection, /controller-style-lab, /decks, /style-guide, /tv | ready for eval | ~0 |
+| 16:29 | Edited components/GameBoard.tsx | 5→5 lines | ~92 |
+| 16:29 | Edited components/GameBoard.tsx | 4→3 lines | ~152 |
+| 16:29 | Edited components/GameBoard.tsx | 2→2 lines | ~49 |
+| 16:30 | Edited components/GameBoard.tsx | 5→4 lines | ~28 |
+| 16:30 | Edited components/GameBoard.tsx | 3→2 lines | ~29 |
+| 16:30 | Edited components/GameBoard.tsx | CSS: pending, top | ~737 |
+| 16:31 | Stack rail -> modal-overlay (alleen bij pending items) + flex-col root fixt afgekapte priority-rand onderaan | components/GameBoard.tsx, StackRail.tsx verwijderd | tsc+eslint groen | ~4k |
