@@ -155,7 +155,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 **Rules (from spec, exactly):**
 1. `landTotal` = ALL lands (chip mirrors the mini-widget numbers); `landOpen` = untapped lands.
 2. A land is REMOVED from tiles unless it has a badge: `animated`, is attached (`attached_to`), hosts an attachment (some other card's `attached_to` points at it), or `damage_marked > 0`. Badged lands stay as tiles AND still count in the chip.
-3. Remaining cards stack when they share `name` + `is_tapped` AND every copy is "plain": no badge (rule 2's list), no `plus_one_counters`, no non-empty `counters` bag, not face-down, and `type_line` does not contain `legendary` (commander guard — see Global Constraints). Non-plain cards always render individually.
+3. Remaining cards stack when they share `name` + `is_tapped` AND every copy is "plain": no badge (rule 2's list), no `plus_one_counters`, no counter in the `counters` bag with value > 0 (a zero-valued key counts as no counter — Jordy's ruling 2026-07-28), not face-down, and `type_line` does not contain `legendary` (commander guard — see Global Constraints). Non-plain cards always render individually.
 4. Original card order is preserved; a stack sits at its first copy's position.
 
 - [ ] **Step 1: Write the failing tests**
