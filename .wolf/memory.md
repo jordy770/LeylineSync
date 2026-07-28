@@ -8157,3 +8157,8 @@
 | 11:20 | designqc: captured 0 screenshots (0KB, ~0 tok) | C:/Program Files/Git/board/a87d18b5-4f76-456e-bbdf-a8839477565b | ready for eval | ~0 |
 | 11:20 | designqc: captured 2 screenshots (39KB, ~5000 tok) | /board/a87d18b5-4f76-456e-bbdf-a8839477565b | ready for eval | ~0 |
 | 11:21 | Created .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | — | ~1295 |
+| 11:45 | Task 4 follow-up: verified spotlight fit via auth-free TV link (session cd99ba86, board_token, jordy seat 7 nonland perms) — PASS at >=1280px (xl breakpoint): no scrollbar, all 7 permanents visible, lands chip visible; FOUND BUG: GameBoard.tsx L218 spotlight grid has no grid-cols fallback between max-height:640px and xl:(1280px), collapses to 0 visible permanents in that width range; xN stacking unverified (no dupes on tested seat) | components/GameBoard.tsx | DONE_WITH_CONCERNS — core fit verified, new responsive-width bug found and documented, not fixed | ~3k |
+| 11:23 | designqc: captured 2 screenshots (35KB, ~5000 tok) | /board/a87d18b5-4f76-456e-bbdf-a8839477565b?key=6edbc1fb-02f0-432c-b4b3-cd0b1ecca70d | ready for eval | ~0 |
+| 11:24 | designqc: captured 2 screenshots (52KB, ~5000 tok) | /board/cd99ba86-37cd-4d35-8842-48153040f8c0?key=18e6d83c-40a0-4600-a6f8-36e684bed6f9 | ready for eval | ~0 |
+| 11:28 | designqc: captured 1 screenshots (119KB, ~2500 tok) | /board/cd99ba86-37cd-4d35-8842-48153040f8c0?key=18e6d83c-40a0-4600-a6f8-36e684bed6f9 | ready for eval | ~0 |
+| 11:30 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | modified up() | ~2968 |
