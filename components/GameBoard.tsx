@@ -45,7 +45,16 @@ function useFitColumns(count: number) {
   const [cols, setCols] = useState<number | null>(null)
   useEffect(() => {
     const el = ref.current
-    if (!el || count === 0) return
+    if (!el) return
+    if (count === 0) {
+      setCols(null)
+      return
+    }
+    // Old-TV guard: pre-2019 WebOS/Tizen browsers (the spectator board's
+    // actual audience) lack ResizeObserver entirely. Without this, the
+    // effect throws on mount and React unmounts the tree — a blank TV.
+    // Bailing out here just leaves cols null, so the static ladder governs.
+    if (typeof ResizeObserver === 'undefined') return
     const media = window.matchMedia('(min-width: 1280px), (max-height: 640px)')
     let observer: ResizeObserver | null = null
     const measure = () => {
@@ -66,9 +75,20 @@ function useFitColumns(count: number) {
       }
     }
     sync()
-    media.addEventListener('change', sync)
+    // Old-TV guard: MediaQueryList.addEventListener is also missing on the
+    // same old WebOS/Tizen browsers — they only have the deprecated
+    // addListener/removeListener pair.
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', sync)
+    } else {
+      media.addListener(sync)
+    }
     return () => {
-      media.removeEventListener('change', sync)
+      if (typeof media.removeEventListener === 'function') {
+        media.removeEventListener('change', sync)
+      } else {
+        media.removeListener(sync)
+      }
       observer?.disconnect()
     }
   }, [count])

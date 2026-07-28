@@ -19,6 +19,21 @@ per panel and is explicitly out of scope.
 3. **Fit mechanism: computed columns** (measured container + pure math), not
    count-based breakpoints and not CSS `transform: scale()`.
 
+### Scope of the guarantee
+
+The "no page scroll, ever" guarantee (decision 2) applies to the **locked**
+layouts only: `xl` and wider, short-height (`max-height: 640px`), and TV mode
+— the same conditions under which the spotlight branch locks its own height.
+Below `xl` at normal height, the spotlight falls back to the static column
+ladder and the page may scroll by design. This is not a gap to close:
+measured-height fitting is only valid where the container's height is
+externally constrained. Attempting to extend the computed-column fit below
+that boundary re-creates a degenerate feedback loop — the ResizeObserver
+measures a height that the fit itself determines, settling into a few-px
+equilibrium where `fitCardColumns` hits its give-up floor (see bug-2698 in
+`.wolf/buglog.json`). A future session tempted to "fix" sub-xl scrolling
+should not remove the media gate in `useFitColumns`.
+
 ## Section 1 — Structure & compact rules
 
 ### Height lock (spotlight branch only)
