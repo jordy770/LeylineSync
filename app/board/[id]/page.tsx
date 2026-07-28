@@ -44,7 +44,7 @@ async function BoardContent({
   return (
     <main className="leyline-table-bg min-h-screen overflow-hidden text-white">
       {shareToken ? null : (
-        <GameViewHeader sessionId={id} activeView="board" title="Board View" compactHeight />
+        <GameViewHeader sessionId={id} activeView="board" title="Board View" compactHeight showViewSwitcher={false} />
       )}
       <GameBoard sessionId={id} shareToken={shareToken} />
     </main>

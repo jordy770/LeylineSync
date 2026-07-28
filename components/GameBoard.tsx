@@ -104,8 +104,10 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
   useScreenWakeLock(tvMode)
   // Spotlight = the focus layout following the active (turn) player as the big
   // field. Clicking a player pins them instead; the toggle returns to grid.
-  // The TV starts in spotlight — that's the couch's "whose turn is it" view.
-  const [viewMode, setViewMode] = useState<'grid' | 'spotlight'>(tvMode ? 'spotlight' : 'grid')
+  // Every board starts in spotlight — that's the couch's "whose turn is it"
+  // view (members included, per Jordy 2026-07-28); the chrome toggle still
+  // switches to grid.
+  const [viewMode, setViewMode] = useState<'grid' | 'spotlight'>('spotlight')
   const [focusedPlayerId, setFocusedPlayerId] = useState<string | null>(null)
   const [logOpen, setLogOpen] = useState(false)
   const boardRef = useRef<HTMLDivElement | null>(null)

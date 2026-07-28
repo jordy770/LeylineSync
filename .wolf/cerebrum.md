@@ -727,3 +727,7 @@
 - Measured-height fitting (ResizeObserver → layout) is alleen geldig waar de containerhoogte extern begrensd is. Op de board-spotlight ontstond anders een degeneratieve feedbackloop (meting → give-up kolommen → sliver-content → bevestigde meting; bug-2698). Daarom is `useFitColumns` in GameBoard.tsx gegate op matchMedia '(min-width:1280px),(max-height:640px)' met een statische Tailwind-kolomladder als fallback — die gate niet weghalen. Zie "Scope of the guarantee" in docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md.
 - designqc/headless-verificatie van het board kan zonder login via de spectator-link `/board/<id>?key=<board_token>` (mig 378); die start standaard in spotlight. Git Bash mangelt `/board/...` naar een Windows-pad — `MSYS_NO_PATHCONV=1` nodig. Screenshots alleen zijn soms onvoldoende; puppeteer DOM-bounding-rects geven ground truth.
 - Oude TV-browsers (pre-2019 WebOS/Tizen) missen ResizeObserver en moderne MediaQueryList.addEventListener; board-code moet feature-detecten en gracieus degraderen.
+
+## User Preferences — 2026-07-28 (board chrome)
+
+- Board view start voor IEDEREEN in spotlight (niet alleen TV); de Focus/Grid-toggle in BoardViewChrome blijft de weg terug naar grid. De Controller/Board/Judge-switcher is op de board-view verborgen (GameViewHeader showViewSwitcher={false}) — het grote scherm is geen navigatie-oppervlak; de judge-view houdt de switcher.

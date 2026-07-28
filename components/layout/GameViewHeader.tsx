@@ -8,11 +8,15 @@ export default function GameViewHeader({
   activeView,
   title,
   compactHeight = false,
+  showViewSwitcher = true,
 }: {
   sessionId: string
   activeView: GameView
   title: string
   compactHeight?: boolean
+  // The board hides the Controller/Board/Judge switcher (big screen is not a
+  // navigation surface); the judge view keeps it as its way back.
+  showViewSwitcher?: boolean
 }) {
   const heightClass = compactHeight
     ? '[@media(max-height:640px)]:mt-2 [@media(max-height:640px)]:h-12 [@media(max-height:640px)]:px-3'
@@ -28,6 +32,7 @@ export default function GameViewHeader({
       </div>
       <div className="flex min-w-0 items-center gap-3">
         <code className="hidden truncate text-xs text-slate-400 sm:block">Session: {sessionId}</code>
+        {showViewSwitcher ? (
         <div className="flex rounded-lg border border-white/15 bg-slate-950/70 p-1">
           <Link
             href={`/controller/${sessionId}`}
@@ -58,6 +63,7 @@ export default function GameViewHeader({
             )
           ) : null}
         </div>
+        ) : null}
       </div>
     </div>
   )

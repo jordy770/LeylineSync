@@ -8188,3 +8188,9 @@
 | 12:30 | Edited lib/game/spotlight-fit.ts | modified for() | ~193 |
 | 12:30 | Edited docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md | 3→5 lines | ~89 |
 | 12:30 | Ruling toegepast: counter-dragende lands blijven tegel (TDD, 14/14) | lib/game/spotlight-fit.ts, tests, spec | groen, gecommit | ~2k |
+| 13:07 | Edited components/GameBoard.tsx | 4→6 lines | ~118 |
+| 13:08 | Edited components/layout/GameViewHeader.tsx | modified GameViewHeader() | ~114 |
+| 13:08 | Edited components/layout/GameViewHeader.tsx | 2→3 lines | ~62 |
+| 13:08 | Edited components/layout/GameViewHeader.tsx | 6→7 lines | ~24 |
+| 13:08 | Edited app/board/[id]/page.tsx | inline fix | ~34 |
+| 13:08 | Spotlight standaard voor iedereen + Controller/Board/Judge-switcher verborgen op board | components/GameBoard.tsx, components/layout/GameViewHeader.tsx, app/board/[id]/page.tsx | tsc+eslint groen, gecommit | ~1k |
