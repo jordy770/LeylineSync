@@ -1,5 +1,4 @@
 import GameBoard from '@/components/GameBoard';
-import GameViewHeader from '@/components/layout/GameViewHeader';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
@@ -42,10 +41,9 @@ async function BoardContent({
   const shareToken = isMember ? null : (key ?? null);
 
   return (
+    // No chrome above the board: the big screen is pure game surface (the
+    // GameViewHeader bar added nothing here — Jordy 2026-07-28).
     <main className="leyline-table-bg min-h-screen overflow-hidden text-white">
-      {shareToken ? null : (
-        <GameViewHeader sessionId={id} activeView="board" title="Board View" compactHeight showViewSwitcher={false} />
-      )}
       <GameBoard sessionId={id} shareToken={shareToken} />
     </main>
   );

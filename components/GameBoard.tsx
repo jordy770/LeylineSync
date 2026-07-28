@@ -216,12 +216,13 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
 
   return (
     <MotionConfig reducedMotion={tvMode ? 'always' : 'user'}>
+    {/* The board page renders no header (member and TV alike), so both modes
+        get the full viewport: spotlight locks to it (xl / short screens),
+        grid grows from it. */}
     <div ref={boardRef} className={`relative isolate overflow-hidden p-4 [perspective:1600px] [@media(max-height:640px)]:p-2 sm:p-6 ${
       viewMode === 'spotlight'
-        ? (tvMode
-            ? 'min-h-[100svh] xl:h-[100svh] [@media(max-height:640px)]:h-[100svh]'
-            : 'min-h-[calc(100vh-5.75rem)] xl:h-[calc(100svh-5.75rem)] [@media(max-height:640px)]:h-[calc(100svh-4.5rem)]')
-        : 'min-h-[calc(100vh-5.75rem)] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)]'
+        ? 'min-h-[100svh] xl:h-[100svh] [@media(max-height:640px)]:h-[100svh]'
+        : 'min-h-[100svh]'
     } ${tvMode ? 'tv-flat' : ''}`}>
       <div className="pointer-events-none absolute inset-0 opacity-40">
         <div className="leyline-table-grid absolute inset-0 opacity-10" />

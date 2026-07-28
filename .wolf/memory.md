@@ -8211,3 +8211,11 @@
 | 13:34 | Edited components/GameSessionLobby.tsx | added nullish coalescing | ~532 |
 | 13:34 | Edited components/GameSessionLobby.tsx | 2→2 lines | ~58 |
 | 13:39 | Bot-fixes: mig 426 echte basics, mana-fallback custom basics, lobby bot-deckkeuze | migrations/426, mana-sources.ts, GameSessionLobby.tsx | 2437/2437 groen | ~8k |
+| 13:46 | Deploy prod: mig 426 via db push, VPS detached-HEAD -> master 42deb8e, compose rebuild (70 commits incl. spotlight-werk) | VPS + hosted Supabase | live; bots wachten op human priority | ~3k |
+| 14:00 | Edited app/board/[id]/page.tsx | 3→2 lines | ~29 |
+| 14:00 | Edited app/board/[id]/page.tsx | CSS: board | ~88 |
+| 14:00 | Edited components/GameBoard.tsx | calc() → header() | ~141 |
+| 14:00 | Edited components/layout/GameViewHeader.tsx | 11→7 lines | ~34 |
+| 14:00 | Edited components/layout/GameViewHeader.tsx | 3→2 lines | ~54 |
+| 14:00 | Edited components/layout/GameViewHeader.tsx | 7→6 lines | ~19 |
+| 14:01 | Board header volledig verwijderd (member = TV: volle viewport); showViewSwitcher-prop weer opgeruimd | app/board/[id]/page.tsx, GameBoard.tsx, GameViewHeader.tsx | tsc+eslint groen | ~1k |
