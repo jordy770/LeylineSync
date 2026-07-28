@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-21T08:02:12.970Z
-> Files: 105 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-28T09:21:33.701Z
+> Files: 116 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -109,6 +109,14 @@
 
 - `task-2-report.md` — Task 2 Report: `cast_card_free` (~2024 tok)
 - `task-5-report.md` — Task 5 report: `enqueue_cast_triggers` + wire into cast paths (~1811 tok)
+
+## .superpowers/sdd/2026-07-28-spotlight-viewport-fit/
+
+- `task-1-report.md` — Task 1 Report: `fitCardColumns` — Column-Count Math (~731 tok)
+- `task-2-report.md` — Task 2 Report: `partitionSpotlightCards` — lands chip + ×N stacking (~1820 tok)
+- `task-2-report.md` — Task 2 Report: `partitionSpotlightCards` — lands chip + ×N stacking (~1233 tok)
+- `task-3-report.md` — Task 3 Report — Wire spotlight viewport fit into GameBoard (~1160 tok)
+- `task-4-report.md` — Task 4 Report: Visual verification + OpenWolf bookkeeping (~1214 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -278,6 +286,7 @@
 ## components/
 
 - `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~72555 tok)
+- `GameBoard.tsx` — Big-screen board: `grid`/`spotlight` view toggle, life/turn/stack overlays. Spotlight (`FocusSeatPanel`) height-locks to viewport (TV vs member header offset), fits lands-chip + ×N-stacked + computed-column cards via `useFitColumns`/ResizeObserver (`lib/game/spotlight-fit.ts`); grid (`PlayerQuadrantPanel`) branch is untouched/unbounded. (~10900 tok)
 
 ## components/board/
 
@@ -312,11 +321,14 @@
 ## docs/superpowers/plans/
 
 - `2026-07-20-cascade-nested-cast.md` — Cascade & Generalized Free Nested-Cast — Implementation Plan (~12760 tok)
+- `2026-07-28-spotlight-viewport-fit.md` — Spotlight Viewport Fit — Implementation Plan (~6360 tok)
 
 ## docs/superpowers/specs/
 
 - `2026-07-20-cascade-nested-cast-design.md` — Design spec: cascade + generalized free nested-cast (cast_card_free, target-parking reuse, fallback taxonomy); ~34 v1 cards, 21 deferred (~1600 tok)
 - `2026-07-20-cascade-nested-cast-design.md` — Cascade & Generalized Free Nested-Cast — Design Spec (~3133 tok)
+- `2026-07-28-spotlight-viewport-fit-design.md` — Design spec: spotlight board panel viewport fit — height lock, lands→header chip (exceptions: animated/attached/damaged), ×N duplicate stacking, fitCardColumns computed-columns algorithm (~1100 tok)
+- `2026-07-28-spotlight-viewport-fit-design.md` — Spotlight Viewport Fit — Design Spec (~1043 tok)
 
 ## lib/
 
@@ -333,6 +345,7 @@
 ## lib/game/
 
 - `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~23960 tok)
+- `spotlight-fit.ts` — Spotlight board panel fit helpers (spec: docs/superpowers/specs/ (~810 tok)
 - `types.ts` — Short room code for the /tv spectator flow (mig 379). (~3095 tok)
 
 ## lib/intelligence/
@@ -417,7 +430,7 @@
 
 - `breya-manabase.test.ts` — mig 263 — Breya mana base. Engine touch: bounce_up_to type_line filter (~928 tok)
 - `card-drawn-watcher.test.ts` — mig 401 — card_drawn watcher: every real draw (draw effect, natural draw, (~1076 tok)
-- `cascade-cast-hook.test.ts` — s: hasCascadeTrigger (~801 tok)
+- `cascade-cast-hook.test.ts` — s: hasCascadeTrigger (~821 tok)
 - `cascade-e2e.test.ts` — mig 418-423 — cascade end-to-end: cast a cascade card from hand → the cast hook (~900 tok)
 - `cascade-handler.test.ts` — mig 422 — the cascade effect handler: exile-until-lesser-MV (shared (~1495 tok)
 - `cast-card-free-targeted.test.ts` — mig 420 — cast_card_free's targeted-spell path: a found instant that needs a (~1344 tok)
@@ -452,6 +465,7 @@
 ## tests/unit/
 
 - `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3403 tok)
+- `spotlight-fit.test.ts` — fitCardColumns — the spotlight board's "how many columns make N cards fit (~1536 tok)
 
 ## vercel/
 

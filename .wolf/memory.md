@@ -8122,3 +8122,38 @@
 | 10:02 | Edited tests/feature/cast-card-free-targeted.test.ts | 13→16 lines | ~306 |
 | 10:02 | Edited tests/feature/free-cast-flag.test.ts | expanded (+19 lines) | ~371 |
 | 10:08 | Built cascade: generalized free nested-cast (migs 418-425) + 32 card scripts; whole-branch reviewed | functions_src/*, card-scripts.json, ControllerListV5 | complete, 2417 tests green, branch feat/cascade-nested-cast | ~300k |
+| 10:58 | Edited tests/feature/cascade-cast-hook.test.ts | 2→2 lines | ~53 |
+
+## Session: 2026-07-28 09:17
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:49 | Created docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md | — | ~1049 |
+| 09:49 | Edited docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md | 3→6 lines | ~118 |
+| 09:49 | Brainstormed + wrote spec: spotlight viewport-fit (lands chip, xN stacking, computed columns) | docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md | committed cda513e | ~9k |
+| 10:31 | Created docs/superpowers/plans/2026-07-28-spotlight-viewport-fit.md | — | ~6748 |
+| 10:32 | Edited docs/superpowers/plans/2026-07-28-spotlight-viewport-fit.md | reduced (-6 lines) | ~62 |
+| 10:32 | Edited docs/superpowers/plans/2026-07-28-spotlight-viewport-fit.md | 9→6 lines | ~102 |
+| 10:32 | Edited docs/superpowers/plans/2026-07-28-spotlight-viewport-fit.md | inline fix | ~28 |
+| 10:32 | Edited docs/superpowers/plans/2026-07-28-spotlight-viewport-fit.md | 9→8 lines | ~94 |
+| 10:39 | Created tests/unit/spotlight-fit.test.ts | — | ~626 |
+| 10:39 | Created lib/game/spotlight-fit.ts | — | ~270 |
+| 10:40 | Created .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-1-report.md | — | ~779 |
+| 10:42 | Edited tests/unit/spotlight-fit.test.ts | added 1 import(s) | ~105 |
+| 10:42 | Edited tests/unit/spotlight-fit.test.ts | modified card() | ~962 |
+| 10:43 | Edited lib/game/spotlight-fit.ts | added optional chaining | ~810 |
+| 10:43 | Created .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-2-report.md | — | ~1315 |
+| 10:45 | Task 2: partitionSpotlightCards — TDD RED→GREEN (6 tests), all 13 passing, committed 1c3aff9 | lib/game/spotlight-fit.ts, tests/unit/spotlight-fit.test.ts | ✅ complete | ~2450 |
+| 10:56 | Edited docs/superpowers/plans/2026-07-28-spotlight-viewport-fit.md | inline fix | ~49 |
+| 10:57 | Edited components/GameBoard.tsx | CSS: fit, count | ~535 |
+| 10:57 | Edited components/GameBoard.tsx | expanded (+6 lines) | ~124 |
+| 10:58 | Edited components/GameBoard.tsx | 5→5 lines | ~211 |
+| 10:58 | Edited components/GameBoard.tsx | CSS: ref | ~173 |
+| 10:58 | Edited components/GameBoard.tsx | CSS: gridTemplateColumns | ~738 |
+| 11:03 | Task 3 done: spotlight viewport fit wired into GameBoard (height lock, lands chip, xN stacks, ResizeObserver cols); eslint clean, tsc clean, 2430/2430 tests pass; commit 334a7f8 | components/GameBoard.tsx | success | ~2500 |
+| 11:04 | Created .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-3-report.md | — | ~1238 |
+| 11:24 | Task 4: designqc against session a87d18b5 (62 battlefield cards) — tool captured /auth/login (headless browser unauthenticated, no cookie support in designqc), spotlight fit visually unverified; anatomy entries already present, bookkeeping + report done | lib/game/spotlight-fit.ts, components/GameBoard.tsx | DONE_WITH_CONCERNS — auth gate blocks headless visual check | ~2k |
+| 11:08 | designqc: captured 0 screenshots (0KB, ~0 tok) | C:/Program Files/Git/board/a87d18b5-4f76-456e-bbdf-a8839477565b | ready for eval | ~0 |
+| 11:20 | designqc: captured 0 screenshots (0KB, ~0 tok) | C:/Program Files/Git/board/a87d18b5-4f76-456e-bbdf-a8839477565b | ready for eval | ~0 |
+| 11:20 | designqc: captured 2 screenshots (39KB, ~5000 tok) | /board/a87d18b5-4f76-456e-bbdf-a8839477565b | ready for eval | ~0 |
+| 11:21 | Created .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | — | ~1295 |
