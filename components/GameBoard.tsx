@@ -11,6 +11,7 @@ import {
 } from '@/lib/game/board-selectors'
 import { useBoardGameState } from '@/lib/game/use-board-game-state'
 import { useScreenWakeLock } from '@/lib/game/use-screen-wake-lock'
+import { fitCardColumns, partitionSpotlightCards } from '@/lib/game/spotlight-fit'
 import type { CommanderDamageEntry } from '@/lib/game/data'
 import type {
   BoardCard,
@@ -26,6 +27,31 @@ import GameFinishedOverlay from './board/GameFinishedOverlay'
 import StackRail from './board/StackRail'
 import MotionCard from './MotionCard'
 import CombatManager from './CombatManager'
+
+// Card gap inside the spotlight grid — must match the Tailwind gap-3 (12px)
+// on the fit container so fitCardColumns' math matches what CSS renders.
+const SPOTLIGHT_GAP_PX = 12
+
+// Measured column fit: a ResizeObserver on the card zone feeds the pure
+// fitCardColumns; starts at the old static column count (5) so the first
+// paint before measurement doesn't flash a different layout.
+function useFitColumns(count: number) {
+  const ref = useRef<HTMLDivElement | null>(null)
+  const [cols, setCols] = useState(5)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || count === 0) return
+    const measure = () => {
+      const rect = el.getBoundingClientRect()
+      setCols(fitCardColumns(rect.width, rect.height, count, SPOTLIGHT_GAP_PX))
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [count])
+  return { ref, cols }
+}
 
 export default function GameBoard({ sessionId, shareToken }: { sessionId: string; shareToken?: string | null }) {
   const { cards, session, players, turnState, combatAssignments, stackItems, attackTaxes, commanderDamage, errorMessage } = useBoardGameState(sessionId, shareToken)
@@ -146,7 +172,13 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
 
   return (
     <MotionConfig reducedMotion={tvMode ? 'always' : 'user'}>
-    <div ref={boardRef} className={`relative isolate min-h-[calc(100vh-5.75rem)] overflow-hidden p-4 [perspective:1600px] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)] [@media(max-height:640px)]:p-2 sm:p-6 ${tvMode ? 'tv-flat' : ''}`}>
+    <div ref={boardRef} className={`relative isolate overflow-hidden p-4 [perspective:1600px] [@media(max-height:640px)]:p-2 sm:p-6 ${
+      viewMode === 'spotlight'
+        ? (tvMode
+            ? 'h-[100svh]'
+            : 'h-[calc(100svh-5.75rem)] [@media(max-height:640px)]:h-[calc(100svh-4.5rem)]')
+        : 'min-h-[calc(100vh-5.75rem)] [@media(max-height:640px)]:min-h-[calc(100svh-4.5rem)]'
+    } ${tvMode ? 'tv-flat' : ''}`}>
       <div className="pointer-events-none absolute inset-0 opacity-40">
         <div className="leyline-table-grid absolute inset-0 opacity-10" />
         <div className="absolute inset-x-8 top-1/2 h-px bg-cyan-200/20 [transform:rotateX(62deg)_translateZ(-70px)]" />
@@ -183,11 +215,11 @@ export default function GameBoard({ sessionId, shareToken }: { sessionId: string
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="relative z-20 grid min-h-[72vh] gap-5 [transform-style:preserve-3d] [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_7.5rem_minmax(9rem,11rem)] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
+            className="relative z-20 grid h-full min-h-0 gap-5 [transform-style:preserve-3d] [@media(max-height:640px)]:grid-cols-[minmax(0,1fr)_7.5rem_minmax(9rem,11rem)] [@media(max-height:640px)]:gap-2 xl:grid-cols-[minmax(0,1fr)_10.5rem_minmax(16rem,20rem)] 2xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_11rem_minmax(18rem,22rem)]"
           >
             <FocusSeatPanel seat={focusSeat} turnState={turnState} attackTaxes={attackTaxes} commanderDamage={commanderDamage} lifeDelta={focusSeat.player ? lifeDeltas[focusSeat.player.player_id] : undefined} />
             <StackRail stackItems={pendingStackItems} />
-            <motion.aside layout className="grid content-start gap-3 [@media(max-height:640px)]:gap-2">
+            <motion.aside layout className="grid min-h-0 content-start gap-3 overflow-hidden [@media(max-height:640px)]:gap-2">
               <AnimatePresence initial={false}>
                 {minimapSeats.map((seat) => (
                   <MiniPlayerWidget
@@ -307,10 +339,12 @@ function FocusSeatPanel({
   lifeDelta?: { delta: number; key: number }
 }) {
   const { countByHost, nameById } = seatAttachments(seat.cards)
+  const partition = useMemo(() => partitionSpotlightCards(seat.cards), [seat.cards])
+  const { ref: fitRef, cols } = useFitColumns(partition.tiles.length)
   return (
     <motion.section
       layout
-      className={`leyline-glass-panel relative z-10 min-h-[32rem] overflow-hidden rounded-lg p-4 [transform:rotateX(5deg)_translateZ(0)] [transform-origin:center_bottom] [transform-style:preserve-3d] [@media(max-height:640px)]:min-h-[calc(100svh-8rem)] [@media(max-height:640px)]:p-3 ${
+      className={`leyline-glass-panel relative z-10 flex h-full min-h-0 flex-col overflow-hidden rounded-lg p-4 [transform:rotateX(5deg)_translateZ(0)] [transform-origin:center_bottom] [transform-style:preserve-3d] [@media(max-height:640px)]:p-3 ${
         seat.isPriority ? 'leyline-priority-panel mtg-priority-border' : ''
       }`}
     >
@@ -355,41 +389,61 @@ function FocusSeatPanel({
               <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">Life</p>
             </div>
           ) : null}
+          {partition.landTotal > 0 && (
+            <div className="rounded-md border border-white/15 bg-slate-950/70 px-3 py-2 text-right">
+              <p className="text-[10px] uppercase text-cyan-200/80">Lands</p>
+              <p className="text-sm font-bold text-white">
+                {partition.landTotal}
+                {partition.landOpen > 0 ? <span className="text-emerald-300"> · {partition.landOpen} open</span> : null}
+              </p>
+            </div>
+          )}
           <div className="rounded-md border border-white/15 bg-slate-950/70 px-3 py-2 text-right">
             <p className="text-[10px] uppercase text-cyan-200/80">Phase</p>
             <p className="text-sm font-bold text-white">{formatStepLabel(turnState?.step)}</p>
           </div>
         </div>
       </div>
-      <motion.div
-        layout
-        className="relative grid grid-cols-2 gap-3 [transform:translateZ(34px)] [@media(max-height:640px)]:grid-cols-4 [@media(max-height:640px)]:gap-2 sm:grid-cols-3 xl:grid-cols-5"
-      >
-        <AnimatePresence initial={false}>
-          {seat.cards.map((card) => (
-            <motion.div key={card.id} layout className="relative">
-              <MotionCard
-                card={{
-                  id: card.id,
-                  name: card.name,
-                  image_url: card.image_url,
-                  is_tapped: card.is_tapped,
-                  damage_marked: card.damage_marked,
-                  zone: card.zone,
-                }}
-                size="board"
-                className="max-w-40 [transform:translateZ(14px)] [@media(max-height:640px)]:max-w-20"
-                visualClassName="shadow-[0_16px_26px_rgba(0,0,0,0.42)]"
-              />
-              <BoardCardBadges
-                card={card}
-                attachmentCount={countByHost.get(card.id) ?? 0}
-                hostName={card.attached_to ? nameById.get(card.attached_to) ?? null : null}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
+      <div ref={fitRef} className="relative min-h-0 flex-1">
+        <motion.div
+          layout
+          className="grid gap-3 justify-items-center [transform:translateZ(34px)]"
+          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+        >
+          <AnimatePresence initial={false}>
+            {partition.tiles.map((tile) => (
+              <motion.div key={tile.card.id} layout className="relative w-full max-w-40">
+                <MotionCard
+                  card={{
+                    id: tile.card.id,
+                    name: tile.card.name,
+                    image_url: tile.card.image_url,
+                    is_tapped: tile.card.is_tapped,
+                    damage_marked: tile.card.damage_marked,
+                    zone: tile.card.zone,
+                  }}
+                  size="board"
+                  className="[transform:translateZ(14px)]"
+                  visualClassName="shadow-[0_16px_26px_rgba(0,0,0,0.42)]"
+                />
+                <BoardCardBadges
+                  card={tile.card}
+                  attachmentCount={countByHost.get(tile.card.id) ?? 0}
+                  hostName={tile.card.attached_to ? nameById.get(tile.card.attached_to) ?? null : null}
+                />
+                {tile.count > 1 && (
+                  <span
+                    className="absolute -bottom-1 -right-1 z-10 rounded-full bg-slate-200 px-1.5 py-0.5 text-[10px] font-black text-slate-900 shadow ring-1 ring-black/40"
+                    title={`${tile.count} copies`}
+                  >
+                    ×{tile.count}
+                  </span>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      </div>
       {seat.cards.length === 0 ? (
         <div className="relative flex min-h-56 items-center justify-center rounded-md border border-dashed border-white/15 text-xs text-slate-500 [transform:translateZ(20px)] [@media(max-height:640px)]:min-h-28">
           Battlefield empty
