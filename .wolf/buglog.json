@@ -22374,14 +22374,51 @@
     {
       "id": "bug-2698",
       "timestamp": "2026-07-28T09:40:00.000Z",
-      "error_message": "Sub-xl spotlight board renders 0 cards: in spotlight mode below Tailwind `xl` (1280px) with normal viewport height, the focused player's card grid shows no permanents. Confirmed by A/B screenshot capture at 1200px vs 1440px.",
+      "error_message": "Sub-xl spotlight board renders 0 cards: in spotlight mode below Tailwind `xl` (1280px) with normal viewport height, the focused player's card grid shows no permanents. Confirmed by A/B screenshot capture at 1200px vs 1440px. RECURRED (round 2) in changed form after the round-1 fix: DOM measurement showed the card zone at 10.7px tall at 1200px width (cards crushed to a sliver) instead of 0 permanents.",
       "file": "components/GameBoard.tsx",
-      "root_cause": "The spotlight branch's outer grid (key=\"focus-board\" motion.div) only defines grid-template-columns under `[@media(max-height:640px)]`, `xl:`, and `2xl:` — below `xl` at normal height it is a single-column stack of auto rows. Task 3's height-lock (root div `h-[calc(100svh-5.75rem)]` unconditional on any breakpoint) plus `FocusSeatPanel`'s `h-full` plus the card zone's `flex-1` (flex-basis 0%) chained through ancestors that were actually auto-height below xl, collapsing the card zone to 0 height.",
-      "fix": "Two changes in components/GameBoard.tsx: (1) root div height ternary now only locks height (`h-[...]`) at `xl:` and in the `[@media(max-height:640px)]` short mode, keeping `min-h-[calc(100vh-5.75rem)]` (member) / `min-h-[100svh]` (TV) as the base so sub-xl spotlight reverts to the pre-existing scrollable stack; (2) FocusSeatPanel's card-zone wrapper changed from `flex-1` to `flex-auto` (flex: 1 1 auto) so with a definite-height xl parent it still grows/shrinks to fill leftover space (fit math stable), but with an auto-height sub-xl parent its flex-basis is auto instead of 0%, so it sizes by content instead of collapsing.",
-      "tags": ["board", "spotlight", "css", "viewport-fit"],
+      "root_cause": "The spotlight branch's outer grid (key=\"focus-board\" motion.div) only defines grid-template-columns under `[@media(max-height:640px)]`, `xl:`, and `2xl:` — below `xl` at normal height it is a single-column stack of auto rows. Task 3's height-lock (root div `h-[calc(100svh-5.75rem)]` unconditional on any breakpoint) plus `FocusSeatPanel`'s `h-full` plus the card zone's `flex-1` (flex-basis 0%) chained through ancestors that were actually auto-height below xl, collapsing the card zone to 0 height. Round 1 (xl-scoped height lock + flex-auto zone) could not fully prevent this: below xl the zone's height is still content-driven, so the ResizeObserver measures a tiny/circular height, fitCardColumns hits its 8px give-up floor and returns a huge column count (~50+), which makes the cells — and therefore the aspect-ratio cards — a few px tall, which re-confirms the tiny measurement. A stable degenerate equilibrium. Principle: measured-height fitting is only valid where height is EXTERNALLY constrained (xl: and max-height:640px) — not below that.",
+      "fix": "Round 1 - two changes in components/GameBoard.tsx: (1) root div height ternary now only locks height (`h-[...]`) at `xl:` and in the `[@media(max-height:640px)]` short mode, keeping `min-h-[calc(100vh-5.75rem)]` (member) / `min-h-[100svh]` (TV) as the base so sub-xl spotlight reverts to the pre-existing scrollable stack; (2) FocusSeatPanel's card-zone wrapper changed from `flex-1` to `flex-auto` (flex: 1 1 auto). Round 2 (addresses the recurrence) - `useFitColumns` is now matchMedia-gated on `(min-width: 1280px), (max-height: 640px)`: only inside that media condition does it ResizeObserver-measure and call fitCardColumns; cols becomes `number | null`, and outside the media condition it disconnects the observer and sets cols to null. The card grid's motion.div restores a static Tailwind column ladder (`grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 [@media(max-height:640px)]:grid-cols-4`) as a className fallback, and the inline `gridTemplateColumns` style is now conditional (`cols != null ? {...} : undefined`) so the static ladder governs whenever fit is inactive (sub-xl, normal height) and the computed columns govern only where height is actually locked.",
+      "tags": [
+        "board",
+        "spotlight",
+        "css",
+        "viewport-fit"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-28T10:15:00.000Z"
+    },
+    {
+      "id": "bug-1367",
+      "timestamp": "2026-07-28T09:41:38.002Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/inspect-spotlight.mjs",
+      "root_cause": "Had 'C:/Users/Jordy/AppData/Roaming/npm/node_modules/o",
+      "fix": "Changed to 'file:///C:/Users/Jordy/AppData/Roaming/npm/node_m",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
       "related_bugs": [],
       "occurrences": 1,
-      "last_seen": "2026-07-28T09:40:00.000Z"
+      "last_seen": "2026-07-28T09:41:38.002Z"
+    },
+    {
+      "id": "bug-1368",
+      "timestamp": "2026-07-28T09:46:05.513Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/GameBoard.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: className=\"grid grid-cols-2 gap-3 justify-items-center [tran; style={cols != null ? { gridTemplateColumns: `repeat(${cols}",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-28T09:46:27.492Z"
     }
   ]
 }

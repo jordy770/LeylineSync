@@ -33,22 +33,44 @@ import CombatManager from './CombatManager'
 const SPOTLIGHT_GAP_PX = 12
 
 // Measured column fit: a ResizeObserver on the card zone feeds the pure
-// fitCardColumns; starts at the old static column count (5) so the first
-// paint before measurement doesn't flash a different layout.
+// fitCardColumns. Fit only where the spotlight layout locks its height (xl:
+// or short screens) — below that the ancestor chain is auto-height, so
+// measuring the zone's own height is circular and settles into a few-px
+// degenerate equilibrium (bug-2698: fitCardColumns hits its give-up floor,
+// returns a huge column count, cells collapse, re-confirming the tiny
+// measurement). cols === null means fit is inactive; the caller falls back
+// to a static column ladder in that case.
 function useFitColumns(count: number) {
   const ref = useRef<HTMLDivElement | null>(null)
-  const [cols, setCols] = useState(5)
+  const [cols, setCols] = useState<number | null>(null)
   useEffect(() => {
     const el = ref.current
     if (!el || count === 0) return
+    const media = window.matchMedia('(min-width: 1280px), (max-height: 640px)')
+    let observer: ResizeObserver | null = null
     const measure = () => {
       const rect = el.getBoundingClientRect()
       setCols(fitCardColumns(rect.width, rect.height, count, SPOTLIGHT_GAP_PX))
     }
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(el)
-    return () => observer.disconnect()
+    const sync = () => {
+      if (media.matches) {
+        measure()
+        if (!observer) {
+          observer = new ResizeObserver(measure)
+          observer.observe(el)
+        }
+      } else {
+        observer?.disconnect()
+        observer = null
+        setCols(null)
+      }
+    }
+    sync()
+    media.addEventListener('change', sync)
+    return () => {
+      media.removeEventListener('change', sync)
+      observer?.disconnect()
+    }
   }, [count])
   return { ref, cols }
 }
@@ -407,8 +429,8 @@ function FocusSeatPanel({
       <div ref={fitRef} className="relative min-h-0 flex-auto">
         <motion.div
           layout
-          className="grid gap-3 justify-items-center [transform:translateZ(34px)]"
-          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+          className="grid grid-cols-2 gap-3 justify-items-center [transform:translateZ(34px)] sm:grid-cols-3 xl:grid-cols-5 [@media(max-height:640px)]:grid-cols-4"
+          style={cols != null ? { gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` } : undefined}
         >
           <AnimatePresence initial={false}>
             {partition.tiles.map((tile) => (
