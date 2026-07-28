@@ -8180,3 +8180,7 @@
 | 11:49 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/inspect-spotlight-2.mjs | — | ~543 |
 | 11:50 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md | modified working() | ~1692 |
 | 11:51 | Task 4 re-check of fix round 2 (7d17c7f, matchMedia-gated useFitColumns + static grid-cols ladder fallback): DOM-verified PASS at all 3 requested viewports — xl(1440) 747px card zone/no scroll, sub-xl(1200 normal height) 741px card zone/3 cols/page scrolls as intended, short(1100x600) 497px card zone/5 cols/no scroll; all 7 permanents visible+natural size everywhere; only xN stacking remains unverified (no dupes in test data) | components/GameBoard.tsx | PASS — spotlight viewport fit fully verified across tested range | ~3k |
+| 11:57 | Edited components/GameBoard.tsx | CSS: guard, guard | ~468 |
+| 11:58 | Edited docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md | expanded (+15 lines) | ~287 |
+| 11:59 | Edited .superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-3-report.md | added 1 condition(s) | ~844 |
+| 12:01 | SDD run spotlight viewport-fit compleet: 4 taken + 3 fixrounds + final review clean; branch feature/spotlight-viewport-fit ready | components/GameBoard.tsx, lib/game/spotlight-fit.ts | verified (DOM rects 3 viewports) | ~40k |

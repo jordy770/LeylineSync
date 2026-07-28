@@ -22419,6 +22419,54 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-07-28T09:46:27.492Z"
+    },
+    {
+      "id": "bug-1369",
+      "timestamp": "2026-07-28T09:47:52.419Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-3-report.md",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T09:47:52.419Z"
+    },
+    {
+      "id": "bug-1370",
+      "timestamp": "2026-07-28T09:50:57.551Z",
+      "error_message": "Significant refactor of ",
+      "file": ".superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-4-report.md",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 8→39 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T09:50:57.551Z"
+    },
+    {
+      "id": "bug-1371",
+      "timestamp": "2026-07-28T09:59:10.351Z",
+      "error_message": "Missing guard clause",
+      "file": ".superpowers/sdd/2026-07-28-spotlight-viewport-fit/task-3-report.md",
+      "root_cause": "No early return/throw for edge case: typeof ResizeObserver === 'undefined'",
+      "fix": "Added guard clause: if (typeof ResizeObserver === 'undefined')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-28T09:59:10.351Z"
     }
   ]
 }

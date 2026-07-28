@@ -6,6 +6,8 @@
 
 ## User Preferences
 
+- 2026-07-28 — Board view mag NOOIT scrollen (couch/TV-principe: alles binnen de viewport). Spotlight-oplossing gekozen: compacte representatie is OK (lands → header-chip "12 lands · 3 open", identieke duplicaten stapelen met ×N), daarna kaarten auto-krimpen via berekende kolommen tot alles past — géén "+N meer"-cap, géén ondergrens. Spec: docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md.
+
 - 2026-07-12 — Cast-time choices (adventure creature-vs-instant, kicker) must ALWAYS be presented side by side as direct one-tap buttons; an unavailable option greys out with the reason instead of disappearing. No mode-switch + second Cast press.
 
 - 2026-07-11 — Board spotlight: the big field must follow the ACTIVE (turn) player and stay put for the whole turn; priority is signalled only by the moving gold border. Jordy rejected priority-following (too jumpy) after trying v0.12.0.
@@ -719,3 +721,9 @@
 - **Scenario.as(seat) is a NO-OP on the DB** — it only records `this.acting` synchronously and returns `this`; it does NOT set the `request.jwt.claims` GUC that `auth.uid()` reads. That only happens inside the private `run()` → `asPlayer()`, used by Scenario's own helper methods (`castPermanent`, `putOnStack`, etc). A test that calls `s.client.query(...)` directly (bypassing Scenario's helpers) MUST wrap it in `asPlayer(s.client, s.playerId(seat), () => ...)` itself, or `auth.uid()` raises `invalid input syntax for type json` (it casts the unset claim, an empty string, to json). Do-Not-Repeat: don't trust `s.as(seat)` alone to authenticate a raw `client.query` call.
 - **An exile-zone cast ALWAYS requires a `play_from_exile` permission row** (`game_continuous_effects`, `effect_type = 'play_from_exile'`, `payload.card_ids` containing the game_card id) — checked unconditionally in `cast_spell_effect`, BEFORE the payment block, regardless of `p_free`. Tests spawning a card into `'exile'` and casting it must insert that row first (pattern: `urianger.test.ts`), same for a free cast.
 - **cast_spell_effect has no transient "on the stack" zone for a spell's source card.** A non-permanent (instant/sorcery) cast from hand/exile moves the source straight to `zone = 'graveyard'` AT CAST TIME (see the function's own comment: "Non-permanent spell leaves its cast zone on cast"); `game_stack_items` is the only representation of "on the stack". Only `castPermanent`'s RPC path parks a source in `zone = 'stack'` until resolution (e.g. `liliana-untouched.test.ts` LIL5). Do not assert `zoneOf(...) === 'stack'` after a `cast_spell_effect` call for an instant/sorcery — assert `'graveyard'`.
+
+## Key Learnings — 2026-07-28 (spotlight viewport-fit)
+
+- Measured-height fitting (ResizeObserver → layout) is alleen geldig waar de containerhoogte extern begrensd is. Op de board-spotlight ontstond anders een degeneratieve feedbackloop (meting → give-up kolommen → sliver-content → bevestigde meting; bug-2698). Daarom is `useFitColumns` in GameBoard.tsx gegate op matchMedia '(min-width:1280px),(max-height:640px)' met een statische Tailwind-kolomladder als fallback — die gate niet weghalen. Zie "Scope of the guarantee" in docs/superpowers/specs/2026-07-28-spotlight-viewport-fit-design.md.
+- designqc/headless-verificatie van het board kan zonder login via de spectator-link `/board/<id>?key=<board_token>` (mig 378); die start standaard in spotlight. Git Bash mangelt `/board/...` naar een Windows-pad — `MSYS_NO_PATHCONV=1` nodig. Screenshots alleen zijn soms onvoldoende; puppeteer DOM-bounding-rects geven ground truth.
+- Oude TV-browsers (pre-2019 WebOS/Tizen) missen ResizeObserver en moderne MediaQueryList.addEventListener; board-code moet feature-detecten en gracieus degraderen.

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-28T09:21:33.701Z
-> Files: 116 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-28T09:59:10.329Z
+> Files: 118 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -72,6 +72,11 @@
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/b3467b9f-c3ab-4823-9620-fb93c878b451/scratchpad/
 
 
+## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/
+
+- `inspect-spotlight-2.mjs` — chromePath: inspect, main (~543 tok)
+- `inspect-spotlight.mjs` — chromePath: inspect, main (~683 tok)
+
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/cbab7504-eb67-46c3-a9ec-5892512d9617/scratchpad/
 
 
@@ -115,8 +120,8 @@
 - `task-1-report.md` — Task 1 Report: `fitCardColumns` — Column-Count Math (~731 tok)
 - `task-2-report.md` — Task 2 Report: `partitionSpotlightCards` — lands chip + ×N stacking (~1820 tok)
 - `task-2-report.md` — Task 2 Report: `partitionSpotlightCards` — lands chip + ×N stacking (~1233 tok)
-- `task-3-report.md` — Task 3 Report — Wire spotlight viewport fit into GameBoard (~1160 tok)
-- `task-4-report.md` — Task 4 Report: Visual verification + OpenWolf bookkeeping (~1214 tok)
+- `task-3-report.md` — Task 3 Report — Wire spotlight viewport fit into GameBoard (~3652 tok)
+- `task-4-report.md` — Task 4 Report: Visual verification + OpenWolf bookkeeping (~6300 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -286,7 +291,7 @@
 ## components/
 
 - `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~72555 tok)
-- `GameBoard.tsx` — Big-screen board: `grid`/`spotlight` view toggle, life/turn/stack overlays. Spotlight (`FocusSeatPanel`) height-locks to viewport (TV vs member header offset), fits lands-chip + ×N-stacked + computed-column cards via `useFitColumns`/ResizeObserver (`lib/game/spotlight-fit.ts`); grid (`PlayerQuadrantPanel`) branch is untouched/unbounded. (~10900 tok)
+- `GameBoard.tsx` — SPOTLIGHT_GAP_PX (~11426 tok)
 
 ## components/board/
 
@@ -327,7 +332,7 @@
 
 - `2026-07-20-cascade-nested-cast-design.md` — Design spec: cascade + generalized free nested-cast (cast_card_free, target-parking reuse, fallback taxonomy); ~34 v1 cards, 21 deferred (~1600 tok)
 - `2026-07-20-cascade-nested-cast-design.md` — Cascade & Generalized Free Nested-Cast — Design Spec (~3133 tok)
-- `2026-07-28-spotlight-viewport-fit-design.md` — Design spec: spotlight board panel viewport fit — height lock, lands→header chip (exceptions: animated/attached/damaged), ×N duplicate stacking, fitCardColumns computed-columns algorithm (~1100 tok)
+- `2026-07-28-spotlight-viewport-fit-design.md` — Spotlight Viewport Fit — Design Spec (~1267 tok)
 - `2026-07-28-spotlight-viewport-fit-design.md` — Spotlight Viewport Fit — Design Spec (~1043 tok)
 
 ## lib/
