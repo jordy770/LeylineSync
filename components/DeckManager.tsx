@@ -548,6 +548,7 @@ export default function DeckManager() {
                     key={mode}
                     type="button"
                     onClick={() => setViewMode(mode)}
+                    aria-pressed={viewMode === mode}
                     className={`px-[11px] py-[5px] text-[11.5px] font-semibold capitalize ${
                       viewMode === mode
                         ? 'bg-[rgba(255,212,121,0.14)] text-[var(--gold-bright)]'
@@ -572,6 +573,7 @@ export default function DeckManager() {
                       key={key}
                       type="button"
                       onClick={() => setSortKey(key)}
+                      aria-pressed={sortKey === key}
                       className={`px-[11px] py-[5px] text-[11.5px] font-semibold ${
                         sortKey === key
                           ? 'bg-[rgba(255,212,121,0.14)] text-[var(--gold-bright)]'
