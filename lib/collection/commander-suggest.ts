@@ -111,14 +111,21 @@ const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
  * so a bare "+s" rule would miss real tribal payoffs like Elvish Archdruid.
  */
 function tribalWordForms(subtype: string): string[] {
-  const forms = new Set<string>([subtype, `${subtype}s`, `${subtype}es`])
-  if (/fe?$/i.test(subtype)) {
-    forms.add(`${subtype.replace(/fe?$/i, '')}ves`)
-  }
-  if (/[^aeiou]y$/i.test(subtype)) {
-    forms.add(`${subtype.slice(0, -1)}ies`)
-  }
+  const forms = new Set<string>([subtype, `${subtype}s`, `${subtype}es`, pluralizeSubtype(subtype)])
   return [...forms]
+}
+
+/**
+ * The single preferred plural for a creature subtype, for PROSE display
+ * (Elf → Elves, Harpy → Harpies, Bear → Bears) — same irregular rules as
+ * tribalWordForms above (f/fe→ves, consonant+y→ies) but one best guess
+ * instead of the full set of forms tribalWordForms matches oracle text
+ * against.
+ */
+export function pluralizeSubtype(subtype: string): string {
+  if (/fe?$/i.test(subtype)) return `${subtype.replace(/fe?$/i, '')}ves`
+  if (/[^aeiou]y$/i.test(subtype)) return `${subtype.slice(0, -1)}ies`
+  return `${subtype}s`
 }
 
 // Per-card facts, derived once per input collection instead of re-derived

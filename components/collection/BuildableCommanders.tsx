@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
-import type { CommanderSuggestion } from '@/lib/collection/commander-suggest'
+import { pluralizeSubtype, type CommanderSuggestion } from '@/lib/collection/commander-suggest'
 import { ColorPips, Panel } from './ui'
 
 // "Commanders you can build" — deterministic ranking, no LLM. The advisor page
@@ -417,7 +417,7 @@ function SuggestionDetail({
 
       {tribal || keywordOverlap.length > 0 ? (
         <p className="font-rules text-xs" style={{ color: 'var(--text-dim)' }}>
-          {tribal ? `${tribal.count} ${tribal.type}s tie into this commander's tribal theme. ` : ''}
+          {tribal ? `${tribal.count} ${pluralizeSubtype(tribal.type)} tie into this commander's tribal theme. ` : ''}
           {keywordOverlap.length > 0 ? `Keyword overlap: ${keywordOverlap.join(', ')}.` : ''}
         </p>
       ) : null}
@@ -434,9 +434,10 @@ function SuggestionDetail({
   )
 }
 
-/** "{ownedPlayable} free playable cards · strong in {bucket, bucket} · {n} {type}s [· {locked} in decks]" */
+/** "{ownedPlayable} free playable cards · strong in {bucket, bucket} · {n} {type}s [· {locked} in decks]"
+ *  In whole-collection mode ownedPlayable includes locked cards, so drop "free". */
 function explanationLine(s: CommanderSuggestion, freeOnly: boolean): string {
-  const parts: string[] = [`${s.ownedPlayable} free playable cards`]
+  const parts: string[] = [`${s.ownedPlayable} ${freeOnly ? 'free ' : ''}playable cards`]
 
   const strongBuckets = [...s.buckets]
     .filter((b) => b.owned > 0)
@@ -445,7 +446,7 @@ function explanationLine(s: CommanderSuggestion, freeOnly: boolean): string {
     .map((b) => BUCKET_LABEL[b.bucket])
   if (strongBuckets.length > 0) parts.push(`strong in ${strongBuckets.join(', ')}`)
 
-  if (s.themeFacts.tribal) parts.push(`${s.themeFacts.tribal.count} ${s.themeFacts.tribal.type}s`)
+  if (s.themeFacts.tribal) parts.push(`${s.themeFacts.tribal.count} ${pluralizeSubtype(s.themeFacts.tribal.type)}`)
 
   if (!freeOnly && s.lockedCount > 0) parts.push(`${s.lockedCount} in decks`)
 

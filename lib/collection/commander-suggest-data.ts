@@ -11,8 +11,8 @@ import { forEachIdChunk, IN_CHUNK, loadAvailability, loadTags } from './deck-loa
 
 const SEARCH_LIMIT = 12
 
-/** Escape ilike wildcards in user input so a literal %/_ in the query can't alter the pattern. */
-const escapeIlike = (s: string) => s.replace(/[%_]/g, (c) => `\\${c}`)
+/** Escape ilike wildcards (and the escape character itself) so literal %/_/\ in the query can't alter the pattern. */
+const escapeIlike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`)
 
 interface OracleRow {
   oracleId: string

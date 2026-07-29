@@ -5,6 +5,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   isCommanderEligible,
+  pluralizeSubtype,
   scoreCommander,
   suggestCommanders,
   type OwnedOracleCard,
@@ -121,6 +122,12 @@ test('MDFC/double-faced type lines yield only real subtypes, one face at a time'
   const s = scoreCommander(c, mdfc, { freeOnly: true })
   assert.equal(s.themeFacts.tribal?.type, 'Angel')
   assert.equal(s.themeFacts.tribal?.count, 6)
+})
+
+test('pluralizeSubtype: irregular forms used in prose (Elf/Harpy/Bear)', () => {
+  assert.equal(pluralizeSubtype('Elf'), 'Elves')
+  assert.equal(pluralizeSubtype('Harpy'), 'Harpies')
+  assert.equal(pluralizeSubtype('Bear'), 'Bears')
 })
 
 test('the card type "Creature" is never extracted as a tribal subtype', () => {
