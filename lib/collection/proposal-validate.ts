@@ -27,11 +27,35 @@ export function validateProposal(
   basics: SavePayloadBasics,
   commanderIdentity: string[],
   metaByOracle: Map<string, CardMeta>,
+  // Both optional and additive — every pre-existing call site (and its unit
+  // tests) omits them and is unaffected. Passed by the save-deck route once
+  // it has the commander's own oracleId and the basics' resolved oracle ids
+  // in hand (whole-branch review fix round 1: these two tamper cases used to
+  // reach a DB insert/500 instead of a clean validation 400).
+  commanderOracleId?: string,
+  basicOracleIds?: Map<string, string>,
 ): { ok: true } | { ok: false; error: string } {
   const seen = new Set<string>()
   for (const c of cards) {
     if (seen.has(c.oracleId)) return { ok: false, error: `Duplicate card in proposal: ${c.oracleId}` }
     seen.add(c.oracleId)
+  }
+
+  if (commanderOracleId) {
+    for (const c of cards) {
+      if (c.oracleId === commanderOracleId) {
+        return { ok: false, error: `Proposal cannot include the commander as a nonland card: ${c.oracleId}` }
+      }
+    }
+  }
+
+  if (basicOracleIds) {
+    const basicIdSet = new Set(basicOracleIds.values())
+    for (const c of cards) {
+      if (basicIdSet.has(c.oracleId)) {
+        return { ok: false, error: `Card ${c.oracleId} duplicates a basic land already in the proposal` }
+      }
+    }
   }
 
   for (const c of cards) {

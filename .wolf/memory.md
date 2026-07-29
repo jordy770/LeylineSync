@@ -8368,3 +8368,11 @@
 | 18:47 | Created tmp-check-analysis.mts | — | ~367 |
 | 18:53 | Created .superpowers/sdd/2026-07-29-deck-generation/task-5-report.md | — | ~2028 |
 | 18:52 | Task 5 (deck-generation SDD): e2e-verified generate/save-deck/lookup/tamper against real local DB via magic-link+HTTP; found+fixed bug-2701 (co_deck_cards.is_commander NULL from PostgREST bulk-insert key-union) | app/api/collection/commanders/save-deck/route.ts, .wolf/buglog.json, .wolf/cerebrum.md | gates green (2473 tests, tsc clean, eslint 2 known errors); deck created 994ef219-78d3-4258-9480-e406a8fee4c1 power 9.5 | ~4200 |
+| 19:00 | Edited components/collection/BuildableCommanders.tsx | added 1 import(s) | ~83 |
+| 19:00 | Edited components/collection/BuildableCommanders.tsx | join() → cardmarketUrl() | ~251 |
+| 19:02 | Edited tests/unit/proposal-validate.test.ts | expanded (+42 lines) | ~788 |
+| 19:02 | Edited lib/collection/proposal-validate.ts | added 4 condition(s) | ~394 |
+| 19:02 | Edited app/api/collection/commanders/save-deck/route.ts | added 1 condition(s) | ~190 |
+| 19:02 | Edited app/api/collection/commanders/save-deck/route.ts | modified catch() | ~646 |
+| 19:04 | Edited .superpowers/sdd/2026-07-29-deck-generation/task-4-report.md | added 1 condition(s) | ~1315 |
+| 19:04 | Fix round 2 (whole-branch review): Gaps buys → Cardmarket links; save-deck early size-reject; validateProposal commander-in-cards + card/basic oracleId collision (RED-first) | components/collection/BuildableCommanders.tsx, app/api/collection/commanders/save-deck/route.ts, lib/collection/proposal-validate.ts, tests/unit/proposal-validate.test.ts | tsc+eslint+next build clean, unit 40/40 green | ~4000 |

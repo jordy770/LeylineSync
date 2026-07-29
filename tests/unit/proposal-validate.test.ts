@@ -155,3 +155,45 @@ test('duplicate basic land name across the basics list → error', () => {
   assert.equal(result.ok, false)
   assert.match((result as { error: string }).error, /duplicate/i)
 })
+
+// ── whole-branch review fix round 1: reject two tamper-500s as clean 400s ──
+// (route previously let these reach a DB insert/500 instead of a validation
+// 400 — see save-deck/route.ts). Both new params are optional so every
+// existing call site/test above (which omits them) is unaffected.
+
+test('commander oracleId appears among the proposal cards → error', () => {
+  const cards: SavePayloadCard[] = [{ oracleId: 'cmd-1', quantity: 1 }]
+  const metaByOracle = metaMap([meta({ oracleId: 'cmd-1', colorIdentity: ['G'] })])
+  const result = validateProposal(cards, [], IDENTITY, metaByOracle, 'cmd-1')
+  assert.equal(result.ok, false)
+  assert.match((result as { error: string }).error, /commander/i)
+})
+
+test('cards[] entry with no commanderOracleId given → commander check is skipped (ok)', () => {
+  const cards: SavePayloadCard[] = [{ oracleId: 'cmd-1', quantity: 1 }]
+  const metaByOracle = metaMap([meta({ oracleId: 'cmd-1', colorIdentity: ['G'] })])
+  const result = validateProposal(cards, [], IDENTITY, metaByOracle)
+  assert.deepEqual(result, { ok: true })
+})
+
+test('a cards[] oracleId collides with a resolved basic land oracleId → error', () => {
+  const cards: SavePayloadCard[] = [{ oracleId: 'forest-oracle', quantity: 1 }]
+  const metaByOracle = metaMap([meta({ oracleId: 'forest-oracle', colorIdentity: [] })])
+  const basics: SavePayloadBasics = [{ name: 'Forest', quantity: 10 }]
+  const basicOracleIds = new Map([['Forest', 'forest-oracle']])
+  const result = validateProposal(cards, basics, IDENTITY, metaByOracle, undefined, basicOracleIds)
+  assert.equal(result.ok, false)
+  assert.match((result as { error: string }).error, /basic/i)
+})
+
+test('cards[] oracleId matches a DIFFERENT basic name than the one resolved to it → ok', () => {
+  // Sanity check the collision check compares actual resolved oracle ids, not
+  // just "any card whose id happens to look land-like" — an unrelated basic
+  // resolution must not false-positive.
+  const cards: SavePayloadCard[] = [{ oracleId: 'card-1', quantity: 1 }]
+  const metaByOracle = metaMap([meta({ oracleId: 'card-1', colorIdentity: ['G'] })])
+  const basics: SavePayloadBasics = [{ name: 'Forest', quantity: 10 }]
+  const basicOracleIds = new Map([['Forest', 'forest-oracle']])
+  const result = validateProposal(cards, basics, IDENTITY, metaByOracle, undefined, basicOracleIds)
+  assert.deepEqual(result, { ok: true })
+})

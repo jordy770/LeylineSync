@@ -61,6 +61,14 @@ export async function POST(request: Request) {
   if (!oracleId) {
     return NextResponse.json({ error: 'oracleId is required' }, { status: 400 })
   }
+  // Reject an oversized payload before any DB lookups — otherwise a huge
+  // tampered cards[]/basics[] array reaches loadCardMeta's chunked
+  // co_card_oracle/co_card_availability .in() queries (up to ~500 rows'
+  // worth) before validateProposal's own MAX_DECK_SIZE check ever runs.
+  // Mirrors that same 100-card cap (1 commander + cards + basics).
+  if (1 + cards.length + basics.length > 100) {
+    return NextResponse.json({ error: 'Proposal is too large' }, { status: 400 })
+  }
 
   const { data: commanderRow, error: commanderError } = await supabase
     .from('co_card_oracle')
@@ -85,7 +93,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Card lookup failed' }, { status: 500 })
   }
 
-  const validation = validateProposal(cards, basics, colorIdentity, metaByOracle)
+  // Basics aren't submitted with an oracleId (the client only knows the land
+  // name) — resolve each to the catalog's true basic-land printing BEFORE
+  // validation and before any row is written. This lets validateProposal
+  // reject a cards[] oracleId that collides with a resolved basic (a
+  // duplicate-card exploit that used to slip past the cards-only duplicate
+  // check and reach the insert as two rows for one physical land), and keeps
+  // a resolution failure a clean no-op — nothing's been created yet, so
+  // there's no co_decks row to roll back on error, unlike before.
+  const basicOracleIds = new Map<string, string>()
+  for (const b of basics) {
+    const { data: basicRow, error: basicError } = await supabase
+      .from('co_card_oracle')
+      .select('oracle_id')
+      .ilike('type_line', 'Basic Land%')
+      .eq('name', b.name)
+      .maybeSingle()
+    if (basicError || !basicRow) {
+      return NextResponse.json({ error: `Could not resolve basic land "${b.name}"` }, { status: 500 })
+    }
+    basicOracleIds.set(b.name, basicRow.oracle_id as string)
+  }
+
+  const validation = validateProposal(cards, basics, colorIdentity, metaByOracle, oracleId, basicOracleIds)
   if (!validation.ok) {
     return NextResponse.json({ error: validation.error }, { status: 400 })
   }
@@ -100,23 +130,12 @@ export async function POST(request: Request) {
   }
   const deckId = deckRow.id as string
 
-  // Basics aren't submitted with an oracleId (the client only knows the
-  // land name) — resolve each to the catalog's true basic-land printing by
-  // exact name before it can become an insert row.
-  const basicRows: { deck_id: string; oracle_id: string; quantity: number; is_commander: boolean }[] = []
-  for (const b of basics) {
-    const { data: basicRow, error: basicError } = await supabase
-      .from('co_card_oracle')
-      .select('oracle_id')
-      .ilike('type_line', 'Basic Land%')
-      .eq('name', b.name)
-      .maybeSingle()
-    if (basicError || !basicRow) {
-      await supabase.from('co_decks').delete().eq('id', deckId)
-      return NextResponse.json({ error: `Could not resolve basic land "${b.name}"` }, { status: 500 })
-    }
-    basicRows.push({ deck_id: deckId, oracle_id: basicRow.oracle_id as string, quantity: b.quantity, is_commander: false })
-  }
+  const basicRows = basics.map((b) => ({
+    deck_id: deckId,
+    oracle_id: basicOracleIds.get(b.name) as string,
+    quantity: b.quantity,
+    is_commander: false,
+  }))
 
   // Every row must explicitly set is_commander (not just the commander row):
   // PostgREST's bulk insert unions the key set across the whole batch, so a

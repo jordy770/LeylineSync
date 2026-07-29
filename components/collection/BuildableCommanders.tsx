@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { pluralizeSubtype, type CommanderSuggestion } from '@/lib/collection/commander-suggest'
 import type { BasicName, DeckProposal, ProposalBucket } from '@/lib/collection/deck-generator'
+import { cardmarketUrl } from '@/lib/collection/shop-links'
 import { ColorPips, Panel } from './ui'
 
 // "Commanders you can build" — deterministic ranking, no LLM. The advisor page
@@ -626,13 +627,21 @@ function SuggestionDetail({
               {preview.gaps.map((g) => (
                 <p key={g.bucket} className="font-rules text-xs" style={{ color: 'var(--text-dim)' }}>
                   {BUCKET_LABEL[g.bucket]}: short {g.shortfall}
-                  {g.buys.length > 0
-                    ? ' — ' +
-                      g.buys
-                        .slice(0, 2)
-                        .map((b) => (b.priceEur != null ? `${b.name} (€${b.priceEur.toFixed(2)})` : b.name))
-                        .join(', ')
-                    : ''}
+                  {g.buys.length > 0 ? ' — ' : ''}
+                  {g.buys.slice(0, 2).map((b, i) => (
+                    <span key={b.oracleId}>
+                      {i > 0 ? ', ' : ''}
+                      <a
+                        href={cardmarketUrl(b.name)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="underline underline-offset-2"
+                      >
+                        {b.name}
+                      </a>
+                      {b.priceEur != null ? ` (€${b.priceEur.toFixed(2)})` : ''}
+                    </span>
+                  ))}
                 </p>
               ))}
             </div>

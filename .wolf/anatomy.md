@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T16:53:22.225Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T17:04:13.472Z
 > Files: 19 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
@@ -95,7 +95,7 @@
 - `task-1-report.md` — Task 1 report: pure generator `deck-generator.ts` (~1845 tok)
 - `task-2-report.md` — Task 2 report: loader cmc + gap-buys helper + generate route (~1232 tok)
 - `task-3-report.md` — Task 3 report: save-deck route with pure server-side revalidation (~1971 tok)
-- `task-4-report.md` — Task 4 report: deck-proposal preview UI in Buildable Commanders panel (~2195 tok)
+- `task-4-report.md` — Task 4 report: deck-proposal preview UI in Buildable Commanders panel (~3348 tok)
 - `task-5-report.md` — Task 5 report — end-to-end verification + OpenWolf bookkeeping (~1902 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
@@ -116,7 +116,7 @@
 
 ## app/api/collection/commanders/save-deck/
 
-- `route.ts` — oracle_id → {colorIdentity, typeLine, ownedQty} for the submitted card ids, chunked. (~1882 tok)
+- `route.ts` — oracle_id → {colorIdentity, typeLine, ownedQty} for the submitted card ids, chunked. Early 400 if 1+cards.length+basics.length>100 (before any DB lookup); resolves basic-land oracle ids BEFORE validateProposal (and before the co_decks insert) so validateProposal can reject commander-in-cards / card-vs-basic oracleId collisions as clean 400s (~2450 tok)
 
 ## app/api/collection/commanders/start-deck/
 
@@ -285,7 +285,7 @@
 
 ## components/collection/
 
-- `BuildableCommanders.tsx` — TOP_N; SuggestionDetail also holds a per-instance deck-proposal preview (Generate decklist → POST generate, Save deck (N) → POST save-deck, Back), refetching on freeOnly flip while a preview is open, guarded by a requestId generation-token so superseded/late/post-unmount responses are dropped (~11550 tok)
+- `BuildableCommanders.tsx` — TOP_N; SuggestionDetail's Generate-decklist preview has a requestId-guarded refetch and a Gaps block whose buys link out via lib/collection/shop-links.ts cardmarketUrl (~11550 tok)
 
 ## components/controller/
 
@@ -327,7 +327,7 @@
 - `commander-suggest-data.ts` — Escape ilike wildcards (and the escape character itself) so literal %/_/\ in the query can't alter t (~2922 tok)
 - `commander-suggest.ts` — Creature subtypes present on a card's type line. Double-faced/MDFC type (~3061 tok)
 - `deck-generator.ts` — Deck proposal generator (buildable commanders, phase 2) — deterministic (~2972 tok)
-- `proposal-validate.ts` — Save-deck proposal revalidation — pure server-side re-check of the payload (~988 tok)
+- `proposal-validate.ts` — Save-deck proposal revalidation — pure server-side re-check of the payload; validateProposal takes 2 optional trailing params (commanderOracleId, basicOracleIds Map) to reject commander-in-cards[] and card/basic oracleId collisions (~1550 tok)
 
 ## lib/collection/parsers/
 
@@ -389,7 +389,7 @@
 ## tests/unit/
 
 - `deck-generator.test.ts` — Deck proposal generator (lib/collection/deck-generator) — pure, deterministic (~3824 tok)
-- `proposal-validate.test.ts` — Save-deck proposal revalidation (lib/collection/proposal-validate) — pure, (~2055 tok)
+- `proposal-validate.test.ts` — Save-deck proposal revalidation (lib/collection/proposal-validate) — pure, 17 tests incl. commander-in-cards[] and card/basic oracleId collision rules (~3400 tok)
 
 ## vercel/
 
