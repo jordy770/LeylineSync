@@ -16,6 +16,7 @@ export type OwnedOracleCard = {
   ownedQty: number
   freeQty: number
   tags: { tag: SynergyTag; weight: number }[]
+  cmc?: number // optional: added for phase-2 deck-generator's curve brake; unused by phase-1 scoring
 }
 export type CommanderCandidate = OwnedOracleCard // lookup mode may pass ownedQty/freeQty 0
 export type SuggestOptions = { freeOnly: boolean }
@@ -135,7 +136,7 @@ export function pluralizeSubtype(subtype: string): string {
 // non-trivial constant (perf verification measured ~2.4s on a 5451-card
 // collection vs the <1s target). isBasic/isCreature/tags/subtypes/keywords
 // only depend on the card itself, never on which commander is being scored.
-type CardFacts = {
+export type CardFacts = {
   card: OwnedOracleCard
   isBasic: boolean
   isCreature: boolean
@@ -144,7 +145,7 @@ type CardFacts = {
   keywordSet: Set<string>
 }
 
-function buildCardFacts(collection: OwnedOracleCard[]): CardFacts[] {
+export function buildCardFacts(collection: OwnedOracleCard[]): CardFacts[] {
   return collection.map((card) => ({
     card,
     isBasic: isBasic(card),
