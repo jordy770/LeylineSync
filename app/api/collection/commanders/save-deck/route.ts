@@ -103,7 +103,7 @@ export async function POST(request: Request) {
   // Basics aren't submitted with an oracleId (the client only knows the
   // land name) — resolve each to the catalog's true basic-land printing by
   // exact name before it can become an insert row.
-  const basicRows: { deck_id: string; oracle_id: string; quantity: number }[] = []
+  const basicRows: { deck_id: string; oracle_id: string; quantity: number; is_commander: boolean }[] = []
   for (const b of basics) {
     const { data: basicRow, error: basicError } = await supabase
       .from('co_card_oracle')
@@ -115,12 +115,19 @@ export async function POST(request: Request) {
       await supabase.from('co_decks').delete().eq('id', deckId)
       return NextResponse.json({ error: `Could not resolve basic land "${b.name}"` }, { status: 500 })
     }
-    basicRows.push({ deck_id: deckId, oracle_id: basicRow.oracle_id as string, quantity: b.quantity })
+    basicRows.push({ deck_id: deckId, oracle_id: basicRow.oracle_id as string, quantity: b.quantity, is_commander: false })
   }
 
+  // Every row must explicitly set is_commander (not just the commander row):
+  // PostgREST's bulk insert unions the key set across the whole batch, so a
+  // row missing a key present on ANOTHER row in the same call gets an
+  // explicit NULL, not the column default — violates co_deck_cards'
+  // `is_commander boolean not null default false`. Found via real-DB e2e
+  // verification (bug-2701), not caught by unit tests (route isn't unit
+  // tested; validateProposal's tests use synthetic inputs, no DB round-trip).
   const rows = [
     { deck_id: deckId, oracle_id: oracleId, quantity: 1, is_commander: true },
-    ...cards.map((c) => ({ deck_id: deckId, oracle_id: c.oracleId, quantity: 1 })),
+    ...cards.map((c) => ({ deck_id: deckId, oracle_id: c.oracleId, quantity: 1, is_commander: false })),
     ...basicRows,
   ]
 
