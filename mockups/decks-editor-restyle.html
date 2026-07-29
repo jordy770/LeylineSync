@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup — /decks editor: binder-restyle + herindeling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Binder theme tokens — mirrored from app/globals.css .binder-shell */
+  :root {
+    --gold-bright: #ffd479; --frame-gold: #e8b44c;
+    --ink-2: #26282f; --text: #e8e8ea; --text-bright: #fff;
+    --text-dim: #9a9aa4; --text-faint: #6c6c76;
+    --cast: #8fd6a2; --warn: #e9a178; --danger: #e07a7a;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background-color: #17181c;
+    background-image: radial-gradient(#1f2127 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: var(--text); font-family: Karla, sans-serif; padding: 32px 16px 80px;
+  }
+  .display { font-family: Outfit, sans-serif; letter-spacing: -0.01em; }
+  .wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 16px; }
+  .note { font-size: 12px; color: var(--text-faint); text-align: center; }
+  .note b { color: var(--text-dim); }
+  .panel {
+    background: var(--ink-2); border-radius: 16px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 14px 34px rgba(0,0,0,0.45);
+  }
+  .cols { display: grid; grid-template-columns: 250px 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
+
+  /* ── Left: deck list as deckboxes ── */
+  .decklist { padding: 14px; display: grid; gap: 8px; }
+  .decklist h3 { font-family: Outfit; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--frame-gold); padding: 4px 6px 8px; }
+  .deckbox {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer;
+    border-radius: 12px; border-left: 4px solid transparent; background: rgba(255,255,255,0.03);
+  }
+  .deckbox.active { background: rgba(255,212,121,0.08); border-left-color: var(--frame-gold); }
+  .deckbox .nm { font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .deckbox .sub { font-size: 11px; color: var(--text-faint); }
+  .deckbox .pips { margin-left: auto; display: flex; gap: 2px; }
+  .pip { width: 10px; height: 10px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4); }
+  .newdeck { font-size: 12.5px; color: var(--gold-bright); padding: 8px 6px 2px; cursor: pointer; }
+
+  /* ── Right: editor ── */
+  .editor { padding: 0; overflow: hidden; }
+
+  /* Compacte deck-header: alles wat nu 6 losse blokken is, in één band */
+  .dhead { display: flex; gap: 16px; align-items: center; padding: 18px 20px 14px; flex-wrap: wrap; }
+  .cmdr-art {
+    width: 76px; height: 56px; border-radius: 10px; flex: none;
+    background: linear-gradient(140deg, #7a4a25, #37502a 55%, #24333f); position: relative;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14);
+  }
+  .cmdr-art::after { content: '★'; position: absolute; right: 5px; bottom: 3px; color: var(--gold-bright); font-size: 13px; }
+  .dhead .nm { font-family: Outfit; font-size: 19px; font-weight: 600; color: var(--text-bright); }
+  .dhead .sub { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+  .dhead .sub b.s { color: var(--cast); } .dhead .sub b.v { color: var(--text-dim); } .dhead .sub b.n { color: var(--warn); }
+  .legal { margin-left: auto; align-self: center; font-size: 11.5px; font-weight: 600; color: var(--cast); border: 1px solid rgba(143,214,162,0.35); border-radius: 999px; padding: 4px 11px; }
+
+  /* Insights-strip: inklapbaar, zoals health-strip elders */
+  .strip-head { display: flex; align-items: center; gap: 10px; padding: 10px 20px; cursor: pointer; font-size: 12.5px; color: var(--text-dim); border-top: 1px solid rgba(255,255,255,0.06); user-select: none; }
+  .strip-head .chev { margin-left: auto; color: var(--text-faint); transition: transform .2s; }
+  .insights.open .chev { transform: rotate(180deg); }
+  .strip-body { display: none; padding: 6px 20px 16px; }
+  .insights.open .strip-body { display: flex; gap: 28px; flex-wrap: wrap; }
+  .curve { display: flex; align-items: flex-end; gap: 5px; height: 64px; }
+  .curve .bar { width: 18px; background: linear-gradient(180deg, var(--gold-bright), var(--frame-gold)); border-radius: 3px 3px 0 0; position: relative; }
+  .curve .bar i { position: absolute; top: -16px; left: 0; right: 0; text-align: center; font-size: 10px; font-style: normal; color: var(--text-faint); }
+  .curve .bar u { position: absolute; bottom: -16px; left: 0; right: 0; text-align: center; font-size: 10px; text-decoration: none; color: var(--text-faint); }
+  .ins-lbl { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 12px; }
+  .types { font-size: 12px; color: var(--text-dim); display: grid; gap: 3px; }
+
+  /* Actie-rij + Add card in één werkbalk boven de grid */
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .btn { font-family: Karla; font-size: 12.5px; font-weight: 600; cursor: pointer; border-radius: 10px; padding: 8px 13px; border: 1px solid rgba(255,255,255,0.14); background: transparent; color: var(--text-dim); }
+  .btn.gold { border-color: rgba(255,212,121,0.4); color: var(--gold-bright); }
+  .addcard { display: flex; gap: 6px; margin-left: auto; }
+  .addcard input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: var(--text); border-radius: 10px; padding: 8px 12px; font-size: 12.5px; width: 220px; font-family: Karla; }
+  .addcard .btn.primary { background: linear-gradient(160deg, #f2c96a, #d99a2b); color: #221a08; border: 0; }
+
+  /* View-controls + grid */
+  .gridwrap { padding: 6px 20px 20px; }
+  .viewrow { display: flex; gap: 6px; align-items: center; padding: 10px 0 2px; font-size: 12px; color: var(--text-faint); }
+  .seg { display: inline-flex; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; overflow: hidden; }
+  .seg button { background: transparent; border: 0; color: var(--text-dim); font-size: 11.5px; padding: 5px 11px; cursor: pointer; font-family: Karla; }
+  .seg button.on { background: rgba(255,212,121,0.14); color: var(--gold-bright); }
+  .group h4 { font-family: Outfit; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin: 16px 0 8px; }
+  .group h4 b { color: var(--text-dim); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; }
+  .tile { border-radius: 10px; overflow: hidden; position: relative; background: #1c1e24; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07); }
+  .tile.cmdr { box-shadow: inset 0 0 0 2px var(--frame-gold), 0 0 18px rgba(232,180,76,0.25); }
+  .art { aspect-ratio: 2/3; display: grid; place-items: center; padding: 8px; text-align: center; font-size: 11px; font-weight: 600; color: #ddd; }
+  .qty { position: absolute; left: 5px; top: 5px; background: rgba(0,0,0,0.72); border-radius: 6px; padding: 1px 6px; font-size: 11px; font-weight: 800; color: var(--gold-bright); }
+  .beh { position: absolute; right: 5px; top: 5px; border-radius: 5px; padding: 1px 5px; font-size: 8.5px; font-weight: 800; text-transform: uppercase; }
+  .beh.s { background: rgba(143,214,162,0.2); color: var(--cast); }
+  .beh.n { background: rgba(233,161,120,0.25); color: var(--warn); }
+  .cmdtag { position: absolute; left: 5px; bottom: 34px; background: var(--frame-gold); color: #221a08; border-radius: 5px; padding: 1px 6px; font-size: 9px; font-weight: 800; }
+  .qtyrow { display: flex; }
+  .qtyrow button { flex: 1; background: rgba(255,255,255,0.05); border: 0; color: var(--text-dim); font-size: 13px; padding: 4px 0; cursor: pointer; }
+  .qtyrow button:hover { background: rgba(255,212,121,0.12); color: var(--gold-bright); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="note"><b>Mockup — /decks editor: binder-restyle + herindeling</b> · DeckManager stapt over op de binder-huisstijl; de kaartgrid (het mooiste deel) krijgt de hoofdrol · insights-strip en viewtoggles zijn klikbaar</p>
+
+  <div class="cols">
+    <!-- Links: decklijst als deckboxen (was: slate-lijst) -->
+    <div class="panel decklist">
+      <h3>Your spellbook</h3>
+      <div class="deckbox active">
+        <div><div class="nm">Gishath Dinos</div><div class="sub">100 kaarten · commander</div></div>
+        <div class="pips"><span class="pip" style="background:#f8f6d8"></span><span class="pip" style="background:#d3202a"></span><span class="pip" style="background:#00733e"></span></div>
+      </div>
+      <div class="deckbox">
+        <div><div class="nm">Y'shtola Control</div><div class="sub">100 kaarten · commander</div></div>
+        <div class="pips"><span class="pip" style="background:#f8f6d8"></span><span class="pip" style="background:#1d68a8"></span><span class="pip" style="background:#3b3542"></span></div>
+      </div>
+      <div class="deckbox">
+        <div><div class="nm">Meren Graveyard</div><div class="sub">100 kaarten · commander</div></div>
+        <div class="pips"><span class="pip" style="background:#3b3542"></span><span class="pip" style="background:#00733e"></span></div>
+      </div>
+      <div class="newdeck">+ Forge new deck (paste a list)</div>
+    </div>
+
+    <!-- Rechts: de editor, geherstructureerd -->
+    <div class="panel editor">
+
+      <!-- 1. Compacte deck-header: naam + commander-art + status + legality in één band -->
+      <div class="dhead">
+        <div class="cmdr-art" title="Commander art (fase B: echte Scryfall art-crop)"></div>
+        <div>
+          <div class="nm display">Gishath Dinos</div>
+          <div class="sub">100 kaarten · <b class="s">78 scripted</b> · <b class="v">16 vanilla</b> · <b class="n">6 need behavior</b></div>
+        </div>
+        <span class="legal">✓ Commander-legal (100)</span>
+      </div>
+
+      <!-- 2. Insights als inklapbare strip (curve + types + kleuren) -->
+      <div class="insights" id="ins">
+        <div class="strip-head" onclick="document.getElementById('ins').classList.toggle('open')">
+          <span>📊 Insights — curve piekt op MV 3 · 31 creatures · kleuren in balans</span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="strip-body">
+          <div>
+            <div class="ins-lbl">Mana curve</div>
+            <div class="curve">
+              <div class="bar" style="height:22%"><i>5</i><u>1</u></div>
+              <div class="bar" style="height:45%"><i>10</i><u>2</u></div>
+              <div class="bar" style="height:64%"><i>14</i><u>3</u></div>
+              <div class="bar" style="height:50%"><i>11</i><u>4</u></div>
+              <div class="bar" style="height:36%"><i>8</i><u>5</u></div>
+              <div class="bar" style="height:41%"><i>9</i><u>6+</u></div>
+            </div>
+          </div>
+          <div>
+            <div class="ins-lbl">Types</div>
+            <div class="types"><span>31 creatures</span><span>12 instants/sorceries</span><span>11 artifacts/enchantments</span><span>37 lands</span></div>
+          </div>
+          <div>
+            <div class="ins-lbl">Checks</div>
+            <div class="types"><span style="color:var(--cast)">✓ singleton</span><span style="color:var(--cast)">✓ color identity</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Werkbalk: deck-tools links, Add card rechts — altijd bij de grid -->
+      <div class="toolbar">
+        <button class="btn gold">✨ Generate behavior (6)</button>
+        <button class="btn">🃏 Sample hand</button>
+        <button class="btn">Copy as text</button>
+        <button class="btn">Clone</button>
+        <div class="addcard">
+          <input placeholder="Add a card… (catalog search)">
+          <button class="btn primary">+ Add</button>
+        </div>
+      </div>
+
+      <!-- 4. De grid krijgt de hoofdrol -->
+      <div class="gridwrap">
+        <div class="viewrow">
+          <div class="seg"><button class="on" onclick="seg(this)">Grid</button><button onclick="seg(this)">List</button></div>
+          <div class="seg"><button class="on" onclick="seg(this)">Name</button><button onclick="seg(this)">MV</button><button onclick="seg(this)">Type</button><button onclick="seg(this)">Behavior</button></div>
+          <label style="margin-left:auto; display:flex; gap:5px; align-items:center; cursor:pointer"><input type="checkbox"> alleen “needs behavior”</label>
+        </div>
+
+        <div class="group">
+          <h4>Commander <b>· 1</b></h4>
+          <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));">
+            <div class="tile cmdr">
+              <div class="art" style="background:linear-gradient(150deg,#7a4a25,#37502a 55%,#24333f)">Gishath, Sun's Avatar</div>
+              <span class="qty">×1</span><span class="beh s">✓ beh</span><span class="cmdtag">★ CMD</span>
+              <div class="qtyrow"><button>−</button><button>+</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h4>Creatures <b>· 31</b></h4>
+          <div class="cards">
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#5c3a1e,#3a5a2c)">Regisaur Alpha</div><span class="qty">×1</span><span class="beh s">✓ beh</span><div class="qtyrow"><button>−</button><button>+</button></div></div>
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#4a5a2c,#2c4a3a)">Ripjaw Raptor</div><span class="qty">×1</span><span class="beh s">✓ beh</span><div class="qtyrow"><button>−</button><button>+</button></div></div>
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#6a2c2c,#4a3a2c)">Marauding Raptor</div><span class="qty">×1</span><span class="beh n">needs</span><div class="qtyrow"><button>−</button><button>+</button></div></div>
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#2c4a6a,#6a4a2c)">Thundermane Dragon</div><span class="qty">×1</span><span class="beh s">✓ beh</span><div class="qtyrow"><button>−</button><button>+</button></div></div>
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#3a5a3c,#2c3a4a)">Sakura-Tribe Elder</div><span class="qty">×1</span><span class="beh s">✓ beh</span><div class="qtyrow"><button>−</button><button>+</button></div></div>
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#5a4a2c,#3a2c4a);color:var(--text-faint)">… nog 26</div></div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h4>Lands <b>· 37</b></h4>
+          <div class="cards">
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#2c5a2c,#1c3a1c)">Forest</div><span class="qty">×14</span><div class="qtyrow"><button>−</button><button>+</button></div></div>
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#6a3a2c,#3a1c1c)">Mountain</div><span class="qty">×9</span><div class="qtyrow"><button>−</button><button>+</button></div></div>
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#6a6a5c,#3a3a2c)">Plains</div><span class="qty">×7</span><div class="qtyrow"><button>−</button><button>+</button></div></div>
+            <div class="tile"><div class="art" style="background:linear-gradient(150deg,#4a4a4a,#2a2a2a);color:var(--text-faint)">7 nonbasics …</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">Wat verandert: binder-huisstijl overal (geen slate/amber meer) · header/insights/legality gecomprimeerd tot 2 compacte banden · tools + Add card in één werkbalk direct boven de grid · commander-tegel met gouden frame. Wat blijft: alle bestaande functies (behavior-badges, ×N, +/−, sample hand, clone, preview) — alleen verplaatst en hergestyled. Fase B-hint: echte art-crops in de header en tegels (nu placeholders).</p>
+</div>
+
+<script>
+  function seg(btn) {
+    btn.parentElement.querySelectorAll('button').forEach(function (b) { b.classList.remove('on') })
+    btn.classList.add('on')
+  }
+</script>
+</body>
+</html>

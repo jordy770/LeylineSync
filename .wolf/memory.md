@@ -8377,3 +8377,10 @@
 | 19:04 | Edited .superpowers/sdd/2026-07-29-deck-generation/task-4-report.md | added 1 condition(s) | ~1315 |
 | 19:04 | Fix round 2 (whole-branch review): Gaps buys → Cardmarket links; save-deck early size-reject; validateProposal commander-in-cards + card/basic oracleId collision (RED-first) | components/collection/BuildableCommanders.tsx, app/api/collection/commanders/save-deck/route.ts, lib/collection/proposal-validate.ts, tests/unit/proposal-validate.test.ts | tsc+eslint+next build clean, unit 40/40 green | ~4000 |
 | 19:08 | SDD run deck-generation compleet: 5 taken + 3 fixrounds + final review clean (incl. bug-2701 PostgREST key-union) | deck-generator.ts, proposal-validate.ts, 2 routes, preview-UI | branch ready | ~55k |
+| 22:04 | Created docs/superpowers/specs/2026-07-29-deck-page-structure-design.md | — | ~1174 |
+| 22:11 | Created mockups/deck-page-structure.html | — | ~4405 |
+| 22:19 | Created mockups/decks-editor-restyle.html | — | ~4343 |
+| 22:25 | Created docs/superpowers/specs/2026-07-29-decks-editor-restyle-design.md | — | ~1384 |
+| 22:42 | Created docs/superpowers/plans/2026-07-29-decks-editor-restyle.md | — | ~2933 |
+| 22:43 | Edited docs/superpowers/plans/2026-07-29-decks-editor-restyle.md | "mockups/deck-editor-resty" → "mockups/decks-editor-rest" | ~31 |
+| 22:43 | Edited docs/superpowers/specs/2026-07-29-decks-editor-restyle-design.md | 3→5 lines | ~94 |
