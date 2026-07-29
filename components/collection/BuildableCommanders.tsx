@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 import { pluralizeSubtype, type CommanderSuggestion } from '@/lib/collection/commander-suggest'
+import type { BasicName, DeckProposal, ProposalBucket } from '@/lib/collection/deck-generator'
 import { ColorPips, Panel } from './ui'
 
 // "Commanders you can build" — deterministic ranking, no LLM. The advisor page
@@ -32,6 +33,31 @@ interface LookupResult {
   name: string
   typeLine: string
   colorIdentity: string[]
+}
+
+// Response shape of POST .../commanders/generate: the pure DeckProposal plus
+// the route's server-side gap-buy lookup (per shortfall bucket, up to 2 cheap
+// in-identity cards the user doesn't own — priceEur is null when unknown).
+type GapBuyCard = { oracleId: string; name: string; priceEur: number | null }
+type ProposalGap = { bucket: ProposalBucket; shortfall: number; buys: GapBuyCard[] }
+type Proposal = DeckProposal & { gaps: ProposalGap[] }
+
+const BUCKET_ORDER: ProposalBucket[] = ['ramp', 'card_draw', 'removal', 'board_wipe', 'creatures', 'filler']
+const BASIC_ORDER: BasicName[] = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest', 'Wastes']
+const BASIC_LETTER: Record<BasicName, string> = { Plains: 'W', Island: 'U', Swamp: 'B', Mountain: 'R', Forest: 'G', Wastes: 'C' }
+
+function groupByBucket(cards: Proposal['cards']): { bucket: ProposalBucket; cards: Proposal['cards'] }[] {
+  return BUCKET_ORDER.map((bucket) => ({ bucket, cards: cards.filter((c) => c.bucket === bucket) })).filter(
+    (g) => g.cards.length > 0,
+  )
+}
+
+function landsLine(proposal: Proposal): string {
+  const perColour = BASIC_ORDER.filter((n) => (proposal.basics[n] ?? 0) > 0)
+    .map((n) => `${BASIC_LETTER[n]}${proposal.basics[n]}`)
+    .join(' ')
+  const base = `${proposal.totals.ownedLand} owned lands + ${proposal.totals.basicLand} basics`
+  return perColour ? `${base} — ${perColour}` : base
 }
 
 export function BuildableCommanders({
@@ -310,6 +336,7 @@ export function BuildableCommanders({
             <Panel className="p-4">
               <SuggestionDetail
                 suggestion={pickedSuggestion}
+                freeOnly={freeOnly}
                 onStart={() => startDeck(pickedSuggestion.commander)}
                 starting={startBusy === pickedSuggestion.commander.oracleId}
               />
@@ -362,25 +389,112 @@ function CommanderRow({
       </button>
       {expanded ? (
         <div className="border-t p-4" style={{ borderColor: 'rgba(201,154,58,0.15)' }}>
-          <SuggestionDetail suggestion={suggestion} onStart={onStart} starting={starting} />
+          <SuggestionDetail suggestion={suggestion} freeOnly={freeOnly} onStart={onStart} starting={starting} />
         </div>
       ) : null}
     </Panel>
   )
 }
 
-/** Shared inline detail: bucket coverage (biggest gaps first), theme facts, Start this deck. */
+/** Shared inline detail: bucket coverage (biggest gaps first), theme facts,
+ *  Start empty / Generate decklist. Generate replaces the bucket-bars block
+ *  with a full 99-card proposal preview (fetched from the generate route);
+ *  Back returns to the bars. Each mounted instance (ranked-list row or the
+ *  lookup panel) owns its own preview state — suggestion identity is stable
+ *  per instance, so there's no cross-talk between rows. */
 function SuggestionDetail({
   suggestion,
+  freeOnly,
   onStart,
   starting,
 }: {
   suggestion: CommanderSuggestion
+  freeOnly: boolean
   onStart: () => void
   starting: boolean
 }) {
+  const router = useRouter()
   const sortedBuckets = [...suggestion.buckets].sort((a, b) => a.owned / a.ideal - b.owned / b.ideal)
   const { tribal, keywordOverlap } = suggestion.themeFacts
+
+  const [preview, setPreview] = useState<Proposal | null>(null)
+  const [previewBusy, setPreviewBusy] = useState(false)
+  const [previewError, setPreviewError] = useState<string | null>(null)
+  const [saveBusy, setSaveBusy] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+
+  async function generate(nextFreeOnly: boolean) {
+    setPreviewBusy(true)
+    setPreviewError(null)
+    try {
+      const res = await fetch('/api/collection/commanders/generate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ oracleId: suggestion.commander.oracleId, freeOnly: nextFreeOnly }),
+      })
+      const bodyJson = await res.json()
+      if (!res.ok) {
+        setPreviewError(bodyJson.error ?? 'Could not generate the deck.')
+        setPreview(null)
+        return
+      }
+      setPreview(bodyJson.proposal)
+    } catch {
+      setPreviewError('Network error while generating the deck.')
+    } finally {
+      setPreviewBusy(false)
+    }
+  }
+
+  // Refetch when the toggle flips while a preview is open — skip the mount
+  // run (nothing to refetch yet) so this never races the initial "Generate
+  // decklist" click's own fetch.
+  const mounted = useRef(false)
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true
+      return
+    }
+    if (!preview) return
+    generate(freeOnly)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [freeOnly])
+
+  async function saveDeck() {
+    if (!preview) return
+    setSaveBusy(true)
+    setSaveError(null)
+    try {
+      const cards = [
+        ...preview.cards.map((c) => ({ oracleId: c.oracleId, quantity: 1 })),
+        ...preview.ownedLands.map((l) => ({ oracleId: l.oracleId, quantity: 1 })),
+      ]
+      const basics = BASIC_ORDER.filter((n) => (preview.basics[n] ?? 0) > 0).map((n) => ({
+        name: n,
+        quantity: preview.basics[n] as number,
+      }))
+      const res = await fetch('/api/collection/commanders/save-deck', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          oracleId: suggestion.commander.oracleId,
+          name: `${suggestion.commander.name} (generated)`,
+          cards,
+          basics,
+        }),
+      })
+      const bodyJson = await res.json()
+      if (!res.ok) {
+        setSaveError(bodyJson.error ?? 'Could not save the deck.')
+        return
+      }
+      router.push(`/collection/decks/${bodyJson.deckId}`)
+    } catch {
+      setSaveError('Network error while saving the deck.')
+    } finally {
+      setSaveBusy(false)
+    }
+  }
 
   return (
     <div className="space-y-3">
@@ -390,46 +504,152 @@ function SuggestionDetail({
         </p>
       ) : null}
 
-      <div className="space-y-1.5">
-        {sortedBuckets.map((b) => {
-          const pct = Math.min(100, Math.round((b.owned / b.ideal) * 100))
-          return (
-            <div key={b.bucket}>
-              <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-dim)' }}>
-                <span>{BUCKET_LABEL[b.bucket]}</span>
-                <span>
-                  {b.owned}/{b.ideal}
-                </span>
+      {!preview ? (
+        <>
+          <div className="space-y-1.5">
+            {sortedBuckets.map((b) => {
+              const pct = Math.min(100, Math.round((b.owned / b.ideal) * 100))
+              return (
+                <div key={b.bucket}>
+                  <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-dim)' }}>
+                    <span>{BUCKET_LABEL[b.bucket]}</span>
+                    <span>
+                      {b.owned}/{b.ideal}
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'rgba(201,154,58,0.12)' }}>
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${pct}%`,
+                        background: pct >= 80 ? 'var(--cast)' : pct >= 40 ? 'var(--frame-gold)' : 'var(--danger)',
+                      }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {tribal || keywordOverlap.length > 0 ? (
+            <p className="font-rules text-xs" style={{ color: 'var(--text-dim)' }}>
+              {tribal ? `${tribal.count} ${pluralizeSubtype(tribal.type)} tie into this commander's tribal theme. ` : ''}
+              {keywordOverlap.length > 0 ? `Keyword overlap: ${keywordOverlap.join(', ')}.` : ''}
+            </p>
+          ) : null}
+
+          {previewError ? (
+            <p className="text-sm" style={{ color: 'var(--danger)' }}>
+              {previewError}
+            </p>
+          ) : null}
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={onStart}
+              disabled={starting}
+              className="rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+              style={{ border: '1px solid rgba(201,154,58,0.45)', color: 'var(--gold-bright)' }}
+            >
+              {starting ? '…' : 'Start empty'}
+            </button>
+            <button
+              onClick={() => generate(freeOnly)}
+              disabled={previewBusy}
+              className="rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+              style={{ background: 'var(--frame-gold)', color: '#1c1407' }}
+            >
+              {previewBusy ? '…' : 'Generate decklist'}
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="space-y-3">
+          {previewBusy ? (
+            <p className="font-rules text-xs" style={{ color: 'var(--text-faint)' }}>
+              Refreshing for the new toggle…
+            </p>
+          ) : null}
+          {previewError ? (
+            <p className="text-sm" style={{ color: 'var(--danger)' }}>
+              {previewError}
+            </p>
+          ) : null}
+          <div className="space-y-2.5">
+            {groupByBucket(preview.cards).map((g) => (
+              <div key={g.bucket}>
+                <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
+                  {BUCKET_LABEL[g.bucket]} ({g.cards.length})
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {g.cards.map((c) => (
+                    <li key={c.oracleId} className="flex flex-wrap items-center gap-1.5 text-sm" style={{ color: 'var(--text)' }}>
+                      <span>{c.name}</span>
+                      {c.reasons.map((r) => (
+                        <Tag key={r}>{r}</Tag>
+                      ))}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'rgba(201,154,58,0.12)' }}>
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${pct}%`,
-                    background: pct >= 80 ? 'var(--cast)' : pct >= 40 ? 'var(--frame-gold)' : 'var(--danger)',
-                  }}
-                />
-              </div>
+            ))}
+          </div>
+
+          <p className="font-rules text-xs" style={{ color: 'var(--text-dim)' }}>
+            {landsLine(preview)}
+          </p>
+
+          {preview.gaps.length > 0 ? (
+            <div className="space-y-1.5 rounded-lg p-2.5" style={{ border: '1px solid rgba(201,154,58,0.2)' }}>
+              <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-faint)' }}>
+                Gaps
+              </p>
+              {preview.gaps.map((g) => (
+                <p key={g.bucket} className="font-rules text-xs" style={{ color: 'var(--text-dim)' }}>
+                  {BUCKET_LABEL[g.bucket]}: short {g.shortfall}
+                  {g.buys.length > 0
+                    ? ' — ' +
+                      g.buys
+                        .slice(0, 2)
+                        .map((b) => (b.priceEur != null ? `${b.name} (€${b.priceEur.toFixed(2)})` : b.name))
+                        .join(', ')
+                    : ''}
+                </p>
+              ))}
             </div>
-          )
-        })}
-      </div>
+          ) : null}
 
-      {tribal || keywordOverlap.length > 0 ? (
-        <p className="font-rules text-xs" style={{ color: 'var(--text-dim)' }}>
-          {tribal ? `${tribal.count} ${pluralizeSubtype(tribal.type)} tie into this commander's tribal theme. ` : ''}
-          {keywordOverlap.length > 0 ? `Keyword overlap: ${keywordOverlap.join(', ')}.` : ''}
-        </p>
-      ) : null}
+          {saveError ? (
+            <p className="text-sm" style={{ color: 'var(--danger)' }}>
+              {saveError}
+            </p>
+          ) : null}
 
-      <button
-        onClick={onStart}
-        disabled={starting}
-        className="rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
-        style={{ border: '1px solid rgba(201,154,58,0.45)', color: 'var(--gold-bright)' }}
-      >
-        {starting ? '…' : 'Start this deck'}
-      </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={saveDeck}
+              disabled={saveBusy}
+              className="rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+              style={{ background: 'var(--frame-gold)', color: '#1c1407' }}
+            >
+              {saveBusy
+                ? '…'
+                : `Save deck (${preview.totals.nonland + preview.totals.ownedLand + preview.totals.basicLand + 1})`}
+            </button>
+            <button
+              onClick={() => {
+                setPreview(null)
+                setSaveError(null)
+              }}
+              disabled={saveBusy}
+              className="rounded-lg px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+              style={{ border: '1px solid rgba(201,154,58,0.45)', color: 'var(--text-dim)' }}
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

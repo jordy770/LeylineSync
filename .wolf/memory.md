@@ -8345,3 +8345,11 @@
 | 18:16 | Edited lib/collection/proposal-validate.ts | modified fitsIdentity() | ~128 |
 | 18:16 | Edited lib/collection/proposal-validate.ts | added 1 condition(s) | ~252 |
 | 18:17 | Edited .superpowers/sdd/2026-07-29-deck-generation/task-3-report.md | modified Finding() | ~875 |
+| 18:22 | Edited components/collection/BuildableCommanders.tsx | added 1 import(s) | ~66 |
+| 18:22 | Edited components/collection/BuildableCommanders.tsx | added nullish coalescing | ~428 |
+| 18:22 | Edited components/collection/BuildableCommanders.tsx | 5→6 lines | ~80 |
+| 18:22 | Edited components/collection/BuildableCommanders.tsx | 5→5 lines | ~72 |
+| 18:23 | Edited components/collection/BuildableCommanders.tsx | added error handling | ~2626 |
+| 18:24 | Edited components/collection/BuildableCommanders.tsx | CSS: color, color | ~144 |
+| 18:26 | Created .superpowers/sdd/2026-07-29-deck-generation/task-4-report.md | — | ~1595 |
+| 18:26 | Task 4 (deck-generation SDD): added deck-proposal preview (Generate decklist/Save deck/Back) to SuggestionDetail | components/collection/BuildableCommanders.tsx | tsc+eslint+next build clean, unit suites 36/36 green | ~11200 |
