@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import type { CommanderSuggestion } from '@/lib/collection/commander-suggest'
 import { ColorPips, Panel } from './ui'
@@ -65,9 +65,14 @@ export function BuildableCommanders({
   const list = freeOnly ? freeSuggestions : allSuggestions
   const visible = showAll ? list : list.slice(0, TOP_N)
 
-  // Debounced catalog search (name → candidates) as the user types.
+  // Debounced catalog search (name → candidates) as the user types. Skipped
+  // when the query is exactly the just-picked name — pickCommander sets query
+  // to r.name to show the selection in the box, which would otherwise
+  // retrigger this effect and pop the dropdown back open over the detail
+  // panel ~300ms after the user picked something from it.
   useEffect(() => {
     const q = query.trim()
+    if (picked && q === picked.name) return
     if (q.length < 2) {
       setLookupResults([])
       setLookupOpen(false)
@@ -93,7 +98,21 @@ export function BuildableCommanders({
       }
     }, DEBOUNCE_MS)
     return () => window.clearTimeout(timer)
-  }, [query])
+  }, [query, picked])
+
+  // Dismiss the lookup dropdown on an outside tap/click (same convention as
+  // CardName's touch-preview: document pointerdown, not blur, so a click on a
+  // dropdown row isn't swallowed by a blur firing first).
+  const lookupBoxRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    function onPointerDown(e: PointerEvent) {
+      if (lookupBoxRef.current && !lookupBoxRef.current.contains(e.target as Node)) {
+        setLookupOpen(false)
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [])
 
   // Scored lookup — re-fetches on pick AND whenever the toggle changes while a
   // lookup result is open (the ranked list never refetches; this does).
@@ -226,7 +245,7 @@ export function BuildableCommanders({
       )}
 
       {/* Lookup — check any catalog commander, owned or not. Always visible. */}
-      <div className="relative mt-4 max-w-md">
+      <div ref={lookupBoxRef} className="relative mt-4 max-w-md">
         <input
           type="search"
           value={query}
@@ -257,7 +276,14 @@ export function BuildableCommanders({
                 className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-[rgba(201,154,58,0.08)]"
                 style={{ color: 'var(--text)' }}
               >
-                <span className="truncate">{r.name}</span>
+                <span className="min-w-0 flex-1 truncate">
+                  {r.name}
+                  {r.typeLine ? (
+                    <span className="ml-2 text-xs" style={{ color: 'var(--text-faint)' }}>
+                      {r.typeLine}
+                    </span>
+                  ) : null}
+                </span>
                 <ColorPips colors={r.colorIdentity} />
               </button>
             ))}
