@@ -23481,6 +23481,22 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-07-29T22:20:43.825Z"
+    },
+    {
+      "id": "bug-1434",
+      "timestamp": "2026-07-29T22:25:10.855Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".superpowers/sdd/2026-07-29-decks-editor-restyle/task-3-report.md",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:25:10.855Z"
     }
   ]
 }
