@@ -41,19 +41,32 @@ the missing half of the "personal EDHRec" vision
   named, and a **"Start this deck"** button that creates an empty `co_` deck
   with this commander designated (existing deck-mutations path) and navigates
   to it. Filling the list is Phase 2.
+- **Commander lookup (added on review):** a search box in the same section —
+  *"Check a specific commander"* — searching ALL commander-eligible cards in
+  the catalog, owned or not. Picking one opens the same detail panel, scored
+  against the user's collection with the same toggle semantics. If the user
+  does not own the commander itself, the panel says so explicitly (an implicit
+  buy hint: "70 playable cards — you only lack the commander"); "Start this
+  deck" still works (the deck lists the commander; owning it is a paper
+  problem, not an app constraint).
 - Empty states: no collection imported → pointer to import; collection without
-  owned legendaries → explanatory empty state.
+  owned legendaries → explanatory empty state (the lookup box still shows).
 
 ## Section 2 — Scoring (pure, deterministic)
 
 New module `lib/collection/commander-suggest.ts` (pure functions, unit-tested)
 next to `upgrade-scanner.ts`.
 
-- **Candidates:** owned cards that are legendary creatures OR carry "can be
-  your commander" in oracle text. In free-only mode the commander itself must
-  also be free (a suggestion must never require breaking a deck for its own
-  commander); in whole-collection mode a locked commander is allowed and
-  labeled as locked.
+- **Candidates (ranked list):** owned cards that are legendary creatures OR
+  carry "can be your commander" in oracle text. In free-only mode the commander
+  itself must also be free (a suggestion must never require breaking a deck for
+  its own commander); in whole-collection mode a locked commander is allowed
+  and labeled as locked.
+- **Candidate (lookup mode):** any commander-eligible card from the catalog,
+  ownership not required — the scoring function takes the commander as an
+  explicit argument and is identical for both entry points; only the candidate
+  selection differs. The result carries an `ownsCommander` /
+  `commanderIsFree` fact for the UI.
 - **Pool per candidate:** owned cards (per the toggle: free-only or all) whose
   color identity is a subset of the commander's. **Basic lands count as always
   available and never limit a suggestion** (completeness is computed over the
@@ -88,7 +101,9 @@ next to `upgrade-scanner.ts`.
 
 1. Unit tests (node:test) for the scoring module: color-identity subset rule,
    basics-never-limit rule, bucket completeness math, tribal boost, boost cap,
-   free-vs-all toggle semantics, deterministic ordering.
+   free-vs-all toggle semantics, deterministic ordering, and lookup mode (an
+   unowned commander scores the same pool as an owned one; ownsCommander fact
+   set correctly).
 2. Manual check against Jordy's real local collection: suggestions render <1s,
    the explanation lines read sensibly, and a known tribal cluster in the
    collection surfaces near the top.
