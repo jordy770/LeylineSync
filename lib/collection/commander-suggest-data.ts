@@ -11,6 +11,9 @@ import { forEachIdChunk, IN_CHUNK, loadAvailability, loadTags } from './deck-loa
 
 const SEARCH_LIMIT = 12
 
+/** Escape ilike wildcards in user input so a literal %/_ in the query can't alter the pattern. */
+const escapeIlike = (s: string) => s.replace(/[%_]/g, (c) => `\\${c}`)
+
 interface OracleRow {
   oracleId: string
   name: string
@@ -85,11 +88,20 @@ export async function searchCommanderCatalog(
 ): Promise<{ oracleId: string; name: string; typeLine: string; colorIdentity: string[] }[]> {
   const q = query.trim()
   if (!q) return []
+  const pattern = `%${escapeIlike(q)}%`
 
+  // Eligibility must be pushed into the SQL, not applied after `.limit()` — a name
+  // query like "dragon" matches hundreds of non-eligible cards, and if they sort
+  // ahead of the (fewer) eligible ones alphabetically, limit-then-filter can starve
+  // out or entirely miss commanders that do exist. This mirrors isCommanderEligible
+  // exactly (type_line has both "legendary" and "creature", OR oracle_text has "can
+  // be your commander"); isCommanderEligible below stays the source of truth on the
+  // returned rows.
   const { data, error } = await supabase
     .from('co_card_oracle')
     .select(ORACLE_COLUMNS)
-    .ilike('name', `%${q}%`)
+    .ilike('name', pattern)
+    .or('and(type_line.ilike.%legendary%,type_line.ilike.%creature%),oracle_text.ilike.%can be your commander%')
     .order('name')
     .limit(SEARCH_LIMIT)
   if (error) throw new Error(`Commander search failed: ${error.message}`)
