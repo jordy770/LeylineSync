@@ -15,7 +15,7 @@ import {
 } from '@/lib/game/deck-insights'
 
 const COLOR_DOT: Record<ManaColor, string> = {
-  W: 'bg-amber-100',
+  W: 'bg-[#f8f6d8]',
   U: 'bg-sky-400',
   B: 'bg-zinc-500',
   R: 'bg-red-500',
@@ -61,8 +61,8 @@ export default function DeckInsights({
         <div
           className={`rounded border p-2 sm:col-span-2 ${
             legality.legal
-              ? 'border-[var(--cast)]/40 bg-[var(--cast)]/10'
-              : 'border-[var(--danger)]/40 bg-[var(--danger)]/10'
+              ? 'border-[rgba(143,214,162,0.4)] bg-[rgba(143,214,162,0.1)]'
+              : 'border-[rgba(224,122,122,0.4)] bg-[rgba(224,122,122,0.1)]'
           }`}
         >
           {legality.legal ? (
@@ -72,7 +72,7 @@ export default function DeckInsights({
               <p className="font-semibold text-[var(--danger)]">
                 Not Commander-legal — {legality.issues.length} issue{legality.issues.length > 1 ? 's' : ''}
               </p>
-              <ul className="mt-0.5 list-disc pl-4 text-[var(--danger)]/80">
+              <ul className="mt-0.5 list-disc pl-4 text-[rgba(224,122,122,0.8)]">
                 {legality.issues.map((issue) => (
                   <li key={issue}>{issue}</li>
                 ))}
@@ -140,12 +140,12 @@ export default function DeckInsights({
 
       {/* Colour-identity (Commander) warnings */}
       {offIdentity.length > 0 && (
-        <div className="rounded border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-2 sm:col-span-2">
+        <div className="rounded border border-[rgba(224,122,122,0.3)] bg-[rgba(224,122,122,0.1)] p-2 sm:col-span-2">
           <p className="font-semibold text-[var(--danger)]">
             {offIdentity.length} card{offIdentity.length > 1 ? 's' : ''} outside the commander&apos;s colour identity
-            <span className="font-normal text-[var(--danger)]/70"> (illegal in Commander; approximate)</span>
+            <span className="font-normal text-[rgba(224,122,122,0.7)]"> (illegal in Commander; approximate)</span>
           </p>
-          <p className="mt-0.5 truncate text-[var(--danger)]/80">
+          <p className="mt-0.5 truncate text-[rgba(224,122,122,0.8)]">
             {offIdentity.map((c) => `${c.name} (${c.colors.join('')})`).join(', ')}
           </p>
         </div>
@@ -153,12 +153,12 @@ export default function DeckInsights({
 
       {/* Singleton (Commander) warnings */}
       {dupes.length > 0 && (
-        <div className="rounded border border-[var(--warn)]/30 bg-[var(--warn)]/10 p-2 sm:col-span-2">
+        <div className="rounded border border-[rgba(233,161,120,0.3)] bg-[rgba(233,161,120,0.1)] p-2 sm:col-span-2">
           <p className="font-semibold text-[var(--warn)]">
             Not singleton — {dupes.length} card{dupes.length > 1 ? 's' : ''} listed more than once
-            <span className="font-normal text-[var(--warn)]/70"> (illegal in Commander; basics are fine)</span>
+            <span className="font-normal text-[rgba(233,161,120,0.7)]"> (illegal in Commander; basics are fine)</span>
           </p>
-          <p className="mt-0.5 truncate text-[var(--warn)]/80">
+          <p className="mt-0.5 truncate text-[rgba(233,161,120,0.8)]">
             {dupes.map((d) => `${d.quantity}× ${d.name}`).join(', ')}
           </p>
         </div>

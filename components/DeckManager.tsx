@@ -167,7 +167,7 @@ export default function DeckManager() {
       if (result.card_count > 0 && result.id) {
         setDeckNameInput('')
         setDecklistInput('')
-        setForgeOpen(false)
+        if (!result.missing?.length) setForgeOpen(false)
         await refreshDecks()
         setSelectedDeckId(result.id)
       }
@@ -379,7 +379,7 @@ export default function DeckManager() {
                 }`}
               >
                 <p className="text-[13.5px] font-semibold text-[var(--text)]">{deck.name || 'Untitled Deck'}</p>
-                <p className="mt-0.5 text-[11px] text-[var(--text-faint)]">{deck.card_count} kaarten</p>
+                <p className="mt-0.5 text-[11px] text-[var(--text-faint)]">{deck.card_count} cards</p>
               </button>
             ))}
           </div>

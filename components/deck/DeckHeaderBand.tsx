@@ -43,7 +43,7 @@ export default function DeckHeaderBand({
       {legality && (
         <div className="relative ml-auto self-center">
           {legality.legal ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--cast)]/35 px-[11px] py-1 text-[11.5px] font-semibold text-[var(--cast)]">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(143,214,162,0.35)] px-[11px] py-1 text-[11.5px] font-semibold text-[var(--cast)]">
               ✓ Commander-legal ({legality.card_count})
             </span>
           ) : (
@@ -51,13 +51,13 @@ export default function DeckHeaderBand({
               <button
                 type="button"
                 onClick={() => setIssuesOpen((value) => !value)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--warn)]/35 px-[11px] py-1 text-[11.5px] font-semibold text-[var(--warn)]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(233,161,120,0.35)] px-[11px] py-1 text-[11.5px] font-semibold text-[var(--warn)]"
               >
                 ⚠ Not Commander-legal
               </button>
               {issuesOpen && (
-                <div className="absolute right-0 top-full z-10 mt-1.5 w-64 rounded-md border border-[var(--warn)]/30 bg-[var(--ink-2)] p-2.5 text-xs text-[var(--warn)] shadow-lg">
-                  <ul className="list-disc space-y-0.5 pl-4 text-[var(--warn)]/90">
+                <div className="absolute right-0 top-full z-10 mt-1.5 w-64 rounded-md border border-[rgba(233,161,120,0.3)] bg-[var(--ink-2)] p-2.5 text-xs text-[var(--warn)] shadow-lg">
+                  <ul className="list-disc space-y-0.5 pl-4 text-[rgba(233,161,120,0.9)]">
                     {legality.issues.map((issue, i) => (
                       <li key={i}>{issue}</li>
                     ))}

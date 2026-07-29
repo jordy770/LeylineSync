@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T22:29:03.816Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T22:39:26.602Z
 > Files: 16 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
@@ -279,8 +279,8 @@
 
 ## components/
 
-- `DeckInsights.tsx` — deck stats panel (curve/pips/types/legality); binder tokens, gold curve bars (~1800 tok)
-- `DeckManager.tsx` — /decks game-side deck editor: deckbox list (gold active state) + collapsible Forge form + renders DeckHeaderBand/DeckInsightsStrip/toolbar + grid/list/tiles/preview/behavior-editor modals; binder-restyled jul '26. Toast (status/error) hoisted above forgeOpen/selectedDeck ternary so it's visible in all right-column states; toolbar's Add Card controls collapsed behind a gold "+ Add card" toggle (`addOpen` state) to keep the grid above the fold; all `bg-[var(--x)]/NN` opacity-var utilities swept to literal rgba(...) (Tailwind 3.4 can't compile a slash-opacity modifier on a hex CSS var — bug-1430/1431, fixed commit 94f68e7, re-verified task 4) (~12594 tok)
+- `DeckInsights.tsx` — deck stats panel (curve/pips/types/legality); binder tokens, gold curve bars; all var(--x)/NN opacity-var utilities swept to literal rgba(...) (bug-1430 pattern) (~2000 tok)
+- `DeckManager.tsx` — DeckManager; Edit Deck = DeckHeaderBand+DeckInsightsStrip+unified toolbar; forge stays open when a partial import has rejected lines to read (~11700 tok)
 
 ## components/board/
 
@@ -293,8 +293,8 @@
 
 ## components/deck/
 
-- `DeckHeaderBand.tsx` — Edit Deck band 1: commander-art placeholder, name, status counts, legality chip (click amber pill to see issues) (~650 tok)
-- `DeckInsightsStrip.tsx` — Edit Deck band 2: collapsible strip wrapping DeckInsights; summary = curve-peak MV + creature count (~450 tok)
+- `DeckHeaderBand.tsx` — Edit Deck band 1: commander-art placeholder, name, status counts, legality chip (click amber pill to see issues); literal rgba(...) not var(--x)/NN (~650 tok)
+- `DeckInsightsStrip.tsx` — Edit Deck band 2: collapsible strip wrapping DeckInsights; summary = curve-peak MV + creature count, English copy (~450 tok)
 
 ## components/judge/
 

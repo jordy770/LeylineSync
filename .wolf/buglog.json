@@ -23497,6 +23497,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-29T22:25:10.855Z"
+    },
+    {
+      "id": "bug-1435",
+      "timestamp": "2026-07-29T22:37:22.187Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/DeckInsights.tsx",
+      "root_cause": "Had 'border-[var(--cast)]/40 bg-[var(--cast)]/10'",
+      "fix": "Changed to 'border-[rgba(143,214,162,0.4)] bg-[rgba(143,214,1",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-07-29T22:39:26.627Z"
+    },
+    {
+      "id": "bug-1436",
+      "timestamp": "2026-07-29T22:37:38.178Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/deck/DeckHeaderBand.tsx",
+      "root_cause": "Had \"inline-flex items-center gap-1.5 rounded-full bor",
+      "fix": "Changed to \"inline-flex items-center gap-1.5 rounded-full bor",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:37:38.178Z"
+    },
+    {
+      "id": "bug-1437",
+      "timestamp": "2026-07-29T22:38:01.760Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:38:01.760Z"
+    },
+    {
+      "id": "bug-1438",
+      "timestamp": "2026-07-29T22:38:09.252Z",
+      "error_message": "Wrong reference: kaarten should be cards",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Used \"kaarten\" instead of \"cards\"",
+      "fix": "Changed kaarten → cards",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:38:09.252Z"
     }
   ]
 }

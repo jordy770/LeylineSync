@@ -8438,3 +8438,14 @@
 | 00:27 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/decks-reverify.mjs | — | ~2281 |
 | 00:29 | Edited .superpowers/sdd/2026-07-29-decks-editor-restyle/task-4-report.md | modified grid() | ~1143 |
 | 00:30 | Re-verified fix-wave (commit 94f68e7) on /decks binder-restyle — gates clean (tsc, eslint); grid tile now starts at y=589 (was y=896, fold criterion met); remove button shows rgba(224,122,122,0.8) red tint without hover (bug-1430 confirmed fixed); status toast "Updated quantity..." visible while clone "Y'shtola (copy)" selected (bug-1431 confirmed fixed); "+ Add card" toggle expands/collapses and add-via-panel works (107→108 cards) | components/DeckManager.tsx (read-only re-verify), .wolf/anatomy.md, .wolf/buglog.json, task-4-report.md | all 4 coordinator checks pass | ~900 |
+| 00:37 | Edited components/DeckInsights.tsx | 3→3 lines | ~51 |
+| 00:37 | Edited components/DeckInsights.tsx | "mt-0.5 list-disc pl-4 tex" → "mt-0.5 list-disc pl-4 tex" | ~24 |
+| 00:37 | Edited components/DeckInsights.tsx | 6→6 lines | ~142 |
+| 00:37 | Edited components/DeckInsights.tsx | 6→6 lines | ~137 |
+| 00:37 | Edited components/deck/DeckHeaderBand.tsx | "inline-flex items-center " → "inline-flex items-center " | ~51 |
+| 00:37 | Edited components/deck/DeckHeaderBand.tsx | 7→7 lines | ~161 |
+| 00:38 | Edited components/DeckManager.tsx | added optional chaining | ~68 |
+| 00:38 | Edited components/DeckManager.tsx | inline fix | ~30 |
+| 00:38 | Edited components/deck/DeckInsightsStrip.tsx | inline fix | ~24 |
+| 00:39 | Edited components/DeckInsights.tsx | "bg-amber-100" → "bg-[#f8f6d8]" | ~6 |
+| 00:45 | Fix round 2 (whole-branch review): swept 13x var(--x)]/NN opacity-modifier (bug-1430 pattern, was silently dropping tints) to literal rgba(...) in DeckInsights.tsx + DeckHeaderBand.tsx incl. the mana-color legend's amber-100→#f8f6d8 (grep -cE "slate-\|amber-" now 0); forge auto-close gated on !missing.length so partial imports stay open; normalized 2 Dutch strings ("kaarten"→"cards", "curve piekt op MV"→"curve peaks at MV") | components/DeckInsights.tsx, components/DeckManager.tsx, components/deck/DeckHeaderBand.tsx, components/deck/DeckInsightsStrip.tsx | tsc/eslint/next build all clean, opacity grep empty | ~ok |

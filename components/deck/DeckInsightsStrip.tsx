@@ -32,7 +32,7 @@ export default function DeckInsightsStrip({
         className="flex w-full items-center gap-2.5 px-5 py-2.5 text-left text-[12.5px] text-[var(--text-dim)]"
       >
         <span>
-          📊 Insights — curve piekt op MV {peak.label} · {creatureCount} creatures
+          📊 Insights — curve peaks at MV {peak.label} · {creatureCount} creatures
         </span>
         <span
           className={`ml-auto text-[var(--text-faint)] transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
