@@ -541,22 +541,49 @@ export default function DeckManager() {
 
             <div className="px-5 pb-5 pt-1.5">
             {/* List controls */}
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-              <div className="flex overflow-hidden rounded border border-slate-700">
+            <div className="mt-4 flex flex-wrap items-center gap-1.5 text-xs text-[var(--text-faint)]">
+              <div className="inline-flex overflow-hidden rounded-lg border border-[rgba(255,255,255,0.12)]">
                 {(['grid', 'list'] as const).map((mode) => (
                   <button
                     key={mode}
                     type="button"
                     onClick={() => setViewMode(mode)}
-                    className={`px-2.5 py-1 font-semibold capitalize ${
-                      viewMode === mode ? 'bg-amber-400 text-amber-950' : 'text-slate-300 hover:bg-slate-800'
+                    className={`px-[11px] py-[5px] text-[11.5px] font-semibold capitalize ${
+                      viewMode === mode
+                        ? 'bg-[rgba(255,212,121,0.14)] text-[var(--gold-bright)]'
+                        : 'text-[var(--text-dim)] hover:bg-[rgba(255,255,255,0.05)]'
                     }`}
                   >
                     {mode}
                   </button>
                 ))}
               </div>
-              <label className="flex items-center gap-1.5 text-slate-300">
+              {viewMode === 'list' && (
+                <div className="inline-flex overflow-hidden rounded-lg border border-[rgba(255,255,255,0.12)]">
+                  {(
+                    [
+                      ['name', 'Name'],
+                      ['cmc', 'MV'],
+                      ['type', 'Type'],
+                      ['behavior', 'Behavior'],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setSortKey(key)}
+                      className={`px-[11px] py-[5px] text-[11.5px] font-semibold ${
+                        sortKey === key
+                          ? 'bg-[rgba(255,212,121,0.14)] text-[var(--gold-bright)]'
+                          : 'text-[var(--text-dim)] hover:bg-[rgba(255,255,255,0.05)]'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <label className="ml-auto flex cursor-pointer items-center gap-1.5 text-[var(--text-dim)]">
                 <input
                   type="checkbox"
                   checked={showNeedsOnly}
@@ -564,21 +591,6 @@ export default function DeckManager() {
                 />
                 Needs behavior only
               </label>
-              {viewMode === 'list' && (
-                <>
-                  <span className="ml-auto text-slate-500">Sort</span>
-                  <select
-                    value={sortKey}
-                    onChange={(event) => setSortKey(event.target.value as typeof sortKey)}
-                    className="rounded border border-slate-700 bg-slate-950 px-2 py-1 text-slate-200"
-                  >
-                    <option value="name">Name</option>
-                    <option value="cmc">Mana value</option>
-                    <option value="type">Type</option>
-                    <option value="behavior">Behavior</option>
-                  </select>
-                </>
-              )}
             </div>
 
             {viewMode === 'grid' ? (
@@ -609,8 +621,10 @@ export default function DeckManager() {
                 return (
                   <div
                     key={line.card_id}
-                    className={`grid grid-cols-[72px_1fr_auto] items-center gap-2 rounded-md border p-2 ${
-                      isCommander ? 'border-amber-500 bg-amber-500/10' : 'border-slate-800 bg-slate-900'
+                    className={`grid grid-cols-[72px_1fr_auto] items-center gap-2 rounded-md bg-[#1c1e24] p-2 ${
+                      isCommander
+                        ? 'shadow-[inset_0_0_0_2px_var(--frame-gold),0_0_18px_rgba(232,180,76,0.25)]'
+                        : 'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.07)]'
                     }`}
                   >
                     <input
@@ -620,10 +634,10 @@ export default function DeckManager() {
                       value={line.quantity}
                       onChange={(event) => handleSetQuantity(line.card_id, Number(event.target.value))}
                       disabled={isWorking}
-                      className="rounded border border-slate-700 bg-slate-950 px-2 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+                      className="rounded border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] px-2 py-1 text-sm text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-50"
                     />
                     <div className="min-w-0">
-                      <p className="flex items-center gap-2 truncate text-sm font-semibold text-white">
+                      <p className="flex items-center gap-2 truncate text-sm font-semibold text-[var(--text)]">
                         <button
                           type="button"
                           onClick={() => line.card && setPreview(line.card)}
@@ -636,9 +650,9 @@ export default function DeckManager() {
                         <span className={`shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide ${badge.cls}`}>
                           {badge.label}
                         </span>
-                        {isCommander && <span className="shrink-0 text-xs font-bold text-amber-400">★ Commander</span>}
+                        {isCommander && <span className="shrink-0 text-xs font-bold text-[var(--gold-bright)]">★ Commander</span>}
                       </p>
-                      <p className="truncate text-xs text-slate-400">
+                      <p className="truncate text-xs text-[var(--text-faint)]">
                         {[line.card?.mana_cost, line.card?.type_line].filter(Boolean).join(' - ')}
                       </p>
                     </div>
@@ -647,7 +661,7 @@ export default function DeckManager() {
                         type="button"
                         onClick={() => setBehaviorCardId(line.card_id)}
                         title="Edit this card's behavior"
-                        className="rounded bg-amber-700 px-2 py-1 text-xs font-semibold text-amber-100 hover:bg-amber-600"
+                        className="rounded border border-[rgba(255,255,255,0.14)] px-2 py-1 text-xs font-semibold text-[var(--text-dim)] hover:bg-[rgba(255,255,255,0.05)]"
                       >
                         Behavior
                       </button>
@@ -657,7 +671,7 @@ export default function DeckManager() {
                         disabled={isWorking}
                         title={isCommander ? 'Clear commander' : 'Set as commander'}
                         className={`rounded px-2 py-1 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${
-                          isCommander ? 'bg-amber-500 text-amber-950' : 'bg-slate-700 text-slate-200'
+                          isCommander ? 'bg-[var(--gold-bright)] text-[#221a08]' : 'bg-[rgba(255,255,255,0.08)] text-[var(--text-dim)]'
                         }`}
                       >
                         ★
@@ -666,7 +680,7 @@ export default function DeckManager() {
                         type="button"
                         onClick={() => handleSetQuantity(line.card_id, 0)}
                         disabled={isWorking}
-                        className="rounded bg-red-500 px-2 py-1 text-xs font-semibold text-red-950 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded bg-[var(--danger)] px-2 py-1 text-xs font-semibold text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         Remove
                       </button>
@@ -691,25 +705,26 @@ export default function DeckManager() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
           onClick={() => setSampleHand(null)}
         >
-          <div className="w-full max-w-sm rounded-lg border border-slate-700 bg-slate-950 p-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="mb-2 text-sm font-bold text-white">Sample opening hand</h3>
-            <ul className="space-y-1 text-sm text-slate-200">
+          <div className="w-full max-w-sm rounded-lg border border-[rgba(255,255,255,0.12)] bg-[#1c1e24] p-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="mb-2 text-sm font-bold text-[var(--text)]">Sample opening hand</h3>
+            <ul className="space-y-1 text-sm text-[var(--text)]">
               {sampleHand.map((name, i) => (
-                <li key={i} className="rounded bg-slate-900 px-2 py-1">{name}</li>
+                <li key={i} className="rounded bg-[rgba(255,255,255,0.05)] px-2 py-1">{name}</li>
               ))}
             </ul>
             <div className="mt-3 flex gap-2">
               <button
                 type="button"
                 onClick={() => selectedDeck && setSampleHand(sampleOpeningHand(selectedDeck))}
-                className="flex-1 rounded-md bg-amber-500 px-3 py-2 text-xs font-semibold text-amber-950"
+                className="flex-1 rounded-md px-3 py-2 text-xs font-semibold text-[#221a08]"
+                style={{ background: 'linear-gradient(160deg,#f2c96a,#d99a2b)' }}
               >
                 Redraw
               </button>
               <button
                 type="button"
                 onClick={() => setSampleHand(null)}
-                className="flex-1 rounded-md border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-200"
+                className="flex-1 rounded-md border border-[rgba(255,255,255,0.14)] px-3 py-2 text-xs font-semibold text-[var(--text-dim)] hover:bg-[rgba(255,255,255,0.05)]"
               >
                 Close
               </button>
@@ -740,15 +755,15 @@ export default function DeckManager() {
           onClick={closeBehavior}
         >
           <div
-            className="my-4 w-full max-w-6xl rounded-lg border border-slate-700 bg-slate-950 p-4"
+            className="my-4 w-full max-w-6xl rounded-lg border border-[rgba(255,255,255,0.12)] bg-[#1c1e24] p-4"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white">Card behavior</h3>
+              <h3 className="text-sm font-bold text-[var(--text)]">Card behavior</h3>
               <button
                 type="button"
                 onClick={closeBehavior}
-                className="rounded border border-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 hover:bg-slate-800"
+                className="rounded border border-[rgba(255,255,255,0.14)] px-3 py-1 text-xs font-semibold text-[var(--text-dim)] hover:bg-[rgba(255,255,255,0.05)]"
               >
                 Close
               </button>
@@ -762,9 +777,9 @@ export default function DeckManager() {
 }
 
 const BEHAVIOR_BADGE: Record<CardConfigStatus, { label: string; cls: string }> = {
-  scripted: { label: 'Behavior', cls: 'bg-emerald-500/20 text-emerald-300' },
-  vanilla: { label: 'Vanilla', cls: 'bg-slate-600/40 text-slate-300' },
-  needs: { label: 'Needs behavior', cls: 'bg-amber-500/20 text-amber-300' },
+  scripted: { label: 'Behavior', cls: 'bg-[rgba(143,214,162,0.2)] text-[var(--cast)]' },
+  vanilla: { label: 'Vanilla', cls: 'bg-[rgba(255,255,255,0.08)] text-[var(--text-dim)]' },
+  needs: { label: 'Needs behavior', cls: 'bg-[rgba(233,161,120,0.25)] text-[var(--warn)]' },
 }
 
 const BEHAVIOR_RANK: Record<CardConfigStatus, number> = { needs: 0, vanilla: 1, scripted: 2 }
@@ -858,7 +873,7 @@ function DeckGrid({
   }
   const ordered = GROUP_ORDER.filter((g) => groups.has(g))
   if (ordered.length === 0) {
-    return <p className="mt-3 text-sm text-slate-500">No cards match.</p>
+    return <p className="mt-3 text-sm text-[var(--text-faint)]">No cards match.</p>
   }
   return (
     <div className="mt-2 space-y-5">
@@ -867,10 +882,10 @@ function DeckGrid({
         const total = lines.reduce((sum, l) => sum + l.quantity, 0)
         return (
           <div key={g}>
-            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-              {g} <span className="text-slate-600">· {total}</span>
+            <h4 className="mb-2 font-display text-[11px] uppercase tracking-[0.14em] text-[var(--text-faint)]">
+              {g} <span className="text-[var(--text-dim)]">· {total}</span>
             </h4>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {lines.map((line) => (
                 <DeckCardTile
                   key={line.card_id}
@@ -902,8 +917,10 @@ function DeckCardTile({
   const badge = BEHAVIOR_BADGE[status]
   return (
     <div
-      className={`relative overflow-hidden rounded-lg border ${
-        isCommander ? 'border-amber-500 ring-1 ring-amber-500/40' : 'border-slate-800'
+      className={`relative overflow-hidden rounded-[10px] bg-[#1c1e24] ${
+        isCommander
+          ? 'shadow-[inset_0_0_0_2px_var(--frame-gold),0_0_18px_rgba(232,180,76,0.25)]'
+          : 'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.07)]'
       }`}
     >
       <button
@@ -919,18 +936,18 @@ function DeckCardTile({
             src={card.image_url}
             alt={card?.name ?? ''}
             loading="lazy"
-            className="aspect-[2/3] w-full bg-slate-900 object-cover"
+            className="aspect-[2/3] w-full bg-[#1c1e24] object-cover"
           />
         ) : (
-          <div className="flex aspect-[2/3] w-full items-center justify-center bg-slate-900 p-2 text-center">
-            <span className="line-clamp-4 text-[11px] font-semibold text-slate-300">
+          <div className="flex aspect-[2/3] w-full items-center justify-center bg-[#1c1e24] p-2 text-center">
+            <span className="line-clamp-4 text-[11px] font-semibold text-[var(--text-dim)]">
               {card?.name ?? line.card_id}
             </span>
           </div>
         )}
       </button>
 
-      <span className="pointer-events-none absolute left-1 top-1 rounded bg-black/80 px-1.5 py-0.5 text-[11px] font-black text-white">
+      <span className="pointer-events-none absolute left-1 top-1 rounded-[6px] bg-[rgba(0,0,0,0.72)] px-1.5 py-0.5 text-[11px] font-extrabold text-[var(--gold-bright)]">
         ×{line.quantity}
       </span>
 
@@ -938,32 +955,32 @@ function DeckCardTile({
         type="button"
         onClick={() => onEditBehavior(line.card_id)}
         title="Edit behavior"
-        className={`absolute right-1 top-1 rounded px-1 py-0.5 text-[8px] font-bold uppercase ${badge.cls}`}
+        className={`absolute right-1 top-1 rounded-[5px] px-1 py-0.5 text-[8.5px] font-extrabold uppercase ${badge.cls}`}
       >
         {status === 'scripted' ? '✓ beh' : status === 'needs' ? 'needs' : 'van'}
       </button>
 
       {isCommander && (
-        <span className="pointer-events-none absolute bottom-[30px] left-1 rounded bg-amber-500 px-1 text-[9px] font-black text-amber-950">
+        <span className="pointer-events-none absolute bottom-[34px] left-1 rounded-[5px] bg-[var(--frame-gold)] px-1.5 py-px text-[9px] font-extrabold text-[#221a08]">
           ★ CMD
         </span>
       )}
 
-      <div className="flex items-stretch gap-px bg-slate-950 text-xs">
+      <div className="flex items-stretch gap-px bg-[rgba(255,255,255,0.07)] text-xs">
         <button
           type="button"
           onClick={() => onSetQuantity(line.card_id, line.quantity - 1)}
           disabled={isWorking}
-          className="flex-1 bg-slate-800 py-1 font-bold text-slate-200 hover:bg-slate-700 disabled:opacity-50"
+          className="flex-1 bg-[rgba(255,255,255,0.05)] py-1 font-bold text-[var(--text-dim)] hover:bg-[rgba(255,212,121,0.12)] hover:text-[var(--gold-bright)] disabled:opacity-50"
         >
           −
         </button>
-        <span className="flex-1 py-1 text-center font-semibold text-white">{line.quantity}</span>
+        <span className="flex-1 bg-[rgba(255,255,255,0.05)] py-1 text-center font-semibold text-[var(--text)]">{line.quantity}</span>
         <button
           type="button"
           onClick={() => onSetQuantity(line.card_id, line.quantity + 1)}
           disabled={isWorking}
-          className="flex-1 bg-slate-800 py-1 font-bold text-slate-200 hover:bg-slate-700 disabled:opacity-50"
+          className="flex-1 bg-[rgba(255,255,255,0.05)] py-1 font-bold text-[var(--text-dim)] hover:bg-[rgba(255,212,121,0.12)] hover:text-[var(--gold-bright)] disabled:opacity-50"
         >
           ＋
         </button>
@@ -973,7 +990,9 @@ function DeckCardTile({
           disabled={isWorking}
           title={isCommander ? 'Clear commander' : 'Set as commander'}
           className={`flex-1 py-1 font-bold disabled:opacity-50 ${
-            isCommander ? 'bg-amber-500 text-amber-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+            isCommander
+              ? 'bg-[var(--gold-bright)] text-[#221a08]'
+              : 'bg-[rgba(255,255,255,0.05)] text-[var(--text-dim)] hover:bg-[rgba(255,212,121,0.12)] hover:text-[var(--gold-bright)]'
           }`}
         >
           ★
@@ -983,7 +1002,7 @@ function DeckCardTile({
           onClick={() => onSetQuantity(line.card_id, 0)}
           disabled={isWorking}
           title="Remove"
-          className="flex-1 bg-red-600/80 py-1 font-bold text-white hover:bg-red-600 disabled:opacity-50"
+          className="flex-1 bg-[var(--danger)]/80 py-1 font-bold text-white hover:bg-[var(--danger)] disabled:opacity-50"
         >
           ✕
         </button>
