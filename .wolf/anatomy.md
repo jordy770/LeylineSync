@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T16:26:02.347Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T16:34:06.073Z
 > Files: 15 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
@@ -92,7 +92,7 @@
 - `task-1-report.md` — Task 1 report: pure generator `deck-generator.ts` (~1845 tok)
 - `task-2-report.md` — Task 2 report: loader cmc + gap-buys helper + generate route (~1232 tok)
 - `task-3-report.md` — Task 3 report: save-deck route with pure server-side revalidation (~1971 tok)
-- `task-4-report.md` — Task 4 report: deck-proposal preview UI in Buildable Commanders panel (~1495 tok)
+- `task-4-report.md` — Task 4 report: deck-proposal preview UI in Buildable Commanders panel (~2195 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -281,7 +281,7 @@
 
 ## components/collection/
 
-- `BuildableCommanders.tsx` — TOP_N; SuggestionDetail now also holds a per-instance deck-proposal preview (Generate decklist → POST generate, Save deck (N) → POST save-deck, Back), refetching on freeOnly flip while a preview is open (~11200 tok)
+- `BuildableCommanders.tsx` — TOP_N; SuggestionDetail also holds a per-instance deck-proposal preview (Generate decklist → POST generate, Save deck (N) → POST save-deck, Back), refetching on freeOnly flip while a preview is open, guarded by a requestId generation-token so superseded/late/post-unmount responses are dropped (~11550 tok)
 
 ## components/controller/
 

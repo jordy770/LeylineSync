@@ -8353,3 +8353,7 @@
 | 18:24 | Edited components/collection/BuildableCommanders.tsx | CSS: color, color | ~144 |
 | 18:26 | Created .superpowers/sdd/2026-07-29-deck-generation/task-4-report.md | — | ~1595 |
 | 18:26 | Task 4 (deck-generation SDD): added deck-proposal preview (Generate decklist/Save deck/Back) to SuggestionDetail | components/collection/BuildableCommanders.tsx | tsc+eslint+next build clean, unit suites 36/36 green | ~11200 |
+| 18:32 | Edited components/collection/BuildableCommanders.tsx | added 3 condition(s) | ~706 |
+| 18:32 | Edited components/collection/BuildableCommanders.tsx | 10→13 lines | ~165 |
+| 18:34 | Edited .superpowers/sdd/2026-07-29-deck-generation/task-4-report.md | expanded (+12 lines) | ~773 |
+| 18:34 | Task 4 fix round 1 (review): requestId generation-token guard on preview generate/refetch (stale-response race, Back reopen, unmount setState) | components/collection/BuildableCommanders.tsx | tsc+eslint+next build clean, unit suites 36/36 green | ~11550 |

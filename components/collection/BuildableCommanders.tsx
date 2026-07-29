@@ -423,7 +423,24 @@ function SuggestionDetail({
   const [saveBusy, setSaveBusy] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
 
+  // Generation-token guard (same idea as the picked+freeOnly lookup effect
+  // above, which uses a `cancelled` flag) — a fast double-toggle can fire two
+  // overlapping generate() calls; without this, "last response to arrive"
+  // wins rather than "last call issued", so the displayed/saveable proposal
+  // could end up generated for a freeOnly value that no longer matches the
+  // visible toggle. Each generate() call claims the next id; a response only
+  // applies if its id is still current when it resolves. Back() and the
+  // unmount cleanup both bump/invalidate the token too, so a late response
+  // can never reopen a dismissed preview or setState after unmount.
+  const requestId = useRef(0)
+  useEffect(() => {
+    return () => {
+      requestId.current = -1
+    }
+  }, [])
+
   async function generate(nextFreeOnly: boolean) {
+    const id = ++requestId.current
     setPreviewBusy(true)
     setPreviewError(null)
     try {
@@ -433,6 +450,7 @@ function SuggestionDetail({
         body: JSON.stringify({ oracleId: suggestion.commander.oracleId, freeOnly: nextFreeOnly }),
       })
       const bodyJson = await res.json()
+      if (id !== requestId.current) return // superseded by a newer call, or dismissed/unmounted
       if (!res.ok) {
         setPreviewError(bodyJson.error ?? 'Could not generate the deck.')
         setPreview(null)
@@ -440,9 +458,10 @@ function SuggestionDetail({
       }
       setPreview(bodyJson.proposal)
     } catch {
+      if (id !== requestId.current) return
       setPreviewError('Network error while generating the deck.')
     } finally {
-      setPreviewBusy(false)
+      if (id === requestId.current) setPreviewBusy(false)
     }
   }
 
@@ -638,7 +657,10 @@ function SuggestionDetail({
             </button>
             <button
               onClick={() => {
+                requestId.current = -1 // invalidate any in-flight/refetch response so it can't reopen this preview
                 setPreview(null)
+                setPreviewBusy(false)
+                setPreviewError(null)
                 setSaveError(null)
               }}
               disabled={saveBusy}
