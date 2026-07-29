@@ -7,9 +7,19 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { isCommanderEligible } from './commander-suggest'
 import type { OwnedOracleCard } from './commander-suggest'
+import { fitsColorIdentity } from './upgrade-scanner'
 import { forEachIdChunk, IN_CHUNK, loadAvailability, loadTags } from './deck-loader'
+import type { ProposalBucket } from './deck-generator'
 
 const SEARCH_LIMIT = 12
+
+// Bounded overfetch per gap-bucket tag query, ordered by tag weight desc, before the
+// TS-side owned-exclusion + color-identity filter. 50 is safe: co_card_tags rows for a
+// single bucket tag are a small slice of the catalog, and taking the 50 best-weighted
+// matches virtually always leaves ≥2 unowned, identity-fitting cards to shop for — this
+// is a "buy suggestion" nicety, not a completeness guarantee, so a bounded miss is fine.
+const GAP_BUY_OVERFETCH = 50
+const GAP_BUY_TAKE = 2
 
 /** Escape ilike wildcards (and the escape character itself) so literal %/_/\ in the query can't alter the pattern. */
 const escapeIlike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`)
@@ -21,6 +31,7 @@ interface OracleRow {
   oracleText: string
   colorIdentity: string[]
   keywords: string[]
+  cmc: number
 }
 
 function toOracleRow(r: Record<string, unknown>): OracleRow {
@@ -31,10 +42,11 @@ function toOracleRow(r: Record<string, unknown>): OracleRow {
     oracleText: (r.oracle_text as string) ?? '',
     colorIdentity: (r.color_identity as string[]) ?? [],
     keywords: (r.keywords as string[]) ?? [],
+    cmc: (r.cmc as number) ?? 0,
   }
 }
 
-const ORACLE_COLUMNS = 'oracle_id, name, type_line, oracle_text, color_identity, keywords'
+const ORACLE_COLUMNS = 'oracle_id, name, type_line, oracle_text, color_identity, keywords, cmc'
 
 /** oracle_id → full card shape (name/type/text/identity/keywords), chunked. */
 async function loadOracleRows(supabase: SupabaseClient, oracleIds: string[]): Promise<Map<string, OracleRow>> {
@@ -73,6 +85,7 @@ export async function loadOwnedOracleCards(supabase: SupabaseClient, userId: str
       oracleText: meta.oracleText,
       colorIdentity: meta.colorIdentity,
       keywords: meta.keywords,
+      cmc: meta.cmc,
       ownedQty: a.ownedQty,
       freeQty: a.freeQty,
       tags: tagsByOracle.get(a.oracleId) ?? [],
@@ -150,8 +163,85 @@ export async function loadCommanderCandidate(
     oracleText: meta.oracleText,
     colorIdentity: meta.colorIdentity,
     keywords: meta.keywords,
+    cmc: meta.cmc,
     ownedQty: Number(availData?.owned_qty ?? 0),
     freeQty: Number(availData?.free_qty ?? 0),
     tags: (tagData ?? []).map((t) => ({ tag: t.tag as OwnedOracleCard['tags'][number]['tag'], weight: Number(t.weight) || 1 })),
   }
+}
+
+export interface GapBuyCard {
+  oracleId: string
+  name: string
+  priceEur: number | null
+}
+
+/**
+ * For each shortfall bucket in a DeckProposal's gapBuckets, up to two cheap
+ * cards the user doesn't own that would fill the gap: tagged `bucket` in
+ * co_card_tags, within the commander's colour identity, cheapest-first.
+ *
+ * 'creatures' and 'filler' are skipped — neither is a co_card_tags tag.
+ * 'creatures' membership in deck-generator is type-line based (isCreature),
+ * and 'filler' is deck-generator's leftover-fill pass, not a tag/type rule —
+ * there's nothing to query co_card_tags for in either case.
+ */
+export async function findGapBuys(
+  supabase: SupabaseClient,
+  userId: string,
+  commanderIdentity: string[],
+  gapBuckets: { bucket: ProposalBucket; shortfall: number }[],
+): Promise<{ bucket: ProposalBucket; buys: GapBuyCard[] }[]> {
+  const availability = await loadAvailability(supabase, userId)
+  const owned = new Set(availability.map((a) => a.oracleId))
+
+  const out: { bucket: ProposalBucket; buys: GapBuyCard[] }[] = []
+  for (const { bucket } of gapBuckets) {
+    if (bucket === 'creatures' || bucket === 'filler') continue
+
+    const { data: tagRows, error: tagError } = await supabase
+      .from('co_card_tags')
+      .select('oracle_id')
+      .eq('tag', bucket)
+      .order('weight', { ascending: false })
+      .limit(GAP_BUY_OVERFETCH)
+    if (tagError) throw new Error(`Gap buy tag lookup failed (${bucket}): ${tagError.message}`)
+
+    const candidateIds = (tagRows ?? []).map((r) => r.oracle_id as string).filter((id) => !owned.has(id))
+    if (candidateIds.length === 0) {
+      out.push({ bucket, buys: [] })
+      continue
+    }
+
+    // co_card_tags is not FK-embeddable with co_card_oracle (it's a view) — hand-join,
+    // same pattern as loadTags/loadOracleMeta above. candidateIds is already ≤ GAP_BUY_OVERFETCH
+    // (well under IN_CHUNK), so a single .in() call is safe without chunking.
+    const { data: oracleRows, error: oracleError } = await supabase
+      .from('co_card_oracle')
+      .select('oracle_id, name, color_identity, prices')
+      .in('oracle_id', candidateIds)
+    if (oracleError) throw new Error(`Gap buy oracle lookup failed (${bucket}): ${oracleError.message}`)
+
+    const buys = (oracleRows ?? [])
+      .map((r) => {
+        const prices = r.prices as Record<string, string> | null
+        return {
+          oracleId: r.oracle_id as string,
+          name: r.name as string,
+          colorIdentity: (r.color_identity as string[]) ?? [],
+          priceEur: prices?.eur ? Number(prices.eur) : null,
+        }
+      })
+      .filter((c) => fitsColorIdentity(c.colorIdentity, commanderIdentity))
+      .sort((a, b) => {
+        const pa = a.priceEur ?? Infinity
+        const pb = b.priceEur ?? Infinity
+        return pa - pb || a.name.localeCompare(b.name)
+      })
+      .slice(0, GAP_BUY_TAKE)
+      .map(({ oracleId, name, priceEur }) => ({ oracleId, name, priceEur }))
+
+    out.push({ bucket, buys })
+  }
+  return out
 }
