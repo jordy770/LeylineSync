@@ -1,0 +1,57 @@
+// Save-deck proposal revalidation — pure server-side re-check of the payload
+// the client sends to POST /api/collection/commanders/save-deck. The client's
+// proposal is untrusted: the collection may have changed since it was
+// generated, and the payload itself may be hand-crafted. No I/O here — the
+// route loads a fresh CardMeta snapshot and hands it in.
+// Task brief: .superpowers/sdd/2026-07-29-deck-generation/task-3-brief.md
+
+import type { BasicName } from './deck-generator'
+
+export type SavePayloadCard = { oracleId: string; quantity: number }
+export type SavePayloadBasics = { name: BasicName; quantity: number }[]
+export type CardMeta = { oracleId: string; colorIdentity: string[]; typeLine: string; ownedQty: number }
+
+const BASIC_NAMES: readonly BasicName[] = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest', 'Wastes']
+const MAX_DECK_SIZE = 100
+
+function fitsIdentity(cardIdentity: string[], deckIdentity: string[]): boolean {
+  return cardIdentity.every((c) => deckIdentity.includes(c))
+}
+
+export function validateProposal(
+  cards: SavePayloadCard[],
+  basics: SavePayloadBasics,
+  commanderIdentity: string[],
+  metaByOracle: Map<string, CardMeta>,
+): { ok: true } | { ok: false; error: string } {
+  const seen = new Set<string>()
+  for (const c of cards) {
+    if (seen.has(c.oracleId)) return { ok: false, error: `Duplicate card in proposal: ${c.oracleId}` }
+    seen.add(c.oracleId)
+  }
+
+  for (const c of cards) {
+    if (c.quantity !== 1) {
+      return { ok: false, error: `Card ${c.oracleId} must have quantity 1, got ${c.quantity}` }
+    }
+    const meta = metaByOracle.get(c.oracleId)
+    if (!meta) return { ok: false, error: `Unknown card in proposal: ${c.oracleId}` }
+    if (meta.ownedQty < 1) return { ok: false, error: `Card not owned: ${c.oracleId}` }
+    if (!fitsIdentity(meta.colorIdentity, commanderIdentity)) {
+      return { ok: false, error: `Card ${c.oracleId} does not fit the commander's color identity` }
+    }
+  }
+
+  for (const b of basics) {
+    if (!BASIC_NAMES.includes(b.name)) return { ok: false, error: `Unknown basic land: ${b.name}` }
+    if (b.quantity < 1) return { ok: false, error: `Basic ${b.name} quantity must be at least 1` }
+  }
+
+  const totalBasics = basics.reduce((sum, b) => sum + b.quantity, 0)
+  const total = 1 + cards.length + totalBasics // +1 for the commander
+  if (total > MAX_DECK_SIZE) {
+    return { ok: false, error: `Deck has ${total} cards, exceeding the ${MAX_DECK_SIZE}-card limit` }
+  }
+
+  return { ok: true }
+}

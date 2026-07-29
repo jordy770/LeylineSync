@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T13:50:37.192Z
-> Files: 10 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T16:08:46.189Z
+> Files: 13 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -47,9 +47,6 @@
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/
 
-- `perf-check.ts` — One-off perf timing for lib/collection/commander-suggest.ts — synthetic (~826 tok)
-- `resolve-bug-1395.js` — Declares fs (~423 tok)
-- `verify-start-deck-fix.mjs` — One-off verification for the start-deck color_identity CRITICAL fix. (~2355 tok)
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/cbab7504-eb67-46c3-a9ec-5892512d9617/scratchpad/
 
@@ -89,8 +86,12 @@
 
 ## .superpowers/sdd/2026-07-29-buildable-commanders/
 
-- `task-1-report.md` — Task 1 report — commander-suggest scoring module (~4047 tok)
-- `task-3-report.md` — Task 3 report — Advisor UI for buildable commanders (~4286 tok)
+
+## .superpowers/sdd/2026-07-29-deck-generation/
+
+- `task-1-report.md` — Task 1 report: pure generator `deck-generator.ts` (~1845 tok)
+- `task-2-report.md` — Task 2 report: loader cmc + gap-buys helper + generate route (~1232 tok)
+- `task-3-report.md` — Task 3 report: save-deck route with pure server-side revalidation (~1192 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -104,9 +105,16 @@
 ## app/api/collection/commanders/
 
 
+## app/api/collection/commanders/generate/
+
+- `route.ts` — POST /api/collection/commanders/generate  body: { oracleId, freeOnly } → { proposal: DeckProposal & (~634 tok)
+
+## app/api/collection/commanders/save-deck/
+
+- `route.ts` — oracle_id → {colorIdentity, typeLine, ownedQty} for the submitted card ids, chunked. (~1715 tok)
+
 ## app/api/collection/commanders/start-deck/
 
-- `route.ts` — POST /api/collection/commanders/start-deck { oracleId, name } → { deckId } (~744 tok)
 
 ## app/api/collection/deck-containers/
 
@@ -272,7 +280,6 @@
 
 ## components/collection/
 
-- `BuildableCommanders.tsx` — TOP_N (~4984 tok)
 
 ## components/controller/
 
@@ -300,17 +307,21 @@
 
 ## docs/superpowers/plans/
 
+- `2026-07-29-deck-generation.md` — Deck Generation from Collection (Phase 2) — Implementation Plan (~3611 tok)
 
 ## docs/superpowers/specs/
 
+- `2026-07-29-deck-generation-design.md` — Deck Generation from Collection (Buildable Commanders Phase 2) — Design Spec (~1557 tok)
 
 ## lib/
 
 
 ## lib/collection/
 
-- `commander-suggest-data.ts` — Escape ilike wildcards (and the escape character itself) so literal %/_/\ in the query can't alter t (~1796 tok)
-- `commander-suggest.ts` — Creature subtypes present on a card's type line. Double-faced/MDFC type (~2955 tok)
+- `commander-suggest-data.ts` — Escape ilike wildcards (and the escape character itself) so literal %/_/\ in the query can't alter t (~2922 tok)
+- `commander-suggest.ts` — Creature subtypes present on a card's type line. Double-faced/MDFC type (~3061 tok)
+- `deck-generator.ts` — Deck proposal generator (buildable commanders, phase 2) — deterministic (~2972 tok)
+- `proposal-validate.ts` — Save-deck proposal revalidation — pure server-side re-check of the payload (~715 tok)
 
 ## lib/collection/parsers/
 
@@ -371,7 +382,8 @@
 
 ## tests/unit/
 
-- `commander-suggest.test.ts` — Buildable-commanders scoring (lib/collection/commander-suggest) — pure, (~1800 tok)
+- `deck-generator.test.ts` — Deck proposal generator (lib/collection/deck-generator) — pure, deterministic (~3824 tok)
+- `proposal-validate.test.ts` — Save-deck proposal revalidation (lib/collection/proposal-validate) — pure, (~1467 tok)
 
 ## vercel/
 

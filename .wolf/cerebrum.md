@@ -784,3 +784,8 @@
 
 - Elke co_decks-creatie MOET color_identity zetten (kolom not null default '{}'); move-card/apply-swap weigeren anders elke gekleurde kaart. Bij een nieuw creatiepad: spiegel import-deck.ts inclusief dít veld (final review ving het; e2e-checks moeten ook de VERVOLGstap testen, niet alleen creatie).
 - E2E-verificatie van collection-routes kan met echte HTTP-calls + magic-link-cookies tegen de lokale dev server; puppeteer alleen nodig voor render-checks.
+
+## Key Learnings — 2026-07-29 (Task 3, save-deck route)
+
+- `loadOracleMeta` (lib/collection/deck-loader.ts) returns name/cmc/typeLine/colorIdentity/priceEur but NOT ownedQty — it's not availability data. Any route that needs "meta + how many the user owns" for a batch of oracleIds (e.g. save-deck's server-side revalidation) must pair it with its own chunked `co_card_availability` query (`forEachIdChunk`/`IN_CHUNK`, `.eq('user_id', …).in('oracle_id', chunk)`), not assume one loader covers both.
+- Pure-validator pattern that worked well for a rules-heavy check (proposal-validate.ts): one function, one `{ok:true}|{ok:false,error}` return, checks ordered so each RED-first unit test can isolate exactly one rule (structural checks like duplicate-id/quantity before meta-dependent checks like unknown/ownedQty/identity, aggregate checks like the 100-card cap last). Mirrors validateProposal's brief in .superpowers/sdd/2026-07-29-deck-generation/task-3-brief.md.

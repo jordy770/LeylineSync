@@ -23009,6 +23009,70 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-07-29T00:00:00.000Z"
+    },
+    {
+      "id": "bug-1405",
+      "timestamp": "2026-07-29T15:03:37.138Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/superpowers/specs/2026-07-29-deck-generation-design.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→4 lines (2 removed) | Also: the preview shows a Gaps block with budget-aware b; existing `suggestBuys` (top 2 per short bucket, wi",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-29T15:05:22.105Z"
+    },
+    {
+      "id": "bug-1406",
+      "timestamp": "2026-07-29T15:55:04.949Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/collection/commander-suggest-data.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: export interface GapBuyCard {; oracleId: string",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-29T15:55:27.802Z"
+    },
+    {
+      "id": "bug-1407",
+      "timestamp": "2026-07-29T15:55:51.264Z",
+      "error_message": "Null/undefined access in ",
+      "file": "app/api/collection/commanders/generate/route.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T15:55:51.264Z"
+    },
+    {
+      "id": "bug-1408",
+      "timestamp": "2026-07-29T16:07:02.038Z",
+      "error_message": "Incorrect value in code",
+      "file": "app/api/collection/commanders/save-deck/route.ts",
+      "root_cause": "Had '@/lib/collection/deck-generator'",
+      "fix": "Changed to '@/lib/collection/deck-loader'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:07:02.038Z"
     }
   ]
 }

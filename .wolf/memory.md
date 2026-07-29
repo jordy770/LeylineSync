@@ -8313,3 +8313,31 @@
 | 15:47 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-start-deck-fix.mjs | 6→1 lines | ~23 |
 | 15:50 | Edited .superpowers/sdd/2026-07-29-buildable-commanders/task-3-report.md | modified fix() | ~2134 |
 | 15:52 | SDD run buildable commanders compleet: 4 taken + 4 fixrounds + final review clean (85ms scoring, MDFC-fix, color_identity-fix) | lib/collection/commander-suggest*, BuildableCommanders.tsx, 2 API-routes | branch ready | ~60k |
+| 17:03 | Created docs/superpowers/specs/2026-07-29-deck-generation-design.md | — | ~1523 |
+| 17:03 | Edited docs/superpowers/specs/2026-07-29-deck-generation-design.md | 3→4 lines | ~71 |
+| 17:03 | Brainstorm + spec fase 2: deck-generatie (preview->save, 62/37, greedy+synergie, gaps->buys) | docs/superpowers/specs/2026-07-29-deck-generation-design.md | committed | ~6k |
+| 17:05 | Edited docs/superpowers/specs/2026-07-29-deck-generation-design.md | 3→6 lines | ~112 |
+| 17:06 | Created docs/superpowers/plans/2026-07-29-deck-generation.md | — | ~3796 |
+| 17:06 | Edited docs/superpowers/plans/2026-07-29-deck-generation.md | inline fix | ~23 |
+| 17:07 | Edited docs/superpowers/specs/2026-07-29-deck-generation-design.md | 2→5 lines | ~85 |
+| 17:07 | Plan fase 2 deck-generatie geschreven (5 taken) + spec-amendementen | docs/superpowers/plans/2026-07-29-deck-generation.md | committed | ~8k |
+| 17:42 | Created tests/unit/deck-generator.test.ts | — | ~3824 |
+| 17:42 | Edited lib/collection/commander-suggest.ts | 7→8 lines | ~78 |
+| 17:42 | Edited lib/collection/commander-suggest.ts | modified buildCardFacts() | ~70 |
+| 17:43 | Created lib/collection/deck-generator.ts | — | ~2972 |
+| 17:47 | Created .superpowers/sdd/2026-07-29-deck-generation/task-1-report.md | — | ~1968 |
+| 17:54 | Edited lib/collection/commander-suggest-data.ts | modified toOracleRow() | ~489 |
+| 17:55 | Edited lib/collection/commander-suggest-data.ts | added nullish coalescing | ~10 |
+| 17:55 | Edited lib/collection/commander-suggest-data.ts | 5→6 lines | ~56 |
+| 17:55 | Edited lib/collection/commander-suggest-data.ts | 3→4 lines | ~39 |
+| 17:55 | Edited lib/collection/commander-suggest-data.ts | added optional chaining | ~896 |
+| 17:55 | Created app/api/collection/commanders/generate/route.ts | — | ~519 |
+| 17:55 | Edited app/api/collection/commanders/generate/route.ts | added nullish coalescing | ~205 |
+| 17:57 | Created .superpowers/sdd/2026-07-29-deck-generation/task-2-report.md | — | ~1315 |
+| 18:01 | Edited docs/superpowers/plans/2026-07-29-deck-generation.md | inline fix | ~110 |
+| 18:04 | Created tests/unit/proposal-validate.test.ts | — | ~1467 |
+| 18:04 | Created lib/collection/proposal-validate.ts | — | ~715 |
+| 18:05 | Created app/api/collection/commanders/save-deck/route.ts | — | ~1746 |
+| 18:06 | Edited app/api/collection/commanders/save-deck/route.ts | modified for() | ~32 |
+| 18:07 | Edited app/api/collection/commanders/save-deck/route.ts | 2→1 lines | ~25 |
+| 18:08 | Created .superpowers/sdd/2026-07-29-deck-generation/task-3-report.md | — | ~1272 |
