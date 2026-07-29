@@ -8290,3 +8290,26 @@
 | 15:17 | Created tmp-verify-deck.mjs | — | ~224 |
 | 15:18 | Buildable commanders fase 1 gebouwd (scoring, loader, advisor-sectie, lookup, start-deck) | lib/collection/commander-suggest*, BuildableCommanders.tsx | suite groen (2445/2445), eslint/tsc clean, live check ok (login via magic link + puppeteer, section/toggle/lookup/start-deck all verified against Jordy's real 5451-card collection) — found + logged a real DFC tribal-subtype bug (bug-1395), scoring perf ~1.8s (over the <1s target) | ~18k |
 | 15:23 | Created .superpowers/sdd/2026-07-29-buildable-commanders/task-4-report.md | — | ~2778 |
+| 15:29 | Edited lib/collection/commander-suggest.ts | modified computeCompleteness() | ~549 |
+| 15:29 | Edited lib/collection/commander-suggest.ts | added 1 condition(s) | ~1423 |
+| 15:30 | Edited tests/unit/commander-suggest.test.ts | added optional chaining | ~375 |
+| 15:30 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/perf-check.ts | — | ~818 |
+| 15:30 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/perf-check.ts | 2→2 lines | ~62 |
+| 15:31 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/perf-check.ts | inline fix | ~26 |
+| 15:31 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/resolve-bug-1395.js | — | ~423 |
+| 15:32 | Edited .superpowers/sdd/2026-07-29-buildable-commanders/task-1-report.md | modified ruling() | ~159 |
+| 15:32 | Edited .superpowers/sdd/2026-07-29-buildable-commanders/task-1-report.md | modified of() | ~1572 |
+| 15:32 | commander-suggest perf fix (precomputed CardFacts, ~2.4s to ~85ms on 5500 cards) + bug-1395 MDFC tribal subtype parsing fix — 10/10 green, committed 4206483 | lib/collection/commander-suggest.ts, tests/unit/commander-suggest.test.ts, .wolf/buglog.json | done | ~2k |
+| 15:43 | Edited app/api/collection/commanders/start-deck/route.ts | added nullish coalescing | ~361 |
+| 15:43 | Edited app/api/collection/commanders/start-deck/route.ts | modified if() | ~105 |
+| 15:44 | Edited lib/collection/commander-suggest-data.ts | 2→2 lines | ~55 |
+| 15:44 | Edited lib/collection/commander-suggest.ts | modified tribalWordForms() | ~205 |
+| 15:44 | Edited tests/unit/commander-suggest.test.ts | 6→7 lines | ~47 |
+| 15:44 | Edited tests/unit/commander-suggest.test.ts | expanded (+6 lines) | ~91 |
+| 15:45 | Edited components/collection/BuildableCommanders.tsx | inline fix | ~28 |
+| 15:45 | Edited components/collection/BuildableCommanders.tsx | "${tribal.count} ${tribal." → "${tribal.count} ${plurali" | ~34 |
+| 15:45 | Edited components/collection/BuildableCommanders.tsx | modified explanationLine() | ~245 |
+| 15:47 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-start-deck-fix.mjs | — | ~2425 |
+| 15:47 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-start-deck-fix.mjs | 6→1 lines | ~23 |
+| 15:50 | Edited .superpowers/sdd/2026-07-29-buildable-commanders/task-3-report.md | modified fix() | ~2134 |
+| 15:52 | SDD run buildable commanders compleet: 4 taken + 4 fixrounds + final review clean (85ms scoring, MDFC-fix, color_identity-fix) | lib/collection/commander-suggest*, BuildableCommanders.tsx, 2 API-routes | branch ready | ~60k |
