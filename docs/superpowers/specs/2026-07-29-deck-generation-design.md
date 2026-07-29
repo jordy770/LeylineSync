@@ -15,9 +15,15 @@ for a chosen commander — preview first, save on confirmation.
    secondary "Start empty" action.
 2. **Gaps: basics + buy suggestions.** Land shortfall is always filled with
    basics (distribution below). Nonland bucket shortfalls do NOT block saving:
-   the preview shows a Gaps block with budget-aware buy suggestions via the
-   existing `suggestBuys` (top 2 per short bucket, with prices); the deck saves
-   with what the user owns.
+   the preview shows a Gaps block with budget-aware buy suggestions (top 2 per
+   short bucket, with prices). Amendment during planning: the existing
+   `suggestBuys` is deck-bound (requires a saved deckId) and cannot serve a
+   pre-save preview — a light gap-buys helper queries the catalog directly
+   (same price source `prices->>eur`, same shop-link conventions) instead.
+   Buy suggestions cover the tag buckets only (ramp/draw/removal/wipes) — the
+   creatures bucket is type-based, not a `co_card_tags` tag, so it has nothing
+   to query and is too generic to shop for. The deck saves with what the user
+   owns.
 3. **Algorithm: greedy bucket-fill with synergy ordering** (deterministic, no
    AI, explainable per card). Not plain tag-greedy, not iterative optimization.
 
