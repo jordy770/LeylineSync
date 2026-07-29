@@ -23221,6 +23221,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-29T16:51:46.788Z"
+    },
+    {
+      "id": "bug-1418",
+      "timestamp": "2026-07-29T17:00:54.639Z",
+      "error_message": "Significant refactor of ",
+      "file": "components/collection/BuildableCommanders.tsx",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 12→20 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T17:00:54.639Z"
+    },
+    {
+      "id": "bug-1419",
+      "timestamp": "2026-07-29T17:02:24.557Z",
+      "error_message": "Type error",
+      "file": "lib/collection/proposal-validate.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T17:02:24.557Z"
     }
   ]
 }
