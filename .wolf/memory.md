@@ -8376,3 +8376,4 @@
 | 19:02 | Edited app/api/collection/commanders/save-deck/route.ts | modified catch() | ~646 |
 | 19:04 | Edited .superpowers/sdd/2026-07-29-deck-generation/task-4-report.md | added 1 condition(s) | ~1315 |
 | 19:04 | Fix round 2 (whole-branch review): Gaps buys → Cardmarket links; save-deck early size-reject; validateProposal commander-in-cards + card/basic oracleId collision (RED-first) | components/collection/BuildableCommanders.tsx, app/api/collection/commanders/save-deck/route.ts, lib/collection/proposal-validate.ts, tests/unit/proposal-validate.test.ts | tsc+eslint+next build clean, unit 40/40 green | ~4000 |
+| 19:08 | SDD run deck-generation compleet: 5 taken + 3 fixrounds + final review clean (incl. bug-2701 PostgREST key-union) | deck-generator.ts, proposal-validate.ts, 2 routes, preview-UI | branch ready | ~55k |
