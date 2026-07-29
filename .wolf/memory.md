@@ -8384,3 +8384,4 @@
 | 22:42 | Created docs/superpowers/plans/2026-07-29-decks-editor-restyle.md | — | ~2933 |
 | 22:43 | Edited docs/superpowers/plans/2026-07-29-decks-editor-restyle.md | "mockups/deck-editor-resty" → "mockups/decks-editor-rest" | ~31 |
 | 22:43 | Edited docs/superpowers/specs/2026-07-29-decks-editor-restyle-design.md | 3→5 lines | ~94 |
+| 23:16 | Mockup /decks goedgekeurd; spec + plan gecommit; SDD-run gestart | specs/plans 2026-07-29-decks-editor-restyle | branch feature/decks-editor-restyle | ~8k |

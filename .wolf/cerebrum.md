@@ -818,3 +818,8 @@
 
 - PostgREST bulk-inserts UNIONEN de keys van alle rijen in één insert-array; rijen die een optionele kolom weglaten krijgen SQL NULL (niet de kolom-default) zodra één andere rij die key wél zet. Bij batched inserts met gemengde rijen: zet optionele kolommen (is_commander e.d.) EXPLICIET op elke rij (bug-2701; import-deck.ts deed dit al goed).
 - Validator-lessen: losse vergelijkingen (`x < 1`) zijn NaN/undefined-lek (bug: ontbrekende quantity omzeilde de 100-cap én persisteerde via kolom-default). Altijd Number.isInteger/isFinite-guards vóór aggregaties.
+
+## Do-Not-Repeat — 2026-07-29 (deckpagina-ambiguïteit)
+
+- "De deckpagina" = voor Jordy de GAME-kant deck editor op /decks (components/DeckManager.tsx), NIET /collection/decks/[id] (DeckDetail). Bij deck-UI-verzoeken eerst checken welke van de twee bedoeld wordt (spec+mockup voor de verkeerde pagina weggegooid).
+- DeckManager op /decks draait nog op de OUDE slate/amber-styling binnen een binder-shell pagina — de binder-restyle van jul '26 sloeg die component over.
