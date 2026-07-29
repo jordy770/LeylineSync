@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T21:43:54.123Z
-> Files: 13 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T22:16:52.699Z
+> Files: 19 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -47,6 +47,8 @@
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/
 
+- `decks-verify.mjs` — Task 4 verification: authenticated screenshots + functional click-through of /decks binder-restyle. (~4892 tok)
+- `decks-verify2.mjs` — Task 4 verification round 2: fixes for the functional click-through's false negatives (~3176 tok)
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/cbab7504-eb67-46c3-a9ec-5892512d9617/scratchpad/
 
@@ -93,7 +95,9 @@
 ## .superpowers/sdd/2026-07-29-decks-editor-restyle/
 
 - `task-1-report.md` — Task 1 Report — Layout swap: deckbox list left, Forge-new-deck collapsed (~1407 tok)
-- `task-2-report.md` — Task 2 report — editor bands 1–3 (header band, insights strip, unified toolbar) (~2327 tok)
+- `task-2-report.md` — Task 2 report — editor bands 1–3 (header band, insights strip, unified toolbar) (~2759 tok)
+- `task-3-report.md` — Task 3 report — band 4: view controls, grid, tiles, list view, preview chrome (~1660 tok)
+- `task-4-report.md` — Task 4 report — visual + functional verification, OpenWolf bookkeeping (~2782 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -274,8 +278,8 @@
 
 ## components/
 
-- `DeckInsights.tsx` — deck stats panel (curve/pips/types/legality); binder tokens, gold curve bars (~2000 tok)
-- `DeckManager.tsx` — DeckManager; Edit Deck now DeckHeaderBand+DeckInsightsStrip+unified toolbar (~11700 tok)
+- `DeckInsights.tsx` — deck stats panel (curve/pips/types/legality); binder tokens, gold curve bars (~1800 tok)
+- `DeckManager.tsx` — /decks game-side deck editor: deckbox list (gold active state) + collapsible Forge form + renders DeckHeaderBand/DeckInsightsStrip/toolbar + grid/list/tiles/preview/behavior-editor modals; binder-restyled jul '26 (task 4 verified: gold deckbox active state OK, no slate-gray outside CardCatalogPicker; found 2 bugs — grid-tile remove btn `bg-[var(--danger)]/80` compiles to no rule under Tailwind 3.4 [hex var, not RGB triplet] so it's transparent until hover, and status/error toasts only render inside the Forge panel so they're invisible whenever an existing deck is selected) (~10650 tok)
 
 ## components/board/
 

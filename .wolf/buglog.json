@@ -23301,6 +23301,154 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-29T21:25:03.037Z"
+    },
+    {
+      "id": "bug-1423",
+      "timestamp": "2026-07-29T21:35:13.674Z",
+      "error_message": "CSS fix: hover",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "hover: bg-slate-800 disabled:opacity-50\" → bg-[rgba(255,255,255,0.05)] disabled:opacity-50\"",
+      "fix": "Changed hover: bg-slate-800 disabled:opacity-50\" → bg-[rgba(255,255,255,0.05)] disabled:opacity-50\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T21:35:13.674Z"
+    },
+    {
+      "id": "bug-1424",
+      "timestamp": "2026-07-29T21:36:37.078Z",
+      "error_message": "CSS fix: C",
+      "file": "components/DeckInsights.tsx",
+      "root_cause": "C: 'bg-slate-400', → 'bg-neutral-400',",
+      "fix": "Changed C: 'bg-slate-400', → 'bg-neutral-400',",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T21:36:37.078Z"
+    },
+    {
+      "id": "bug-1425",
+      "timestamp": "2026-07-29T21:43:54.153Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/deck/DeckHeaderBand.tsx",
+      "root_cause": "Had \"flex flex-wrap items-center gap-4 px-1 pb-3.5 pt-",
+      "fix": "Changed to \"flex flex-wrap items-center gap-4 px-5 pb-3.5 pt-",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T21:43:54.153Z"
+    },
+    {
+      "id": "bug-1426",
+      "timestamp": "2026-07-29T21:50:02.145Z",
+      "error_message": "CSS fix: hover",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "hover: bg-slate-800' → bg-[rgba(255,255,255,0.05)]'",
+      "fix": "Changed hover: bg-slate-800' → bg-[rgba(255,255,255,0.05)]'",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-07-29T21:51:10.004Z"
+    },
+    {
+      "id": "bug-1427",
+      "timestamp": "2026-07-29T21:50:38.944Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Had 'bg-emerald-500/20 text-emerald-300'",
+      "fix": "Changed to 'bg-[rgba(143,214,162,0.2)] text-[var(--cast)]'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T21:50:38.944Z"
+    },
+    {
+      "id": "bug-1428",
+      "timestamp": "2026-07-29T22:07:01.816Z",
+      "error_message": "Incorrect value in code",
+      "file": "tmp-decks-verify.mjs",
+      "root_cause": "Had 'C:/Users/Jordy/AppData/Roaming/npm/node_modules/o",
+      "fix": "Changed to 'file:///C:/Users/Jordy/AppData/Roaming/npm/node_m",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:07:01.816Z"
+    },
+    {
+      "id": "bug-1429",
+      "timestamp": "2026-07-29T22:12:43.392Z",
+      "error_message": "Incorrect value in code",
+      "file": "tmp-verify-orig.mjs",
+      "root_cause": "Had 'user_id'",
+      "fix": "Changed to 'owner_id'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:12:43.392Z"
+    },
+    {
+      "id": "bug-1430",
+      "timestamp": "2026-07-29T22:15:57.736Z",
+      "error_message": "Task 4 visual verification of /decks binder-restyle: grid-tile remove (✕) button renders with a fully transparent background instead of the intended semi-transparent red tint (only turns solid red on hover)",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "DeckCardTile's remove button uses className 'bg-[var(--danger)]/80' (Tailwind arbitrary-value opacity modifier on a CSS custom property). Tailwind 3.4.19's JIT engine can only apply a slash-opacity modifier to an arbitrary var() color when that variable is defined as space-separated RGB channels (e.g. '192 64 43'); this project's --danger token is a hex literal (#c0402b in dark theme, #e07a7a in light). Confirmed via compiled CSS (.next/dev/static/chunks/app_globals_css_*.single.css): only '.bg-[var(--danger)]' (no modifier) and '.hover:bg-[var(--danger)]:hover' rules exist — no /80 variant was generated at all, so the class name is inert and getComputedStyle on the button returns backgroundColor rgba(0,0,0,0) at rest. The plain (non-opacity) bg-[var(--danger)] used elsewhere (e.g. the list-view Remove button) compiles and renders correctly.",
+      "fix": "NOT FIXED — flagged for a follow-up fix round (out of Task 4's verification-only scope). Fix options: (a) redefine --danger (and any other token used with a slash-opacity arbitrary-var modifier) as space-separated RGB channels so rgb(var(--danger)/80%) resolves, or (b) replace bg-[var(--danger)]/80 with a literal rgba(...) at 80% alpha matching each theme's --danger value, or (c) add a dedicated --danger-soft token.",
+      "tags": [
+        "tailwind",
+        "css-variable",
+        "opacity-modifier",
+        "decks-binder-restyle",
+        "visual-regression"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:15:57.736Z"
+    },
+    {
+      "id": "bug-1431",
+      "timestamp": "2026-07-29T22:15:57.736Z",
+      "error_message": "Task 4 functional click-through of /decks binder-restyle: status/error toast messages ('Added card.', 'Commander set.', 'Deck cloned.', 'Could not copy to clipboard.', AI-generation errors, etc.) never appear on screen while an existing deck is selected — confirmed by adding a card to a clone and seeing the card count update with zero visible feedback",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "The {statusMessage}/{errorMessage} <p> paragraphs (lines ~453-454) are rendered ONLY inside the forgeOpen branch of the JSX (the 'Forge new deck' panel), not inside the selectedDeck branch. Pre-restyle (master), the equivalent 'Create Deck' panel that hosted this same paragraph pair was ALWAYS visible alongside the deck list, so every action's toast was seen regardless of which deck was open. Task 1 of the binder-restyle branch (commit d192dd9, collapsible deckbox list + forge form) copied the status/error JSX verbatim into the new collapsible Forge section but did not add an equivalent always-visible (or selectedDeck-scoped) toast location, so the messages are now orphaned behind forgeOpen === true — invisible for the primary/normal workflow (working an existing deck).",
+      "fix": "NOT FIXED — flagged for a follow-up fix round (out of Task 4's verification-only scope). Needs a toast location rendered regardless of forgeOpen (e.g. duplicate the two <p> lines inside the selectedDeck branch, or lift them above the forgeOpen/selectedDeck conditional into a shared header).",
+      "tags": [
+        "decks-binder-restyle",
+        "regression",
+        "ux",
+        "toast",
+        "status-message"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:15:57.736Z"
     }
   ]
 }
