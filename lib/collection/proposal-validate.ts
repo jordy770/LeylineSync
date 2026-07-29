@@ -14,6 +14,10 @@ export type CardMeta = { oracleId: string; colorIdentity: string[]; typeLine: st
 const BASIC_NAMES: readonly BasicName[] = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest', 'Wastes']
 const MAX_DECK_SIZE = 100
 
+// Deliberately re-implemented rather than importing the canonical
+// fitsColorIdentity from upgrade-scanner.ts: that module transitively pulls in
+// supabase-typed I/O helpers, and this validator must stay dependency-free
+// (pure, importable with zero DB/client setup) so its unit tests need no mocks.
 function fitsIdentity(cardIdentity: string[], deckIdentity: string[]): boolean {
   return cardIdentity.every((c) => deckIdentity.includes(c))
 }
@@ -42,9 +46,22 @@ export function validateProposal(
     }
   }
 
+  const seenBasics = new Set<string>()
+  for (const b of basics) {
+    if (seenBasics.has(b.name)) return { ok: false, error: `Duplicate basic land in proposal: ${b.name}` }
+    seenBasics.add(b.name)
+  }
+
   for (const b of basics) {
     if (!BASIC_NAMES.includes(b.name)) return { ok: false, error: `Unknown basic land: ${b.name}` }
-    if (b.quantity < 1) return { ok: false, error: `Basic ${b.name} quantity must be at least 1` }
+    // Strict integer guard, not just `< 1`: a missing/undefined or non-numeric
+    // quantity (e.g. JSON `{name:'Forest'}` with no quantity key, or a string)
+    // makes `< 1` evaluate false (undefined/NaN comparisons are always false),
+    // which let a malformed basic slip past this check AND poison the
+    // totalBasics sum below into NaN, silently defeating the 100-card cap too.
+    if (!Number.isInteger(b.quantity) || b.quantity < 1) {
+      return { ok: false, error: `Basic ${b.name} quantity must be a positive integer` }
+    }
   }
 
   const totalBasics = basics.reduce((sum, b) => sum + b.quantity, 0)

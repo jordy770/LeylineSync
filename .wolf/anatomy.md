@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T16:08:46.189Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T16:17:38.520Z
 > Files: 13 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
@@ -91,7 +91,7 @@
 
 - `task-1-report.md` — Task 1 report: pure generator `deck-generator.ts` (~1845 tok)
 - `task-2-report.md` — Task 2 report: loader cmc + gap-buys helper + generate route (~1232 tok)
-- `task-3-report.md` — Task 3 report: save-deck route with pure server-side revalidation (~1192 tok)
+- `task-3-report.md` — Task 3 report: save-deck route with pure server-side revalidation (~1971 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -321,7 +321,7 @@
 - `commander-suggest-data.ts` — Escape ilike wildcards (and the escape character itself) so literal %/_/\ in the query can't alter t (~2922 tok)
 - `commander-suggest.ts` — Creature subtypes present on a card's type line. Double-faced/MDFC type (~3061 tok)
 - `deck-generator.ts` — Deck proposal generator (buildable commanders, phase 2) — deterministic (~2972 tok)
-- `proposal-validate.ts` — Save-deck proposal revalidation — pure server-side re-check of the payload (~715 tok)
+- `proposal-validate.ts` — Save-deck proposal revalidation — pure server-side re-check of the payload (~988 tok)
 
 ## lib/collection/parsers/
 
@@ -383,7 +383,7 @@
 ## tests/unit/
 
 - `deck-generator.test.ts` — Deck proposal generator (lib/collection/deck-generator) — pure, deterministic (~3824 tok)
-- `proposal-validate.test.ts` — Save-deck proposal revalidation (lib/collection/proposal-validate) — pure, (~1467 tok)
+- `proposal-validate.test.ts` — Save-deck proposal revalidation (lib/collection/proposal-validate) — pure, (~2055 tok)
 
 ## vercel/
 

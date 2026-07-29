@@ -113,3 +113,45 @@ test('total commander + cards + basics > 100 → error', () => {
   assert.equal(result.ok, false)
   assert.match((result as { error: string }).error, /100/)
 })
+
+// ── review fix round 1: basics quantity must be a real positive integer ──
+// (undefined/NaN/string quantities silently defeated both the per-item check
+// and the aggregate cap — `undefined < 1` and `NaN > 100` are both `false`).
+
+test('basics with a missing quantity field → error (not silently 0/undefined)', () => {
+  const basics = [{ name: 'Forest' }] as unknown as SavePayloadBasics
+  const result = validateProposal([], basics, IDENTITY, metaMap([]))
+  assert.equal(result.ok, false)
+  assert.match((result as { error: string }).error, /quantity/i)
+})
+
+test('basics quantity as a non-numeric string → error', () => {
+  const basics = [{ name: 'Forest', quantity: 'lots' }] as unknown as SavePayloadBasics
+  const result = validateProposal([], basics, IDENTITY, metaMap([]))
+  assert.equal(result.ok, false)
+  assert.match((result as { error: string }).error, /quantity/i)
+})
+
+test('reachable exploit: 90 owned cards + 200-quantity Forest + missing-quantity Island → rejected, nothing persists', () => {
+  // Before the fix: NaN math from the missing-quantity Island made totalBasics
+  // NaN, and `NaN > 100` is false, so the 100-card cap silently no-op'd on the
+  // whole request — a ~292-card deck would have made it past validateProposal.
+  const cards: SavePayloadCard[] = Array.from({ length: 90 }, (_, i) => ({ oracleId: `card-${i}`, quantity: 1 }))
+  const metaByOracle = metaMap(cards.map((c) => meta({ oracleId: c.oracleId, colorIdentity: ['G'] })))
+  const basics = [
+    { name: 'Forest', quantity: 200 },
+    { name: 'Island' },
+  ] as unknown as SavePayloadBasics
+  const result = validateProposal(cards, basics, IDENTITY, metaByOracle)
+  assert.equal(result.ok, false)
+})
+
+test('duplicate basic land name across the basics list → error', () => {
+  const basics: SavePayloadBasics = [
+    { name: 'Forest', quantity: 5 },
+    { name: 'Forest', quantity: 5 },
+  ]
+  const result = validateProposal([], basics, IDENTITY, metaMap([]))
+  assert.equal(result.ok, false)
+  assert.match((result as { error: string }).error, /duplicate/i)
+})

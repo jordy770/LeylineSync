@@ -23073,6 +23073,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-29T16:07:02.038Z"
+    },
+    {
+      "id": "bug-1409",
+      "timestamp": "2026-07-29T16:16:46.873Z",
+      "error_message": "Wrong condition in logic",
+      "file": "lib/collection/proposal-validate.ts",
+      "root_cause": "Condition was: if (!BASIC_NAMES.includes(b.name)",
+      "fix": "Changed to: if (seenBasics.has(b.name)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:16:46.873Z"
     }
   ]
 }
