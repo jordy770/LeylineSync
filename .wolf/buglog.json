@@ -22907,6 +22907,108 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-29T13:30:50.783Z"
+    },
+    {
+      "id": "bug-1399",
+      "timestamp": "2026-07-29T13:43:45.695Z",
+      "error_message": "Null/undefined access in ",
+      "file": "app/api/collection/commanders/start-deck/route.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T13:43:45.695Z"
+    },
+    {
+      "id": "bug-1400",
+      "timestamp": "2026-07-29T13:44:00.815Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/collection/commander-suggest-data.ts",
+      "root_cause": "Had 't alter the pattern. */\nconst escapeIlike = (s: s",
+      "fix": "Changed to 't alter the pattern. */\nconst escapeIlike = (s: s",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T13:44:00.815Z"
+    },
+    {
+      "id": "bug-1401",
+      "timestamp": "2026-07-29T13:44:32.921Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/collection/commander-suggest.ts",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 10→17 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T13:44:32.921Z"
+    },
+    {
+      "id": "bug-1402",
+      "timestamp": "2026-07-29T13:44:46.182Z",
+      "error_message": "Type error",
+      "file": "tests/unit/commander-suggest.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T13:44:46.182Z"
+    },
+    {
+      "id": "bug-1403",
+      "timestamp": "2026-07-29T13:45:29.531Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/BuildableCommanders.tsx",
+      "root_cause": "Had `${tribal.count} ${tribal.type}s tie into this com",
+      "fix": "Changed to `${tribal.count} ${pluralizeSubtype(tribal.type)} ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T13:45:29.531Z"
+    },
+    {
+      "id": "bug-2700",
+      "timestamp": "2026-07-29T00:00:00.000Z",
+      "error_message": "Whole-branch review CRITICAL: a deck created via \"Start this deck\" rejects every colored card moved into it; deck page shows no color pips; upgrade scanner scores the deck as colorless.",
+      "file": "app/api/collection/commanders/start-deck/route.ts",
+      "root_cause": "The co_decks insert omitted color_identity, so it kept the column's '{}' (empty array) default. lib/collection/move-card.ts:29-32 and lib/collection/apply-swap.ts:26-32 gate every incoming card on `meta.colorIdentity.every(c => toIdentity.includes(c))` — with toIdentity=[] that's only ever true for a colorless card, so every colored card (including basics, whose color_identity is non-empty) was rejected with \"doesn't fit the destination deck's color identity\", and the deck page/upgrade scanner read the same empty column and treated the deck as colorless. Caught in whole-branch review, not by the unit tests (which never inserted a co_decks row) or Task 4's E2E pass (which checked deck creation but not a subsequent move-card into it).",
+      "fix": "Look up the commander's color_identity from co_card_oracle before inserting (also now 404s with {error:'Commander not found'} on an unknown oracleId, replacing the prior accept-any-string behavior), then insert co_decks with color_identity: [...new Set(ci)].sort() — same dedupe+sort convention as lib/collection/deck-containers.ts:143. Verified end-to-end against the real local DB (jordy@test.com, real magic-link session cookies, real running dev server): POST /api/collection/commanders/start-deck → co_decks.color_identity matches the commander's sorted identity → POST /api/collection/move-card successfully moves an owned colored card (a Swamp, color_identity [\"B\"]) from an existing deck into the new one, which would have 422'd before the fix.",
+      "tags": [
+        "collection",
+        "color-identity",
+        "start-deck",
+        "move-card",
+        "apply-swap",
+        "whole-branch-review",
+        "critical"
+      ],
+      "related_bugs": [
+        "bug-1399"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T00:00:00.000Z"
     }
   ]
 }
