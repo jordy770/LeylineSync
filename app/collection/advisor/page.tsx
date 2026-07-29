@@ -3,9 +3,12 @@ import { redirect } from 'next/navigation'
 
 import { AdvisorContested } from '@/components/collection/AdvisorContested'
 import { AdvisorFits } from '@/components/collection/AdvisorFits'
+import { BuildableCommanders } from '@/components/collection/BuildableCommanders'
 import { CardName } from '@/components/collection/CardName'
 import { TradeBuilder } from '@/components/collection/TradeBuilder'
 import { Panel, Shell } from '@/components/collection/Shell'
+import { suggestCommanders } from '@/lib/collection/commander-suggest'
+import { loadOwnedOracleCards } from '@/lib/collection/commander-suggest-data'
 import { getCollectionInsights } from '@/lib/collection/insights'
 import { loadCollectionIntelligence } from '@/lib/intelligence/loaders'
 import { createClient } from '@/lib/supabase/server'
@@ -24,12 +27,15 @@ export default async function AdvisorPage() {
   if (error || !claims?.claims?.sub) redirect('/auth/login')
   const userId = claims.claims.sub as string
 
-  const [{ decks, contested }, ins] = await Promise.all([
+  const [{ decks, contested }, ins, owned] = await Promise.all([
     loadCollectionIntelligence(supabase, userId),
     getCollectionInsights(supabase, userId),
+    loadOwnedOracleCards(supabase, userId),
   ])
   const totalIssues = decks.reduce((n, d) => n + d.intel.issues.length, 0)
   const empty = decks.length === 0 && ins.perfectFits.length === 0 && ins.unusedStaples.length === 0
+  const freeSuggestions = suggestCommanders(owned, { freeOnly: true })
+  const allSuggestions = suggestCommanders(owned, { freeOnly: false })
 
   return (
     <Shell
@@ -220,6 +226,12 @@ export default async function AdvisorPage() {
           </section>
         </div>
       )}
+
+      {/* Buildable commanders — works even before the first deck exists, so it
+          renders regardless of the "nothing to show yet" state above. */}
+      <div className="mt-10">
+        <BuildableCommanders freeSuggestions={freeSuggestions} allSuggestions={allSuggestions} hasCollection={owned.length > 0} />
+      </div>
     </Shell>
   )
 }
