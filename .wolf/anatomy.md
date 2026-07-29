@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T21:27:59.224Z
-> Files: 7 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T21:37:04.280Z
+> Files: 10 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -273,7 +273,8 @@
 
 ## components/
 
-- `DeckManager.tsx` — DeckManager (~11831 tok)
+- `DeckInsights.tsx` — deck stats panel (curve/pips/types/legality); binder tokens, gold curve bars (~2000 tok)
+- `DeckManager.tsx` — DeckManager; Edit Deck now DeckHeaderBand+DeckInsightsStrip+unified toolbar (~11700 tok)
 
 ## components/board/
 
@@ -283,6 +284,14 @@
 
 ## components/controller/
 
+
+## components/deck/
+
+- `DeckHeaderBand.tsx` — Edit Deck band 1: commander-art placeholder, name, status counts, legality chip (click amber pill to see issues) (~650 tok)
+- `DeckInsightsStrip.tsx` — Edit Deck band 2: collapsible strip wrapping DeckInsights; summary = curve-peak MV + creature count (~450 tok)
+
+- `DeckHeaderBand.tsx` — DeckHeaderBand (~886 tok)
+- `DeckInsightsStrip.tsx` — DeckInsightsStrip (~484 tok)
 
 ## components/judge/
 

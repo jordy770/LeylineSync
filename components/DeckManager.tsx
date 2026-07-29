@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import CardCatalogPicker from '@/components/CardCatalogPicker'
 import CardBehaviorEditor from '@/components/CardBehaviorEditor'
-import DeckInsights from '@/components/DeckInsights'
+import DeckHeaderBand from '@/components/deck/DeckHeaderBand'
+import DeckInsightsStrip from '@/components/deck/DeckInsightsStrip'
 import { importDeckFromText, getErrorMessage, getDeckLegality, setCardScript, setDeckCommander, updateDeckList, type DeckLegality } from '@/lib/game/actions'
 import { getCardConfigStatus, type CardConfigStatus } from '@/lib/game/card-behavior'
 import { manaValue } from '@/lib/game/deck-insights'
@@ -453,13 +454,9 @@ export default function DeckManager() {
           {errorMessage ? <p className="mt-3 text-sm text-[var(--danger)]">{errorMessage}</p> : null}
         </section>
       ) : selectedDeck ? (
-        <section className="leyline-glass-panel min-w-0 p-5">
-            <h3 className="font-display text-base tracking-wide text-amber-200/90">Edit Deck</h3>
-            <p className="mt-1 text-xs text-slate-400">
-              {selectedDeck.name || 'Untitled Deck'} - {selectedDeck.card_count} cards
-            </p>
+        <section className="leyline-glass-panel min-w-0 p-0">
             {(() => {
-              const counts = selectedDeck.cards.reduce(
+              const statusCounts = selectedDeck.cards.reduce(
                 (acc, line) => {
                   acc[getCardConfigStatus(line.card ?? {})] += line.quantity
                   return acc
@@ -467,100 +464,82 @@ export default function DeckManager() {
                 { scripted: 0, vanilla: 0, needs: 0 } as Record<CardConfigStatus, number>,
               )
               return (
-                <p className="mt-1 text-xs text-slate-500">
-                  <span className="font-semibold text-emerald-300">{counts.scripted}</span> scripted ·{' '}
-                  <span className="font-semibold text-slate-300">{counts.vanilla}</span> vanilla ·{' '}
-                  <span className="font-semibold text-amber-300">{counts.needs}</span> need behavior
-                </p>
+                <>
+                  {/* Band 1: commander art + name + status counts + legality chip */}
+                  <DeckHeaderBand deck={selectedDeck} statusCounts={statusCounts} legality={legality} />
+
+                  {/* Band 2: collapsible insights strip (curve, types, colours, checks) */}
+                  <DeckInsightsStrip
+                    cards={selectedDeck.cards}
+                    commanderCard={selectedDeck.cards.find((l) => l.card_id === selectedDeck.commander_card_id)?.card ?? null}
+                  />
+
+                  {/* Band 3: unified toolbar — deck tools left, Add Card right */}
+                  <div className="flex flex-wrap items-center gap-2 border-t border-[rgba(255,255,255,0.06)] px-5 py-3">
+                    <button
+                      type="button"
+                      onClick={handleBatchGenerate}
+                      disabled={isWorking}
+                      className="rounded-[10px] border border-[var(--gold-bright)]/40 px-[13px] py-2 text-[12.5px] font-semibold text-[var(--gold-bright)] disabled:opacity-50"
+                    >
+                      ✨ Generate behavior ({statusCounts.needs})
+                    </button>
+                    {batch && (
+                      <span className="text-[12.5px] text-[var(--gold-bright)]">
+                        {batch.done}/{batch.total} · {batch.ok} ok{batch.failed ? ` · ${batch.failed} failed` : ''}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setSampleHand(sampleOpeningHand(selectedDeck))}
+                      className="rounded-[10px] border border-[rgba(255,255,255,0.14)] px-[13px] py-2 text-[12.5px] font-semibold text-[var(--text-dim)] hover:bg-[rgba(255,255,255,0.05)]"
+                    >
+                      Sample hand
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleExport}
+                      className="rounded-[10px] border border-[rgba(255,255,255,0.14)] px-[13px] py-2 text-[12.5px] font-semibold text-[var(--text-dim)] hover:bg-[rgba(255,255,255,0.05)]"
+                    >
+                      Copy as text
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleClone}
+                      disabled={isWorking}
+                      className="rounded-[10px] border border-[rgba(255,255,255,0.14)] px-[13px] py-2 text-[12.5px] font-semibold text-[var(--text-dim)] hover:bg-[rgba(255,255,255,0.05)] disabled:opacity-50"
+                    >
+                      Clone
+                    </button>
+
+                    <div className="ml-auto flex flex-wrap items-center gap-1.5">
+                      <div className="min-w-[220px]">
+                        <CardCatalogPicker value={selectedCardId} onChange={setSelectedCardId} disabled={isWorking} />
+                      </div>
+                      <input
+                        type="number"
+                        min={1}
+                        max={99}
+                        value={addQuantity}
+                        onChange={(event) => setAddQuantity(Number(event.target.value))}
+                        className="w-20 rounded-[10px] border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] px-3 py-2 text-[12.5px] text-[var(--text)]"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCard}
+                        disabled={isWorking || !selectedCardId}
+                        className="rounded-[10px] px-4 py-2 text-[12.5px] font-semibold text-[#221a08] disabled:cursor-not-allowed disabled:opacity-50"
+                        style={{ background: 'linear-gradient(160deg,#f2c96a,#d99a2b)' }}
+                      >
+                        + Add
+                      </button>
+                    </div>
+                  </div>
+                </>
               )
             })()}
 
-            {/* Deck insights: curve, types, colours, singleton + colour-identity checks */}
-            <DeckInsights
-              cards={selectedDeck.cards}
-              commanderCard={selectedDeck.cards.find((l) => l.card_id === selectedDeck.commander_card_id)?.card ?? null}
-            />
-
-            {/* Commander legality (server-authoritative; only when a commander is set) */}
-            {legality && (
-              legality.legal ? (
-                <p className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-300">
-                  ✓ Commander-legal ({legality.card_count} cards)
-                </p>
-              ) : (
-                <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
-                  <p className="font-semibold text-amber-300">⚠ Not Commander-legal</p>
-                  <ul className="mt-1 list-disc pl-4 text-amber-200/90">
-                    {legality.issues.map((issue, i) => (
-                      <li key={i}>{issue}</li>
-                    ))}
-                  </ul>
-                </div>
-              )
-            )}
-
-            {/* Deck-level tools */}
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={handleBatchGenerate}
-                disabled={isWorking}
-                className="rounded-md bg-violet-500 px-3 py-1.5 text-xs font-semibold text-violet-950 hover:bg-violet-400 disabled:opacity-50"
-              >
-                ✨ Generate behavior (needs)
-              </button>
-              {batch && (
-                <span className="text-xs text-violet-300">
-                  {batch.done}/{batch.total} · {batch.ok} ok{batch.failed ? ` · ${batch.failed} failed` : ''}
-                </span>
-              )}
-              <button
-                type="button"
-                onClick={() => setSampleHand(sampleOpeningHand(selectedDeck))}
-                className="rounded-md border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-800"
-              >
-                Sample hand
-              </button>
-              <button
-                type="button"
-                onClick={handleExport}
-                className="rounded-md border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-800"
-              >
-                Copy as text
-              </button>
-              <button
-                type="button"
-                onClick={handleClone}
-                disabled={isWorking}
-                className="rounded-md border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 disabled:opacity-50"
-              >
-                Clone deck
-              </button>
-            </div>
-
-            <div className="mt-4 min-w-0 rounded-md border border-slate-800 bg-slate-900 p-3">
-              <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Add Card</h4>
-              <CardCatalogPicker value={selectedCardId} onChange={setSelectedCardId} disabled={isWorking} />
-              <div className="mt-3 grid grid-cols-[96px_1fr] gap-2">
-                <input
-                  type="number"
-                  min={1}
-                  max={99}
-                  value={addQuantity}
-                  onChange={(event) => setAddQuantity(Number(event.target.value))}
-                  className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddCard}
-                  disabled={isWorking || !selectedCardId}
-                  className="rounded-md bg-amber-400 px-4 py-2 text-sm font-semibold text-amber-950 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Add to Deck
-                </button>
-              </div>
-            </div>
-
+            <div className="px-5 pb-5 pt-1.5">
             {/* List controls */}
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
               <div className="flex overflow-hidden rounded border border-slate-700">
@@ -697,6 +676,7 @@ export default function DeckManager() {
               })}
             </div>
             )}
+            </div>
         </section>
       ) : (
         <section className="leyline-glass-panel min-w-0 p-8 text-center">

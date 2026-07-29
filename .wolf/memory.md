@@ -8390,3 +8390,14 @@
 | 23:25 | Edited components/DeckManager.tsx | CSS: md | ~1524 |
 | 23:25 | Edited components/DeckManager.tsx | 4→9 lines | ~79 |
 | 23:27 | Created .superpowers/sdd/2026-07-29-decks-editor-restyle/task-1-report.md | — | ~1501 |
+| 23:34 | Created components/deck/DeckHeaderBand.tsx | — | ~886 |
+| 23:34 | Created components/deck/DeckInsightsStrip.tsx | — | ~484 |
+| 23:34 | Edited components/DeckManager.tsx | added 1 import(s) | ~119 |
+| 23:35 | Edited components/DeckManager.tsx | reduced (-25 lines) | ~1283 |
+| 23:35 | Edited components/DeckManager.tsx | 4→5 lines | ~51 |
+| 23:35 | Edited components/DeckManager.tsx | 4→5 lines | ~26 |
+| 23:35 | Edited components/DeckManager.tsx | 3→5 lines | ~90 |
+| 23:36 | Edited components/DeckInsights.tsx | 8→8 lines | ~49 |
+| 23:36 | Edited components/DeckInsights.tsx | 26→26 lines | ~314 |
+| 23:37 | Edited components/DeckInsights.tsx | modified Stat() | ~1102 |
+| 23:45 | Task 2 (editor bands 1-3): created DeckHeaderBand.tsx + DeckInsightsStrip.tsx, rewired DeckManager.tsx Edit Deck header/insights/legality/tools/Add-Card into header band + collapsible insights strip + unified toolbar, restyled DeckInsights.tsx to binder tokens (0 slate- classes, gold curve bars) | components/deck/DeckHeaderBand.tsx, components/deck/DeckInsightsStrip.tsx, components/DeckManager.tsx, components/DeckInsights.tsx | tsc/eslint/next build all clean | ~ok |
