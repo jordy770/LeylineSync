@@ -18,7 +18,7 @@ export default function DeckHeaderBand({
   const [issuesOpen, setIssuesOpen] = useState(false)
 
   return (
-    <div className="flex flex-wrap items-center gap-4 px-1 pb-3.5 pt-1">
+    <div className="flex flex-wrap items-center gap-4 px-5 pb-3.5 pt-[18px]">
       {/* Commander-art placeholder — phase B swaps this for a real Scryfall art-crop */}
       <div
         className="relative h-14 w-[76px] flex-none rounded-[10px] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.14)]"

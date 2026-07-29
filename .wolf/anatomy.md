@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T21:37:04.280Z
-> Files: 10 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T21:43:54.123Z
+> Files: 13 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -93,6 +93,7 @@
 ## .superpowers/sdd/2026-07-29-decks-editor-restyle/
 
 - `task-1-report.md` — Task 1 Report — Layout swap: deckbox list left, Forge-new-deck collapsed (~1407 tok)
+- `task-2-report.md` — Task 2 report — editor bands 1–3 (header band, insights strip, unified toolbar) (~2327 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -289,9 +290,6 @@
 
 - `DeckHeaderBand.tsx` — Edit Deck band 1: commander-art placeholder, name, status counts, legality chip (click amber pill to see issues) (~650 tok)
 - `DeckInsightsStrip.tsx` — Edit Deck band 2: collapsible strip wrapping DeckInsights; summary = curve-peak MV + creature count (~450 tok)
-
-- `DeckHeaderBand.tsx` — DeckHeaderBand (~886 tok)
-- `DeckInsightsStrip.tsx` — DeckInsightsStrip (~484 tok)
 
 ## components/judge/
 

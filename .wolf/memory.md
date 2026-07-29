@@ -8401,3 +8401,6 @@
 | 23:36 | Edited components/DeckInsights.tsx | 26→26 lines | ~314 |
 | 23:37 | Edited components/DeckInsights.tsx | modified Stat() | ~1102 |
 | 23:45 | Task 2 (editor bands 1-3): created DeckHeaderBand.tsx + DeckInsightsStrip.tsx, rewired DeckManager.tsx Edit Deck header/insights/legality/tools/Add-Card into header band + collapsible insights strip + unified toolbar, restyled DeckInsights.tsx to binder tokens (0 slate- classes, gold curve bars) | components/deck/DeckHeaderBand.tsx, components/deck/DeckInsightsStrip.tsx, components/DeckManager.tsx, components/DeckInsights.tsx | tsc/eslint/next build all clean | ~ok |
+| 23:40 | Created .superpowers/sdd/2026-07-29-decks-editor-restyle/task-2-report.md | — | ~2483 |
+| 23:43 | Edited components/deck/DeckHeaderBand.tsx | "flex flex-wrap items-cent" → "flex flex-wrap items-cent" | ~22 |
+| 23:50 | Fix round 1 (review): DeckHeaderBand root padding px-1/pb-3.5/pt-1 → px-5/pb-3.5/pt-[18px] to align band 1 with bands 2-3 left edge; squashed duplicate anatomy.md entries for the two new deck/ components | components/deck/DeckHeaderBand.tsx, .wolf/anatomy.md | tsc/eslint/next build all clean | ~ok |
