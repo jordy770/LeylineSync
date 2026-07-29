@@ -57,7 +57,7 @@ The phase-1 loader gains the `cmc` field (already present on `co_card_oracle`).
 - **Nonland fill:** buckets in fixed order ramp(10) → card_draw(10) →
   removal(8) → board_wipe(3) → creatures(25), then filler up to 62. Within a
   bucket, candidates sort by `tagWeight + themeMatch + commanderSynergy`
-  (themeMatch: +2 tribal subtype hit, +1 keyword overlap), tie-break name asc.
+  (themeMatch: +2 tribal subtype hit, +1 per overlapping keyword), tie-break name asc.
   A chosen card leaves the pool (singleton per oracle_id, one bucket per
   card). Filler sorts by the same synergy score with a curve brake (cmc > 6 →
   −1).
