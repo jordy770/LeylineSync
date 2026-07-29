@@ -26,6 +26,7 @@ export default function DeckManager() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [isWorking, setIsWorking] = useState(false)
   const [forgeOpen, setForgeOpen] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
   // Deck-list view controls + ergonomics.
   const [showNeedsOnly, setShowNeedsOnly] = useState(false)
   const [sortKey, setSortKey] = useState<'name' | 'cmc' | 'type' | 'behavior'>('name')
@@ -393,6 +394,13 @@ export default function DeckManager() {
         </button>
       </section>
 
+      <div className="min-w-0 space-y-3">
+        {(statusMessage || errorMessage) && (
+          <div className="space-y-1">
+            {statusMessage ? <p className="text-sm text-[var(--cast)]">{statusMessage}</p> : null}
+            {errorMessage ? <p className="text-sm text-[var(--danger)]">{errorMessage}</p> : null}
+          </div>
+        )}
       {forgeOpen ? (
         <section className="leyline-glass-panel min-w-0 p-5">
           <div className="flex items-center justify-between gap-3">
@@ -414,14 +422,14 @@ export default function DeckManager() {
               value={deckNameInput}
               onChange={(event) => setDeckNameInput(event.target.value)}
               placeholder="Deck name"
-              className="rounded-lg border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--frame-gold)]/60"
+              className="rounded-lg border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[rgba(232,180,76,0.6)]"
             />
             <textarea
               value={decklistInput}
               onChange={(event) => setDecklistInput(event.target.value)}
               placeholder={`4 Lightning Bolt\n4 Counterspell\n24 Island`}
               rows={16}
-              className="min-h-96 rounded-lg border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] px-3 py-2 font-mono text-sm text-[var(--text)] outline-none focus:border-[var(--frame-gold)]/60"
+              className="min-h-96 rounded-lg border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] px-3 py-2 font-mono text-sm text-[var(--text)] outline-none focus:border-[rgba(232,180,76,0.6)]"
             />
             <button
               type="button"
@@ -434,9 +442,9 @@ export default function DeckManager() {
           </div>
 
           {missingLines?.length ? (
-            <div className="mt-4 rounded-lg border border-[var(--warn)]/30 bg-[var(--warn)]/10 p-3 text-xs text-[var(--warn)]">
+            <div className="mt-4 rounded-lg border border-[rgba(233,161,120,0.3)] bg-[rgba(233,161,120,0.1)] p-3 text-xs text-[var(--warn)]">
               <p className="font-semibold">Not accepted</p>
-              <p className="mt-1 text-[var(--warn)]/90">
+              <p className="mt-1 text-[rgba(233,161,120,0.9)]">
                 These lines did not match a card in the catalog and were skipped.
               </p>
               <ul className="mt-2 space-y-1">
@@ -445,13 +453,10 @@ export default function DeckManager() {
                 ))}
               </ul>
               {missingLines.length > 12 ? (
-                <p className="mt-2 text-[var(--warn)]/90">+{missingLines.length - 12} more</p>
+                <p className="mt-2 text-[rgba(233,161,120,0.9)]">+{missingLines.length - 12} more</p>
               ) : null}
             </div>
           ) : null}
-
-          {statusMessage ? <p className="mt-3 text-sm text-[var(--cast)]">{statusMessage}</p> : null}
-          {errorMessage ? <p className="mt-3 text-sm text-[var(--danger)]">{errorMessage}</p> : null}
         </section>
       ) : selectedDeck ? (
         <section className="leyline-glass-panel min-w-0 p-0">
@@ -474,13 +479,15 @@ export default function DeckManager() {
                     commanderCard={selectedDeck.cards.find((l) => l.card_id === selectedDeck.commander_card_id)?.card ?? null}
                   />
 
-                  {/* Band 3: unified toolbar — deck tools left, Add Card right */}
+                  {/* Band 3: unified toolbar — deck tools left, Add Card toggle right. Kept to one
+                      line so the grid lands above the fold; the picker/quantity/Add row expands
+                      beneath it on demand instead of permanently widening this row. */}
                   <div className="flex flex-wrap items-center gap-2 border-t border-[rgba(255,255,255,0.06)] px-5 py-3">
                     <button
                       type="button"
                       onClick={handleBatchGenerate}
                       disabled={isWorking}
-                      className="rounded-[10px] border border-[var(--gold-bright)]/40 px-[13px] py-2 text-[12.5px] font-semibold text-[var(--gold-bright)] disabled:opacity-50"
+                      className="rounded-[10px] border border-[rgba(255,212,121,0.4)] px-[13px] py-2 text-[12.5px] font-semibold text-[var(--gold-bright)] disabled:opacity-50"
                     >
                       ✨ Generate behavior ({statusCounts.needs})
                     </button>
@@ -512,7 +519,19 @@ export default function DeckManager() {
                       Clone
                     </button>
 
-                    <div className="ml-auto flex flex-wrap items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setAddOpen((open) => !open)}
+                      aria-pressed={addOpen}
+                      className="ml-auto rounded-[10px] px-4 py-2 text-[12.5px] font-semibold text-[#221a08]"
+                      style={{ background: 'linear-gradient(160deg,#f2c96a,#d99a2b)' }}
+                    >
+                      {addOpen ? 'Cancel add' : '+ Add card'}
+                    </button>
+                  </div>
+
+                  {addOpen && (
+                    <div className="flex flex-wrap items-center gap-1.5 border-t border-[rgba(255,255,255,0.06)] px-5 py-3">
                       <div className="min-w-[220px]">
                         <CardCatalogPicker value={selectedCardId} onChange={setSelectedCardId} disabled={isWorking} />
                       </div>
@@ -533,8 +552,15 @@ export default function DeckManager() {
                       >
                         + Add
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => setAddOpen(false)}
+                        className="rounded-[10px] border border-[rgba(255,255,255,0.14)] px-[13px] py-2 text-[12.5px] font-semibold text-[var(--text-dim)] hover:bg-[rgba(255,255,255,0.05)]"
+                      >
+                        Cancel
+                      </button>
                     </div>
-                  </div>
+                  )}
                 </>
               )
             })()}
@@ -699,6 +725,7 @@ export default function DeckManager() {
           <p className="text-sm text-[var(--text-faint)]">Select a deck or forge a new one.</p>
         </section>
       )}
+      </div>
       </div>
 
       {/* Sample opening hand */}
@@ -1004,7 +1031,7 @@ function DeckCardTile({
           onClick={() => onSetQuantity(line.card_id, 0)}
           disabled={isWorking}
           title="Remove"
-          className="flex-1 bg-[var(--danger)]/80 py-1 font-bold text-white hover:bg-[var(--danger)] disabled:opacity-50"
+          className="flex-1 bg-[rgba(224,122,122,0.8)] py-1 font-bold text-white hover:bg-[var(--danger)] disabled:opacity-50"
         >
           ✕
         </button>

@@ -23420,7 +23420,7 @@
       "error_message": "Task 4 visual verification of /decks binder-restyle: grid-tile remove (✕) button renders with a fully transparent background instead of the intended semi-transparent red tint (only turns solid red on hover)",
       "file": "components/DeckManager.tsx",
       "root_cause": "DeckCardTile's remove button uses className 'bg-[var(--danger)]/80' (Tailwind arbitrary-value opacity modifier on a CSS custom property). Tailwind 3.4.19's JIT engine can only apply a slash-opacity modifier to an arbitrary var() color when that variable is defined as space-separated RGB channels (e.g. '192 64 43'); this project's --danger token is a hex literal (#c0402b in dark theme, #e07a7a in light). Confirmed via compiled CSS (.next/dev/static/chunks/app_globals_css_*.single.css): only '.bg-[var(--danger)]' (no modifier) and '.hover:bg-[var(--danger)]:hover' rules exist — no /80 variant was generated at all, so the class name is inert and getComputedStyle on the button returns backgroundColor rgba(0,0,0,0) at rest. The plain (non-opacity) bg-[var(--danger)] used elsewhere (e.g. the list-view Remove button) compiles and renders correctly.",
-      "fix": "NOT FIXED — flagged for a follow-up fix round (out of Task 4's verification-only scope). Fix options: (a) redefine --danger (and any other token used with a slash-opacity arbitrary-var modifier) as space-separated RGB channels so rgb(var(--danger)/80%) resolves, or (b) replace bg-[var(--danger)]/80 with a literal rgba(...) at 80% alpha matching each theme's --danger value, or (c) add a dedicated --danger-soft token.",
+      "fix": "FIXED — removed the slash-opacity modifier on the CSS-var color. Replaced bg-[var(--danger)]/80 with the literal rgba(224,122,122,0.8) (--danger at 80% alpha under .binder-shell, which wraps this component). Also swept the rest of the file for the same var(--x)/NN pattern (all broken for the same reason, since none of frame-gold/warn/gold-bright/danger are defined as space-separated RGB channels) and converted each to an equivalent literal rgba(...): focus:border-[var(--frame-gold)]/60 -> rgba(232,180,76,0.6) (deck-name input + decklist textarea), border/bg-[var(--warn)]/30/10/90 -> rgba(233,161,120,0.3/0.1/0.9) (forge missing-lines box), border-[var(--gold-bright)]/40 -> rgba(255,212,121,0.4) (Generate behavior button). Verified grep -n \"var(--[a-zA-Z-]*)]/\" components/DeckManager.tsx now returns no matches.",
       "tags": [
         "tailwind",
         "css-variable",
@@ -23430,7 +23430,7 @@
       ],
       "related_bugs": [],
       "occurrences": 1,
-      "last_seen": "2026-07-29T22:15:57.736Z"
+      "last_seen": "2026-07-29T22:23:37.505Z"
     },
     {
       "id": "bug-1431",
@@ -23438,7 +23438,7 @@
       "error_message": "Task 4 functional click-through of /decks binder-restyle: status/error toast messages ('Added card.', 'Commander set.', 'Deck cloned.', 'Could not copy to clipboard.', AI-generation errors, etc.) never appear on screen while an existing deck is selected — confirmed by adding a card to a clone and seeing the card count update with zero visible feedback",
       "file": "components/DeckManager.tsx",
       "root_cause": "The {statusMessage}/{errorMessage} <p> paragraphs (lines ~453-454) are rendered ONLY inside the forgeOpen branch of the JSX (the 'Forge new deck' panel), not inside the selectedDeck branch. Pre-restyle (master), the equivalent 'Create Deck' panel that hosted this same paragraph pair was ALWAYS visible alongside the deck list, so every action's toast was seen regardless of which deck was open. Task 1 of the binder-restyle branch (commit d192dd9, collapsible deckbox list + forge form) copied the status/error JSX verbatim into the new collapsible Forge section but did not add an equivalent always-visible (or selectedDeck-scoped) toast location, so the messages are now orphaned behind forgeOpen === true — invisible for the primary/normal workflow (working an existing deck).",
-      "fix": "NOT FIXED — flagged for a follow-up fix round (out of Task 4's verification-only scope). Needs a toast location rendered regardless of forgeOpen (e.g. duplicate the two <p> lines inside the selectedDeck branch, or lift them above the forgeOpen/selectedDeck conditional into a shared header).",
+      "fix": "FIXED — hoisted the status/error toast out of the forgeOpen-only branch. The two <p> lines were removed from inside the Forge new deck section and replaced with a single {(statusMessage || errorMessage) && (...)} banner rendered in a new wrapper div that is now the direct sibling of the deckbox sidebar inside the grid layout, above the forgeOpen ? ... : selectedDeck ? ... : ... ternary — so it is visible in all three right-column states (forge open, deck editor, empty-selection), styled per binder tokens (status text-[var(--cast)], error text-[var(--danger)]).",
       "tags": [
         "decks-binder-restyle",
         "regression",
@@ -23448,7 +23448,39 @@
       ],
       "related_bugs": [],
       "occurrences": 1,
-      "last_seen": "2026-07-29T22:15:57.736Z"
+      "last_seen": "2026-07-29T22:23:37.505Z"
+    },
+    {
+      "id": "bug-1432",
+      "timestamp": "2026-07-29T22:20:28.813Z",
+      "error_message": "CSS fix: focus",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "focus: border-[var(--frame-gold)]/60 → border-[rgba(232,180,76,0.6)]",
+      "fix": "Changed focus: border-[var(--frame-gold)]/60 → border-[rgba(232,180,76,0.6)]",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-29T22:21:56.571Z"
+    },
+    {
+      "id": "bug-1433",
+      "timestamp": "2026-07-29T22:20:40.419Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "Had \"rounded-[10px] border border-[var(--gold-bright)]",
+      "fix": "Changed to \"rounded-[10px] border border-[rgba(255,212,121,0.",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-29T22:20:43.825Z"
     }
   ]
 }
