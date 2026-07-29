@@ -23089,6 +23089,138 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-29T16:16:46.873Z"
+    },
+    {
+      "id": "bug-1410",
+      "timestamp": "2026-07-29T16:22:22.116Z",
+      "error_message": "Incorrect value in code",
+      "file": "components/collection/BuildableCommanders.tsx",
+      "root_cause": "Had './ui'",
+      "fix": "Changed to '@/lib/collection/deck-generator'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:22:22.116Z"
+    },
+    {
+      "id": "bug-1411",
+      "timestamp": "2026-07-29T16:22:29.870Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/collection/BuildableCommanders.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:22:29.870Z"
+    },
+    {
+      "id": "bug-1412",
+      "timestamp": "2026-07-29T16:23:08.777Z",
+      "error_message": "Missing error handling in SuggestionDetail",
+      "file": "components/collection/BuildableCommanders.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:23:08.777Z"
+    },
+    {
+      "id": "bug-1413",
+      "timestamp": "2026-07-29T16:32:43.121Z",
+      "error_message": "Type error",
+      "file": "components/collection/BuildableCommanders.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:32:43.121Z"
+    },
+    {
+      "id": "bug-1414",
+      "timestamp": "2026-07-29T16:44:40.007Z",
+      "error_message": "Significant refactor of ",
+      "file": "tmp-e2e-deckgen.mts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 7→15 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:44:40.007Z"
+    },
+    {
+      "id": "bug-1415",
+      "timestamp": "2026-07-29T16:45:01.699Z",
+      "error_message": "Incorrect value in code",
+      "file": "tmp-e2e-deckgen.mts",
+      "root_cause": "Had `\\nCHECK co_deck_cards count: ${(deckCards ?? []).",
+      "fix": "Changed to `\\nCHECK co_deck_cards count: ${(deckCards ?? []).",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:45:01.699Z"
+    },
+    {
+      "id": "bug-1416",
+      "timestamp": "2026-07-29T16:46:01.206Z",
+      "error_message": "Significant refactor of ",
+      "file": "app/api/collection/commanders/save-deck/route.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 20→27 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:46:01.206Z"
+    },
+    {
+      "id": "bug-2701",
+      "timestamp": "2026-07-29T16:51:46.788Z",
+      "error_message": "save-deck POST returned 500: null value in column \"is_commander\" of relation \"co_deck_cards\" violates not-null constraint",
+      "file": "app/api/collection/commanders/save-deck/route.ts",
+      "root_cause": "The co_deck_cards insert built one array mixing the commander row (which sets is_commander: true) with nonland/land card rows and basic-land rows that omitted the key entirely, relying on the column default (not null default false). PostgREST bulk inserts union the key set across the whole batch payload, so rows missing a key present on ANOTHER row in the same insert call get an explicit NULL sent to Postgres instead of falling back to the column default -- violating the NOT NULL constraint. Not caught by unit tests (the route has no unit tests; proposal-validate.test.ts only exercises the pure validator with synthetic inputs, no DB round-trip) or by task 1-4 verification (none of them exercised save-deck against the real local DB). Found by Task 5 real-HTTP e2e verification against the local dev server.",
+      "fix": "Set is_commander explicitly (true for the commander row, false for every nonland/land card row and every basic-land row) so all objects in the co_deck_cards insert array share the same key set.",
+      "tags": [
+        "collection",
+        "save-deck",
+        "supabase",
+        "postgrest",
+        "bulk-insert",
+        "not-null-constraint",
+        "deck-generation"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T16:51:46.788Z"
     }
   ]
 }

@@ -8357,3 +8357,14 @@
 | 18:32 | Edited components/collection/BuildableCommanders.tsx | 10→13 lines | ~165 |
 | 18:34 | Edited .superpowers/sdd/2026-07-29-deck-generation/task-4-report.md | expanded (+12 lines) | ~773 |
 | 18:34 | Task 4 fix round 1 (review): requestId generation-token guard on preview generate/refetch (stale-response race, Back reopen, unmount setState) | components/collection/BuildableCommanders.tsx | tsc+eslint+next build clean, unit suites 36/36 green | ~11550 |
+| 18:43 | Created tmp-pick-candidate.mts | — | ~308 |
+| 18:44 | Created tmp-e2e-deckgen.mts | — | ~2273 |
+| 18:44 | Edited tmp-e2e-deckgen.mts | modified proposal() | ~203 |
+| 18:44 | Edited tmp-e2e-deckgen.mts | 12→12 lines | ~145 |
+| 18:44 | Edited tmp-e2e-deckgen.mts | 12→12 lines | ~125 |
+| 18:45 | Edited tmp-e2e-deckgen.mts | 2→2 lines | ~76 |
+| 18:46 | Edited app/api/collection/commanders/save-deck/route.ts | modified for() | ~407 |
+| 18:46 | Edited app/api/collection/commanders/save-deck/route.ts | 4→4 lines | ~84 |
+| 18:47 | Created tmp-check-analysis.mts | — | ~367 |
+| 18:53 | Created .superpowers/sdd/2026-07-29-deck-generation/task-5-report.md | — | ~2028 |
+| 18:52 | Task 5 (deck-generation SDD): e2e-verified generate/save-deck/lookup/tamper against real local DB via magic-link+HTTP; found+fixed bug-2701 (co_deck_cards.is_commander NULL from PostgREST bulk-insert key-union) | app/api/collection/commanders/save-deck/route.ts, .wolf/buglog.json, .wolf/cerebrum.md | gates green (2473 tests, tsc clean, eslint 2 known errors); deck created 994ef219-78d3-4258-9480-e406a8fee4c1 power 9.5 | ~4200 |

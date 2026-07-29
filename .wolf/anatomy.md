@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T16:34:06.073Z
-> Files: 15 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T16:53:22.225Z
+> Files: 19 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -59,6 +59,9 @@
 
 ## ./
 
+- `tmp-check-analysis.mts` — THROWAWAY verification script — deleted before session end. (~367 tok)
+- `tmp-e2e-deckgen.mts` — THROWAWAY verification script — deleted before session end. (~2308 tok)
+- `tmp-pick-candidate.mts` — THROWAWAY verification script — deleted before session end. Read-only. (~308 tok)
 
 ## .claude/
 
@@ -93,6 +96,7 @@
 - `task-2-report.md` — Task 2 report: loader cmc + gap-buys helper + generate route (~1232 tok)
 - `task-3-report.md` — Task 3 report: save-deck route with pure server-side revalidation (~1971 tok)
 - `task-4-report.md` — Task 4 report: deck-proposal preview UI in Buildable Commanders panel (~2195 tok)
+- `task-5-report.md` — Task 5 report — end-to-end verification + OpenWolf bookkeeping (~1902 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -112,7 +116,7 @@
 
 ## app/api/collection/commanders/save-deck/
 
-- `route.ts` — oracle_id → {colorIdentity, typeLine, ownedQty} for the submitted card ids, chunked. (~1715 tok)
+- `route.ts` — oracle_id → {colorIdentity, typeLine, ownedQty} for the submitted card ids, chunked. (~1882 tok)
 
 ## app/api/collection/commanders/start-deck/
 
