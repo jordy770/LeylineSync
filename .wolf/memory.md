@@ -8228,3 +8228,65 @@
 | 16:30 | Edited components/GameBoard.tsx | 3→2 lines | ~29 |
 | 16:30 | Edited components/GameBoard.tsx | CSS: pending, top | ~737 |
 | 16:31 | Stack rail -> modal-overlay (alleen bij pending items) + flex-col root fixt afgekapte priority-rand onderaan | components/GameBoard.tsx, StackRail.tsx verwijderd | tsc+eslint groen | ~4k |
+| 13:43 | Created docs/superpowers/specs/2026-07-29-buildable-commanders-design.md | — | ~1397 |
+| 13:43 | Edited docs/superpowers/specs/2026-07-29-buildable-commanders-design.md | 2→5 lines | ~87 |
+| 13:43 | Brainstorm + spec: buildable commanders fase 1 (Advisor-sectie, vrij-toggle, heuristische ranking) | docs/superpowers/specs/2026-07-29-buildable-commanders-design.md | committed | ~6k |
+| 13:50 | Edited docs/superpowers/specs/2026-07-29-buildable-commanders-design.md | modified lookup() | ~193 |
+| 13:50 | Edited docs/superpowers/specs/2026-07-29-buildable-commanders-design.md | modified takes() | ~178 |
+| 13:50 | Edited docs/superpowers/specs/2026-07-29-buildable-commanders-design.md | 3→5 lines | ~88 |
+| 14:07 | Created docs/superpowers/plans/2026-07-29-buildable-commanders.md | — | ~5965 |
+| 14:07 | Edited docs/superpowers/plans/2026-07-29-buildable-commanders.md | modified card() | ~83 |
+| 14:08 | Edited docs/superpowers/plans/2026-07-29-buildable-commanders.md | — | ~0 |
+| 14:08 | Edited docs/superpowers/plans/2026-07-29-buildable-commanders.md | inline fix | ~74 |
+| 14:08 | Plan geschreven: buildable commanders fase 1 (4 taken) | docs/superpowers/plans/2026-07-29-buildable-commanders.md | committed | ~7k |
+| 14:21 | Created tests/unit/commander-suggest.test.ts | — | ~1400 |
+| 14:23 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/check.js | — | ~56 |
+| 14:24 | Created lib/collection/commander-suggest.ts | — | ~1916 |
+| 14:26 | Created .superpowers/sdd/2026-07-29-buildable-commanders/task-1-report.md | — | ~1780 |
+| 14:26 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/append-bug.js | — | ~430 |
+| 14:35 | commander-suggest.ts + tests implemented (6/8 green); tribal boost blocked on Elf/Elves plural rule vs fixture contradiction — reported NEEDS_CONTEXT, not committed | lib/collection/commander-suggest.ts, tests/unit/commander-suggest.test.ts | blocked | ~4k |
+| 14:28 | Edited docs/superpowers/plans/2026-07-29-buildable-commanders.md | "s oracle_text contains th" → "s oracle_text contains th" | ~77 |
+| 14:28 | Edited lib/collection/commander-suggest.ts | added 2 condition(s) | ~416 |
+| 14:29 | Edited .superpowers/sdd/2026-07-29-buildable-commanders/task-1-report.md | modified ruling() | ~136 |
+| 14:29 | Edited .superpowers/sdd/2026-07-29-buildable-commanders/task-1-report.md | added 2 condition(s) | ~1008 |
+| 14:30 | commander-suggest tribal boost resolved per coordinator ruling (small pluralizer, not exception list/fixture change) — 8/8 green, committed 26aa5b5 | lib/collection/commander-suggest.ts, tests/unit/commander-suggest.test.ts | done | ~1.5k |
+| 14:30 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/resolve-bug.js | — | ~306 |
+| 14:35 | Created lib/collection/commander-suggest-data.ts | — | ~1547 |
+| 14:36 | Created app/api/collection/commanders/route.ts | — | ~545 |
+| 14:45 | Task 2 done: loader (reused loadAvailability/loadOracleRows-chunked/loadTags from deck-loader.ts, IN_CHUNK=100 not brief's 500 — see cerebrum) + GET route mirroring search route's auth; tsc/eslint clean, 8/8 commander-suggest tests still green | lib/collection/commander-suggest-data.ts, app/api/collection/commanders/route.ts | done, not yet committed | ~1k |
+| 14:38 | Created .superpowers/sdd/2026-07-29-buildable-commanders/task-2-report.md | — | ~1298 |
+| 14:38 | Edited docs/superpowers/plans/2026-07-29-buildable-commanders.md | inline fix | ~54 |
+| 14:42 | Edited lib/collection/commander-suggest-data.ts | 1→4 lines | ~56 |
+| 14:42 | Edited lib/collection/commander-suggest-data.ts | expanded (+9 lines) | ~277 |
+| 14:43 | Edited .superpowers/sdd/2026-07-29-buildable-commanders/task-2-report.md | modified Fix() | ~607 |
+| 14:49 | Created app/api/collection/commanders/start-deck/route.ts | — | ~527 |
+| 14:52 | Created components/collection/BuildableCommanders.tsx | — | ~4582 |
+| 14:52 | Edited app/collection/advisor/page.tsx | added 3 import(s) | ~216 |
+| 14:52 | Edited app/collection/advisor/page.tsx | CSS: freeOnly, freeOnly | ~151 |
+| 14:52 | Edited app/collection/advisor/page.tsx | expanded (+6 lines) | ~113 |
+| 14:56 | Created .superpowers/sdd/2026-07-29-buildable-commanders/task-3-report.md | — | ~1969 |
+| 15:01 | Edited components/collection/BuildableCommanders.tsx | 3→3 lines | ~36 |
+| 15:01 | Edited components/collection/BuildableCommanders.tsx | CSS: touch-preview, e | ~524 |
+| 15:02 | Edited components/collection/BuildableCommanders.tsx | expanded (+7 lines) | ~536 |
+| 15:03 | Edited .superpowers/sdd/2026-07-29-buildable-commanders/task-3-report.md | added 1 condition(s) | ~755 |
+| 15:08 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/find-user.mjs | — | ~293 |
+| 15:09 | Created tmp-verify-user.mjs | — | ~272 |
+| 15:09 | Created tmp-verify-suggest.mts | — | ~1118 |
+| 15:10 | Created tmp-verify-timing.mts | — | ~344 |
+| 15:12 | Created tmp-puppet-check.mjs | — | ~1411 |
+| 15:13 | Edited tmp-puppet-check.mjs | added 1 condition(s) | ~70 |
+| 15:13 | Edited tmp-puppet-check.mjs | 3→1 lines | ~44 |
+
+## Session: 2026-07-29 15:13
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:13 | Edited tmp-puppet-check.mjs | "C:/Users/Jordy/AppData/Ro" → "file:///C:/Users/Jordy/Ap" | ~46 |
+| 15:14 | Edited tmp-puppet-check.mjs | includes() → test() | ~36 |
+| 15:14 | Created tmp-check-creature-subtype.mjs | — | ~217 |
+| 15:15 | Created tmp-check-creature-subtype2.mjs | — | ~305 |
+| 15:16 | Created tmp-log-bug.mjs | — | ~544 |
+| 15:16 | Edited tmp-puppet-check.mjs | added 2 condition(s) | ~274 |
+| 15:17 | Created tmp-verify-deck.mjs | — | ~224 |
+| 15:18 | Buildable commanders fase 1 gebouwd (scoring, loader, advisor-sectie, lookup, start-deck) | lib/collection/commander-suggest*, BuildableCommanders.tsx | suite groen (2445/2445), eslint/tsc clean, live check ok (login via magic link + puppeteer, section/toggle/lookup/start-deck all verified against Jordy's real 5451-card collection) — found + logged a real DFC tribal-subtype bug (bug-1395), scoring perf ~1.8s (over the <1s target) | ~18k |
+| 15:23 | Created .superpowers/sdd/2026-07-29-buildable-commanders/task-4-report.md | — | ~2778 |

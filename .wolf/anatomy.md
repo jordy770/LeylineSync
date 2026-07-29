@@ -123,6 +123,13 @@
 - `task-3-report.md` — Task 3 Report — Wire spotlight viewport fit into GameBoard (~3652 tok)
 - `task-4-report.md` — Task 4 Report: Visual verification + OpenWolf bookkeeping (~6300 tok)
 
+## .superpowers/sdd/2026-07-29-buildable-commanders/
+
+- `task-1-report.md` — Task 1 report — commander-suggest scoring module (~2588 tok)
+- `task-2-report.md` — Task 2 report — server loader + lookup API route (~1694 tok)
+- `task-3-report.md` — Task 3 report — Advisor UI for buildable commanders (~2386 tok)
+- `task-4-report.md` — Task 4 report — end-to-end verification + OpenWolf bookkeeping (~2800 tok)
+
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
 
@@ -131,6 +138,14 @@
 
 ## app/api/cards/generate-behavior/
 
+
+## app/api/collection/commanders/
+
+- `route.ts` — GET /api/collection/commanders — commander search (?q=) and lookup-scoring (?oracleId=&freeOnly=); auth pattern mirrors search/route.ts (~350 tok)
+
+## app/api/collection/commanders/start-deck/
+
+- `route.ts` — POST /api/collection/commanders/start-deck { oracleId, name } → { deckId } (~527 tok)
 
 ## app/api/collection/deck-containers/
 
@@ -230,6 +245,7 @@
 
 ## app/collection/advisor/
 
+- `page.tsx` — Advisor page (server component, dynamic); loads owned oracle cards once, computes both suggestCommanders({freeOnly:true|false}) variants, renders BuildableCommanders below the existing sections regardless of the page's own "nothing yet" empty state (~3400 tok)
 
 ## app/collection/binders/
 
@@ -298,6 +314,7 @@
 
 ## components/collection/
 
+- `BuildableCommanders.tsx` — Advisor "Commanders you can build" section: ranked list with free/whole-collection toggle, expandable bucket-coverage + tribal/keyword detail, debounced catalog lookup (owned or not), Start this deck → POST start-deck (~4940 tok)
 
 ## components/controller/
 
@@ -340,6 +357,8 @@
 
 ## lib/collection/
 
+- `commander-suggest-data.ts` — Buildable commanders (phase 1): server-side loader mapping co_* views to OwnedOracleCard shapes (loadOwnedOracleCards), catalog name search (searchCommanderCatalog), single-commander lookup (loadCommanderCandidate) (~1789 tok)
+- `commander-suggest.ts` — Buildable commanders (phase 1): pure scoring — completeness over IDEAL_PROFILE buckets + capped tribal/keyword theme boost (tribal pluralizer handles Elf/Wolf/Dwarf→ves, consonant-y→ies). Committed 26aa5b5 (~1150 tok)
 
 ## lib/collection/parsers/
 
@@ -469,6 +488,7 @@
 
 ## tests/unit/
 
+- `commander-suggest.test.ts` — Buildable-commanders scoring unit tests (lib/collection/commander-suggest) — pure completeness/bucket/tribal-pluralizer/keyword-boost coverage, 8/8 green (~1400 tok)
 - `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3403 tok)
 - `spotlight-fit.test.ts` — fitCardColumns — the spotlight board's "how many columns make N cards fit (~1536 tok)
 
