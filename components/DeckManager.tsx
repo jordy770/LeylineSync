@@ -24,6 +24,7 @@ export default function DeckManager() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [isWorking, setIsWorking] = useState(false)
+  const [forgeOpen, setForgeOpen] = useState(false)
   // Deck-list view controls + ergonomics.
   const [showNeedsOnly, setShowNeedsOnly] = useState(false)
   const [sortKey, setSortKey] = useState<'name' | 'cmc' | 'type' | 'behavior'>('name')
@@ -164,6 +165,7 @@ export default function DeckManager() {
       if (result.card_count > 0 && result.id) {
         setDeckNameInput('')
         setDecklistInput('')
+        setForgeOpen(false)
         await refreshDecks()
         setSelectedDeckId(result.id)
       }
@@ -342,73 +344,24 @@ export default function DeckManager() {
 
   return (
     <div className="space-y-6">
-      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)]">
-      <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
-        <h2 className="font-display text-lg tracking-wide text-amber-200/90">Create Deck</h2>
-        <p className="mt-1 text-sm text-slate-400">
-          Paste a plain text decklist. Lines can use counts such as 4 Lightning Bolt or 4x Counterspell.
-        </p>
-
-        <div className="mt-4 grid gap-3">
-          <input
-            value={deckNameInput}
-            onChange={(event) => setDeckNameInput(event.target.value)}
-            placeholder="Deck name"
-            className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none focus:border-slate-400"
-          />
-          <textarea
-            value={decklistInput}
-            onChange={(event) => setDecklistInput(event.target.value)}
-            placeholder={`4 Lightning Bolt\n4 Counterspell\n24 Island`}
-            rows={16}
-            className="min-h-96 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 font-mono text-sm text-white outline-none focus:border-slate-400"
-          />
-          <button
-            type="button"
-            onClick={handleImportDeck}
-            disabled={isWorking}
-            className="rounded-md bg-amber-400 px-4 py-2 text-sm font-semibold text-amber-950 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isWorking ? 'Importing...' : 'Import Deck'}
-          </button>
-        </div>
-
-        {missingLines?.length ? (
-          <div className="mt-4 rounded border border-amber-900 bg-amber-950/40 p-3 text-xs text-amber-200">
-            <p className="font-semibold">Not accepted</p>
-            <p className="mt-1 text-amber-300">
-              These lines did not match a card in the catalog and were skipped.
-            </p>
-            <ul className="mt-2 space-y-1">
-              {missingLines.slice(0, 12).map((item) => (
-                <li key={`${item.name}-${item.line}`}>{item.line}</li>
-              ))}
-            </ul>
-            {missingLines.length > 12 ? (
-              <p className="mt-2 text-amber-300">+{missingLines.length - 12} more</p>
-            ) : null}
-          </div>
-        ) : null}
-
-        {statusMessage ? <p className="mt-3 text-sm text-emerald-300">{statusMessage}</p> : null}
-        {errorMessage ? <p className="mt-3 text-sm text-red-300">{errorMessage}</p> : null}
-      </section>
-
-      <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="font-display text-lg tracking-wide text-amber-200/90">Your Decks</h2>
+      <div className="grid gap-4 md:grid-cols-[250px_minmax(0,1fr)] items-start">
+      <section className="leyline-glass-panel min-w-0 p-3.5">
+        <div className="mb-1 flex items-center justify-between gap-2 px-1.5 pb-2 pt-1">
+          <h2 className="font-display text-[11px] uppercase tracking-[0.28em] text-[var(--frame-gold)]">
+            Your spellbook
+          </h2>
           <button
             type="button"
             onClick={() => refreshDecks().catch((error) => setErrorMessage(getErrorMessage(error)))}
             disabled={isWorking}
-            className="rounded bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+            className="text-[11px] font-semibold text-[var(--text-faint)] hover:text-[var(--text-dim)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Refresh
           </button>
         </div>
 
         {decks.length === 0 ? (
-          <p className="text-sm text-slate-400">No decks yet.</p>
+          <p className="px-1.5 py-2 text-sm text-[var(--text-faint)]">No decks yet.</p>
         ) : (
           <div className="grid gap-2">
             {decks.map((deck) => (
@@ -417,24 +370,90 @@ export default function DeckManager() {
                 type="button"
                 onClick={() => setSelectedDeckId(deck.id)}
                 disabled={isWorking}
-                className={`rounded-md border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                className={`rounded-xl border-l-4 px-3 py-2.5 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                   selectedDeckId === deck.id
-                    ? 'border-amber-500 bg-amber-950/40'
-                    : 'border-slate-800 bg-slate-900 hover:border-slate-600'
+                    ? 'border-l-[var(--frame-gold)] bg-[rgba(255,212,121,0.08)]'
+                    : 'border-l-transparent bg-[rgba(255,255,255,0.03)] hover:bg-[rgba(255,255,255,0.05)]'
                 }`}
               >
-                <p className="text-sm font-semibold text-white">{deck.name || 'Untitled Deck'}</p>
-                <p className="mt-1 text-xs text-slate-400">{deck.card_count} cards</p>
-                <p className="mt-2 break-all font-mono text-[11px] text-slate-500">{deck.id}</p>
+                <p className="text-[13.5px] font-semibold text-[var(--text)]">{deck.name || 'Untitled Deck'}</p>
+                <p className="mt-0.5 text-[11px] text-[var(--text-faint)]">{deck.card_count} kaarten</p>
               </button>
             ))}
           </div>
         )}
-      </section>
-      </div>
 
-      {selectedDeck ? (
-        <section className="min-w-0 rounded-lg border border-slate-800 bg-slate-950 p-5 text-white">
+        <button
+          type="button"
+          onClick={() => setForgeOpen(true)}
+          className="mt-2 px-1.5 py-1 text-left text-[12.5px] font-semibold text-[var(--gold-bright)] hover:underline"
+        >
+          + Forge new deck (paste a list)
+        </button>
+      </section>
+
+      {forgeOpen ? (
+        <section className="leyline-glass-panel min-w-0 p-5">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-lg tracking-wide text-[var(--gold-bright)]">Forge new deck</h2>
+            <button
+              type="button"
+              onClick={() => setForgeOpen(false)}
+              className="text-xs font-semibold text-[var(--text-faint)] hover:text-[var(--text-dim)]"
+            >
+              Cancel
+            </button>
+          </div>
+          <p className="mt-1 text-sm text-[var(--text-dim)]">
+            Paste a plain text decklist. Lines can use counts such as 4 Lightning Bolt or 4x Counterspell.
+          </p>
+
+          <div className="mt-4 grid gap-3">
+            <input
+              value={deckNameInput}
+              onChange={(event) => setDeckNameInput(event.target.value)}
+              placeholder="Deck name"
+              className="rounded-lg border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--frame-gold)]/60"
+            />
+            <textarea
+              value={decklistInput}
+              onChange={(event) => setDecklistInput(event.target.value)}
+              placeholder={`4 Lightning Bolt\n4 Counterspell\n24 Island`}
+              rows={16}
+              className="min-h-96 rounded-lg border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] px-3 py-2 font-mono text-sm text-[var(--text)] outline-none focus:border-[var(--frame-gold)]/60"
+            />
+            <button
+              type="button"
+              onClick={handleImportDeck}
+              disabled={isWorking}
+              className="rounded-lg bg-gradient-to-b from-[var(--gold-bright)] to-[var(--frame-gold)] px-4 py-2 text-sm font-semibold text-[#221a08] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isWorking ? 'Importing...' : 'Import Deck'}
+            </button>
+          </div>
+
+          {missingLines?.length ? (
+            <div className="mt-4 rounded-lg border border-[var(--warn)]/30 bg-[var(--warn)]/10 p-3 text-xs text-[var(--warn)]">
+              <p className="font-semibold">Not accepted</p>
+              <p className="mt-1 text-[var(--warn)]/90">
+                These lines did not match a card in the catalog and were skipped.
+              </p>
+              <ul className="mt-2 space-y-1">
+                {missingLines.slice(0, 12).map((item) => (
+                  <li key={`${item.name}-${item.line}`}>{item.line}</li>
+                ))}
+              </ul>
+              {missingLines.length > 12 ? (
+                <p className="mt-2 text-[var(--warn)]/90">+{missingLines.length - 12} more</p>
+              ) : null}
+            </div>
+          ) : null}
+
+          {statusMessage ? <p className="mt-3 text-sm text-[var(--cast)]">{statusMessage}</p> : null}
+          {errorMessage ? <p className="mt-3 text-sm text-[var(--danger)]">{errorMessage}</p> : null}
+        </section>
+      ) : selectedDeck ? (
+        <section className="leyline-glass-panel min-w-0 p-5">
             <h3 className="font-display text-base tracking-wide text-amber-200/90">Edit Deck</h3>
             <p className="mt-1 text-xs text-slate-400">
               {selectedDeck.name || 'Untitled Deck'} - {selectedDeck.card_count} cards
@@ -679,7 +698,12 @@ export default function DeckManager() {
             </div>
             )}
         </section>
-      ) : null}
+      ) : (
+        <section className="leyline-glass-panel min-w-0 p-8 text-center">
+          <p className="text-sm text-[var(--text-faint)]">Select a deck or forge a new one.</p>
+        </section>
+      )}
+      </div>
 
       {/* Sample opening hand */}
       {sampleHand && (

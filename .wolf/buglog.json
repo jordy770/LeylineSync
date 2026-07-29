@@ -23253,6 +23253,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-29T17:02:24.557Z"
+    },
+    {
+      "id": "bug-1420",
+      "timestamp": "2026-07-29T20:43:04.030Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/superpowers/plans/2026-07-29-decks-editor-restyle.md",
+      "root_cause": "Had `mockups/deck-editor-restyle.html`",
+      "fix": "Changed to `mockups/decks-editor-restyle.html`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T20:43:04.030Z"
+    },
+    {
+      "id": "bug-1421",
+      "timestamp": "2026-07-29T20:43:07.009Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/superpowers/specs/2026-07-29-decks-editor-restyle-design.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T20:43:07.009Z"
+    },
+    {
+      "id": "bug-1422",
+      "timestamp": "2026-07-29T21:25:03.037Z",
+      "error_message": "CSS fix: hover, disabled, focus",
+      "file": "components/DeckManager.tsx",
+      "root_cause": "hover: border-slate-600' → text-[var(--text-dim)]\"; disabled: cursor-not-allowed disabled:opacity-50 ${ → cursor-not-allowed disabled:opacity-50\"; focus: border-slate-400\" → border-[var(--frame-gold)]/60\"",
+      "fix": "Changed hover: border-slate-600' → text-[var(--text-dim)]\"; disabled: cursor-not-allowed disabled:opacity-50 ${ → cursor-not-allowed disabled:opacity-50\"; focus: border-slate-400\" → border-[var(--frame-gold)]/60\"",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T21:25:03.037Z"
     }
   ]
 }
