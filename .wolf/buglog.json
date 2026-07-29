@@ -23561,6 +23561,166 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-29T22:38:09.252Z"
+    },
+    {
+      "id": "bug-1439",
+      "timestamp": "2026-07-29T22:45:44.671Z",
+      "error_message": "Significant refactor of ",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-final.js",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 10→13 lines (7 removed) | Also: await page.goto(actionLink, { waitUntil: 'networki; console.log('post magic-link url:', page.url());",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-07-29T22:46:15.931Z"
+    },
+    {
+      "id": "bug-1440",
+      "timestamp": "2026-07-29T22:46:34.550Z",
+      "error_message": "Missing await",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-final.js",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:46:34.550Z"
+    },
+    {
+      "id": "bug-1441",
+      "timestamp": "2026-07-29T22:47:37.804Z",
+      "error_message": "Wrong reference: user_id should be owner_id",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/q.js",
+      "root_cause": "Used \"user_id\" instead of \"owner_id\"",
+      "fix": "Changed user_id → owner_id",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:47:37.804Z"
+    },
+    {
+      "id": "bug-1442",
+      "timestamp": "2026-07-29T22:50:36.215Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-final.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: const swInfo = await page.evaluate(async () => {; if (!('serviceWorker' in navigator)) return 'no sw api'; | Also: const manualCheck = await page.evaluate(async () => {; try { | Also: const gotrueCheck = await page.evaluate(async () => {; try {",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-07-29T22:57:00.634Z"
+    },
+    {
+      "id": "bug-1443",
+      "timestamp": "2026-07-29T22:51:25.315Z",
+      "error_message": "Significant refactor of ",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-final.js",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 8→3 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:51:25.315Z"
+    },
+    {
+      "id": "bug-1444",
+      "timestamp": "2026-07-29T22:52:53.380Z",
+      "error_message": "Missing await",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-final.js",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:52:53.380Z"
+    },
+    {
+      "id": "bug-1445",
+      "timestamp": "2026-07-29T22:58:00.438Z",
+      "error_message": "Missing await",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-final.js",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T22:58:00.438Z"
+    },
+    {
+      "id": "bug-1446",
+      "timestamp": "2026-07-29T23:02:13.754Z",
+      "error_message": "Missing guard clause",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-final.js",
+      "root_cause": "No early return/throw for edge case: forgeHandle",
+      "fix": "Added guard clause: if (forgeHandle)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T23:02:13.754Z"
+    },
+    {
+      "id": "bug-1447",
+      "timestamp": "2026-07-29T23:02:39.431Z",
+      "error_message": "Significant refactor of ",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-final.js",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 9→13 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T23:02:39.431Z"
+    },
+    {
+      "id": "bug-1448",
+      "timestamp": "2026-07-29T23:03:51.815Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/verify-final.js",
+      "root_cause": "Had `http://127.0.0.1:3000/auth/confirm?token_hash=${d",
+      "fix": "Changed to `http://localhost:3000/auth/confirm?token_hash=${d",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T23:03:51.815Z"
     }
   ]
 }

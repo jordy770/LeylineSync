@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T22:39:26.602Z
-> Files: 16 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T23:06:23.052Z
+> Files: 18 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -50,6 +50,8 @@
 - `decks-reverify.mjs` — Re-verification of commit 94f68e7 (fix-wave: opacity-var utilities, orphaned toast, (~2281 tok)
 - `decks-verify.mjs` — Task 4 verification: authenticated screenshots + functional click-through of /decks binder-restyle. (~4892 tok)
 - `decks-verify2.mjs` — Task 4 verification round 2: fixes for the functional click-through's false negatives (~3176 tok)
+- `q.js` — Declares admin (~269 tok)
+- `verify-final.js` — Declares path (~4512 tok)
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/cbab7504-eb67-46c3-a9ec-5892512d9617/scratchpad/
 
@@ -96,9 +98,9 @@
 ## .superpowers/sdd/2026-07-29-decks-editor-restyle/
 
 - `task-1-report.md` — Task 1 Report — Layout swap: deckbox list left, Forge-new-deck collapsed (~1407 tok)
-- `task-2-report.md` — Task 2 report — editor bands 1–3 (header band, insights strip, unified toolbar) (~2759 tok)
+- `task-2-report.md` — Task 2 report — editor bands 1–3 (header band, insights strip, unified toolbar) (~2787 tok)
 - `task-3-report.md` — Task 3 report — band 4: view controls, grid, tiles, list view, preview chrome (~2671 tok)
-- `task-4-report.md` — Task 4 report — visual + functional verification, OpenWolf bookkeeping (~3636 tok)
+- `task-4-report.md` — Task 4 report — visual + functional verification, OpenWolf bookkeeping (~4622 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
