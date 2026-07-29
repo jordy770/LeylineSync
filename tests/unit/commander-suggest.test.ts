@@ -109,3 +109,24 @@ test('suggestCommanders: freeOnly requires a free commander, ordering is determi
   const sugAll = suggestCommanders([strong, lockedCmdr, weak, ...pool], { freeOnly: false })
   assert.ok(sugAll.some((s) => s.commander.name === 'Locked General'))
 })
+
+// Regression for bug-1395: MDFC/DFC type lines pack two faces into one
+// string ("Creature — A // Creature — B"). A naive single dash-split bled
+// the back face's own type words ("Creature", a stray "//") into the front
+// face's subtypes and dropped the back face's real subtypes.
+test('MDFC/double-faced type lines yield only real subtypes, one face at a time', () => {
+  const c = cmdr({ oracleText: 'Other Angels you control get +1/+1.' })
+  const mdfc = Array.from({ length: 6 }, () =>
+    card({ typeLine: 'Legendary Creature — Phyrexian Angel // Legendary Creature — Nightmare' }))
+  const s = scoreCommander(c, mdfc, { freeOnly: true })
+  assert.equal(s.themeFacts.tribal?.type, 'Angel')
+  assert.equal(s.themeFacts.tribal?.count, 6)
+})
+
+test('the card type "Creature" is never extracted as a tribal subtype', () => {
+  const c = cmdr({ oracleText: 'Creatures you control get +1/+1.' })
+  const mdfc = Array.from({ length: 6 }, () =>
+    card({ typeLine: 'Legendary Creature — Phyrexian Angel // Legendary Creature — Nightmare' }))
+  const s = scoreCommander(c, mdfc, { freeOnly: true })
+  assert.equal(s.themeFacts.tribal, null)
+})

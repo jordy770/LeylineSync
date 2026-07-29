@@ -22847,18 +22847,66 @@
       "error_message": "Tribal theme fact shows nonsensical types like \"15 Creatures tie into this commander's tribal theme\" for double-faced/MDFC commanders (observed live on /collection/advisor for Atraxa, Grand Unifier and others)",
       "file": "lib/collection/commander-suggest.ts",
       "root_cause": "subtypesOf() does typeLine.split(/[—-]/)[1] to grab the text after the FIRST dash. For a DFC/MDFC type_line like \"Creature — Werewolf Horror // Creature — Eldrazi Werewolf\" (two em-dashes, one per face), split yields [\"Creature \", \" Werewolf Horror // Creature \", \" Eldrazi Werewolf\"] — index [1] is \" Werewolf Horror // Creature \", which tokenizes to [\"Werewolf\",\"Horror\",\"//\",\"Creature\"]. The literal word \"Creature\" (from the back face's own type prefix) and a stray \"//\" token get counted as bogus subtypes on the FRONT face, while the back face's real subtypes (e.g. Eldrazi, Werewolf after the second dash) are silently dropped entirely.",
-      "fix": "NOT FIXED — found during Task 4 (end-to-end verification) live UI check, out of scope for that task. Confirmed via direct DB query: 276 co_card_oracle rows parse to include the literal subtype \"Creature\" (e.g. Ulvenwald Captive // Ulvenwald Abomination, Alrund, God of the Cosmos // Hakka, Whispering Raven, Henrika Domnathi // Henrika, Infernal Seer). Needs a follow-up fix: split each face's type_line separately (split on \" // \" first, then take text after the first dash of each face) before extracting subtypes, and union subtypes across both faces.",
+      "fix": "Fixed in lib/collection/commander-suggest.ts subtypesOf(): split the type_line on ' // ' first so each MDFC/DFC face is parsed independently (no more cross-face bleed of the back face's own type words into the front face's subtypes); then, per face, take the text after that face's dash, whitespace-split, and filter tokens through a CARD_TYPE_STOPWORDS set (Legendary/Creature/Artifact/Enchantment/Land/Planeswalker/Instant/Sorcery/Battle/Snow/Basic/Token/World/Kindred, case-insensitive) plus any '/'-containing token (stray \"//\"). The literal word \"Creature\" can now never be extracted as a tribal subtype. Added 2 regression tests: MDFC type line yields only real subtypes per face (Angel fires tribal correctly); a commander whose oracle text says 'Creatures you control' does not produce a false tribal fact. 10/10 tests green.",
       "tags": [
         "commander-suggest",
         "tribal-theme",
         "double-faced-cards",
         "mdfc",
         "data-quality",
-        "needs-fix"
+        "resolved"
       ],
       "related_bugs": [],
       "occurrences": 1,
-      "last_seen": "2026-07-29T13:16:24.548Z"
+      "last_seen": "2026-07-29T13:31:49.195Z"
+    },
+    {
+      "id": "bug-1396",
+      "timestamp": "2026-07-29T13:29:58.608Z",
+      "error_message": "Significant refactor of ",
+      "file": "lib/collection/commander-suggest.ts",
+      "root_cause": "11 lines replaced/restructured",
+      "fix": "Rewrote 67→124 lines (11 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T13:29:58.608Z"
+    },
+    {
+      "id": "bug-1397",
+      "timestamp": "2026-07-29T13:30:08.960Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/unit/commander-suggest.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T13:30:08.960Z"
+    },
+    {
+      "id": "bug-1398",
+      "timestamp": "2026-07-29T13:30:50.783Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/perf-check.ts",
+      "root_cause": "Had '../../../../../../../dev/LeylineSync/lib/collecti",
+      "fix": "Changed to 'C:/Users/Jordy/dev/LeylineSync/lib/collection/com",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-29T13:30:50.783Z"
     }
   ]
 }
