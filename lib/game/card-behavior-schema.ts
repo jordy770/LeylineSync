@@ -1510,6 +1510,9 @@ export const CardBehaviorScriptV2Schema = z.object({
   }).optional(),
   // Cycling cost (mig 228) — "Cycling {2}: Discard this card, draw a card."
   cycling: z.string().optional(),
+  // Basic landcycling (mig 427) — "{2}, Discard this card: Search your library
+  // for a basic land card, reveal it, put it into your hand, then shuffle."
+  landcycling: z.string().optional(),
   // Optional kicker cost (mig 211) — "Kicker {5}{B}": an additional mana cost
   // the caster may pay; paying it stamps 'kicked' on the permanent, read by a
   // conditional with { "counters": "kicked", "of": "self" }.

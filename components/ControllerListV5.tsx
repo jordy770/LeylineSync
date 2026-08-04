@@ -1070,8 +1070,8 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       await refresh()
     },
     // Cycling: discard a hand card with a cycling cost, draw one.
-    cycleCard: async (cardId: string) => {
-      await cycleCard(supabase, sessionId, cardId)
+    cycleCard: async (cardId: string, landcycle?: boolean) => {
+      await cycleCard(supabase, sessionId, cardId, undefined, landcycle)
       await refresh()
     },
     // Aura cast — a permanent that enters attached to the chosen creature.
@@ -1558,7 +1558,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             commanderIdentity={commanderIdentityColors(cards)}
             onTapForMana={async (cardId, color) => { await actions.tapForMana(cardId, color) }}
             onCastCard={async (cardId, opts) => { await actions.castSpell(cardId, opts) }}
-            onCycleCard={async (cardId) => { await actions.cycleCard(cardId) }}
+            onCycleCard={async (cardId, landcycle) => { await actions.cycleCard(cardId, landcycle) }}
             onDealDamageToPlayer={async (cardId, targetPlayerId) => { await actions.dealDamageToPlayer(cardId, targetPlayerId) }}
             onDealDamageToCreature={async (cardId, targetCardId) => { await actions.dealDamageToCreature(cardId, targetCardId) }}
             onPumpCreature={async (cardId, targetCardId) => { await actions.pumpCreature(cardId, targetCardId) }}

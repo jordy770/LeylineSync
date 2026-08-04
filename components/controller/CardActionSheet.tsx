@@ -140,7 +140,7 @@ export function CardActionSheet({
   /** Colour-aware "can I pay this right now" (pool + untapped lands) for the mana warning. */
   canAffordCost?: (costStr?: string | null) => boolean
   openManaCount?: number
-  onCycleCard: (cardId: string) => Promise<void>
+  onCycleCard: (cardId: string, landcycle?: boolean) => Promise<void>
   onDealDamageToPlayer: (cardId: string, targetPlayerId: string) => Promise<void>
   onDealDamageToCreature: (cardId: string, targetCardId: string) => Promise<void>
   onPumpCreature: (cardId: string, targetCardId: string) => Promise<void>
@@ -351,6 +351,9 @@ export function CardActionSheet({
   // Cycling: a card in hand carrying a `cycling` cost can be discarded to draw.
   const cyclingCost = script.cycling ?? null
   const canCycle = !!cyclingCost && zone === 'hand' && pendingStackCount === 0
+  // Basic landcycling: discard to search a basic land instead of drawing.
+  const landcyclingCost = script.landcycling ?? null
+  const canLandcycle = !!landcyclingCost && zone === 'hand' && pendingStackCount === 0
   const fbSorcerySpeed = card.cards?.type_line?.toLowerCase().includes('sorcery') ?? false
   const canFlashback =
     !!flashbackCost &&
@@ -453,6 +456,7 @@ export function CardActionSheet({
   }
 
   const handleCycle = () => { void onCycleCard(card.id); onClose() }
+  const handleLandcycle = () => { void onCycleCard(card.id, true); onClose() }
 
   // One-tap adventure cast: the button flips to adventure mode AND immediately
   // runs the cast flow (target picker opens right away when the half needs one)
@@ -659,6 +663,19 @@ export function CardActionSheet({
           >
             <span className="font-black text-sky-950">Cycle</span>
             <ManaCostDisplay manaCost={cyclingCost} dark />
+          </button>
+        )}
+
+        {/* Basic landcycling button (hand card with a landcycling cost) */}
+        {canLandcycle && !picking && !attachPick && (
+          <button
+            type="button"
+            aria-label={`Basic landcycling ${landcyclingCost}`}
+            onClick={handleLandcycle}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl bg-emerald-400 px-4 py-3.5 transition active:scale-95"
+          >
+            <span className="font-black text-emerald-950">Landcycle</span>
+            <ManaCostDisplay manaCost={landcyclingCost} dark />
           </button>
         )}
 

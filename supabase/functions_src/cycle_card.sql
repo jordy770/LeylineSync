@@ -6,10 +6,19 @@
 -- A from-hand activated ability authored as a top-level `cycling` cost string
 -- (like flashback). Pay the cost, put the card into its owner's graveyard, draw
 -- one. Any-priority (instant speed).
+--
+-- Basic landcycling (mig 427): top-level `landcycling` cost string. Same
+-- pay-and-discard flow, but instead of drawing it parks a stack-less
+-- `search_library` decision (options = basic lands in the owner's library,
+-- reveal, to hand; the existing submit branch shuffles). Returns the decision
+-- id in that mode, the drawn card id in plain-cycling mode.
+-- NOTE signature change 3→4 args: the migration must DROP the old
+-- (uuid, uuid, jsonb) overload first.
 create or replace function public.cycle_card(
   p_session_id uuid,
   p_game_card_id uuid,
-  p_generic_payment jsonb default null
+  p_generic_payment jsonb default null,
+  p_landcycle boolean default false
 ) returns uuid
 language plpgsql
 security definer
@@ -47,9 +56,16 @@ begin
     raise exception 'Card not found in your hand';
   end if;
 
-  v_cycling_cost := public.effective_script(p_session_id, p_game_card_id) ->> 'cycling';
-  if v_cycling_cost is null then
-    raise exception 'This card has no cycling ability';
+  if p_landcycle then
+    v_cycling_cost := public.effective_script(p_session_id, p_game_card_id) ->> 'landcycling';
+    if v_cycling_cost is null then
+      raise exception 'This card has no landcycling ability';
+    end if;
+  else
+    v_cycling_cost := public.effective_script(p_session_id, p_game_card_id) ->> 'cycling';
+    if v_cycling_cost is null then
+      raise exception 'This card has no cycling ability';
+    end if;
   end if;
 
   -- Pay the cycling cost (may be empty for a 0-cost cycle).
@@ -64,6 +80,27 @@ begin
   update public.game_cards
   set zone = 'graveyard', zone_position = v_next_gy, is_tapped = false
   where id = p_game_card_id;
+
+  -- Basic landcycling: park a stack-less search_library decision instead of
+  -- drawing. Options = basic land cards in the owner's library; the existing
+  -- submit_decision search_library branch shuffles and places the pick. An
+  -- empty library of basics still parks (min 0) so the shuffle always happens.
+  if p_landcycle then
+    insert into public.game_pending_decisions
+      (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+    values (
+      p_session_id, auth.uid(), null, 'search_library',
+      'Search your library for a basic land card',
+      (select coalesce(jsonb_agg(jsonb_build_object('game_card_id', lib.id, 'name', c.name) order by c.name, lib.id), '[]'::jsonb)
+       from public.game_cards lib
+       join public.cards c on c.id = lib.card_id
+       where lib.session_id = p_session_id and lib.owner_id = auth.uid() and lib.zone = 'library'
+         and c.type_line ilike '%basic%' and c.type_line ilike '%land%'),
+      0, 1,
+      jsonb_build_object('to', 'hand', 'tapped', false, 'reveal', true))
+    returning id into v_drawn;
+    return v_drawn;
+  end if;
 
   -- Draw a card.
   select id into v_drawn
@@ -88,4 +125,4 @@ begin
   return v_drawn;
 end;
 $$;
-grant execute on function public.cycle_card(uuid, uuid, jsonb) to authenticated;
+grant execute on function public.cycle_card(uuid, uuid, jsonb, boolean) to authenticated;

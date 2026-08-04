@@ -631,13 +631,22 @@ export class Scenario {
     ) as Promise<Record<string, number>>
   }
 
-  /** Cycle a card from the acting seat's hand (discard it, draw one). */
-  async cycle(cardId: string, generic: Record<string, number> | null = null): Promise<string | null> {
+  /**
+   * Cycle a card from the acting seat's hand (discard it, draw one).
+   * landcycle=true (mig 427) discards and parks a search-basic-land decision
+   * instead of drawing; the returned uuid is then the decision id.
+   */
+  async cycle(
+    cardId: string,
+    generic: Record<string, number> | null = null,
+    landcycle = false,
+  ): Promise<string | null> {
     return this.run(() =>
       rpc(this.client, 'cycle_card', {
         p_session_id: this.sessionId,
         p_game_card_id: cardId,
         p_generic_payment: generic,
+        p_landcycle: landcycle,
       }),
     ) as Promise<string | null>
   }

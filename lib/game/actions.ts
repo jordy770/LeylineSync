@@ -1224,16 +1224,20 @@ export async function getDeckLegality(supabase: SupabaseClient, deckId: string) 
 }
 
 // Cycling (mig 228): discard a card with a cycling cost from hand, draw one.
+// Basic landcycling (mig 427): landcycle=true discards and parks a
+// search-your-library-for-a-basic-land decision instead of drawing.
 export async function cycleCard(
   supabase: SupabaseClient,
   sessionId: string,
   cardId: string,
   genericPayment?: Record<string, number>,
+  landcycle?: boolean,
 ) {
   const { error } = await supabase.rpc('cycle_card', {
     p_session_id: sessionId,
     p_game_card_id: cardId,
     p_generic_payment: genericPayment ?? null,
+    p_landcycle: landcycle ?? false,
   })
   if (error) {
     throw error

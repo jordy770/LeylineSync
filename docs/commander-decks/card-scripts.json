@@ -5525,7 +5525,8 @@
           }
         ]
       }
-    ]
+    ],
+    "landcycling": "{1}"
   },
   "Buried Ruin": {
     "schema_version": 2,
@@ -6075,7 +6076,6 @@
   },
   "Migratory Route": {
     "schema_version": 2,
-    "cycling": "{2}",
     "spell_effect": {
       "actions": [
         {
@@ -6084,7 +6084,8 @@
           "count": 4
         }
       ]
-    }
+    },
+    "landcycling": "{2}"
   },
   "Hellkite Igniter": {
     "schema_version": 2,
@@ -6912,7 +6913,8 @@
           }
         }
       ]
-    }
+    },
+    "landcycling": "{2}"
   },
   "Silas Renn, Seeker Adept": {
     "schema_version": 2,
@@ -10935,7 +10937,6 @@
   },
   "Treacherous Terrain": {
     "schema_version": 2,
-    "cycling": "{2}",
     "spell_effect": {
       "actions": [
         {
@@ -10946,7 +10947,8 @@
           "recipient": "each_opponent"
         }
       ]
-    }
+    },
+    "landcycling": "{2}"
   },
   "Trove Warden": {
     "schema_version": 2,
