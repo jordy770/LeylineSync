@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-29T23:06:23.052Z
-> Files: 18 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-04T11:56:34.646Z
+> Files: 1 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -47,11 +47,6 @@
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/bf0a6454-491f-4097-8309-b87718788394/scratchpad/
 
-- `decks-reverify.mjs` — Re-verification of commit 94f68e7 (fix-wave: opacity-var utilities, orphaned toast, (~2281 tok)
-- `decks-verify.mjs` — Task 4 verification: authenticated screenshots + functional click-through of /decks binder-restyle. (~4892 tok)
-- `decks-verify2.mjs` — Task 4 verification round 2: fixes for the functional click-through's false negatives (~3176 tok)
-- `q.js` — Declares admin (~269 tok)
-- `verify-final.js` — Declares path (~4512 tok)
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/cbab7504-eb67-46c3-a9ec-5892512d9617/scratchpad/
 
@@ -64,6 +59,7 @@
 
 ## ./
 
+- `SESSION-PROMPT.md` — Prompt voor de volgende sessie (~3276 tok)
 
 ## .claude/
 
@@ -97,10 +93,6 @@
 
 ## .superpowers/sdd/2026-07-29-decks-editor-restyle/
 
-- `task-1-report.md` — Task 1 Report — Layout swap: deckbox list left, Forge-new-deck collapsed (~1407 tok)
-- `task-2-report.md` — Task 2 report — editor bands 1–3 (header band, insights strip, unified toolbar) (~2787 tok)
-- `task-3-report.md` — Task 3 report — band 4: view controls, grid, tiles, list view, preview chrome (~2671 tok)
-- `task-4-report.md` — Task 4 report — visual + functional verification, OpenWolf bookkeeping (~4622 tok)
 
 ## Phase 1 Tier-B scry (added 2026-06-02)
 
@@ -281,8 +273,6 @@
 
 ## components/
 
-- `DeckInsights.tsx` — deck stats panel (curve/pips/types/legality); binder tokens, gold curve bars; all var(--x)/NN opacity-var utilities swept to literal rgba(...) (bug-1430 pattern) (~2000 tok)
-- `DeckManager.tsx` — DeckManager; Edit Deck = DeckHeaderBand+DeckInsightsStrip+unified toolbar; forge stays open when a partial import has rejected lines to read (~11700 tok)
 
 ## components/board/
 
@@ -295,8 +285,6 @@
 
 ## components/deck/
 
-- `DeckHeaderBand.tsx` — Edit Deck band 1: commander-art placeholder, name, status counts, legality chip (click amber pill to see issues); literal rgba(...) not var(--x)/NN (~650 tok)
-- `DeckInsightsStrip.tsx` — Edit Deck band 2: collapsible strip wrapping DeckInsights; summary = curve-peak MV + creature count, English copy (~450 tok)
 
 ## components/judge/
 
@@ -321,12 +309,9 @@
 
 ## docs/superpowers/plans/
 
-- `2026-07-29-decks-editor-restyle.md` — /decks Editor Binder-Restyle + Herindeling — Implementation Plan (~2736 tok)
 
 ## docs/superpowers/specs/
 
-- `2026-07-29-deck-page-structure-design.md` — Deck Page Structure (Improve & Beautify — Phase A: IA) — Design Spec (~1100 tok)
-- `2026-07-29-decks-editor-restyle-design.md` — /decks Editor — Binder Restyle + Herindeling — Design Spec (~1338 tok)
 
 ## lib/
 
@@ -354,13 +339,14 @@
 
 ## mockups/
 
-- `deck-page-structure.html` — Mockup — Deck Page Structure (Phase A) (~4405 tok)
-- `decks-editor-restyle.html` — Mockup — /decks editor: binder-restyle + herindeling (~4343 tok)
 
 ## public/
 
 
 ## scripts/
+
+
+## scripts/lib/
 
 
 ## supabase/

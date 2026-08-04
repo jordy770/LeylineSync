@@ -832,3 +832,27 @@
 
 - Tailwind 3.4's slash-opacity modifier on an arbitrary `var()` color (`bg-[var(--danger)]/80`, `border-[var(--frame-gold)]/60`, etc.) only compiles when the CSS custom property is defined as space-separated RGB channels (e.g. `--danger: 224 122 122;`). This repo's tokens (`app/globals.css`, both `:root` and `.binder-shell`) are hex literals (`--danger: #e07a7a;`) — so `var(--x)/NN` utilities are silently dropped by the JIT engine (no build error, no lint error, the class just never generates a rule) and the element renders with no background/border until a non-opacity utility (e.g. `:hover`) overrides it. Caught only by a visual screenshot pass, not tsc/eslint/build. Fix: never use the `/NN` opacity shorthand on an arbitrary `var(--token)` color in this codebase — write the literal `rgba(r,g,b,alpha)` instead (compute r/g/b from the token's current hex). Applies repo-wide to any `bg-`/`border-`/`text-[var(--...)]/NN` pattern, not just DeckManager.tsx.
 - Related: hoisting a status/error toast that only rendered inside one conditional JSX branch (forgeOpen) left it invisible for the far-more-common branch (an existing deck selected) — when a shared piece of transient UI state (toast, banner) is read by handlers reachable from multiple render branches, render it ABOVE the branch conditional, not inside just one arm, even if that's where it was easiest to bolt on originally (bug-1431).
+
+## Decision Log — 2026-08-04 (SESSION-PROMPT ANSWERS, door Jordy ingevuld)
+
+- **Sessieprioriteit: engine-backlog-rounds**, te beginnen met **bucket 2 (alternative/additional casting cost, 31 kaarten)** uit engine-blocked-backlog-2026-07-18.md. Doeldeck-gedreven volgorde afgewezen voor nu.
+- **Collection/monetization: eerst een concurrentie-analyse** van bestaande collection- en deckbuild-apps (Moxfield, Archidekt, ManaBox, EDHRec e.d.); paywall-grens pas daarna kiezen. Doel: toegankelijk houden maar interessant genoeg om te proberen. Geen paywall-beslissing nemen zonder die analyse.
+- **Opponent-view-redesign wacht tot het Collection-spoor af is** (mockup blijft mockups/opponent-view-flow.html).
+- **Niche deferred-gaten (damage-redirect, planeswalker statics, morph, …): bewust een eigen sessie inplannen** — niet langer "laten liggen tot een deck erom vraagt".
+- **Commit-beleid bevestigd:** zelf committen op master (conventional + aparte chore(wolf)-commits) is de norm; pushen/OVH-deploy alleen op Jordy's verzoek.
+- **open-items.md mag herschreven worden** zodra een re-scan gedaan is; de nieuwe versie moet de supersedence-claim expliciet overnemen.
+
+## Key Learnings — 2026-08-04 (gegenereerde dashboards)
+
+- **node --test custom reporter (Node 22)**: meerdere reporters kunnen naast elkaar (`--test-reporter=spec --test-reporter-destination=stdout` + custom module → bestand). De custom reporter (scripts/test-reporter-json.mjs) is een async generator over events; op Windows moet het reporter-pad als `pathToFileURL(...).href` worden meegegeven, niet als kaal absoluut pad.
+- **node --test rapporteert elk FILE als synthetische top-level test** (name === het aangeroepen pad, nesting 0). Wie leaf-tests telt moet die entries eruit filteren, anders tellen file-entries dubbel t.o.v. de `# tests`-summary.
+- **Dashboard-architectuur**: test-dashboard.html wordt ALLEEN door volledige `npm test`-runs geschreven (gefilterde runs overschrijven niet — voorkomt het "1/1 i.p.v. alles"-staleness-probleem); dev-dashboard.html (`npm run dashboard`) is volledig afgeleid behalve .wolf/dashboard-tracks.json (enige hand-bron, weights sommeren tot 100). Parsers puur in scripts/lib/dashboard-parse.mjs, unit-getest.
+
+## Do-Not-Repeat — 2026-08-04 (getallen uit een afgekapte read)
+
+- De engine-backlog heeft **34** buckets, geen 32 — de 32 kwam uit een `Get-Content -TotalCount 40` die de tabel afkapte, en belandde zo in SESSION-PROMPT.md en dashboard-tracks.json. Een geciteerd aantal moet uit een telling over het HELE bestand komen (of uit de parser), nooit uit een afgekapte preview.
+
+## Key Learnings — 2026-08-04 (interactief dashboard + headless verificatie zonder repo-puppeteer)
+
+- **dev-dashboard.html is nu interactief**: track-percentages zijn AFGELEID uit milestone-checkboxes (trackPct in scripts/lib/dashboard-parse.mjs); vinkjes leven in localStorage (key leyline-dash-ticks) en worden definitief via de export-knop → plakken in .wolf/dashboard-tracks.json → npm run dashboard. Een statische file://-pagina kan zelf niet terugschrijven; dit export-pad is de brug. Vraagt Jordy om "inbakken", schrijf dan zijn geëxporteerde JSON naar dashboard-tracks.json.
+- **Headless browser-verificatie zonder puppeteer in de repo**: de globale openwolf-installatie bundelt puppeteer-core (npm root -g → openwolf/node_modules/puppeteer-core); laden via createRequire naar dat pad + executablePath naar systeem-Chrome (C:\Program Files\Google\Chrome\Application\chrome.exe). Werkt ook op file://-pagina's incl. localStorage. Scratch-script daarna verwijderen (niets gitignoret tmp-*.mjs).

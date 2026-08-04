@@ -8479,3 +8479,65 @@
 | 01:06 | Edited .superpowers/sdd/2026-07-29-decks-editor-restyle/task-4-report.md | modified snag() | ~1098 |
 | 01:07 | Final /decks binder-restyle re-verification (c13727e): amber legality pill+popover confirmed (border/text amber, bg transparent/ink-2 by design), red+amber insights boxes confirmed via rgba computed styles, English copy confirmed | components/DeckInsights.tsx, components/deck/DeckHeaderBand.tsx (verified only, no edits) | PASS (4/4 checks) | ~4200 |
 | 01:08 | SDD run /decks binder-restyle compleet: 4 taken + 4 fixrounds + final review clean | DeckManager, DeckInsights, DeckHeaderBand, DeckInsightsStrip | branch ready | ~45k |
+
+## Session: 2026-07-29 01:22
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-07-29 01:22
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-08-04 10:08
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:30 | Created SESSION-PROMPT.md | — | ~2729 |
+| 10:2x | SESSION-PROMPT.md aangemaakt: algemene handoff-prompt (alle sporen) naar voorbeeld collega-prompt, gevuld met actuele stand + ANSWERS-blok | SESSION-PROMPT.md, .wolf/anatomy.md | done | ~30k |
+| 11:0x | ANSWERS-blok door Jordy ingevuld verwerkt: beslissingen A1-A7 naar cerebrum Decision Log | SESSION-PROMPT.md, .wolf/cerebrum.md | done | ~2k |
+| 11:03 | Created scripts/lib/dashboard-parse.mjs | — | ~1488 |
+| 11:03 | Created scripts/test-reporter-json.mjs | — | ~441 |
+| 11:04 | Created scripts/gen-test-dashboard.mjs | — | ~1073 |
+| 11:04 | Edited scripts/run-tests.mjs | added 1 import(s) | ~53 |
+| 11:04 | Edited scripts/run-tests.mjs | added error handling | ~371 |
+| 11:05 | Created scripts/gen-dev-dashboard.mjs | — | ~1763 |
+| 11:05 | Edited package.json | 2→3 lines | ~49 |
+| 11:05 | Created tests/unit/dashboard-parse.test.ts | — | ~661 |
+| 11:06 | Edited SESSION-PROMPT.md | inline fix | ~25 |
+| 11:07 | Edited SESSION-PROMPT.md | 3→8 lines | ~196 |
+| 11:07 | Edited SESSION-PROMPT.md | 2→4 lines | ~96 |
+| 11:1x | Dashboards gebouwd (beide gegenereerd): custom test-reporter + gen-test-dashboard + gen-dev-dashboard + tracks-JSON + 5 unit tests; runner-integratie met partial-run-guard; SESSION-PROMPT regel 5 toegevoegd | scripts/*, .wolf/dashboard-tracks.json, tests/unit/dashboard-parse.test.ts, package.json, .gitignore, SESSION-PROMPT.md | unit 5/5 groen, volle suite draait | ~35k |
+| 11:3x | Volledige suite gedraaid als dashboard-verificatie: 2482/2482 groen (323 files, 185s); test-dashboard.html DONE, dev-dashboard ververst | test-dashboard.html, dev-dashboard.html | PASS | ~3k |
+| 12:03 | Edited scripts/lib/dashboard-parse.mjs | added 6 condition(s) | ~419 |
+| 12:03 | Edited scripts/lib/dashboard-parse.mjs | added nullish coalescing | ~972 |
+| 12:04 | Edited scripts/lib/dashboard-parse.mjs | added nullish coalescing | ~340 |
+| 12:04 | Edited scripts/gen-test-dashboard.mjs | expanded (+7 lines) | ~147 |
+| 12:04 | Edited scripts/gen-dev-dashboard.mjs | 7→7 lines | ~104 |
+| 12:04 | Edited scripts/gen-dev-dashboard.mjs | 3→8 lines | ~75 |
+| 12:04 | Edited scripts/gen-dev-dashboard.mjs | added 1 condition(s) | ~597 |
+| 12:04 | Edited tests/unit/dashboard-parse.test.ts | 2→2 lines | ~57 |
+| 12:05 | Edited tests/unit/dashboard-parse.test.ts | expanded (+36 lines) | ~416 |
+| 12:05 | Edited scripts/run-tests.mjs | 4→6 lines | ~111 |
+| 12:05 | Edited scripts/run-tests.mjs | 4→4 lines | ~26 |
+| 11:5x | Dashboards uitgelijnd op collega-voorbeeld (Terminal_Titan): sticky nav over 3 paginas, header-chips, voortgangsring, Nu-eerst-sectie, questions.html uit ANSWERS-blok; partial-runs naar apart JSON-bestand (footgun gedicht); 7/7 unit tests | scripts/lib/dashboard-parse.mjs, scripts/gen-*.mjs, scripts/run-tests.mjs, .wolf/dashboard-tracks.json | groen, volle suite draait | ~28k |
+| 12:0x | Volle suite herdraaid na partial-fix: DONE hersteld; alle 3 paginas definitief gegenereerd | test-dashboard.html, dev-dashboard.html, questions.html | PASS | ~2k |
+| 12:26 | Edited scripts/lib/dashboard-parse.mjs | added nullish coalescing | ~99 |
+| 12:26 | Edited scripts/lib/dashboard-parse.mjs | 3→3 lines | ~82 |
+| 12:26 | Edited scripts/lib/dashboard-parse.mjs | modified pageShell() | ~51 |
+| 12:26 | Edited scripts/lib/dashboard-parse.mjs | expanded (+14 lines) | ~433 |
+| 12:26 | Edited scripts/lib/dashboard-parse.mjs | 7→8 lines | ~25 |
+| 12:27 | Edited scripts/gen-dev-dashboard.mjs | added nullish coalescing | ~379 |
+| 12:27 | Edited scripts/gen-dev-dashboard.mjs | 15→19 lines | ~338 |
+| 12:28 | Edited scripts/gen-dev-dashboard.mjs | added error handling | ~1147 |
+| 12:28 | Edited tests/unit/dashboard-parse.test.ts | 2→2 lines | ~60 |
+| 12:28 | Edited tests/unit/dashboard-parse.test.ts | expanded (+7 lines) | ~132 |
+| 12:29 | Created tmp-verify-dash.mjs | — | ~370 |
+| 12:30 | Created tmp-verify-dash.mjs | — | ~432 |
+| 12:30 | Edited SESSION-PROMPT.md | 5→8 lines | ~203 |
+| 12:3x | Dev-dashboard interactief gemaakt: milestones met checkboxes per spoor, percentages/ring/totaal live afgeleid, localStorage-persistentie + JSON-export/reset; headless geverifieerd (68->74->reload 74->reset 68, 0 JS-fouten); 8/8 unit tests | scripts/gen-dev-dashboard.mjs, scripts/lib/dashboard-parse.mjs, .wolf/dashboard-tracks.json, SESSION-PROMPT.md | PASS | ~30k |
+| 13:56 | Edited SESSION-PROMPT.md | 8→3 lines | ~80 |
+| 13:56 | Edited SESSION-PROMPT.md | expanded (+32 lines) | ~594 |
+| 13:56 | Edited SESSION-PROMPT.md | 4→2 lines | ~48 |
+| 12:4x | Dashboard-werkwijze volledig in SESSION-PROMPT gezet: eigen sectie 'Dashboards en vragenpagina' (3 paginas, afgeleide percentages, inbak-flow, partial-bescherming, headless-verificatietruc); regel 5 verwijst ernaar | SESSION-PROMPT.md | done | ~4k |

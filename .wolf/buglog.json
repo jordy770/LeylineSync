@@ -23721,6 +23721,233 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-29T23:03:51.815Z"
+    },
+    {
+      "id": "bug-1449",
+      "timestamp": "2026-08-04T09:04:33.301Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "scripts/run-tests.mjs",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T09:04:33.301Z"
+    },
+    {
+      "id": "bug-1449",
+      "timestamp": "2026-08-04T09:07:59.780Z",
+      "error_message": "SESSION-PROMPT.md en dashboard-tracks.json claimden 32 engine-backlog-buckets; het doc heeft er 34 (som klopt wel: 280)",
+      "file": "SESSION-PROMPT.md",
+      "root_cause": "Bucket-aantal overgenomen uit een Get-Content -TotalCount 40 preview die de tabel na rij ~32 afkapte",
+      "fix": "Beide plekken gecorrigeerd naar 34; parseBacklogBuckets telt nu canoniek over het hele bestand (unit-getest, som==bold-totaal geverifieerd)",
+      "tags": [
+        "docs",
+        "dashboard",
+        "truncated-read",
+        "counting"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T09:07:59.781Z"
+    },
+    {
+      "id": "bug-1451",
+      "timestamp": "2026-08-04T10:03:32.553Z",
+      "error_message": "Missing guard clause",
+      "file": "scripts/lib/dashboard-parse.mjs",
+      "root_cause": "No early return/throw for edge case: start === -1",
+      "fix": "Added guard clause: if (start === -1)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:03:32.553Z"
+    },
+    {
+      "id": "bug-1452",
+      "timestamp": "2026-08-04T10:03:55.014Z",
+      "error_message": "Null/undefined access in ",
+      "file": "scripts/lib/dashboard-parse.mjs",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: .q { background: var(--void-2); border: 1px solid var(--line; .q .qhead { display: flex; gap: 10px; align-items: baseline;",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-08-04T10:04:10.621Z"
+    },
+    {
+      "id": "bug-1453",
+      "timestamp": "2026-08-04T10:05:39.775Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/run-tests.mjs",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 4→6 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:05:39.775Z"
+    },
+    {
+      "id": "bug-1450",
+      "timestamp": "2026-08-04T10:06:12.534Z",
+      "error_message": "Standalone gen-test-dashboard na een gefilterde run overschreef het volle-run-dashboard (2482 DONE) met PARTIAL 7/7",
+      "file": "scripts/run-tests.mjs",
+      "root_cause": "Gefilterde en volledige runs deelden .wolf/test-results.json; de standalone generator rendert wat er ligt",
+      "fix": "Gefilterde runs schrijven naar .wolf/test-results-partial.json; test-results.json (en dus het dashboard) bevat alleen nog volledige runs. gitignore-entry verbreed naar test-results*.json",
+      "tags": [
+        "dashboard",
+        "test-runner",
+        "staleness"
+      ],
+      "related_bugs": [
+        "bug-1449"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:06:12.535Z"
+    },
+    {
+      "id": "bug-1455",
+      "timestamp": "2026-08-04T10:26:08.816Z",
+      "error_message": "Null/undefined access in ",
+      "file": "scripts/lib/dashboard-parse.mjs",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:26:08.816Z"
+    },
+    {
+      "id": "bug-1456",
+      "timestamp": "2026-08-04T10:26:21.756Z",
+      "error_message": "Incorrect value in code",
+      "file": "scripts/lib/dashboard-parse.mjs",
+      "root_cause": "Had \"66\"",
+      "fix": "Changed to \"ringFg\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:26:21.756Z"
+    },
+    {
+      "id": "bug-1457",
+      "timestamp": "2026-08-04T10:27:18.597Z",
+      "error_message": "Null/undefined access in ",
+      "file": "scripts/gen-dev-dashboard.mjs",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:27:18.597Z"
+    },
+    {
+      "id": "bug-1458",
+      "timestamp": "2026-08-04T10:27:33.930Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/gen-dev-dashboard.mjs",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 15→19 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:27:33.930Z"
+    },
+    {
+      "id": "bug-1459",
+      "timestamp": "2026-08-04T10:28:11.789Z",
+      "error_message": "Missing error handling in recompute",
+      "file": "scripts/gen-dev-dashboard.mjs",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:28:11.789Z"
+    },
+    {
+      "id": "bug-1460",
+      "timestamp": "2026-08-04T10:28:28.634Z",
+      "error_message": "Type error",
+      "file": "tests/unit/dashboard-parse.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:28:28.634Z"
+    },
+    {
+      "id": "bug-1461",
+      "timestamp": "2026-08-04T10:30:58.124Z",
+      "error_message": "Significant refactor of ",
+      "file": "SESSION-PROMPT.md",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 5→8 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T10:30:58.124Z"
+    },
+    {
+      "id": "bug-1462",
+      "timestamp": "2026-08-04T11:56:07.016Z",
+      "error_message": "Significant refactor of ",
+      "file": "SESSION-PROMPT.md",
+      "root_cause": "8 lines replaced/restructured",
+      "fix": "Rewrote 8→3 lines (8 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T11:56:07.016Z"
     }
   ]
 }
