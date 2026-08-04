@@ -868,3 +868,7 @@
 - **Her-import van de collectie is delete-then-insert** (lib/collection/import-collection.ts regel 78): een verse CSV vervangt ALLES van de user. Prima sync-model voor volledige exports, maar een deel-export (één binder) wist stilletjes de rest — elke import-UI moet waarschuwen bij een fors kleinere nieuwe import en uitleggen dat je altijd de hele collectie exporteert.
 - **Importparsers die al bestaan**: ManaBox-CSV (header-gedetecteerd, Scryfall-ID-match), plain-text decklijsten (Moxfield/Archidekt/kaal), en URL-import voor Moxfield/Archidekt (fetch-decklist.ts, SSRF-veilig via vaste API-hosts). Funnel-gat zit in onboarding-UI, niet in parsing.
 - **Besluitlijn met Jordy**: geen eigen kaartscanner bouwen (commodity; ManaBox gratis en beter) — de wizard verwijst daarheen. Collectie is optionele verdieping: spelen en deck-plakken mogen nooit achter een collectie-muur.
+
+## Decision Log — 2026-08-05 (A8: paywall besloten)
+
+- **Paywall-voorstel goedgekeurd door Jordy ("klinkt goed")**: gratis blijft ruimhartig zonder caps (alle gameplay, onbeperkte collectie-import, deck-CRUD) met top-3 buildable commanders als teaser; premium **EUR 3,99/mnd of EUR 35/jr** = volledige advisor + AI-generatie met dagquotum. Stripe als voor-de-hand-liggende provider (definitief bij de bouw). Bouwvolgorde: eerst import-funnel/usability (analysedoc par.5), dan de premium-tier. Vastgelegd in docs/collection-optimizer/competitor-analysis-2026-08.md par.4.

@@ -48,7 +48,10 @@ ManaBox-import bestaat al) en meta-onderzoek (MTGGoldfish).
 Collection-spoor dichten — decklijst-weergave, touch-preview, versnipperde IA. Een paywall op een
 rommelige funnel converteert niet.
 
-## 4. Paywall-voorstel (te beslissen — A8)
+## 4. Paywall-voorstel — ✅ **BESLOTEN (A8, 5 aug 2026: "klinkt goed")**
+
+> Grens en prijs hieronder zijn vastgesteld. Bouwvolgorde blijft: eerst de import-funnel/usability (§5),
+> dan de premium-tier (Stripe ligt voor de hand; definitieve provider-keuze bij de bouw).
 
 Consistent met de vaste principes: gameplay nooit gated; LLM-calls alleen betaald, met server-side
 quota en grounding; het gratis pad blijft heuristisch.

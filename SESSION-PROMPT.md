@@ -183,5 +183,5 @@ A7 — open-items.md mag herschreven worden zodra de re-scan gedaan is (het oude
 A8 — Paywall-voorstel in docs/collection-optimizer/competitor-analysis-2026-08.md §4: gratis = alles
      ruimhartig (geen caps) + top-3 buildable commanders als teaser; premium €3,99/mnd of €35/jr =
      volledige advisor + AI-generatie met dagquotum. Akkoord met grens en prijs, en wanneer/waarmee
-     (Stripe?) bouwen:
+     (Stripe?) bouwen: klinkt goed 
 ```
