@@ -856,3 +856,9 @@
 
 - **dev-dashboard.html is nu interactief**: track-percentages zijn AFGELEID uit milestone-checkboxes (trackPct in scripts/lib/dashboard-parse.mjs); vinkjes leven in localStorage (key leyline-dash-ticks) en worden definitief via de export-knop → plakken in .wolf/dashboard-tracks.json → npm run dashboard. Een statische file://-pagina kan zelf niet terugschrijven; dit export-pad is de brug. Vraagt Jordy om "inbakken", schrijf dan zijn geëxporteerde JSON naar dashboard-tracks.json.
 - **Headless browser-verificatie zonder puppeteer in de repo**: de globale openwolf-installatie bundelt puppeteer-core (npm root -g → openwolf/node_modules/puppeteer-core); laden via createRequire naar dat pad + executablePath naar systeem-Chrome (C:\Program Files\Google\Chrome\Application\chrome.exe). Werkt ook op file://-pagina's incl. localStorage. Scratch-script daarna verwijderen (niets gitignoret tmp-*.mjs).
+
+## Key Learnings — 2026-08-04 (concurrentie-analyse Collection, A2)
+
+- **Niemand in de markt doet collection-aware aanbevelingen** — Archidekt bevestigt op het eigen forum dat hun EDHRec-koppeling geen collecties kán kennen (endpoint heeft er geen notie van; duizenden kaarten meesturen onhaalbaar). LeylineSync's server-side advisor op de eigen DB is dus een echt uniek betaalargument.
+- **Prijsanker markt: $2-6/mnd** (Moxfield $3.99/39jr, Archidekt ~$2 Patreon, MTGGoldfish $6, ManaStack $5 voor AI). Harde caps op kaarten/decks (ManaBox 5 decks, EchoMTG 360 kaarten) zijn de meest gehate patronen — bewust vermijden; AI en scanner achter paywall zijn geaccepteerde precedenten.
+- Voorstel vastgelegd in docs/collection-optimizer/competitor-analysis-2026-08.md: gratis ruimhartig zonder caps + top-3 teaser van buildable commanders; premium EUR 3,99/mnd / EUR 35/jr met volledige advisor + AI-quota. Beslissing staat open als A8; usability-gaten eerst dichten blijft voorwaarde.

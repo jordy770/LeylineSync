@@ -8541,3 +8541,6 @@
 | 13:56 | Edited SESSION-PROMPT.md | expanded (+32 lines) | ~594 |
 | 13:56 | Edited SESSION-PROMPT.md | 4→2 lines | ~48 |
 | 12:4x | Dashboard-werkwijze volledig in SESSION-PROMPT gezet: eigen sectie 'Dashboards en vragenpagina' (3 paginas, afgeleide percentages, inbak-flow, partial-bescherming, headless-verificatietruc); regel 5 verwijst ernaar | SESSION-PROMPT.md | done | ~4k |
+| 16:07 | Created docs/collection-optimizer/competitor-analysis-2026-08.md | — | ~1626 |
+| 16:08 | Edited SESSION-PROMPT.md | modified is() | ~144 |
+| 13:0x | Concurrentie-analyse A2 uitgevoerd (Moxfield/Archidekt/ManaBox/EDHRec/GrimDeck e.a.): niemand doet collection-aware aanbevelingen (Archidekt-forum bevestigt onhaalbaar bij hen); paywall-voorstel EUR 3,99/mnd geschreven; A8 toegevoegd aan ANSWERS | docs/collection-optimizer/competitor-analysis-2026-08.md, SESSION-PROMPT.md, .wolf/dashboard-tracks.json | done | ~18k |
