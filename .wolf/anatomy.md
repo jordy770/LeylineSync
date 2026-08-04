@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-04T14:08:15.794Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-04T21:22:46.002Z
 > Files: 2 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
@@ -303,7 +303,7 @@
 
 ## docs/collection-optimizer/
 
-- `competitor-analysis-2026-08.md` — Concurrentie-analyse — collection- & deckbuild-apps (aug 2026) (~1524 tok)
+- `competitor-analysis-2026-08.md` — Concurrentie-analyse — collection- & deckbuild-apps (aug 2026) (~1923 tok)
 
 ## docs/commander-decks/
 
@@ -409,4 +409,3 @@
 
 ## vercel/styles/
 
-- `docs/collection-optimizer/competitor-analysis-2026-08.md` (~1.6k tokens) - Concurrentie-analyse aug 2026 (A2): marktveld+prijzen, patronen, positionering (uniek: collection-aware advies), paywall-voorstel EUR 3,99/mnd (beslissing = A8).
