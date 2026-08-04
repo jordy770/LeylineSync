@@ -862,3 +862,9 @@
 - **Niemand in de markt doet collection-aware aanbevelingen** — Archidekt bevestigt op het eigen forum dat hun EDHRec-koppeling geen collecties kán kennen (endpoint heeft er geen notie van; duizenden kaarten meesturen onhaalbaar). LeylineSync's server-side advisor op de eigen DB is dus een echt uniek betaalargument.
 - **Prijsanker markt: $2-6/mnd** (Moxfield $3.99/39jr, Archidekt ~$2 Patreon, MTGGoldfish $6, ManaStack $5 voor AI). Harde caps op kaarten/decks (ManaBox 5 decks, EchoMTG 360 kaarten) zijn de meest gehate patronen — bewust vermijden; AI en scanner achter paywall zijn geaccepteerde precedenten.
 - Voorstel vastgelegd in docs/collection-optimizer/competitor-analysis-2026-08.md: gratis ruimhartig zonder caps + top-3 teaser van buildable commanders; premium EUR 3,99/mnd / EUR 35/jr met volledige advisor + AI-quota. Beslissing staat open als A8; usability-gaten eerst dichten blijft voorwaarde.
+
+## Key Learnings — 2026-08-04 (collectie-import-funnel)
+
+- **Her-import van de collectie is delete-then-insert** (lib/collection/import-collection.ts regel 78): een verse CSV vervangt ALLES van de user. Prima sync-model voor volledige exports, maar een deel-export (één binder) wist stilletjes de rest — elke import-UI moet waarschuwen bij een fors kleinere nieuwe import en uitleggen dat je altijd de hele collectie exporteert.
+- **Importparsers die al bestaan**: ManaBox-CSV (header-gedetecteerd, Scryfall-ID-match), plain-text decklijsten (Moxfield/Archidekt/kaal), en URL-import voor Moxfield/Archidekt (fetch-decklist.ts, SSRF-veilig via vaste API-hosts). Funnel-gat zit in onboarding-UI, niet in parsing.
+- **Besluitlijn met Jordy**: geen eigen kaartscanner bouwen (commodity; ManaBox gratis en beter) — de wizard verwijst daarheen. Collectie is optionele verdieping: spelen en deck-plakken mogen nooit achter een collectie-muur.

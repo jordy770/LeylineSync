@@ -39,6 +39,7 @@
         { "text": "Advisor: commander-suggest + buildable commanders", "done": true },
         { "text": "Deck-generatie + validator + start-deck-flow", "done": true },
         { "text": "Concurrentie-analyse gedaan (aug 2026) → paywall-keuze A8", "done": false },
+        { "text": "Import-wizard + teaser + veilige her-import (analyse §5)", "done": false },
         { "text": "IA/usability-restpunten (decklijst, touch-preview)", "done": false }
       ]
     },

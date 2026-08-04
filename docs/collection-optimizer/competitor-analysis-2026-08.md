@@ -71,7 +71,31 @@ quota en grounding; het gratis pad blijft heuristisch.
   spelen → collectie importeren → "je kunt 12 commanders bouwen, 3 zichtbaar" → conversie.
 - **Werknaam tier:** "Leyline Premium" (naamgeving vrij te kiezen).
 
-## 5. Open vragen (→ ANSWERS A8)
+## 5. Import-funnel: hoe krijgen mensen hun collectie erin (besproken 2026-08-04)
+
+Het knelpunt is niet techniek — de parsers bestaan (ManaBox-CSV met Scryfall-ID-match, decklijsten,
+Moxfield/Archidekt-URL-import) — maar de menskant. Drie groepen, één waardetrap:
+
+1. **Al gedigitaliseerd** (ManaBox/Moxfield/Archidekt): drempel is *weten hoe je exporteert*. Nodig:
+   **onboarding-wizard** op `/collection/import` — app kiezen → stap-voor-stap export-instructies met
+   screenshots → drag-drop met format-autodetectie.
+2. **Alleen papier**: géén eigen scanner bouwen (commodity, maanden werk, ManaBox is gratis en beter).
+   De wizard verwijst eerlijk: "scan gratis met ManaBox, exporteer CSV, sleep hier."
+3. **Wil alleen spelen**: heeft geen collectie nodig — precon of decklijst/URL plakken. Collectie is een
+   optionele verdieping, nooit een onboarding-muur.
+
+**Volgorde is de truc:** spelen (nul invoer) → deck plakken (30 sec) → collectie-import, gemotiveerd
+door de advisor-teaser ("importeer en zie welke commanders je nú kunt bouwen") — de teaser moet
+zichtbaar zijn vóór de importvraag.
+
+**Her-import (geverifieerd in code):** `import-collection.ts` doet delete-then-insert — een verse export
+vervangt alles. Goed sync-model (nooit duplicaten), maar de wizard moet twee dingen doen: (a) uitleggen
+"exporteer altijd je héle collectie", en (b) waarschuwen wanneer de nieuwe import fors kleiner is dan de
+bestaande collectie (deel-export-voetklem). Plus een "laatst gesynct op …"-datum op de collectiepagina.
+
+Dit is de concretisering van de "usability-gaten eerst"-voorwaarde uit §3.
+
+## 6. Open vragen (→ ANSWERS A8)
 
 1. Akkoord met de gratis/premium-grens hierboven, of grens verschuiven?
 2. Prijs €3,99/€35 akkoord?

@@ -8544,3 +8544,5 @@
 | 16:07 | Created docs/collection-optimizer/competitor-analysis-2026-08.md | — | ~1626 |
 | 16:08 | Edited SESSION-PROMPT.md | modified is() | ~144 |
 | 13:0x | Concurrentie-analyse A2 uitgevoerd (Moxfield/Archidekt/ManaBox/EDHRec/GrimDeck e.a.): niemand doet collection-aware aanbevelingen (Archidekt-forum bevestigt onhaalbaar bij hen); paywall-voorstel EUR 3,99/mnd geschreven; A8 toegevoegd aan ANSWERS | docs/collection-optimizer/competitor-analysis-2026-08.md, SESSION-PROMPT.md, .wolf/dashboard-tracks.json | done | ~18k |
+| 23:22 | Edited docs/collection-optimizer/competitor-analysis-2026-08.md | modified import() | ~434 |
+| 13:2x | Import-funnel-analyse vastgelegd (analysedoc par.5): wizard + teaser-vooraf + veilige her-import; geverifieerd dat import-collection.ts delete-then-insert doet (deel-export-voetklem); Collection-milestone toegevoegd | docs/collection-optimizer/competitor-analysis-2026-08.md, .wolf/dashboard-tracks.json | done | ~6k |
