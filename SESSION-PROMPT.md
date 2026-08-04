@@ -178,4 +178,10 @@ A6 — Commit-beleid: zelf blijven committen op master (conventional + chore(wol
      zonder jouw akkoord — klopt dat zo: dat klopt
 A7 — open-items.md mag herschreven worden zodra de re-scan gedaan is (het oude doc claimt supersedence,
      dus een verse versie moet dat expliciet overnemen): ja
+
+--- Nieuw sinds 4 aug (concurrentie-analyse) ---
+A8 — Paywall-voorstel in docs/collection-optimizer/competitor-analysis-2026-08.md §4: gratis = alles
+     ruimhartig (geen caps) + top-3 buildable commanders als teaser; premium €3,99/mnd of €35/jr =
+     volledige advisor + AI-generatie met dagquotum. Akkoord met grens en prijs, en wanneer/waarmee
+     (Stripe?) bouwen:
 ```

@@ -2,7 +2,7 @@
   "comment": "ENIGE handmatige bron van dev-dashboard.html — al het andere wordt afgeleid. Weights sommeren tot 100. Percentages zijn AFGELEID uit de milestones (afgevinkt/totaal); vink af in het dashboard zelf en plak de geëxporteerde JSON hier terug, of werk dit bestand direct bij. Daarna `npm run dashboard`.",
   "nowFirst": [
     "Engine-backlog bucket 2: alternative/additional casting cost, 31 kaarten (sessieprioriteit, ANSWERS A1/A4)",
-    "Concurrentie-analyse collection-/deckbuild-apps vóór er een paywall-grens gekozen wordt (A2)",
+    "A8 beslissen: paywall-voorstel beoordelen (docs/collection-optimizer/competitor-analysis-2026-08.md §4)",
     "docs/open-items.md re-scan en herschrijven — zes weken stale (A7 akkoord)"
   ],
   "tracks": [
@@ -38,7 +38,7 @@
         { "text": "Collectie-import + insights + intelligence", "done": true },
         { "text": "Advisor: commander-suggest + buildable commanders", "done": true },
         { "text": "Deck-generatie + validator + start-deck-flow", "done": true },
-        { "text": "Concurrentie-analyse + paywall-keuze (A2)", "done": false },
+        { "text": "Concurrentie-analyse gedaan (aug 2026) → paywall-keuze A8", "done": false },
         { "text": "IA/usability-restpunten (decklijst, touch-preview)", "done": false }
       ]
     },
