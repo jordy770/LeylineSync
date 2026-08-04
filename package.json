@@ -17,7 +17,8 @@
     "deck:seed-precons": "node scripts/seed-precon-decks.mjs",
     "bot": "node --import tsx scripts/bot-runner.mjs",
     "cleanup:sessions": "node scripts/cleanup-runner.mjs",
-    "seed:local-play": "node scripts/seed-local-play.mjs"
+    "seed:local-play": "node scripts/seed-local-play.mjs",
+    "dashboard": "node scripts/gen-dev-dashboard.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",

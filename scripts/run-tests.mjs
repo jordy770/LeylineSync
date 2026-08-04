@@ -7,8 +7,9 @@
 //
 // Exit code mirrors the node --test run.
 
-import { readdirSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 
 const root = process.cwd()
@@ -44,9 +45,44 @@ if (files.length === 0) {
   process.exit(1)
 }
 
+// Two reporters: human-readable spec to the terminal, plus a JSON reporter
+// whose output feeds test-dashboard.html. Filtered runs write to a SEPARATE
+// file so partial totals can never reach the dashboard, not even via a later
+// standalone gen-test-dashboard invocation.
+const fullRun = filters.length === 0
+const resultsPath = join(root, '.wolf', fullRun ? 'test-results.json' : 'test-results-partial.json')
+const t0 = Date.now()
 const result = spawnSync(
   process.execPath,
-  ['--import', 'tsx', '--test', ...files],
+  [
+    '--import', 'tsx', '--test',
+    '--test-reporter=spec', '--test-reporter-destination=stdout',
+    `--test-reporter=${pathToFileURL(join(root, 'scripts', 'test-reporter-json.mjs')).href}`,
+    `--test-reporter-destination=${resultsPath}`,
+    ...files,
+  ],
   { stdio: 'inherit', cwd: root },
 )
+
+try {
+  const data = JSON.parse(readFileSync(resultsPath, 'utf8'))
+  data.meta = {
+    when: new Date().toISOString(),
+    duration_ms: Date.now() - t0,
+    filters,
+    fileCount: files.length,
+    full: fullRun,
+    exitCode: result.status ?? 1,
+  }
+  writeFileSync(resultsPath, JSON.stringify(data, null, 2) + '\n')
+  if (data.meta.full) {
+    const { generateTestDashboard } = await import('./gen-test-dashboard.mjs')
+    console.log(generateTestDashboard(root))
+  } else {
+    console.log('Gefilterde run — test-dashboard.html NIET bijgewerkt (alleen volledige `npm test`-runs schrijven hem).')
+  }
+} catch (e) {
+  console.error('test-dashboard niet bijgewerkt:', e.message)
+}
+
 process.exit(result.status ?? 1)

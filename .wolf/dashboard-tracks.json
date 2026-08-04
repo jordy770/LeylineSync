@@ -1,0 +1,68 @@
+{
+  "comment": "ENIGE handmatige bron van dev-dashboard.html — al het andere wordt afgeleid. Weights sommeren tot 100. Percentages zijn AFGELEID uit de milestones (afgevinkt/totaal); vink af in het dashboard zelf en plak de geëxporteerde JSON hier terug, of werk dit bestand direct bij. Daarna `npm run dashboard`.",
+  "nowFirst": [
+    "Engine-backlog bucket 2: alternative/additional casting cost, 31 kaarten (sessieprioriteit, ANSWERS A1/A4)",
+    "Concurrentie-analyse collection-/deckbuild-apps vóór er een paywall-grens gekozen wordt (A2)",
+    "docs/open-items.md re-scan en herschrijven — zes weken stale (A7 akkoord)"
+  ],
+  "tracks": [
+    {
+      "name": "Engine — kernvocabulaire & rules",
+      "weight": 30,
+      "note": "v0.19, migraties t/m ~418",
+      "milestones": [
+        { "text": "Kernvocabulaire compleet (casting, triggers, keywords, layers)", "done": true },
+        { "text": "Commander-format, multiplayer, priority & autopass", "done": true },
+        { "text": "CPU-bots met echte precon-decks", "done": true },
+        { "text": "Client decision-parity (28/28) + cast-planner", "done": true },
+        { "text": "Frontier: replacement/redirect, DFC, planeswalker-statics", "done": false }
+      ]
+    },
+    {
+      "name": "Engine — kaarten-backlog (long tail)",
+      "weight": 15,
+      "note": "280 kaarten in 34 buckets",
+      "milestones": [
+        { "text": "Audit + triage → bucket-indeling (34 buckets)", "done": true },
+        { "text": "Rounds-workflow bewezen (v0.17–v0.19: 18 kaarten dicht)", "done": true },
+        { "text": "Bucket 2: alternative/additional casting cost (31 kaarten)", "done": false },
+        { "text": "Buckets 3–10 (midden-massa, ~60 kaarten)", "done": false },
+        { "text": "Bucket 1: misc-restant (136 kaarten)", "done": false }
+      ]
+    },
+    {
+      "name": "Collection Optimizer",
+      "weight": 20,
+      "note": "monetization-richting open",
+      "milestones": [
+        { "text": "Collectie-import + insights + intelligence", "done": true },
+        { "text": "Advisor: commander-suggest + buildable commanders", "done": true },
+        { "text": "Deck-generatie + validator + start-deck-flow", "done": true },
+        { "text": "Concurrentie-analyse + paywall-keuze (A2)", "done": false },
+        { "text": "IA/usability-restpunten (decklijst, touch-preview)", "done": false }
+      ]
+    },
+    {
+      "name": "Couch-play UX (board + controller)",
+      "weight": 20,
+      "note": "opponent-view als volgende grote stap",
+      "milestones": [
+        { "text": "Controller V5 (Clean HUD, action bar, zones)", "done": true },
+        { "text": "Board spotlight + tv-flat + viewport-fit", "done": true },
+        { "text": "/decks binder-restyle", "done": true },
+        { "text": "Opponent-view-redesign implementeren (mockup klaar)", "done": false }
+      ]
+    },
+    {
+      "name": "Infra & deploy",
+      "weight": 15,
+      "note": "live op leylinesync.com",
+      "milestones": [
+        { "text": "Live op OVH (compose: web/bot/cleanup/caddy)", "done": true },
+        { "text": "Cleanup-runner + bot-service in productie", "done": true },
+        { "text": "Testsuite (2400+) + gegenereerde dashboards", "done": true },
+        { "text": "Update-flow automatiseren (nu handmatig)", "done": false }
+      ]
+    }
+  ]
+}
