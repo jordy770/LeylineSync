@@ -23948,6 +23948,104 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-04T11:56:07.016Z"
+    },
+    {
+      "id": "bug-1463",
+      "timestamp": "2026-08-04T23:05:28.611Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior.ts",
+      "root_cause": "Had 'flashback'",
+      "fix": "Changed to 'landcycling'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T23:05:28.611Z"
+    },
+    {
+      "id": "bug-1464",
+      "timestamp": "2026-08-04T23:06:22.197Z",
+      "error_message": "CSS fix: onCycleCard",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "onCycleCard: (cardId: string) => Promise<void> → (cardId: string, landcycle?: boolean) => Promise<void>",
+      "fix": "Changed onCycleCard: (cardId: string) => Promise<void> → (cardId: string, landcycle?: boolean) => Promise<void>",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T23:06:22.197Z"
+    },
+    {
+      "id": "bug-1465",
+      "timestamp": "2026-08-04T23:06:32.674Z",
+      "error_message": "CSS fix: cycleCard",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "cycleCard: async (cardId: string) => { → async (cardId: string, landcycle?: boolean) => {",
+      "fix": "Changed cycleCard: async (cardId: string) => { → async (cardId: string, landcycle?: boolean) => {",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T23:06:32.674Z"
+    },
+    {
+      "id": "bug-1466",
+      "timestamp": "2026-08-04T23:07:25.709Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/harness/scenario.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 10→19 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T23:07:25.709Z"
+    },
+    {
+      "id": "bug-1455",
+      "timestamp": "2026-08-04T23:12:20.794Z",
+      "error_message": "Migratory Route en Treacherous Terrain gescript met plain cycling {2} (draw) waar oracle basic landcycling zegt (search basic land)",
+      "file": "docs/commander-decks/card-scripts.json",
+      "root_cause": "Landcycling bestond niet in de engine; scripts benaderden het als gewone cycling",
+      "fix": "Basic landcycling gebouwd (mig 427) en beide scripts + Ash Barrens/Grave Upheaval omgezet naar landcycling; deck:upsert toegepast op Breya/landsWrath",
+      "tags": [
+        "engine",
+        "card-script",
+        "cycling",
+        "landcycling"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T23:12:20.794Z"
+    },
+    {
+      "id": "bug-1456",
+      "timestamp": "2026-08-04T23:12:20.794Z",
+      "error_message": "validate:scripts faalt pre-existing op 3 token/test-rows met script=null (v1-pad: expected object, received null) in de lokale dev-DB",
+      "file": "scripts/validate-card-scripts.mts",
+      "root_cause": "DB-rows (Lesser Elemental Token, Hero Token, Legend Bear Test) hebben jsonb null als script; het v1-validatiepad accepteert dat niet",
+      "fix": "NIET gefixt in deze sessie (pre-existing, los van landcycling) - opvolgen: validator null laten overslaan of de rows een leeg object geven",
+      "tags": [
+        "validator",
+        "tokens",
+        "pre-existing",
+        "open"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-04T23:12:20.794Z"
     }
   ]
 }

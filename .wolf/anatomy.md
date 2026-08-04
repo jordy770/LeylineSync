@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-04T22:50:12.649Z
-> Files: 2 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-04T23:11:54.435Z
+> Files: 13 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -273,6 +273,7 @@
 
 ## components/
 
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~74170 tok)
 
 ## components/board/
 
@@ -282,6 +283,7 @@
 
 ## components/controller/
 
+- `CardActionSheet.tsx` — Current turn number — gates a GRANTED flashback (Snapcaster, mig 392). (~21818 tok)
 
 ## components/deck/
 
@@ -307,6 +309,7 @@
 
 ## docs/commander-decks/
 
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15038 tok)
 
 ## docs/superpowers/plans/
 
@@ -328,6 +331,9 @@
 
 ## lib/game/
 
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13340 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~24017 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4276 tok)
 
 ## lib/intelligence/
 
@@ -358,9 +364,12 @@
 
 ## supabase/functions_src/
 
+- `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~1434 tok)
+- `submit_decision.sql` — Declares public (~17784 tok)
 
 ## supabase/migrations/
 
+- `202605010427_basic_landcycling.sql` — 202605010427_basic_landcycling (~19186 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -370,12 +379,14 @@
 
 ## tests/feature/
 
+- `landcycling.test.ts` — Basic landcycling (mig 427) — "{2}, Discard this card: Search your library (~1137 tok)
 
 ## tests/fixtures/
 
 
 ## tests/harness/
 
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10916 tok)
 
 ## tests/regression/
 

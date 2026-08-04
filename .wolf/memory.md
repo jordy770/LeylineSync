@@ -8548,3 +8548,24 @@
 | 13:2x | Import-funnel-analyse vastgelegd (analysedoc par.5): wizard + teaser-vooraf + veilige her-import; geverifieerd dat import-collection.ts delete-then-insert doet (deel-export-voetklem); Collection-milestone toegevoegd | docs/collection-optimizer/competitor-analysis-2026-08.md, .wolf/dashboard-tracks.json | done | ~6k |
 | 00:50 | Edited docs/collection-optimizer/competitor-analysis-2026-08.md | 1→4 lines | ~72 |
 | ochtend | A8 verwerkt (Jordy: klinkt goed): paywall-grens + prijs besloten, doc par.4 op BESLOTEN, milestone afgevinkt + premium-bouw-milestone toegevoegd, nowFirst opgeschoond | competitor-analysis-2026-08.md, .wolf/dashboard-tracks.json, SESSION-PROMPT.md | done | ~5k |
+| 01:04 | Edited supabase/functions_src/cycle_card.sql | modified public() | ~248 |
+| 01:04 | Edited supabase/functions_src/cycle_card.sql | expanded (+7 lines) | ~117 |
+| 01:04 | Edited supabase/functions_src/cycle_card.sql | expanded (+21 lines) | ~327 |
+| 01:04 | Edited supabase/functions_src/cycle_card.sql | inline fix | ~24 |
+| 01:05 | Edited supabase/functions_src/submit_decision.sql | modified coalesce() | ~152 |
+| 01:05 | Edited lib/game/card-behavior.ts | 2→3 lines | ~17 |
+| 01:05 | Edited lib/game/card-behavior.ts | 2→2 lines | ~49 |
+| 01:05 | Edited lib/game/card-behavior.ts | 2→3 lines | ~27 |
+| 01:05 | Edited lib/game/card-behavior-schema.ts | 2→5 lines | ~88 |
+| 01:05 | Edited lib/game/actions.ts | modified cycleCard() | ~178 |
+| 01:06 | Edited components/controller/CardActionSheet.tsx | inline fix | ~20 |
+| 01:06 | Edited components/controller/CardActionSheet.tsx | CSS: landcycling | ~120 |
+| 01:06 | Edited components/controller/CardActionSheet.tsx | 1→2 lines | ~42 |
+| 01:06 | Edited components/controller/CardActionSheet.tsx | CSS: active | ~191 |
+| 01:06 | Edited components/ControllerListV5.tsx | 2→2 lines | ~39 |
+| 01:06 | Edited components/ControllerListV5.tsx | inline fix | ~29 |
+| 01:07 | Edited tests/harness/scenario.ts | modified cycle() | ~176 |
+| 01:07 | Created tests/feature/landcycling.test.ts | — | ~1137 |
+| 01:08 | Edited supabase/migrations/202605010427_basic_landcycling.sql | modified if() | ~213 |
+| 01:11 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~80 |
+| avond | Bucket-2 slice 1 af: basic landcycling (mig 427) - cycle_card p_landcycle + stack-loze search_library-decision, 4 kaartscripts omgezet, deck-upserts, 4 feature-tests groen, client Landcycle-knop | functions_src/cycle_card+submit_decision, migrations/427, CardActionSheet, actions.ts, card-scripts.json, tests/feature/landcycling.test.ts | 7/7 gericht groen, volle suite draait | ~60k |
