@@ -8720,3 +8720,49 @@
 | 15:2x | RED: fixture Delve Draw Test + 6 delve-tests (beide RPC-paden, cap-, graf- en betaalguards); daarna GREEN mig 431: p_delve_card_ids op beide cast-RPC's + nieuwe helper reduce_generic_cost; DV1/DV6-testfout was eigen setup (lege library) | tests/feature/delve.test.ts, functions_src (3), migrations/431 | 6/6 PASS | ~20k |
 | 15:4x | Client: delve in zod+types, Delve-knop (teal) + graveyard-picker (delveOpen/delveIds, cap = generic-deel), reduceGenericCost-helper in shared.ts, ownGraveyard-prop; BOM-uitglijder van Set-Content direct gestript; Treasure Cruise + Dig Through Time geupsert | CardActionSheet.tsx, shared.ts, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts | tsc/lint schoon | ~16k |
 | 16:0x | Volle suite 2509/2509; backlog-kop (269/20), tracks 11/31, dashboards hergegenereerd | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
+| 11:54 | Edited tests/harness/scenario.ts | modified castPermanent() | ~202 |
+| 11:54 | Edited tests/harness/scenario.ts | 18→20 lines | ~181 |
+| 11:55 | Created tests/feature/convoke.test.ts | — | ~2131 |
+| 11:56 | Created supabase/functions_src/apply_convoke.sql | — | ~962 |
+| 11:56 | Edited supabase/functions_src/cast_spell_effect.sql | modified Delve() | ~122 |
+| 11:56 | Edited supabase/functions_src/cast_spell_effect.sql | 3→4 lines | ~48 |
+| 11:56 | Edited supabase/functions_src/cast_spell_effect.sql | modified Convoke() | ~252 |
+| 11:56 | Edited supabase/functions_src/cast_spell_effect.sql | modified Delve() | ~188 |
+| 11:56 | Edited supabase/functions_src/cast_spell_effect.sql | inline fix | ~42 |
+| 11:57 | Edited supabase/functions_src/cast_card_from_hand.sql | modified Convoke() | ~147 |
+| 11:57 | Edited supabase/functions_src/cast_card_from_hand.sql | 3→5 lines | ~51 |
+| 11:57 | Edited supabase/functions_src/cast_card_from_hand.sql | modified reduction() | ~453 |
+| 11:57 | Edited supabase/functions_src/cast_card_from_hand.sql | inline fix | ~35 |
+| 11:57 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified grant() | ~92 |
+| 11:57 | Edited supabase/migrations/202605010432_convoke.sql | modified if() | ~398 |
+| 11:58 | Edited supabase/migrations/202605010432_convoke.sql | modified if() | ~420 |
+| 11:59 | Edited lib/game/card-behavior-schema.ts | modified Delve() | ~170 |
+| 11:59 | Edited lib/game/card-behavior.ts | modified Delve() | ~54 |
+| 11:59 | Edited lib/game/card-behavior.ts | 3→4 lines | ~33 |
+| 12:01 | Edited components/controller/shared.ts | added 2 condition(s) | ~244 |
+| 12:01 | Edited lib/game/actions.ts | added optional chaining | ~177 |
+| 12:01 | Edited lib/game/actions.ts | 16→18 lines | ~170 |
+| 12:01 | Edited components/ControllerListV5.tsx | modified Convoke() | ~205 |
+| 12:01 | Edited components/ControllerListV5.tsx | CSS: override, convokers | ~88 |
+| 12:01 | Edited components/ControllerListV5.tsx | modified getSpellPlan() | ~430 |
+| 12:01 | Edited components/ControllerListV5.tsx | 5→6 lines | ~43 |
+| 12:01 | Edited components/ControllerListV5.tsx | added optional chaining | ~212 |
+| 12:01 | Edited components/ControllerListV5.tsx | 1→2 lines | ~44 |
+| 12:02 | Edited components/controller/CardActionSheet.tsx | 2→3 lines | ~24 |
+| 12:02 | Edited components/controller/CardActionSheet.tsx | inline fix | ~30 |
+| 12:03 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/fix-mojibake.mjs | — | ~262 |
+| 12:03 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/fix-mojibake.mjs | — | ~393 |
+| 12:04 | Edited components/controller/CardActionSheet.tsx | 3→6 lines | ~124 |
+| 12:04 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~559 |
+| 12:04 | Edited components/controller/CardActionSheet.tsx | modified Delve() | ~153 |
+| 12:04 | Edited components/controller/CardActionSheet.tsx | inline fix | ~17 |
+| 12:04 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~903 |
+| 12:05 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/convoke-cards.txt | — | ~20 |
+| 12:05 | Edited components/controller/CardActionSheet.tsx | 6→7 lines | ~40 |
+| 12:09 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~179 |
+| 12:10 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf5.mjs | — | ~1376 |
+| 16:3x | Convoke-slice verkend: oracle 4 kaarten geverifieerd (Hour of Reckoning {4}{W}{W}{W}; Markov Baron heeft ook madness — blijft open); paden bepaald (2 spells via cast_spell_effect, Markov Baron/artifacts via cast_card_from_hand); grants_convoke-ontwerp voor Chief Engineer; functions_src-syncs gecheckt | oracle, card-scripts, register_card_continuous_effects | ontwerp staat | ~20k |
+| 17:0x | RED 8 convoke-tests → GREEN mig 432: apply_convoke-helper (validatie+tap+pip-herschrijving via card_color_set), p_convoke_card_ids op cast_spell_effect + cast_card_from_hand, grants_convoke in registratie-allowlist; CV7 ving de ontbrekende CHECK-constraint-waarde (hand-DDL in de migratie, bug-283-regel) | apply_convoke.sql, functions_src (4), migrations/432 | 8/8 PASS | ~25k |
+| 17:3x | Client: convoke in zod+types, Convoke-knop (orange) + creature-picker (cap = generic+pips), convokeReducedCost-mirror, convokeGrantTypeLines-prop (Chief Engineer); 4 kaartscripts geupsert; mojibake-incident in CardActionSheet hersteld (bug-2704) | CardActionSheet.tsx, shared.ts, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts | tsc/lint schoon | ~22k |
+| 17:5x | Volle suite 2517/2517; backlog-kop (265/16), tracks 15/31, dashboards hergegenereerd | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
+| 12:11 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~256 |
