@@ -97,6 +97,12 @@ begin
         status = 'cancelled',
         resolved_at = now()
       where id = v_target_stack_item.id;
+
+      -- "Whenever a spell or ability you control counters a spell" (mig 437,
+      -- Baral): broadcast the successful counter; the counterer is the actor.
+      perform public.fire_watcher_triggers(
+        p_session_id, p_stack_item.source_card_id, p_stack_item.controller_player_id,
+        'spell_countered', null);
     end if;
 
     -- Life-loss rider (Undermine): the countered spell's controller loses N life.

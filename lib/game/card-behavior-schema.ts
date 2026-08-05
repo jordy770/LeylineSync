@@ -208,7 +208,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
   'job_select', 'advance_saga', 'grant_flashback', 'hand_to_library_top',
   'exile_graveyard_until_leaves', 'choose_land_type', 'shuffle_graveyards_into_libraries',
-  'goad_all', 'corrupted_summons',
+  'goad_all', 'corrupted_summons', 'grant_type',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -802,6 +802,12 @@ const CardBehaviorActionSchema = z.union([
   // nested under choose_player; the source's controller is the goader.
   z.object({
     type: z.literal('goad_all'),
+  }),
+  // Nogi (mig 437): "until end of turn, ~ becomes a <type> ..." — an
+  // until-EOT granted_type ADD on the source.
+  z.object({
+    type: z.literal('grant_type'),
+    type_line: z.string(),
   }),
   // Geth's Summons (mig 436): per corrupted opponent a pick over THAT
   // graveyard's creatures; the chosen card enters under your control.
@@ -1485,7 +1491,7 @@ export const CardBehaviorScriptV2Schema = z.object({
   cost_reduction: z.object({
     amount: z.number().int().positive(),
     if: z.object({
-      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control']),
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'opponent_graveyard_cards']),
       type_line: z.string().optional(),
       at_least: z.number().int().positive(),
     }).strict().optional(),

@@ -82,6 +82,12 @@ begin
       coalesce(ce.payload ->> 'type_line', '') = ''
       or coalesce(v_type_line, '') ilike '%' || (ce.payload ->> 'type_line') || '%'
     )
+    -- exclude_type_line (mig 437, Lyse Hext: "NONcreature spells you cast cost
+    -- {1} less") — the negative twin of the type_line filter above.
+    and (
+      coalesce(ce.payload ->> 'exclude_type_line', '') = ''
+      or coalesce(v_type_line, '') not ilike '%' || (ce.payload ->> 'exclude_type_line') || '%'
+    )
     -- from_zone (mig 304, Emet-Selch): "spells you cast from your graveyard cost
     -- {2} less" — apply only when the card is being cast from that zone.
     and (

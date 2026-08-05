@@ -299,6 +299,18 @@ begin
     from public.game_session_players
     where session_id = p_session_id and coalesce(life_lost_this_turn, 0) > 0;
 
+  elsif v_count = 'opponent_graveyard_cards' then
+    -- Into the Story (mig 437): "if an opponent has seven or more cards in
+    -- their graveyard" — the HIGHEST graveyard count among opponents.
+    select coalesce(max(cnt), 0)::integer into v_n
+    from (
+      select count(*) as cnt
+      from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'graveyard'
+        and gc.owner_id is distinct from p_controller_id
+      group by gc.owner_id
+    ) g;
+
   elsif v_count = 'opponents_with_more_lands' then
     -- Priest of the Blessed Graf (mig 435): "the number of opponents who
     -- control more lands than you."

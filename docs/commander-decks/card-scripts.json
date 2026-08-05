@@ -2060,6 +2060,10 @@
               {
                 "type": "grant_keyword",
                 "keyword": "flying"
+              },
+              {
+                "type": "grant_type",
+                "type_line": "Dragon"
               }
             ]
           }
@@ -3117,7 +3121,7 @@
         "affected": "controller",
         "payload": {
           "type_line": "Creature",
-          "amount": 2
+          "amount": 1
         }
       }
     ],
@@ -13959,6 +13963,13 @@
           "amount": 4
         }
       ]
+    },
+    "cost_reduction": {
+      "amount": 3,
+      "if": {
+        "count": "opponent_graveyard_cards",
+        "at_least": 7
+      }
     }
   },
   "Isolated Chapel": {
@@ -14774,6 +14785,17 @@
             "toughness": 1
           }
         ]
+      }
+    ],
+    "continuous_effects": [
+      {
+        "type": "cost_reduction",
+        "affected": "controller",
+        "payload": {
+          "exclude_type_line": "Creature",
+          "amount": 1
+        },
+        "source_zone_required": "battlefield"
       }
     ]
   },
@@ -18876,6 +18898,15 @@
           "toughness": 1,
           "creature_type": "Zombie"
         }
+      },
+      {
+        "type": "cost_reduction",
+        "affected": "controller",
+        "payload": {
+          "type_line": "Zombie",
+          "amount": 1
+        },
+        "source_zone_required": "battlefield"
       }
     ]
   },
@@ -19981,6 +20012,31 @@
           "type_line": "Sorcery",
           "amount": 1
         }
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "spell_countered",
+        "filter": {
+          "controller": "you"
+        },
+        "effects": [
+          {
+            "type": "may",
+            "prompt": "Draw a card? (then discard a card)",
+            "program": true,
+            "effects": [
+              {
+                "type": "draw",
+                "amount": 1
+              },
+              {
+                "type": "discard",
+                "count": 1
+              }
+            ]
+          }
+        ]
       }
     ]
   },

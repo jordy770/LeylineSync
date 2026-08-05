@@ -218,6 +218,9 @@ begin
                         when 'permanent_sacrificed' then ''
                         when 'token_created' then ''
                         when 'card_drawn' then ''
+                        -- spell_countered (mig 437, Baral): the event subject is
+                        -- the countering spell/source, any type.
+                        when 'spell_countered' then ''
                         else 'creature' end);
       -- A changeling (mig 408) matches any CREATURE-type filter: skip only when
       -- neither the effective type line matches NOR (it is a changeling and the
