@@ -40,6 +40,12 @@ declare
   v_resume integer;
   v_eff_script jsonb;
   v_type_line text;
+  v_madness_card uuid;
+  v_madness_x integer;
+  v_madness_script jsonb;
+  v_madness_type text;
+  v_madness_actions jsonb;
+  v_madness_pos integer;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required';
@@ -289,8 +295,15 @@ begin
     v_dest := coalesce(v_decision.params ->> 'to', 'graveyard');
     for v_card in select (value)::uuid from jsonb_array_elements_text(v_top)
     loop
-      select coalesce(max(zone_position), -1) + 1 into v_pos from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = v_dest;
-      update public.game_cards set zone = v_dest, zone_position = v_pos, is_tapped = false, damage_marked = 0 where id = v_card;
+      if v_dest = 'graveyard' then
+        -- A hand→graveyard pick is a DISCARD: route through discard_card
+        -- (mig 434) so a madness card is exiled with its decision instead.
+        -- Non-hand cards (mill picks etc.) take the plain graveyard move there.
+        perform public.discard_card(v_decision.session_id, v_card);
+      else
+        select coalesce(max(zone_position), -1) + 1 into v_pos from public.game_cards where session_id = v_decision.session_id and owner_id = v_decision.deciding_player_id and zone = v_dest;
+        update public.game_cards set zone = v_dest, zone_position = v_pos, is_tapped = false, damage_marked = 0 where id = v_card;
+      end if;
     end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
@@ -422,6 +435,97 @@ begin
       where id = v_card and session_id = v_decision.session_id and zone = 'hand';
     end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
+  elsif v_decision.decision_type = 'madness_cast' then
+    -- Madness (mig 434): the discarded card sits in exile (discard_card).
+    -- {cast:true, x?} pays the madness cost and casts it from there; anything
+    -- else drops it into the graveyard. Stack-less decision (null source), so
+    -- no resume — the cast itself pushes a normal stack item.
+    v_madness_card := (v_decision.params ->> 'game_card_id')::uuid;
+    select c.type_line, public.effective_script(v_decision.session_id, gc.id)
+    into v_madness_type, v_madness_script
+    from public.game_cards gc join public.cards c on c.id = gc.card_id
+    where gc.id = v_madness_card and gc.session_id = v_decision.session_id and gc.zone = 'exile';
+
+    if not found or not coalesce((p_result ->> 'cast')::boolean, false) then
+      -- Declined (or the card vanished): into the graveyard it goes.
+      select coalesce(max(zone_position), -1) + 1 into v_madness_pos
+      from public.game_cards
+      where session_id = v_decision.session_id
+        and owner_id = (select owner_id from public.game_cards where id = v_madness_card)
+        and zone = 'graveyard';
+      update public.game_cards
+      set zone = 'graveyard', zone_position = v_madness_pos, is_tapped = false, damage_marked = 0
+      where id = v_madness_card and session_id = v_decision.session_id and zone = 'exile';
+    else
+      v_madness_x := greatest(coalesce((p_result ->> 'x')::integer, 0), 0);
+      perform public.pay_mana_cost(
+        v_decision.session_id, auth.uid(), v_decision.params ->> 'cost', null, v_madness_x,
+        p_pay_context := jsonb_build_object('kind', 'cast',
+          'type_line', coalesce(v_madness_type, ''), 'is_commander', false));
+
+      if v_madness_type ilike any (array[
+        '%creature%', '%artifact%', '%enchantment%', '%planeswalker%', '%battle%', '%land%']) then
+        -- Permanent: a real cast_permanent push from exile (cast_card_free
+        -- precedent) — resolves with true ETBs.
+        select coalesce(max(position), -1) + 1 into v_madness_pos
+        from public.game_stack_items where session_id = v_decision.session_id;
+        update public.game_cards
+        set zone = 'stack', zone_position = v_madness_pos, is_tapped = false, damage_marked = 0
+        where id = v_madness_card and session_id = v_decision.session_id;
+        insert into public.game_stack_items (
+          session_id, controller_player_id, source_card_id, action_type, payload, position)
+        values (
+          v_decision.session_id, auth.uid(), v_madness_card, 'cast_permanent',
+          jsonb_build_object('timing', 'sorcery', 'type_line', v_madness_type, 'madness', true),
+          v_madness_pos);
+      else
+        -- Spell: the madness program replaces the base effect when present
+        -- ("If this spell's madness cost was paid, instead …"), with the
+        -- caster-chosen X substituted like cast_spell_effect does.
+        v_madness_actions := coalesce(
+          v_madness_script -> 'madness_effect' -> 'actions',
+          v_madness_script -> 'spell_effect' -> 'actions',
+          '[]'::jsonb);
+        select coalesce(jsonb_agg(
+          case
+            when (elem ->> 'amount') = 'X' or (elem ->> 'count') = 'X' then
+              elem
+                || (case when (elem ->> 'amount') = 'X'
+                      then jsonb_build_object('amount', v_madness_x) else '{}'::jsonb end)
+                || (case when (elem ->> 'count') = 'X'
+                      then jsonb_build_object('count', v_madness_x) else '{}'::jsonb end)
+            else elem
+          end
+          order by ord
+        ), '[]'::jsonb)
+        into v_madness_actions
+        from jsonb_array_elements(v_madness_actions) with ordinality as t(elem, ord);
+
+        select coalesce(max(position), -1) + 1 into v_madness_pos
+        from public.game_stack_items where session_id = v_decision.session_id;
+        insert into public.game_stack_items (
+          session_id, controller_player_id, source_card_id, action_type, payload, position, status)
+        values (
+          v_decision.session_id, auth.uid(), v_madness_card, 'spell_effect',
+          jsonb_build_object('effects', v_madness_actions,
+            'controller_player_id', auth.uid(), 'timing', 'instant', 'madness', true),
+          v_madness_pos, 'pending');
+        -- The instant/sorcery leaves exile for the graveyard on cast.
+        select coalesce(max(zone_position), -1) + 1 into v_madness_pos
+        from public.game_cards
+        where session_id = v_decision.session_id
+          and owner_id = (select owner_id from public.game_cards where id = v_madness_card)
+          and zone = 'graveyard';
+        update public.game_cards
+        set zone = 'graveyard', zone_position = v_madness_pos
+        where id = v_madness_card and session_id = v_decision.session_id and zone = 'exile';
+      end if;
+
+      -- Madness casts are real casts: fire spell_cast watchers + cast triggers.
+      perform public.fire_watcher_triggers(v_decision.session_id, v_madness_card, auth.uid(), 'spell_cast', null);
+      perform public.enqueue_cast_triggers(v_decision.session_id, v_madness_card, auth.uid());
+    end if;
 
   elsif v_decision.decision_type = 'grant_flashback' then
     -- Snapcaster Mage (mig 392): the chosen instant/sorcery card in the

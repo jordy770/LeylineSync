@@ -124,6 +124,10 @@ export type CardBehaviorScriptV2 = {
   evoke?: string
   blitz?: string
   spectacle?: string
+  // Madness (mig 434): discard-to-exile cast; madness_effect replaces the
+  // base program on a madness cast.
+  madness?: string
+  madness_effect?: CardBehaviorSpellEffect
   // Adventure half (mig 295): { name?, cost?, spell_effect } — the card's
   // instant/sorcery side, surfaced by the controller's "Adventure" cast.
   adventure?: { name?: string; cost?: string; spell_effect: CardBehaviorSpellEffect }
@@ -433,6 +437,8 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     evoke: script.evoke,
     blitz: script.blitz,
     spectacle: script.spectacle,
+    madness: script.madness,
+    madness_effect: script.madness_effect,
     adventure: script.adventure,
     saga_chapters: script.saga_chapters,
     enters_with_counters: script.enters_with_counters,

@@ -2799,6 +2799,8 @@ function PendingDecisionPrompt({
         <ScrySurveilBody decision={decision} surveil={decision.decision_type === 'surveil'} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
       ) : CARD_PICK_DECISIONS.has(decision.decision_type) ? (
         <CardPickBody decision={decision} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
+      ) : decision.decision_type === 'madness_cast' ? (
+        <MadnessBody decision={decision} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'confirm' || decision.decision_type === 'pay_life_untap' || decision.decision_type === 'commander_zone_return' || decision.decision_type === 'pay_or_be_countered' ? (
         <ConfirmBody isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'choose_player' ? (
@@ -3111,6 +3113,53 @@ function CardPickBody({
 }
 
 // Optional "you may" — a yes/no gate.
+// Madness (mig 434): cast the exiled card for its madness cost (with an X
+// input when the cost carries {X}) or drop it into the graveyard.
+function MadnessBody({
+  decision,
+  isPending,
+  onSubmit,
+}: {
+  decision: PendingDecision
+  isPending: boolean
+  onSubmit: (result: Record<string, unknown>) => Promise<void>
+}) {
+  const [x, setX] = useState(1)
+  const params = (decision.params ?? {}) as { cost?: string; has_x?: boolean }
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {params.has_x && (
+        <label className="flex items-center gap-1.5 text-xs font-bold text-slate-300">
+          X =
+          <input
+            type="number"
+            min={0}
+            value={x}
+            onChange={(e) => setX(Math.max(0, Number(e.target.value) || 0))}
+            className="w-14 rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-center text-white"
+          />
+        </label>
+      )}
+      <button
+        type="button"
+        disabled={isPending}
+        onClick={() => void onSubmit(params.has_x ? { cast: true, x } : { cast: true })}
+        className="rounded-xl bg-fuchsia-400 px-4 py-2 text-xs font-black uppercase tracking-wide text-fuchsia-950 transition active:scale-95 disabled:opacity-40"
+      >
+        Cast {params.cost ?? ''}
+      </button>
+      <button
+        type="button"
+        disabled={isPending}
+        onClick={() => void onSubmit({ cast: false })}
+        className="rounded-xl border border-slate-600 px-4 py-2 text-xs font-black uppercase tracking-wide text-slate-300 transition active:scale-95 disabled:opacity-40"
+      >
+        To graveyard
+      </button>
+    </div>
+  )
+}
+
 function ConfirmBody({
   isPending,
   onSubmit,

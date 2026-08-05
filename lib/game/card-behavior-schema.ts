@@ -1620,6 +1620,12 @@ export const CardBehaviorScriptV2Schema = z.object({
   // Spectacle (mig 433, Light Up the Stage): alternative cost, castable only
   // while an opponent has lost life this turn (engine-verified).
   spectacle: z.string().optional(),
+  // Madness (mig 434, From Under the Floorboards / Markov Baron): discarding
+  // the card exiles it with a cast-it-or-graveyard decision; `madness` is the
+  // cost, `madness_effect` the alternate program a madness-cast spell runs
+  // ("If this spell's madness cost was paid, instead …").
+  madness: z.string().optional(),
+  madness_effect: CardBehaviorSpellEffectSchema.optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),

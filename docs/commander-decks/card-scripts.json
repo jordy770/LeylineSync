@@ -16336,7 +16336,8 @@
           "exclude_source": true
         }
       }
-    ]
+    ],
+    "madness": "{2}{B}"
   },
   "New Blood": {
     "schema_version": 2,
@@ -25306,6 +25307,21 @@
         {
           "type": "gain_life",
           "amount": 3
+        }
+      ]
+    },
+    "madness": "{X}{B}{B}",
+    "madness_effect": {
+      "actions": [
+        {
+          "type": "create_token",
+          "token": "Zombie Token",
+          "count": "X",
+          "tapped": true
+        },
+        {
+          "type": "gain_life",
+          "amount": "X"
         }
       ]
     }
