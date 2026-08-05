@@ -21,6 +21,7 @@ as $$
 declare
   v_power integer;
   v_tough integer;
+  v_cid uuid;
 begin
   v_power := public.resolve_dynamic_amount(
     p_session_id, p_source_card_id, p_controller_id, p_effect -> 'power');
@@ -31,6 +32,30 @@ begin
     p_session_id, p_source_card_id, p_controller_id, p_effect -> 'toughness');
   if coalesce((p_effect -> 'toughness' ->> 'negate')::boolean, false) then
     v_tough := -v_tough;
+  end if;
+
+  -- exclude_self (mig 440, End-Raze Forerunners: "OTHER creatures you control
+  -- get +2/+2"): per-creature pump rows via create_pt_pump so the source
+  -- itself stays untouched — the player-scoped mass row can't express it.
+  if coalesce((p_effect ->> 'exclude_self')::boolean, false) then
+    for v_cid in
+      select gc.id
+      from public.game_cards gc
+      join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and c.type_line ilike '%creature%'
+        and gc.id is distinct from p_source_card_id
+        and (coalesce(p_effect ->> 'creature_type', '') = ''
+             or c.type_line ilike '%' || (p_effect ->> 'creature_type') || '%')
+        and (case lower(coalesce(p_effect ->> 'scope', 'all'))
+               when 'controller' then coalesce(gc.controller_player_id, gc.owner_id) = p_controller_id
+               when 'opponent' then coalesce(gc.controller_player_id, gc.owner_id) is distinct from p_controller_id
+               else true end)
+    loop
+      perform public.create_pt_pump(p_session_id, v_cid, coalesce(v_power, 0), coalesce(v_tough, 0));
+    end loop;
+    perform public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
+    return;
   end if;
 
   -- scope 'controller' => only that player's creatures (affected_player_id set);

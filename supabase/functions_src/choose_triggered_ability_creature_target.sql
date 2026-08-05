@@ -77,6 +77,13 @@ begin
     if not public.card_type_line_matches_filter(v_target_type_line, v_stack_item.payload -> 'target_filter') then
       raise exception 'Target does not match this ability''s type restriction';
     end if;
+
+    -- "ANOTHER target …" (mig 440, Xenagos / Majestic Heliopterus): the
+    -- filter's exclude_self forbids the trigger's own source.
+    if coalesce((v_stack_item.payload -> 'target_filter' ->> 'exclude_self')::boolean, false)
+       and p_target_card_id = v_stack_item.source_card_id then
+      raise exception 'This ability cannot target its own source';
+    end if;
   end if;
 
   -- Protection: the chosen target can't have protection from the trigger source's

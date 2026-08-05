@@ -1,7 +1,1160 @@
--- supabase/functions_src/apply_triggered_ability_effects.sql
--- CANONICAL current definition (seeded from 202605010202_grant_keyword_all.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010440_copy_nuances
+-- Bucket-7-slice ("other/another"-exclusies + sorcery-timing):
+-- - exclude_self op pump_all / grant_keyword_all (End-Raze Forerunners:
+--   "OTHER creatures you control ...") — per-creature rows (create_pt_pump /
+--   apply_creature_effect) zodat de source zelf overgeslagen wordt.
+-- - target_filter.exclude_self op targeted trigger-effects (Xenagos /
+--   Majestic Heliopterus: "ANOTHER target creature") — de chooser weigert de
+--   source; enqueue's availability-check telt de source niet mee.
+-- - Activated-ability timing 'sorcery' wordt nu afgedwongen (Orthion:
+--   actieve speler, main phase, lege stack).
+-- Mirror Gallery, The Masters legend-clausule en Helms except-legendary zijn
+-- VACUOUS (de engine kent geen legend rule); Sunfrills exclude_self bestond
+-- al in become_copy's options (mig 240) — allemaal stale flags.
+-- Generated from supabase/functions_src (activate_ability, choose_triggered_ability_creature_target, enqueue_triggered_ability, apply_mass_pump_until_eot, apply_triggered_ability_effects) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+create or replace function public.activate_ability(
+  p_session_id uuid,
+  p_source_card_id uuid,
+  p_ability_index integer default 0,
+  p_target_player_id uuid default null,
+  p_target_card_id uuid default null,
+  p_generic_payment jsonb default null,
+  p_x_value integer default null,
+  -- Chosen cost payments (mig 284): for pick-able costs (sacrifice_artifacts,
+  -- return_land, tap_creatures) the client passes the exact cards to pay
+  -- with, in cost order. Null = the engine auto-picks (legacy behaviour).
+  p_cost_card_ids uuid[] default null
+) returns public.game_stack_items
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_turn public.game_turn_state;
+  v_zone text;
+  v_script jsonb;
+  v_ability jsonb;
+  v_cost jsonb;
+  v_effect jsonb;
+  v_eff_type text;
+  v_target_controller text;
+  v_has_tap boolean := false;
+  v_has_sac boolean := false;
+  v_has_sac_creature boolean := false;
+  v_has_gy_exile boolean := false;
+  v_gy_filter text;
+  v_tap_creatures_count integer := 0;
+  v_tap_creatures_type text;
+  v_discard_cost integer := 0;
+  v_sac_artifacts_count integer := 0;
+  v_sac_artifacts_nontoken boolean := false;
+  v_sac_artifacts_type text := '';
+  v_sac_creature_types jsonb := null;
+  v_sac_creature_another boolean := false;
+  v_sac_creature_id uuid;
+  v_sac_artifact uuid;
+  v_return_land_count integer := 0;
+  v_cost_pick_i integer := 0;
+  v_i integer;
+  v_remove_counter_type text;
+  v_remove_counter_amount integer := 0;
+  v_bag_count integer;
+  v_mana_cost text := null;
+  v_source_type_line text;
+  v_source_is_commander boolean := false;
+  v_energy_cost integer := 0;
+  v_player_energy integer;
+  v_amount integer;
+  v_next_position integer;
+  v_stack public.game_stack_items;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select *
+  into v_turn
+  from public.game_turn_state
+  where session_id = p_session_id
+  for update;
+
+  if not found then
+    raise exception 'Turn state not found';
+  end if;
+
+  if coalesce(v_turn.priority_player_id, v_turn.active_player_id) <> auth.uid() then
+    raise exception 'Only the priority player can activate abilities';
+  end if;
+
+  -- You activate the abilities of permanents you CONTROL (not necessarily own):
+  -- a donated/stolen permanent's abilities belong to its controller (mig 361,
+  -- Xantcha). For non-battlefield zones (graveyard/hand abilities) fall back to
+  -- ownership since control only exists on the battlefield.
+  select game_cards.zone
+  into v_zone
+  from public.game_cards
+  where game_cards.id = p_source_card_id
+    and game_cards.session_id = p_session_id
+    and coalesce(game_cards.controller_player_id, game_cards.owner_id) = auth.uid();
+
+  if not found then
+    raise exception 'Source card not found or not controlled by current user';
+  end if;
+
+  -- Restricted-mana pay context (Haven: "activate abilities of Dragon sources";
+  -- Relic of Legends: "an ability of a commander").
+  select c.type_line, coalesce(gc.is_commander, false)
+  into v_source_type_line, v_source_is_commander
+  from public.game_cards gc join public.cards c on c.id = gc.card_id
+  where gc.id = p_source_card_id and gc.session_id = p_session_id;
+
+  v_script := public.effective_script(p_session_id, p_source_card_id);
+  v_ability := v_script -> 'activated_abilities' -> p_ability_index;
+
+  -- Zone gate (mig 289): battlefield by default, but an ability may declare
+  -- its own source zone (omen back-faces cast from HAND: Flush Out /
+  -- Dynamic Soar; the adventure pattern generally).
+  if v_zone <> coalesce(v_ability ->> 'source_zone_required', 'battlefield') then
+    raise exception 'Ability source must be in its required zone (%)',
+      coalesce(v_ability ->> 'source_zone_required', 'battlefield');
+  end if;
+
+  if v_ability is null then
+    raise exception 'Activated ability not found at index %', p_ability_index;
+  end if;
+
+  -- "Activate only as a sorcery" (mig 440, Orthion): the sorcery gate —
+  -- active player, main phase, empty stack.
+  if lower(coalesce(v_ability ->> 'timing', '')) = 'sorcery' then
+    if v_turn.active_player_id <> auth.uid() then
+      raise exception 'This ability can only be activated as a sorcery (your turn)';
+    end if;
+    if v_turn.step not in ('precombat_main', 'postcombat_main') then
+      raise exception 'This ability can only be activated as a sorcery (main phase)';
+    end if;
+    if exists (
+      select 1 from public.game_stack_items
+      where session_id = p_session_id and status = 'pending'
+    ) then
+      raise exception 'This ability can only be activated as a sorcery (empty stack)';
+    end if;
+  end if;
+
+  if coalesce((v_ability ->> 'is_mana_ability')::boolean, false) then
+    raise exception 'Use the mana ability flow for mana abilities';
+  end if;
+
+  -- Activation condition (mig 233, Skarrgan Hellkite: "Activate only if this
+  -- creature has a +1/+1 counter on it"). A {counters, of, at_least} spec read
+  -- via resolve_dynamic_amount before any cost is paid.
+  if v_ability -> 'condition' is not null then
+    if public.resolve_dynamic_amount(p_session_id, p_source_card_id, auth.uid(), v_ability -> 'condition')
+       < coalesce((v_ability -> 'condition' ->> 'at_least')::integer, 1)
+    then
+      raise exception 'This ability cannot be activated right now';
+    end if;
+  end if;
+
+  -- Parse costs
+  for v_cost in select * from jsonb_array_elements(coalesce(v_ability -> 'costs', '[]'::jsonb))
+  loop
+    case v_cost ->> 'type'
+      when 'tap_self' then v_has_tap := true;
+      when 'sacrifice_self' then v_has_sac := true;
+      when 'sacrifice_creature' then
+        v_has_sac_creature := true;
+        -- type_line_any + another (mig 402, Kalitas: "another Vampire or
+        -- Zombie") restrict which creature may pay the cost.
+        v_sac_creature_types := case when jsonb_typeof(v_cost -> 'type_line_any') = 'array'
+                                     then v_cost -> 'type_line_any' else null end;
+        v_sac_creature_another := coalesce((v_cost ->> 'another')::boolean, false);
+      when 'exile_from_graveyard' then
+        v_has_gy_exile := true;
+        v_gy_filter := lower(coalesce(v_cost ->> 'type_line', 'creature'));
+      when 'mana' then v_mana_cost := v_cost ->> 'amount';
+      when 'energy' then v_energy_cost := greatest(0, coalesce((v_cost ->> 'amount')::integer, 0));
+      -- "Tap five untapped Zombies you control" (mig 212, Gravespawn Sovereign).
+      -- The engine auto-picks the N untapped matching creatures (incl. the
+      -- source); a client-chosen set is a future refinement.
+      when 'tap_creatures' then
+        v_tap_creatures_count := greatest(1, coalesce((v_cost ->> 'count')::integer, 1));
+        v_tap_creatures_type := lower(coalesce(v_cost ->> 'type_line', 'creature'));
+      -- "Discard a card" as a cost (mig 214, Grimoire of the Dead): the chosen
+      -- hand card rides p_target_card_id (these abilities' effect is untargeted,
+      -- like the exile_from_graveyard cost).
+      when 'discard' then v_discard_cost := greatest(1, coalesce((v_cost ->> 'amount')::integer, 1));
+      -- "Sacrifice N artifacts" (mig 264, Breya / Thopter Foundry). The engine
+      -- auto-picks the N cheapest-MV artifacts you control other than the
+      -- source (tokens are MV 0, so they go first — matching real play);
+      -- nontoken:true restricts to nontoken artifacts. A client-chosen set is
+      -- a future refinement.
+      when 'sacrifice_artifacts' then
+        v_sac_artifacts_count := greatest(1, coalesce((v_cost ->> 'count')::integer, 1));
+        v_sac_artifacts_nontoken := coalesce((v_cost ->> 'nontoken')::boolean, false);
+        -- Subtype restriction (mig 402, Professional Face-Breaker: "Sacrifice
+        -- a Treasure") — both the auto-pick and a chosen payment honor it.
+        v_sac_artifacts_type := lower(coalesce(v_cost ->> 'type_line', ''));
+      -- 'Return a land you control to its owner's hand' as a cost (mig 277,
+      -- Mina and Denn). Auto-picks: tapped lands first.
+      when 'return_land' then
+        v_return_land_count := greatest(1, coalesce((v_cost ->> 'count')::integer, 1));
+      -- "Remove three study counters from ~" as a cost (mig 214).
+      when 'remove_counters' then
+        v_remove_counter_type := lower(coalesce(v_cost ->> 'counter_type', 'study'));
+        v_remove_counter_amount := greatest(1, coalesce((v_cost ->> 'amount')::integer, 1));
+      else raise exception 'Unsupported ability cost: %', v_cost ->> 'type';
+    end case;
+  end loop;
+
+  -- {X} in the activation cost (mig 242, Kessig Wolf Run): the activator
+  -- chooses X (p_x_value); it is paid as that much generic mana and every
+  -- literal 'X' power/toughness/amount in the effects becomes the chosen
+  -- value before the effects are put on the stack.
+  if v_mana_cost is not null and position('{X}' in v_mana_cost) > 0 then
+    if coalesce(p_x_value, -1) < 0 then
+      raise exception 'This ability requires a chosen X';
+    end if;
+    v_mana_cost := replace(v_mana_cost, '{X}', '{' || p_x_value::text || '}');
+    select jsonb_set(v_ability, '{effects}', coalesce(jsonb_agg(
+      e.value
+      || case when e.value ->> 'power' = 'X' then jsonb_build_object('power', p_x_value) else '{}'::jsonb end
+      || case when e.value ->> 'toughness' = 'X' then jsonb_build_object('toughness', p_x_value) else '{}'::jsonb end
+      || case when e.value ->> 'amount' = 'X' then jsonb_build_object('amount', p_x_value) else '{}'::jsonb end
+    ), '[]'::jsonb))
+    into v_ability
+    from jsonb_array_elements(coalesce(v_ability -> 'effects', '[]'::jsonb)) e;
+  end if;
+
+  if v_has_tap and exists (
+    select 1 from public.game_cards where id = p_source_card_id and is_tapped = true
+  ) then
+    raise exception 'Source is already tapped';
+  end if;
+
+  -- Energy: the activating player must have enough in their pool.
+  if v_energy_cost > 0 then
+    select coalesce((counters ->> 'energy')::integer, 0)
+    into v_player_energy
+    from public.game_session_players
+    where session_id = p_session_id and player_id = auth.uid();
+
+    if coalesce(v_player_energy, 0) < v_energy_cost then
+      raise exception 'Not enough energy: need % (have %)', v_energy_cost, coalesce(v_player_energy, 0);
+    end if;
+  end if;
+
+  -- Graveyard-exile cost: validate the chosen card BEFORE paying anything (it is
+  -- passed as p_target_card_id; the effect of such abilities is untargeted).
+  if v_has_gy_exile then
+    if p_target_card_id is null then
+      raise exception 'Choose a card in a graveyard to exile for this ability';
+    end if;
+    if not exists (
+      select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.id = p_target_card_id and gc.session_id = p_session_id and gc.zone = 'graveyard'
+        and (v_gy_filter = '' or c.type_line ilike '%' || v_gy_filter || '%')
+    ) then
+      raise exception 'That card is not a matching card in a graveyard';
+    end if;
+  end if;
+
+  -- Sacrifice-a-creature cost. Two-picks (mig 412): when the ability's EFFECT is
+  -- also targeted (Goblin Bombardment: "Sacrifice a creature: deal 1 damage to any
+  -- target"), the client passes the sacrificed creature via p_cost_card_ids[1] and
+  -- the effect's target via p_target_card_id. Legacy untargeted sac abilities still
+  -- pass the creature as p_target_card_id (which is cleared after paying).
+  if v_has_sac_creature then
+    v_sac_creature_id := case when p_cost_card_ids is not null then p_cost_card_ids[1] else p_target_card_id end;
+    if v_sac_creature_id is null then
+      raise exception 'Choose a creature to sacrifice for this ability';
+    end if;
+    if not exists (
+      select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.id = v_sac_creature_id and gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+        and c.type_line ilike '%creature%'
+        and (not v_sac_creature_another or gc.id <> p_source_card_id)
+        -- type_line_any honors the type-changing layer (mig 409): a changeling
+        -- (or a granted-type permanent) satisfies "another Vampire or Zombie".
+        and (v_sac_creature_types is null
+             or exists (select 1 from jsonb_array_elements_text(v_sac_creature_types) t
+                        where public.card_has_creature_type(p_session_id, gc.id, t.value)))
+    ) then
+      raise exception 'You must sacrifice a matching creature you control';
+    end if;
+  end if;
+
+  -- Discard cost: the chosen hand card rides p_target_card_id (untargeted-effect
+  -- abilities only, like the graveyard-exile cost). Single-card discard only.
+  if v_discard_cost > 0 then
+    if v_discard_cost > 1 then
+      raise exception 'Multi-card discard costs are not supported yet';
+    end if;
+    if p_target_card_id is null then
+      raise exception 'Choose a card in your hand to discard for this ability';
+    end if;
+    if not exists (
+      select 1 from public.game_cards
+      where id = p_target_card_id and session_id = p_session_id
+        and zone = 'hand' and owner_id = auth.uid()
+    ) then
+      raise exception 'You must discard a card from your own hand';
+    end if;
+    update public.game_cards gc
+    set zone = 'graveyard', is_tapped = false,
+        zone_position = (select coalesce(max(zone_position), -1) + 1
+                         from public.game_cards x
+                         where x.session_id = p_session_id and x.owner_id = gc.owner_id and x.zone = 'graveyard')
+    where gc.id = p_target_card_id and gc.session_id = p_session_id;
+    -- The cost consumed the target slot; the effect is untargeted.
+    p_target_card_id := null;
+  end if;
+
+  -- Remove-counters cost (mig 214): the SOURCE must carry enough bag counters.
+  if v_remove_counter_amount > 0 then
+    select coalesce((counters ->> v_remove_counter_type)::integer, 0)
+    into v_bag_count
+    from public.game_cards
+    where id = p_source_card_id and session_id = p_session_id;
+    if coalesce(v_bag_count, 0) < v_remove_counter_amount then
+      raise exception 'Not enough % counters: need % (have %)', v_remove_counter_type, v_remove_counter_amount, coalesce(v_bag_count, 0);
+    end if;
+    update public.game_cards
+    set counters = public.adjust_counter_bag(counters, v_remove_counter_type, -v_remove_counter_amount)
+    where id = p_source_card_id and session_id = p_session_id;
+  end if;
+
+  -- Tap-creatures cost: validate there are enough untapped matching creatures,
+  -- then tap the first N (zone-position order).
+  if v_tap_creatures_count > 0 then
+    if (select count(*) from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id and gc.zone = 'battlefield' and gc.is_tapped = false
+          and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+          and c.type_line ilike '%creature%'
+          and c.type_line ilike '%' || v_tap_creatures_type || '%') < v_tap_creatures_count
+    then
+      raise exception 'You need % untapped % creatures to activate this', v_tap_creatures_count, v_tap_creatures_type;
+    end if;
+    if p_cost_card_ids is not null then
+      -- Chosen payment (mig 284): tap exactly the provided creatures.
+      for v_i in 1..v_tap_creatures_count loop
+        v_cost_pick_i := v_cost_pick_i + 1;
+        v_sac_artifact := p_cost_card_ids[v_cost_pick_i];
+        if v_sac_artifact is null or not exists (
+          select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+          where gc.id = v_sac_artifact and gc.session_id = p_session_id
+            and gc.zone = 'battlefield' and gc.is_tapped = false
+            and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+            and c.type_line ilike '%creature%'
+            and c.type_line ilike '%' || v_tap_creatures_type || '%'
+        ) then
+          raise exception 'Chosen cost card is not a legal creature to tap';
+        end if;
+        update public.game_cards set is_tapped = true where id = v_sac_artifact;
+      end loop;
+    else
+    update public.game_cards
+    set is_tapped = true
+    where id in (
+      select gc.id from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'battlefield' and gc.is_tapped = false
+        and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+        and c.type_line ilike '%creature%'
+        and c.type_line ilike '%' || v_tap_creatures_type || '%'
+      order by gc.zone_position, gc.id
+      limit v_tap_creatures_count
+    );
+    end if;
+  end if;
+
+  if v_mana_cost is not null then
+    perform public.pay_mana_cost(p_session_id, auth.uid(), v_mana_cost, p_generic_payment,
+      p_pay_context := jsonb_build_object(
+        'kind', 'ability',
+        'type_line', coalesce(v_source_type_line, ''),
+        'is_commander', v_source_is_commander));
+  end if;
+
+  if v_energy_cost > 0 then
+    update public.game_session_players
+    set counters = public.adjust_counter_bag(counters, 'energy', -v_energy_cost)
+    where session_id = p_session_id and player_id = auth.uid();
+  end if;
+
+  if v_has_tap then
+    update public.game_cards
+    set is_tapped = true
+    where id = p_source_card_id and session_id = p_session_id;
+  end if;
+
+  -- Sacrifice the source as a cost (after the other costs are paid).
+  if v_has_sac then
+    perform public.put_in_graveyard(p_session_id, p_source_card_id);
+    perform public.fire_watcher_triggers(p_session_id, p_source_card_id, auth.uid(), 'permanent_sacrificed');
+  end if;
+
+  -- Pay the graveyard-exile cost: exile the chosen card (controller := owner).
+  if v_has_gy_exile then
+    update public.game_cards gc
+    set zone = 'exile', controller_player_id = gc.owner_id, is_tapped = false, damage_marked = 0,
+        zone_position = (select coalesce(max(zone_position), -1) + 1
+                         from public.game_cards x
+                         where x.session_id = p_session_id and x.owner_id = gc.owner_id and x.zone = 'exile')
+    where gc.id = p_target_card_id and gc.session_id = p_session_id;
+  end if;
+
+  -- Pay the sacrifice-a-creature cost.
+  if v_has_sac_creature then
+    perform public.put_in_graveyard(p_session_id, v_sac_creature_id);
+    perform public.fire_watcher_triggers(p_session_id, v_sac_creature_id, auth.uid(), 'permanent_sacrificed');
+    -- The chosen creature was the COST, not the effect's target (mig 402,
+    -- Kalitas: sacrificing must not aim the +1/+1 counters at the dead body).
+    -- Only clear p_target_card_id in the legacy path where the sacrificed
+    -- creature WAS passed as the target; when paid via p_cost_card_ids, keep
+    -- p_target_card_id for the effect's own target (mig 412, Goblin Bombardment).
+    if p_cost_card_ids is null then
+      p_target_card_id := null;
+    end if;
+  end if;
+
+  -- Pay the sacrifice-N-artifacts cost (mig 264): cheapest MV first, source
+  -- excluded; raise when you control too few matching artifacts.
+  if v_sac_artifacts_count > 0 then
+    for v_i in 1..v_sac_artifacts_count loop
+      if p_cost_card_ids is not null then
+        -- Chosen payment (mig 284): consume the next provided card; it must
+        -- be a legal artifact payment or the activation fails whole.
+        v_cost_pick_i := v_cost_pick_i + 1;
+        v_sac_artifact := p_cost_card_ids[v_cost_pick_i];
+        if v_sac_artifact is null or not exists (
+          select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+          where gc.id = v_sac_artifact and gc.session_id = p_session_id
+            and gc.zone = 'battlefield'
+            and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+            and gc.id <> p_source_card_id
+            and c.type_line ilike '%artifact%'
+            and (v_sac_artifacts_type = '' or c.type_line ilike '%' || v_sac_artifacts_type || '%')
+            and (not v_sac_artifacts_nontoken
+                 or (not coalesce(c.is_token, false) and not coalesce(gc.is_token, false)))
+        ) then
+          raise exception 'Chosen cost card is not a legal artifact to sacrifice';
+        end if;
+      else
+      select gc.id into v_sac_artifact
+      from public.game_cards gc
+      join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+        and gc.id <> p_source_card_id
+        and c.type_line ilike '%artifact%'
+        and (v_sac_artifacts_type = '' or c.type_line ilike '%' || v_sac_artifacts_type || '%')
+        and (not v_sac_artifacts_nontoken
+             or (not coalesce(c.is_token, false) and not coalesce(gc.is_token, false)))
+      order by public.mana_value(c.mana_cost) asc, gc.zone_position asc, gc.id asc
+      limit 1;
+      end if;
+      if v_sac_artifact is null then
+        raise exception 'You must sacrifice % artifact(s) you control', v_sac_artifacts_count;
+      end if;
+      perform public.put_in_graveyard(p_session_id, v_sac_artifact);
+      perform public.fire_watcher_triggers(p_session_id, v_sac_artifact, auth.uid(), 'permanent_sacrificed');
+    end loop;
+  end if;
+
+  -- Pay the return-a-land cost (mig 277, Mina and Denn): tapped lands first.
+  if v_return_land_count > 0 then
+    for v_i in 1..v_return_land_count loop
+      if p_cost_card_ids is not null then
+        v_cost_pick_i := v_cost_pick_i + 1;
+        v_sac_artifact := p_cost_card_ids[v_cost_pick_i];
+        if v_sac_artifact is null or not exists (
+          select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+          where gc.id = v_sac_artifact and gc.session_id = p_session_id
+            and gc.zone = 'battlefield'
+            and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+            and c.type_line ilike '%land%'
+        ) then
+          raise exception 'Chosen cost card is not a legal land to return';
+        end if;
+      else
+      select gc.id into v_sac_artifact
+      from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+        and c.type_line ilike '%land%'
+      order by gc.is_tapped desc, gc.zone_position asc, gc.id asc
+      limit 1;
+      end if;
+      if v_sac_artifact is null then
+        raise exception 'You must return % land(s) you control to pay this cost', v_return_land_count;
+      end if;
+      update public.game_cards gc
+      set zone = 'hand', is_tapped = false, attached_to = null,
+          controller_player_id = gc.owner_id,
+          zone_position = (select coalesce(max(x.zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = p_session_id
+                             and x.owner_id = gc.owner_id and x.zone = 'hand')
+      where gc.id = v_sac_artifact;
+    end loop;
+  end if;
+
+  v_effect := v_ability -> 'effects' -> 0;
+  if v_effect is null then
+    raise exception 'Activated ability has no effect';
+  end if;
+
+  -- Non-mana activation broadcast (mig 258, Runic Armasaur: "whenever an
+  -- opponent activates an ability of a creature or land that isn't a mana
+  -- ability, you may draw a card"). Mana abilities route through
+  -- activate_mana_ability and never reach here, so every fire is non-mana.
+  -- Approximation: the watcher's type filter defaults to '' for this event
+  -- (any permanent type, not just creature-or-land).
+  perform public.fire_watcher_triggers(
+    p_session_id, p_source_card_id, auth.uid(), 'ability_activated');
+
+  -- A MULTI-effect ability (Vampiric Rites: draw + lose life; Kessig Wolf
+  -- Run: targeted pump + trample) resolves its whole program via a
+  -- spell_effect stack item. A provided target rides the payload — the
+  -- program resolver routes each targeted effect to it.
+  if jsonb_array_length(coalesce(v_ability -> 'effects', '[]'::jsonb)) > 1 then
+    select coalesce(max(position), 0) + 1 into v_next_position
+    from public.game_stack_items where session_id = p_session_id;
+    insert into public.game_stack_items (
+      session_id, controller_player_id, source_card_id, action_type, payload, position, status
+    ) values (
+      p_session_id, auth.uid(), p_source_card_id, 'spell_effect',
+      jsonb_build_object('effects', v_ability -> 'effects', 'controller_player_id', auth.uid(), 'timing', 'instant')
+        || case when p_target_card_id is not null
+                then jsonb_build_object('target_card_id', p_target_card_id) else '{}'::jsonb end,
+      v_next_position, 'pending'
+    )
+    returning * into v_stack;
+    return v_stack;
+  end if;
+
+  v_eff_type := lower(coalesce(v_effect ->> 'type', ''));
+  v_target_controller := coalesce(lower(nullif(v_effect ->> 'target_controller', '')), 'any');
+  -- Dynamic amount resolved NOW against the source permanent / controller / target.
+  v_amount := public.resolve_dynamic_amount(
+    p_session_id, p_source_card_id, auth.uid(), v_effect -> 'amount', p_target_card_id);
+
+  if v_eff_type = 'draw' then
+    v_stack := public.put_action_on_stack(
+      p_session_id, 'draw_cards',
+      jsonb_build_object('amount', greatest(1, v_amount), 'timing', 'instant'),
+      p_source_card_id
+    );
+
+  elsif v_eff_type in ('create_token', 'search_library', 'grant_keyword_all', 'return_all_from_graveyard', 'deal_damage_all', 'monstrosity', 'divide_damage', 'return_from_graveyard', 'play_hideaway', 'choose_one', 'gain_life', 'fight_pick', 'destroy_all', 'proliferate', 'copy_permanent', 'copy_self') then
+    -- A single create_token / search_library / grant_keyword_all effect
+    -- routes through a spell_effect stack item so it reuses the spell-effect
+    -- resolver (incl. the `tapped` flag and tutor `filter`). Wayfarer's Bauble.
+    -- A provided target rides the payload (mig 261, Wayta's fight_pick: the
+    -- activation target is the fighter).
+    select coalesce(max(position), 0) + 1 into v_next_position
+    from public.game_stack_items where session_id = p_session_id;
+    insert into public.game_stack_items (
+      session_id, controller_player_id, source_card_id, action_type, payload, position, status
+    ) values (
+      p_session_id, auth.uid(), p_source_card_id, 'spell_effect',
+      jsonb_build_object('effects', jsonb_build_array(v_effect), 'controller_player_id', auth.uid(), 'timing', 'instant')
+        || case when p_target_card_id is not null
+                then jsonb_build_object('target_card_id', p_target_card_id) else '{}'::jsonb end,
+      v_next_position, 'pending'
+    )
+    returning * into v_stack;
+
+  elsif v_eff_type = 'exile_from_graveyard' then
+    -- Withered Wretch: target is a card in ANY graveyard (not consumed as a cost).
+    if p_target_card_id is null then
+      raise exception 'A target card in a graveyard is required';
+    end if;
+    if not exists (
+      select 1 from public.game_cards
+      where id = p_target_card_id and session_id = p_session_id and zone = 'graveyard'
+    ) then
+      raise exception 'Target must be a card in a graveyard';
+    end if;
+    -- Direct-insert the stack item (the dispatcher resolves it via the registered
+    -- handle_exile_from_graveyard handler). put_action_on_stack's hardcoded action
+    -- allowlist doesn't carry this type, so mirror the create_token path above.
+    select coalesce(max(position), 0) + 1 into v_next_position
+    from public.game_stack_items where session_id = p_session_id;
+    insert into public.game_stack_items (
+      session_id, controller_player_id, source_card_id, action_type, payload, position, status
+    ) values (
+      p_session_id, auth.uid(), p_source_card_id, 'exile_from_graveyard',
+      jsonb_build_object('target_card_id', p_target_card_id, 'timing', 'instant'),
+      v_next_position, 'pending'
+    )
+    returning * into v_stack;
+
+  elsif v_eff_type = 'grant_cast_from_graveyard' and p_target_card_id is not null then
+    -- Havengul Lich (mig 215): "{1}: You may cast target creature card in a
+    -- graveyard this turn." The chosen card gets a card-specific until-EOT
+    -- cast-from-graveyard permission (the ATAE branch writes the row). The
+    -- "gains all activated abilities of that card" rider is NOT modelled.
+    -- Engine limitation: the cast path only casts cards you OWN, so targeting
+    -- an opponent's graveyard grants a permission that can't be used yet.
+    if not exists (
+      select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.id = p_target_card_id and gc.session_id = p_session_id and gc.zone = 'graveyard'
+        and c.type_line ilike '%creature%'
+    ) then
+      raise exception 'Target must be a creature card in a graveyard';
+    end if;
+    select coalesce(max(position), 0) + 1 into v_next_position
+    from public.game_stack_items where session_id = p_session_id;
+    insert into public.game_stack_items (
+      session_id, controller_player_id, source_card_id, action_type, payload, position, status
+    ) values (
+      p_session_id, auth.uid(), p_source_card_id, 'spell_effect',
+      jsonb_build_object(
+        'effects', jsonb_build_array(v_effect || jsonb_build_object('card_id', p_target_card_id)),
+        'controller_player_id', auth.uid(), 'timing', 'instant'),
+      v_next_position, 'pending'
+    )
+    returning * into v_stack;
+
+  elsif v_eff_type = 'reanimate_from_graveyard' then
+    -- Gravespawn Sovereign (mig 212): "Put target creature card from a
+    -- graveyard onto the battlefield under your control." Same direct-insert
+    -- route as exile_from_graveyard; the registered handler moves the card.
+    if p_target_card_id is null then
+      raise exception 'A target creature card in a graveyard is required';
+    end if;
+    if not exists (
+      select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.id = p_target_card_id and gc.session_id = p_session_id and gc.zone = 'graveyard'
+        and c.type_line ilike '%creature%'
+    ) then
+      raise exception 'Target must be a creature card in a graveyard';
+    end if;
+    select coalesce(max(position), 0) + 1 into v_next_position
+    from public.game_stack_items where session_id = p_session_id;
+    insert into public.game_stack_items (
+      session_id, controller_player_id, source_card_id, action_type, payload, position, status
+    ) values (
+      p_session_id, auth.uid(), p_source_card_id, 'reanimate_from_graveyard',
+      jsonb_build_object('target_card_id', p_target_card_id, 'timing', 'instant'),
+      v_next_position, 'pending'
+    )
+    returning * into v_stack;
+
+  elsif v_eff_type = 'deal_damage' then
+    if v_amount <= 0 then
+      raise exception 'Invalid damage amount';
+    end if;
+    if p_target_card_id is not null then
+      v_stack := public.put_action_on_stack(
+        p_session_id, 'deal_damage_creature',
+        jsonb_build_object('target_card_id', p_target_card_id, 'amount', v_amount, 'target_controller', v_target_controller, 'timing', 'instant'),
+        p_source_card_id
+      );
+    elsif p_target_player_id is not null then
+      v_stack := public.put_action_on_stack(
+        p_session_id, 'deal_damage_player',
+        jsonb_build_object('target_player_id', p_target_player_id, 'amount', v_amount, 'timing', 'instant'),
+        p_source_card_id
+      );
+    else
+      raise exception 'A target is required for this ability';
+    end if;
+
+  elsif v_eff_type in ('destroy', 'exile', 'bounce', 'tap', 'untap') then
+    if p_target_card_id is null then
+      raise exception 'A target is required for this ability';
+    end if;
+    -- Negative target restrictions (mig 414) ride along so apply_creature_effect
+    -- can reject a NONBLACK / non-<type> target (Executioner's Capsule). strip_nulls
+    -- keeps absent keys out (the `?` existence check must not see phantom nulls).
+    if public.behavior_target_type_is_creature_only(v_effect -> 'target_type') then
+      v_stack := public.put_action_on_stack(
+        p_session_id, v_eff_type || '_creature',
+        jsonb_build_object('target_card_id', p_target_card_id, 'target_controller', v_target_controller, 'timing', 'instant')
+          || jsonb_strip_nulls(jsonb_build_object(
+               'exclude_type_line', v_effect -> 'exclude_type_line',
+               'exclude_color', v_effect -> 'exclude_color')),
+        p_source_card_id
+      );
+    else
+      -- A non-creature / any-permanent target (Unstable Obelisk) goes through the
+      -- type-flexible permanent_effect action; apply_creature_effect's removal
+      -- kinds operate on any permanent.
+      v_stack := public.put_action_on_stack(
+        p_session_id, 'permanent_effect',
+        jsonb_build_object('kind', v_eff_type, 'target_card_id', p_target_card_id,
+          'target_type', coalesce(v_effect -> 'target_type', '"permanent"'::jsonb),
+          'target_controller', v_target_controller, 'timing', 'instant')
+          || jsonb_strip_nulls(jsonb_build_object(
+               'exclude_type_line', v_effect -> 'exclude_type_line',
+               'exclude_color', v_effect -> 'exclude_color')),
+        p_source_card_id
+      );
+    end if;
+
+  elsif v_eff_type = 'add_counters' then
+    if v_amount <= 0 then
+      raise exception 'Invalid counter amount';
+    end if;
+    if p_target_card_id is null then
+      -- Untargeted (mig 214, Grimoire of the Dead "put a study counter on ~"):
+      -- route through a spell_effect stack item — the trigger resolver's
+      -- add_counters defaults to the SOURCE (incl. bag counter_type).
+      select coalesce(max(position), 0) + 1 into v_next_position
+      from public.game_stack_items where session_id = p_session_id;
+      insert into public.game_stack_items (
+        session_id, controller_player_id, source_card_id, action_type, payload, position, status
+      ) values (
+        p_session_id, auth.uid(), p_source_card_id, 'spell_effect',
+        jsonb_build_object('effects', jsonb_build_array(v_effect), 'controller_player_id', auth.uid(), 'timing', 'instant'),
+        v_next_position, 'pending'
+      )
+      returning * into v_stack;
+    else
+      v_stack := public.put_action_on_stack(
+        p_session_id, 'add_counters_creature',
+        jsonb_build_object('target_card_id', p_target_card_id, 'amount', v_amount, 'target_controller', v_target_controller, 'timing', 'instant'),
+        p_source_card_id
+      );
+    end if;
+
+  elsif v_eff_type = 'pump' then
+    if p_target_card_id is null then
+      raise exception 'A target is required for this ability';
+    end if;
+    v_stack := public.put_action_on_stack(
+      p_session_id, 'pump_creature',
+      jsonb_build_object('target_card_id', p_target_card_id,
+        'power', coalesce((v_effect ->> 'power')::integer, 0),
+        'toughness', coalesce((v_effect ->> 'toughness')::integer, 0),
+        'target_controller', v_target_controller, 'timing', 'instant'),
+      p_source_card_id
+    );
+
+  elsif v_eff_type = 'grant_keyword' then
+    if p_target_card_id is null then
+      raise exception 'A target is required for this ability';
+    end if;
+    v_stack := public.put_action_on_stack(
+      p_session_id, 'grant_keyword_creature',
+      jsonb_build_object('target_card_id', p_target_card_id, 'keyword', lower(coalesce(v_effect ->> 'keyword', '')),
+        'target_controller', v_target_controller, 'timing', 'instant'),
+      p_source_card_id
+    );
+
+  elsif v_eff_type = 'equip' then
+    -- Equip {N} (mig 266, Breya Equipment cluster): attach this Equipment to
+    -- target creature you control. register_card_continuous_effects already
+    -- lands affected:'equipped' rows on attached_to, so a re-register after
+    -- the move grants the Equipment's bonuses to the new host. Sorcery-speed
+    -- timing is not enforced (consistent with the engine's loose timing).
+    if p_target_card_id is null then
+      raise exception 'Equip needs a target creature you control';
+    end if;
+    if not exists (
+      select 1 from public.game_cards gc join public.cards c on c.id = gc.card_id
+      where gc.id = p_target_card_id and gc.session_id = p_session_id
+        and gc.zone = 'battlefield'
+        and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
+        and c.type_line ilike '%creature%'
+    ) then
+      raise exception 'Equip target must be a creature you control';
+    end if;
+    update public.game_cards
+    set attached_to = p_target_card_id
+    where id = p_source_card_id and session_id = p_session_id;
+    perform public.rebuild_scripted_continuous_effects(p_session_id);
+    v_stack := null;
+
+  elsif v_eff_type = 'gain_control' then
+    if p_target_card_id is null then
+      raise exception 'A target is required for this ability';
+    end if;
+    v_stack := public.put_action_on_stack(
+      p_session_id, 'gain_control_creature',
+      jsonb_build_object('target_card_id', p_target_card_id,
+        'duration', coalesce(v_effect ->> 'duration', 'permanent'),
+        'untap', coalesce((v_effect ->> 'untap')::boolean, false),
+        'haste', coalesce((v_effect ->> 'haste')::boolean, false),
+        'target_controller', v_target_controller, 'timing', 'instant'),
+      p_source_card_id
+    );
+
+  else
+    raise exception 'Unsupported ability effect: %', v_eff_type;
+  end if;
+
+  return v_stack;
+end;
+$$;
+grant execute on function public.activate_ability(uuid, uuid, integer, uuid, uuid, jsonb, integer, uuid[]) to authenticated;
+grant execute on function public.activate_ability(uuid, uuid, integer, uuid, uuid, jsonb, integer, uuid[]) to service_role;
+
+create or replace function public.choose_triggered_ability_creature_target(
+  p_session_id uuid, p_stack_item_id uuid, p_target_card_id uuid
+) returns public.game_stack_items
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_stack_item public.game_stack_items;
+  v_target_type jsonb;
+  v_target_type_line text;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  if not public.is_session_player(p_session_id, auth.uid()) then
+    raise exception 'Current user is not a player in this session';
+  end if;
+
+  select *
+  into v_stack_item
+  from public.game_stack_items
+  where id = p_stack_item_id and session_id = p_session_id and status = 'pending'
+  for update;
+
+  if not found then
+    raise exception 'Triggered ability stack item not found';
+  end if;
+
+  -- 'spell_effect' (mig 420): a free nested-cast parks its found spell in the same
+  -- target shape; the target_required/optional gate still scopes this to free casts.
+  if v_stack_item.action_type not in ('triggered_ability', 'spell_effect')
+    or (coalesce((v_stack_item.payload ->> 'target_required')::boolean, false) is not true
+        and coalesce((v_stack_item.payload ->> 'target_optional')::boolean, false) is not true)
+  then
+    raise exception 'Stack item does not require a trigger target';
+  end if;
+
+  if v_stack_item.controller_player_id <> auth.uid() then
+    raise exception 'Only the trigger controller can choose its target';
+  end if;
+
+  v_target_type := v_stack_item.payload -> 'target_type';
+
+  if v_target_type is null or public.behavior_target_type_is_creature_only(v_target_type) then
+    if not public.creature_target_controller_ok(
+      p_session_id, p_target_card_id, v_stack_item.controller_player_id,
+      coalesce(v_stack_item.payload ->> 'target_controller', 'any')
+    ) then
+      raise exception 'Target is not a legal creature for this ability';
+    end if;
+  else
+    if not public.permanent_target_controller_ok(
+      p_session_id, p_target_card_id, v_stack_item.controller_player_id,
+      coalesce(v_stack_item.payload ->> 'target_controller', 'any'), v_target_type
+    ) then
+      raise exception 'Target is not a legal permanent for this ability';
+    end if;
+  end if;
+
+  -- Type-line restriction (mig 310): a payload `target_filter` narrows the legal
+  -- targets by type line (Opportunistic Dragon: Human or artifact). Null = no
+  -- restriction.
+  if v_stack_item.payload -> 'target_filter' is not null then
+    select c.type_line into v_target_type_line
+    from public.game_cards gc
+    join public.cards c on c.id = gc.card_id
+    where gc.id = p_target_card_id and gc.session_id = p_session_id;
+
+    if not public.card_type_line_matches_filter(v_target_type_line, v_stack_item.payload -> 'target_filter') then
+      raise exception 'Target does not match this ability''s type restriction';
+    end if;
+
+    -- "ANOTHER target …" (mig 440, Xenagos / Majestic Heliopterus): the
+    -- filter's exclude_self forbids the trigger's own source.
+    if coalesce((v_stack_item.payload -> 'target_filter' ->> 'exclude_self')::boolean, false)
+       and p_target_card_id = v_stack_item.source_card_id then
+      raise exception 'This ability cannot target its own source';
+    end if;
+  end if;
+
+  -- Protection: the chosen target can't have protection from the trigger source's
+  -- colour(s). The source card's mana cost gives its colours.
+  if public.card_has_protection_from_any(
+       p_session_id, p_target_card_id,
+       public.card_color_set((
+         select c.mana_cost
+         from public.game_cards gc
+         join public.cards c on c.id = gc.card_id
+         where gc.id = v_stack_item.source_card_id
+       ))) then
+    raise exception 'Target has protection from this ability''s colour';
+  end if;
+
+  update public.game_stack_items
+  set payload = payload || jsonb_build_object('target_card_id', p_target_card_id, 'target_chosen', true)
+  where id = v_stack_item.id
+  returning * into v_stack_item;
+
+  return v_stack_item;
+end;
+$$;
+grant all on function public.choose_triggered_ability_creature_target(uuid, uuid, uuid) to anon, authenticated, service_role;
+
+create or replace function public.enqueue_triggered_ability(
+  p_session_id uuid, p_controller_id uuid, p_source_card_id uuid, p_label text, p_effects jsonb,
+  -- The creature that CAUSED a watcher to fire (entering/attacking), so a
+  -- reflexive effect ("it gains haste") can apply to it (mig 227).
+  p_triggering_card_id uuid default null,
+  -- Extra event context merged onto the payload (mig 247: event_amount /
+  -- event_player_id for dragons_combat_damage).
+  p_extra jsonb default null
+) returns void
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_next_position integer;
+  v_target_type jsonb;
+  v_requires_target boolean;
+  v_target_optional boolean;
+  v_target_controller text;
+  v_target_filter jsonb;
+  v_has_target boolean;
+  v_active_player_id uuid;
+  v_player_count integer;
+  v_controller_seat integer;
+  v_active_seat integer;
+  v_apnap_rank integer := 0;
+  v_per_opponent boolean;
+  v_opponent_count integer;
+begin
+  if p_effects is null or jsonb_typeof(p_effects) <> 'array' or jsonb_array_length(p_effects) = 0 then
+    return;
+  end if;
+
+  v_target_type := public.trigger_effects_target_type(p_effects);
+  -- "Up to one target …" (Obuun's animate): the targeting effect carries
+  -- optional:true. Optional targets do NOT make the trigger require a target — it
+  -- resolves (as a no-op) if none is chosen — so it can never soft-lock the stack.
+  v_target_optional := v_target_type is not null and coalesce((
+    select (effects.effect ->> 'optional')::boolean
+    from jsonb_array_elements(coalesce(p_effects, '[]'::jsonb)) as effects(effect)
+    where public.trigger_effect_target_type(effects.effect) is not null
+    limit 1
+  ), false);
+  -- per_opponent (mig 415, Bronzebeak Foragers / Grasp of Fate): "for each
+  -- opponent, exile up to one target … that player controls". The target COUNT
+  -- becomes the number of LIVING opponents (life_total > 0), and it's optional
+  -- ("up to one" each). The picker enforces at-most-one-per-opponent.
+  v_per_opponent := v_target_type is not null and coalesce((
+    select (effects.effect ->> 'per_opponent')::boolean
+    from jsonb_array_elements(coalesce(p_effects, '[]'::jsonb)) as effects(effect)
+    where public.trigger_effect_target_type(effects.effect) is not null
+    limit 1
+  ), false);
+  if v_per_opponent then
+    v_target_optional := true;
+    select count(*) into v_opponent_count
+    from public.game_session_players
+    where session_id = p_session_id and player_id <> p_controller_id and life_total > 0;
+  end if;
+
+  v_requires_target := v_target_type is not null and not v_target_optional;
+
+  -- Target metadata is carried whenever the trigger CAN target (required or
+  -- optional) so the client can offer a picker; the controller/filter feed both
+  -- the picker and the chooser RPC's legality checks.
+  if v_target_type is not null then
+    v_target_controller := coalesce(public.trigger_effects_target_controller(p_effects), 'any');
+    -- Optional type-line restriction on the target (mig 310, Opportunistic Dragon:
+    -- "Human or artifact").
+    v_target_filter := public.trigger_effects_target_filter(p_effects);
+  end if;
+
+  -- A REQUIRED target with no legal pick fizzles: don't enqueue (mirrors the
+  -- existing guard). Optional targets always enqueue — they just resolve no-op.
+  if v_requires_target then
+    if v_target_filter is not null then
+      -- Filter-aware availability: don't enqueue a "choose target" trigger when no
+      -- battlefield permanent matches BOTH the target type and the type-line
+      -- filter — otherwise the trigger would sit unresolvable with no legal pick.
+      v_has_target := exists (
+        select 1
+        from public.game_cards gc
+        join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id
+          and gc.zone = 'battlefield'
+          and public.card_type_line_matches_target(c.type_line, v_target_type)
+          and public.card_type_line_matches_filter(c.type_line, v_target_filter)
+          -- exclude_self (mig 440): "another target …" — the source alone is
+          -- no legal pick, so such a trigger must not enqueue unresolvable.
+          and not (coalesce((v_target_filter ->> 'exclude_self')::boolean, false)
+                   and gc.id = p_source_card_id)
+          and (
+            v_target_controller = 'any'
+            or (v_target_controller = 'opponent' and gc.controller_player_id is distinct from p_controller_id)
+            or (v_target_controller = 'you' and gc.controller_player_id = p_controller_id)
+          )
+      );
+    elsif public.behavior_target_type_is_creature_only(v_target_type) then
+      v_has_target := public.session_has_targetable_creature(p_session_id, p_controller_id, v_target_controller);
+    else
+      v_has_target := public.session_has_targetable_permanent(p_session_id, p_controller_id, v_target_controller, v_target_type);
+    end if;
+
+    if not v_has_target then
+      return;
+    end if;
+  end if;
+
+  -- APNAP rank: how far the controller sits from the active player in seat order.
+  -- 0 = active player (its triggers resolve last). Falls back to 0 if unknown.
+  select active_player_id into v_active_player_id
+  from public.game_turn_state where session_id = p_session_id;
+
+  select count(*) into v_player_count
+  from public.game_session_players where session_id = p_session_id;
+
+  select seat_number into v_controller_seat
+  from public.game_session_players
+  where session_id = p_session_id and player_id = p_controller_id;
+
+  select seat_number into v_active_seat
+  from public.game_session_players
+  where session_id = p_session_id and player_id = v_active_player_id;
+
+  if coalesce(v_player_count, 0) > 0 and v_controller_seat is not null and v_active_seat is not null then
+    v_apnap_rank := ((v_controller_seat - v_active_seat) % v_player_count + v_player_count) % v_player_count;
+  end if;
+
+  select coalesce(max(position), -1) + 1
+  into v_next_position
+  from public.game_stack_items
+  where session_id = p_session_id;
+
+  insert into public.game_stack_items (
+    session_id, controller_player_id, source_card_id, action_type, payload, position
+  )
+  values (
+    p_session_id, p_controller_id, p_source_card_id, 'triggered_ability',
+    jsonb_build_object(
+      'label', p_label,
+      'controller_player_id', p_controller_id,
+      'effects', p_effects,
+      'target_required', v_requires_target,
+      'target_optional', v_target_optional,
+      'target_type', case when v_target_type is not null then v_target_type else null end,
+      'target_count', case when v_target_type is null then null
+                           when v_per_opponent then greatest(0, coalesce(v_opponent_count, 0))
+                           else public.trigger_effects_target_count(p_effects) end,
+      'per_opponent', v_per_opponent,
+      'target_controller', case when v_target_type is not null then v_target_controller else null end,
+      'target_filter', case when v_target_type is not null then v_target_filter else null end,
+      'timing', 'triggered',
+      'apnap_rank', v_apnap_rank,
+      'triggering_card_id', p_triggering_card_id
+    ) || coalesce(p_extra, '{}'::jsonb),
+    v_next_position
+  );
+end;
+$$;
+grant execute on function public.enqueue_triggered_ability(uuid, uuid, uuid, text, jsonb, uuid, jsonb) to authenticated;
+
+create or replace function public.apply_mass_pump_until_eot(
+  p_session_id uuid,
+  p_source_card_id uuid,
+  p_controller_id uuid,
+  p_effect jsonb
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_power integer;
+  v_tough integer;
+  v_cid uuid;
+begin
+  v_power := public.resolve_dynamic_amount(
+    p_session_id, p_source_card_id, p_controller_id, p_effect -> 'power');
+  if coalesce((p_effect -> 'power' ->> 'negate')::boolean, false) then
+    v_power := -v_power;
+  end if;
+  v_tough := public.resolve_dynamic_amount(
+    p_session_id, p_source_card_id, p_controller_id, p_effect -> 'toughness');
+  if coalesce((p_effect -> 'toughness' ->> 'negate')::boolean, false) then
+    v_tough := -v_tough;
+  end if;
+
+  -- exclude_self (mig 440, End-Raze Forerunners: "OTHER creatures you control
+  -- get +2/+2"): per-creature pump rows via create_pt_pump so the source
+  -- itself stays untouched — the player-scoped mass row can't express it.
+  if coalesce((p_effect ->> 'exclude_self')::boolean, false) then
+    for v_cid in
+      select gc.id
+      from public.game_cards gc
+      join public.cards c on c.id = gc.card_id
+      where gc.session_id = p_session_id and gc.zone = 'battlefield'
+        and c.type_line ilike '%creature%'
+        and gc.id is distinct from p_source_card_id
+        and (coalesce(p_effect ->> 'creature_type', '') = ''
+             or c.type_line ilike '%' || (p_effect ->> 'creature_type') || '%')
+        and (case lower(coalesce(p_effect ->> 'scope', 'all'))
+               when 'controller' then coalesce(gc.controller_player_id, gc.owner_id) = p_controller_id
+               when 'opponent' then coalesce(gc.controller_player_id, gc.owner_id) is distinct from p_controller_id
+               else true end)
+    loop
+      perform public.create_pt_pump(p_session_id, v_cid, coalesce(v_power, 0), coalesce(v_tough, 0));
+    end loop;
+    perform public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
+    return;
+  end if;
+
+  -- scope 'controller' => only that player's creatures (affected_player_id set);
+  -- 'all' (default) => every creature, any controller (affected_player_id null);
+  -- 'opponent' (mig 395, Phyresis Outbreak: "creatures your opponents control
+  -- get -1/-1…") => one 'pump' row PER OPPONENT, so the layered P/T fold
+  -- (which matches on affected_player_id) needs no reader changes.
+  if lower(coalesce(p_effect ->> 'scope', 'all')) = 'opponent' then
+    insert into public.game_continuous_effects (
+      session_id, source_card_id, affected_player_id, effect_type, payload,
+      expires_at_phase, expires_at_step
+    )
+    select
+      p_session_id, p_source_card_id, sp.player_id,
+      'pump',
+      jsonb_build_object(
+        'power', coalesce(v_power, 0),
+        'toughness', coalesce(v_tough, 0),
+        'creature_type', p_effect ->> 'creature_type',
+        'exclude_type', coalesce((p_effect ->> 'exclude_type')::boolean, false)
+      ),
+      'ending', 'cleanup'
+    from public.game_session_players sp
+    where sp.session_id = p_session_id
+      and sp.player_id is distinct from p_controller_id;
+  else
+    insert into public.game_continuous_effects (
+      session_id, source_card_id, affected_player_id, effect_type, payload,
+      expires_at_phase, expires_at_step
+    ) values (
+      p_session_id, p_source_card_id,
+      case when lower(coalesce(p_effect ->> 'scope', 'all')) = 'controller' then p_controller_id else null end,
+      'pump',
+      jsonb_build_object(
+        'power', coalesce(v_power, 0),
+        'toughness', coalesce(v_tough, 0),
+        'creature_type', p_effect ->> 'creature_type',
+        'exclude_type', coalesce((p_effect ->> 'exclude_type')::boolean, false)
+      ),
+      'ending', 'cleanup'
+    );
+  end if;
+  -- A -X/-X can drop creatures to 0 toughness; the SBA reads effective toughness.
+  perform public.move_lethal_damaged_creatures_to_graveyard(p_session_id);
+end;
+$$;
+grant execute on function public.apply_mass_pump_until_eot(uuid, uuid, uuid, jsonb) to authenticated;
 
 create or replace function public.apply_triggered_ability_effects(
   p_session_id uuid,

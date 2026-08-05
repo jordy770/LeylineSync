@@ -13431,5 +13431,97 @@
         ]
       }
     }
+  },
+  {
+    "name": "Boar Rally Test",
+    "type_line": "Creature - Boar",
+    "oracle_text": "When this creature enters, other creatures you control get +2/+2 and gain vigilance until end of turn.",
+    "power_toughness": "5/5",
+    "mana_cost": "{5}{G}{G}",
+    "script": {
+      "schema_version": 2,
+      "triggered_abilities": [
+        {
+          "event": "enters_the_battlefield",
+          "effects": [
+            {
+              "type": "pump_all",
+              "power": 2,
+              "toughness": 2,
+              "scope": "controller",
+              "exclude_self": true
+            },
+            {
+              "type": "grant_keyword_all",
+              "keyword": "vigilance",
+              "scope": "controller",
+              "exclude_self": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Revel God Test",
+    "type_line": "Legendary Enchantment Creature - God",
+    "oracle_text": "At the beginning of combat on your turn, another target creature you control gains haste and gets +2/+2 until end of turn.",
+    "power_toughness": "6/5",
+    "mana_cost": "{3}{R}{G}",
+    "script": {
+      "schema_version": 2,
+      "triggered_abilities": [
+        {
+          "event": "beginning_of_combat",
+          "effects": [
+            {
+              "type": "pump",
+              "power": 2,
+              "toughness": 2,
+              "target_type": "creature",
+              "target_controller": "you",
+              "target_filter": {
+                "exclude_self": true
+              }
+            },
+            {
+              "type": "grant_keyword",
+              "keyword": "haste",
+              "target_type": "creature",
+              "target_controller": "you",
+              "target_filter": {
+                "exclude_self": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Sorcery Tinker Test",
+    "type_line": "Legendary Creature - Human Soldier",
+    "oracle_text": "{T}: Draw a card. Activate only as a sorcery.",
+    "power_toughness": "2/2",
+    "mana_cost": "{3}{R}",
+    "script": {
+      "schema_version": 2,
+      "activated_abilities": [
+        {
+          "timing": "sorcery",
+          "costs": [
+            {
+              "type": "tap_self"
+            }
+          ],
+          "effects": [
+            {
+              "type": "draw",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    }
   }
 ]

@@ -118,6 +118,23 @@ begin
     raise exception 'Activated ability not found at index %', p_ability_index;
   end if;
 
+  -- "Activate only as a sorcery" (mig 440, Orthion): the sorcery gate —
+  -- active player, main phase, empty stack.
+  if lower(coalesce(v_ability ->> 'timing', '')) = 'sorcery' then
+    if v_turn.active_player_id <> auth.uid() then
+      raise exception 'This ability can only be activated as a sorcery (your turn)';
+    end if;
+    if v_turn.step not in ('precombat_main', 'postcombat_main') then
+      raise exception 'This ability can only be activated as a sorcery (main phase)';
+    end if;
+    if exists (
+      select 1 from public.game_stack_items
+      where session_id = p_session_id and status = 'pending'
+    ) then
+      raise exception 'This ability can only be activated as a sorcery (empty stack)';
+    end if;
+  end if;
+
   if coalesce((v_ability ->> 'is_mana_ability')::boolean, false) then
     raise exception 'Use the mana ability flow for mana abilities';
   end if;

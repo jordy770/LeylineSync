@@ -4149,7 +4149,11 @@
             "type": "grant_keyword",
             "keyword": "flying",
             "target_type": "creature",
-            "target_controller": "you"
+            "target_controller": "you",
+            "target_filter": {
+              "type_line": "Dinosaur",
+              "exclude_self": true
+            }
           }
         ]
       }
@@ -4766,13 +4770,19 @@
               "power_of": "target"
             },
             "target_type": "creature",
-            "target_controller": "you"
+            "target_controller": "you",
+            "target_filter": {
+              "exclude_self": true
+            }
           },
           {
             "type": "grant_keyword",
             "keyword": "haste",
             "target_type": "creature",
-            "target_controller": "you"
+            "target_controller": "you",
+            "target_filter": {
+              "exclude_self": true
+            }
           }
         ]
       }
@@ -18451,7 +18461,8 @@
               "cleanup_at_end_step": true
             }
           }
-        ]
+        ],
+        "timing": "sorcery"
       },
       {
         "costs": [
@@ -18478,7 +18489,8 @@
             },
             "count": 5
           }
-        ]
+        ],
+        "timing": "sorcery"
       }
     ]
   },
@@ -22558,17 +22570,20 @@
             "type": "pump_all",
             "power": 2,
             "toughness": 2,
-            "scope": "controller"
+            "scope": "controller",
+            "exclude_self": true
           },
           {
             "type": "grant_keyword_all",
             "keyword": "vigilance",
-            "scope": "controller"
+            "scope": "controller",
+            "exclude_self": true
           },
           {
             "type": "grant_keyword_all",
             "keyword": "trample",
-            "scope": "controller"
+            "scope": "controller",
+            "exclude_self": true
           }
         ]
       }

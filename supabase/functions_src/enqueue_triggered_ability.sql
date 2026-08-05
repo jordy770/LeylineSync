@@ -88,6 +88,10 @@ begin
           and gc.zone = 'battlefield'
           and public.card_type_line_matches_target(c.type_line, v_target_type)
           and public.card_type_line_matches_filter(c.type_line, v_target_filter)
+          -- exclude_self (mig 440): "another target …" — the source alone is
+          -- no legal pick, so such a trigger must not enqueue unresolvable.
+          and not (coalesce((v_target_filter ->> 'exclude_self')::boolean, false)
+                   and gc.id = p_source_card_id)
           and (
             v_target_controller = 'any'
             or (v_target_controller = 'opponent' and gc.controller_player_id is distinct from p_controller_id)

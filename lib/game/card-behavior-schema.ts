@@ -1037,6 +1037,13 @@ const CardBehaviorActionSchema = z.union([
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+    // Type-line / "another"-restriction on the trigger target (mig 310/440,
+    // Xenagos: exclude_self forbids the trigger's own source).
+    target_filter: z.object({
+      type_line: z.string().optional(),
+      type_line_any: z.array(z.string()).optional(),
+      exclude_self: z.boolean().optional(),
+    }).strict().optional(),
     // Reflexive watcher (Shared Animosity, mig 340): pump the EVENT SUBJECT (the
     // attacking creature), no target pick.
     target: z.literal('triggering_creature').optional(),
@@ -1056,6 +1063,9 @@ const CardBehaviorActionSchema = z.union([
     scope: z.enum(['all', 'controller', 'opponent']).optional(),
     creature_type: z.string().optional(),
     exclude_type: z.boolean().optional(),
+    // "OTHER creatures you control get …" (mig 440, End-Raze Forerunners):
+    // per-creature rows that skip the source.
+    exclude_self: z.boolean().optional(),
   }),
   // Amass N — create-or-grow a 0/0 Zombie Army with N +1/+1 counters.
   z.object({
@@ -1137,6 +1147,8 @@ const CardBehaviorActionSchema = z.union([
     scope: z.enum(['all', 'controller']).optional(),
     creature_type: z.string().optional(),
     includes_player: z.boolean().optional(),
+    // "OTHER creatures you control gain …" (mig 440): skip the source.
+    exclude_self: z.boolean().optional(),
   }),
   // Mass destroy (board wipe) — all matching battlefield creatures, optional type.
   z.object({
@@ -1229,6 +1241,13 @@ const CardBehaviorActionSchema = z.union([
     target_ref: z.string().optional(),
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
+    // Type-line / "another"-restriction on the trigger target (mig 310/440,
+    // Majestic Heliopterus: Dinosaur only + exclude_self).
+    target_filter: z.object({
+      type_line: z.string().optional(),
+      type_line_any: z.array(z.string()).optional(),
+      exclude_self: z.boolean().optional(),
+    }).strict().optional(),
     // Reflexive watcher (mig 227): 'triggering_creature' applies the grant to
     // the entering/attacking creature that fired the watcher (Atarka, Dragon
     // Tempest), no target pick.
