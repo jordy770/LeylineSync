@@ -853,6 +853,7 @@ export async function putDrawCardsOnStack(
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
   xValue?: number | null,
+  delveCardIds?: string[] | null,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -864,6 +865,7 @@ export async function putDrawCardsOnStack(
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
+    p_delve_card_ids: delveCardIds?.length ? delveCardIds : null,
   })
 
   if (error) {
@@ -928,6 +930,7 @@ export async function castSpellEffect(
   adventure = false,
   overload = false,
   buyback = false,
+  delveCardIds?: string[] | null,
 ) {
   const { data, error } = await supabase.rpc('cast_spell_effect', {
     p_session_id: sessionId,
@@ -938,6 +941,7 @@ export async function castSpellEffect(
     p_adventure: adventure,
     p_overload: overload,
     p_buyback: buyback,
+    p_delve_card_ids: delveCardIds?.length ? delveCardIds : null,
   })
 
   if (error) {

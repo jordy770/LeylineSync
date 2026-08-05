@@ -258,6 +258,17 @@ export const CREATURE_EFFECT_MAP: Record<string, { effect: TargetedCreatureActio
   untap: { effect: 'untap_creature', label: 'Untap' },
 }
 
+// Reduce a mana-cost string's single generic token by `by`, floored at zero
+// (the token disappears at zero). Client mirror of the engine's
+// reduce_generic_cost (mig 431, delve) — used to auto-pay the reduced cost.
+export function reduceGenericCost(cost: string, by: number): string {
+  if (by <= 0 || !cost) return cost
+  const m = cost.match(/\{(\d+)\}/)
+  if (!m) return cost
+  const left = Math.max(0, Number(m[1]) - by)
+  return cost.replace(/\{\d+\}/, left === 0 ? '' : `{${left}}`)
+}
+
 export function targetTypeMatches(tt: unknown, want: string): boolean {
   if (!tt) return false
   if (tt === want || tt === 'any') return true

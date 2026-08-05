@@ -1602,6 +1602,10 @@ export const CardBehaviorScriptV2Schema = z.object({
   // paying it returns the card to its owner's hand as the spell resolves
   // (finalize_stack_resolution reads the stamp on the stack item).
   buyback: z.string().optional(),
+  // Delve (mig 431, Treasure Cruise / Dig Through Time): the caster may exile
+  // graveyard cards while casting; each pays for {1} of the generic cost
+  // (cast RPCs take p_delve_card_ids, engine-validated and capped).
+  delve: z.boolean().optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),

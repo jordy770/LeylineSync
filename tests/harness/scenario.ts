@@ -283,6 +283,7 @@ export class Scenario {
     sourceCardId: string | null = null,
     freeCast = false,
     buyback = false,
+    delveCardIds: string[] | null = null,
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'put_action_on_stack', {
@@ -292,6 +293,7 @@ export class Scenario {
         p_source_card_id: sourceCardId,
         p_free_cast: freeCast,
         p_buyback: buyback,
+        p_delve_card_ids: delveCardIds,
       }),
     )
   }
@@ -525,6 +527,7 @@ export class Scenario {
     adventure = false,
     overload = false,
     buyback = false,
+    delveCardIds: string[] | null = null,
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'cast_spell_effect', {
@@ -536,6 +539,7 @@ export class Scenario {
         p_adventure: adventure,
         p_overload: overload,
         p_buyback: buyback,
+        p_delve_card_ids: delveCardIds,
       }),
     )
   }

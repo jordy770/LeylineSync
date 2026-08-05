@@ -103,6 +103,7 @@ import {
   manaCostColors,
   playerHasInstantResponse,
   playerHasMainPhaseAction,
+  reduceGenericCost,
   targetTypeMatches,
 } from './controller/shared'
 
@@ -1214,19 +1215,22 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       await refresh()
     },
     // Untargeted card-draw spell (Divination etc.)
-    drawCards: async (cardId: string) => {
+    drawCards: async (cardId: string, delveCardIds?: string[]) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'draw') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
-      await autoPay(card)
-      await putDrawCardsOnStack(supabase, sessionId, plan.amount, plan.timing, cardId, undefined, x)
+      // Delve (mig 431): each exiled graveyard card pays {1} — auto-pay the
+      // reduced cost; the server validates, exiles, and charges the same.
+      const delved = delveCardIds?.length ?? 0
+      await autoPay(card, delved > 0 ? { override: reduceGenericCost(card.cards?.mana_cost ?? '', delved) } : undefined)
+      await putDrawCardsOnStack(supabase, sessionId, plan.amount, plan.timing, cardId, undefined, x, delveCardIds)
       await refresh()
     },
     // Untargeted multi-action spell (scry/surveil/draw program, e.g. Opt) — runs
     // the effects in order server-side, parking on a scry/surveil decision.
-    spellEffect: async (cardId: string, buyback = false) => {
+    spellEffect: async (cardId: string, buyback = false, delveCardIds?: string[]) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'spell_effect') return
@@ -1237,8 +1241,15 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       const buybackCost = buyback
         ? normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)?.buyback
         : undefined
-      await autoPay(card, buybackCost ? { extra: buybackCost } : undefined)
-      await castSpellEffect(supabase, sessionId, plan.actions, cardId, x, null, false, false, buyback)
+      // Delve (mig 431): each exiled graveyard card pays {1} — auto-pay the
+      // reduced cost; the server validates, exiles, and charges the same.
+      const delved = delveCardIds?.length ?? 0
+      await autoPay(card, buybackCost
+        ? { extra: buybackCost }
+        : delved > 0
+          ? { override: reduceGenericCost(card.cards?.mana_cost ?? '', delved) }
+          : undefined)
+      await castSpellEffect(supabase, sessionId, plan.actions, cardId, x, null, false, false, buyback, delveCardIds)
       await refresh()
     },
     // Modal spell — cast the card's modes; the choose_mode decision UI does the rest.
@@ -1595,8 +1606,9 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             onPermanentEffect={async (cardId, targetCardId, buyback) => { await actions.permanentEffect(cardId, targetCardId, buyback) }}
             onDividedDamage={async (cardId, allocations) => { await actions.dividedDamage(cardId, allocations) }}
             onFight={async (cardId, fighterCardId, foughtCardId) => { await actions.fight(cardId, fighterCardId, foughtCardId) }}
-            onDrawCards={async (cardId) => { await actions.drawCards(cardId) }}
-            onSpellEffect={async (cardId, buyback) => { await actions.spellEffect(cardId, buyback) }}
+            onDrawCards={async (cardId, delveCardIds) => { await actions.drawCards(cardId, delveCardIds) }}
+            onSpellEffect={async (cardId, buyback, delveCardIds) => { await actions.spellEffect(cardId, buyback, delveCardIds) }}
+            graveyardCards={ownGraveyard.map((c) => ({ id: c.id, name: c.name }))}
             onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onCastAdventure={async (cardId, opts) => { await actions.castAdventure(cardId, opts) }}

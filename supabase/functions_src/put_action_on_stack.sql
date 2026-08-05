@@ -16,7 +16,10 @@ create or replace function public.put_action_on_stack(
   -- Buyback (mig 430, Mind Games): pay the script's `buyback` cost as an
   -- ADDITIONAL cost; finalize_stack_resolution returns the card to its owner's
   -- hand as the spell resolves (the payload carries the stamp).
-  p_buyback boolean default false
+  p_buyback boolean default false,
+  -- Delve (mig 431, Treasure Cruise): graveyard cards the caster exiles while
+  -- casting — each pays for {1} of the generic cost. Script-gated (`delve`).
+  p_delve_card_ids uuid[] default null
 )
 returns public.game_stack_items
 language plpgsql
@@ -41,6 +44,8 @@ declare
   v_builder_fn text;
   v_built_payload jsonb;
   v_stack_item public.game_stack_items;
+  v_delve_count integer := coalesce(array_length(p_delve_card_ids, 1), 0);
+  v_pay_cost text;
 begin
   if auth.uid() is null then
     raise exception 'Authentication required';
@@ -132,6 +137,26 @@ begin
     end if;
     if v_source_zone not in ('hand', 'exile') then
       raise exception 'Buyback can only be used when casting from hand or exile';
+    end if;
+  end if;
+
+  -- Delve (mig 431): script-gated; the chosen cards must be distinct cards in
+  -- the CASTER's graveyard. The generic-cap check happens at payment time.
+  if v_delve_count > 0 then
+    if p_source_card_id is null
+       or not coalesce((v_source_script ->> 'delve')::boolean, false) then
+      raise exception 'This card does not have delve';
+    end if;
+    if v_source_zone not in ('hand', 'exile') then
+      raise exception 'Delve can only be used when casting from hand or exile';
+    end if;
+    if (select count(distinct u) from unnest(p_delve_card_ids) u) <> v_delve_count
+       or (select count(*) from public.game_cards gc
+           where gc.id = any(p_delve_card_ids)
+             and gc.session_id = p_session_id
+             and gc.owner_id = auth.uid()
+             and gc.zone = 'graveyard') <> v_delve_count then
+      raise exception 'Delve cards must be distinct cards in your graveyard';
     end if;
   end if;
 
@@ -242,7 +267,16 @@ begin
   -- An exile cast (impulse) pays the printed cost too — impulse is not free.
   -- A verified conditional free cast (p_free_cast, guarded above) skips payment.
   if not p_free_cast and p_source_card_id is not null and v_source_zone in ('hand', 'exile') then
-    perform public.pay_mana_cost(p_session_id, auth.uid(), v_source_mana_cost, v_generic_payment, v_x_value,
+    v_pay_cost := v_source_mana_cost;
+    -- Delve (mig 431): each exiled card pays {1} of the generic — capped at
+    -- that generic (CR 702.66a: one card per generic mana).
+    if v_delve_count > 0 then
+      if v_delve_count > coalesce(substring(coalesce(v_pay_cost, '') from '\{(\d+)\}')::integer, 0) then
+        raise exception 'Cannot delve more cards than the generic part of the cost';
+      end if;
+      v_pay_cost := public.reduce_generic_cost(v_pay_cost, v_delve_count);
+    end if;
+    perform public.pay_mana_cost(p_session_id, auth.uid(), v_pay_cost, v_generic_payment, v_x_value,
       p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_source_type_line, ''),
         'is_commander', v_source_is_commander));
     -- Buyback (mig 430): the additional cost is paid ON TOP of the printed
@@ -251,6 +285,16 @@ begin
       perform public.pay_mana_cost(p_session_id, auth.uid(), v_source_script ->> 'buyback', null, 0,
         p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_source_type_line, ''),
           'is_commander', v_source_is_commander));
+    end if;
+    -- The delved cards leave the graveyard for exile as part of the cast.
+    if v_delve_count > 0 then
+      update public.game_cards gc
+      set zone = 'exile',
+          zone_position = (select coalesce(max(x.zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = p_session_id
+                             and x.owner_id = gc.owner_id and x.zone = 'exile')
+      where gc.id = any(p_delve_card_ids) and gc.session_id = p_session_id;
     end if;
   end if;
 
@@ -339,4 +383,4 @@ begin
   return v_stack_item;
 end;
 $$;
-grant execute on function public.put_action_on_stack(uuid, text, jsonb, uuid, boolean, boolean) to authenticated;
+grant execute on function public.put_action_on_stack(uuid, text, jsonb, uuid, boolean, boolean, uuid[]) to authenticated;

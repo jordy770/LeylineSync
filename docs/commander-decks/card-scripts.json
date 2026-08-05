@@ -15145,7 +15145,8 @@
           "min_picks": 2
         }
       ]
-    }
+    },
+    "delve": true
   },
   "Observed Stasis": {
     "schema_version": 2,
@@ -20359,7 +20360,8 @@
           "amount": 3
         }
       ]
-    }
+    },
+    "delve": true
   },
   "Frantic Search": {
     "schema_version": 2,
