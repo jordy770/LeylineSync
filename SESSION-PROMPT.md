@@ -26,10 +26,12 @@ het gratis pad blijft heuristisch.
 2. `.wolf/cerebrum.md` — **onderaan beginnen**: de recentste secties (jul '26) staan achteraan en zijn het
    meest waard. De vaste secties bovenaan (User Preferences, Do-Not-Repeat) gelden onverkort.
 3. `docs/open-items.md` — de geconsolideerde TODO, maar **stale sinds 25 juni** (engine stond toen op
-   mig 333; we zitten nu op ~418). De "deferred-by-choice"-lijst klopt grotendeels nog; de TL;DR niet.
+   mig 333; we zitten nu op ~441). De "deferred-by-choice"-lijst klopt grotendeels nog; de TL;DR niet.
 4. `docs/commander-decks/engine-blocked-backlog-2026-07-18.md` — de eerlijke engine-restlijst
-   (**280 kaarten**, gegroepeerd op ontbrekende primitive). De kop legt uit wat sinds v0.17–v0.19 al
-   gedekt is — **verifieer per kaart tegen de huidige scripts vóór je iets herbouwt.**
+   (**212 open**, was 280; gegroepeerd op ontbrekende primitive). De sectie "Voortgang sinds 18 juli"
+   bovenaan zegt wat per bucket dicht is; het ronde-verslag van 5–6 aug staat in
+   `docs/commander-decks/engine-round-2026-08-05.md`. **Verifieer per kaart tegen de huidige scripts
+   vóór je iets herbouwt.**
 5. `docs/collection-optimizer/ARCHITECTURE.md` — zegt "design, pre-build" maar dat is **achterhaald**: het
    advisor-spoor (commander-suggest, buildable commanders, deck-generatie, start-deck-routes) is eind juli
    gebouwd. Gebruik het doc voor de architectuurkeuzes, niet voor de status.
@@ -59,11 +61,15 @@ is erger.
    ververst staat in de sectie **Dashboards & vragenpagina** hieronder. Kern: na elk stuk werk dat een
    spoor opschuift → milestones bijwerken in `.wolf/dashboard-tracks.json` → `npm run dashboard`.
 
-## Waar het project staat (4 aug 2026)
+## Waar het project staat (6 aug 2026)
 
-- **Engine v0.19, migraties t/m ~418.** Kern-vocabulaire compleet; laatste arcs: karoo-bounce,
-  planeswalker-damage, per-opponent targets, scaling cost-reduction, `p_free` cast-vlag. Restwerk zit in
-  de 280-kaarten-backlog (grootste coherente bucket: alternative/additional casting cost, 31 kaarten).
+- **Engine v0.20, migraties t/m 441 (lokaal; OVH staat nog op v0.19).** Kern-vocabulaire compleet;
+  de ronde van 5–6 aug bouwde het volledige cast-modifier-vocabulaire (landcycling, overload, free-cast,
+  buyback, delve, convoke, evoke, blitz, spectacle, madness) plus per-opponent-drains, situationele
+  cost-reduction, damage-statics (Gisela), planeswalker-target-fixes, copy-excludes en mana-riders.
+  Backlog 280 → **212**; verslag in `docs/commander-decks/engine-round-2026-08-05.md`.
+  **Let op: de ~10 nieuwe cast-knoppen/pickers in de controller zijn nog nooit in een echt potje
+  gezien — een live phone-test is de eerstvolgende zinnige stap vóór verder UI-werk of deploy.**
 - **Collection Optimizer / advisor is gebouwd** (jul 29): commander-suggesties uit je collectie,
   "buildable commanders", deck-generatie met validator, start-deck-flow. Jordy overweegt dit spoor als
   monetization-pijler; eerder genoemde usability-gaten (decklijst, touch-preview, versnipperde IA) —
@@ -79,7 +85,7 @@ is erger.
 
 | Wat | Detail |
 |---|---|
-| **Engine-backlog-rounds** | 280 kaarten in 34 buckets; round-workflow beschreven in memory. Bucket 2 (alt-cost, 31) en bucket 1 (misc, 136) zijn de massa. Per ronde: triage → primitives → scripts → tests → deploy-notitie. |
+| **Engine-backlog-rounds** | 212 kaarten in 34 buckets (was 280; ronde 5–6 aug sloot 68). Buckets 5+7 AF; b2 11 misfits, b3/b4/b6/b8 bijna dicht (rest = gedocumenteerde deferrals in het ronde-doc). Massa zit nu in bucket 1 (misc, 136) en buckets 9–34. Per ronde: triage → primitives → scripts → tests → deploy-notitie. |
 | **Collection als monetization-pijler** | Beslissing over paywall-grens en welke AI-features erachter komen staat open (zie ANSWERS). |
 | **Opponent-view implementeren** | Ontwerp klaar, mockup klaar, nul code. Raakt `ControllerListV5` + `OpponentBoardOverlay`. |
 | **`docs/open-items.md` verversen** | Zes weken stale; een re-scan zoals die van 25 juni (claims tegen code verifiëren) is een dagdeel en voorkomt dubbel werk. |
