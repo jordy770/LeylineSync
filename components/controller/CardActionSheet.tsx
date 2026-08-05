@@ -151,11 +151,11 @@ export function CardActionSheet({
   onCreatureEffect: (cardId: string, targetCardId: string, freeCast?: boolean) => Promise<void>
   onTargetedSpellEffect: (cardId: string, targetCardId: string) => Promise<void>
   onMultiCreatureEffect: (cardId: string, targetCardIds: string[]) => Promise<void>
-  onPermanentEffect: (cardId: string, targetCardId: string) => Promise<void>
+  onPermanentEffect: (cardId: string, targetCardId: string, buyback?: boolean) => Promise<void>
   onDividedDamage: (cardId: string, allocations: DamageAllocation[]) => Promise<void>
   onFight: (cardId: string, fighterCardId: string, foughtCardId: string) => Promise<void>
   onDrawCards: (cardId: string) => Promise<void>
-  onSpellEffect: (cardId: string) => Promise<void>
+  onSpellEffect: (cardId: string, buyback?: boolean) => Promise<void>
   onModalSpell: (cardId: string) => Promise<void>
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
   onCastAdventure: (cardId: string, opts: { targetCardId?: string | null; stackItemId?: string | null }) => Promise<void>
@@ -212,6 +212,10 @@ export function CardActionSheet({
   // belongs to a FREE cast — the pick routes through onCreatureEffect with the
   // free flag so no mana is auto-paid or charged.
   const [freeCastPick, setFreeCastPick] = useState(false)
+  // Buyback (mig 430, Mind Games): the target being picked belongs to a
+  // BUYBACK cast — the pick routes through onPermanentEffect with the flag so
+  // the additional cost is paid and the spell returns to hand on resolution.
+  const [buybackPick, setBuybackPick] = useState(false)
   // Fight is a two-step pick: the chosen fighter (a creature you control), then
   // the fought creature. null = still choosing the fighter.
   const [fightFighterId, setFightFighterId] = useState<string | null>(null)
@@ -494,6 +498,33 @@ export function CardActionSheet({
     spellPlan.kind === 'creature_effect' &&
     hasRequiredTargets
 
+  // Buyback (mig 430): a hand card whose script carries a `buyback` cost gets
+  // a second cast button that pays printed + buyback; the spell then returns
+  // to hand as it resolves. Wired for the untargeted program path (Disturbed
+  // Burial, kind 'spell_effect' — casts in one tap) and the permanent-target
+  // path (Mind Games, kind 'permanent_effect' — opens the target picker).
+  const buybackCost = script.buyback ?? null
+  const canCastBuyback =
+    !!buybackCost &&
+    zone === 'hand' &&
+    canCast &&
+    !adventureMode &&
+    !isAura &&
+    (spellPlan.kind === 'spell_effect' ||
+      (spellPlan.kind === 'permanent_effect' && hasRequiredTargets))
+  const affordBuyback =
+    buybackCost && canAffordCost ? canAffordCost(`${card.cards?.mana_cost ?? ''}${buybackCost}`) : true
+
+  const handleCastBuyback = () => {
+    if (spellPlan.kind === 'spell_effect') {
+      void onSpellEffect(card.id, true)
+      onClose()
+    } else {
+      setBuybackPick(true)
+      setPicking(true)
+    }
+  }
+
   const handleFlashback = () => {
     if (spellPlan.kind === 'draw') void onDrawCards(card.id)
     else if (spellPlan.kind === 'modal') void onModalSpell(card.id)
@@ -675,6 +706,23 @@ export function CardActionSheet({
           </button>
         )}
 
+        {/* Buyback — pay the extra cost; the spell returns to hand as it
+            resolves instead of staying in the graveyard. */}
+        {canCastBuyback && !picking && !attachPick && (
+          <button
+            type="button"
+            aria-label={`Cast with buyback - pay ${buybackCost} extra`}
+            onClick={handleCastBuyback}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-fuchsia-400/60 bg-fuchsia-400/15 px-4 py-3 transition active:scale-95"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[9px] font-black uppercase tracking-widest text-fuchsia-300/80">Buyback</span>
+              <span className="font-bold text-fuchsia-100">Cast with buyback - returns to hand</span>
+            </span>
+            <ManaCostDisplay manaCost={`${card.cards?.mana_cost ?? ''}${buybackCost}`} />
+          </button>
+        )}
+
         {/* Conditional free cast — the condition holds right now, so offer the
             spell for free (the target picker opens; the engine re-verifies). */}
         {canCastFree && !picking && !attachPick && (
@@ -723,7 +771,7 @@ export function CardActionSheet({
 
         {/* Mana warning — the cast buttons gate on TIMING; when the mana isn't
             there the server would bounce the cast, so say so up front. */}
-        {!picking && !attachPick && ((canCast && !affordCreature) || (canEnterAdventure && canCastAdventure && !affordAdventure) || (canCastOverloaded && !affordOverload)) && (
+        {!picking && !attachPick && ((canCast && !affordCreature) || (canEnterAdventure && canCastAdventure && !affordAdventure) || (canCastOverloaded && !affordOverload) || (canCastBuyback && !affordBuyback)) && (
           <p className="mb-3 flex items-start gap-1.5 text-xs text-amber-300/90">
             <span aria-hidden>⚠</span>
             <span>
@@ -1023,7 +1071,7 @@ export function CardActionSheet({
               <button
                 key={c.id}
                 type="button"
-                onClick={() => { void (adventureMode ? onCastAdventure(card.id, { targetCardId: c.id }) : onPermanentEffect(card.id, c.id)); onClose() }}
+                onClick={() => { void (adventureMode ? onCastAdventure(card.id, { targetCardId: c.id }) : onPermanentEffect(card.id, c.id, buybackPick || undefined)); onClose() }}
                 className="flex w-full items-center justify-between rounded-2xl border border-amber-400/40 bg-amber-400/10 px-4 py-2.5 transition active:scale-95"
               >
                 <span className="truncate font-bold text-white">{c.name}</span>
@@ -1032,7 +1080,7 @@ export function CardActionSheet({
             )} />
             <button
               type="button"
-              onClick={() => setPicking(false)}
+              onClick={() => { setBuybackPick(false); setPicking(false) }}
               className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
             >
               Back

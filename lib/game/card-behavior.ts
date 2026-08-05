@@ -114,6 +114,8 @@ export type CardBehaviorScriptV2 = {
   // Conditional free cast (mig 429, Deadly Rollick): cast for free while the
   // condition holds (engine re-verifies).
   free_cast_condition?: { controls_commander?: boolean }
+  // Buyback (mig 430): additional cost; the spell returns to hand on resolution.
+  buyback?: string
   // Adventure half (mig 295): { name?, cost?, spell_effect } — the card's
   // instant/sorcery side, surfaced by the controller's "Adventure" cast.
   adventure?: { name?: string; cost?: string; spell_effect: CardBehaviorSpellEffect }
@@ -417,6 +419,7 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     overload: script.overload,
     overload_effect: script.overload_effect,
     free_cast_condition: script.free_cast_condition,
+    buyback: script.buyback,
     adventure: script.adventure,
     saga_chapters: script.saga_chapters,
     enters_with_counters: script.enters_with_counters,

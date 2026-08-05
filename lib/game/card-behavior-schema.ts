@@ -1598,6 +1598,10 @@ export const CardBehaviorScriptV2Schema = z.object({
   // commander, you may cast this spell without paying its mana cost." The
   // engine (put_action_on_stack p_free_cast) re-verifies the condition.
   free_cast_condition: z.object({ controls_commander: z.literal(true) }).optional(),
+  // Buyback (mig 430, Disturbed Burial / Mind Games): an ADDITIONAL mana cost;
+  // paying it returns the card to its owner's hand as the spell resolves
+  // (finalize_stack_resolution reads the stamp on the stack item).
+  buyback: z.string().optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),

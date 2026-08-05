@@ -12746,5 +12746,47 @@
         "controls_commander": true
       }
     }
+  },
+  {
+    "name": "Buyback Recall Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Buyback {3}\nReturn target creature card from your graveyard to your hand.",
+    "power_toughness": null,
+    "mana_cost": "{1}{B}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "return_from_graveyard",
+            "to": "hand",
+            "count": 1,
+            "filter": {
+              "type_line": "creature"
+            }
+          }
+        ]
+      },
+      "buyback": "{3}"
+    }
+  },
+  {
+    "name": "Buyback Tapper Test",
+    "type_line": "Instant",
+    "oracle_text": "Buyback {2}{U}\nTap target artifact, creature, or land.",
+    "power_toughness": null,
+    "mana_cost": "{U}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "tap",
+            "target_type": "permanent"
+          }
+        ]
+      },
+      "buyback": "{2}{U}"
+    }
   }
 ]

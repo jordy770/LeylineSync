@@ -20494,7 +20494,8 @@
           "target_type": "permanent"
         }
       ]
-    }
+    },
+    "buyback": "{2}{U}"
   },
   "Blink of an Eye": {
     "schema_version": 2,
@@ -24829,7 +24830,8 @@
           }
         }
       ]
-    }
+    },
+    "buyback": "{3}"
   },
   "Ghoulcaller's Chant": {
     "schema_version": 2,

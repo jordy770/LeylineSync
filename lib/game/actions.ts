@@ -645,6 +645,7 @@ export async function castPermanentEffect(
   // Donate direction for kind=gain_control: 'opponent' gives the target permanent
   // (one you control) to an opponent (Harmless Offering); otherwise you gain it.
   to?: string | null,
+  buyback = false,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -661,6 +662,7 @@ export async function castPermanentEffect(
       to: to ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
+    p_buyback: buyback,
   })
 
   if (error) {
@@ -925,6 +927,7 @@ export async function castSpellEffect(
   targetCardId?: string | null,
   adventure = false,
   overload = false,
+  buyback = false,
 ) {
   const { data, error } = await supabase.rpc('cast_spell_effect', {
     p_session_id: sessionId,
@@ -934,6 +937,7 @@ export async function castSpellEffect(
     p_target_card_id: targetCardId ?? null,
     p_adventure: adventure,
     p_overload: overload,
+    p_buyback: buyback,
   })
 
   if (error) {

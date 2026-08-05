@@ -1182,12 +1182,17 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       await refresh()
     },
     // Non-creature permanent removal — destroy/exile/… a target artifact/enchantment/…
-    permanentEffect: async (cardId: string, targetCardId: string) => {
+    permanentEffect: async (cardId: string, targetCardId: string, buyback = false) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'permanent_effect') return
-      await autoPay(card)
-      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then, plan.controllerSearchesBasicLand, plan.donate ? 'opponent' : null)
+      // Buyback (mig 430): the additional cost is auto-paid on top (kicker's
+      // `extra` path); the server charges printed + buyback and stamps the item.
+      const buybackCost = buyback
+        ? normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)?.buyback
+        : undefined
+      await autoPay(card, buybackCost ? { extra: buybackCost } : undefined)
+      await castPermanentEffect(supabase, sessionId, plan.effectKind, targetCardId, plan.targetType, plan.timing, cardId, undefined, plan.targetController, plan.then, plan.controllerSearchesBasicLand, plan.donate ? 'opponent' : null, buyback)
       await refresh()
     },
     // Divided damage — allocate the total across the chosen creature/player targets.
@@ -1221,14 +1226,19 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     },
     // Untargeted multi-action spell (scry/surveil/draw program, e.g. Opt) — runs
     // the effects in order server-side, parking on a scry/surveil decision.
-    spellEffect: async (cardId: string) => {
+    spellEffect: async (cardId: string, buyback = false) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'spell_effect') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
-      await autoPay(card)
-      await castSpellEffect(supabase, sessionId, plan.actions, cardId, x)
+      // Buyback (mig 430): auto-pay the additional cost on top (kicker's
+      // `extra` path); the server charges printed + buyback and stamps the item.
+      const buybackCost = buyback
+        ? normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)?.buyback
+        : undefined
+      await autoPay(card, buybackCost ? { extra: buybackCost } : undefined)
+      await castSpellEffect(supabase, sessionId, plan.actions, cardId, x, null, false, false, buyback)
       await refresh()
     },
     // Modal spell — cast the card's modes; the choose_mode decision UI does the rest.
@@ -1582,11 +1592,11 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             onCreatureEffect={async (cardId, targetCardId, freeCast) => { await actions.creatureEffect(cardId, targetCardId, freeCast) }}
             onTargetedSpellEffect={async (cardId, targetCardId) => { await actions.targetedSpellEffect(cardId, targetCardId) }}
             onMultiCreatureEffect={async (cardId, targetCardIds) => { await actions.multiCreatureEffect(cardId, targetCardIds) }}
-            onPermanentEffect={async (cardId, targetCardId) => { await actions.permanentEffect(cardId, targetCardId) }}
+            onPermanentEffect={async (cardId, targetCardId, buyback) => { await actions.permanentEffect(cardId, targetCardId, buyback) }}
             onDividedDamage={async (cardId, allocations) => { await actions.dividedDamage(cardId, allocations) }}
             onFight={async (cardId, fighterCardId, foughtCardId) => { await actions.fight(cardId, fighterCardId, foughtCardId) }}
             onDrawCards={async (cardId) => { await actions.drawCards(cardId) }}
-            onSpellEffect={async (cardId) => { await actions.spellEffect(cardId) }}
+            onSpellEffect={async (cardId, buyback) => { await actions.spellEffect(cardId, buyback) }}
             onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onCastAdventure={async (cardId, opts) => { await actions.castAdventure(cardId, opts) }}

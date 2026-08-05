@@ -12,7 +12,11 @@ create or replace function public.put_action_on_stack(
   -- Only honored when the source card's script carries a `free_cast_condition`
   -- and the condition holds (controls_commander); every other gate — priority,
   -- timing, targeting, protection/hexproof — applies unchanged.
-  p_free_cast boolean default false
+  p_free_cast boolean default false,
+  -- Buyback (mig 430, Mind Games): pay the script's `buyback` cost as an
+  -- ADDITIONAL cost; finalize_stack_resolution returns the card to its owner's
+  -- hand as the spell resolves (the payload carries the stamp).
+  p_buyback boolean default false
 )
 returns public.game_stack_items
 language plpgsql
@@ -118,6 +122,16 @@ begin
            and coalesce(gc.controller_player_id, gc.owner_id) = auth.uid()
        ) then
       raise exception 'Free cast requires you to control a commander';
+    end if;
+  end if;
+
+  -- Buyback (mig 430): script-gated additional cost, hand/exile casts only.
+  if p_buyback then
+    if p_source_card_id is null or nullif(v_source_script ->> 'buyback', '') is null then
+      raise exception 'This card has no buyback cost';
+    end if;
+    if v_source_zone not in ('hand', 'exile') then
+      raise exception 'Buyback can only be used when casting from hand or exile';
     end if;
   end if;
 
@@ -231,6 +245,18 @@ begin
     perform public.pay_mana_cost(p_session_id, auth.uid(), v_source_mana_cost, v_generic_payment, v_x_value,
       p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_source_type_line, ''),
         'is_commander', v_source_is_commander));
+    -- Buyback (mig 430): the additional cost is paid ON TOP of the printed
+    -- cost (kicker precedent — a second pay_mana_cost call).
+    if p_buyback then
+      perform public.pay_mana_cost(p_session_id, auth.uid(), v_source_script ->> 'buyback', null, 0,
+        p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_source_type_line, ''),
+          'is_commander', v_source_is_commander));
+    end if;
+  end if;
+
+  -- Buyback stamp (mig 430) — read by finalize_stack_resolution.
+  if p_buyback then
+    v_built_payload := v_built_payload || jsonb_build_object('buyback', true);
   end if;
 
   select coalesce(max(position), -1) + 1
@@ -313,4 +339,4 @@ begin
   return v_stack_item;
 end;
 $$;
-grant execute on function public.put_action_on_stack(uuid, text, jsonb, uuid, boolean) to authenticated;
+grant execute on function public.put_action_on_stack(uuid, text, jsonb, uuid, boolean, boolean) to authenticated;
