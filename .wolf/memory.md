@@ -8641,3 +8641,42 @@
 | 12:2x | Mig 429: p_free_cast op put_action_on_stack (script-gated, controls_commander engine-check); FC3 ving NULL-propagation-bug in de guard (bug-2703), coalesce-fix, play-DB handmatig bijgewerkt (mig al gestempeld) | put_action_on_stack.sql, migrations/429 | 4/4 PASS | ~14k |
 | 12:4x | Rollick client: free_cast_condition in zod+types, Cast-free-knop (emerald) + freeCastPick-picker-flow, creatureEffect free-routing, controlsCommander-prop; Deadly Rollick geupsert; tsc+lint schoon | CardActionSheet.tsx, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts, card-scripts.json | schoon | ~15k |
 | 12:5x | Volle suite 2498/2498; backlog-kop (273/24), tracks 7/31, dashboards hergegenereerd | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
+| 11:14 | Edited tests/harness/scenario.ts | modified putOnStack() | ~148 |
+| 11:14 | Edited tests/harness/scenario.ts | 14→16 lines | ~133 |
+| 11:14 | Created tests/feature/buyback.test.ts | — | ~1552 |
+| 11:15 | Edited supabase/functions_src/cast_spell_effect.sql | modified Overload() | ~163 |
+| 11:15 | Edited supabase/functions_src/cast_spell_effect.sql | added 1 condition(s) | ~188 |
+| 11:15 | Edited supabase/functions_src/cast_spell_effect.sql | modified Buyback() | ~320 |
+| 11:15 | Edited supabase/functions_src/cast_spell_effect.sql | modified untargeted() | ~139 |
+| 11:15 | Edited supabase/functions_src/cast_spell_effect.sql | inline fix | ~37 |
+| 11:15 | Edited supabase/functions_src/put_action_on_stack.sql | modified cast() | ~159 |
+| 11:15 | Edited supabase/functions_src/put_action_on_stack.sql | added 1 condition(s) | ~238 |
+| 11:15 | Edited supabase/functions_src/put_action_on_stack.sql | modified Buyback() | ~304 |
+| 11:15 | Edited supabase/functions_src/put_action_on_stack.sql | inline fix | ~31 |
+| 11:16 | Created supabase/functions_src/finalize_stack_resolution.sql | — | ~650 |
+| 11:16 | Edited supabase/migrations/202605010430_buyback.sql | modified if() | ~334 |
+| 11:17 | Edited lib/game/actions.ts | 12→14 lines | ~111 |
+| 11:17 | Edited lib/game/actions.ts | 20→22 lines | ~217 |
+| 11:17 | Edited components/ControllerListV5.tsx | CSS: buyback, extra | ~270 |
+| 11:17 | Edited components/ControllerListV5.tsx | CSS: buyback, extra | ~251 |
+| 11:17 | Edited components/ControllerListV5.tsx | inline fix | ~40 |
+| 11:17 | Edited components/ControllerListV5.tsx | inline fix | ~29 |
+| 11:18 | Edited components/controller/CardActionSheet.tsx | inline fix | ~28 |
+| 11:18 | Edited components/controller/CardActionSheet.tsx | inline fix | ~20 |
+| 11:18 | Edited components/controller/CardActionSheet.tsx | modified cast() | ~158 |
+| 11:18 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~343 |
+| 11:18 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~315 |
+| 11:18 | Edited components/controller/CardActionSheet.tsx | inline fix | ~52 |
+| 11:18 | Edited components/controller/CardActionSheet.tsx | 7→7 lines | ~104 |
+| 11:18 | Edited components/controller/CardActionSheet.tsx | inline fix | ~62 |
+| 11:18 | Edited lib/game/card-behavior-schema.ts | modified cast() | ~160 |
+| 11:18 | Edited lib/game/card-behavior.ts | modified cast() | ~80 |
+| 11:18 | Edited lib/game/card-behavior.ts | 2→3 lines | ~33 |
+| 11:19 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/buyback-cards.txt | — | ~9 |
+| 11:23 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~102 |
+| 11:23 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf3.mjs | — | ~931 |
+| 13:0x | Buyback-slice verkend: oracle geverifieerd (Mind Games buyback = {2}{U}, backlog zei {2}); paden bepaald (Burial via cast_spell_effect, Mind Games via put_action_on_stack/permanent_effect); finalize_stack_resolution + resume_or_finalize + counter-pad gecheckt | backlog, functions_src, mig 087/096 | ontwerp staat | ~18k |
+| 13:2x | RED: 2 fixtures + 5 buyback-tests (incl. decision-pad en counter-pad); BB1/BB3/BB4/BB5 falen op ontbrekende p_buyback | tests/feature/buyback.test.ts, test-cards.json, scenario.ts | RED | ~8k |
+| 13:4x | GREEN mig 430: p_buyback op cast_spell_effect + put_action_on_stack (additionele betaling, payload-stamp), terug-naar-hand in finalize_stack_resolution (nieuw canoniek functions_src-bestand, seed mig 087); beide DBs bijgewerkt; 5/5 groen | functions_src (3), migrations/430 | 5/5 PASS | ~15k |
+| 14:0x | Client + scripts: buyback in zod+types, Buyback-knop (fuchsia) met spell_effect-one-tap en permanent_effect-pickerflow (buybackPick), autoPay extra-pad hergebruikt (kicker); Disturbed Burial + Mind Games geupsert; tsc/lint/fixtures schoon | CardActionSheet.tsx, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts, card-scripts.json | schoon | ~14k |
+| 14:2x | Volle suite 2503/2503; backlog-kop (271/22), tracks 9/31, dashboards hergegenereerd | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
