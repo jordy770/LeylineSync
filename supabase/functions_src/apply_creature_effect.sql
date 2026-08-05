@@ -465,6 +465,16 @@ begin
       end if;
     end if;
 
+  elsif p_kind = 'remove_from_combat' then
+    -- Labyrinth of Skophos (mig 441): "remove target attacking or blocking
+    -- creature from combat" — drop its attack assignment / detach it as a
+    -- blocker. No damage, no untap.
+    delete from public.game_combat_assignments
+    where session_id = p_session_id and attacker_card_id = p_target_card_id;
+    update public.game_combat_assignments
+    set blocker_card_id = null
+    where session_id = p_session_id and blocker_card_id = p_target_card_id;
+
   elsif p_kind = 'goad' then
     -- Goad (mig 249, Vengeful Ancestor): "until your next turn, that creature
     -- attacks each combat if able and attacks a player other than you if

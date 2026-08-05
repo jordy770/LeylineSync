@@ -96,6 +96,8 @@ const JSON_ONLY: Record<string, string> = {
   goad_all: 'goad each creature the chosen player controls, nested under choose_player (Geode Rager, mig 436); JSON/AI-authored',
   corrupted_summons: 'per corrupted opponent a graveyard pick that reanimates under your control (Geths Summons, mig 436); JSON/AI-authored',
   grant_type: 'until-EOT granted_type add on the source (Nogi, mig 437); JSON/AI-authored',
+  remove_from_combat: 'pull an attacker/blocker out of combat (Labyrinth of Skophos, mig 441); JSON/AI-authored',
+  sacrifice_unless_pay: 'ETB pay-or-sacrifice decision (Rupture Spire, mig 441); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

@@ -335,6 +335,7 @@ const UNTARGETED_ABILITY_TYPES = [
 ]
 export const ABILITY_EFFECT_TYPES = [
   'deal_damage', 'destroy', 'exile', 'bounce', 'tap', 'untap', 'add_counters', 'pump', 'grant_keyword', 'gain_control',
+  'remove_from_combat',
   ...UNTARGETED_ABILITY_TYPES,
 ]
 export function getAbilityEffect(
@@ -368,6 +369,7 @@ export function getAbilityEffect(
 export const ABILITY_VERB: Record<string, string> = {
   destroy: 'Destroy', exile: 'Exile', bounce: 'Return to hand', tap: 'Tap', untap: 'Untap',
   add_counters: 'Add counters to', pump: 'Pump', grant_keyword: 'Grant keyword to', gain_control: 'Gain control of',
+  remove_from_combat: 'Remove from combat',
 }
 
 /** Classifies what a hand spell does so the cast flow can pick targets correctly. */

@@ -13523,5 +13523,128 @@
         }
       ]
     }
+  },
+  {
+    "name": "Corrupted Sphere Test",
+    "type_line": "Artifact",
+    "oracle_text": "Corrupted - {T}: Add three mana of any one color. Activate only if an opponent has three or more poison counters.",
+    "power_toughness": null,
+    "mana_cost": "{3}",
+    "script": {
+      "schema_version": 2,
+      "activated_abilities": [
+        {
+          "is_mana_ability": true,
+          "costs": [
+            {
+              "type": "tap_self"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_mana",
+              "color": "any",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "is_mana_ability": true,
+          "condition": {
+            "count": "opponent_poison_counters",
+            "at_least": 3
+          },
+          "costs": [
+            {
+              "type": "tap_self"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_mana",
+              "color": "any",
+              "amount": 3
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Dino Drover Test",
+    "type_line": "Creature - Human Druid",
+    "oracle_text": "This creature gets +2/+2 as long as you control a Dinosaur.",
+    "power_toughness": "1/1",
+    "mana_cost": "{1}{G}",
+    "script": {
+      "schema_version": 2,
+      "continuous_effects": [
+        {
+          "type": "pump",
+          "affected": "source",
+          "source_zone_required": "battlefield",
+          "payload": {
+            "power": 2,
+            "toughness": 2,
+            "condition": {
+              "count": "creatures_you_control",
+              "type_line": "Dinosaur",
+              "at_least": 1
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "Skophos Maze Test",
+    "type_line": "Land",
+    "oracle_text": "{4}, {T}: Remove target attacking or blocking creature from combat.",
+    "power_toughness": null,
+    "mana_cost": null,
+    "script": {
+      "schema_version": 2,
+      "activated_abilities": [
+        {
+          "costs": [
+            {
+              "type": "mana",
+              "amount": "{4}"
+            },
+            {
+              "type": "tap_self"
+            }
+          ],
+          "effects": [
+            {
+              "type": "remove_from_combat",
+              "target_type": "creature",
+              "target_controller": "any"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Spire Land Test",
+    "type_line": "Land",
+    "oracle_text": "When this land enters, sacrifice it unless you pay {1}.",
+    "power_toughness": null,
+    "mana_cost": null,
+    "script": {
+      "schema_version": 2,
+      "triggered_abilities": [
+        {
+          "event": "enters_the_battlefield",
+          "effects": [
+            {
+              "type": "sacrifice_unless_pay",
+              "cost": "{1}"
+            }
+          ]
+        }
+      ]
+    }
   }
 ]

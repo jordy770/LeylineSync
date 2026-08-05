@@ -67,6 +67,17 @@ begin
     raise exception 'Not a mana ability';
   end if;
 
+  -- Activation condition (mig 441, Glistening Sphere's corrupted mana:
+  -- "Activate only if an opponent has three or more poison counters") —
+  -- mirrors activate_ability's gate.
+  if v_ability -> 'condition' is not null then
+    if public.resolve_dynamic_amount(p_session_id, p_source_card_id, auth.uid(), v_ability -> 'condition')
+       < coalesce((v_ability -> 'condition' ->> 'at_least')::integer, 1)
+    then
+      raise exception 'This ability cannot be activated right now';
+    end if;
+  end if;
+
   -- Parse costs (tap_self / mana / pay_life / self_damage).
   for v_cost in select * from jsonb_array_elements(coalesce(v_ability -> 'costs', '[]'::jsonb))
   loop

@@ -368,6 +368,20 @@ begin
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
 
+    elsif v_type = 'sacrifice_unless_pay' then
+      -- Rupture Spire / Transguild Promenade (mig 441): "When this enters,
+      -- sacrifice it unless you pay {1}." Parks a pay-or-sacrifice confirm;
+      -- submit_decision pays the cost or puts the source in the graveyard.
+      insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
+      values (p_session_id, v_controller, p_stack_item_id, 'sacrifice_unless_pay',
+        'Pay ' || coalesce(v_effect ->> 'cost', '{1}') || ' or sacrifice it',
+        '[]'::jsonb, 0, 0,
+        jsonb_build_object('cost', coalesce(v_effect ->> 'cost', '{1}'),
+          'game_card_id', v_item.source_card_id))
+      returning id into v_decision_id;
+      update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
+      return v_decision_id;
+
     elsif v_type = 'choose_player' then
       v_filter := lower(coalesce(v_effect ->> 'filter', 'any'));
       select coalesce(

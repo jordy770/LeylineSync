@@ -436,6 +436,19 @@ begin
     end loop;
     perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
 
+  elsif v_decision.decision_type = 'sacrifice_unless_pay' then
+    -- Rupture Spire / Transguild Promenade (mig 441): pay the tax or the
+    -- source goes to the graveyard.
+    if coalesce((p_result ->> 'confirmed')::boolean, false) then
+      perform public.pay_mana_cost(
+        v_decision.session_id, auth.uid(), v_decision.params ->> 'cost', null,
+        p_pay_context := jsonb_build_object('kind', 'ability', 'type_line', '', 'is_commander', false));
+    else
+      perform public.put_in_graveyard(
+        v_decision.session_id, (v_decision.params ->> 'game_card_id')::uuid);
+    end if;
+    perform public.resume_or_finalize(v_decision.session_id, v_decision.source_stack_item_id);
+
   elsif v_decision.decision_type = 'corrupted_summons_pick' then
     -- Geth's Summons (mig 436): the chosen creature card (from the corrupted
     -- opponent's graveyard) enters the battlefield under the DECIDER's

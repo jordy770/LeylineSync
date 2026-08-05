@@ -657,7 +657,7 @@ begin
       raise exception 'A target is required for this ability';
     end if;
 
-  elsif v_eff_type in ('destroy', 'exile', 'bounce', 'tap', 'untap') then
+  elsif v_eff_type in ('destroy', 'exile', 'bounce', 'tap', 'untap', 'remove_from_combat') then
     if p_target_card_id is null then
       raise exception 'A target is required for this ability';
     end if;

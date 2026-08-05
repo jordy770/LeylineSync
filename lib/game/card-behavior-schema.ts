@@ -211,7 +211,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
   'job_select', 'advance_saga', 'grant_flashback', 'hand_to_library_top',
   'exile_graveyard_until_leaves', 'choose_land_type', 'shuffle_graveyards_into_libraries',
-  'goad_all', 'corrupted_summons', 'grant_type',
+  'goad_all', 'corrupted_summons', 'grant_type', 'remove_from_combat', 'sacrifice_unless_pay',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -811,6 +811,19 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('grant_type'),
     type_line: z.string(),
+  }),
+  // Labyrinth of Skophos (mig 441): remove target attacking or blocking
+  // creature from combat.
+  z.object({
+    type: z.literal('remove_from_combat'),
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    target_controller: TargetControllerSchema,
+  }),
+  // Rupture Spire / Transguild Promenade (mig 441): "sacrifice it unless you
+  // pay {N}" — parks a pay-or-sacrifice decision on the ETB.
+  z.object({
+    type: z.literal('sacrifice_unless_pay'),
+    cost: z.string(),
   }),
   // Geth's Summons (mig 436): per corrupted opponent a pick over THAT
   // graveyard's creatures; the chosen card enters under your control.
@@ -1417,7 +1430,7 @@ const CardBehaviorActivatedAbilitySchema = z.object({
     z.object({
       // tokens_created_this_turn (mig 399, Idol of Oblivion: "Activate only if
       // you created a token this turn") — turn-stamped by fire_token_created.
-      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'commanders_you_control', 'total_power_you_control', 'permanents_you_control', 'tokens_created_this_turn', 'opponents_with_more_lands']),
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'commanders_you_control', 'total_power_you_control', 'permanents_you_control', 'tokens_created_this_turn', 'opponents_with_more_lands', 'opponent_poison_counters']),
       type_line: z.string().optional(),
       at_least: z.number().int().positive(),
     }).strict(),

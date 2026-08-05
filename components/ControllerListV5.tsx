@@ -2801,7 +2801,7 @@ function PendingDecisionPrompt({
         <CardPickBody decision={decision} cardImageById={cardImageById} onZoom={onZoom} isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'madness_cast' ? (
         <MadnessBody decision={decision} isPending={isPending} onSubmit={submit} />
-      ) : decision.decision_type === 'confirm' || decision.decision_type === 'pay_life_untap' || decision.decision_type === 'commander_zone_return' || decision.decision_type === 'pay_or_be_countered' ? (
+      ) : decision.decision_type === 'confirm' || decision.decision_type === 'pay_life_untap' || decision.decision_type === 'commander_zone_return' || decision.decision_type === 'pay_or_be_countered' || decision.decision_type === 'sacrifice_unless_pay' ? (
         <ConfirmBody isPending={isPending} onSubmit={submit} />
       ) : decision.decision_type === 'choose_player' ? (
         <ChoosePlayerBody decision={decision} isPending={isPending} onSubmit={submit} />

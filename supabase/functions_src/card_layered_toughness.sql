@@ -38,6 +38,14 @@ as $$
           and effects.effect_type = 'pump'
           and effects.affected_card_id = p_game_card_id
           and (effects.source_zone_required is null or source_card.zone = effects.source_zone_required)
+          -- Conditional static (mig 441, Drover of the Mighty) — mirrors the
+          -- power fold.
+          and (effects.payload -> 'condition' is null
+               or public.resolve_count_amount(
+                    p_session_id,
+                    coalesce(source_card.controller_player_id, source_card.owner_id),
+                    effects.payload -> 'condition')
+                  >= coalesce((effects.payload -> 'condition' ->> 'at_least')::integer, 1))
       ), 0)
     + coalesce((
         select sum(coalesce((effects.payload ->> 'toughness')::integer, 0))

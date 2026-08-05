@@ -3920,6 +3920,22 @@
           }
         ]
       }
+    ],
+    "continuous_effects": [
+      {
+        "type": "pump",
+        "affected": "source",
+        "source_zone_required": "battlefield",
+        "payload": {
+          "power": 2,
+          "toughness": 2,
+          "condition": {
+            "count": "creatures_you_control",
+            "type_line": "Dinosaur",
+            "at_least": 1
+          }
+        }
+      }
     ]
   },
   "Regisaur Alpha": {
@@ -5656,6 +5672,17 @@
           }
         ]
       }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "sacrifice_unless_pay",
+            "cost": "{1}"
+          }
+        ]
+      }
     ]
   },
   "Transguild Promenade": {
@@ -5674,6 +5701,17 @@
             "type": "add_mana",
             "color": "any",
             "amount": 1
+          }
+        ]
+      }
+    ],
+    "triggered_abilities": [
+      {
+        "event": "enters_the_battlefield",
+        "effects": [
+          {
+            "type": "sacrifice_unless_pay",
+            "cost": "{1}"
           }
         ]
       }
@@ -7628,7 +7666,11 @@
             "color": "any",
             "amount": 3
           }
-        ]
+        ],
+        "condition": {
+          "count": "opponent_poison_counters",
+          "at_least": 3
+        }
       }
     ]
   },
@@ -17683,6 +17725,24 @@
             "amount": 1
           }
         ]
+      },
+      {
+        "costs": [
+          {
+            "type": "mana",
+            "amount": "{4}"
+          },
+          {
+            "type": "tap_self"
+          }
+        ],
+        "effects": [
+          {
+            "type": "remove_from_combat",
+            "target_type": "creature",
+            "target_controller": "any"
+          }
+        ]
       }
     ]
   },
@@ -22057,6 +22117,10 @@
         "costs": [
           {
             "type": "tap_self"
+          },
+          {
+            "type": "self_damage",
+            "amount": 1
           }
         ],
         "effects": [
