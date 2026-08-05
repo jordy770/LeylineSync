@@ -103,6 +103,29 @@ begin
       perform public.put_in_graveyard(p_session_id, v_cleanup.id);
     end loop;
 
+    -- Daretti-emblem (mig 442): artifacts stamped by put_in_graveyard return
+    -- from the graveyard to the battlefield under their owner when the end
+    -- step is processed. Mirrors the corrupted_summons battlefield-entry
+    -- (entered_battlefield_turn_number + effect re-register; no ETB triggers —
+    -- the engine's standing approximation for non-cast entries).
+    for v_revert in
+      select gc.id from public.game_cards gc
+      where gc.session_id = p_session_id and gc.zone = 'graveyard'
+        and gc.counters ? 'return_at_end_step'
+    loop
+      update public.game_cards gc
+      set zone = 'battlefield', is_tapped = false, damage_marked = 0,
+          controller_player_id = gc.owner_id,
+          entered_battlefield_turn_number = v_current_state.turn_number,
+          counters = gc.counters - 'return_at_end_step',
+          zone_position = (select coalesce(max(zone_position), -1) + 1
+                           from public.game_cards x
+                           where x.session_id = p_session_id and x.owner_id = gc.owner_id
+                             and x.zone = 'battlefield')
+      where gc.id = v_revert;
+      perform public.register_card_continuous_effects(p_session_id, v_revert);
+    end loop;
+
     -- Hellkite Courser (mig 248): "return it to the command zone at the
     -- beginning of the next end step" — processed when the end step is left.
     for v_revert in

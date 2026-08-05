@@ -1,12 +1,12 @@
-# Engine-ronde 5–6 augustus 2026 — migs 428–441 (v0.20)
+# Engine-ronde 5–6 augustus 2026 — migs 428–442 (v0.20)
 
-Zestien feature-slices in één doorlopende sessie, aansluitend op de
-landcycling-slice (mig 427). **68 backlog-kaarten dicht (280 → 212)**, suite
-gegroeid van 2494 naar 2566 tests. Buckets 2 t/m 8 van
+Zeventien feature-slices in één doorlopende sessie, aansluitend op de
+landcycling-slice (mig 427). **73 backlog-kaarten dicht (280 → 207)**, suite
+gegroeid van 2494 naar 2572 tests. Buckets 2 t/m 9 van
 `engine-blocked-backlog-2026-07-18.md` zijn afgewerkt; wat per bucket rest
 staat onderaan. Elke slice is RED-first getest, per slice gecommit
 (feat + aparte chore(wolf)), en beide lokale DB's (play + `leyline_test`)
-lopen mee t/m mig 441. **Niets is gepusht of gedeployed.**
+lopen mee t/m mig 442. **Niets is gepusht of gedeployed.**
 
 ## Migratie-overzicht
 
@@ -26,6 +26,7 @@ lopen mee t/m mig 441. **Niets is gepusht of gedeployed.**
 | 439 | Planeswalker-eligible effects | Hour of Revelation, Sorin (+ script-fixes Banishing Light, Demon's Disciple, Plaguecrafter, Haven; Norn's Annex bleek al gedekt) |
 | 440 | Other/another-exclusies & sorcery-timing | End-Raze Forerunners, Xenagos, Majestic Heliopterus, Orthion (+ 4 vacuous/stale, zie onder) |
 | 441 | Mana-ability-riders | Glistening Sphere, Drover of the Mighty, Labyrinth of Skophos, Rupture Spire (+ Elves of Deep Shadow script-only, + Transguild Promenade uit b26) |
+| 442 | Reflexive riders (bucket 9) | Daretti (-10 emblem), Not Dead After All, Oblation, Stormshriek Feral ×2 (script-fix: self-pump) |
 
 ## Nieuwe script-vocabulaire (voor kaart-auteurs)
 
@@ -54,14 +55,23 @@ De statische tegenhanger: continuous effect `grants_convoke` (payload
   (genest onder choose_player; goader = source-controller),
   `corrupted_summons` (stack-loze pick per corrupted opponent), `grant_type`
   (until-EOT granted_type-add op de source), `remove_from_combat` (targeted;
-  eigen stack-actietype), `sacrifice_unless_pay` (ETB pay-or-sacrifice).
+  eigen stack-actietype), `sacrifice_unless_pay` (ETB pay-or-sacrifice),
+  `create_emblem {emblem:'artifact_return'}` (mig 442, Daretti -10:
+  speler-scoped `artifact_return_emblem`-rij zonder source-zone-eis;
+  put_in_graveyard stempelt stervende artifacts van de emblem-houder met
+  `return_at_end_step`, advance_step's end-step-sweep zet ze terug).
 - **Effect-riders**: `times_opponents` (bedrag × aantal opponents),
   `recipient_filter {poison_at_least}` (per-opponent corrupted-gate op
   lose_life/deal_damage), `if_target_type_line` (add_counters-rider, checkt
   de effective type line), `target_filter {type_line, type_line_any,
   exclude_self}` op targeted trigger-effects (pump/grant_keyword),
   `exclude_self` op pump_all/grant_keyword_all, `required` op destroy_up_to,
-  `scope: 'opponent'` op bounce_all.
+  `scope: 'opponent'` op bounce_all. Mig 442: `owner_draws` op
+  shuffle_into_library (Oblation: de EIGENAAR trekt na de shuffle),
+  `expires:'end_of_turn'` op grant_dies_effect (Not Dead After All: de grant
+  rijdt de ending/cleanup-expiry-sweep mee), pump-`target_type:'self'`
+  (Stormshriek-firebreathing: activated ability pompt zijn eigen source,
+  geen target-picker — client getAbilityEffect kent de kortsluiting).
 - **Kosten**: `self_damage` (mana-ability-cost; échte damage door
   apply_damage_to_player — nooit meer pay_life voor "deals N damage to you").
 - **Condities**: activation-`condition` werkt nu ook op mana-abilities;
@@ -133,6 +143,13 @@ geseed): `finalize_stack_resolution`, `build_stack_payload_add_counters_creature
   nog (speler zonder creature/planeswalker wordt geskipt).
 - Drogskol: "other Spirits have melee" en de noncombat-preventie voor Spirits
   blijven ongescript (alleen de melee-schaal is gefixt).
+- Daretti-emblem (mig 442): het emblem is een effect-rij, geen zichtbaar
+  permanent; de return verwerkt bij het VERLATEN van de end step en vuurt
+  geen ETB-triggers (de staande benadering voor non-cast entries, zelfde als
+  corrupted_summons).
+- Not Dead After All (mig 442): de Wicked Role is benaderd als de bestaande
+  +1/+1-counter-return-rider; de drain wanneer de Role zelf sterft is niet
+  gemodelleerd.
 
 ## Open rest na deze ronde (per bucket)
 
@@ -152,7 +169,9 @@ geseed): `finalize_stack_resolution`, `build_stack_payload_add_counters_creature
 - **b8 (1)**: Coveted Jewel (unblocked-attackers-watcher + controlewissel).
 - **Vacuous zolang er geen legend rule is** (b7, afgevinkt met notitie):
   Mirror Gallery, The Masters legend-clausule, Helms except-legendary.
-- **b9 t/m b34**: onaangeroerd deze ronde (behalve b26: Transguild
+- **b9 (0) — AF** (mig 442): Daretti-emblem, Not Dead After All, Oblation,
+  Stormshriek Feral ×2 (self-pump was een pure script-fix).
+- **b10 t/m b34**: onaangeroerd deze ronde (behalve b26: Transguild
   Promenade dicht); zie de backlog-doc.
 
 ## Registratie-checklists (de drie vindplaatsen-lessen)

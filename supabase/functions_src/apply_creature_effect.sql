@@ -30,6 +30,8 @@ declare
   v_turn integer;
   v_goad_players integer;
   v_is_pw boolean;
+  v_draw_i integer;
+  v_lib_card uuid;
 begin
   if p_target_card_id is null then
     return;
@@ -261,6 +263,27 @@ begin
           perform public.register_card_continuous_effects(p_session_id, v_top_card);
         end if;
       end if;
+
+      -- owner_draws (mig 442, Oblation: "…shuffles it into their library, then
+      -- draws two cards"): the target's OWNER draws after the shuffle. Same
+      -- draw mechanics as the trigger resolver (incl. the card_drawn watcher);
+      -- an empty library simply stops drawing.
+      for v_draw_i in 1..coalesce((p_params ->> 'owner_draws')::integer, 0) loop
+        select id into v_lib_card
+        from public.game_cards
+        where session_id = p_session_id and owner_id = v_target_owner_id and zone = 'library'
+        order by zone_position asc, id asc limit 1 for update skip locked;
+        exit when v_lib_card is null;
+        update public.game_cards
+        set zone = 'hand', is_tapped = false,
+            zone_position = (select coalesce(max(zone_position), -1) + 1
+                             from public.game_cards
+                             where session_id = p_session_id and owner_id = v_target_owner_id and zone = 'hand')
+        where id = v_lib_card;
+        perform public.fire_watcher_triggers(
+          p_session_id, v_lib_card, v_target_owner_id, 'card_drawn',
+          jsonb_build_object('draw_number', public.note_card_drawn(p_session_id, v_target_owner_id)));
+      end loop;
     end if;
 
   elsif p_kind in ('tap', 'untap') then
@@ -385,13 +408,19 @@ begin
     -- ability, stored as a granted_dies_effect continuous effect ON the creature
     -- (source = the creature, so it is swept when the creature leaves and SURVIVES
     -- the granter leaving). put_in_graveyard fires payload.effects on its death.
+    -- expires 'end_of_turn' (mig 442, Not Dead After All: "UNTIL END OF TURN,
+    -- target creature gains…"): the grant rides the standard ending/cleanup
+    -- expiry sweep instead of persisting forever.
     if exists (select 1 from public.game_cards where id = p_target_card_id and session_id = p_session_id and zone = 'battlefield') then
       insert into public.game_continuous_effects (
-        session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+        session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required,
+        expires_at_phase, expires_at_step
       ) values (
         p_session_id, p_target_card_id, p_target_card_id, 'granted_dies_effect',
         jsonb_build_object('effects', coalesce(p_params -> 'effects', '[]'::jsonb)),
-        'battlefield'
+        'battlefield',
+        case when lower(coalesce(p_params ->> 'expires', '')) = 'end_of_turn' then 'ending' end,
+        case when lower(coalesce(p_params ->> 'expires', '')) = 'end_of_turn' then 'cleanup' end
       );
     end if;
 

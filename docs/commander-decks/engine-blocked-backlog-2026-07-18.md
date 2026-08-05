@@ -1,6 +1,6 @@
 # Engine-blocked backlog — flagged-but-unfixed kaarten
 
-Ververst 2026-07-18; **stand na de ronde van 5–6 aug 2026: 212 open** (was 280). Dit is de eerlijke "wat rest er nog"-lijst: grotendeels engine-geblokkeerd, met een residu van bevestigde false-positives en best-available benaderingen. Gegroepeerd op de ontbrekende engine-primitive. **De secties hieronder zijn de originele lijst van 18 juli** — welke kaarten inmiddels dicht zijn staat in de voortgangsnotitie hieronder; verifieer per kaart tegen de huidige scripts vóór je iets herbouwt (meerdere 'gaten' bleken al gedekt).
+Ververst 2026-07-18; **stand na de ronde van 5–6 aug 2026: 207 open** (was 280). Dit is de eerlijke "wat rest er nog"-lijst: grotendeels engine-geblokkeerd, met een residu van bevestigde false-positives en best-available benaderingen. Gegroepeerd op de ontbrekende engine-primitive. **De secties hieronder zijn de originele lijst van 18 juli** — welke kaarten inmiddels dicht zijn staat in de voortgangsnotitie hieronder; verifieer per kaart tegen de huidige scripts vóór je iets herbouwt (meerdere 'gaten' bleken al gedekt).
 
 ## Voortgang sinds 18 juli
 
@@ -11,8 +11,8 @@ cost_reduction `per` (416), sacrifice `type_line_any` (417), directed
 target-player script-fixes, basic landcycling (427: Ash Barrens, Grave
 Upheaval, Migratory Route, Treacherous Terrain). 280 → 276.
 
-**Ronde 5–6 aug 2026 (migs 428–441, v0.20, lokaal — zie
-`engine-round-2026-08-05.md` voor het volledige verslag):** 276 → **212**.
+**Ronde 5–6 aug 2026 (migs 428–442, v0.20, lokaal — zie
+`engine-round-2026-08-05.md` voor het volledige verslag):** 276 → **207**.
 
 | Bucket | Stand | Dicht in deze ronde | Rest |
 |---|---|---|---|
@@ -23,8 +23,9 @@ Upheaval, Migratory Route, Treacherous Terrain). 280 → 276.
 | 6 planeswalker-targets | 2/9 open | mig 439: Hour of Revelation, Sorin-rider + script-fixes Banishing Light/Demon's Disciple/Plaguecrafter/Haven; Norn's Annex was stale (attack_tax, mig 275) | Myr Battlesphere (multi-pick-tap-cost), Xantcha (forced attacks) |
 | 7 copy-nuances | **AF** | mig 440: exclude_self (mass + targeted), Heliopterus-filter, Orthion-timing; vacuous (geen legend rule): Mirror Gallery, The Master-clausule, Helm-except; stale: Sunfrill (mig 240) | — |
 | 8 mana-ability-riders | 1/6 open | mig 441: Glistening Sphere-conditie, Drover-conditional-static, Labyrinth remove_from_combat, Rupture Spire sacrifice_unless_pay; Elves script-only (self_damage) | Coveted Jewel (unblocked-attackers-watcher + controlewissel) |
+| 9 reflexive riders | **AF** | mig 442: Daretti -10 (artifact_return-emblem), Not Dead After All (expiry + Role→counter), Oblation (owner_draws), Stormshriek Feral ×2 (script-fix: pump target_type 'self') | — |
 | 26 sac-/pay-unless tax | 1/2 open | Transguild Promenade (441, sacrifice_unless_pay) | Condescend |
-| 1, 9–25, 27–34 | onaangeroerd | — | zie de secties hieronder |
+| 1, 10–25, 27–34 | onaangeroerd | — | zie de secties hieronder |
 
 | # | Ontbrekende primitive | Kaarten |
 |---|---|---|

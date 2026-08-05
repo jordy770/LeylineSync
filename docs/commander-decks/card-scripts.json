@@ -7264,6 +7264,16 @@
             }
           }
         ]
+      },
+      {
+        "cost": -10,
+        "label": "Emblem: dead artifacts return at end step",
+        "effects": [
+          {
+            "type": "create_emblem",
+            "emblem": "artifact_return"
+          }
+        ]
       }
     ]
   },
@@ -12823,8 +12833,7 @@
             "type": "pump",
             "power": 1,
             "toughness": 0,
-            "target_type": "creature",
-            "target_controller": "you"
+            "target_type": "self"
           }
         ]
       },
@@ -12931,8 +12940,7 @@
             "type": "pump",
             "power": 1,
             "toughness": 0,
-            "target_type": "creature",
-            "target_controller": "you"
+            "target_type": "self"
           }
         ]
       },
@@ -18469,9 +18477,11 @@
           "effects": [
             {
               "type": "return_self_to_battlefield",
-              "tapped": true
+              "tapped": true,
+              "plus_one_counters": 1
             }
-          ]
+          ],
+          "expires": "end_of_turn"
         }
       ]
     }
@@ -22022,7 +22032,8 @@
       "actions": [
         {
           "type": "shuffle_into_library",
-          "target_type": "permanent"
+          "target_type": "permanent",
+          "owner_draws": 2
         }
       ]
     }

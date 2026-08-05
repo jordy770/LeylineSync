@@ -23,12 +23,14 @@ declare
   v_rider_payloads jsonb := '[]'::jsonb;
   v_repl record;
   v_next_exile_position integer;
+  v_is_artifact boolean;
 begin
   select g.owner_id, coalesce(g.controller_player_id, g.owner_id), (c.type_line ilike '%creature%'),
          -- Token at either level: catalog tokens (cards.is_token) or copy
          -- tokens (game_cards.is_token, mig 239).
-         coalesce(c.is_token, false) or coalesce(g.is_token, false), coalesce(g.plus_one_counters, 0)
-  into v_owner_id, v_controller_id, v_is_creature, v_is_token, v_had_counters
+         coalesce(c.is_token, false) or coalesce(g.is_token, false), coalesce(g.plus_one_counters, 0),
+         (c.type_line ilike '%artifact%')
+  into v_owner_id, v_controller_id, v_is_creature, v_is_token, v_had_counters, v_is_artifact
   from public.game_cards g
   join public.cards c on c.id = g.card_id
   where g.id = p_game_card_id
@@ -130,6 +132,22 @@ begin
     dealt_deathtouch_damage = false,
     plus_one_counters = 0
   where id = p_game_card_id;
+
+  -- Daretti-emblem (mig 442): an ARTIFACT dying while its owner holds an
+  -- artifact_return_emblem is stamped for the end-step return sweep
+  -- (advance_step). "Put into YOUR graveyard from the battlefield" — the
+  -- graveyard is the owner's, so the emblem is matched on the OWNER. Tokens
+  -- cease on the zone move, so they never return.
+  if v_is_artifact and not v_is_token and exists (
+    select 1 from public.game_continuous_effects
+    where session_id = p_session_id
+      and effect_type = 'artifact_return_emblem'
+      and affected_player_id = v_owner_id
+  ) then
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb) || '{"return_at_end_step": true}'::jsonb
+    where id = p_game_card_id and session_id = p_session_id;
+  end if;
 
   -- Fire the captured dies-triggers AFTER the move so a return_self_to_battlefield
   -- effect finds the card in its graveyard. (For tokens the card has already

@@ -278,6 +278,22 @@ begin
         end if;
       end if;
 
+    elsif v_eff_type = 'create_emblem' then
+      -- Daretti's -10 (mig 442): an emblem is modelled as a player-scoped
+      -- continuous-effect row with NO source-zone requirement, so it survives
+      -- the planeswalker leaving (the ultimate usually kills him via the
+      -- 0-loyalty SBA) and every rebuild (not in the register allowlist).
+      -- Only 'artifact_return' exists: put_in_graveyard stamps artifacts dying
+      -- under it, advance_step's end-step sweep returns them.
+      if lower(coalesce(v_effect ->> 'emblem', '')) = 'artifact_return'
+         and p_controller_id is not null then
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_player_id, effect_type, payload
+        ) values (
+          p_session_id, p_source_card_id, p_controller_id, 'artifact_return_emblem', '{}'::jsonb
+        );
+      end if;
+
     elsif v_eff_type = 'create_token' then
       -- A dynamic count object ({count:{count:'...'}}) resolves via the amount
       -- engine and is NOT floored at 1 — zero matches makes zero tokens (Gadrak

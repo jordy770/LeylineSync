@@ -345,6 +345,11 @@ export function getAbilityEffect(
     | (CardBehaviorAction & { amount?: number; target_type?: unknown })
     | undefined
   if (!e || !e.type) return null
+  // Self-pump (mig 442, Stormshriek Feral firebreathing): "this creature gets
+  // +X/+Y" pumps its own source — activate directly, no target picker.
+  if (e.type === 'pump' && e.target_type === 'self') {
+    return { type: 'pump', amount: 0, canTargetPlayer: false, canTargetCreature: false, needsTarget: false }
+  }
   if (e.type === 'draw') {
     return { type: 'draw', amount: typeof e.amount === 'number' ? e.amount : 1, canTargetPlayer: false, canTargetCreature: false, needsTarget: false }
   }

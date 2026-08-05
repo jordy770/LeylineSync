@@ -716,17 +716,30 @@ begin
     end if;
 
   elsif v_eff_type = 'pump' then
-    if p_target_card_id is null then
-      raise exception 'A target is required for this ability';
+    -- target_type 'self' (mig 442, Stormshriek Feral firebreathing): "this
+    -- creature gets +X/+Y" — the ability pumps its own source, no target choice.
+    if (v_effect ->> 'target_type') = 'self' then
+      v_stack := public.put_action_on_stack(
+        p_session_id, 'pump_creature',
+        jsonb_build_object('target_card_id', p_source_card_id,
+          'power', coalesce((v_effect ->> 'power')::integer, 0),
+          'toughness', coalesce((v_effect ->> 'toughness')::integer, 0),
+          'timing', 'instant'),
+        p_source_card_id
+      );
+    else
+      if p_target_card_id is null then
+        raise exception 'A target is required for this ability';
+      end if;
+      v_stack := public.put_action_on_stack(
+        p_session_id, 'pump_creature',
+        jsonb_build_object('target_card_id', p_target_card_id,
+          'power', coalesce((v_effect ->> 'power')::integer, 0),
+          'toughness', coalesce((v_effect ->> 'toughness')::integer, 0),
+          'target_controller', v_target_controller, 'timing', 'instant'),
+        p_source_card_id
+      );
     end if;
-    v_stack := public.put_action_on_stack(
-      p_session_id, 'pump_creature',
-      jsonb_build_object('target_card_id', p_target_card_id,
-        'power', coalesce((v_effect ->> 'power')::integer, 0),
-        'toughness', coalesce((v_effect ->> 'toughness')::integer, 0),
-        'target_controller', v_target_controller, 'timing', 'instant'),
-      p_source_card_id
-    );
 
   elsif v_eff_type = 'grant_keyword' then
     if p_target_card_id is null then

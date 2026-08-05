@@ -193,7 +193,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'add_mana', 'deal_damage', 'counter', 'gain_life', 'lose_life', 'draw',
   'create_token', 'add_counters', 'destroy', 'exile', 'bounce', 'tap', 'untap',
   'pump', 'pump_all', 'mill', 'scry', 'surveil', 'search_library', 'discard', 'may', 'choose_player', 'choose_creature_type', 'tap_self',
-  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'blink', 'myriad', 'saw_in_half', 'delina_d20', 'donate_self', 'fight', 'gain_control',
+  'add_counters_all', 'tap_all', 'untap_all', 'grant_keyword', 'grant_dies_effect', 'create_emblem', 'blink', 'myriad', 'saw_in_half', 'delina_d20', 'donate_self', 'fight', 'gain_control',
   'sacrifice', 'return_from_graveyard', 'prevent_damage', 'set_pt',
   'add_player_counters', 'proliferate', 'grant_cast_from_graveyard', 'amass',
   'destroy_all', 'return_all_from_graveyard', 'exile_from_graveyard', 'conditional',
@@ -567,10 +567,13 @@ const CardBehaviorActionSchema = z.union([
   // "The owner of target permanent shuffles it into their library" (Chaos
   // Warp, mig 242). then_reveal_top_to_battlefield adds the rider: reveal the
   // owner's top card; a permanent card goes onto the battlefield.
+  // owner_draws (Oblation, mig 442): "…then draws two cards" — the target's
+  // OWNER draws after the shuffle.
   z.object({
     type: z.literal('shuffle_into_library'),
     target_type: z.enum(['permanent', 'creature', 'artifact', 'enchantment']).optional(),
     then_reveal_top_to_battlefield: z.boolean().optional(),
+    owner_draws: z.number().int().positive().optional(),
   }),
   // "You may pay any amount of {R}. When you do, it deals that much damage to
   // any target." (Leyline Tyrant dies trigger, mig 244.) Parks a decision; the
@@ -1048,7 +1051,9 @@ const CardBehaviorActionSchema = z.union([
     power: z.union([z.number(), z.literal('X'), PumpValueSchema, PowerOfSchema]).optional(),
     toughness: z.union([z.number(), z.literal('X'), PumpValueSchema, PowerOfSchema]).optional(),
     target_ref: z.string().optional(),
-    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
+    // 'self' (mig 442, Stormshriek Feral firebreathing): an activated ability
+    // that pumps its own source — no target choice.
+    target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema), z.literal('self')]).optional(),
     target_controller: TargetControllerSchema,
     // Type-line / "another"-restriction on the trigger target (mig 310/440,
     // Xenagos: exclude_self forbids the trigger's own source).
@@ -1308,6 +1313,16 @@ const CardBehaviorActionSchema = z.union([
     target_type: z.union([BehaviorTargetTypeSchema, z.array(BehaviorTargetTypeSchema)]).optional(),
     target_controller: TargetControllerSchema,
     effects: z.array(z.record(z.string(), z.unknown())).optional(),
+    // 'end_of_turn' (Not Dead After All, mig 442): the grant lapses at cleanup
+    // instead of persisting until the creature dies.
+    expires: z.literal('end_of_turn').optional(),
+  }),
+  // "You get an emblem with …" (Daretti -10, mig 442): a player-scoped
+  // continuous effect that survives its source. Only artifact_return exists:
+  // artifacts dying under it return to the battlefield at the next end step.
+  z.object({
+    type: z.literal('create_emblem'),
+    emblem: z.literal('artifact_return'),
   }),
   // Fight: a creature you control fights a target creature. target_type/
   // target_controller describe the FOUGHT creature (the fighter is implicitly

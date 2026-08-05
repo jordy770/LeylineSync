@@ -26,9 +26,9 @@ het gratis pad blijft heuristisch.
 2. `.wolf/cerebrum.md` — **onderaan beginnen**: de recentste secties (jul '26) staan achteraan en zijn het
    meest waard. De vaste secties bovenaan (User Preferences, Do-Not-Repeat) gelden onverkort.
 3. `docs/open-items.md` — de geconsolideerde TODO, maar **stale sinds 25 juni** (engine stond toen op
-   mig 333; we zitten nu op ~441). De "deferred-by-choice"-lijst klopt grotendeels nog; de TL;DR niet.
+   mig 333; we zitten nu op ~442). De "deferred-by-choice"-lijst klopt grotendeels nog; de TL;DR niet.
 4. `docs/commander-decks/engine-blocked-backlog-2026-07-18.md` — de eerlijke engine-restlijst
-   (**212 open**, was 280; gegroepeerd op ontbrekende primitive). De sectie "Voortgang sinds 18 juli"
+   (**207 open**, was 280; gegroepeerd op ontbrekende primitive). De sectie "Voortgang sinds 18 juli"
    bovenaan zegt wat per bucket dicht is; het ronde-verslag van 5–6 aug staat in
    `docs/commander-decks/engine-round-2026-08-05.md`. **Verifieer per kaart tegen de huidige scripts
    vóór je iets herbouwt.**
@@ -63,11 +63,12 @@ is erger.
 
 ## Waar het project staat (6 aug 2026)
 
-- **Engine v0.20, migraties t/m 441 (lokaal; OVH staat nog op v0.19).** Kern-vocabulaire compleet;
+- **Engine v0.20, migraties t/m 442 (lokaal; OVH staat nog op v0.19).** Kern-vocabulaire compleet;
   de ronde van 5–6 aug bouwde het volledige cast-modifier-vocabulaire (landcycling, overload, free-cast,
   buyback, delve, convoke, evoke, blitz, spectacle, madness) plus per-opponent-drains, situationele
-  cost-reduction, damage-statics (Gisela), planeswalker-target-fixes, copy-excludes en mana-riders.
-  Backlog 280 → **212**; verslag in `docs/commander-decks/engine-round-2026-08-05.md`.
+  cost-reduction, damage-statics (Gisela), planeswalker-target-fixes, copy-excludes, mana-riders en
+  reflexive riders (Daretti-emblem, self-pump, owner_draws, until-EOT-grants).
+  Backlog 280 → **207**; verslag in `docs/commander-decks/engine-round-2026-08-05.md`.
   **Let op: de ~10 nieuwe cast-knoppen/pickers in de controller zijn nog nooit in een echt potje
   gezien — een live phone-test is de eerstvolgende zinnige stap vóór verder UI-werk of deploy.**
 - **Collection Optimizer / advisor is gebouwd** (jul 29): commander-suggesties uit je collectie,
@@ -85,7 +86,7 @@ is erger.
 
 | Wat | Detail |
 |---|---|
-| **Engine-backlog-rounds** | 212 kaarten in 34 buckets (was 280; ronde 5–6 aug sloot 68). Buckets 5+7 AF; b2 11 misfits, b3/b4/b6/b8 bijna dicht (rest = gedocumenteerde deferrals in het ronde-doc). Massa zit nu in bucket 1 (misc, 136) en buckets 9–34. Per ronde: triage → primitives → scripts → tests → deploy-notitie. |
+| **Engine-backlog-rounds** | 207 kaarten in 34 buckets (was 280; ronde 5–6 aug sloot 73). Buckets 5+7+9 AF; b2 11 misfits, b3/b4/b6/b8 bijna dicht (rest = gedocumenteerde deferrals in het ronde-doc). Massa zit nu in bucket 1 (misc, 136) en buckets 10–34. Per ronde: triage → primitives → scripts → tests → deploy-notitie. |
 | **Collection als monetization-pijler** | Beslissing over paywall-grens en welke AI-features erachter komen staat open (zie ANSWERS). |
 | **Opponent-view implementeren** | Ontwerp klaar, mockup klaar, nul code. Raakt `ControllerListV5` + `OpponentBoardOverlay`. |
 | **`docs/open-items.md` verversen** | Zes weken stale; een re-scan zoals die van 25 juni (claims tegen code verifiëren) is een dagdeel en voorkomt dubbel werk. |

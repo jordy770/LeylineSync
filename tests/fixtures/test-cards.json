@@ -13646,5 +13646,108 @@
         }
       ]
     }
+  },
+  {
+    "name": "Firebreathing Dragon Test",
+    "type_line": "Creature - Dragon",
+    "oracle_text": "Flying\n{1}{R}: This creature gets +1/+0 until end of turn.",
+    "power_toughness": "4/4",
+    "mana_cost": "{2}{R}{R}",
+    "script": {
+      "schema_version": 2,
+      "continuous_effects": [
+        {
+          "type": "flying",
+          "affected": "source",
+          "source_zone_required": "battlefield"
+        }
+      ],
+      "activated_abilities": [
+        {
+          "costs": [
+            {
+              "type": "mana",
+              "amount": "{1}{R}"
+            }
+          ],
+          "effects": [
+            {
+              "type": "pump",
+              "power": 1,
+              "toughness": 0,
+              "target_type": "self"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Oblation Test",
+    "type_line": "Instant",
+    "oracle_text": "The owner of target nonland permanent shuffles it into their library, then draws two cards.",
+    "power_toughness": null,
+    "mana_cost": "{2}{W}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "shuffle_into_library",
+            "target_type": "permanent",
+            "owner_draws": 2
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Not Dead Test",
+    "type_line": "Instant",
+    "oracle_text": "Until end of turn, target creature you control gains \"When this creature dies, return it to the battlefield tapped under its owner's control, then create a Wicked Role token attached to it.\"",
+    "power_toughness": null,
+    "mana_cost": "{B}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "grant_dies_effect",
+            "target_type": "creature",
+            "expires": "end_of_turn",
+            "effects": [
+              {
+                "type": "return_self_to_battlefield",
+                "tapped": true,
+                "plus_one_counters": 1
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Scrap Emblem Walker Test",
+    "type_line": "Legendary Planeswalker - Tester",
+    "oracle_text": "-10: You get an emblem with \"Whenever an artifact is put into your graveyard from the battlefield, return that card to the battlefield at the beginning of the next end step.\"",
+    "power_toughness": null,
+    "mana_cost": "{3}{R}",
+    "script": {
+      "schema_version": 2,
+      "loyalty": 3,
+      "loyalty_abilities": [
+        {
+          "cost": -10,
+          "label": "Artifact-return emblem",
+          "effects": [
+            {
+              "type": "create_emblem",
+              "emblem": "artifact_return"
+            }
+          ]
+        }
+      ]
+    }
   }
 ]
