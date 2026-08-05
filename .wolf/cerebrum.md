@@ -973,3 +973,10 @@
 - **self_damage is de derde mana-ability-cost naast pay_life**: routeert door apply_damage_to_player, dus shields en Gisela-statics gelden. Eén cost-type verving in één keer 14 pay_life-benaderingen over 7 kaarten. De vocab-les: "deals damage to you" ≠ "pay life" — bij nieuwe scripts altijd self_damage gebruiken.
 - **Scripted deal_damage naar SPELERS routeert nu door apply_damage_to_player** (de lose_life/deal_damage-branch splitst): elk bestaand script met deal_damage-naar-spelers werd hiermee prevention/statics-aware zonder scriptwijziging; lose_life blijft bewust een directe decrement (loss is geen damage).
 - **game_combat_assignments heet defending_player_id** (niet defender_...) — kolomnamen checken vóór een nieuwe count; de RED-test ving het direct.
+
+## Key Learnings — 2026-08-06 (planeswalker-targets, mig 439 — dertiende slice)
+
+- **Payload-builders zijn whitelist-rebuilds**: build_stack_payload_* functies herbouwen de client-payload met jsonb_build_object — een nieuw params-veld voor de resolver (if_target_type_line) moet expliciet doorgegeven worden of het verdwijnt stil. Bij elk nieuw veld dat door put_action_on_stack rijdt: check de builder in stack_action_handlers. (PW3b ving het; de builder had geen functions_src-bestand en is nu geseed van mig 162.)
+- **Weer drie stale/gedekte flags**: Norn's Annex (attack_tax al enforced, mig 275), de edict-planeswalker-eligibility (park_edict_sacrifice's type_line_any, mig 417) en Havens types-array (mig 265) — de helft van bucket 6 was script-only of al af. Verifieer-eerst blijft de grootste tijdwinst van de backlog-rounds.
+- **if_target_type_line op add_counters** checkt de EFFECTIVE type line (dus Nogi's granted Dragon telt); het rider-patroon (conditioneel effect op het gekozen target) is herbruikbaar voor vergelijkbare "if it's a <type>"-clausules.
+- **Bewust open**: Myr Battlesphere (tap-X-Myr = multi-pick-cost-UI + defending-player-recipient) en Xantcha (forced attacks — zelfde onafgedwongen klasse als goads must-attack-helft).

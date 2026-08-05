@@ -8916,3 +8916,19 @@
 | 03:0x | RED 6 tests → GREEN mig 438: self_damage-cost op mana-abilities (echte damage door apply_damage_to_player), damage_double_to_opponents + damage_prevent_half in beide damage-appliers (verdubbelen vóór halveren; CHECK-constraint + allowlist), scripted deal_damage-naar-spelers door de prevention-keten, count opponents_attacked_this_combat (kolom heet defending_player_id); DR4-fix was een kolomnaam | functions_src (6), migrations/438 | 6/6 PASS | ~28k |
 | 03:3x | 10 kaartscripts geupsert (14 pay_life→self_damage-costs, Eshki deal_damage, Gisela-statics, Drogskol-melee); pump-count-enum + cost-schema bij; volle suite 2551/2551; backlog 233/34, bucket 5 AF | card-scripts.json, card-behavior-schema.ts | DONE | ~15k |
 | 14:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~296 |
+| 14:56 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/show-b6.mjs | — | ~179 |
+| 14:58 | Edited supabase/functions_src/apply_creature_effect.sql | added 1 condition(s) | ~177 |
+| 14:58 | Edited supabase/functions_src/resolve_count_amount.sql | modified Revelation() | ~129 |
+| 14:58 | Edited lib/game/card-behavior-schema.ts | 8→11 lines | ~153 |
+| 14:58 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~83 |
+| 14:59 | Created tests/feature/planeswalker-targets.test.ts | — | ~1262 |
+| 15:01 | Created supabase/functions_src/build_stack_payload_add_counters_creature.sql | — | ~542 |
+| 15:01 | Edited supabase/migrations/202605010439_planeswalker_targets.sql | modified slice() | ~207 |
+| 15:01 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/update-b6.mjs | — | ~352 |
+| 15:02 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b6-cards.txt | — | ~36 |
+| 15:06 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~199 |
+| 15:07 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf12.mjs | — | ~615 |
+| 04:0x | Bucket 6 getriaged: Norn's Annex stale (attack_tax enforced), 4 kaarten script-only (edict-type_line_any en return-types-array bestonden al — migs 417/265), 2 kleine engine-gaten; Myr Battlesphere + Xantcha uitgesteld | backlog, park_edict_sacrifice, apply_trigger_effects | ontwerp staat | ~15k |
+| 04:3x | RED 4 tests → GREEN mig 439: count nonland_permanents_on_battlefield + add_counters if_target_type_line; PW3b ving dat de add_counters-BUILDER de nieuwe key dropte (whitelist-rebuild) — builder als canoniek functions_src-bestand geseed (mig 162) met passthrough | functions_src (3), migrations/439 | 4/4 PASS | ~22k |
+| 05:0x | 6 kaartscripts geupsert (Banishing Light, Demon's Disciple, Plaguecrafter, Haven, Hour of Revelation, Sorin-rider); volle suite 2555/2555; backlog 226/34, bucket 6 op 2 | card-scripts.json, card-behavior-schema.ts | DONE | ~13k |
+| 15:07 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~270 |

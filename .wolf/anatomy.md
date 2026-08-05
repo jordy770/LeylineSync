@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T12:54:23.058Z
-> Files: 84 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T13:07:23.275Z
+> Files: 92 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -45,6 +45,7 @@
 - `append-wolf.mjs` — Declares mem (~819 tok)
 - `append-wolf10.mjs` — Declares mem (~738 tok)
 - `append-wolf11.mjs` — Declares mem (~685 tok)
+- `append-wolf12.mjs` — Declares mem (~615 tok)
 - `append-wolf2.mjs` — buglog: FC3 caught a real guard-bypass pre-commit (~1216 tok)
 - `append-wolf3.mjs` — Declares mem (~931 tok)
 - `append-wolf4.mjs` — Declares mem (~751 tok)
@@ -56,9 +57,10 @@
 - `b3rest-cards.txt` (~23 tok)
 - `b4-cards.txt` (~29 tok)
 - `b5-cards.txt` (~58 tok)
+- `b6-cards.txt` (~33 tok)
 - `bucket3-cards.txt` (~34 tok)
 - `buyback-cards.txt` (~8 tok)
-- `commitmsg.txt` (~277 tok)
+- `commitmsg.txt` — Declares line (~253 tok)
 - `convoke-cards.txt` (~19 tok)
 - `delve-cards.txt` (~10 tok)
 - `fix-mojibake.mjs` — Declares p (~393 tok)
@@ -67,10 +69,12 @@
 - `overload-cards.txt` (~8 tok)
 - `show-b4.mjs` — Declares names (~175 tok)
 - `show-b5.mjs` — Declares names (~163 tok)
+- `show-b6.mjs` — Declares names (~179 tok)
 - `show-cards.mjs` — Declares names (~157 tok)
 - `update-b3.mjs` — Declares path (~346 tok)
 - `update-b4.mjs` — Declares path (~420 tok)
 - `update-b5.mjs` — Declares path (~465 tok)
+- `update-b6.mjs` — Declares path (~352 tok)
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/
 
@@ -343,7 +347,7 @@
 
 ## docs/commander-decks/
 
-- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~16019 tok)
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~16191 tok)
 
 ## docs/superpowers/plans/
 
@@ -366,7 +370,7 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13546 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~25346 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~25416 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4676 tok)
 
 ## lib/intelligence/
@@ -400,10 +404,12 @@
 
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~2257 tok)
 - `apply_convoke.sql` — supabase/functions_src/apply_convoke.sql (~962 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~8061 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~2232 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1402 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24836 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~16300 tok)
+- `build_stack_payload_add_counters_creature.sql` — supabase/functions_src/build_stack_payload_add_counters_creature.sql (~542 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~7271 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~6037 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~1434 tok)
@@ -416,7 +422,7 @@
 - `reduce_generic_cost.sql` — supabase/functions_src/reduce_generic_cost.sql (~376 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~1504 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3321 tok)
-- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~4887 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~5004 tok)
 - `submit_decision.sql` — Declares public (~19640 tok)
 
 ## supabase/migrations/
@@ -431,6 +437,7 @@
 - `202605010434_madness.sql` — 202605010434_madness (~43843 tok)
 - `202605010435_per_opponent.sql` — 202605010435_per_opponent (~44232 tok)
 - `202605010438_damage_replacement.sql` — 202605010438_damage_replacement (~30616 tok)
+- `202605010439_planeswalker_targets.sql` — 202605010439_planeswalker_targets (~13664 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -452,6 +459,7 @@
 - `madness.test.ts` — Madness (mig 434, From Under the Floorboards / Markov Baron) — "If you (~1607 tok)
 - `overload.test.ts` — Overload (mig 428) — "You may cast this spell for its overload cost. If you (~1603 tok)
 - `per-opponent.test.ts` — Per-opponent amounts & targets (mig 435, bucket 3) — (~1433 tok)
+- `planeswalker-targets.test.ts` — Bucket-6 slice (mig 439) — planeswalker-eligible effects: (~1262 tok)
 
 ## tests/fixtures/
 
