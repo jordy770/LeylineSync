@@ -8932,3 +8932,26 @@
 | 04:3x | RED 4 tests → GREEN mig 439: count nonland_permanents_on_battlefield + add_counters if_target_type_line; PW3b ving dat de add_counters-BUILDER de nieuwe key dropte (whitelist-rebuild) — builder als canoniek functions_src-bestand geseed (mig 162) met passthrough | functions_src (3), migrations/439 | 4/4 PASS | ~22k |
 | 05:0x | 6 kaartscripts geupsert (Banishing Light, Demon's Disciple, Plaguecrafter, Haven, Hour of Revelation, Sorin-rider); volle suite 2555/2555; backlog 226/34, bucket 6 op 2 | card-scripts.json, card-behavior-schema.ts | DONE | ~13k |
 | 15:07 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~270 |
+| 15:10 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/show-b7.mjs | — | ~175 |
+| 15:14 | Created tests/feature/copy-nuances.test.ts | — | ~1256 |
+| 15:15 | Edited supabase/functions_src/activate_ability.sql | expanded (+17 lines) | ~229 |
+| 15:15 | Edited supabase/functions_src/choose_triggered_ability_creature_target.sql | modified coalesce() | ~225 |
+| 15:15 | Edited supabase/functions_src/enqueue_triggered_ability.sql | modified exclude_self() | ~250 |
+| 15:15 | Edited supabase/functions_src/apply_mass_pump_until_eot.sql | 4→5 lines | ~18 |
+| 15:15 | Edited supabase/functions_src/apply_mass_pump_until_eot.sql | modified exclude_self() | ~455 |
+| 15:16 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified coalesce() | ~568 |
+| 15:16 | Edited lib/game/card-behavior-schema.ts | 5→8 lines | ~112 |
+| 15:16 | Edited lib/game/card-behavior-schema.ts | 5→7 lines | ~98 |
+| 15:16 | Edited lib/game/card-behavior-schema.ts | modified watcher() | ~256 |
+| 15:16 | Edited lib/game/card-behavior-schema.ts | modified watcher() | ~220 |
+| 15:19 | Edited tests/feature/copy-nuances.test.ts | expanded (+6 lines) | ~138 |
+| 15:20 | Edited tests/feature/copy-nuances.test.ts | reduced (-7 lines) | ~102 |
+| 15:20 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/update-b7.mjs | — | ~254 |
+| 15:20 | Edited supabase/migrations/202605010440_copy_nuances.sql | modified slice() | ~231 |
+| 15:20 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b7-cards.txt | — | ~27 |
+| 15:24 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~162 |
+| 15:25 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf13.mjs | — | ~770 |
+| 05:3x | Bucket 7 getriaged: GEEN legend rule in de engine → Mirror Gallery/The Master-clausule/Helm-except vacuous; Sunfrill-exclude_self zat al in become_copy (mig 240) — halve bucket stale; echt werk: mass/targeted exclude_self + Orthion-timing | backlog, become_copy-branch | ontwerp staat | ~15k |
+| 06:0x | RED 5 tests → GREEN mig 440: exclude_self op pump_all/grant_keyword_all (per-creature rows), target_filter.exclude_self op targeted triggers (chooser + enqueue-availability), sorcery-timing-gate in activate_ability; CN1-dubbeltelling was eigen testfout (dev_spawn naar battlefield vuurt de ETB al — geen handmatige fireTriggers erbovenop) | functions_src (5), migrations/440 | 5/5 PASS | ~26k |
+| 06:3x | 4 kaartscripts geupsert (End-Raze, Xenagos, Heliopterus, Orthion); pump/grant_keyword target_filter + mass-exclude_self in schema; volle suite 2560/2560; backlog 218/34, bucket 7 AF | card-scripts.json, card-behavior-schema.ts | DONE | ~13k |
+| 15:26 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~263 |

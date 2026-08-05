@@ -24726,6 +24726,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-05T12:19:38.174Z"
+    },
+    {
+      "id": "bug-1511",
+      "timestamp": "2026-08-05T13:19:26.012Z",
+      "error_message": "Type error",
+      "file": "tests/feature/copy-nuances.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T13:19:26.012Z"
+    },
+    {
+      "id": "bug-1512",
+      "timestamp": "2026-08-05T13:20:06.928Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/copy-nuances.test.ts",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 13→6 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T13:20:06.928Z"
     }
   ]
 }

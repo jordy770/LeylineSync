@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T13:07:23.275Z
-> Files: 92 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T13:26:03.291Z
+> Files: 102 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -46,6 +46,7 @@
 - `append-wolf10.mjs` — Declares mem (~738 tok)
 - `append-wolf11.mjs` — Declares mem (~685 tok)
 - `append-wolf12.mjs` — Declares mem (~615 tok)
+- `append-wolf13.mjs` — Declares mem (~770 tok)
 - `append-wolf2.mjs` — buglog: FC3 caught a real guard-bypass pre-commit (~1216 tok)
 - `append-wolf3.mjs` — Declares mem (~931 tok)
 - `append-wolf4.mjs` — Declares mem (~751 tok)
@@ -58,9 +59,10 @@
 - `b4-cards.txt` (~29 tok)
 - `b5-cards.txt` (~58 tok)
 - `b6-cards.txt` (~33 tok)
+- `b7-cards.txt` (~25 tok)
 - `bucket3-cards.txt` (~34 tok)
 - `buyback-cards.txt` (~8 tok)
-- `commitmsg.txt` — Declares line (~253 tok)
+- `commitmsg.txt` (~246 tok)
 - `convoke-cards.txt` (~19 tok)
 - `delve-cards.txt` (~10 tok)
 - `fix-mojibake.mjs` — Declares p (~393 tok)
@@ -70,11 +72,13 @@
 - `show-b4.mjs` — Declares names (~175 tok)
 - `show-b5.mjs` — Declares names (~163 tok)
 - `show-b6.mjs` — Declares names (~179 tok)
+- `show-b7.mjs` — Declares names (~175 tok)
 - `show-cards.mjs` — Declares names (~157 tok)
 - `update-b3.mjs` — Declares path (~346 tok)
 - `update-b4.mjs` — Declares path (~420 tok)
 - `update-b5.mjs` — Declares path (~465 tok)
 - `update-b6.mjs` — Declares path (~352 tok)
+- `update-b7.mjs` — Declares path (~254 tok)
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/
 
@@ -347,7 +351,7 @@
 
 ## docs/commander-decks/
 
-- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~16191 tok)
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~16331 tok)
 
 ## docs/superpowers/plans/
 
@@ -370,7 +374,7 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13546 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~25416 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~25692 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4676 tok)
 
 ## lib/intelligence/
@@ -402,18 +406,22 @@
 
 ## supabase/functions_src/
 
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~10304 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~2257 tok)
 - `apply_convoke.sql` — supabase/functions_src/apply_convoke.sql (~962 tok)
 - `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~8061 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~2232 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1402 tok)
+- `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~1282 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24836 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~16300 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~16608 tok)
 - `build_stack_payload_add_counters_creature.sql` — supabase/functions_src/build_stack_payload_add_counters_creature.sql (~542 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~7271 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~6037 tok)
+- `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1258 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~1434 tok)
 - `discard_card.sql` — supabase/functions_src/discard_card.sql (~779 tok)
+- `enqueue_triggered_ability.sql` — supabase/functions_src/enqueue_triggered_ability.sql (~2062 tok)
 - `finalize_stack_resolution.sql` — supabase/functions_src/finalize_stack_resolution.sql (~650 tok)
 - `fire_watcher_triggers.sql` — supabase/functions_src/fire_watcher_triggers.sql (~4962 tok)
 - `handle_cast_permanent.sql` — supabase/functions_src/handle_cast_permanent.sql (~1405 tok)
@@ -438,6 +446,7 @@
 - `202605010435_per_opponent.sql` — 202605010435_per_opponent (~44232 tok)
 - `202605010438_damage_replacement.sql` — 202605010438_damage_replacement (~30616 tok)
 - `202605010439_planeswalker_targets.sql` — 202605010439_planeswalker_targets (~13664 tok)
+- `202605010440_copy_nuances.sql` — 202605010440_copy_nuances (~31308 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -450,6 +459,7 @@
 - `alt-cost-mechanics.test.ts` — Evoke / blitz / spectacle (mig 433) — three one-card alternative-cost (~1693 tok)
 - `buyback.test.ts` — Buyback (mig 430, Disturbed Burial / Mind Games) — "You may pay an (~1552 tok)
 - `convoke.test.ts` — Convoke (mig 432, Hour of Reckoning / Triplicate Spirits / Markov Baron / (~2131 tok)
+- `copy-nuances.test.ts` — Bucket-7 slice (mig 440) — "other/another" exclusions + sorcery-only timing: (~1254 tok)
 - `corrupted-goad.test.ts` — Bucket-3 rest (mig 436) — (~2178 tok)
 - `cost-reduction-2.test.ts` — Bucket-4 slice (mig 437) — situational cost reduction + riders: (~2175 tok)
 - `damage-replacement.test.ts` — Bucket-5 slice (mig 438) — damage replacement / prevention / self-damage: (~1403 tok)
