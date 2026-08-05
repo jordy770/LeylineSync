@@ -7159,11 +7159,10 @@
     "schema_version": 2,
     "continuous_effects": [
       {
-        "type": "cost_reduction",
+        "type": "grants_convoke",
         "affected": "controller",
         "payload": {
-          "type_line": "artifact",
-          "amount": 1
+          "type_line": "artifact"
         }
       }
     ]
@@ -16325,6 +16324,7 @@
     "keywords": [
       "lifelink"
     ],
+    "convoke": true,
     "continuous_effects": [
       {
         "type": "pump",
@@ -24046,7 +24046,8 @@
           "exclude_type": "Token"
         }
       ]
-    }
+    },
+    "convoke": true
   },
   "Duneblast": {
     "schema_version": 2,
@@ -25376,7 +25377,8 @@
           "count": 3
         }
       ]
-    }
+    },
+    "convoke": true
   },
   "Glorious Anthem": {
     "schema_version": 2,

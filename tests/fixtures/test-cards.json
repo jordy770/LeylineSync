@@ -12807,5 +12807,58 @@
       },
       "delve": true
     }
+  },
+  {
+    "name": "Convoke Tokens Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Convoke\nCreate three 1/1 white Spirit creature tokens with flying.",
+    "power_toughness": null,
+    "mana_cost": "{4}{W}{W}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "create_token",
+            "token": "Spirit Token",
+            "count": 3
+          }
+        ]
+      },
+      "convoke": true
+    }
+  },
+  {
+    "name": "Convoke Vampire Test",
+    "type_line": "Creature - Vampire Noble",
+    "oracle_text": "Convoke\nLifelink",
+    "power_toughness": "3/3",
+    "mana_cost": "{2}{B}",
+    "keywords": [
+      "lifelink"
+    ],
+    "script": {
+      "schema_version": 2,
+      "convoke": true
+    }
+  },
+  {
+    "name": "Convoke Granter Test",
+    "type_line": "Creature - Vedalken Artificer",
+    "oracle_text": "Artifact spells you cast have convoke.",
+    "power_toughness": "1/2",
+    "mana_cost": "{1}{U}",
+    "script": {
+      "schema_version": 2,
+      "continuous_effects": [
+        {
+          "type": "grants_convoke",
+          "affected": "controller",
+          "payload": {
+            "type_line": "artifact"
+          }
+        }
+      ]
+    }
   }
 ]

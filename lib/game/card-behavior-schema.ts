@@ -1606,6 +1606,11 @@ export const CardBehaviorScriptV2Schema = z.object({
   // graveyard cards while casting; each pays for {1} of the generic cost
   // (cast RPCs take p_delve_card_ids, engine-validated and capped).
   delve: z.boolean().optional(),
+  // Convoke (mig 432, Hour of Reckoning / Triplicate Spirits / Markov Baron):
+  // the caster may tap untapped creatures while casting; each pays a matching
+  // coloured pip or {1} generic (cast RPCs take p_convoke_card_ids). Chief
+  // Engineer's grant is a `grants_convoke` continuous effect instead.
+  convoke: z.boolean().optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),

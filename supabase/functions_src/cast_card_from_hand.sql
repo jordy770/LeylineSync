@@ -12,7 +12,12 @@ create or replace function public.cast_card_from_hand(
   p_sacrifice_ids uuid[] default null,
   -- The chosen X for an {X} permanent (mig 300). Stamped on the card's counter
   -- bag so its ETB can read it (create_token count:'X' → counters.x).
-  p_x_value integer default null
+  p_x_value integer default null,
+  -- Convoke (mig 432, Markov Baron / Chief Engineer's grant): untapped
+  -- creatures the caster taps while casting — each pays a matching coloured
+  -- pip or {1} generic (apply_convoke). Allowed when the card's script has
+  -- `convoke` or a grants_convoke static covers the card's type line.
+  p_convoke_card_ids uuid[] default null
 ) returns public.game_cards
 language plpgsql
 security definer
@@ -28,6 +33,8 @@ declare
   v_is_aura boolean;
   v_pending_stack_count integer := 0;
   v_has_flash boolean := false;
+  v_convoke_count integer := coalesce(array_length(p_convoke_card_ids, 1), 0);
+  v_pay_cost text;
   v_land_play_limit integer := 1;
   v_next_battlefield_position integer;
   v_next_stack_position integer;
@@ -441,9 +448,28 @@ begin
   else
     -- Cost reduction (mig 231): reduce the generic portion before paying (e.g.
     -- "Dragon spells you cast cost {1} less" — Dragonlord's Servant).
+    v_pay_cost := public.reduced_mana_cost(p_session_id, auth.uid(), p_game_card_id, v_card_mana_cost);
+    -- Convoke (mig 432): the card's own script, or a battlefield static that
+    -- grants it ("Artifact spells you cast have convoke" — Chief Engineer,
+    -- grants_convoke with a type_line filter).
+    if v_convoke_count > 0 then
+      if not (coalesce((public.effective_script(p_session_id, p_game_card_id) ->> 'convoke')::boolean, false)
+              or exists (
+                select 1
+                from public.game_continuous_effects ce
+                join public.game_cards sc on sc.id = ce.source_card_id and sc.zone = 'battlefield'
+                where ce.session_id = p_session_id
+                  and ce.effect_type = 'grants_convoke'
+                  and ce.affected_player_id = auth.uid()
+                  and (coalesce(ce.payload ->> 'type_line', '') = ''
+                       or coalesce(v_card_type_line, '') ilike '%' || (ce.payload ->> 'type_line') || '%'))) then
+        raise exception 'This card does not have convoke';
+      end if;
+      -- Validates + taps the creatures and rewrites the cost pip by pip.
+      v_pay_cost := public.apply_convoke(p_session_id, auth.uid(), v_pay_cost, p_convoke_card_ids);
+    end if;
     perform public.pay_mana_cost(
-      p_session_id, auth.uid(),
-      public.reduced_mana_cost(p_session_id, auth.uid(), p_game_card_id, v_card_mana_cost),
+      p_session_id, auth.uid(), v_pay_cost,
       p_generic_payment,
       p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_card_type_line, ''),
         'is_commander', coalesce(v_card.is_commander, false)));
@@ -537,4 +563,4 @@ begin
   return v_card;
 end;
 $$;
-grant execute on function public.cast_card_from_hand(uuid, uuid, jsonb, uuid, boolean, uuid[], integer) to authenticated;
+grant execute on function public.cast_card_from_hand(uuid, uuid, jsonb, uuid, boolean, uuid[], integer, uuid[]) to authenticated;

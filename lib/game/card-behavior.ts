@@ -118,6 +118,8 @@ export type CardBehaviorScriptV2 = {
   buyback?: string
   // Delve (mig 431): exile graveyard cards while casting; each pays {1}.
   delve?: boolean
+  // Convoke (mig 432): tap creatures while casting; each pays a pip or {1}.
+  convoke?: boolean
   // Adventure half (mig 295): { name?, cost?, spell_effect } — the card's
   // instant/sorcery side, surfaced by the controller's "Adventure" cast.
   adventure?: { name?: string; cost?: string; spell_effect: CardBehaviorSpellEffect }
@@ -423,6 +425,7 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     free_cast_condition: script.free_cast_condition,
     buyback: script.buyback,
     delve: script.delve,
+    convoke: script.convoke,
     adventure: script.adventure,
     saga_chapters: script.saga_chapters,
     enters_with_counters: script.enters_with_counters,

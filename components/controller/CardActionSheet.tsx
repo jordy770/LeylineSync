@@ -27,6 +27,7 @@ import {
   getAbilityEffect,
   getCardKeywords,
   getEffectivePT,
+  convokeReducedCost,
   getSpellPlan,
   manaCostColors,
   reduceGenericCost,
@@ -34,10 +35,10 @@ import {
   renderAbilityEffect,
 } from './shared'
 
-// â”€â”€â”€ Card Action Sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Card Action Sheet ────────────────────────────────────────────────────────
 
-// Target rows grouped per controller â€” opponents first (seat order), your own
-// cards last â€” so every picker says WHOSE permanent you're about to hit
+// Target rows grouped per controller — opponents first (seat order), your own
+// cards last — so every picker says WHOSE permanent you're about to hit
 // instead of one unsorted pile.
 function GroupedTargets({
   items,
@@ -115,6 +116,7 @@ export function CardActionSheet({
   onOverloadCast,
   controlsCommander = false,
   graveyardCards = [],
+  convokeGrantTypeLines = [],
   onActivateAbility,
   onActivateManaAbility,
   onActivateLoyalty,
@@ -131,7 +133,7 @@ export function CardActionSheet({
   playableFromExile?: boolean
   canCastSorceries: boolean
   canCastInstants: boolean
-  /** Current turn number â€” gates a GRANTED flashback (Snapcaster, mig 392). */
+  /** Current turn number — gates a GRANTED flashback (Snapcaster, mig 392). */
   turnNumber?: number
   pendingStackCount: number
   players: GameSessionPlayer[]
@@ -140,7 +142,7 @@ export function CardActionSheet({
   boardCards: BoardCard[]
   commanderIdentity: ManaColor[]
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
-  onCastCard: (cardId: string, opts?: { kicked?: boolean }) => Promise<void>
+  onCastCard: (cardId: string, opts?: { kicked?: boolean; convokeCardIds?: string[] }) => Promise<void>
   /** Colour-aware "can I pay this right now" (pool + untapped lands) for the mana warning. */
   canAffordCost?: (costStr?: string | null) => boolean
   openManaCount?: number
@@ -157,14 +159,17 @@ export function CardActionSheet({
   onDividedDamage: (cardId: string, allocations: DamageAllocation[]) => Promise<void>
   onFight: (cardId: string, fighterCardId: string, foughtCardId: string) => Promise<void>
   onDrawCards: (cardId: string, delveCardIds?: string[]) => Promise<void>
-  onSpellEffect: (cardId: string, buyback?: boolean, delveCardIds?: string[]) => Promise<void>
-  // The player's own graveyard (id + name) â€” feeds the delve picker (mig 431).
+  onSpellEffect: (cardId: string, buyback?: boolean, delveCardIds?: string[], convokeCardIds?: string[]) => Promise<void>
+  // The player's own graveyard (id + name) — feeds the delve picker (mig 431).
   graveyardCards?: { id: string; name: string }[]
+  // type_line filters of active grants_convoke statics (mig 432, Chief
+  // Engineer) — a matching hand card may convoke without printed convoke.
+  convokeGrantTypeLines?: string[]
   onModalSpell: (cardId: string) => Promise<void>
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
   onCastAdventure: (cardId: string, opts: { targetCardId?: string | null; stackItemId?: string | null }) => Promise<void>
   onOverloadCast: (cardId: string) => Promise<void>
-  // Whether the player controls a commander on the battlefield right now â€”
+  // Whether the player controls a commander on the battlefield right now —
   // drives the conditional-free-cast button (mig 429); the engine re-verifies.
   controlsCommander?: boolean
   onActivateAbility: (
@@ -193,7 +198,7 @@ export function CardActionSheet({
   const castableFromExile = card.zone === 'exile' && playableFromExile
   const zone = castableFromExile ? 'hand' : card.zone
   // Mirrors activate_ability's zone gate (mig 289): a missing
-  // source_zone_required means BATTLEFIELD, not anywhere â€” otherwise a
+  // source_zone_required means BATTLEFIELD, not anywhere — otherwise a
   // creature's pump ability shows on the card while it's still in hand
   // (Stormshriek Feral) and the engine rejects the tap anyway.
   const abilityAvailableInZone = (req?: string | null) =>
@@ -213,17 +218,21 @@ export function CardActionSheet({
   // 'target' = showing the target picker for a targeted spell
   const [picking, setPicking] = useState(false)
   // Conditional free cast (mig 429, Deadly Rollick): the target being picked
-  // belongs to a FREE cast â€” the pick routes through onCreatureEffect with the
+  // belongs to a FREE cast — the pick routes through onCreatureEffect with the
   // free flag so no mana is auto-paid or charged.
   const [freeCastPick, setFreeCastPick] = useState(false)
   // Buyback (mig 430, Mind Games): the target being picked belongs to a
-  // BUYBACK cast â€” the pick routes through onPermanentEffect with the flag so
+  // BUYBACK cast — the pick routes through onPermanentEffect with the flag so
   // the additional cost is paid and the spell returns to hand on resolution.
   const [buybackPick, setBuybackPick] = useState(false)
   // Delve (mig 431): the graveyard-card picker is open / the cards chosen so
   // far. Each chosen card pays {1} of the generic cost on the delved cast.
   const [delveOpen, setDelveOpen] = useState(false)
   const [delveIds, setDelveIds] = useState<string[]>([])
+  // Convoke (mig 432): the creature picker is open / the creatures chosen so
+  // far. Each tapped creature pays a matching coloured pip or {1} generic.
+  const [convokeOpen, setConvokeOpen] = useState(false)
+  const [convokeIds, setConvokeIds] = useState<string[]>([])
   // Fight is a two-step pick: the chosen fighter (a creature you control), then
   // the fought creature. null = still choosing the fighter.
   const [fightFighterId, setFightFighterId] = useState<string | null>(null)
@@ -250,7 +259,7 @@ export function CardActionSheet({
     count: number
     eligible: BoardCard[]
     selected: string[]
-    // The follow-up target pick (Shacklegeist: tap two Spirits â†’ tap target).
+    // The follow-up target pick (Shacklegeist: tap two Spirits → tap target).
     then: { type: string; amount: number; canTargetPlayer: boolean; canTargetCreature: boolean } | null
   }>(null)
   // Adventure (mig 295/296): when on, the whole cast UI (plan, target pickers,
@@ -262,7 +271,7 @@ export function CardActionSheet({
   // Base the plan on a hand-zoned clone when casting from exile so the spell
   // plan's `zone === 'hand'` timing check passes (canCastHandSpell).
   const planBase = castableFromExile ? ({ ...card, zone: 'hand' } as ControllerCard) : card
-  // The adventure half as a castable plan card â€” built up-front (not only in
+  // The adventure half as a castable plan card — built up-front (not only in
   // adventure mode) so both halves can be offered side by side.
   const adventurePlanCard = adventure
     ? ({
@@ -296,7 +305,7 @@ export function CardActionSheet({
       creatureMatchesController(c, playerId, spellTargetController) &&
       !creatureProtectedFrom(c, spellColors),
   )
-  // Creature cards in ANY graveyard â€” the choices for an "exile a creature card
+  // Creature cards in ANY graveyard — the choices for an "exile a creature card
   // from a graveyard" activated-ability cost (Cemetery Reaper).
   const graveyardCreatures = boardCards.filter(
     (c) => c.zone === 'graveyard' && c.type_line?.toLowerCase().includes('creature'),
@@ -340,16 +349,16 @@ export function CardActionSheet({
   const canCast = canCastHandSpell(planCard, canCastSorceries, canCastInstants, pendingStackCount)
   // The adventure half can be entered whenever the creature is in hand.
   const canEnterAdventure = !!adventure && zone === 'hand' && !adventureMode
-  // Whether the adventure half is castable RIGHT NOW â€” drives the button's
+  // Whether the adventure half is castable RIGHT NOW — drives the button's
   // enabled state so both halves always show with honest availability.
   const canCastAdventure = adventurePlanCard
     ? canCastHandSpell(adventurePlanCard, canCastSorceries, canCastInstants, pendingStackCount)
     : false
   // Mana honesty (bug-1511): timing said "castable" while the player's lands
-  // were already tapped â€” surface a warning instead of a silent server bounce.
+  // were already tapped — surface a warning instead of a silent server bounce.
   const affordCreature = canAffordCost ? canAffordCost(card.cards?.mana_cost) : true
   const affordAdventure = adventure && canAffordCost ? canAffordCost(adventure.cost) : true
-  // Name the exact gate that blocks a sorcery-speed cast â€” "your main phase"
+  // Name the exact gate that blocks a sorcery-speed cast — "your main phase"
   // covered three different causes and made stale-state bugs undiagnosable.
   const sorceryBlockReason = canCastSorceries
     ? null
@@ -452,7 +461,7 @@ export function CardActionSheet({
   // Kicker (mig 211): a hand card with a top-level `kicker` cost gets a second
   // cast button that pays printed + kicker in one go; the server stamps
   // 'kicked' so "if it was kicked" ETB conditionals fire (Verix Bladewing).
-  // Only for the plain untargeted cast path â€” kicked targeted spells later.
+  // Only for the plain untargeted cast path — kicked targeted spells later.
   const kickerCost = script.kicker ?? null
   const canCastKicked =
     !!kickerCost &&
@@ -473,7 +482,7 @@ export function CardActionSheet({
   // Overload (mig 428): a hand card whose script carries `overload` +
   // `overload_effect` gets a second cast button that pays the overload cost;
   // the server swaps in the mass, untargeted program ("change 'target' to
-  // 'each'"), so this path never needs the target picker â€” it stays available
+  // 'each'"), so this path never needs the target picker — it stays available
   // even when the base spell has no legal target.
   const overloadCost = script.overload ?? null
   const canCastOverloaded =
@@ -509,8 +518,8 @@ export function CardActionSheet({
   // Buyback (mig 430): a hand card whose script carries a `buyback` cost gets
   // a second cast button that pays printed + buyback; the spell then returns
   // to hand as it resolves. Wired for the untargeted program path (Disturbed
-  // Burial, kind 'spell_effect' â€” casts in one tap) and the permanent-target
-  // path (Mind Games, kind 'permanent_effect' â€” opens the target picker).
+  // Burial, kind 'spell_effect' — casts in one tap) and the permanent-target
+  // path (Mind Games, kind 'permanent_effect' — opens the target picker).
   const buybackCost = script.buyback ?? null
   const canCastBuyback =
     !!buybackCost &&
@@ -534,7 +543,7 @@ export function CardActionSheet({
   }
 
   // Delve (mig 431): a hand card whose script carries `delve: true` gets a
-  // "Cast with delve" flow â€” pick any number of your graveyard cards (capped
+  // "Cast with delve" flow — pick any number of your graveyard cards (capped
   // at the generic part of the cost), each paying {1}. Wired for the two
   // shapes the delve cards use: untargeted programs (Dig Through Time,
   // 'spell_effect') and plain draw spells (Treasure Cruise, 'draw').
@@ -570,6 +579,53 @@ export function CardActionSheet({
     onClose()
   }
 
+  // Convoke (mig 432): printed (`convoke: true`) or granted by a battlefield
+  // static whose type_line filter matches this card (Chief Engineer's
+  // "artifact spells you cast have convoke"). Untapped own creatures can each
+  // pay one matching coloured pip or {1} generic; capped at the cost's pips.
+  const convokeGranted = convokeGrantTypeLines.some(
+    (tl) => tl !== '' && (card.cards?.type_line ?? '').toLowerCase().includes(tl.toLowerCase()),
+  )
+  const convokeCreatures = boardCards.filter(
+    (c) => isCreature(c) && c.controller_player_id === playerId && !c.is_tapped,
+  )
+  const convokePipCap = (() => {
+    const mc = card.cards?.mana_cost ?? ''
+    const generic = Number(mc.match(/\{(\d+)\}/)?.[1] ?? 0)
+    const pips = (mc.match(/\{[WUBRG]\}/g) ?? []).length
+    return generic + pips
+  })()
+  const canCastConvoke =
+    (!!script.convoke || convokeGranted) &&
+    zone === 'hand' &&
+    canCast &&
+    !adventureMode &&
+    !isAura &&
+    convokePipCap > 0 &&
+    convokeCreatures.length > 0 &&
+    (spellPlan.kind === 'spell_effect' || spellPlan.kind === 'normal')
+  const convokedCost = convokeReducedCost(
+    card.cards?.mana_cost ?? '',
+    convokeIds.map((id) => boardCards.find((b) => b.id === id)?.mana_cost),
+  )
+  const affordConvoked = canAffordCost ? canAffordCost(convokedCost) : true
+
+  const toggleConvokeCard = (id: string) => {
+    setConvokeIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : prev.length >= convokePipCap
+          ? prev
+          : [...prev, id],
+    )
+  }
+
+  const handleCastConvoked = () => {
+    if (spellPlan.kind === 'spell_effect') void onSpellEffect(card.id, false, undefined, convokeIds)
+    else void onCastCard(card.id, { convokeCardIds: convokeIds })
+    onClose()
+  }
+
   const handleFlashback = () => {
     if (spellPlan.kind === 'draw') void onDrawCards(card.id)
     else if (spellPlan.kind === 'modal') void onModalSpell(card.id)
@@ -582,7 +638,7 @@ export function CardActionSheet({
 
   // One-tap adventure cast: the button flips to adventure mode AND immediately
   // runs the cast flow (target picker opens right away when the half needs one)
-  // â€” no second Cast press. The effect fires on the render where the adventure
+  // — no second Cast press. The effect fires on the render where the adventure
   // spellPlan/needsTarget are live.
   const autoAdventureCastRef = useRef(false)
   useEffect(() => {
@@ -619,7 +675,7 @@ export function CardActionSheet({
 
         {/* Two-column body: pinned card preview (left) + scrollable actions (right) */}
         <div className="flex min-h-0 flex-1 items-start gap-4">
-          {/* Card preview â€” pinned; tap to zoom for full detail */}
+          {/* Card preview — pinned; tap to zoom for full detail */}
           {imageUrl && (
             <button
               type="button"
@@ -692,14 +748,14 @@ export function CardActionSheet({
             onClick={() => setAdventureMode(false)}
             className="mb-2 self-start text-[10px] font-black uppercase tracking-widest text-violet-300/80 transition active:scale-95"
           >
-            â† Back to creature
+            ← Back to creature
           </button>
         )}
 
-        {/* On an adventure card BOTH halves are always offered side by side â€”
+        {/* On an adventure card BOTH halves are always offered side by side —
             each greys out (with the reason) instead of disappearing, so the
             choice itself is always visible. */}
-        {(canCast || canEnterAdventure) && !picking && !attachPick && !delveOpen && (
+        {(canCast || canEnterAdventure) && !picking && !attachPick && !delveOpen && !convokeOpen && (
           <button
             type="button"
             aria-label={isAura ? 'Cast - enchant a creature' : castLabel}
@@ -718,8 +774,8 @@ export function CardActionSheet({
           </button>
         )}
 
-        {/* Kicked cast â€” pay the kicker on top for the card's bonus effect */}
-        {canCastKicked && !picking && !attachPick && !delveOpen && (
+        {/* Kicked cast — pay the kicker on top for the card's bonus effect */}
+        {canCastKicked && !picking && !attachPick && !delveOpen && !convokeOpen && (
           <button
             type="button"
             aria-label={`Cast kicked - pay ${kickerCost} extra`}
@@ -734,9 +790,9 @@ export function CardActionSheet({
           </button>
         )}
 
-        {/* Overloaded cast â€” pay the overload cost, hit "each" instead of
+        {/* Overloaded cast — pay the overload cost, hit "each" instead of
             "target" (mass program, no target picker). */}
-        {canCastOverloaded && !picking && !attachPick && !delveOpen && (
+        {canCastOverloaded && !picking && !attachPick && !delveOpen && !convokeOpen && (
           <button
             type="button"
             aria-label={`Cast overloaded - pay ${overloadCost}`}
@@ -751,9 +807,9 @@ export function CardActionSheet({
           </button>
         )}
 
-        {/* Delve â€” exile graveyard cards to shrink the generic cost; opens the
+        {/* Delve — exile graveyard cards to shrink the generic cost; opens the
             graveyard picker, confirm casts for the reduced cost. */}
-        {canCastDelve && !picking && !attachPick && !delveOpen && (
+        {canCastDelve && !picking && !attachPick && !delveOpen && !convokeOpen && (
           <button
             type="button"
             aria-label="Cast with delve - exile graveyard cards"
@@ -768,7 +824,69 @@ export function CardActionSheet({
           </button>
         )}
 
-        {delveOpen && !picking && !attachPick && (
+        {/* Convoke — tap your creatures to help pay; opens the creature
+            picker, confirm casts for the pip-rewritten cost. */}
+        {canCastConvoke && !picking && !attachPick && !delveOpen && !convokeOpen && (
+          <button
+            type="button"
+            aria-label="Cast with convoke - tap creatures to help pay"
+            onClick={() => { setConvokeIds([]); setConvokeOpen(true) }}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-orange-400/60 bg-orange-400/15 px-4 py-3 transition active:scale-95"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[9px] font-black uppercase tracking-widest text-orange-300/80">Convoke</span>
+              <span className="font-bold text-orange-100">Cast with convoke - creatures help pay</span>
+            </span>
+            <ManaCostDisplay manaCost={card.cards?.mana_cost} />
+          </button>
+        )}
+
+        {convokeOpen && !picking && !attachPick && (
+          <div className="mb-3 space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              Convoke - tap up to {Math.min(convokePipCap, convokeCreatures.length)} creatures
+            </p>
+            {convokeCreatures.map((c) => {
+              const chosen = convokeIds.includes(c.id)
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => toggleConvokeCard(c.id)}
+                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-2.5 transition active:scale-95 ${
+                    chosen ? 'border-orange-400/70 bg-orange-400/25' : 'border-white/10 bg-white/5'
+                  }`}
+                >
+                  <span className="truncate font-bold text-white">{c.name}</span>
+                  {chosen && <span className="ml-2 shrink-0 text-xs font-black text-orange-300">TAP</span>}
+                </button>
+              )
+            })}
+            <button
+              type="button"
+              onClick={handleCastConvoked}
+              className="flex w-full items-center justify-between rounded-2xl bg-orange-400 px-4 py-3 font-black text-orange-950 transition active:scale-95"
+            >
+              <span>Cast - convoke {convokeIds.length}</span>
+              <ManaCostDisplay manaCost={convokedCost} dark />
+            </button>
+            {!affordConvoked && (
+              <p className="flex items-start gap-1.5 text-xs text-amber-300/90">
+                <span aria-hidden>⚠</span>
+                <span>Probably not payable right now - tap more creatures or tap mana by hand.</span>
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={() => { setConvokeOpen(false); setConvokeIds([]) }}
+              className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
+            >
+              Back
+            </button>
+          </div>
+        )}
+
+        {delveOpen && !picking && !attachPick && !convokeOpen && (
           <div className="mb-3 space-y-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Delve - exile up to {Math.min(delveGenericCap, graveyardCards.length)} graveyard cards
@@ -799,7 +917,7 @@ export function CardActionSheet({
             </button>
             {!affordDelved && (
               <p className="flex items-start gap-1.5 text-xs text-amber-300/90">
-                <span aria-hidden>âš </span>
+                <span aria-hidden>⚠</span>
                 <span>Probably not payable right now - exile more cards or tap mana by hand.</span>
               </p>
             )}
@@ -813,9 +931,9 @@ export function CardActionSheet({
           </div>
         )}
 
-        {/* Buyback â€” pay the extra cost; the spell returns to hand as it
+        {/* Buyback — pay the extra cost; the spell returns to hand as it
             resolves instead of staying in the graveyard. */}
-        {canCastBuyback && !picking && !attachPick && !delveOpen && (
+        {canCastBuyback && !picking && !attachPick && !delveOpen && !convokeOpen && (
           <button
             type="button"
             aria-label={`Cast with buyback - pay ${buybackCost} extra`}
@@ -830,9 +948,9 @@ export function CardActionSheet({
           </button>
         )}
 
-        {/* Conditional free cast â€” the condition holds right now, so offer the
+        {/* Conditional free cast — the condition holds right now, so offer the
             spell for free (the target picker opens; the engine re-verifies). */}
-        {canCastFree && !picking && !attachPick && !delveOpen && (
+        {canCastFree && !picking && !attachPick && !delveOpen && !convokeOpen && (
           <button
             type="button"
             aria-label="Cast free - you control a commander"
@@ -847,9 +965,9 @@ export function CardActionSheet({
           </button>
         )}
 
-        {/* Adventure half â€” casts in ONE tap (the target picker opens straight
+        {/* Adventure half — casts in ONE tap (the target picker opens straight
             away when the spell needs one). */}
-        {canEnterAdventure && !picking && !attachPick && !delveOpen && (
+        {canEnterAdventure && !picking && !attachPick && !delveOpen && !convokeOpen && (
           <button
             type="button"
             aria-label={`Cast adventure${adventure?.name ? ` - ${adventure.name}` : ''}`}
@@ -876,13 +994,13 @@ export function CardActionSheet({
           </button>
         )}
 
-        {/* Mana warning â€” the cast buttons gate on TIMING; when the mana isn't
+        {/* Mana warning — the cast buttons gate on TIMING; when the mana isn't
             there the server would bounce the cast, so say so up front. */}
-        {!picking && !attachPick && !delveOpen && ((canCast && !affordCreature) || (canEnterAdventure && canCastAdventure && !affordAdventure) || (canCastOverloaded && !affordOverload) || (canCastBuyback && !affordBuyback)) && (
+        {!picking && !attachPick && !delveOpen && !convokeOpen && ((canCast && !affordCreature) || (canEnterAdventure && canCastAdventure && !affordAdventure) || (canCastOverloaded && !affordOverload) || (canCastBuyback && !affordBuyback)) && (
           <p className="mb-3 flex items-start gap-1.5 text-xs text-amber-300/90">
-            <span aria-hidden>âš </span>
+            <span aria-hidden>⚠</span>
             <span>
-              Probably not payable right now â€” {openManaCount ?? 0} mana open.
+              Probably not payable right now — {openManaCount ?? 0} mana open.
               Mana from rocks/abilities isn&apos;t counted here; tapping by hand may still work.
             </span>
           </p>
@@ -1000,7 +1118,7 @@ export function CardActionSheet({
                   {p.username ?? `Player ${p.seat_number}`}
                   {p.player_id === playerId && <span className="ml-1 text-[10px] text-slate-400">(you)</span>}
                 </span>
-                <span className="text-sm font-black text-[#D4591A]">â™¥{p.life_total} â†’ {Math.max(0, p.life_total - spellPlan.amount)}</span>
+                <span className="text-sm font-black text-[#D4591A]">♥{p.life_total} → {Math.max(0, p.life_total - spellPlan.amount)}</span>
               </button>
             ))}
             {spellPlan.canTargetCreature && (
@@ -1041,7 +1159,7 @@ export function CardActionSheet({
             <div key={key} className="flex items-center justify-between rounded-2xl border border-[#D4591A]/40 bg-[#D4591A]/10 px-3 py-2">
               <span className="min-w-0 flex-1 truncate font-bold text-white">{name}<span className="ml-1 text-[10px] text-slate-400">{sub}</span></span>
               <div className="flex shrink-0 items-center gap-2">
-                <button type="button" onClick={() => bump(key, -1)} disabled={(dmgAlloc[key] ?? 0) === 0} className="h-7 w-7 rounded-lg border border-white/10 text-sm font-black text-white disabled:opacity-30 active:scale-90">âˆ’</button>
+                <button type="button" onClick={() => bump(key, -1)} disabled={(dmgAlloc[key] ?? 0) === 0} className="h-7 w-7 rounded-lg border border-white/10 text-sm font-black text-white disabled:opacity-30 active:scale-90">−</button>
                 <span className="w-5 text-center text-sm font-black text-[#D4591A]">{dmgAlloc[key] ?? 0}</span>
                 <button type="button" onClick={() => bump(key, 1)} disabled={remaining <= 0} className="h-7 w-7 rounded-lg border border-white/10 text-sm font-black text-white disabled:opacity-30 active:scale-90">+</button>
               </div>
@@ -1062,9 +1180,9 @@ export function CardActionSheet({
           return (
             <div className="mb-3 space-y-2">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Divide {spellPlan.amount} damage â€” {remaining} left
+                Divide {spellPlan.amount} damage — {remaining} left
               </p>
-              {spellPlan.canTargetPlayer && players.map((p) => row(`player:${p.player_id}`, p.username ?? `Player ${p.seat_number}`, p.player_id === playerId ? '(you)' : `â™¥${p.life_total}`))}
+              {spellPlan.canTargetPlayer && players.map((p) => row(`player:${p.player_id}`, p.username ?? `Player ${p.seat_number}`, p.player_id === playerId ? '(you)' : `♥${p.life_total}`))}
               {spellPlan.canTargetCreature && (
                 <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => row(`card:${c.id}`, c.name, effectiveBoardPT(c))} />
               )}
@@ -1126,7 +1244,7 @@ export function CardActionSheet({
                 className="flex w-full items-center justify-between rounded-2xl border border-sky-400/40 bg-sky-400/10 px-4 py-2.5 transition active:scale-95"
               >
                 <span className="truncate font-bold text-white">{c.name}</span>
-                <span className="ml-2 shrink-0 text-xs font-black text-sky-300">{effectiveBoardPT(c)} â†’ {spellPlan.power}/{spellPlan.toughness}</span>
+                <span className="ml-2 shrink-0 text-xs font-black text-sky-300">{effectiveBoardPT(c)} → {spellPlan.power}/{spellPlan.toughness}</span>
               </button>
             )} />
             <button
@@ -1198,7 +1316,7 @@ export function CardActionSheet({
         {picking && spellPlan.kind === 'multi_creature' && (
           <div className="mb-3 space-y-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              {spellPlan.label} up to {spellPlan.count} â€” {multiTargets.length}/{spellPlan.count} chosen
+              {spellPlan.label} up to {spellPlan.count} — {multiTargets.length}/{spellPlan.count} chosen
             </p>
             <GroupedTargets items={targetableCreatures} players={players} playerId={playerId} render={(c) => {
               const chosen = multiTargets.includes(c.id)
@@ -1222,7 +1340,7 @@ export function CardActionSheet({
                   }`}
                 >
                   <span className="truncate font-bold text-white">
-                    {chosen ? 'âœ“ ' : ''}
+                    {chosen ? '✓ ' : ''}
                     {c.name}
                   </span>
                   <span className="ml-2 shrink-0 text-xs font-black text-violet-300">{effectiveBoardPT(c)}</span>
@@ -1361,16 +1479,16 @@ export function CardActionSheet({
               const addManaEffects = ability.effects.filter(isAddManaBehaviorAction)
               const hasTapCost = ability.costs.some((c) => c.type === 'tap_self')
               const isUnavailable = hasTapCost && card.is_tapped
-              // A mana ability with a non-tap cost (a mana cost â€” Dimir Signet
-              // "{1},{T}: Add {U}{B}"; or a "Pay N life" cost â€” Talisman of
+              // A mana ability with a non-tap cost (a mana cost — Dimir Signet
+              // "{1},{T}: Add {U}{B}"; or a "Pay N life" cost — Talisman of
               // Dominance "{T},Pay 1 life: Add {U}") or multiple produced colours
               // is one atomic activation: pay the cost(s), tap, add all colours via
               // activate_mana_ability (so the life/mana payment isn't skipped).
               const hasNonTapCost = ability.costs.some((c) => c.type !== 'tap_self')
               // A producer of "any"/"commander" mana needs a colour pick, so it
               // always uses the per-colour buttons below (which route a sacrifice
-              // cost through activate_mana_ability with the chosen colour â€”
-              // Treasure) â€” never the single atomic button.
+              // cost through activate_mana_ability with the chosen colour —
+              // Treasure) — never the single atomic button.
               const needsColorChoice = addManaEffects.some((e) => e.color === 'any' || e.color === 'commander')
               if ((hasNonTapCost || addManaEffects.length > 1) && !needsColorChoice) {
                 return [(
@@ -1384,7 +1502,7 @@ export function CardActionSheet({
                     }`}
                   >
                     <span className="shrink-0 text-[10px] font-black text-slate-400">{renderAbilityCost(ability.costs)}</span>
-                    <span className="text-slate-500">â†’</span>
+                    <span className="text-slate-500">→</span>
                     <span className="flex items-center gap-1">
                       {addManaEffects.flatMap((effect) =>
                         Array.from({ length: Math.max(1, effect.amount) }, (_, k) => (
@@ -1396,8 +1514,8 @@ export function CardActionSheet({
                 )]
               }
               return addManaEffects.flatMap((effect) => {
-                // 'commander' â†’ one button per colour in the commander's identity
-                // (colourless fallback when there is none); 'any' â†’ one per W/U/B/R/G;
+                // 'commander' → one button per colour in the commander's identity
+                // (colourless fallback when there is none); 'any' → one per W/U/B/R/G;
                 // else the fixed colour.
                 const produces: ManaColor[] =
                   effect.color === 'commander'
@@ -1455,7 +1573,7 @@ export function CardActionSheet({
                 const tl = b.type_line ?? ''
                 if (pickableCost.type === 'sacrifice_artifacts') {
                   if (!/artifact/i.test(tl) || b.id === card.id) return false
-                  // nontoken: token rows are named 'â€¦ Token' by convention.
+                  // nontoken: token rows are named '… Token' by convention.
                   if (pickableCost.nontoken && /\bToken\b/.test(b.name)) return false
                   return true
                 }
@@ -1516,7 +1634,7 @@ export function CardActionSheet({
         {(script.loyalty_abilities?.length ?? 0) > 0 && !picking && !abilityPick && !costPick && (
           <div className="space-y-1.5">
             <p className="mb-1 flex items-center gap-1.5 text-[9px] uppercase tracking-widest text-slate-600">
-              Loyalty <span className="text-[11px] font-black text-amber-400">â—† {Number(card.counters?.loyalty ?? 0)}</span>
+              Loyalty <span className="text-[11px] font-black text-amber-400">◆ {Number(card.counters?.loyalty ?? 0)}</span>
             </p>
             {(script.loyalty_abilities ?? []).map((ability, index) => {
               const cur = Number(card.counters?.loyalty ?? 0)
@@ -1621,7 +1739,7 @@ export function CardActionSheet({
                   {p.username ?? `Player ${p.seat_number}`}
                   {p.player_id === playerId && <span className="ml-1 text-[10px] text-slate-400">(you)</span>}
                 </span>
-                <span className="text-sm font-black text-[#D4591A]">â™¥{p.life_total} â†’ {Math.max(0, p.life_total - abilityPick.amount)}</span>
+                <span className="text-sm font-black text-[#D4591A]">♥{p.life_total} → {Math.max(0, p.life_total - abilityPick.amount)}</span>
               </button>
             ))}
             {abilityPick.canTargetCreature && (
@@ -1651,7 +1769,7 @@ export function CardActionSheet({
           <p className="py-2 text-center text-sm text-slate-600">No actions available</p>
         )}
 
-        {/* Commander: standing return preference for HAND/LIBRARY bounces only â€”
+        {/* Commander: standing return preference for HAND/LIBRARY bounces only —
             death/exile asks on the spot via the commander_zone_return decision. */}
         {card.is_commander && commanderRedirect != null && onSetCommanderRedirect && (
           <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] px-3 py-2.5">
@@ -1668,7 +1786,7 @@ export function CardActionSheet({
               onClick={() => { void onSetCommanderRedirect(!commanderRedirect) }}
               className="shrink-0 rounded-full border border-amber-500/30 px-3 py-1.5 text-[10px] font-black uppercase tracking-wide text-amber-200/90 transition active:scale-95 hover:bg-amber-500/10"
             >
-              {commanderRedirect ? 'â†© command zone' : 'â†’ hand/library'}
+              {commanderRedirect ? '↩ command zone' : '→ hand/library'}
             </button>
           </div>
         )}
@@ -1689,7 +1807,7 @@ export function CardActionSheet({
   )
 }
 
-// â”€â”€â”€ Card Zoom Overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Card Zoom Overlay ────────────────────────────────────────────────────────
 
 export function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClose: () => void }) {
   const imageUrl = card.cards?.image_url
@@ -1697,7 +1815,7 @@ export function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClo
   const pt = getPowerToughnessLabel(card)
 
   // Portal to <body> with fixed positioning so the overlay centres on the
-  // VIEWPORT â€” when rendered inside a transformed ancestor (the Your-zones
+  // VIEWPORT — when rendered inside a transformed ancestor (the Your-zones
   // bottom sheet animates `y`, which makes it the containing block for absolute/
   // fixed children) it otherwise opened below the fold. (bug: zones zoom offscreen)
   const overlay = (
@@ -1716,7 +1834,7 @@ export function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClo
         className="relative flex max-h-[92svh] w-[min(94vw,640px)] flex-col items-stretch gap-3 rounded-2xl border border-white/10 bg-[#0D1018] p-3 shadow-2xl sm:flex-row"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Card image â€” bounded by viewport height, keeps MTG aspect. On narrow
+        {/* Card image — bounded by viewport height, keeps MTG aspect. On narrow
             (phone) screens it stacks on top and is width-capped so it stays
             centered; on wider screens it sits beside the text column. */}
         {imageUrl && (
@@ -1727,7 +1845,7 @@ export function CardZoomOverlay({ card, onClose }: { card: ControllerCard; onClo
           />
         )}
 
-        {/* Text column â€” scrolls if long */}
+        {/* Text column — scrolls if long */}
         <div className="flex min-w-0 flex-1 flex-col gap-2 overflow-y-auto py-1 pr-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">

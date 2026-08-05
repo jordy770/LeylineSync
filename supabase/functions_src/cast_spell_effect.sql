@@ -28,7 +28,11 @@ create or replace function public.cast_spell_effect(
   p_buyback boolean default false,
   -- Delve (mig 431, Dig Through Time): graveyard cards the caster exiles while
   -- casting — each pays for {1} of the generic cost. Script-gated (`delve`).
-  p_delve_card_ids uuid[] default null
+  p_delve_card_ids uuid[] default null,
+  -- Convoke (mig 432, Hour of Reckoning / Triplicate Spirits): untapped
+  -- creatures the caster taps while casting — each pays a matching coloured
+  -- pip or {1} generic (apply_convoke). Script-gated (`convoke`).
+  p_convoke_card_ids uuid[] default null
 )
 returns public.game_stack_items
 language plpgsql
@@ -55,6 +59,7 @@ declare
   v_resolved_actions jsonb;
   v_stack public.game_stack_items;
   v_delve_count integer := coalesce(array_length(p_delve_card_ids, 1), 0);
+  v_convoke_count integer := coalesce(array_length(p_convoke_card_ids, 1), 0);
   v_pay_cost text;
 begin
   if auth.uid() is null then
@@ -172,6 +177,18 @@ begin
     end if;
   end if;
 
+  -- Convoke (mig 432): script-gated; creature validation, tapping, and the
+  -- pip-by-pip cost rewrite live in apply_convoke (at payment time).
+  if v_convoke_count > 0 then
+    if p_source_card_id is null
+       or not coalesce((v_source_script ->> 'convoke')::boolean, false) then
+      raise exception 'This card does not have convoke';
+    end if;
+    if v_source_zone not in ('hand', 'exile') then
+      raise exception 'Convoke can only be used when casting from hand or exile';
+    end if;
+  end if;
+
   -- Timing: instants any time the caster has priority; sorceries main-phase only,
   -- empty stack, active player. A sourceless cast (tests) defaults to instant.
   if v_source_type_line ilike '%sorcery%' then
@@ -261,6 +278,10 @@ begin
           raise exception 'Cannot delve more cards than the generic part of the cost';
         end if;
         v_pay_cost := public.reduce_generic_cost(v_pay_cost, v_delve_count);
+      end if;
+      -- Convoke (mig 432): validates + taps the creatures and rewrites the cost.
+      if v_convoke_count > 0 then
+        v_pay_cost := public.apply_convoke(p_session_id, auth.uid(), v_pay_cost, p_convoke_card_ids);
       end if;
       if btrim(v_pay_cost) <> '' then
         perform public.pay_mana_cost(
@@ -412,4 +433,4 @@ begin
   return v_stack;
 end;
 $$;
-grant execute on function public.cast_spell_effect(uuid, jsonb, uuid, integer, uuid, boolean, boolean, boolean, boolean, uuid[]) to authenticated;
+grant execute on function public.cast_spell_effect(uuid, jsonb, uuid, integer, uuid, boolean, boolean, boolean, boolean, uuid[], uuid[]) to authenticated;

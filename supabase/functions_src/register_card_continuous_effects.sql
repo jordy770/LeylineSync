@@ -110,6 +110,10 @@ begin
       -- to affected:'controller' (not a source-keyword), so affected_player_id is
       -- the controller.
       'cost_reduction',
+      -- STATIC convoke grant (mig 432, Chief Engineer: "Artifact spells you
+      -- cast have convoke"): payload {type_line}; cast_card_from_hand's convoke
+      -- gate accepts matching casts while the source is fielded.
+      'grants_convoke',
       -- STATIC cast-from-the-top-of-your-library permission (mig 244,
       -- Thundermane Dragon): payload {creature, min_power, grant_haste};
       -- cast_card_from_hand's library gate consumes it.

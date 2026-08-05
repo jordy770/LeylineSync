@@ -101,6 +101,7 @@ import {
   manaColors,
   manaColorStyles,
   manaCostColors,
+  convokeReducedCost,
   playerHasInstantResponse,
   playerHasMainPhaseAction,
   reduceGenericCost,
@@ -557,6 +558,14 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     // doesn't reshuffle the hand.
     .sort((a, b) => (a.zone_position - b.zone_position) || a.id.localeCompare(b.id))
   const ownGraveyard = cards.filter((c) => c.zone === 'graveyard')
+  // Convoke grants (mig 432, Chief Engineer): battlefield statics whose script
+  // carries grants_convoke — their type_line filters feed the sheet's convoke
+  // gate for cards that don't have convoke printed.
+  const convokeGrantTypeLines = cards
+    .filter((c) => c.zone === 'battlefield')
+    .flatMap((c) => (normalizeCardBehaviorToV2(c.copied_script ?? c.cards?.script ?? null, c.cards?.type_line).continuous_effects ?? [])
+      .filter((e) => ((e as { type?: string; effect_type?: string }).type ?? (e as { effect_type?: string }).effect_type) === 'grants_convoke')
+      .map((e) => String(((e as { payload?: { type_line?: string } }).payload?.type_line) ?? '')))
   const ownExile = cards.filter((c) => c.zone === 'exile')
   const ownLibraryCount = cards.filter((c) => c.zone === 'library').length
   // "Look at / cast from the top of your library" (Thundermane Dragon). The top
@@ -1052,10 +1061,16 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     advanceStep: async () => { await advanceStep(supabase, sessionId); await refresh() },
     // Plain cast — permanents and untargeted spells. `kicked` pays the card's
     // kicker on top (mig 211); the server stamps 'kicked' for ETB conditionals.
-    castSpell: async (cardId: string, opts?: { kicked?: boolean }) => {
+    castSpell: async (cardId: string, opts?: { kicked?: boolean; convokeCardIds?: string[] }) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const kicker = opts?.kicked
         ? normalizeCardBehaviorToV2(card?.copied_script ?? card?.cards?.script ?? null, card?.cards?.type_line)?.kicker ?? null
+        : null
+      // Convoke (mig 432): auto-pay the pip-rewritten cost; the server
+      // re-validates, taps the creatures, and charges the same.
+      const convokers = opts?.convokeCardIds ?? []
+      const convokeCost = convokers.length > 0
+        ? convokeReducedCost(card?.cards?.mana_cost ?? '', convokers.map((id) => boardCards.find((b) => b.id === id)?.mana_cost))
         : null
       // An {X} cost (Shivan Devastator): ask X up front so the engine can stamp
       // counters.x and pay the real {X} generic. autoPay already skips {X}
@@ -1065,8 +1080,8 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         x = promptForXValue()
         if (x == null) return
       }
-      await autoPay(card, kicker ? { extra: kicker } : undefined)
-      await castCardFromHand(supabase, sessionId, cardId, undefined, undefined, x, opts?.kicked ?? false)
+      await autoPay(card, kicker ? { extra: kicker } : convokeCost != null ? { override: convokeCost } : undefined)
+      await castCardFromHand(supabase, sessionId, cardId, undefined, undefined, x, opts?.kicked ?? false, convokers.length ? convokers : undefined)
       buzz()
       await refresh()
     },
@@ -1230,7 +1245,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     },
     // Untargeted multi-action spell (scry/surveil/draw program, e.g. Opt) — runs
     // the effects in order server-side, parking on a scry/surveil decision.
-    spellEffect: async (cardId: string, buyback = false, delveCardIds?: string[]) => {
+    spellEffect: async (cardId: string, buyback = false, delveCardIds?: string[], convokeCardIds?: string[]) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'spell_effect') return
@@ -1241,15 +1256,18 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       const buybackCost = buyback
         ? normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)?.buyback
         : undefined
-      // Delve (mig 431): each exiled graveyard card pays {1} — auto-pay the
-      // reduced cost; the server validates, exiles, and charges the same.
+      // Delve (mig 431) / convoke (mig 432): auto-pay the reduced cost; the
+      // server validates, exiles/taps, and charges the same.
       const delved = delveCardIds?.length ?? 0
+      const convoked = convokeCardIds?.length ?? 0
       await autoPay(card, buybackCost
         ? { extra: buybackCost }
         : delved > 0
           ? { override: reduceGenericCost(card.cards?.mana_cost ?? '', delved) }
-          : undefined)
-      await castSpellEffect(supabase, sessionId, plan.actions, cardId, x, null, false, false, buyback, delveCardIds)
+          : convoked > 0
+            ? { override: convokeReducedCost(card.cards?.mana_cost ?? '', (convokeCardIds ?? []).map((id) => boardCards.find((b) => b.id === id)?.mana_cost)) }
+            : undefined)
+      await castSpellEffect(supabase, sessionId, plan.actions, cardId, x, null, false, false, buyback, delveCardIds, convokeCardIds)
       await refresh()
     },
     // Modal spell — cast the card's modes; the choose_mode decision UI does the rest.
@@ -1614,6 +1632,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             onCastAdventure={async (cardId, opts) => { await actions.castAdventure(cardId, opts) }}
             onOverloadCast={async (cardId) => { await actions.overloadCast(cardId) }}
             controlsCommander={cards.some((c) => c.is_commander && c.zone === 'battlefield')}
+            convokeGrantTypeLines={convokeGrantTypeLines}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
             onActivateManaAbility={async (sourceId, abilityIndex) => { await actions.activateManaAbility(sourceId, abilityIndex) }}
             onActivateLoyalty={async (sourceId, abilityIndex) => { await actions.activateLoyalty(sourceId, abilityIndex) }}

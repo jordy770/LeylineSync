@@ -269,6 +269,27 @@ export function reduceGenericCost(cost: string, by: number): string {
   return cost.replace(/\{\d+\}/, left === 0 ? '' : `{${left}}`)
 }
 
+// Client mirror of the engine's apply_convoke cost rewrite (mig 432): per
+// tapped creature remove one coloured pip matching the creature's colour
+// (derived from its mana cost), else one generic — same greedy order.
+export function convokeReducedCost(cost: string, creatureManaCosts: (string | null | undefined)[]): string {
+  const letterFor: Record<string, string> = { white: 'W', blue: 'U', black: 'B', red: 'R', green: 'G' }
+  let out = cost
+  for (const mc of creatureManaCosts) {
+    let paid = false
+    for (const color of manaCostColors(mc)) {
+      const pip = `{${letterFor[color]}}`
+      if (out.includes(pip)) {
+        out = out.replace(pip, '')
+        paid = true
+        break
+      }
+    }
+    if (!paid) out = reduceGenericCost(out, 1)
+  }
+  return out
+}
+
 export function targetTypeMatches(tt: unknown, want: string): boolean {
   if (!tt) return false
   if (tt === want || tt === 'any') return true
