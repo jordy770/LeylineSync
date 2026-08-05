@@ -8873,3 +8873,23 @@
 | 00:0x | RED 5 tests → GREEN mig 436: recipient_filter poison_at_least op lose_life/deal_damage, goad_all (goader = source-controller), corrupted_summons (stack-loze pick per corrupted opponent) + corrupted_summons_pick-submit-branch, destroy_up_to required; 2 testfouten waren eigen harness-misverstanden (continuousEffectCount telt op SOURCE; geen savepoints na assert.rejects) | functions_src (3), migrations/436, corrupted-goad.test.ts | 5/5 PASS | ~28k |
 | 00:3x | 5 kaartscripts geupsert (Feed the Infection, Phyrexian Atlas, Geths Summons, Geode Rager, Fiery Confluence); schema + drift-guard + CARD_PICK_DECISIONS bijgewerkt; volle suite 2538/2538; backlog 250/34, bucket 3 op 1 (alleen Emet-Selch) | card-scripts.json, card-behavior-schema.ts, ControllerListV5.tsx | DONE | ~15k |
 | 13:58 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~255 |
+| 14:12 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/show-b4.mjs | — | ~175 |
+| 14:15 | Created tests/feature/cost-reduction-2.test.ts | — | ~2132 |
+| 14:16 | Edited supabase/functions_src/resolve_count_amount.sql | modified Story() | ~142 |
+| 14:16 | Edited supabase/functions_src/reduced_mana_cost.sql | expanded (+6 lines) | ~126 |
+| 14:16 | Edited supabase/functions_src/handle_counter_spell.sql | expanded (+6 lines) | ~128 |
+| 14:16 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | added 1 condition(s) | ~210 |
+| 14:17 | Edited lib/game/card-behavior-schema.ts | 7→7 lines | ~93 |
+| 14:17 | Edited lib/game/card-behavior-schema.ts | modified Rager() | ~114 |
+| 14:17 | Edited lib/game/card-behavior-schema.ts | 3→3 lines | ~43 |
+| 14:17 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~68 |
+| 14:18 | Edited supabase/functions_src/fire_watcher_triggers.sql | modified coalesce() | ~172 |
+| 14:19 | Edited tests/feature/cost-reduction-2.test.ts | 3→5 lines | ~75 |
+| 14:20 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/update-b4.mjs | — | ~420 |
+| 14:20 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b4-cards.txt | — | ~31 |
+| 14:24 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~179 |
+| 14:24 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf10.mjs | — | ~738 |
+| 01:0x | Bucket 4 getriaged: Alisaie al gedekt (nth_spell mig 369 — stale flag, met CR1 geverifieerd), 2 script-only fixes, 4 kleine engine-gaten; Savage Stomp + Wayta bewust uitgesteld | backlog, reduced_mana_cost | ontwerp staat | ~15k |
+| 01:3x | RED 7 tests → GREEN mig 437: count opponent_graveyard_cards, exclude_type_line op cost_reduction-statics, spell_countered-watcher (handle_counter_spell vuurt na de cancel; fire_watcher_triggers-type-default op '' voor dit event — de default-'creature' skipte instant-sources), grant_type until-EOT op de granted_type-laag; CR3 slaagde eerst om de verkeerde reden (korting gold voor alles) — CR3b was de echte RED | functions_src (5), migrations/437 | 7/7 PASS | ~25k |
+| 02:0x | 6 kaartscripts geupsert (Marauding Raptor amount-fix, Undead Warchief static, Into the Story, Lyse Hext, Baral, Nogi); schema + drift-guard bij; volle suite 2545/2545; backlog 243/34, bucket 4 op 2 | card-scripts.json, card-behavior-schema.ts | DONE | ~15k |
+| 14:25 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~287 |

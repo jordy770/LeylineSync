@@ -24710,6 +24710,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-05T11:51:39.499Z"
+    },
+    {
+      "id": "bug-1510",
+      "timestamp": "2026-08-05T12:19:38.174Z",
+      "error_message": "Type error",
+      "file": "tests/feature/cost-reduction-2.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T12:19:38.174Z"
     }
   ]
 }
