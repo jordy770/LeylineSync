@@ -24646,6 +24646,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-05T10:35:53.050Z"
+    },
+    {
+      "id": "bug-1506",
+      "timestamp": "2026-08-05T11:48:19.297Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/apply_trigger_effects.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→14 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T11:48:19.297Z"
+    },
+    {
+      "id": "bug-1507",
+      "timestamp": "2026-08-05T11:48:31.533Z",
+      "error_message": "Wrong reference: then should be corrupted_summons_pick",
+      "file": "supabase/functions_src/submit_decision.sql",
+      "root_cause": "Used \"then\" instead of \"corrupted_summons_pick\"",
+      "fix": "Changed then → corrupted_summons_pick",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T11:48:31.533Z"
+    },
+    {
+      "id": "bug-1508",
+      "timestamp": "2026-08-05T11:51:27.862Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/feature/corrupted-goad.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T11:51:27.862Z"
+    },
+    {
+      "id": "bug-1509",
+      "timestamp": "2026-08-05T11:51:39.499Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/feature/corrupted-goad.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 19→38 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T11:51:39.499Z"
     }
   ]
 }

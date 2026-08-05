@@ -8847,3 +8847,29 @@
 | 22:3x | RED 4 tests (3-speler-scenario's) → GREEN mig 435: times_opponents-rider generiek na resolve_dynamic_amount, event_amount pre-resolve in choose_player-parkering, nieuwe count + shuffle-actie; PO3-fix was een parameternaam (p_controller_id) | functions_src (3), migrations/435, per-opponent.test.ts | 4/4 PASS | ~20k |
 | 23:0x | 6 kaartscripts geupsert (Exsanguinate, Malakir, Sanguine Bond, Vito, Priest, Struggle//Survive); CountAmountSchema + KNOWN_V2 + JSON_ONLY-drift-guard bijgewerkt (guard ving de vergeten registry-reden); volle suite 2533/2533 | card-scripts.json, card-behavior-schema.ts, registry-schema-drift.test.ts | DONE | ~15k |
 | 13:02 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~240 |
+| 13:43 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/show-cards.mjs | — | ~157 |
+| 13:46 | Created tests/feature/corrupted-goad.test.ts | — | ~1795 |
+| 13:47 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | added 1 condition(s) | ~525 |
+| 13:47 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified Rager() | ~855 |
+| 13:48 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | 4→8 lines | ~38 |
+| 13:48 | Edited supabase/functions_src/apply_trigger_effects.sql | modified values() | ~280 |
+| 13:48 | Edited supabase/functions_src/submit_decision.sql | inline fix | ~132 |
+| 13:48 | Edited supabase/functions_src/submit_decision.sql | modified Summons() | ~324 |
+| 13:49 | Edited tests/feature/corrupted-goad.test.ts | 4→4 lines | ~45 |
+| 13:49 | Edited tests/feature/corrupted-goad.test.ts | 3→3 lines | ~58 |
+| 13:51 | Edited tests/feature/corrupted-goad.test.ts | added nullish coalescing | ~234 |
+| 13:51 | Edited tests/feature/corrupted-goad.test.ts | expanded (+19 lines) | ~558 |
+| 13:52 | Edited components/ControllerListV5.tsx | 3→3 lines | ~45 |
+| 13:52 | Edited lib/game/card-behavior-schema.ts | modified required() | ~78 |
+| 13:52 | Edited lib/game/card-behavior-schema.ts | modified gate() | ~117 |
+| 13:52 | Edited lib/game/card-behavior-schema.ts | modified Survive() | ~168 |
+| 13:52 | Edited lib/game/card-behavior-schema.ts | 2→3 lines | ~39 |
+| 13:52 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~123 |
+| 13:52 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/update-b3.mjs | — | ~346 |
+| 13:52 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b3rest-cards.txt | — | ~24 |
+| 13:57 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~189 |
+| 13:58 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf9.mjs | — | ~781 |
+| 23:3x | Bucket-3-rest verkend: goad draagt goaded_by expliciet (nest-baar onder choose_player), poison zit in game_session_players.counters, destroy_up_to parkeert met min 0; Emet-Selch bewust open gelaten (life-loss-watcher ontbreekt; track_life_lost is BEFORE-row-trigger) | functions_src | ontwerp staat | ~15k |
+| 00:0x | RED 5 tests → GREEN mig 436: recipient_filter poison_at_least op lose_life/deal_damage, goad_all (goader = source-controller), corrupted_summons (stack-loze pick per corrupted opponent) + corrupted_summons_pick-submit-branch, destroy_up_to required; 2 testfouten waren eigen harness-misverstanden (continuousEffectCount telt op SOURCE; geen savepoints na assert.rejects) | functions_src (3), migrations/436, corrupted-goad.test.ts | 5/5 PASS | ~28k |
+| 00:3x | 5 kaartscripts geupsert (Feed the Infection, Phyrexian Atlas, Geths Summons, Geode Rager, Fiery Confluence); schema + drift-guard + CARD_PICK_DECISIONS bijgewerkt; volle suite 2538/2538; backlog 250/34, bucket 3 op 1 (alleen Emet-Selch) | card-scripts.json, card-behavior-schema.ts, ControllerListV5.tsx | DONE | ~15k |
+| 13:58 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~255 |
