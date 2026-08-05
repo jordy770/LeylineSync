@@ -8825,3 +8825,25 @@
 | 21:0x | Client MadnessBody (cast-met-X-input / to-graveyard) in de decision-renderer; madness+madness_effect in zod+types; From Under the Floorboards + Markov Baron geupsert (Markov Baron nu volledig) | ControllerListV5.tsx, card-behavior(-schema).ts, card-scripts.json | tsc/lint schoon | ~10k |
 | 21:2x | Volle suite 2529/2529; backlog-kop (261/12), tracks 19/31, dashboards | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
 | 12:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~251 |
+| 12:46 | Created tests/feature/per-opponent.test.ts | — | ~1433 |
+| 12:47 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified coalesce() | ~196 |
+| 12:47 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified Survive() | ~310 |
+| 12:47 | Edited supabase/functions_src/apply_trigger_effects.sql | added 1 condition(s) | ~291 |
+| 12:47 | Edited supabase/functions_src/apply_trigger_effects.sql | 7→8 lines | ~42 |
+| 12:47 | Edited supabase/functions_src/resolve_count_amount.sql | modified Graf() | ~320 |
+| 12:47 | Edited supabase/migrations/202605010435_per_opponent.sql | modified targets() | ~194 |
+| 12:48 | Edited supabase/functions_src/resolve_count_amount.sql | 11→11 lines | ~178 |
+| 12:49 | Edited lib/game/card-behavior-schema.ts | 9→13 lines | ~138 |
+| 12:49 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~29 |
+| 12:49 | Edited lib/game/card-behavior-schema.ts | modified Breach() | ~149 |
+| 12:49 | Edited lib/game/card-behavior-schema.ts | inline fix | ~66 |
+| 12:49 | Edited supabase/migrations/202605010435_per_opponent.sql | modified targets() | ~194 |
+| 12:49 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/bucket3-cards.txt | — | ~36 |
+| 12:50 | Edited lib/game/card-behavior-schema.ts | inline fix | ~204 |
+| 12:57 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~79 |
+| 13:01 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~114 |
+| 13:02 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf8.mjs | — | ~704 |
+| 22:0x | Bucket 3 getriaged; slice-kern gekozen (6 kaarten): times_opponents, choose_player-drains, opponents_with_more_lands, Survive-als-flashback_effect; choose_player-mechanisme + event_amount-gat gevonden | backlog, apply_trigger_effects, submit_decision | ontwerp staat | ~18k |
+| 22:3x | RED 4 tests (3-speler-scenario's) → GREEN mig 435: times_opponents-rider generiek na resolve_dynamic_amount, event_amount pre-resolve in choose_player-parkering, nieuwe count + shuffle-actie; PO3-fix was een parameternaam (p_controller_id) | functions_src (3), migrations/435, per-opponent.test.ts | 4/4 PASS | ~20k |
+| 23:0x | 6 kaartscripts geupsert (Exsanguinate, Malakir, Sanguine Bond, Vito, Priest, Struggle//Survive); CountAmountSchema + KNOWN_V2 + JSON_ONLY-drift-guard bijgewerkt (guard ving de vergeten registry-reden); volle suite 2533/2533 | card-scripts.json, card-behavior-schema.ts, registry-schema-drift.test.ts | DONE | ~15k |
+| 13:02 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~240 |

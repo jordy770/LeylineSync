@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T10:41:08.436Z
-> Files: 56 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T11:02:37.176Z
+> Files: 62 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -49,8 +49,10 @@
 - `append-wolf5.mjs` — buglog: the cp1252 mojibake incident (~1376 tok)
 - `append-wolf6.mjs` — buglog: convoke render-site arg-drop (found while wiring spectacle) (~1231 tok)
 - `append-wolf7.mjs` — Declares mem (~796 tok)
+- `append-wolf8.mjs` — Declares mem (~704 tok)
+- `bucket3-cards.txt` (~34 tok)
 - `buyback-cards.txt` (~8 tok)
-- `commitmsg.txt` (~235 tok)
+- `commitmsg.txt` (~225 tok)
 - `convoke-cards.txt` (~19 tok)
 - `delve-cards.txt` (~10 tok)
 - `fix-mojibake.mjs` — Declares p (~393 tok)
@@ -329,7 +331,7 @@
 
 ## docs/commander-decks/
 
-- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15445 tok)
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15540 tok)
 
 ## docs/superpowers/plans/
 
@@ -352,7 +354,7 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13546 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~24799 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~24948 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4676 tok)
 
 ## lib/intelligence/
@@ -385,8 +387,8 @@
 ## supabase/functions_src/
 
 - `apply_convoke.sql` — supabase/functions_src/apply_convoke.sql (~962 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24500 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14500 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24694 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14896 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~7271 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~6037 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~1434 tok)
@@ -396,6 +398,7 @@
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~4179 tok)
 - `reduce_generic_cost.sql` — supabase/functions_src/reduce_generic_cost.sql (~376 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3226 tok)
+- `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~4603 tok)
 - `submit_decision.sql` — Declares public (~19318 tok)
 
 ## supabase/migrations/
@@ -408,6 +411,7 @@
 - `202605010432_convoke.sql` — 202605010432_convoke (~16487 tok)
 - `202605010433_evoke_blitz_spectacle.sql` — 202605010433_evoke_blitz_spectacle (~14806 tok)
 - `202605010434_madness.sql` — 202605010434_madness (~43843 tok)
+- `202605010435_per_opponent.sql` — 202605010435_per_opponent (~44232 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -425,6 +429,7 @@
 - `landcycling.test.ts` — Basic landcycling (mig 427) — "{2}, Discard this card: Search your library (~1137 tok)
 - `madness.test.ts` — Madness (mig 434, From Under the Floorboards / Markov Baron) — "If you (~1607 tok)
 - `overload.test.ts` — Overload (mig 428) — "You may cast this spell for its overload cost. If you (~1603 tok)
+- `per-opponent.test.ts` — Per-opponent amounts & targets (mig 435, bucket 3) — (~1433 tok)
 
 ## tests/fixtures/
 
@@ -439,6 +444,7 @@
 ## tests/unit/
 
 - `dashboard-parse.test.ts` — Declares backlogMd (~1084 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3448 tok)
 
 ## vercel/
 
