@@ -8680,3 +8680,43 @@
 | 13:4x | GREEN mig 430: p_buyback op cast_spell_effect + put_action_on_stack (additionele betaling, payload-stamp), terug-naar-hand in finalize_stack_resolution (nieuw canoniek functions_src-bestand, seed mig 087); beide DBs bijgewerkt; 5/5 groen | functions_src (3), migrations/430 | 5/5 PASS | ~15k |
 | 14:0x | Client + scripts: buyback in zod+types, Buyback-knop (fuchsia) met spell_effect-one-tap en permanent_effect-pickerflow (buybackPick), autoPay extra-pad hergebruikt (kicker); Disturbed Burial + Mind Games geupsert; tsc/lint/fixtures schoon | CardActionSheet.tsx, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts, card-scripts.json | schoon | ~14k |
 | 14:2x | Volle suite 2503/2503; backlog-kop (271/22), tracks 9/31, dashboards hergegenereerd | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
+| 11:27 | Edited tests/harness/scenario.ts | 15→17 lines | ~148 |
+| 11:27 | Edited tests/harness/scenario.ts | 16→18 lines | ~156 |
+| 11:28 | Created tests/feature/delve.test.ts | — | ~1551 |
+| 11:28 | Created supabase/functions_src/reduce_generic_cost.sql | — | ~376 |
+| 11:28 | Edited supabase/functions_src/cast_spell_effect.sql | modified Buyback() | ~123 |
+| 11:28 | Edited supabase/functions_src/cast_spell_effect.sql | 3→5 lines | ~44 |
+| 11:28 | Edited supabase/functions_src/cast_spell_effect.sql | added 1 condition(s) | ~356 |
+| 11:29 | Edited supabase/functions_src/cast_spell_effect.sql | modified Delve() | ~496 |
+| 11:29 | Edited supabase/functions_src/cast_spell_effect.sql | inline fix | ~39 |
+| 11:29 | Edited supabase/functions_src/put_action_on_stack.sql | modified Buyback() | ~121 |
+| 11:29 | Edited supabase/functions_src/put_action_on_stack.sql | modified text() | ~50 |
+| 11:29 | Edited supabase/functions_src/put_action_on_stack.sql | added 1 condition(s) | ~358 |
+| 11:29 | Edited supabase/functions_src/put_action_on_stack.sql | modified Delve() | ~526 |
+| 11:29 | Edited supabase/functions_src/put_action_on_stack.sql | inline fix | ~33 |
+| 11:30 | Edited supabase/migrations/202605010431_delve.sql | modified if() | ~329 |
+| 11:30 | Edited tests/feature/delve.test.ts | 6→7 lines | ~118 |
+| 11:30 | Edited tests/feature/delve.test.ts | 6→7 lines | ~112 |
+| 11:31 | Edited lib/game/card-behavior-schema.ts | modified Buyback() | ~146 |
+| 11:31 | Edited lib/game/card-behavior.ts | modified Buyback() | ~55 |
+| 11:31 | Edited lib/game/card-behavior.ts | 3→4 lines | ~40 |
+| 11:31 | Edited lib/game/actions.ts | added optional chaining | ~139 |
+| 11:31 | Edited lib/game/actions.ts | added optional chaining | ~197 |
+| 11:31 | Edited components/controller/shared.ts | added 2 condition(s) | ~162 |
+| 11:32 | Edited components/ControllerListV5.tsx | CSS: override | ~245 |
+| 11:32 | Edited components/ControllerListV5.tsx | CSS: override | ~353 |
+| 11:32 | Edited components/ControllerListV5.tsx | 4→5 lines | ~36 |
+| 11:32 | Edited components/ControllerListV5.tsx | CSS: id, name | ~92 |
+| 11:32 | Edited components/controller/CardActionSheet.tsx | 5→6 lines | ~34 |
+| 11:32 | Edited components/controller/CardActionSheet.tsx | CSS: id, name | ~86 |
+| 11:32 | Edited components/controller/CardActionSheet.tsx | 3→4 lines | ~26 |
+| 11:32 | Edited components/controller/CardActionSheet.tsx | modified Buyback() | ~157 |
+| 11:33 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~438 |
+| 11:33 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~908 |
+| 11:34 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/delve-cards.txt | — | ~10 |
+| 11:38 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~109 |
+| 11:38 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf4.mjs | — | ~751 |
+| 15:0x | Delve-slice verkend: oracle + scripts geverifieerd; paden bepaald (Dig via cast_spell_effect, Treasure Cruise via put_action_on_stack draw_cards); generic-reductie-patroon uit reduced_mana_cost | oracle-cards.json, card-scripts.json, reduced_mana_cost.sql | ontwerp staat | ~12k |
+| 15:2x | RED: fixture Delve Draw Test + 6 delve-tests (beide RPC-paden, cap-, graf- en betaalguards); daarna GREEN mig 431: p_delve_card_ids op beide cast-RPC's + nieuwe helper reduce_generic_cost; DV1/DV6-testfout was eigen setup (lege library) | tests/feature/delve.test.ts, functions_src (3), migrations/431 | 6/6 PASS | ~20k |
+| 15:4x | Client: delve in zod+types, Delve-knop (teal) + graveyard-picker (delveOpen/delveIds, cap = generic-deel), reduceGenericCost-helper in shared.ts, ownGraveyard-prop; BOM-uitglijder van Set-Content direct gestript; Treasure Cruise + Dig Through Time geupsert | CardActionSheet.tsx, shared.ts, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts | tsc/lint schoon | ~16k |
+| 16:0x | Volle suite 2509/2509; backlog-kop (269/20), tracks 11/31, dashboards hergegenereerd | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |

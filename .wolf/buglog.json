@@ -24291,6 +24291,118 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-05T09:18:47.079Z"
+    },
+    {
+      "id": "bug-1484",
+      "timestamp": "2026-08-05T09:29:06.954Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/cast_spell_effect.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 12→32 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T09:29:06.954Z"
+    },
+    {
+      "id": "bug-1485",
+      "timestamp": "2026-08-05T09:31:44.251Z",
+      "error_message": "Null/undefined access in ",
+      "file": "lib/game/actions.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: delveCardIds?: string[] | null,; p_delve_card_ids: delveCardIds?.length ? delveCardIds : null",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-08-05T09:31:49.404Z"
+    },
+    {
+      "id": "bug-1486",
+      "timestamp": "2026-08-05T09:31:52.877Z",
+      "error_message": "Missing guard clause",
+      "file": "components/controller/shared.ts",
+      "root_cause": "No early return/throw for edge case: by <= 0 || !cost",
+      "fix": "Added guard clause: if (by <= 0 || !cost)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T09:31:52.877Z"
+    },
+    {
+      "id": "bug-1487",
+      "timestamp": "2026-08-05T09:32:08.597Z",
+      "error_message": "CSS fix: drawCards",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "drawCards: async (cardId: string) => { → async (cardId: string, delveCardIds?: string[]) => {",
+      "fix": "Changed drawCards: async (cardId: string) => { → async (cardId: string, delveCardIds?: string[]) => {",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-08-05T09:32:16.260Z"
+    },
+    {
+      "id": "bug-1488",
+      "timestamp": "2026-08-05T09:32:27.354Z",
+      "error_message": "Type error",
+      "file": "components/ControllerListV5.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T09:32:27.354Z"
+    },
+    {
+      "id": "bug-1489",
+      "timestamp": "2026-08-05T09:32:46.827Z",
+      "error_message": "CSS fix: onDrawCards, onSpellEffect",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "onDrawCards: (cardId: string) => Promise<void> → (cardId: string, delveCardIds?: string[]) => Promise<void>; onSpellEffect: (cardId: string, buyback?: boolean) => Promise<void> → (cardId: string, buyback?: boolean, delveCardIds?: string[]) => Promise<void>",
+      "fix": "Changed onDrawCards: (cardId: string) => Promise<void> → (cardId: string, delveCardIds?: string[]) => Promise<void>; onSpellEffect: (cardId: string, buyback?: boolean) => Promise<void> → (cardId: string, buyback?: boolean, delveCardIds?: string[]) => Promise<void>",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T09:32:46.827Z"
+    },
+    {
+      "id": "bug-1490",
+      "timestamp": "2026-08-05T09:33:08.486Z",
+      "error_message": "Null/undefined access in ",
+      "file": "components/controller/CardActionSheet.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* Delve — exile graveyard cards to shrink the generic cost; graveyard picker, confirm casts for the reduced cost. */}",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-08-05T09:33:29.014Z"
     }
   ]
 }

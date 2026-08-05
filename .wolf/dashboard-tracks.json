@@ -20,11 +20,11 @@
     {
       "name": "Engine — kaarten-backlog (long tail)",
       "weight": 15,
-      "note": "271 kaarten in 34 buckets",
+      "note": "269 kaarten in 34 buckets",
       "milestones": [
         { "text": "Audit + triage → bucket-indeling (34 buckets)", "done": true },
         { "text": "Rounds-workflow bewezen (v0.17–v0.19: 18 kaarten dicht)", "done": true },
-        { "text": "Bucket 2: alt/additional casting cost (9/31 af — migs 427-430: landcycling, overload, free-cast, buyback)", "done": false },
+        { "text": "Bucket 2: alt/additional casting cost (11/31 af — migs 427-431: landcycling, overload, free-cast, buyback, delve)", "done": false },
         { "text": "Buckets 3–10 (midden-massa, ~60 kaarten)", "done": false },
         { "text": "Bucket 1: misc-restant (136 kaarten)", "done": false }
       ]
