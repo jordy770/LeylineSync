@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T13:26:03.291Z
-> Files: 102 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T13:42:50.842Z
+> Files: 110 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -47,6 +47,7 @@
 - `append-wolf11.mjs` — Declares mem (~685 tok)
 - `append-wolf12.mjs` — Declares mem (~615 tok)
 - `append-wolf13.mjs` — Declares mem (~770 tok)
+- `append-wolf14.mjs` — Declares mem (~689 tok)
 - `append-wolf2.mjs` — buglog: FC3 caught a real guard-bypass pre-commit (~1216 tok)
 - `append-wolf3.mjs` — Declares mem (~931 tok)
 - `append-wolf4.mjs` — Declares mem (~751 tok)
@@ -60,9 +61,10 @@
 - `b5-cards.txt` (~58 tok)
 - `b6-cards.txt` (~33 tok)
 - `b7-cards.txt` (~25 tok)
+- `b8-cards.txt` (~32 tok)
 - `bucket3-cards.txt` (~34 tok)
 - `buyback-cards.txt` (~8 tok)
-- `commitmsg.txt` (~246 tok)
+- `commitmsg.txt` (~242 tok)
 - `convoke-cards.txt` (~19 tok)
 - `delve-cards.txt` (~10 tok)
 - `fix-mojibake.mjs` — Declares p (~393 tok)
@@ -73,12 +75,14 @@
 - `show-b5.mjs` — Declares names (~163 tok)
 - `show-b6.mjs` — Declares names (~179 tok)
 - `show-b7.mjs` — Declares names (~175 tok)
+- `show-b8.mjs` — Declares names (~164 tok)
 - `show-cards.mjs` — Declares names (~157 tok)
 - `update-b3.mjs` — Declares path (~346 tok)
 - `update-b4.mjs` — Declares path (~420 tok)
 - `update-b5.mjs` — Declares path (~465 tok)
 - `update-b6.mjs` — Declares path (~352 tok)
 - `update-b7.mjs` — Declares path (~254 tok)
+- `update-b8.mjs` — Declares path (~382 tok)
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/
 
@@ -314,7 +318,7 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~76207 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~76222 tok)
 
 ## components/board/
 
@@ -325,7 +329,7 @@
 ## components/controller/
 
 - `CardActionSheet.tsx` — Current turn number — gates a GRANTED flashback (Snapcaster, mig 392). (~27645 tok)
-- `shared.ts` — Whether one of YOUR battlefield permanents grants this hand card flash via a (~11566 tok)
+- `shared.ts` — Whether one of YOUR battlefield permanents grants this hand card flash via a (~11586 tok)
 
 ## components/deck/
 
@@ -351,7 +355,7 @@
 
 ## docs/commander-decks/
 
-- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~16331 tok)
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~16471 tok)
 
 ## docs/superpowers/plans/
 
@@ -374,7 +378,7 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13546 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~25692 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~25869 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4676 tok)
 
 ## lib/intelligence/
@@ -406,16 +410,18 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~10304 tok)
-- `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~2257 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~10310 tok)
+- `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~2396 tok)
 - `apply_convoke.sql` — supabase/functions_src/apply_convoke.sql (~962 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~8061 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~8199 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~2232 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1402 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~1282 tok)
-- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24836 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~25103 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~16608 tok)
 - `build_stack_payload_add_counters_creature.sql` — supabase/functions_src/build_stack_payload_add_counters_creature.sql (~542 tok)
+- `card_layered_power.sql` — supabase/functions_src/card_layered_power.sql (~1862 tok)
+- `card_layered_toughness.sql` — supabase/functions_src/card_layered_toughness.sql (~1851 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~7271 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~6037 tok)
 - `choose_triggered_ability_creature_target.sql` — supabase/functions_src/choose_triggered_ability_creature_target.sql (~1258 tok)
@@ -431,7 +437,7 @@
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~1504 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3321 tok)
 - `resolve_count_amount.sql` — supabase/functions_src/resolve_count_amount.sql (~5004 tok)
-- `submit_decision.sql` — Declares public (~19640 tok)
+- `submit_decision.sql` — Declares public (~19828 tok)
 
 ## supabase/migrations/
 
@@ -447,6 +453,7 @@
 - `202605010438_damage_replacement.sql` — 202605010438_damage_replacement (~30616 tok)
 - `202605010439_planeswalker_targets.sql` — 202605010439_planeswalker_targets (~13664 tok)
 - `202605010440_copy_nuances.sql` — 202605010440_copy_nuances (~31308 tok)
+- `202605010441_mana_riders.sql` — 202605010441_mana_riders (~69742 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -467,6 +474,7 @@
 - `free-cast-condition.test.ts` — Conditional free cast (mig 429, Deadly Rollick) — "If you control a (~1066 tok)
 - `landcycling.test.ts` — Basic landcycling (mig 427) — "{2}, Discard this card: Search your library (~1137 tok)
 - `madness.test.ts` — Madness (mig 434, From Under the Floorboards / Markov Baron) — "If you (~1607 tok)
+- `mana-riders.test.ts` — Bucket-8 slice (mig 441) — mana-ability riders & friends: (~1601 tok)
 - `overload.test.ts` — Overload (mig 428) — "You may cast this spell for its overload cost. If you (~1603 tok)
 - `per-opponent.test.ts` — Per-opponent amounts & targets (mig 435, bucket 3) — (~1433 tok)
 - `planeswalker-targets.test.ts` — Bucket-6 slice (mig 439) — planeswalker-eligible effects: (~1262 tok)
@@ -484,7 +492,7 @@
 ## tests/unit/
 
 - `dashboard-parse.test.ts` — Declares backlogMd (~1084 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3552 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3614 tok)
 
 ## vercel/
 

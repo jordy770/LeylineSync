@@ -8955,3 +8955,29 @@
 | 06:0x | RED 5 tests → GREEN mig 440: exclude_self op pump_all/grant_keyword_all (per-creature rows), target_filter.exclude_self op targeted triggers (chooser + enqueue-availability), sorcery-timing-gate in activate_ability; CN1-dubbeltelling was eigen testfout (dev_spawn naar battlefield vuurt de ETB al — geen handmatige fireTriggers erbovenop) | functions_src (5), migrations/440 | 5/5 PASS | ~26k |
 | 06:3x | 4 kaartscripts geupsert (End-Raze, Xenagos, Heliopterus, Orthion); pump/grant_keyword target_filter + mass-exclude_self in schema; volle suite 2560/2560; backlog 218/34, bucket 7 AF | card-scripts.json, card-behavior-schema.ts | DONE | ~13k |
 | 15:26 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~263 |
+| 15:29 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/show-b8.mjs | — | ~164 |
+| 15:33 | Created tests/feature/mana-riders.test.ts | — | ~1601 |
+| 15:33 | Edited supabase/functions_src/activate_mana_ability.sql | modified coalesce() | ~152 |
+| 15:33 | Edited supabase/functions_src/card_layered_power.sql | modified coalesce() | ~283 |
+| 15:34 | Edited supabase/functions_src/card_layered_toughness.sql | modified coalesce() | ~261 |
+| 15:34 | Edited supabase/functions_src/activate_ability.sql | inline fix | ~26 |
+| 15:34 | Edited supabase/functions_src/apply_creature_effect.sql | modified Skophos() | ~143 |
+| 15:34 | Edited supabase/functions_src/apply_trigger_effects.sql | modified Promenade() | ~292 |
+| 15:34 | Edited supabase/functions_src/submit_decision.sql | modified Promenade() | ~202 |
+| 15:34 | Edited supabase/migrations/202605010441_mana_riders.sql | modified slice() | ~308 |
+| 15:35 | Edited supabase/migrations/202605010441_mana_riders.sql | expanded (+15 lines) | ~327 |
+| 15:36 | Edited lib/game/card-behavior-schema.ts | modified Nogi() | ~210 |
+| 15:36 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~30 |
+| 15:36 | Edited tests/unit/registry-schema-drift.test.ts | 2→4 lines | ~88 |
+| 15:36 | Edited components/controller/shared.ts | 4→5 lines | ~62 |
+| 15:36 | Edited components/controller/shared.ts | 4→5 lines | ~88 |
+| 15:36 | Edited components/ControllerListV5.tsx | 2→2 lines | ~92 |
+| 15:36 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/update-b8.mjs | — | ~382 |
+| 15:36 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b8-cards.txt | — | ~35 |
+| 15:37 | Edited lib/game/card-behavior-schema.ts | 5→5 lines | ~108 |
+| 15:41 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~161 |
+| 15:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf14.mjs | — | ~689 |
+| 07:0x | Bucket 8 getriaged: Elves script-only (self_damage mig 438), 4 engine-gaten (mana-conditie, conditionele pump-static, remove_from_combat, sacrifice_unless_pay — dekt ook Transguild Promenade uit b26); Coveted Jewel uitgesteld | backlog | ontwerp staat | ~14k |
+| 07:3x | RED 6 tests → GREEN mig 441: conditie-gate in activate_mana_ability (spiegel activate_ability), payload-condition in beide P/T-folds (live geëvalueerd), remove_from_combat (registry-row + game_stack_items-CHECK herbouwd — DERDE check-constraint-vindplaats), sacrifice_unless_pay-decision (ConfirmBody-familie) | functions_src (7), migrations/441 | 6/6 PASS | ~28k |
+| 08:0x | 6 kaartscripts geupsert; activated-conditie-enum + opponent_poison_counters (validator ving het), remove_from_combat in ABILITY_EFFECT_TYPES/VERB; volle suite 2566/2566; backlog 212/34, bucket 8 op 1 | card-scripts.json, schema, shared.ts, ControllerListV5 | DONE | ~14k |
+| 15:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~258 |
