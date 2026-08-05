@@ -8998,3 +8998,42 @@
 | 12:10 | SESSION-PROMPT status-blokken geactualiseerd (v0.20, migs t/m 441, backlog 212, live-test-waarschuwing) | SESSION-PROMPT.md | ok | ~1k |
 | 12:12 | Persistente memory engine-primitive-rounds.md herschreven (v0.20-stand, registratie-checklists, deferrals) | ~/.claude/.../memory/ | ok | ~1k |
 | 15:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commit-msg-docs.txt | — | ~241 |
+| 21:16 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b9-verify.mjs | — | ~337 |
+| 21:26 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b9-fixtures.mjs | — | ~749 |
+| 21:26 | Created tests/feature/reflexive-riders.test.ts | — | ~2282 |
+| 21:28 | Edited supabase/functions_src/activate_ability.sql | added 1 condition(s) | ~300 |
+| 21:29 | Edited supabase/functions_src/apply_creature_effect.sql | 3→5 lines | ~24 |
+| 21:29 | Edited supabase/functions_src/apply_creature_effect.sql | modified owner_draws() | ~380 |
+| 21:29 | Edited supabase/functions_src/apply_creature_effect.sql | modified o() | ~355 |
+| 21:29 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified 10() | ~311 |
+| 21:29 | Edited supabase/functions_src/put_in_graveyard.sql | 5→6 lines | ~124 |
+| 21:29 | Edited supabase/functions_src/put_in_graveyard.sql | 3→4 lines | ~22 |
+| 21:29 | Edited supabase/functions_src/put_in_graveyard.sql | modified emblem() | ~269 |
+| 21:29 | Edited supabase/functions_src/advance_step.sql | modified emblem() | ~370 |
+| 21:30 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b9-stale-check.mjs | — | ~489 |
+| 21:31 | Edited ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b9-stale-check.mjs | 2→2 lines | ~12 |
+| 21:32 | Edited supabase/migrations/202605010442_reflexive_riders.sql | modified slice() | ~648 |
+| 21:33 | Edited tests/feature/reflexive-riders.test.ts | modified query() | ~186 |
+| 21:33 | Edited tests/feature/reflexive-riders.test.ts | sweep() → advance() | ~132 |
+| 21:34 | Edited lib/game/card-behavior-schema.ts | modified owner_draws() | ~173 |
+| 21:34 | Edited lib/game/card-behavior-schema.ts | 5→7 lines | ~137 |
+| 21:34 | Edited lib/game/card-behavior-schema.ts | expanded (+10 lines) | ~252 |
+| 21:34 | Edited lib/game/card-behavior-schema.ts | inline fix | ~54 |
+| 21:34 | Edited tests/unit/registry-schema-drift.test.ts | 2→3 lines | ~84 |
+| 21:34 | Edited components/controller/shared.ts | added 1 condition(s) | ~156 |
+| 21:35 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b9-scripts.mjs | — | ~522 |
+| 21:41 | Edited docs/commander-decks/engine-round-2026-08-05.md | 441() → 442() | ~143 |
+| 21:41 | Edited docs/commander-decks/engine-round-2026-08-05.md | 1→2 lines | ~84 |
+| 21:42 | Edited docs/commander-decks/engine-round-2026-08-05.md | 5→9 lines | ~170 |
+| 21:42 | Edited docs/commander-decks/engine-round-2026-08-05.md | 7→12 lines | ~227 |
+| 21:42 | Edited docs/commander-decks/engine-round-2026-08-05.md | modified emblem() | ~183 |
+| 21:42 | Edited docs/commander-decks/engine-round-2026-08-05.md | 5→7 lines | ~124 |
+| 21:42 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~22 |
+| 21:42 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | modified 2026() | ~35 |
+| 21:42 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | 1→2 lines | ~127 |
+| 21:42 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~18 |
+| 21:43 | Edited SESSION-PROMPT.md | 4→4 lines | ~98 |
+| 21:43 | Edited SESSION-PROMPT.md | 5→6 lines | ~152 |
+| 21:43 | Edited SESSION-PROMPT.md | inline fix | ~87 |
+| 13:1x | Bucket-9-slice (mig 442, reflexive riders): self-pump (Stormshriek), owner_draws (Oblation), grant-expiry (Not Dead After All), artifact_return-emblem (Daretti -10); RED-first 6 tests, volle suite 2572/2572; backlog 212 -> 207, bucket 9 AF | functions_src x5, mig 442, schema, shared.ts, card-scripts.json, ronde-doc | DONE | ~45k |
+| 21:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commit-msg-b9.txt | — | ~356 |

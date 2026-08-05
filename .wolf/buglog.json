@@ -24806,6 +24806,102 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-08-05T13:53:27.676Z"
+    },
+    {
+      "id": "bug-1516",
+      "timestamp": "2026-08-05T19:29:20.757Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/functions_src/apply_creature_effect.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 14→20 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T19:29:20.757Z"
+    },
+    {
+      "id": "bug-1517",
+      "timestamp": "2026-08-05T19:29:59.719Z",
+      "error_message": "Wrong return value",
+      "file": "supabase/functions_src/advance_step.sql",
+      "root_cause": "Was returning: it to the command zone at the",
+      "fix": "Now returns: -- from the graveyard to the battlefield under the",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T19:29:59.719Z"
+    },
+    {
+      "id": "bug-1518",
+      "timestamp": "2026-08-05T19:32:31.825Z",
+      "error_message": "Significant refactor of ",
+      "file": "supabase/migrations/202605010442_reflexive_riders.sql",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→38 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sql"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T19:32:31.825Z"
+    },
+    {
+      "id": "bug-1519",
+      "timestamp": "2026-08-05T19:34:34.488Z",
+      "error_message": "Incorrect value in code",
+      "file": "lib/game/card-behavior-schema.ts",
+      "root_cause": "Had 'blink'",
+      "fix": "Changed to 'create_emblem'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T19:34:34.488Z"
+    },
+    {
+      "id": "bug-1520",
+      "timestamp": "2026-08-05T19:34:55.484Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/unit/registry-schema-drift.test.ts",
+      "root_cause": "Had 'parked graveyard pick that stamps a turn-scoped f",
+      "fix": "Changed to 'player-scoped emblem row (Daretti -10, mig 442); ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T19:34:55.484Z"
+    },
+    {
+      "id": "bug-1521",
+      "timestamp": "2026-08-05T19:42:39.527Z",
+      "error_message": "Wrong reference: 212 should be 207",
+      "file": "docs/commander-decks/engine-blocked-backlog-2026-07-18.md",
+      "root_cause": "Used \"212\" instead of \"207\"",
+      "fix": "Changed 212 → 207",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-05T19:42:39.527Z"
     }
   ]
 }

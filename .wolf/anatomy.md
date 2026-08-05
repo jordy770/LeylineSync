@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T13:54:51.567Z
-> Files: 115 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T19:44:23.915Z
+> Files: 124 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -64,8 +64,13 @@
 - `b6-cards.txt` (~33 tok)
 - `b7-cards.txt` (~25 tok)
 - `b8-cards.txt` (~32 tok)
+- `b9-fixtures.mjs` — Declares path (~749 tok)
+- `b9-scripts.mjs` — Declares path (~522 tok)
+- `b9-stale-check.mjs` — Stale-check: vergelijk de git-HEAD-versie van elke aangeraakte functions_src (~490 tok)
+- `b9-verify.mjs` — Declares scripts (~337 tok)
 - `bucket3-cards.txt` (~34 tok)
 - `buyback-cards.txt` (~8 tok)
+- `commit-msg-b9.txt` — Declares in (~334 tok)
 - `commit-msg-docs.txt` (~226 tok)
 - `commitmsg.txt` (~242 tok)
 - `convoke-cards.txt` (~19 tok)
@@ -108,7 +113,7 @@
 
 ## ./
 
-- `SESSION-PROMPT.md` — Prompt voor de volgende sessie (~3523 tok)
+- `SESSION-PROMPT.md` — Prompt voor de volgende sessie (~3543 tok)
 
 ## .claude/
 
@@ -333,7 +338,7 @@
 ## components/controller/
 
 - `CardActionSheet.tsx` — Current turn number — gates a GRANTED flashback (Snapcaster, mig 392). (~27645 tok)
-- `shared.ts` — Whether one of YOUR battlefield permanents grants this hand card flash via a (~11586 tok)
+- `shared.ts` — Whether one of YOUR battlefield permanents grants this hand card flash via a (~11679 tok)
 
 ## components/deck/
 
@@ -359,8 +364,8 @@
 
 ## docs/commander-decks/
 
-- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~16520 tok)
-- `engine-round-2026-08-05.md` — Engine-ronde 5–6 augustus 2026 — migs 428–441 (v0.20) (~2768 tok)
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15584 tok)
+- `engine-round-2026-08-05.md` — Engine-ronde 5–6 augustus 2026 — migs 428–442 (v0.20) (~3106 tok)
 
 ## docs/superpowers/plans/
 
@@ -383,7 +388,7 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13546 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~25869 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~26116 tok)
 - `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4676 tok)
 
 ## lib/intelligence/
@@ -415,15 +420,16 @@
 
 ## supabase/functions_src/
 
-- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~10310 tok)
+- `activate_ability.sql` — supabase/functions_src/activate_ability.sql (~10474 tok)
 - `activate_mana_ability.sql` — supabase/functions_src/activate_mana_ability.sql (~2396 tok)
+- `advance_step.sql` — supabase/functions_src/advance_step.sql (~4550 tok)
 - `apply_convoke.sql` — supabase/functions_src/apply_convoke.sql (~962 tok)
-- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~8199 tok)
+- `apply_creature_effect.sql` — supabase/functions_src/apply_creature_effect.sql (~8661 tok)
 - `apply_damage_to_creature.sql` — supabase/functions_src/apply_damage_to_creature.sql (~2232 tok)
 - `apply_damage_to_player.sql` — supabase/functions_src/apply_damage_to_player.sql (~1402 tok)
 - `apply_mass_pump_until_eot.sql` — supabase/functions_src/apply_mass_pump_until_eot.sql (~1282 tok)
 - `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~25103 tok)
-- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~16608 tok)
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~16847 tok)
 - `build_stack_payload_add_counters_creature.sql` — supabase/functions_src/build_stack_payload_add_counters_creature.sql (~542 tok)
 - `card_layered_power.sql` — supabase/functions_src/card_layered_power.sql (~1862 tok)
 - `card_layered_toughness.sql` — supabase/functions_src/card_layered_toughness.sql (~1851 tok)
@@ -438,6 +444,7 @@
 - `handle_cast_permanent.sql` — supabase/functions_src/handle_cast_permanent.sql (~1405 tok)
 - `handle_counter_spell.sql` — supabase/functions_src/handle_counter_spell.sql (~1907 tok)
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~4179 tok)
+- `put_in_graveyard.sql` — supabase/functions_src/put_in_graveyard.sql (~2551 tok)
 - `reduce_generic_cost.sql` — supabase/functions_src/reduce_generic_cost.sql (~376 tok)
 - `reduced_mana_cost.sql` — supabase/functions_src/reduced_mana_cost.sql (~1504 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3321 tok)
@@ -459,6 +466,7 @@
 - `202605010439_planeswalker_targets.sql` — 202605010439_planeswalker_targets (~13664 tok)
 - `202605010440_copy_nuances.sql` — 202605010440_copy_nuances (~31308 tok)
 - `202605010441_mana_riders.sql` — 202605010441_mana_riders (~69742 tok)
+- `202605010442_reflexive_riders.sql` — 202605010442_reflexive_riders (~43393 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -483,6 +491,7 @@
 - `overload.test.ts` — Overload (mig 428) — "You may cast this spell for its overload cost. If you (~1603 tok)
 - `per-opponent.test.ts` — Per-opponent amounts & targets (mig 435, bucket 3) — (~1433 tok)
 - `planeswalker-targets.test.ts` — Bucket-6 slice (mig 439) — planeswalker-eligible effects: (~1262 tok)
+- `reflexive-riders.test.ts` — Bucket 9 — reflexive/conditional riders (mig 442). Four gaps: (~2407 tok)
 
 ## tests/fixtures/
 
@@ -497,7 +506,7 @@
 ## tests/unit/
 
 - `dashboard-parse.test.ts` — Declares backlogMd (~1084 tok)
-- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3614 tok)
+- `registry-schema-drift.test.ts` — Drift guard for the card-behavior authoring stack's two type vocabularies: (~3648 tok)
 
 ## vercel/
 
