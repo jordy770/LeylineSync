@@ -208,6 +208,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
   'job_select', 'advance_saga', 'grant_flashback', 'hand_to_library_top',
   'exile_graveyard_until_leaves', 'choose_land_type', 'shuffle_graveyards_into_libraries',
+  'goad_all', 'corrupted_summons',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -345,6 +346,9 @@ const CardBehaviorActionSchema = z.union([
     amount: AmountSchema,
     recipient: BehaviorRecipientSchema.optional(),
     times_opponents: z.boolean().optional(),
+    // Corrupted per-opponent gate (mig 436, Feed the Infection / Phyrexian
+    // Atlas): only recipients whose own poison count meets the bar.
+    recipient_filter: z.object({ poison_at_least: z.number().int().positive() }).strict().optional(),
   }),
   z.object({
     type: z.literal('draw'),
@@ -710,6 +714,9 @@ const CardBehaviorActionSchema = z.union([
   z.object({
     type: z.literal('destroy_up_to'),
     count: z.number().int().positive().optional(),
+    // required (mig 436, Fiery Confluence's "Destroy target artifact" mode):
+    // the parked pick demands a choice instead of being declinable.
+    required: z.boolean().optional(),
     target_filter: z.object({
       controller: z.enum(['any', 'opponent', 'you']).optional(),
       type_line: z.string().optional(),
@@ -790,6 +797,16 @@ const CardBehaviorActionSchema = z.union([
   // graveyard into their library.
   z.object({
     type: z.literal('shuffle_graveyards_into_libraries'),
+  }),
+  // Geode Rager (mig 436): goad every creature the chosen player controls —
+  // nested under choose_player; the source's controller is the goader.
+  z.object({
+    type: z.literal('goad_all'),
+  }),
+  // Geth's Summons (mig 436): per corrupted opponent a pick over THAT
+  // graveyard's creatures; the chosen card enters under your control.
+  z.object({
+    type: z.literal('corrupted_summons'),
   }),
   // Phyrexian Rebirth (mig 269): wipe all creatures, then an X/X token where
   // X is the number destroyed.

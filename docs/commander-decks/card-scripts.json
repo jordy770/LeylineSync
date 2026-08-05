@@ -4451,7 +4451,8 @@
                   "target_filter": {
                     "controller": "any",
                     "type_line": "artifact"
-                  }
+                  },
+                  "required": true
                 }
               ]
             }
@@ -8095,18 +8096,12 @@
         "event": "becomes_tapped",
         "effects": [
           {
-            "type": "conditional",
-            "condition": {
-              "count": "opponent_poison_counters",
-              "at_least": 3
-            },
-            "effects": [
-              {
-                "type": "lose_life",
-                "amount": 1,
-                "recipient": "each_opponent"
-              }
-            ]
+            "type": "lose_life",
+            "amount": 1,
+            "recipient": "each_opponent",
+            "recipient_filter": {
+              "poison_at_least": 3
+            }
           }
         ]
       }
@@ -8150,18 +8145,12 @@
           "recipient": "controller"
         },
         {
-          "type": "conditional",
-          "condition": {
-            "count": "opponent_poison_counters",
-            "at_least": 3
-          },
-          "effects": [
-            {
-              "type": "lose_life",
-              "amount": 3,
-              "recipient": "each_opponent"
-            }
-          ]
+          "type": "lose_life",
+          "amount": 3,
+          "recipient": "each_opponent",
+          "recipient_filter": {
+            "poison_at_least": 3
+          }
         }
       ]
     }
@@ -8815,6 +8804,9 @@
           "filter": {
             "type_line": "creature"
           }
+        },
+        {
+          "type": "corrupted_summons"
         }
       ]
     }
@@ -10540,9 +10532,13 @@
         },
         "effects": [
           {
-            "type": "goad",
-            "target_type": "creature",
-            "target_controller": "opponent"
+            "type": "choose_player",
+            "filter": "any",
+            "effects": [
+              {
+                "type": "goad_all"
+              }
+            ]
           }
         ]
       }

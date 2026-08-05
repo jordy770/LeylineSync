@@ -93,6 +93,8 @@ const JSON_ONLY: Record<string, string> = {
   shuffle_self_into_library: 'omen back-face rider — the source shuffles itself away (Flush Out / Dynamic Soar, mig 289); JSON/AI-authored',
   animate: 'target land becomes an X/X creature, still a land (Obuun / Embodiment / Waker, mig 277); JSON/AI-authored',
   shuffle_graveyards_into_libraries: 'each player shuffles their graveyard into their library (Struggle // Survive aftermath, mig 435); JSON/AI-authored',
+  goad_all: 'goad each creature the chosen player controls, nested under choose_player (Geode Rager, mig 436); JSON/AI-authored',
+  corrupted_summons: 'per corrupted opponent a graveyard pick that reanimates under your control (Geths Summons, mig 436); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))

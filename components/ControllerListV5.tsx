@@ -3033,7 +3033,7 @@ const CARD_PICK_DECISIONS = new Set([
   'reanimate_destroyed', 'look_top', 'copy_permanent', 'become_copy', 'bounce_pick',
   'cast_exiled_free', 'cascade_cast', 'put_from_hand_pick', 'destroy_pick', 'command_zone_pick',
   'graveyard_exile_pick', 'fight_pick', 'etali_cast_pick', 'graveyard_to_top_pick',
-  'grant_flashback', 'hand_to_library_top',
+  'grant_flashback', 'hand_to_library_top', 'corrupted_summons_pick',
 ])
 
 function CardPickBody({

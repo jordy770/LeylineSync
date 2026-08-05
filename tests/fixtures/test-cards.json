@@ -13081,5 +13081,93 @@
         ]
       }
     }
+  },
+  {
+    "name": "Corrupted Drain Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Corrupted - Each opponent who has three or more poison counters loses 3 life.",
+    "power_toughness": null,
+    "mana_cost": "{3}{B}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "lose_life",
+            "amount": 3,
+            "recipient": "each_opponent",
+            "recipient_filter": {
+              "poison_at_least": 3
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Corrupted Summons Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Corrupted - For each opponent who has three or more poison counters, put up to one target creature card from that player s graveyard onto the battlefield under your control.",
+    "power_toughness": null,
+    "mana_cost": "{2}{B}{B}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "corrupted_summons"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Goad Field Test",
+    "type_line": "Creature - Elemental",
+    "oracle_text": "At the beginning of your end step, goad each creature target player controls.",
+    "power_toughness": "4/4",
+    "mana_cost": "{4}{R}{R}",
+    "script": {
+      "schema_version": 2,
+      "triggered_abilities": [
+        {
+          "event": "end_step",
+          "effects": [
+            {
+              "type": "choose_player",
+              "filter": "any",
+              "effects": [
+                {
+                  "type": "goad_all"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Confluence Destroy Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Destroy target artifact.",
+    "power_toughness": null,
+    "mana_cost": "{1}{R}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "destroy_up_to",
+            "count": 1,
+            "required": true,
+            "target_filter": {
+              "controller": "any",
+              "type_line": "artifact"
+            }
+          }
+        ]
+      }
+    }
   }
 ]

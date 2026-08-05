@@ -44,6 +44,10 @@ declare
   v_saga jsonb;
   v_chapter jsonb;
   v_saga_max integer;
+  v_goader uuid;
+  v_goad_players integer;
+  v_turn integer;
+  v_options jsonb;
 begin
   for v_effect in
     select * from jsonb_array_elements(coalesce(p_effects, '[]'::jsonb))
@@ -132,6 +136,18 @@ begin
           select array_agg(player_id) into v_recipients
           from public.game_session_players
           where session_id = p_session_id and player_id is distinct from p_controller_id;
+        end if;
+        -- Corrupted per-opponent gate (mig 436, Feed the Infection / Phyrexian
+        -- Atlas: "each opponent WHO HAS three or more poison counters") — keep
+        -- only recipients whose own poison count meets the filter, instead of
+        -- gating the whole effect on the table maximum.
+        if (v_effect -> 'recipient_filter' ->> 'poison_at_least') is not null then
+          select array_agg(sp.player_id) into v_recipients
+          from public.game_session_players sp
+          where sp.session_id = p_session_id
+            and sp.player_id = any(coalesce(v_recipients, array[]::uuid[]))
+            and coalesce((sp.counters ->> 'poison')::integer, 0)
+                >= (v_effect -> 'recipient_filter' ->> 'poison_at_least')::integer;
         end if;
         foreach v_rid in array coalesce(v_recipients, array[]::uuid[]) loop
           update public.game_session_players
@@ -366,6 +382,61 @@ begin
       if p_controller_id is not null and v_eff_amount > 0 then
         perform public.amass(p_session_id, p_controller_id, v_eff_amount);
       end if;
+
+    elsif v_eff_type = 'goad_all' then
+      -- Geode Rager (mig 436): "goad each creature target player controls" —
+      -- runs nested under choose_player, so p_controller_id is the CHOSEN
+      -- player; the goader is the SOURCE card's current controller. Mirrors
+      -- the single-target goad rows (apply_creature_effect): expiry = before
+      -- the goader's next turn.
+      select coalesce(gc.controller_player_id, gc.owner_id) into v_goader
+      from public.game_cards gc
+      where gc.id = p_source_card_id and gc.session_id = p_session_id;
+      select turn_number into v_turn from public.game_turn_state where session_id = p_session_id;
+      select count(*) into v_goad_players from public.game_session_players where session_id = p_session_id;
+      for v_rid in
+        select gc.id from public.game_cards gc
+        join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id and gc.zone = 'battlefield'
+          and coalesce(gc.controller_player_id, gc.owner_id) = p_controller_id
+          and c.type_line ilike '%creature%'
+      loop
+        insert into public.game_continuous_effects (
+          session_id, source_card_id, affected_card_id, effect_type, payload, expires_at_turn_number)
+        values (
+          p_session_id, coalesce(p_source_card_id, v_rid), v_rid, 'goaded',
+          jsonb_build_object('goaded_by', v_goader),
+          coalesce(v_turn, 0) + greatest(1, coalesce(v_goad_players, 2) - 1));
+      end loop;
+
+    elsif v_eff_type = 'corrupted_summons' then
+      -- Geth's Summons (mig 436): "for each opponent who has three or more
+      -- poison counters, put up to one target creature card from that player's
+      -- graveyard onto the battlefield under your control." One STACK-LESS
+      -- pick per corrupted opponent with creature cards in their graveyard
+      -- (pass_priority freezes on pending decisions; submit_decision's
+      -- corrupted_summons_pick branch does the reanimate).
+      for v_rid in
+        select sp.player_id from public.game_session_players sp
+        where sp.session_id = p_session_id
+          and sp.player_id is distinct from p_controller_id
+          and coalesce((sp.counters ->> 'poison')::integer, 0) >= 3
+      loop
+        select coalesce(jsonb_agg(jsonb_build_object('game_card_id', gc.id, 'name', c.name) order by c.name, gc.id), '[]'::jsonb)
+          into v_options
+        from public.game_cards gc join public.cards c on c.id = gc.card_id
+        where gc.session_id = p_session_id and gc.owner_id = v_rid and gc.zone = 'graveyard'
+          and c.type_line ilike '%creature%';
+        if jsonb_array_length(v_options) > 0 then
+          insert into public.game_pending_decisions (
+            session_id, deciding_player_id, source_stack_item_id, decision_type,
+            prompt, options, min_choices, max_choices, params)
+          values (
+            p_session_id, p_controller_id, null, 'corrupted_summons_pick',
+            'Corrupted — put up to one creature from that graveyard onto the battlefield',
+            v_options, 0, 1, jsonb_build_object('from_player', v_rid));
+        end if;
+      end loop;
 
     elsif v_eff_type = 'shuffle_graveyards_into_libraries' then
       -- Survive (mig 435, Struggle // Survive's aftermath half): each player

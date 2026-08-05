@@ -1113,8 +1113,16 @@ begin
       if jsonb_array_length(v_options) = 0 then v_i := v_i + 1; continue; end if;
       insert into public.game_pending_decisions (session_id, deciding_player_id, source_stack_item_id, decision_type, prompt, options, min_choices, max_choices, params)
       values (p_session_id, v_controller, p_stack_item_id, 'destroy_pick',
-        'Destroy up to ' || coalesce(v_effect ->> 'count', '1'),
-        v_options, 0, greatest(1, coalesce((v_effect ->> 'count')::integer, 1)), '{}'::jsonb)
+        case when coalesce((v_effect ->> 'required')::boolean, false)
+             then 'Destroy ' || coalesce(v_effect ->> 'count', '1')
+             else 'Destroy up to ' || coalesce(v_effect ->> 'count', '1') end,
+        v_options,
+        -- required (mig 436, Fiery Confluence's third mode): "Destroy target
+        -- artifact" is not declinable — demand the pick (capped at what exists).
+        case when coalesce((v_effect ->> 'required')::boolean, false)
+             then least(jsonb_array_length(v_options), greatest(1, coalesce((v_effect ->> 'count')::integer, 1)))
+             else 0 end,
+        greatest(1, coalesce((v_effect ->> 'count')::integer, 1)), '{}'::jsonb)
       returning id into v_decision_id;
       update public.game_stack_items set status = 'awaiting_decision', payload = payload || jsonb_build_object('resume_index', v_i + 1) where id = p_stack_item_id;
       return v_decision_id;
