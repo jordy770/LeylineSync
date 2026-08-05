@@ -8981,3 +8981,20 @@
 | 07:3x | RED 6 tests → GREEN mig 441: conditie-gate in activate_mana_ability (spiegel activate_ability), payload-condition in beide P/T-folds (live geëvalueerd), remove_from_combat (registry-row + game_stack_items-CHECK herbouwd — DERDE check-constraint-vindplaats), sacrifice_unless_pay-decision (ConfirmBody-familie) | functions_src (7), migrations/441 | 6/6 PASS | ~28k |
 | 08:0x | 6 kaartscripts geupsert; activated-conditie-enum + opponent_poison_counters (validator ving het), remove_from_combat in ABILITY_EFFECT_TYPES/VERB; volle suite 2566/2566; backlog 212/34, bucket 8 op 1 | card-scripts.json, schema, shared.ts, ControllerListV5 | DONE | ~14k |
 | 15:42 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~258 |
+| 15:49 | Created docs/commander-decks/engine-round-2026-08-05.md | — | ~2953 |
+| 15:49 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | "8e3f123" → "wat rest er nog" | ~140 |
+| 15:50 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/fix-backlog-header.mjs | — | ~828 |
+
+## Session: 2026-08-05 15:53
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:53 | Edited SESSION-PROMPT.md | 5→7 lines | ~163 |
+| 15:53 | Edited SESSION-PROMPT.md | 5→9 lines | ~194 |
+| 15:53 | Edited SESSION-PROMPT.md | inline fix | ~86 |
+| 15:53 | Created ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/engine-primitive-rounds.md | — | ~1105 |
+| 15:54 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | inline fix | ~72 |
+| 12:05 | Backlog-kop herstructureerd: "Voortgang sinds 18 juli" met per-bucket-tabel (280 -> 212) | docs/commander-decks/engine-blocked-backlog-2026-07-18.md | ok | ~1k |
+| 12:10 | SESSION-PROMPT status-blokken geactualiseerd (v0.20, migs t/m 441, backlog 212, live-test-waarschuwing) | SESSION-PROMPT.md | ok | ~1k |
+| 12:12 | Persistente memory engine-primitive-rounds.md herschreven (v0.20-stand, registratie-checklists, deferrals) | ~/.claude/.../memory/ | ok | ~1k |
+| 15:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commit-msg-docs.txt | — | ~241 |

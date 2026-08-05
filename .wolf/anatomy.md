@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T13:42:50.842Z
-> Files: 110 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T13:54:51.567Z
+> Files: 115 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -26,6 +26,8 @@
 
 ## ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/
 
+- `engine-primitive-rounds.md` — Declares exclude_type_line (~1045 tok)
+- `MEMORY.md` (~519 tok)
 
 ## ../../.cloudflared/
 
@@ -64,9 +66,11 @@
 - `b8-cards.txt` (~32 tok)
 - `bucket3-cards.txt` (~34 tok)
 - `buyback-cards.txt` (~8 tok)
+- `commit-msg-docs.txt` (~226 tok)
 - `commitmsg.txt` (~242 tok)
 - `convoke-cards.txt` (~19 tok)
 - `delve-cards.txt` (~10 tok)
+- `fix-backlog-header.mjs` — Declares p (~828 tok)
 - `fix-mojibake.mjs` — Declares p (~393 tok)
 - `madness-cards.txt` (~11 tok)
 - `mech-cards.txt` (~13 tok)
@@ -104,7 +108,7 @@
 
 ## ./
 
-- `SESSION-PROMPT.md` — Prompt voor de volgende sessie (~3369 tok)
+- `SESSION-PROMPT.md` — Prompt voor de volgende sessie (~3523 tok)
 
 ## .claude/
 
@@ -355,7 +359,8 @@
 
 ## docs/commander-decks/
 
-- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~16471 tok)
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~16520 tok)
+- `engine-round-2026-08-05.md` — Engine-ronde 5–6 augustus 2026 — migs 428–441 (v0.20) (~2768 tok)
 
 ## docs/superpowers/plans/
 
