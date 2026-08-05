@@ -24517,6 +24517,103 @@
    "related_bugs": [],
    "occurrences": 1,
    "last_seen": "2026-08-05T10:10:31.641Z"
+  },
+  {
+   "id": "bug-1498",
+   "timestamp": "2026-08-05T10:22:14.135Z",
+   "error_message": "Type error",
+   "file": "tests/feature/alt-cost-mechanics.test.ts",
+   "root_cause": "Missing or incorrect type annotation",
+   "fix": "Added type assertion/annotation",
+   "tags": [
+    "auto-detected",
+    "type-fix",
+    "ts"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T10:22:14.135Z"
+  },
+  {
+   "id": "bug-1499",
+   "timestamp": "2026-08-05T10:23:35.628Z",
+   "error_message": "Significant refactor of ",
+   "file": "components/ControllerListV5.tsx",
+   "root_cause": "3 lines replaced/restructured",
+   "fix": "Rewrote 11→13 lines (3 removed)",
+   "tags": [
+    "auto-detected",
+    "refactor",
+    "tsx"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T10:23:35.628Z"
+  },
+  {
+   "id": "bug-1500",
+   "timestamp": "2026-08-05T10:23:45.787Z",
+   "error_message": "CSS fix: convokers",
+   "file": "components/ControllerListV5.tsx",
+   "root_cause": "convokers: undefined) → undefined, opts?.altCost ?? null)",
+   "fix": "Changed convokers: undefined) → undefined, opts?.altCost ?? null)",
+   "tags": [
+    "auto-detected",
+    "style-fix",
+    "tsx"
+   ],
+   "related_bugs": [],
+   "occurrences": 2,
+   "last_seen": "2026-08-05T10:23:57.231Z"
+  },
+  {
+   "id": "bug-1501",
+   "timestamp": "2026-08-05T10:24:16.763Z",
+   "error_message": "CSS fix: onSpellEffect",
+   "file": "components/controller/CardActionSheet.tsx",
+   "root_cause": "onSpellEffect: (cardId: string, buyback?: boolean, delveCardIds?: string[], convokeCardIds?: string[]) => Promise<void> → (cardId: string, buyback?: boolean, delveCardIds?: string[], convokeCardIds?: string[], spectacle?: boolean) => Promise<void>",
+   "fix": "Changed onSpellEffect: (cardId: string, buyback?: boolean, delveCardIds?: string[], convokeCardIds?: string[]) => Promise<void> → (cardId: string, buyback?: boolean, delveCardIds?: string[], convokeCardIds?: string[], spectacle?: boolean) => Promise<void>",
+   "tags": [
+    "auto-detected",
+    "style-fix",
+    "tsx"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T10:24:16.763Z"
+  },
+  {
+   "id": "bug-1502",
+   "timestamp": "2026-08-05T10:24:24.535Z",
+   "error_message": "Null/undefined access in ",
+   "file": "components/controller/CardActionSheet.tsx",
+   "root_cause": "Property access on potentially null/undefined value",
+   "fix": "Added null safety (optional chaining or null check) | Also: {/* Evoke / blitz / spectacle — one-tap alternative casts. *; {canCastEvoke && !picking && !attachPick && !delveOpen && !c",
+   "tags": [
+    "auto-detected",
+    "null-safety",
+    "tsx"
+   ],
+   "related_bugs": [],
+   "occurrences": 2,
+   "last_seen": "2026-08-05T10:24:38.168Z"
+  },
+  {
+   "id": "bug-2705",
+   "timestamp": "2026-08-05T10:29:58.955Z",
+   "error_message": "Convoke op spell-programma-kaarten (Hour of Reckoning/Triplicate Spirits) castte zonder convoke: de creatures werden niet getapt en de volle cost werd betaald",
+   "file": "components/ControllerListV5.tsx",
+   "root_cause": "De render-site forwardde onSpellEffect met slechts drie args ((cardId, buyback, delveCardIds) => ...) terwijl de sheet convokeIds als vierde arg meegaf — TypeScript vangt dit niet (extra args aan een korter-getypeerde callback zijn legaal), en de harness-tests raken de client-forwarding niet.",
+   "fix": "Render-site forwardt nu alle vijf args (buyback, delve, convoke, spectacle). Les: bij het uitbreiden van een callback-signatuur ALTIJD de render-site-forwarder meecontroleren; een args-object i.p.v. positionele args had dit voorkomen.",
+   "tags": [
+    "client",
+    "callback-forwarding",
+    "convoke",
+    "typescript-gap"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T10:29:58.955Z"
   }
  ]
 }

@@ -8766,3 +8766,41 @@
 | 17:3x | Client: convoke in zod+types, Convoke-knop (orange) + creature-picker (cap = generic+pips), convokeReducedCost-mirror, convokeGrantTypeLines-prop (Chief Engineer); 4 kaartscripts geupsert; mojibake-incident in CardActionSheet hersteld (bug-2704) | CardActionSheet.tsx, shared.ts, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts | tsc/lint schoon | ~22k |
 | 17:5x | Volle suite 2517/2517; backlog-kop (265/16), tracks 15/31, dashboards hergegenereerd | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
 | 12:11 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~256 |
+| 12:17 | Edited tests/harness/scenario.ts | modified castPermanent() | ~220 |
+| 12:17 | Edited tests/harness/scenario.ts | 20→22 lines | ~197 |
+| 12:18 | Created tests/feature/alt-cost-mechanics.test.ts | — | ~1664 |
+| 12:19 | Edited supabase/functions_src/cast_card_from_hand.sql | modified Convoke() | ~199 |
+| 12:19 | Edited supabase/functions_src/cast_card_from_hand.sql | added 1 condition(s) | ~294 |
+| 12:19 | Edited supabase/functions_src/cast_card_from_hand.sql | modified marker() | ~132 |
+| 12:19 | Edited supabase/functions_src/cast_card_from_hand.sql | inline fix | ~36 |
+| 12:20 | Edited supabase/functions_src/cast_card_from_hand.sql | modified marker() | ~204 |
+| 12:20 | Edited supabase/functions_src/handle_cast_permanent.sql | 8→9 lines | ~51 |
+| 12:20 | Edited supabase/functions_src/handle_cast_permanent.sql | modified Evoke() | ~504 |
+| 12:20 | Edited supabase/functions_src/cast_spell_effect.sql | modified Convoke() | ~137 |
+| 12:20 | Edited supabase/functions_src/cast_spell_effect.sql | added 1 condition(s) | ~349 |
+| 12:20 | Edited supabase/functions_src/cast_spell_effect.sql | modified Overload() | ~125 |
+| 12:20 | Edited supabase/functions_src/cast_spell_effect.sql | inline fix | ~44 |
+| 12:21 | Edited supabase/migrations/202605010433_evoke_blitz_spectacle.sql | modified if() | ~428 |
+| 12:22 | Edited tests/feature/alt-cost-mechanics.test.ts | 2→5 lines | ~76 |
+| 12:22 | Edited lib/game/card-behavior-schema.ts | modified Convoke() | ~248 |
+| 12:22 | Edited lib/game/card-behavior.ts | modified Convoke() | ~64 |
+| 12:23 | Edited lib/game/card-behavior.ts | 3→6 lines | ~49 |
+| 12:23 | Edited lib/game/actions.ts | 12→14 lines | ~136 |
+| 12:23 | Edited lib/game/actions.ts | 15→17 lines | ~167 |
+| 12:23 | Edited components/ControllerListV5.tsx | modified blitz() | ~276 |
+| 12:23 | Edited components/ControllerListV5.tsx | modified blitz() | ~35 |
+| 12:23 | Edited components/ControllerListV5.tsx | expanded (+6 lines) | ~124 |
+| 12:23 | Edited components/ControllerListV5.tsx | CSS: spectacle | ~515 |
+| 12:24 | Edited components/ControllerListV5.tsx | inline fix | ~53 |
+| 12:24 | Edited components/controller/CardActionSheet.tsx | inline fix | ~41 |
+| 12:24 | Edited components/controller/CardActionSheet.tsx | inline fix | ~38 |
+| 12:24 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~302 |
+| 12:24 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~794 |
+| 12:25 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/mech-cards.txt | — | ~14 |
+| 12:29 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~80 |
+| 12:29 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf6.mjs | — | ~1231 |
+| 18:2x | Evoke/blitz/spectacle verkend: bouwstenen bestonden al (cleanup_at_end_step-sweep via put_in_graveyard, granted_dies_effect-rows, life_lost_this_turn-tracker); madness apart gescopet (discard-replacement) | functions_src | ontwerp staat | ~15k |
+| 18:5x | RED 6 tests → GREEN mig 433: p_alt_cost (whitelist evoke/blitz) op cast_card_from_hand + riders in handle_cast_permanent (evoke: sac na ETB-enqueue; blitz: haste + dies-draw + end-step-mark), p_spectacle op cast_spell_effect (conditie-check); BL1-assert was eigen fout (cardState selecteert geen counters) | functions_src (3), migrations/433, alt-cost-mechanics.test.ts | 6/6 PASS | ~22k |
+| 19:2x | Client: evoke/blitz/spectacle in zod+types + 3 one-tap-knoppen (cyan/rose/yellow); castSpell-opts altCost, spellEffect spectacle-flag; render-site-arg-drop van convoke gevonden en gefixt (bug-2705); 3 kaartscripts geupsert | CardActionSheet.tsx, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts | tsc/lint schoon | ~18k |
+| 19:4x | Volle suite 2523/2523; backlog-kop (262/13), tracks 18/31, dashboards | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
+| 12:30 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~239 |

@@ -925,3 +925,14 @@
 ## Do-Not-Repeat — 2026-08-05 (PS 5.1 Get-Content/Set-Content dubbel-encoding) — bug-2704
 
 - **PS 5.1 Get-Content -Raw leest BOM-loze UTF-8 als ANSI (cp1252)**; een bewerkte string via Set-Content -Encoding utf8 terugschrijven dubbel-codeert dan elk niet-ASCII-teken én voegt een BOM toe. In CardActionSheet.tsx raakten zo 176 comment-tekens verminkt; tsc/eslint zagen niets (alleen comments). Bulk-tekstpatches op bronbestanden ALTIJD via een node-script (fs.readFileSync utf8) doen; als PowerShell onvermijdelijk is: [IO.File]::ReadAllText/WriteAllText met expliciete UTF8Encoding($false). Herstelrecept: mojibake-triples via een cp1252-terugmap naar bytes en opnieuw als UTF-8 decoderen — geen blanket-conversie (die sloopt de wél-correcte tekens die er later bijkwamen).
+
+## Key Learnings — 2026-08-05 (evoke/blitz/spectacle, mig 433 — zevende bucket-2-slice)
+
+- **Alt-cost-riders op permanents = marker-counter + handle_cast_permanent-hook**: cast stampt 'evoked'/'blitzed' (kicker-precedent), de resolutie past de rider toe. Evoke sacrificet ná de battlefield-move (de zone-move vuurt de ETB al, dus de draw resolvet alsnog); blitz hergebruikt drie bestaande bouwstenen — een 'haste'-continuous-row, een granted_dies_effect-row (payload {effects:[...]}) en de cleanup_at_end_step-counter (advance_step ruimt via put_in_graveyard op, dus de dies-draw vuurt bij de end-step-sac).
+- **p_alt_cost is een WHITELISTED script-key** ('evoke','blitz') — nooit een vrij veld accepteren, anders kan een client kicker/cycling-strings als cast-cost kapen. De whitelist wordt op het stamp-punt herhaald omdat het graveyard-cast-pad de else-branch-guard mist.
+- **Spectacle-achtige condities**: game_session_players.life_lost_this_turn bestond al (mig 294) — check bestaande trackers vóór je een nieuwe bouwt. De client kent die tracker niet (get_controller_state exposeert hem niet): knop toont op script+timing, de server handhaaft en de error-toast legt uit. Bewuste keuze — geen RPC-uitbreiding voor één knop-gate.
+- **cardState in de test-harness selecteert GEEN counters** — asserts op de counter-bag moeten direct via client.query. (BL1 faalde hierop, de engine was correct.)
+
+## Do-Not-Repeat — 2026-08-05 (callback-signatuur uitbreiden zonder de forwarder) — bug-2705
+
+- Bij het uitbreiden van een sheet-callback met extra positionele args MOET de render-site-forwarder in ControllerListV5 mee: `onSpellEffect={(cardId, buyback, delveCardIds) => ...}` slikte de convokeIds-arg geruisloos in (extra args aan een korter-getypeerde arrow zijn legaal TS). De convoke-cast op spell-programma's deed daardoor niets convoke-achtigs. Grep bij zo'n uitbreiding altijd de `on<Naam>={`-regel; overweeg een opts-object bij de volgende uitbreiding.
