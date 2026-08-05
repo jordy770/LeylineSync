@@ -1144,17 +1144,19 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       await refresh()
     },
     // Targeted creature effect — destroy / bounce / tap / untap
-    creatureEffect: async (cardId: string, targetCardId: string) => {
+    creatureEffect: async (cardId: string, targetCardId: string, freeCast = false) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'creature_effect') return
-      await autoPay(card)
+      // Conditional free cast (mig 429, Deadly Rollick): no auto-pay, and the
+      // server skips the payment after re-verifying the script's condition.
+      if (!freeCast) await autoPay(card)
       if (plan.effect === 'gain_control_creature') {
         await putGainControlCreatureOnStack(supabase, sessionId, targetCardId, plan.duration ?? 'permanent', plan.untap ?? false, plan.haste ?? false, plan.timing, cardId, undefined, plan.targetController)
       } else if (plan.keyword) {
         await putGrantKeywordCreatureOnStack(supabase, sessionId, targetCardId, plan.keyword, plan.timing, cardId, undefined, plan.targetController)
       } else {
-        await putTargetedCreatureActionOnStack(supabase, sessionId, plan.effect, targetCardId, plan.timing, cardId, undefined, plan.targetController)
+        await putTargetedCreatureActionOnStack(supabase, sessionId, plan.effect, targetCardId, plan.timing, cardId, undefined, plan.targetController, freeCast)
       }
       await refresh()
     },
@@ -1577,7 +1579,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             onPumpCreature={async (cardId, targetCardId) => { await actions.pumpCreature(cardId, targetCardId) }}
             onSetPtCreature={async (cardId, targetCardId) => { await actions.setPtCreature(cardId, targetCardId) }}
             onAddCountersCreature={async (cardId, targetCardId) => { await actions.addCountersCreature(cardId, targetCardId) }}
-            onCreatureEffect={async (cardId, targetCardId) => { await actions.creatureEffect(cardId, targetCardId) }}
+            onCreatureEffect={async (cardId, targetCardId, freeCast) => { await actions.creatureEffect(cardId, targetCardId, freeCast) }}
             onTargetedSpellEffect={async (cardId, targetCardId) => { await actions.targetedSpellEffect(cardId, targetCardId) }}
             onMultiCreatureEffect={async (cardId, targetCardIds) => { await actions.multiCreatureEffect(cardId, targetCardIds) }}
             onPermanentEffect={async (cardId, targetCardId) => { await actions.permanentEffect(cardId, targetCardId) }}
@@ -1589,6 +1591,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onCastAdventure={async (cardId, opts) => { await actions.castAdventure(cardId, opts) }}
             onOverloadCast={async (cardId) => { await actions.overloadCast(cardId) }}
+            controlsCommander={cards.some((c) => c.is_commander && c.zone === 'battlefield')}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
             onActivateManaAbility={async (sourceId, abilityIndex) => { await actions.activateManaAbility(sourceId, abilityIndex) }}
             onActivateLoyalty={async (sourceId, abilityIndex) => { await actions.activateLoyalty(sourceId, abilityIndex) }}

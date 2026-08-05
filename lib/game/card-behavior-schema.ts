@@ -1594,6 +1594,10 @@ export const CardBehaviorScriptV2Schema = z.object({
   // Scripts carrying one must carry both.
   overload: z.string().optional(),
   overload_effect: CardBehaviorSpellEffectSchema.optional(),
+  // Conditional free cast (mig 429, Deadly Rollick): "If you control a
+  // commander, you may cast this spell without paying its mana cost." The
+  // engine (put_action_on_stack p_free_cast) re-verifies the condition.
+  free_cast_condition: z.object({ controls_commander: z.literal(true) }).optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),

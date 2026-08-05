@@ -1,7 +1,17 @@
--- supabase/functions_src/put_action_on_stack.sql
--- CANONICAL current definition (seeded from 202605010195_intimidate_hexproof.sql).
--- Edit THIS file, then generate a migration with scripts/new-migration.mjs —
--- never re-extract from past migrations.
+-- 202605010429_conditional_free_cast
+-- Conditional free cast (Deadly Rollick): put_action_on_stack gains a
+-- p_free_cast boolean (default false, new last param). When true, the source
+-- card's script must carry a `free_cast_condition` and the condition must hold
+-- (controls_commander: a battlefield commander under the caster's control);
+-- the mana payment is then skipped. Priority, timing, targeting and
+-- protection/hexproof gates apply unchanged.
+-- Generated from supabase/functions_src (put_action_on_stack) — those files are
+-- the canonical current definitions; edit them, not past migrations.
+
+-- A new trailing default param changes the function's identity arguments, so
+-- `create or replace` below would ADD a second overload rather than replace the
+-- old one. Drop the old 4-arg signature first (same pattern as mig 418/428).
+drop function if exists public.put_action_on_stack(uuid, text, jsonb, uuid);
 
 create or replace function public.put_action_on_stack(
   p_session_id uuid,

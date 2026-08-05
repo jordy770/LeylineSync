@@ -12725,5 +12725,26 @@
         ]
       }
     }
+  },
+  {
+    "name": "Free Rollick Test",
+    "type_line": "Instant",
+    "oracle_text": "If you control a commander, you may cast this spell without paying its mana cost.\nExile target creature.",
+    "power_toughness": null,
+    "mana_cost": "{3}{B}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "exile",
+            "target_type": "creature"
+          }
+        ]
+      },
+      "free_cast_condition": {
+        "controls_commander": true
+      }
+    }
   }
 ]

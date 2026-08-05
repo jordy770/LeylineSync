@@ -511,6 +511,7 @@ export async function putTargetedCreatureActionOnStack(
   sourceCardId?: string | null,
   genericPayment?: Record<string, number>,
   targetController?: TargetController | null,
+  freeCast = false,
 ) {
   const { data, error } = await supabase.rpc('put_action_on_stack', {
     p_session_id: sessionId,
@@ -522,6 +523,7 @@ export async function putTargetedCreatureActionOnStack(
       generic_payment: genericPayment ?? null,
     },
     p_source_card_id: sourceCardId ?? null,
+    p_free_cast: freeCast,
   })
 
   if (error) {

@@ -17483,6 +17483,9 @@
           "target_type": "creature"
         }
       ]
+    },
+    "free_cast_condition": {
+      "controls_commander": true
     }
   },
   "Echoing Assault": {

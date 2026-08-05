@@ -112,6 +112,7 @@ export function CardActionSheet({
   onCounterSpell,
   onCastAdventure,
   onOverloadCast,
+  controlsCommander = false,
   onActivateAbility,
   onActivateManaAbility,
   onActivateLoyalty,
@@ -147,7 +148,7 @@ export function CardActionSheet({
   onPumpCreature: (cardId: string, targetCardId: string) => Promise<void>
   onSetPtCreature: (cardId: string, targetCardId: string) => Promise<void>
   onAddCountersCreature: (cardId: string, targetCardId: string) => Promise<void>
-  onCreatureEffect: (cardId: string, targetCardId: string) => Promise<void>
+  onCreatureEffect: (cardId: string, targetCardId: string, freeCast?: boolean) => Promise<void>
   onTargetedSpellEffect: (cardId: string, targetCardId: string) => Promise<void>
   onMultiCreatureEffect: (cardId: string, targetCardIds: string[]) => Promise<void>
   onPermanentEffect: (cardId: string, targetCardId: string) => Promise<void>
@@ -159,6 +160,9 @@ export function CardActionSheet({
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
   onCastAdventure: (cardId: string, opts: { targetCardId?: string | null; stackItemId?: string | null }) => Promise<void>
   onOverloadCast: (cardId: string) => Promise<void>
+  // Whether the player controls a commander on the battlefield right now —
+  // drives the conditional-free-cast button (mig 429); the engine re-verifies.
+  controlsCommander?: boolean
   onActivateAbility: (
     sourceId: string,
     abilityIndex: number,
@@ -204,6 +208,10 @@ export function CardActionSheet({
   const [zoomed, setZoomed] = useState(false)
   // 'target' = showing the target picker for a targeted spell
   const [picking, setPicking] = useState(false)
+  // Conditional free cast (mig 429, Deadly Rollick): the target being picked
+  // belongs to a FREE cast — the pick routes through onCreatureEffect with the
+  // free flag so no mana is auto-paid or charged.
+  const [freeCastPick, setFreeCastPick] = useState(false)
   // Fight is a two-step pick: the chosen fighter (a creature you control), then
   // the fought creature. null = still choosing the fighter.
   const [fightFighterId, setFightFighterId] = useState<string | null>(null)
@@ -470,6 +478,22 @@ export function CardActionSheet({
     onClose()
   }
 
+  // Conditional free cast (mig 429, Deadly Rollick): "If you control a
+  // commander, you may cast this spell without paying its mana cost." Shown
+  // only while the condition holds; the engine re-verifies it on cast. Only
+  // wired for the targeted creature-effect path (the free-spell cycle's shape).
+  const freeCastCondition = script.free_cast_condition ?? null
+  const meetsFreeCastCondition =
+    !!freeCastCondition && (!freeCastCondition.controls_commander || controlsCommander)
+  const canCastFree =
+    meetsFreeCastCondition &&
+    zone === 'hand' &&
+    canCast &&
+    !adventureMode &&
+    !isAura &&
+    spellPlan.kind === 'creature_effect' &&
+    hasRequiredTargets
+
   const handleFlashback = () => {
     if (spellPlan.kind === 'draw') void onDrawCards(card.id)
     else if (spellPlan.kind === 'modal') void onModalSpell(card.id)
@@ -648,6 +672,23 @@ export function CardActionSheet({
               <span className="font-bold text-sky-100">Cast overloaded - hits each</span>
             </span>
             <ManaCostDisplay manaCost={overloadCost ?? undefined} />
+          </button>
+        )}
+
+        {/* Conditional free cast — the condition holds right now, so offer the
+            spell for free (the target picker opens; the engine re-verifies). */}
+        {canCastFree && !picking && !attachPick && (
+          <button
+            type="button"
+            aria-label="Cast free - you control a commander"
+            onClick={() => { setFreeCastPick(true); setPicking(true) }}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-emerald-400/60 bg-emerald-400/15 px-4 py-3 transition active:scale-95"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-300/80">Free</span>
+              <span className="font-bold text-emerald-100">Cast free - you control a commander</span>
+            </span>
+            <span className="text-xs font-black text-emerald-200">{'{0}'}</span>
           </button>
         )}
 
@@ -954,7 +995,7 @@ export function CardActionSheet({
                 type="button"
                 onClick={() => {
                   if (spellPlan.kind === 'targeted_spell_effect') void onTargetedSpellEffect(card.id, c.id)
-                  else void onCreatureEffect(card.id, c.id)
+                  else void onCreatureEffect(card.id, c.id, freeCastPick || undefined)
                   onClose()
                 }}
                 className="flex w-full items-center justify-between rounded-2xl border border-violet-400/40 bg-violet-400/10 px-4 py-2.5 transition active:scale-95"
@@ -965,7 +1006,7 @@ export function CardActionSheet({
             )} />
             <button
               type="button"
-              onClick={() => setPicking(false)}
+              onClick={() => { setFreeCastPick(false); setPicking(false) }}
               className="w-full rounded-xl border border-white/10 py-2 text-xs font-bold text-slate-400 active:scale-95"
             >
               Back

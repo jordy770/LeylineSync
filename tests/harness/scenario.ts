@@ -281,6 +281,7 @@ export class Scenario {
     actionType: string,
     payload: Record<string, unknown>,
     sourceCardId: string | null = null,
+    freeCast = false,
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'put_action_on_stack', {
@@ -288,6 +289,7 @@ export class Scenario {
         p_action_type: actionType,
         p_payload: { timing: 'instant', ...payload },
         p_source_card_id: sourceCardId,
+        p_free_cast: freeCast,
       }),
     )
   }
