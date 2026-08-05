@@ -8569,3 +8569,42 @@
 | 01:08 | Edited supabase/migrations/202605010427_basic_landcycling.sql | modified if() | ~213 |
 | 01:11 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~80 |
 | avond | Bucket-2 slice 1 af: basic landcycling (mig 427) - cycle_card p_landcycle + stack-loze search_library-decision, 4 kaartscripts omgezet, deck-upserts, 4 feature-tests groen, client Landcycle-knop | functions_src/cycle_card+submit_decision, migrations/427, CardActionSheet, actions.ts, card-scripts.json, tests/feature/landcycling.test.ts | 7/7 gericht groen, volle suite draait | ~60k |
+
+## Session: 2026-08-05 09:34
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:13 | Edited tests/harness/scenario.ts | modified castSpellEffect() | ~189 |
+| 10:13 | Created tests/feature/overload.test.ts | — | ~1603 |
+| 10:14 | Edited supabase/functions_src/cast_spell_effect.sql | modified cast() | ~164 |
+| 10:14 | Edited supabase/functions_src/cast_spell_effect.sql | added 1 condition(s) | ~265 |
+| 10:15 | Edited supabase/functions_src/cast_spell_effect.sql | 5→8 lines | ~134 |
+| 10:15 | Edited supabase/functions_src/cast_spell_effect.sql | modified Overload() | ~143 |
+| 10:15 | Edited supabase/functions_src/cast_spell_effect.sql | modified untargeted() | ~95 |
+| 10:15 | Edited supabase/functions_src/cast_spell_effect.sql | inline fix | ~35 |
+| 10:15 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified Breach() | ~320 |
+| 10:15 | Edited supabase/migrations/202605010428_overload.sql | modified if() | ~310 |
+| 10:17 | Edited lib/game/card-behavior.ts | modified Overload() | ~94 |
+| 10:17 | Edited lib/game/card-behavior.ts | 3→4 lines | ~46 |
+| 10:17 | Edited lib/game/card-behavior.ts | 4→6 lines | ~66 |
+| 10:17 | Edited lib/game/card-behavior-schema.ts | modified Breach() | ~97 |
+| 10:17 | Edited lib/game/card-behavior-schema.ts | modified Overload() | ~172 |
+| 10:18 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/overload-cards.txt | — | ~8 |
+| 10:19 | Edited lib/game/actions.ts | modified castSpellEffect() | ~156 |
+| 10:19 | Edited components/ControllerListV5.tsx | added optional chaining | ~291 |
+| 10:20 | Edited components/ControllerListV5.tsx | 1→2 lines | ~53 |
+| 10:20 | Edited components/controller/CardActionSheet.tsx | CSS: onOverloadCast | ~50 |
+| 10:20 | Edited components/controller/CardActionSheet.tsx | added optional chaining | ~248 |
+| 10:20 | Edited components/controller/CardActionSheet.tsx | 3→3 lines | ~59 |
+| 10:20 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~292 |
+| 10:20 | Edited components/controller/CardActionSheet.tsx | inline fix | ~51 |
+| 10:21 | Edited components/controller/CardActionSheet.tsx | 1→2 lines | ~11 |
+| 10:21 | Edited tests/unit/dashboard-parse.test.ts | 2→1 lines | ~39 |
+| 10:25 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~92 |
+| 10:26 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-bug.mjs | — | ~294 |
+| 10:26 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf.mjs | — | ~819 |
+| 10:0x | Bucket-2 slice 2 verkend: overload-ontwerp (flashback_effect-precedent), functions_src gediffed tegen mig 425/401 (in sync) | cast_spell_effect.sql, apply_triggered_ability_effects.sql | ontwerp staat | ~25k |
+| 10:3x | RED: 5 feature-tests overload geschreven en zien falen (p_overload bestaat niet); 2 fixture-kaarten toegevoegd | tests/feature/overload.test.ts, tests/fixtures/test-cards.json, tests/harness/scenario.ts | RED zoals bedoeld | ~8k |
+| 11:0x | GREEN: mig 428 (p_overload op cast_spell_effect + bounce_all scope opponent), test-db + play-db gemigreerd; 5/5 groen | functions_src, migrations/202605010428_overload.sql | 5/5 PASS | ~12k |
+| 11:2x | Schema + scripts + client: overload/overload_effect in zod+types, Cyclonic Rift & Vandalblast geupsert (--force), Overload-knop in CardActionSheet + overloadCast-handler | card-behavior(-schema).ts, card-scripts.json, CardActionSheet.tsx, ControllerListV5.tsx, actions.ts | tsc+lint schoon | ~15k |
+| 11:4x | Volle suite 2494/2494 groen; backlog-doc kop (274/25), dashboard-tracks 6/31, dashboards hergegenereerd; bug-2702 gelogd (@ts-expect-error TS2578) | test-dashboard.html, backlog-doc, dashboard-tracks.json, buglog.json | DONE | ~10k |

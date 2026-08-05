@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-04T23:11:54.435Z
-> Files: 13 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T08:26:59.287Z
+> Files: 21 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -38,6 +38,12 @@
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/6cbaf238-ecfd-454f-9738-19dff50029e0/scratchpad/
 
+
+## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/
+
+- `append-bug.mjs` — Declares path (~294 tok)
+- `append-wolf.mjs` — Declares mem (~819 tok)
+- `overload-cards.txt` (~8 tok)
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/
 
@@ -273,7 +279,7 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~74170 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~74431 tok)
 
 ## components/board/
 
@@ -283,7 +289,7 @@
 
 ## components/controller/
 
-- `CardActionSheet.tsx` — Current turn number — gates a GRANTED flashback (Snapcaster, mig 392). (~21818 tok)
+- `CardActionSheet.tsx` — Current turn number — gates a GRANTED flashback (Snapcaster, mig 392). (~22324 tok)
 
 ## components/deck/
 
@@ -309,7 +315,7 @@
 
 ## docs/commander-decks/
 
-- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15038 tok)
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15078 tok)
 
 ## docs/superpowers/plans/
 
@@ -331,9 +337,9 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13340 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~24017 tok)
-- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4276 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13353 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~24198 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4367 tok)
 
 ## lib/intelligence/
 
@@ -364,12 +370,15 @@
 
 ## supabase/functions_src/
 
+- `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14500 tok)
+- `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~4370 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~1434 tok)
 - `submit_decision.sql` — Declares public (~17784 tok)
 
 ## supabase/migrations/
 
 - `202605010427_basic_landcycling.sql` — 202605010427_basic_landcycling (~19186 tok)
+- `202605010428_overload.sql` — 202605010428_overload (~19028 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -380,19 +389,21 @@
 ## tests/feature/
 
 - `landcycling.test.ts` — Basic landcycling (mig 427) — "{2}, Discard this card: Search your library (~1137 tok)
+- `overload.test.ts` — Overload (mig 428) — "You may cast this spell for its overload cost. If you (~1603 tok)
 
 ## tests/fixtures/
 
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10916 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10931 tok)
 
 ## tests/regression/
 
 
 ## tests/unit/
 
+- `dashboard-parse.test.ts` — Declares backlogMd (~1084 tok)
 
 ## vercel/
 
