@@ -922,6 +922,7 @@ export async function castSpellEffect(
   xValue?: number | null,
   targetCardId?: string | null,
   adventure = false,
+  overload = false,
 ) {
   const { data, error } = await supabase.rpc('cast_spell_effect', {
     p_session_id: sessionId,
@@ -930,6 +931,7 @@ export async function castSpellEffect(
     p_x_value: xValue ?? null,
     p_target_card_id: targetCardId ?? null,
     p_adventure: adventure,
+    p_overload: overload,
   })
 
   if (error) {

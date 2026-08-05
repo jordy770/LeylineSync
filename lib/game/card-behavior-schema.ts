@@ -775,9 +775,12 @@ const CardBehaviorActionSchema = z.union([
     type_line: z.string().optional(),
   }),
   // Coastal Breach (mig 269): return each (nonland) permanent to its owner's hand.
+  // scope 'opponent' (mig 428, Cyclonic Rift overload): only permanents you
+  // don't control; default 'all'.
   z.object({
     type: z.literal('bounce_all'),
     nonland: z.boolean().optional(),
+    scope: z.enum(['all', 'opponent']).optional(),
   }),
   // Phyrexian Rebirth (mig 269): wipe all creatures, then an X/X token where
   // X is the number destroyed.
@@ -1584,6 +1587,13 @@ export const CardBehaviorScriptV2Schema = z.object({
   // create ten tokens instead of five, mill twice X, etc.). Same shape as
   // spell_effect; the engine selects it by cast zone.
   flashback_effect: CardBehaviorSpellEffectSchema.optional(),
+  // Overload (mig 428, Cyclonic Rift / Vandalblast): an alternative mana cost.
+  // Casting overloaded (cast_spell_effect p_overload) pays `overload` instead of
+  // the printed cost and runs `overload_effect` — the mass, untargeted program
+  // ("change 'target' to 'each'") — selected engine-side like flashback_effect.
+  // Scripts carrying one must carry both.
+  overload: z.string().optional(),
+  overload_effect: CardBehaviorSpellEffectSchema.optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),

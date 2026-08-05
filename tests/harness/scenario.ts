@@ -519,6 +519,7 @@ export class Scenario {
     xValue: number | null = null,
     targetCardId: string | null = null,
     adventure = false,
+    overload = false,
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'cast_spell_effect', {
@@ -528,6 +529,7 @@ export class Scenario {
         p_x_value: xValue,
         p_target_card_id: targetCardId,
         p_adventure: adventure,
+        p_overload: overload,
       }),
     )
   }

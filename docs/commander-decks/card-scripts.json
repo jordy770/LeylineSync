@@ -18259,6 +18259,18 @@
           "target_controller": "opponent"
         }
       ]
+    },
+    "overload": "{4}{R}",
+    "overload_effect": {
+      "actions": [
+        {
+          "type": "destroy_all",
+          "types": [
+            "Artifact"
+          ],
+          "scope": "opponent"
+        }
+      ]
     }
   },
   "Zulaport Cutthroat": {
@@ -20242,6 +20254,16 @@
           "type": "bounce",
           "target_type": "nonland_permanent",
           "target_controller": "opponent"
+        }
+      ]
+    },
+    "overload": "{6}{U}",
+    "overload_effect": {
+      "actions": [
+        {
+          "type": "bounce_all",
+          "nonland": true,
+          "scope": "opponent"
         }
       ]
     }

@@ -107,6 +107,10 @@ export type CardBehaviorScriptV2 = {
   flashback_life?: number
   // Alternate spell program used when cast via flashback (replaces spell_effect).
   flashback_effect?: CardBehaviorSpellEffect
+  // Overload (mig 428): alternative mana cost; casting overloaded runs
+  // overload_effect (mass, untargeted) instead of spell_effect.
+  overload?: string
+  overload_effect?: CardBehaviorSpellEffect
   // Adventure half (mig 295): { name?, cost?, spell_effect } — the card's
   // instant/sorcery side, surfaced by the controller's "Adventure" cast.
   adventure?: { name?: string; cost?: string; spell_effect: CardBehaviorSpellEffect }
@@ -163,7 +167,8 @@ const HANDLED_KEYWORDS = new Set([
 const BEHAVIOR_TOP_LEVEL_PROPS = [
   'loyalty_abilities', 'enters_with_counters', 'damage_removes_counters',
   'undying', 'kicker', 'graveyard_cast_cost', 'enters_tapped', 'cycling', 'landcycling',
-  'flashback', 'flashback_effect', 'cant_be_countered', 'doubles_counters', 'cda',
+  'flashback', 'flashback_effect', 'overload', 'overload_effect',
+  'cant_be_countered', 'doubles_counters', 'cda',
   'adventure', 'saga_chapters',
 ] as const
 
@@ -406,6 +411,8 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     flashback: script.flashback,
     flashback_life: script.flashback_life,
     flashback_effect: script.flashback_effect,
+    overload: script.overload,
+    overload_effect: script.overload_effect,
     adventure: script.adventure,
     saga_chapters: script.saga_chapters,
     enters_with_counters: script.enters_with_counters,

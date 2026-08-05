@@ -1,6 +1,5 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-// @ts-expect-error — plain .mjs helper module without type declarations
 import { parseBacklogBuckets, countOpenItems, latestDecisionLog, parseAnswers, trackPct } from '../../scripts/lib/dashboard-parse.mjs'
 
 const backlogMd = `# Engine-blocked backlog

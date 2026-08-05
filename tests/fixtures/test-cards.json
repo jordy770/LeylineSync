@@ -12665,5 +12665,65 @@
         ]
       }
     }
+  },
+  {
+    "name": "Overload Bounce Test",
+    "type_line": "Instant",
+    "oracle_text": "Return target nonland permanent you don't control to its owner's hand.\nOverload {6}{U}",
+    "power_toughness": null,
+    "mana_cost": "{1}{U}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "bounce",
+            "target_type": "nonland_permanent",
+            "target_controller": "opponent"
+          }
+        ]
+      },
+      "overload": "{6}{U}",
+      "overload_effect": {
+        "actions": [
+          {
+            "type": "bounce_all",
+            "nonland": true,
+            "scope": "opponent"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Overload Shatter Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Destroy target artifact you don't control.\nOverload {4}{R}",
+    "power_toughness": null,
+    "mana_cost": "{R}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "destroy",
+            "target_type": "artifact",
+            "target_controller": "opponent"
+          }
+        ]
+      },
+      "overload": "{4}{R}",
+      "overload_effect": {
+        "actions": [
+          {
+            "type": "destroy_all",
+            "types": [
+              "artifact"
+            ],
+            "scope": "opponent"
+          }
+        ]
+      }
+    }
   }
 ]

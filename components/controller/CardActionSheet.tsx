@@ -111,6 +111,7 @@ export function CardActionSheet({
   onModalSpell,
   onCounterSpell,
   onCastAdventure,
+  onOverloadCast,
   onActivateAbility,
   onActivateManaAbility,
   onActivateLoyalty,
@@ -157,6 +158,7 @@ export function CardActionSheet({
   onModalSpell: (cardId: string) => Promise<void>
   onCounterSpell: (cardId: string, stackItemId: string) => Promise<void>
   onCastAdventure: (cardId: string, opts: { targetCardId?: string | null; stackItemId?: string | null }) => Promise<void>
+  onOverloadCast: (cardId: string) => Promise<void>
   onActivateAbility: (
     sourceId: string,
     abilityIndex: number,
@@ -448,6 +450,26 @@ export function CardActionSheet({
     onClose()
   }
 
+  // Overload (mig 428): a hand card whose script carries `overload` +
+  // `overload_effect` gets a second cast button that pays the overload cost;
+  // the server swaps in the mass, untargeted program ("change 'target' to
+  // 'each'"), so this path never needs the target picker — it stays available
+  // even when the base spell has no legal target.
+  const overloadCost = script.overload ?? null
+  const canCastOverloaded =
+    !!overloadCost &&
+    (script.overload_effect?.actions?.length ?? 0) > 0 &&
+    zone === 'hand' &&
+    canCast &&
+    !adventureMode &&
+    !isAura
+  const affordOverload = overloadCost && canAffordCost ? canAffordCost(overloadCost) : true
+
+  const handleCastOverloaded = () => {
+    void onOverloadCast(card.id)
+    onClose()
+  }
+
   const handleFlashback = () => {
     if (spellPlan.kind === 'draw') void onDrawCards(card.id)
     else if (spellPlan.kind === 'modal') void onModalSpell(card.id)
@@ -612,6 +634,23 @@ export function CardActionSheet({
           </button>
         )}
 
+        {/* Overloaded cast — pay the overload cost, hit "each" instead of
+            "target" (mass program, no target picker). */}
+        {canCastOverloaded && !picking && !attachPick && (
+          <button
+            type="button"
+            aria-label={`Cast overloaded - pay ${overloadCost}`}
+            onClick={handleCastOverloaded}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-sky-400/60 bg-sky-400/15 px-4 py-3 transition active:scale-95"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[9px] font-black uppercase tracking-widest text-sky-300/80">Overload</span>
+              <span className="font-bold text-sky-100">Cast overloaded - hits each</span>
+            </span>
+            <ManaCostDisplay manaCost={overloadCost ?? undefined} />
+          </button>
+        )}
+
         {/* Adventure half — casts in ONE tap (the target picker opens straight
             away when the spell needs one). */}
         {canEnterAdventure && !picking && !attachPick && (
@@ -643,7 +682,7 @@ export function CardActionSheet({
 
         {/* Mana warning — the cast buttons gate on TIMING; when the mana isn't
             there the server would bounce the cast, so say so up front. */}
-        {!picking && !attachPick && ((canCast && !affordCreature) || (canEnterAdventure && canCastAdventure && !affordAdventure)) && (
+        {!picking && !attachPick && ((canCast && !affordCreature) || (canEnterAdventure && canCastAdventure && !affordAdventure) || (canCastOverloaded && !affordOverload)) && (
           <p className="mb-3 flex items-start gap-1.5 text-xs text-amber-300/90">
             <span aria-hidden>⚠</span>
             <span>

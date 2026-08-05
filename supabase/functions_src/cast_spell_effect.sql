@@ -16,7 +16,12 @@ create or replace function public.cast_spell_effect(
   -- Free cast (mig 418, cascade / generalized nested-cast): skip the payment block
   -- entirely — no mana, no flashback cost — while still moving the source and firing
   -- watchers. The caller has already decided the cast is free.
-  p_free boolean default false
+  p_free boolean default false,
+  -- Overload (mig 428, Cyclonic Rift / Vandalblast): cast for the script's
+  -- `overload` mana cost instead of the printed cost; the engine runs the
+  -- script's `overload_effect` actions (mass, untargeted — "change 'target' to
+  -- 'each'") instead of the client-supplied program, mirroring flashback_effect.
+  p_overload boolean default false
 )
 returns public.game_stack_items
 language plpgsql
@@ -109,6 +114,22 @@ begin
     end if;
   end if;
 
+  -- Overload is script-gated: the card must carry both the alternative cost and
+  -- the engine-selected mass program, and — like the flashback/adventure
+  -- alternative-cost mechanics — it is only available while actually casting the
+  -- card from hand (or exile, e.g. an impulse cast), never from the graveyard.
+  if p_overload then
+    if p_source_card_id is null
+       or nullif(v_source_script ->> 'overload', '') is null
+       or jsonb_typeof(v_source_script -> 'overload_effect' -> 'actions') <> 'array'
+       or jsonb_array_length(v_source_script -> 'overload_effect' -> 'actions') < 1 then
+      raise exception 'This card has no overload cost';
+    end if;
+    if v_source_zone not in ('hand', 'exile') then
+      raise exception 'Overload can only be used when casting from hand or exile';
+    end if;
+  end if;
+
   -- Timing: instants any time the caster has priority; sorceries main-phase only,
   -- empty stack, active player. A sourceless cast (tests) defaults to instant.
   if v_source_type_line ilike '%sorcery%' then
@@ -134,11 +155,14 @@ begin
     end if;
   end if;
 
-  -- The spell program. A FLASHBACK (graveyard) cast uses the script's
+  -- The spell program. An OVERLOAD cast uses the script's `overload_effect`
+  -- actions; a FLASHBACK (graveyard) cast uses the script's
   -- `flashback_effect` actions when present, REPLACING the normal effect (the
   -- "Increasing …" cards do more / different on flashback). The engine selects by
-  -- cast zone — it does not trust the client's actions for the flashback effect.
-  if v_source_zone = 'graveyard'
+  -- cast mode / zone — it does not trust the client's actions for either.
+  if p_overload then
+    v_program := v_source_script -> 'overload_effect' -> 'actions';
+  elsif v_source_zone = 'graveyard'
      and jsonb_typeof(v_source_script -> 'flashback_effect' -> 'actions') = 'array'
      and jsonb_array_length(v_source_script -> 'flashback_effect' -> 'actions') > 0 then
     v_program := v_source_script -> 'flashback_effect' -> 'actions';
@@ -175,6 +199,12 @@ begin
     if p_adventure then
       v_source_mana_cost := coalesce(v_source_script -> 'adventure' ->> 'cost', v_source_mana_cost);
       v_source_type_line := nullif(split_part(coalesce(v_source_type_line, ''), ' // ', 2), '');
+    end if;
+    -- Overload (mig 428): the alternative cost REPLACES the printed cost
+    -- (guarded non-null above). Cost reduction below still applies — reductions
+    -- apply after an alternative cost is chosen.
+    if p_overload then
+      v_source_mana_cost := v_source_script ->> 'overload';
     end if;
     if v_source_mana_cost is not null and btrim(v_source_mana_cost) <> '' then
       -- Cost reduction (mig 231, Draconic Lore: "costs {2} less if you control a
@@ -237,7 +267,8 @@ begin
     p_source_card_id,
     'spell_effect',
     jsonb_build_object('effects', v_resolved_actions, 'controller_player_id', auth.uid(), 'timing', v_timing)
-      || (case when p_target_card_id is not null
+      -- An overloaded spell is untargeted ("each"): never stamp a stray target.
+      || (case when p_target_card_id is not null and not p_overload
                then jsonb_build_object('target_card_id', p_target_card_id) else '{}'::jsonb end),
     v_next_position,
     'pending'
@@ -309,4 +340,4 @@ begin
   return v_stack;
 end;
 $$;
-grant execute on function public.cast_spell_effect(uuid, jsonb, uuid, integer, uuid, boolean, boolean) to authenticated;
+grant execute on function public.cast_spell_effect(uuid, jsonb, uuid, integer, uuid, boolean, boolean, boolean) to authenticated;

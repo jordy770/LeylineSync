@@ -1271,6 +1271,19 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       buzz()
       await refresh()
     },
+    // Overload (mig 428): cast for the script's `overload` cost; the server
+    // swaps in the overload_effect program (mass, untargeted — "change 'target'
+    // to 'each'"), so no target picker is involved.
+    overloadCast: async (cardId: string) => {
+      const card = cards.find((c) => c.id === cardId) ?? null
+      const script = card ? normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line) : null
+      const overloadActions = script?.overload_effect?.actions
+      if (!card || !script?.overload || !overloadActions || overloadActions.length === 0) return
+      await autoPay(card, { override: script.overload })
+      await castSpellEffect(supabase, sessionId, overloadActions, cardId, null, null, false, true)
+      buzz()
+      await refresh()
+    },
     activateAbility: async (
       sourceCardId: string,
       abilityIndex: number,
@@ -1575,6 +1588,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}
             onCastAdventure={async (cardId, opts) => { await actions.castAdventure(cardId, opts) }}
+            onOverloadCast={async (cardId) => { await actions.overloadCast(cardId) }}
             onActivateAbility={async (sourceId, abilityIndex, target) => { await actions.activateAbility(sourceId, abilityIndex, target) }}
             onActivateManaAbility={async (sourceId, abilityIndex) => { await actions.activateManaAbility(sourceId, abilityIndex) }}
             onActivateLoyalty={async (sourceId, abilityIndex) => { await actions.activateLoyalty(sourceId, abilityIndex) }}
