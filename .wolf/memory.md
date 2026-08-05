@@ -8893,3 +8893,26 @@
 | 01:3x | RED 7 tests → GREEN mig 437: count opponent_graveyard_cards, exclude_type_line op cost_reduction-statics, spell_countered-watcher (handle_counter_spell vuurt na de cancel; fire_watcher_triggers-type-default op '' voor dit event — de default-'creature' skipte instant-sources), grant_type until-EOT op de granted_type-laag; CR3 slaagde eerst om de verkeerde reden (korting gold voor alles) — CR3b was de echte RED | functions_src (5), migrations/437 | 7/7 PASS | ~25k |
 | 02:0x | 6 kaartscripts geupsert (Marauding Raptor amount-fix, Undead Warchief static, Into the Story, Lyse Hext, Baral, Nogi); schema + drift-guard bij; volle suite 2545/2545; backlog 243/34, bucket 4 op 2 | card-scripts.json, card-behavior-schema.ts | DONE | ~15k |
 | 14:25 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~287 |
+| 14:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/show-b5.mjs | — | ~163 |
+| 14:43 | Created tests/feature/damage-replacement.test.ts | — | ~1403 |
+| 14:44 | Edited supabase/functions_src/activate_mana_ability.sql | modified greatest() | ~236 |
+| 14:44 | Edited supabase/functions_src/activate_mana_ability.sql | 3→4 lines | ~30 |
+| 14:44 | Edited supabase/functions_src/activate_mana_ability.sql | modified rider() | ~116 |
+| 14:44 | Edited supabase/functions_src/apply_damage_to_player.sql | expanded (+30 lines) | ~409 |
+| 14:45 | Edited supabase/functions_src/apply_damage_to_creature.sql | modified statics() | ~460 |
+| 14:45 | Edited supabase/functions_src/apply_triggered_ability_effects.sql | modified apply_damage_to_player() | ~206 |
+| 14:45 | Edited supabase/functions_src/resolve_count_amount.sql | modified Melee() | ~163 |
+| 14:45 | Edited supabase/functions_src/register_card_continuous_effects.sql | modified grant() | ~159 |
+| 14:45 | Edited supabase/migrations/202605010438_damage_replacement.sql | modified damage() | ~544 |
+| 14:46 | Edited lib/game/card-behavior-schema.ts | 2→5 lines | ~97 |
+| 14:46 | Edited supabase/functions_src/resolve_count_amount.sql | modified count() | ~98 |
+| 14:47 | Edited supabase/migrations/202605010438_damage_replacement.sql | modified damage() | ~544 |
+| 14:48 | Edited lib/game/card-behavior-schema.ts | 2→2 lines | ~94 |
+| 14:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/update-b5.mjs | — | ~465 |
+| 14:48 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/b5-cards.txt | — | ~62 |
+| 14:52 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~179 |
+| 14:53 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf11.mjs | — | ~685 |
+| 02:3x | Bucket 5 getriaged: 6 pain-lands/talismans zelfde pay_life-benadering (+Yavimaya Coast uit bucket 2), Eshki lose_life-vs-damage, Gisela-statics (het zware stuk), Drogskol-melee-count | backlog, activate_mana_ability, apply_damage_to_* | ontwerp staat | ~15k |
+| 03:0x | RED 6 tests → GREEN mig 438: self_damage-cost op mana-abilities (echte damage door apply_damage_to_player), damage_double_to_opponents + damage_prevent_half in beide damage-appliers (verdubbelen vóór halveren; CHECK-constraint + allowlist), scripted deal_damage-naar-spelers door de prevention-keten, count opponents_attacked_this_combat (kolom heet defending_player_id); DR4-fix was een kolomnaam | functions_src (6), migrations/438 | 6/6 PASS | ~28k |
+| 03:3x | 10 kaartscripts geupsert (14 pay_life→self_damage-costs, Eshki deal_damage, Gisela-statics, Drogskol-melee); pump-count-enum + cost-schema bij; volle suite 2551/2551; backlog 233/34, bucket 5 AF | card-scripts.json, card-behavior-schema.ts | DONE | ~15k |
+| 14:54 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~296 |

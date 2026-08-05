@@ -14,18 +14,18 @@
         { "text": "Commander-format, multiplayer, priority & autopass", "done": true },
         { "text": "CPU-bots met echte precon-decks", "done": true },
         { "text": "Client decision-parity (28/28) + cast-planner", "done": true },
-        { "text": "Frontier: replacement/redirect, DFC, planeswalker-statics", "done": false }
+        { "text": "Frontier: replacement/redirect (eerste statics af — mig 438), DFC, planeswalker-statics", "done": false }
       ]
     },
     {
       "name": "Engine — kaarten-backlog (long tail)",
       "weight": 15,
-      "note": "243 kaarten in 34 buckets",
+      "note": "233 kaarten in 34 buckets",
       "milestones": [
         { "text": "Audit + triage → bucket-indeling (34 buckets)", "done": true },
         { "text": "Rounds-workflow bewezen (v0.17–v0.19: 18 kaarten dicht)", "done": true },
         { "text": "Bucket 2: alt/additional casting cost (19/31 af — migs 427-434, alle kern-mechanics gebouwd)", "done": false },
-        { "text": "Buckets 3–10 (midden-massa; bucket 3 op 11/12, bucket 4 op 7/9 — migs 435-437)", "done": false },
+        { "text": "Buckets 3–10 (midden-massa; bucket 3 op 11/12, bucket 4 op 7/9, bucket 5 AF — migs 435-438)", "done": false },
         { "text": "Bucket 1: misc-restant (136 kaarten)", "done": false }
       ]
     },
