@@ -25,6 +25,7 @@ declare
   v_has_sac boolean := false;
   v_mana_cost text := null;
   v_life_cost integer := 0;
+  v_self_damage integer := 0;
   v_player_life integer;
   v_color text;
   v_amount integer;
@@ -66,7 +67,7 @@ begin
     raise exception 'Not a mana ability';
   end if;
 
-  -- Parse costs (tap_self / mana / pay_life).
+  -- Parse costs (tap_self / mana / pay_life / self_damage).
   for v_cost in select * from jsonb_array_elements(coalesce(v_ability -> 'costs', '[]'::jsonb))
   loop
     case v_cost ->> 'type'
@@ -74,6 +75,10 @@ begin
       when 'sacrifice_self' then v_has_sac := true;
       when 'mana' then v_mana_cost := v_cost ->> 'amount';
       when 'pay_life' then v_life_cost := greatest(0, coalesce((v_cost ->> 'amount')::integer, 0));
+      -- self_damage (mig 438, pain lands / talismans: "this land deals 1
+      -- damage to you") — real DAMAGE through apply_damage_to_player below,
+      -- so prevention shields and damage statics apply, unlike pay_life.
+      when 'self_damage' then v_self_damage := greatest(0, coalesce((v_cost ->> 'amount')::integer, 0));
       else raise exception 'Unsupported mana-ability cost: %', v_cost ->> 'type';
     end case;
   end loop;
@@ -104,6 +109,12 @@ begin
     update public.game_session_players
     set life_total = life_total - v_life_cost
     where session_id = p_session_id and player_id = auth.uid();
+  end if;
+
+  -- Self-damage rider (mig 438): dealt as damage, not paid as life.
+  if v_self_damage > 0 then
+    perform public.apply_damage_to_player(
+      p_session_id, auth.uid(), v_self_damage, p_source_card_id, false);
   end if;
 
   if v_has_tap then

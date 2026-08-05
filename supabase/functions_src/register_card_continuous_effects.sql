@@ -114,6 +114,12 @@ begin
       -- cast have convoke"): payload {type_line}; cast_card_from_hand's convoke
       -- gate accepts matching casts while the source is fielded.
       'grants_convoke',
+      -- STATIC damage modifiers (mig 438, Gisela, Blade of Goldnight): double
+      -- damage dealt to opponents of the controller / prevent half (rounded
+      -- up) dealt to the controller or their permanents. Read by
+      -- apply_damage_to_player and apply_damage_to_creature.
+      'damage_double_to_opponents',
+      'damage_prevent_half',
       -- STATIC cast-from-the-top-of-your-library permission (mig 244,
       -- Thundermane Dragon): payload {creature, min_power, grant_haste};
       -- cast_card_from_hand's library gate consumes it.

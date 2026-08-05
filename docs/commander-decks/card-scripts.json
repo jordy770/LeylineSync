@@ -595,7 +595,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -614,7 +614,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -653,7 +653,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -672,7 +672,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -711,7 +711,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -730,7 +730,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -1936,7 +1936,7 @@
         },
         "effects": [
           {
-            "type": "lose_life",
+            "type": "deal_damage",
             "amount": {
               "power_of": "source"
             },
@@ -11269,8 +11269,12 @@
         "effects": [
           {
             "type": "pump",
-            "power": 1,
-            "toughness": 1
+            "power": {
+              "count": "opponents_attacked_this_combat"
+            },
+            "toughness": {
+              "count": "opponents_attacked_this_combat"
+            }
           }
         ]
       }
@@ -14630,7 +14634,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -14649,7 +14653,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -16648,7 +16652,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -16667,7 +16671,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -21801,6 +21805,16 @@
         "type": "first_strike",
         "affected": "source",
         "source_zone_required": "battlefield"
+      },
+      {
+        "type": "damage_double_to_opponents",
+        "affected": "controller",
+        "source_zone_required": "battlefield"
+      },
+      {
+        "type": "damage_prevent_half",
+        "affected": "controller",
+        "source_zone_required": "battlefield"
       }
     ]
   },
@@ -23187,7 +23201,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -23206,7 +23220,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -23303,7 +23317,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],
@@ -23322,7 +23336,7 @@
             "type": "tap_self"
           },
           {
-            "type": "pay_life",
+            "type": "self_damage",
             "amount": 1
           }
         ],

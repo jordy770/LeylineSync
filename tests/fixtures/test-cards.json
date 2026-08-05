@@ -13297,5 +13297,84 @@
         }
       ]
     }
+  },
+  {
+    "name": "Pain Ability Test",
+    "type_line": "Land",
+    "oracle_text": "{T}: Add {B}. This land deals 1 damage to you.",
+    "power_toughness": null,
+    "mana_cost": null,
+    "script": {
+      "schema_version": 2,
+      "activated_abilities": [
+        {
+          "is_mana_ability": true,
+          "costs": [
+            {
+              "type": "tap_self"
+            },
+            {
+              "type": "self_damage",
+              "amount": 1
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_mana",
+              "color": "B",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Angel of Goldnight Test",
+    "type_line": "Legendary Creature - Angel",
+    "oracle_text": "If a source would deal damage to an opponent or a permanent an opponent controls, double it. If a source would deal damage to you or a permanent you control, prevent half, rounded up.",
+    "power_toughness": "5/5",
+    "mana_cost": "{4}{R}{W}{W}",
+    "script": {
+      "schema_version": 2,
+      "continuous_effects": [
+        {
+          "type": "damage_double_to_opponents",
+          "affected": "controller",
+          "source_zone_required": "battlefield"
+        },
+        {
+          "type": "damage_prevent_half",
+          "affected": "controller",
+          "source_zone_required": "battlefield"
+        }
+      ]
+    }
+  },
+  {
+    "name": "Melee Soldier Test",
+    "type_line": "Creature - Spirit Soldier",
+    "oracle_text": "Melee",
+    "power_toughness": "2/2",
+    "mana_cost": "{3}{W}",
+    "script": {
+      "schema_version": 2,
+      "triggered_abilities": [
+        {
+          "event": "attacks",
+          "effects": [
+            {
+              "type": "pump",
+              "power": {
+                "count": "opponents_attacked_this_combat"
+              },
+              "toughness": {
+                "count": "opponents_attacked_this_combat"
+              }
+            }
+          ]
+        }
+      ]
+    }
   }
 ]

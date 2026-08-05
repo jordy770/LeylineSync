@@ -154,6 +154,9 @@ const CardBehaviorCostSchema = z.union([
   z.object({ type: z.literal('untap_self') }),
   z.object({ type: z.literal('mana'), amount: z.string() }),
   z.object({ type: z.literal('pay_life'), amount: z.number() }),
+  // self_damage (mig 438, pain lands / talismans: "this land deals 1 damage
+  // to you") — real damage through apply_damage_to_player, unlike pay_life.
+  z.object({ type: z.literal('self_damage'), amount: z.number() }),
   z.object({ type: z.literal('sacrifice_self') }),
   // "Sacrifice a creature" as a cost (Spark Reaper, Vampiric Rites) — the chosen
   // creature you control is passed at activation. type_line_any (mig 402,
@@ -263,7 +266,7 @@ const CountAmountSchema = z.object({
 // A pump power/toughness driven by a count, optionally negated (Liliana −2: -X/-X
 // where X = Zombies you control → { count, type_line, negate: true }).
 const PumpValueSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion', 'artifacts_you_control', 'opponent_poison_counters', 'shared_type_attackers']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'commanders_you_control', 'graveyard_casts_this_turn', 'devotion', 'artifacts_you_control', 'opponent_poison_counters', 'shared_type_attackers', 'opponents_attacked_this_combat']),
   type_line: z.string().optional(),
   color: z.enum(['W', 'U', 'B', 'R', 'G']).optional(),
   negate: z.boolean().optional(),

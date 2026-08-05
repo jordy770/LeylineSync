@@ -299,6 +299,16 @@ begin
     from public.game_session_players
     where session_id = p_session_id and coalesce(life_lost_this_turn, 0) > 0;
 
+  elsif v_count = 'opponents_attacked_this_combat' then
+    -- Melee (mig 438, Drogskol Reinforcements): the number of distinct
+    -- opponents attacked by the controller's creatures this combat.
+    select count(distinct ca.defending_player_id)::integer into v_n
+    from public.game_combat_assignments ca
+    join public.game_cards gc on gc.id = ca.attacker_card_id and gc.session_id = ca.session_id
+    where ca.session_id = p_session_id
+      and coalesce(gc.controller_player_id, gc.owner_id) = p_controller_id
+      and ca.defending_player_id is not null;
+
   elsif v_count = 'opponent_graveyard_cards' then
     -- Into the Story (mig 437): "if an opponent has seven or more cards in
     -- their graveyard" — the HIGHEST graveyard count among opponents.

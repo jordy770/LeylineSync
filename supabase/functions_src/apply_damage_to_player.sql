@@ -17,6 +17,7 @@ declare
   v_shield record;
   v_prevent integer;
   v_cmd_total integer;
+  v_mod integer;
 begin
   if v_remaining <= 0 then
     return 0;
@@ -24,6 +25,35 @@ begin
 
   select turn_number into v_turn
   from public.game_turn_state where session_id = p_session_id;
+
+  -- Damage-modifying statics (mig 438, Gisela, Blade of Goldnight), applied
+  -- before the prevention shields: first every active "double damage to
+  -- opponents" whose controller sees the damaged player as an opponent, then
+  -- every "prevent half, rounded up" protecting the damaged player.
+  for v_mod in
+    select 1 from public.game_continuous_effects ce
+    join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+    where ce.session_id = p_session_id
+      and ce.effect_type = 'damage_double_to_opponents'
+      and src.zone = 'battlefield'
+      and ce.affected_player_id is not null
+      and ce.affected_player_id is distinct from p_player_id
+  loop
+    v_remaining := v_remaining * 2;
+  end loop;
+  for v_mod in
+    select 1 from public.game_continuous_effects ce
+    join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+    where ce.session_id = p_session_id
+      and ce.effect_type = 'damage_prevent_half'
+      and src.zone = 'battlefield'
+      and ce.affected_player_id = p_player_id
+  loop
+    v_remaining := v_remaining - ((v_remaining + 1) / 2);
+  end loop;
+  if v_remaining <= 0 then
+    return 0;
+  end if;
 
   for v_shield in
     select * from public.game_damage_prevention

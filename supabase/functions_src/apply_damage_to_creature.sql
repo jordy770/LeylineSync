@@ -21,9 +21,45 @@ declare
   v_shield record;
   v_prevent integer;
   v_cap integer;
+  v_mod integer;
+  v_tgt_controller uuid;
 begin
   if v_remaining <= 0 then
     return 0;
+  end if;
+
+  -- Damage-modifying statics (mig 438, Gisela): keyed on the damaged
+  -- creature's CONTROLLER — double when that player is an opponent of the
+  -- static's controller, then prevent half (rounded up) when the static
+  -- protects that player. Applied before shields, mirroring the player path.
+  select coalesce(gc.controller_player_id, gc.owner_id) into v_tgt_controller
+  from public.game_cards gc
+  where gc.id = p_card_id and gc.session_id = p_session_id;
+  if v_tgt_controller is not null then
+    for v_mod in
+      select 1 from public.game_continuous_effects ce
+      join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+      where ce.session_id = p_session_id
+        and ce.effect_type = 'damage_double_to_opponents'
+        and src.zone = 'battlefield'
+        and ce.affected_player_id is not null
+        and ce.affected_player_id is distinct from v_tgt_controller
+    loop
+      v_remaining := v_remaining * 2;
+    end loop;
+    for v_mod in
+      select 1 from public.game_continuous_effects ce
+      join public.game_cards src on src.id = ce.source_card_id and src.session_id = ce.session_id
+      where ce.session_id = p_session_id
+        and ce.effect_type = 'damage_prevent_half'
+        and src.zone = 'battlefield'
+        and ce.affected_player_id = v_tgt_controller
+    loop
+      v_remaining := v_remaining - ((v_remaining + 1) / 2);
+    end loop;
+    if v_remaining <= 0 then
+      return 0;
+    end if;
   end if;
 
   -- Counter shield (mig 210, Unbreathing Horde): "If this creature would be
