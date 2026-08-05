@@ -1061,11 +1061,13 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     advanceStep: async () => { await advanceStep(supabase, sessionId); await refresh() },
     // Plain cast — permanents and untargeted spells. `kicked` pays the card's
     // kicker on top (mig 211); the server stamps 'kicked' for ETB conditionals.
-    castSpell: async (cardId: string, opts?: { kicked?: boolean; convokeCardIds?: string[] }) => {
+    castSpell: async (cardId: string, opts?: { kicked?: boolean; convokeCardIds?: string[]; altCost?: 'evoke' | 'blitz' }) => {
       const card = cards.find((c) => c.id === cardId) ?? null
-      const kicker = opts?.kicked
-        ? normalizeCardBehaviorToV2(card?.copied_script ?? card?.cards?.script ?? null, card?.cards?.type_line)?.kicker ?? null
-        : null
+      const script = normalizeCardBehaviorToV2(card?.copied_script ?? card?.cards?.script ?? null, card?.cards?.type_line)
+      const kicker = opts?.kicked ? script?.kicker ?? null : null
+      // Evoke / blitz (mig 433): the script's alternative cost replaces the
+      // printed cost; auto-pay that instead.
+      const altCostString = opts?.altCost ? script?.[opts.altCost] ?? null : null
       // Convoke (mig 432): auto-pay the pip-rewritten cost; the server
       // re-validates, taps the creatures, and charges the same.
       const convokers = opts?.convokeCardIds ?? []
@@ -1080,8 +1082,14 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         x = promptForXValue()
         if (x == null) return
       }
-      await autoPay(card, kicker ? { extra: kicker } : convokeCost != null ? { override: convokeCost } : undefined)
-      await castCardFromHand(supabase, sessionId, cardId, undefined, undefined, x, opts?.kicked ?? false, convokers.length ? convokers : undefined)
+      await autoPay(card, kicker
+        ? { extra: kicker }
+        : altCostString
+          ? { override: altCostString }
+          : convokeCost != null
+            ? { override: convokeCost }
+            : undefined)
+      await castCardFromHand(supabase, sessionId, cardId, undefined, undefined, x, opts?.kicked ?? false, convokers.length ? convokers : undefined, opts?.altCost ?? null)
       buzz()
       await refresh()
     },
@@ -1245,29 +1253,33 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
     },
     // Untargeted multi-action spell (scry/surveil/draw program, e.g. Opt) — runs
     // the effects in order server-side, parking on a scry/surveil decision.
-    spellEffect: async (cardId: string, buyback = false, delveCardIds?: string[], convokeCardIds?: string[]) => {
+    spellEffect: async (cardId: string, buyback = false, delveCardIds?: string[], convokeCardIds?: string[], spectacle = false) => {
       const card = cards.find((c) => c.id === cardId) ?? null
       const plan = card ? getSpellPlan(card) : null
       if (!card || plan?.kind !== 'spell_effect') return
       let x: number | null = null
       if (plan.xRequired) { x = promptForXValue(); if (x == null) return }
+      const script = normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)
       // Buyback (mig 430): auto-pay the additional cost on top (kicker's
       // `extra` path); the server charges printed + buyback and stamps the item.
-      const buybackCost = buyback
-        ? normalizeCardBehaviorToV2(card.copied_script ?? card.cards?.script ?? null, card.cards?.type_line)?.buyback
-        : undefined
+      const buybackCost = buyback ? script?.buyback : undefined
+      // Spectacle (mig 433): alternative cost — the server verifies the
+      // opponent-lost-life condition.
+      const spectacleCost = spectacle ? script?.spectacle : undefined
       // Delve (mig 431) / convoke (mig 432): auto-pay the reduced cost; the
       // server validates, exiles/taps, and charges the same.
       const delved = delveCardIds?.length ?? 0
       const convoked = convokeCardIds?.length ?? 0
       await autoPay(card, buybackCost
         ? { extra: buybackCost }
-        : delved > 0
-          ? { override: reduceGenericCost(card.cards?.mana_cost ?? '', delved) }
-          : convoked > 0
-            ? { override: convokeReducedCost(card.cards?.mana_cost ?? '', (convokeCardIds ?? []).map((id) => boardCards.find((b) => b.id === id)?.mana_cost)) }
-            : undefined)
-      await castSpellEffect(supabase, sessionId, plan.actions, cardId, x, null, false, false, buyback, delveCardIds, convokeCardIds)
+        : spectacleCost
+          ? { override: spectacleCost }
+          : delved > 0
+            ? { override: reduceGenericCost(card.cards?.mana_cost ?? '', delved) }
+            : convoked > 0
+              ? { override: convokeReducedCost(card.cards?.mana_cost ?? '', (convokeCardIds ?? []).map((id) => boardCards.find((b) => b.id === id)?.mana_cost)) }
+              : undefined)
+      await castSpellEffect(supabase, sessionId, plan.actions, cardId, x, null, false, false, buyback, delveCardIds, convokeCardIds, spectacle)
       await refresh()
     },
     // Modal spell — cast the card's modes; the choose_mode decision UI does the rest.
@@ -1625,7 +1637,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
             onDividedDamage={async (cardId, allocations) => { await actions.dividedDamage(cardId, allocations) }}
             onFight={async (cardId, fighterCardId, foughtCardId) => { await actions.fight(cardId, fighterCardId, foughtCardId) }}
             onDrawCards={async (cardId, delveCardIds) => { await actions.drawCards(cardId, delveCardIds) }}
-            onSpellEffect={async (cardId, buyback, delveCardIds) => { await actions.spellEffect(cardId, buyback, delveCardIds) }}
+            onSpellEffect={async (cardId, buyback, delveCardIds, convokeCardIds, spectacle) => { await actions.spellEffect(cardId, buyback, delveCardIds, convokeCardIds, spectacle) }}
             graveyardCards={ownGraveyard.map((c) => ({ id: c.id, name: c.name }))}
             onModalSpell={async (cardId) => { await actions.modalSpell(cardId) }}
             onCounterSpell={async (cardId, stackItemId) => { await actions.counterSpell(cardId, stackItemId) }}

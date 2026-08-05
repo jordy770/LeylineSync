@@ -120,6 +120,10 @@ export type CardBehaviorScriptV2 = {
   delve?: boolean
   // Convoke (mig 432): tap creatures while casting; each pays a pip or {1}.
   convoke?: boolean
+  // Evoke / blitz / spectacle (mig 433): one-card alternative costs.
+  evoke?: string
+  blitz?: string
+  spectacle?: string
   // Adventure half (mig 295): { name?, cost?, spell_effect } — the card's
   // instant/sorcery side, surfaced by the controller's "Adventure" cast.
   adventure?: { name?: string; cost?: string; spell_effect: CardBehaviorSpellEffect }
@@ -426,6 +430,9 @@ function normalizeV2Script(script: Partial<CardBehaviorScriptV2>): CardBehaviorS
     buyback: script.buyback,
     delve: script.delve,
     convoke: script.convoke,
+    evoke: script.evoke,
+    blitz: script.blitz,
+    spectacle: script.spectacle,
     adventure: script.adventure,
     saga_chapters: script.saga_chapters,
     enters_with_counters: script.enters_with_counters,

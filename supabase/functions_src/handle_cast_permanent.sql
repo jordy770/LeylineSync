@@ -22,6 +22,7 @@ declare
   v_mana_cost text;
   v_target_card_id uuid;
   v_target_legal boolean;
+  v_counters jsonb;
 begin
   if p_stack_item.source_card_id is null then
     raise exception 'Permanent spell has no source card';
@@ -86,6 +87,37 @@ begin
     else
       perform public.put_in_graveyard(p_session_id, p_stack_item.source_card_id);
     end if;
+  end if;
+
+  -- Alternative-cost riders (mig 433) — the cast stamped a marker.
+  select counters into v_counters
+  from public.game_cards
+  where id = p_stack_item.source_card_id and session_id = p_session_id;
+
+  if coalesce(v_counters, '{}'::jsonb) ? 'evoked' then
+    -- Evoke (Mulldrifter): "it's sacrificed when it enters." The battlefield
+    -- move above already fired the ETB triggers; sacrificing now still lets
+    -- the enqueued ETB resolve.
+    perform public.put_in_graveyard(p_session_id, p_stack_item.source_card_id);
+
+  elsif coalesce(v_counters, '{}'::jsonb) ? 'blitzed' then
+    -- Blitz (Mayhem Patrol): haste + "When this creature dies, draw a card."
+    -- + sacrifice at the beginning of the next end step — the existing
+    -- cleanup_at_end_step sweep (mig 347) runs put_in_graveyard, so the
+    -- granted dies-draw fires on the sacrifice too.
+    insert into public.game_continuous_effects (
+      session_id, source_card_id, affected_card_id, effect_type, payload, source_zone_required
+    ) values
+      (p_session_id, p_stack_item.source_card_id, p_stack_item.source_card_id,
+       'haste', '{}'::jsonb, 'battlefield'),
+      (p_session_id, p_stack_item.source_card_id, p_stack_item.source_card_id,
+       'granted_dies_effect',
+       jsonb_build_object('effects', jsonb_build_array(jsonb_build_object('type', 'draw', 'amount', 1))),
+       'battlefield');
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb)
+        || jsonb_build_object('cleanup_at_end_step', coalesce(v_turn_number, 0)::text)
+    where id = p_stack_item.source_card_id and session_id = p_session_id;
   end if;
 
   return null;

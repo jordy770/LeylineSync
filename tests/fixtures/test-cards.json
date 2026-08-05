@@ -12860,5 +12860,71 @@
         }
       ]
     }
+  },
+  {
+    "name": "Evoke Drake Test",
+    "type_line": "Creature - Elemental",
+    "oracle_text": "Flying\nWhen this creature enters, draw two cards.\nEvoke {2}{U}",
+    "power_toughness": "2/2",
+    "mana_cost": "{4}{U}",
+    "script": {
+      "schema_version": 2,
+      "evoke": "{2}{U}",
+      "continuous_effects": [
+        {
+          "type": "flying",
+          "affected": "source",
+          "source_zone_required": "battlefield"
+        }
+      ],
+      "triggered_abilities": [
+        {
+          "event": "enters_the_battlefield",
+          "effects": [
+            {
+              "type": "draw",
+              "amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Blitz Devil Test",
+    "type_line": "Creature - Devil Warrior",
+    "oracle_text": "Menace\nBlitz {R}",
+    "power_toughness": "2/1",
+    "mana_cost": "{2}{R}",
+    "script": {
+      "schema_version": 2,
+      "blitz": "{R}",
+      "continuous_effects": [
+        {
+          "type": "menace",
+          "affected": "source",
+          "source_zone_required": "battlefield"
+        }
+      ]
+    }
+  },
+  {
+    "name": "Spectacle Impulse Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Spectacle {R}\nExile the top two cards of your library. Until the end of your next turn, you may play those cards.",
+    "power_toughness": null,
+    "mana_cost": "{2}{R}",
+    "script": {
+      "schema_version": 2,
+      "spectacle": "{R}",
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "impulse",
+            "count": 2
+          }
+        ]
+      }
+    }
   }
 ]

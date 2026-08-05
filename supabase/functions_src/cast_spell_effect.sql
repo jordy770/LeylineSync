@@ -32,7 +32,11 @@ create or replace function public.cast_spell_effect(
   -- Convoke (mig 432, Hour of Reckoning / Triplicate Spirits): untapped
   -- creatures the caster taps while casting — each pays a matching coloured
   -- pip or {1} generic (apply_convoke). Script-gated (`convoke`).
-  p_convoke_card_ids uuid[] default null
+  p_convoke_card_ids uuid[] default null,
+  -- Spectacle (mig 433, Light Up the Stage): cast for the script's `spectacle`
+  -- cost instead of the printed cost — only while an opponent has lost life
+  -- this turn (game_session_players.life_lost_this_turn).
+  p_spectacle boolean default false
 )
 returns public.game_stack_items
 language plpgsql
@@ -189,6 +193,25 @@ begin
     end if;
   end if;
 
+  -- Spectacle (mig 433): script-gated alternative cost with a game-state
+  -- condition — an opponent must have lost life this turn.
+  if p_spectacle then
+    if p_source_card_id is null or nullif(v_source_script ->> 'spectacle', '') is null then
+      raise exception 'This card has no spectacle cost';
+    end if;
+    if v_source_zone not in ('hand', 'exile') then
+      raise exception 'Spectacle can only be used when casting from hand or exile';
+    end if;
+    if not exists (
+      select 1 from public.game_session_players sp
+      where sp.session_id = p_session_id
+        and sp.player_id is distinct from auth.uid()
+        and coalesce(sp.life_lost_this_turn, 0) > 0
+    ) then
+      raise exception 'Spectacle requires an opponent to have lost life this turn';
+    end if;
+  end if;
+
   -- Timing: instants any time the caster has priority; sorceries main-phase only,
   -- empty stack, active player. A sourceless cast (tests) defaults to instant.
   if v_source_type_line ilike '%sorcery%' then
@@ -264,6 +287,10 @@ begin
     -- apply after an alternative cost is chosen.
     if p_overload then
       v_source_mana_cost := v_source_script ->> 'overload';
+    end if;
+    -- Spectacle (mig 433): same replacement, condition guarded above.
+    if p_spectacle then
+      v_source_mana_cost := v_source_script ->> 'spectacle';
     end if;
     if v_source_mana_cost is not null and btrim(v_source_mana_cost) <> '' then
       -- Cost reduction (mig 231, Draconic Lore: "costs {2} less if you control a
@@ -433,4 +460,4 @@ begin
   return v_stack;
 end;
 $$;
-grant execute on function public.cast_spell_effect(uuid, jsonb, uuid, integer, uuid, boolean, boolean, boolean, boolean, uuid[], uuid[]) to authenticated;
+grant execute on function public.cast_spell_effect(uuid, jsonb, uuid, integer, uuid, boolean, boolean, boolean, boolean, uuid[], uuid[], boolean) to authenticated;

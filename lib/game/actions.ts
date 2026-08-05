@@ -68,6 +68,7 @@ export async function castCardFromHand(
   xValue?: number | null,
   kicked?: boolean,
   convokeCardIds?: string[] | null,
+  altCost?: string | null,
 ) {
   const { data, error } = await supabase.rpc('cast_card_from_hand', {
     p_session_id: sessionId,
@@ -77,6 +78,7 @@ export async function castCardFromHand(
     p_x_value: xValue ?? null,
     p_kicked: kicked ?? false,
     p_convoke_card_ids: convokeCardIds?.length ? convokeCardIds : null,
+    p_alt_cost: altCost ?? null,
   })
 
   if (error) {
@@ -934,6 +936,7 @@ export async function castSpellEffect(
   buyback = false,
   delveCardIds?: string[] | null,
   convokeCardIds?: string[] | null,
+  spectacle = false,
 ) {
   const { data, error } = await supabase.rpc('cast_spell_effect', {
     p_session_id: sessionId,
@@ -946,6 +949,7 @@ export async function castSpellEffect(
     p_buyback: buyback,
     p_delve_card_ids: delveCardIds?.length ? delveCardIds : null,
     p_convoke_card_ids: convokeCardIds?.length ? convokeCardIds : null,
+    p_spectacle: spectacle,
   })
 
   if (error) {

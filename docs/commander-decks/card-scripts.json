@@ -19593,7 +19593,8 @@
           "count": 2
         }
       ]
-    }
+    },
+    "spectacle": "{R}"
   },
   "Wrenn's Resolve": {
     "schema_version": 2,
@@ -19783,7 +19784,8 @@
           }
         ]
       }
-    ]
+    ],
+    "blitz": "{1}{R}"
   },
   "Bloodfell Caves": {
     "schema_version": 2,
@@ -24106,7 +24108,8 @@
           }
         ]
       }
-    ]
+    ],
+    "evoke": "{2}{U}"
   },
   "Cloudblazer": {
     "schema_version": 2,

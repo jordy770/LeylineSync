@@ -17,7 +17,13 @@ create or replace function public.cast_card_from_hand(
   -- creatures the caster taps while casting — each pays a matching coloured
   -- pip or {1} generic (apply_convoke). Allowed when the card's script has
   -- `convoke` or a grants_convoke static covers the card's type line.
-  p_convoke_card_ids uuid[] default null
+  p_convoke_card_ids uuid[] default null,
+  -- Alternative cast cost (mig 433): 'evoke' (Mulldrifter) or 'blitz' (Mayhem
+  -- Patrol) — a WHITELISTED key into the script whose mana string replaces the
+  -- printed cost; the stamped marker drives the resolution rider
+  -- (handle_cast_permanent: evoke sacrifices on entry, blitz grants haste +
+  -- dies-draw + the end-step cleanup mark).
+  p_alt_cost text default null
 ) returns public.game_cards
 language plpgsql
 security definer
@@ -446,6 +452,21 @@ begin
       end if;
     end if;
   else
+    -- Alternative cast cost (mig 433, evoke/blitz): the script's cost replaces
+    -- the printed cost. Whitelisted keys only — never an arbitrary field, so
+    -- kicker/cycling strings can't be hijacked as a cast cost.
+    if p_alt_cost is not null then
+      if p_alt_cost not in ('evoke', 'blitz') then
+        raise exception 'Unsupported alternative cost: %', p_alt_cost;
+      end if;
+      if nullif(public.effective_script(p_session_id, p_game_card_id) ->> p_alt_cost, '') is null then
+        raise exception 'This card has no % cost', p_alt_cost;
+      end if;
+      if v_cast_zone not in ('hand', 'exile') then
+        raise exception 'Alternative costs can only be used when casting from hand or exile';
+      end if;
+      v_card_mana_cost := public.effective_script(p_session_id, p_game_card_id) ->> p_alt_cost;
+    end if;
     -- Cost reduction (mig 231): reduce the generic portion before paying (e.g.
     -- "Dragon spells you cast cost {1} less" — Dragonlord's Servant).
     v_pay_cost := public.reduced_mana_cost(p_session_id, auth.uid(), p_game_card_id, v_card_mana_cost);
@@ -473,6 +494,22 @@ begin
       p_generic_payment,
       p_pay_context := jsonb_build_object('kind', 'cast', 'type_line', coalesce(v_card_type_line, ''),
         'is_commander', coalesce(v_card.is_commander, false)));
+  end if;
+
+  -- Evoke / blitz marker (mig 433): stamped like 'kicked'; handle_cast_permanent
+  -- applies the rider when the permanent resolves. The whitelist re-check keeps
+  -- the graveyard-cast path (which skips the else-branch guard) honest.
+  if p_alt_cost is not null then
+    if p_alt_cost not in ('evoke', 'blitz') then
+      raise exception 'Unsupported alternative cost: %', p_alt_cost;
+    end if;
+    if v_use_alt then
+      raise exception 'Alternative costs cannot be combined with a graveyard cast';
+    end if;
+    update public.game_cards
+    set counters = coalesce(counters, '{}'::jsonb)
+        || jsonb_build_object(case p_alt_cost when 'evoke' then 'evoked' else 'blitzed' end, 1)
+    where id = p_game_card_id and session_id = p_session_id;
   end if;
 
   -- Kicker (mig 211, Josu Vess): an OPTIONAL additional cost from the script's
@@ -563,4 +600,4 @@ begin
   return v_card;
 end;
 $$;
-grant execute on function public.cast_card_from_hand(uuid, uuid, jsonb, uuid, boolean, uuid[], integer, uuid[]) to authenticated;
+grant execute on function public.cast_card_from_hand(uuid, uuid, jsonb, uuid, boolean, uuid[], integer, uuid[], text) to authenticated;

@@ -142,7 +142,7 @@ export function CardActionSheet({
   boardCards: BoardCard[]
   commanderIdentity: ManaColor[]
   onTapForMana: (cardId: string, color?: ManaColor) => Promise<void>
-  onCastCard: (cardId: string, opts?: { kicked?: boolean; convokeCardIds?: string[] }) => Promise<void>
+  onCastCard: (cardId: string, opts?: { kicked?: boolean; convokeCardIds?: string[]; altCost?: 'evoke' | 'blitz' }) => Promise<void>
   /** Colour-aware "can I pay this right now" (pool + untapped lands) for the mana warning. */
   canAffordCost?: (costStr?: string | null) => boolean
   openManaCount?: number
@@ -159,7 +159,7 @@ export function CardActionSheet({
   onDividedDamage: (cardId: string, allocations: DamageAllocation[]) => Promise<void>
   onFight: (cardId: string, fighterCardId: string, foughtCardId: string) => Promise<void>
   onDrawCards: (cardId: string, delveCardIds?: string[]) => Promise<void>
-  onSpellEffect: (cardId: string, buyback?: boolean, delveCardIds?: string[], convokeCardIds?: string[]) => Promise<void>
+  onSpellEffect: (cardId: string, buyback?: boolean, delveCardIds?: string[], convokeCardIds?: string[], spectacle?: boolean) => Promise<void>
   // The player's own graveyard (id + name) — feeds the delve picker (mig 431).
   graveyardCards?: { id: string; name: string }[]
   // type_line filters of active grants_convoke statics (mig 432, Chief
@@ -626,6 +626,20 @@ export function CardActionSheet({
     onClose()
   }
 
+  // Evoke / blitz (mig 433): one-tap alternative casts of a hand permanent.
+  // Spectacle (mig 433): one-tap alternative cast of a spell program — shown
+  // whenever the script carries the cost; the SERVER verifies the
+  // opponent-lost-life condition and rejects with a clear message otherwise.
+  const evokeCost = script.evoke ?? null
+  const blitzCost = script.blitz ?? null
+  const spectacleCost = script.spectacle ?? null
+  const canCastEvoke =
+    !!evokeCost && zone === 'hand' && canCast && !adventureMode && !isAura && spellPlan.kind === 'normal'
+  const canCastBlitz =
+    !!blitzCost && zone === 'hand' && canCast && !adventureMode && !isAura && spellPlan.kind === 'normal'
+  const canCastSpectacle =
+    !!spectacleCost && zone === 'hand' && canCast && !adventureMode && !isAura && spellPlan.kind === 'spell_effect'
+
   const handleFlashback = () => {
     if (spellPlan.kind === 'draw') void onDrawCards(card.id)
     else if (spellPlan.kind === 'modal') void onModalSpell(card.id)
@@ -821,6 +835,50 @@ export function CardActionSheet({
               <span className="font-bold text-teal-100">Cast with delve - exile pays {'{1}'} each</span>
             </span>
             <ManaCostDisplay manaCost={card.cards?.mana_cost} />
+          </button>
+        )}
+
+        {/* Evoke / blitz / spectacle — one-tap alternative casts. */}
+        {canCastEvoke && !picking && !attachPick && !delveOpen && !convokeOpen && (
+          <button
+            type="button"
+            aria-label={`Cast evoked - pay ${evokeCost}`}
+            onClick={() => { void onCastCard(card.id, { altCost: 'evoke' }); onClose() }}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-cyan-400/60 bg-cyan-400/15 px-4 py-3 transition active:scale-95"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[9px] font-black uppercase tracking-widest text-cyan-300/80">Evoke</span>
+              <span className="font-bold text-cyan-100">Cast evoked - sacrificed on entry</span>
+            </span>
+            <ManaCostDisplay manaCost={evokeCost ?? undefined} />
+          </button>
+        )}
+        {canCastBlitz && !picking && !attachPick && !delveOpen && !convokeOpen && (
+          <button
+            type="button"
+            aria-label={`Cast with blitz - pay ${blitzCost}`}
+            onClick={() => { void onCastCard(card.id, { altCost: 'blitz' }); onClose() }}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-rose-400/60 bg-rose-400/15 px-4 py-3 transition active:scale-95"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[9px] font-black uppercase tracking-widest text-rose-300/80">Blitz</span>
+              <span className="font-bold text-rose-100">Cast with blitz - haste, dies-draw, sac at end step</span>
+            </span>
+            <ManaCostDisplay manaCost={blitzCost ?? undefined} />
+          </button>
+        )}
+        {canCastSpectacle && !picking && !attachPick && !delveOpen && !convokeOpen && (
+          <button
+            type="button"
+            aria-label={`Cast for spectacle - pay ${spectacleCost}`}
+            onClick={() => { void onSpellEffect(card.id, false, undefined, undefined, true); onClose() }}
+            className="mb-3 flex w-full items-center justify-between rounded-2xl border border-yellow-400/60 bg-yellow-400/15 px-4 py-3 transition active:scale-95"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[9px] font-black uppercase tracking-widest text-yellow-300/80">Spectacle</span>
+              <span className="font-bold text-yellow-100">Cast for spectacle - if a foe lost life this turn</span>
+            </span>
+            <ManaCostDisplay manaCost={spectacleCost ?? undefined} />
           </button>
         )}
 

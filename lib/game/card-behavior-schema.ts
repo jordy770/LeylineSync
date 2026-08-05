@@ -1611,6 +1611,15 @@ export const CardBehaviorScriptV2Schema = z.object({
   // coloured pip or {1} generic (cast RPCs take p_convoke_card_ids). Chief
   // Engineer's grant is a `grants_convoke` continuous effect instead.
   convoke: z.boolean().optional(),
+  // Evoke (mig 433, Mulldrifter): alternative cost; the permanent is
+  // sacrificed when it enters (its ETB still resolves).
+  evoke: z.string().optional(),
+  // Blitz (mig 433, Mayhem Patrol): alternative cost; the permanent gains
+  // haste + "when it dies, draw a card" and is sacrificed at the next end step.
+  blitz: z.string().optional(),
+  // Spectacle (mig 433, Light Up the Stage): alternative cost, castable only
+  // while an opponent has lost life this turn (engine-verified).
+  spectacle: z.string().optional(),
   activated_abilities: z.array(CardBehaviorActivatedAbilitySchema).optional(),
   triggered_abilities: z.array(CardBehaviorTriggeredAbilitySchema).optional(),
   continuous_effects: z.array(CardContinuousEffectSchema).optional(),

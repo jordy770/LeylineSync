@@ -304,7 +304,7 @@ export class Scenario {
    */
   async castPermanent(
     gameCardId: string,
-    opts: { target?: string; generic?: Record<string, number>; kicked?: boolean; sacrificeIds?: string[]; x?: number; convokeCardIds?: string[] } = {},
+    opts: { target?: string; generic?: Record<string, number>; kicked?: boolean; sacrificeIds?: string[]; x?: number; convokeCardIds?: string[]; altCost?: string } = {},
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'cast_card_from_hand', {
@@ -316,6 +316,7 @@ export class Scenario {
         p_sacrifice_ids: opts.sacrificeIds ?? null,
         p_x_value: opts.x ?? null,
         p_convoke_card_ids: opts.convokeCardIds ?? null,
+        p_alt_cost: opts.altCost ?? null,
       }),
     )
   }
@@ -530,6 +531,7 @@ export class Scenario {
     buyback = false,
     delveCardIds: string[] | null = null,
     convokeCardIds: string[] | null = null,
+    spectacle = false,
   ): Promise<{ id: string }> {
     return this.run(() =>
       rpc(this.client, 'cast_spell_effect', {
@@ -543,6 +545,7 @@ export class Scenario {
         p_buyback: buyback,
         p_delve_card_ids: delveCardIds,
         p_convoke_card_ids: convokeCardIds,
+        p_spectacle: spectacle,
       }),
     )
   }
