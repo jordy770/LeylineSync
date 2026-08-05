@@ -888,3 +888,14 @@
 ## Do-Not-Repeat — 2026-08-05 (@ts-expect-error zonder actuele error) — bug-2702
 
 - `@ts-expect-error` op een import die gewoon resolvet maakt tsc --noEmit zelf rood (TS2578 unused directive) — de directive uit de dashboard-testfile van 4 aug brak de repo-brede typecheck. Alleen toevoegen als tsc de error op dát moment echt geeft; anders weglaten.
+
+## Key Learnings — 2026-08-05 (conditionele gratis cast, mig 429 — derde bucket-2-slice)
+
+- **"Exile/destroy target creature"-instants casten NIET via cast_spell_effect maar via put_action_on_stack** (plan kind 'creature_effect' → putTargetedCreatureActionOnStack). Een cast-modifier (gratis, alternatieve cost) voor zo'n kaart moet dus op put_action_on_stack, niet op cast_spell_effect — check getSpellPlan's plan-kind vóór je kiest welke RPC een nieuw cast-vlag krijgt.
+- **Deadly Rollick's gratis cast is engine-geverifieerd**: script `free_cast_condition: {controls_commander: true}` + put_action_on_stack p_free_cast; de engine hercheckt de conditie (battlefield is_commander, controller = caster) en slaat alléén de betaling over — priority/timing/targeting/protection blijven staan. Bewust NIET het p_free-pad van cast_spell_effect gebruikt: dat bypasst ook priority/timing (engine-authorized nested-cast) en is dus niet geschikt voor een client-geïnitieerde cast.
+- **Board_cards-projectie van get_controller_state heeft GEEN is_commander** (controller_cards wél). Voor "controls a commander" client-side: afleiden uit de eigen ControllerCard-lijst (`cards.some(c => c.is_commander && c.zone === 'battlefield')`) en als boolean-prop doorgeven — geen RPC-wijziging nodig; de engine is toch de autoriteit.
+
+## Do-Not-Repeat — 2026-08-05 (PL/pgSQL NULL-propagation defeats guards) — bug-2703
+
+- `jsonb_typeof(x -> 'key')` is NULL bij een ontbrekende key en `NULL <> 'waarde'` is NULL — een `if a or <NULL>`-guard vuurt dan NIET. Elke jsonb_typeof-vergelijking in een guard hoort in een coalesce: `coalesce(jsonb_typeof(...), 'missing') <> 'object'`. SQL-spiegel van de JS undefined/NaN-les (proposal-validate): gevangen doordat de RED-first test (FC3) het negatieve pad echt afdwong.
+- **Hergenereerde migratie = handwerk opnieuw**: scripts/new-migration.mjs overschrijft niets maar een regenereer-cyclus (delete + opnieuw) verliest de hand-toegevoegde header/drop-statements — die moeten er daarna weer bij. En een al gestempelde migratie her-fixen bereikt de play-DB alleen nog via een directe psql-apply van de functions_src-file (migration up slaat hem over).

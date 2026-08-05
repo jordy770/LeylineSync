@@ -24111,6 +24111,106 @@
    "related_bugs": [],
    "occurrences": 1,
    "last_seen": "2026-08-05T08:26:25.590Z"
+  },
+  {
+   "id": "bug-1473",
+   "timestamp": "2026-08-05T08:30:29.934Z",
+   "error_message": "Significant refactor of ",
+   "file": "supabase/functions_src/put_action_on_stack.sql",
+   "root_cause": "2 lines replaced/restructured",
+   "fix": "Rewrote 16→35 lines (2 removed)",
+   "tags": [
+    "auto-detected",
+    "refactor",
+    "sql"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T08:30:29.934Z"
+  },
+  {
+   "id": "bug-1474",
+   "timestamp": "2026-08-05T08:34:36.605Z",
+   "error_message": "CSS fix: onCreatureEffect",
+   "file": "components/controller/CardActionSheet.tsx",
+   "root_cause": "onCreatureEffect: (cardId: string, targetCardId: string) => Promise<void> → (cardId: string, targetCardId: string, freeCast?: boolean) => Promise<void>",
+   "fix": "Changed onCreatureEffect: (cardId: string, targetCardId: string) => Promise<void> → (cardId: string, targetCardId: string, freeCast?: boolean) => Promise<void>",
+   "tags": [
+    "auto-detected",
+    "style-fix",
+    "tsx"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T08:34:36.605Z"
+  },
+  {
+   "id": "bug-1475",
+   "timestamp": "2026-08-05T08:34:38.423Z",
+   "error_message": "Type error",
+   "file": "components/controller/CardActionSheet.tsx",
+   "root_cause": "Missing or incorrect type annotation",
+   "fix": "Added type assertion/annotation",
+   "tags": [
+    "auto-detected",
+    "type-fix",
+    "tsx"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T08:34:38.423Z"
+  },
+  {
+   "id": "bug-1476",
+   "timestamp": "2026-08-05T08:34:42.985Z",
+   "error_message": "Null/undefined access in ",
+   "file": "components/controller/CardActionSheet.tsx",
+   "root_cause": "Property access on potentially null/undefined value",
+   "fix": "Added null safety (optional chaining or null check)",
+   "tags": [
+    "auto-detected",
+    "null-safety",
+    "tsx"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T08:34:42.985Z"
+  },
+  {
+   "id": "bug-1477",
+   "timestamp": "2026-08-05T08:35:17.818Z",
+   "error_message": "CSS fix: creatureEffect",
+   "file": "components/ControllerListV5.tsx",
+   "root_cause": "creatureEffect: async (cardId: string, targetCardId: string) => { → async (cardId: string, targetCardId: string, freeCast = false) => {",
+   "fix": "Changed creatureEffect: async (cardId: string, targetCardId: string) => { → async (cardId: string, targetCardId: string, freeCast = false) => {",
+   "tags": [
+    "auto-detected",
+    "style-fix",
+    "tsx"
+   ],
+   "related_bugs": [],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T08:35:17.818Z"
+  },
+  {
+   "id": "bug-2703",
+   "timestamp": "2026-08-05T08:43:36.024Z",
+   "error_message": "FC3: free cast van een kaart ZONDER free_cast_condition werd geaccepteerd (Missing expected rejection) — de guard vuurde niet",
+   "file": "supabase/functions_src/put_action_on_stack.sql",
+   "root_cause": "SQL three-valued logic: jsonb_typeof(script -> 'ontbrekende_key') is NULL, en NULL <> 'object' evalueert naar NULL (niet true), dus `if ... or NULL` slaat de raise over. Zelfde bugklasse als de JS undefined/NaN-vergelijkingen uit de proposal-validate-les (bug-2701-ronde).",
+   "fix": "coalesce(jsonb_typeof(...), 'missing') <> 'object' — de guard vuurt nu ook bij een ontbrekende key. Gevangen door de RED-first feature-test vóór commit.",
+   "tags": [
+    "plpgsql",
+    "null-propagation",
+    "three-valued-logic",
+    "free-cast",
+    "guard-bypass"
+   ],
+   "related_bugs": [
+    "bug-2701"
+   ],
+   "occurrences": 1,
+   "last_seen": "2026-08-05T08:43:36.024Z"
   }
  ]
 }

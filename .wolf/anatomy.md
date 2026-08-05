@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T08:26:59.287Z
-> Files: 21 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T08:43:26.872Z
+> Files: 25 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -43,6 +43,7 @@
 
 - `append-bug.mjs` — Declares path (~294 tok)
 - `append-wolf.mjs` — Declares mem (~819 tok)
+- `append-wolf2.mjs` — buglog: FC3 caught a real guard-bypass pre-commit (~1216 tok)
 - `overload-cards.txt` (~8 tok)
 
 ## ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/a403f535-8b14-4f77-9426-b571a70d18cf/scratchpad/
@@ -279,7 +280,7 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~74431 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~74521 tok)
 
 ## components/board/
 
@@ -289,7 +290,7 @@
 
 ## components/controller/
 
-- `CardActionSheet.tsx` — Current turn number — gates a GRANTED flashback (Snapcaster, mig 392). (~22324 tok)
+- `CardActionSheet.tsx` — Current turn number — gates a GRANTED flashback (Snapcaster, mig 392). (~22957 tok)
 
 ## components/deck/
 
@@ -315,7 +316,7 @@
 
 ## docs/commander-decks/
 
-- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15078 tok)
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15117 tok)
 
 ## docs/superpowers/plans/
 
@@ -337,9 +338,9 @@
 
 ## lib/game/
 
-- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13353 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~24198 tok)
-- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4367 tok)
+- `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13367 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~24287 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4434 tok)
 
 ## lib/intelligence/
 
@@ -373,12 +374,14 @@
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14500 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~4370 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~1434 tok)
+- `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~3221 tok)
 - `submit_decision.sql` — Declares public (~17784 tok)
 
 ## supabase/migrations/
 
 - `202605010427_basic_landcycling.sql` — 202605010427_basic_landcycling (~19186 tok)
 - `202605010428_overload.sql` — 202605010428_overload (~19028 tok)
+- `202605010429_conditional_free_cast.sql` — 202605010429_conditional_free_cast (~3403 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -388,6 +391,7 @@
 
 ## tests/feature/
 
+- `free-cast-condition.test.ts` — Conditional free cast (mig 429, Deadly Rollick) — "If you control a (~1066 tok)
 - `landcycling.test.ts` — Basic landcycling (mig 427) — "{2}, Discard this card: Search your library (~1137 tok)
 - `overload.test.ts` — Overload (mig 428) — "You may cast this spell for its overload cost. If you (~1603 tok)
 
@@ -396,7 +400,7 @@
 
 ## tests/harness/
 
-- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10931 tok)
+- `scenario.ts` — Create a session. Seat A is the creator + active player; B/C/D join in seat (~10947 tok)
 
 ## tests/regression/
 

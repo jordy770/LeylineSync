@@ -8608,3 +8608,36 @@
 | 11:0x | GREEN: mig 428 (p_overload op cast_spell_effect + bounce_all scope opponent), test-db + play-db gemigreerd; 5/5 groen | functions_src, migrations/202605010428_overload.sql | 5/5 PASS | ~12k |
 | 11:2x | Schema + scripts + client: overload/overload_effect in zod+types, Cyclonic Rift & Vandalblast geupsert (--force), Overload-knop in CardActionSheet + overloadCast-handler | card-behavior(-schema).ts, card-scripts.json, CardActionSheet.tsx, ControllerListV5.tsx, actions.ts | tsc+lint schoon | ~15k |
 | 11:4x | Volle suite 2494/2494 groen; backlog-doc kop (274/25), dashboard-tracks 6/31, dashboards hergegenereerd; bug-2702 gelogd (@ts-expect-error TS2578) | test-dashboard.html, backlog-doc, dashboard-tracks.json, buglog.json | DONE | ~10k |
+| 10:29 | Edited tests/harness/scenario.ts | modified putOnStack() | ~156 |
+| 10:29 | Created tests/feature/free-cast-condition.test.ts | — | ~1058 |
+| 10:29 | Edited tests/feature/free-cast-condition.test.ts | 3→4 lines | ~44 |
+| 10:30 | Edited supabase/functions_src/put_action_on_stack.sql | modified public() | ~132 |
+| 10:30 | Edited supabase/functions_src/put_action_on_stack.sql | 2→3 lines | ~20 |
+| 10:30 | Edited supabase/functions_src/put_action_on_stack.sql | modified cast() | ~384 |
+| 10:30 | Edited supabase/functions_src/put_action_on_stack.sql | 6→7 lines | ~142 |
+| 10:30 | Edited supabase/functions_src/put_action_on_stack.sql | inline fix | ~28 |
+| 10:31 | Edited supabase/migrations/202605010429_conditional_free_cast.sql | modified if() | ~262 |
+| 10:32 | Edited supabase/functions_src/put_action_on_stack.sql | 4→6 lines | ~98 |
+| 10:32 | Edited supabase/migrations/202605010429_conditional_free_cast.sql | modified if() | ~262 |
+| 10:33 | Edited lib/game/actions.ts | modified putTargetedCreatureActionOnStack() | ~208 |
+| 10:33 | Edited lib/game/card-behavior-schema.ts | modified cast() | ~137 |
+| 10:33 | Edited lib/game/card-behavior.ts | modified Overload() | ~108 |
+| 10:33 | Edited lib/game/card-behavior.ts | 3→4 lines | ~46 |
+| 10:34 | Edited components/controller/CardActionSheet.tsx | inline fix | ~28 |
+| 10:34 | Edited components/controller/CardActionSheet.tsx | modified cast() | ~108 |
+| 10:34 | Edited components/controller/CardActionSheet.tsx | added nullish coalescing | ~242 |
+| 10:34 | Edited components/controller/CardActionSheet.tsx | 5→5 lines | ~79 |
+| 10:34 | Edited components/controller/CardActionSheet.tsx | CSS: active | ~314 |
+| 10:35 | Edited components/controller/CardActionSheet.tsx | 13→13 lines | ~223 |
+| 10:35 | Edited components/ControllerListV5.tsx | added 1 condition(s) | ~316 |
+| 10:35 | Edited components/ControllerListV5.tsx | inline fix | ~40 |
+| 10:38 | Edited components/controller/CardActionSheet.tsx | 2→5 lines | ~103 |
+| 10:38 | Edited components/controller/CardActionSheet.tsx | 2→3 lines | ~19 |
+| 10:38 | Edited components/controller/CardActionSheet.tsx | 4→2 lines | ~35 |
+| 10:38 | Edited components/ControllerListV5.tsx | 1→2 lines | ~52 |
+| 10:42 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~96 |
+| 10:43 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf2.mjs | — | ~1216 |
+| 12:0x | Slice 3 Deadly Rollick RED: fixture Free Rollick Test + 4 feature-tests; FC1/FC2 falen op ontbrekende p_free_cast | tests/feature/free-cast-condition.test.ts, test-cards.json, scenario.ts | RED | ~8k |
+| 12:2x | Mig 429: p_free_cast op put_action_on_stack (script-gated, controls_commander engine-check); FC3 ving NULL-propagation-bug in de guard (bug-2703), coalesce-fix, play-DB handmatig bijgewerkt (mig al gestempeld) | put_action_on_stack.sql, migrations/429 | 4/4 PASS | ~14k |
+| 12:4x | Rollick client: free_cast_condition in zod+types, Cast-free-knop (emerald) + freeCastPick-picker-flow, creatureEffect free-routing, controlsCommander-prop; Deadly Rollick geupsert; tsc+lint schoon | CardActionSheet.tsx, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts, card-scripts.json | schoon | ~15k |
+| 12:5x | Volle suite 2498/2498; backlog-kop (273/24), tracks 7/31, dashboards hergegenereerd | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
