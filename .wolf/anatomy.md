@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T10:30:11.118Z
-> Files: 50 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-05T10:41:08.436Z
+> Files: 56 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/jobs/adcb6c2b/tmp/
 
@@ -48,11 +48,13 @@
 - `append-wolf4.mjs` — Declares mem (~751 tok)
 - `append-wolf5.mjs` — buglog: the cp1252 mojibake incident (~1376 tok)
 - `append-wolf6.mjs` — buglog: convoke render-site arg-drop (found while wiring spectacle) (~1231 tok)
+- `append-wolf7.mjs` — Declares mem (~796 tok)
 - `buyback-cards.txt` (~8 tok)
-- `commitmsg.txt` (~224 tok)
+- `commitmsg.txt` (~235 tok)
 - `convoke-cards.txt` (~19 tok)
 - `delve-cards.txt` (~10 tok)
 - `fix-mojibake.mjs` — Declares p (~393 tok)
+- `madness-cards.txt` (~11 tok)
 - `mech-cards.txt` (~13 tok)
 - `overload-cards.txt` (~8 tok)
 
@@ -290,7 +292,7 @@
 
 ## components/
 
-- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~75670 tok)
+- `ControllerListV5.tsx` — The mana an untapped card auto-produces when it has exactly one simple (~76199 tok)
 
 ## components/board/
 
@@ -327,7 +329,7 @@
 
 ## docs/commander-decks/
 
-- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15380 tok)
+- `engine-blocked-backlog-2026-07-18.md` — Engine-blocked backlog — flagged-but-unfixed kaarten (~15445 tok)
 
 ## docs/superpowers/plans/
 
@@ -350,8 +352,8 @@
 ## lib/game/
 
 - `actions.ts` — Exports getErrorMessage, setCardTapped, moveCardToZone, castCardFromHand + 24 more (~13546 tok)
-- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~24687 tok)
-- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4604 tok)
+- `card-behavior-schema.ts` — ─── Shared primitives ─────────────────────────────────────────────────────── (~24799 tok)
+- `card-behavior.ts` — Classify a catalog card's rules readiness for the deck editor: (~4676 tok)
 
 ## lib/intelligence/
 
@@ -383,16 +385,18 @@
 ## supabase/functions_src/
 
 - `apply_convoke.sql` — supabase/functions_src/apply_convoke.sql (~962 tok)
+- `apply_trigger_effects.sql` — supabase/functions_src/apply_trigger_effects.sql (~24500 tok)
 - `apply_triggered_ability_effects.sql` — supabase/functions_src/apply_triggered_ability_effects.sql (~14500 tok)
 - `cast_card_from_hand.sql` — supabase/functions_src/cast_card_from_hand.sql (~7271 tok)
 - `cast_spell_effect.sql` — supabase/functions_src/cast_spell_effect.sql (~6037 tok)
 - `cycle_card.sql` — supabase/functions_src/cycle_card.sql (~1434 tok)
+- `discard_card.sql` — supabase/functions_src/discard_card.sql (~779 tok)
 - `finalize_stack_resolution.sql` — supabase/functions_src/finalize_stack_resolution.sql (~650 tok)
 - `handle_cast_permanent.sql` — supabase/functions_src/handle_cast_permanent.sql (~1405 tok)
 - `put_action_on_stack.sql` — supabase/functions_src/put_action_on_stack.sql (~4179 tok)
 - `reduce_generic_cost.sql` — supabase/functions_src/reduce_generic_cost.sql (~376 tok)
 - `register_card_continuous_effects.sql` — supabase/functions_src/register_card_continuous_effects.sql (~3226 tok)
-- `submit_decision.sql` — Declares public (~17784 tok)
+- `submit_decision.sql` — Declares public (~19318 tok)
 
 ## supabase/migrations/
 
@@ -403,6 +407,7 @@
 - `202605010431_delve.sql` — 202605010431_delve (~9985 tok)
 - `202605010432_convoke.sql` — 202605010432_convoke (~16487 tok)
 - `202605010433_evoke_blitz_spectacle.sql` — 202605010433_evoke_blitz_spectacle (~14806 tok)
+- `202605010434_madness.sql` — 202605010434_madness (~43843 tok)
 
 ## supabase/migrations/ (200-215, 2026-06-10)
 
@@ -418,6 +423,7 @@
 - `delve.test.ts` — Delve (mig 431, Treasure Cruise / Dig Through Time) — "Each card you exile (~1595 tok)
 - `free-cast-condition.test.ts` — Conditional free cast (mig 429, Deadly Rollick) — "If you control a (~1066 tok)
 - `landcycling.test.ts` — Basic landcycling (mig 427) — "{2}, Discard this card: Search your library (~1137 tok)
+- `madness.test.ts` — Madness (mig 434, From Under the Floorboards / Markov Baron) — "If you (~1607 tok)
 - `overload.test.ts` — Overload (mig 428) — "You may cast this spell for its overload cost. If you (~1603 tok)
 
 ## tests/fixtures/

@@ -8804,3 +8804,24 @@
 | 19:2x | Client: evoke/blitz/spectacle in zod+types + 3 one-tap-knoppen (cyan/rose/yellow); castSpell-opts altCost, spellEffect spectacle-flag; render-site-arg-drop van convoke gevonden en gefixt (bug-2705); 3 kaartscripts geupsert | CardActionSheet.tsx, ControllerListV5.tsx, actions.ts, card-behavior(-schema).ts | tsc/lint schoon | ~18k |
 | 19:4x | Volle suite 2523/2523; backlog-kop (262/13), tracks 18/31, dashboards | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
 | 12:30 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~239 |
+| 12:33 | Created tests/feature/madness.test.ts | — | ~1607 |
+| 12:33 | Created supabase/functions_src/discard_card.sql | — | ~779 |
+| 12:33 | Edited supabase/functions_src/apply_trigger_effects.sql | reduced (-6 lines) | ~168 |
+| 12:34 | Edited supabase/functions_src/apply_trigger_effects.sql | modified coalesce() | ~128 |
+| 12:34 | Edited supabase/functions_src/submit_decision.sql | modified select() | ~266 |
+| 12:34 | Edited supabase/functions_src/submit_decision.sql | expanded (+6 lines) | ~58 |
+| 12:34 | Edited supabase/functions_src/submit_decision.sql | modified Madness() | ~1386 |
+| 12:34 | Edited supabase/migrations/202605010434_madness.sql | modified Madness() | ~256 |
+| 12:35 | Edited components/ControllerListV5.tsx | added nullish coalescing | ~516 |
+| 12:35 | Edited components/ControllerListV5.tsx | 2→4 lines | ~117 |
+| 12:36 | Edited lib/game/card-behavior-schema.ts | modified Spectacle() | ~162 |
+| 12:36 | Edited lib/game/card-behavior.ts | modified spectacle() | ~86 |
+| 12:36 | Edited lib/game/card-behavior.ts | 4→6 lines | ~54 |
+| 12:36 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/madness-cards.txt | — | ~12 |
+| 12:40 | Edited docs/commander-decks/engine-blocked-backlog-2026-07-18.md | inline fix | ~149 |
+| 12:40 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/append-wolf7.mjs | — | ~796 |
+| 20:1x | Madness verkend: discard-paden gemapt (2 bulk-random-branches in apply_trigger_effects + choose_cards→graveyard in submit_decision); geen CHECK-constraint op decision_type (wel gecheckt — CV7-les) | functions_src | ontwerp staat | ~12k |
+| 20:4x | RED 6 madness-tests → GREEN mig 434: discard_card-helper (madness → exile + stack-loze madness_cast-decision), alle discard-paden omgelegd, madness_cast-submit-branch (pay met X, cast_permanent-push of X-gesubstitueerd madness_effect-program, watchers+cast-triggers); 6/6 in één keer groen | discard_card.sql, apply_trigger_effects.sql, submit_decision.sql, migrations/434 | 6/6 PASS | ~25k |
+| 21:0x | Client MadnessBody (cast-met-X-input / to-graveyard) in de decision-renderer; madness+madness_effect in zod+types; From Under the Floorboards + Markov Baron geupsert (Markov Baron nu volledig) | ControllerListV5.tsx, card-behavior(-schema).ts, card-scripts.json | tsc/lint schoon | ~10k |
+| 21:2x | Volle suite 2529/2529; backlog-kop (261/12), tracks 19/31, dashboards | test-dashboard.html, backlog-doc, dashboard-tracks.json | DONE | ~8k |
+| 12:41 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commitmsg.txt | — | ~251 |
