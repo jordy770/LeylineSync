@@ -53,6 +53,15 @@ begin
       p_session_id, p_source_card_id, p_controller_id, v_effect -> 'amount');
     v_recipient := lower(coalesce(v_effect ->> 'recipient', ''));
 
+    -- ×-number-of-opponents rider (mig 435, Exsanguinate / Malakir Bloodwitch:
+    -- "you gain life equal to the life lost this way" — base amount times the
+    -- number of opponents in multiplayer).
+    if coalesce((v_effect ->> 'times_opponents')::boolean, false) then
+      v_eff_amount := v_eff_amount * (
+        select count(*)::integer from public.game_session_players
+        where session_id = p_session_id and player_id is distinct from p_controller_id);
+    end if;
+
     if v_eff_type = 'untap_all_attackers' then
       -- "Untap all attacking creatures" (mig 250, Scourge of the Throne).
       update public.game_cards gc
@@ -357,6 +366,27 @@ begin
       if p_controller_id is not null and v_eff_amount > 0 then
         perform public.amass(p_session_id, p_controller_id, v_eff_amount);
       end if;
+
+    elsif v_eff_type = 'shuffle_graveyards_into_libraries' then
+      -- Survive (mig 435, Struggle // Survive's aftermath half): each player
+      -- shuffles their graveyard into their library — move, then reshuffle the
+      -- whole library so the returned cards land in random positions.
+      for v_rid in
+        select player_id from public.game_session_players where session_id = p_session_id
+      loop
+        update public.game_cards
+        set zone = 'library', is_tapped = false, damage_marked = 0
+        where session_id = p_session_id and owner_id = v_rid and zone = 'graveyard';
+        with shuffled as (
+          select id, (row_number() over (order by random())) - 1 as pos
+          from public.game_cards
+          where session_id = p_session_id and owner_id = v_rid and zone = 'library'
+        )
+        update public.game_cards g
+        set zone_position = shuffled.pos
+        from shuffled
+        where g.id = shuffled.id;
+      end loop;
 
     elsif v_eff_type = 'destroy_all' then
       if p_controller_id is not null then

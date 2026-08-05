@@ -12976,5 +12976,110 @@
       "schema_version": 2,
       "madness": "{1}{B}"
     }
+  },
+  {
+    "name": "Drain All Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Each opponent loses X life. You gain life equal to the life lost this way.",
+    "power_toughness": null,
+    "mana_cost": "{X}{B}{B}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "lose_life",
+            "amount": "X",
+            "recipient": "each_opponent"
+          },
+          {
+            "type": "gain_life",
+            "amount": "X",
+            "recipient": "controller",
+            "times_opponents": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Bond Drain Test",
+    "type_line": "Enchantment",
+    "oracle_text": "Whenever you gain life, target opponent loses that much life.",
+    "power_toughness": null,
+    "mana_cost": "{3}{B}{B}",
+    "script": {
+      "schema_version": 2,
+      "triggered_abilities": [
+        {
+          "event": "you_gain_life",
+          "effects": [
+            {
+              "type": "choose_player",
+              "filter": "opponent",
+              "effects": [
+                {
+                  "type": "lose_life",
+                  "amount": "event_amount"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Graf Priest Test",
+    "type_line": "Creature - Human Cleric",
+    "oracle_text": "At the beginning of your end step, create X 1/1 white Spirit creature tokens with flying, where X is the number of opponents who control more lands than you.",
+    "power_toughness": "1/2",
+    "mana_cost": "{2}{W}",
+    "script": {
+      "schema_version": 2,
+      "triggered_abilities": [
+        {
+          "event": "end_step",
+          "effects": [
+            {
+              "type": "create_token",
+              "token": "Spirit Token",
+              "count": {
+                "count": "opponents_with_more_lands"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Aftermath Survive Test",
+    "type_line": "Instant - Sorcery",
+    "oracle_text": "Struggle: deal damage. // Survive: Each player shuffles their graveyard into their library.",
+    "power_toughness": null,
+    "mana_cost": "{2}{R}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "deal_damage",
+            "amount": {
+              "count": "lands_you_control"
+            },
+            "target_type": "creature"
+          }
+        ]
+      },
+      "flashback": "{1}{G}",
+      "flashback_effect": {
+        "actions": [
+          {
+            "type": "shuffle_graveyards_into_libraries"
+          }
+        ]
+      }
+    }
   }
 ]

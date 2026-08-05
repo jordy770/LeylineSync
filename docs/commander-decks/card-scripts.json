@@ -10847,6 +10847,14 @@
           "target_type": "creature"
         }
       ]
+    },
+    "flashback": "{1}{G}",
+    "flashback_effect": {
+      "actions": [
+        {
+          "type": "shuffle_graveyards_into_libraries"
+        }
+      ]
     }
   },
   "Sylvan Reclamation": {
@@ -12061,7 +12069,9 @@
           {
             "type": "create_token",
             "token": "Spirit Token",
-            "count": 1
+            "count": {
+              "count": "opponents_with_more_lands"
+            }
           }
         ]
       }
@@ -13594,7 +13604,8 @@
         {
           "type": "gain_life",
           "amount": "X",
-          "recipient": "controller"
+          "recipient": "controller",
+          "times_opponents": true
         }
       ]
     }
@@ -16313,7 +16324,8 @@
               "count": "creatures_you_control",
               "type_line": "Vampire"
             },
-            "recipient": "controller"
+            "recipient": "controller",
+            "times_opponents": true
           }
         ]
       }
@@ -25156,9 +25168,14 @@
         "event": "you_gain_life",
         "effects": [
           {
-            "type": "lose_life",
-            "amount": "event_amount",
-            "recipient": "each_opponent"
+            "type": "choose_player",
+            "filter": "opponent",
+            "effects": [
+              {
+                "type": "lose_life",
+                "amount": "event_amount"
+              }
+            ]
           }
         ]
       }
@@ -25188,9 +25205,14 @@
         "event": "you_gain_life",
         "effects": [
           {
-            "type": "lose_life",
-            "amount": "event_amount",
-            "recipient": "each_opponent"
+            "type": "choose_player",
+            "filter": "opponent",
+            "effects": [
+              {
+                "type": "lose_life",
+                "amount": "event_amount"
+              }
+            ]
           }
         ]
       }

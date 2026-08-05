@@ -207,7 +207,7 @@ export const KNOWN_V2_ACTION_TYPES = [
   'destroy_all_mv', 'add_poison', 'exile_graveyard', 'ixhel_corrupted_exile',
   'exile_all', 'graveyard_to_library_top', 'animate', 'shuffle_self_into_library',
   'job_select', 'advance_saga', 'grant_flashback', 'hand_to_library_top',
-  'exile_graveyard_until_leaves', 'choose_land_type',
+  'exile_graveyard_until_leaves', 'choose_land_type', 'shuffle_graveyards_into_libraries',
 ] as const
 
 const UnknownV2ActionSchema = z.object({
@@ -237,7 +237,7 @@ const DynamicAmountSchema = z.object({
 // A count-based dynamic amount: "X = number of creatures you control / cards in your
 // graveyard / your devotion to <color>". Relative to the amount's controller.
 const CountAmountSchema = z.object({
-  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters', 'countered_creatures_you_control', 'opponent_hand_excess', 'lands_and_graveyard_lands', 'opponent_lands', 'max_life_lost_this_turn', 'players_lost_life_this_turn', 'num_opponents', 'opponent_artifacts_and_enchantments', 'creatures_on_battlefield', 'tokens_created_this_turn']),
+  count: z.enum(['creatures_you_control', 'lands_you_control', 'cards_in_graveyard', 'creatures_died_this_turn', 'nontoken_creatures_died_this_turn', 'artifacts_you_control', 'commanders_you_control', 'graveyard_casts_this_turn', 'greatest_mana_value_you_control', 'cards_in_hand', 'total_power_you_control', 'permanents_you_control', 'greatest_power_you_control', 'devotion', 'opponent_poison_counters', 'countered_creatures_you_control', 'opponent_hand_excess', 'lands_and_graveyard_lands', 'opponent_lands', 'max_life_lost_this_turn', 'players_lost_life_this_turn', 'num_opponents', 'opponent_artifacts_and_enchantments', 'creatures_on_battlefield', 'tokens_created_this_turn', 'opponents_with_more_lands']),
   // times (mig 268, Filigree Angel / Benevolent Offering): the resolved count
   // is multiplied by this. Re-added in the mig 281 cleanup — the original
   // edit silently no-opped on a CRLF regex; the hosted upsert validator
@@ -336,11 +336,15 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('gain_life'),
     amount: AmountSchema,
     recipient: BehaviorRecipientSchema.optional(),
+    // ×-number-of-opponents (mig 435, Exsanguinate / Malakir Bloodwitch:
+    // "you gain life equal to the life lost this way" in multiplayer).
+    times_opponents: z.boolean().optional(),
   }),
   z.object({
     type: z.literal('lose_life'),
     amount: AmountSchema,
     recipient: BehaviorRecipientSchema.optional(),
+    times_opponents: z.boolean().optional(),
   }),
   z.object({
     type: z.literal('draw'),
@@ -781,6 +785,11 @@ const CardBehaviorActionSchema = z.union([
     type: z.literal('bounce_all'),
     nonland: z.boolean().optional(),
     scope: z.enum(['all', 'opponent']).optional(),
+  }),
+  // Survive (mig 435, Struggle // Survive): each player shuffles their
+  // graveyard into their library.
+  z.object({
+    type: z.literal('shuffle_graveyards_into_libraries'),
   }),
   // Phyrexian Rebirth (mig 269): wipe all creatures, then an X/X token where
   // X is the number destroyed.
@@ -1360,7 +1369,7 @@ const CardBehaviorActivatedAbilitySchema = z.object({
     z.object({
       // tokens_created_this_turn (mig 399, Idol of Oblivion: "Activate only if
       // you created a token this turn") — turn-stamped by fire_token_created.
-      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'commanders_you_control', 'total_power_you_control', 'permanents_you_control', 'tokens_created_this_turn']),
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'commanders_you_control', 'total_power_you_control', 'permanents_you_control', 'tokens_created_this_turn', 'opponents_with_more_lands']),
       type_line: z.string().optional(),
       at_least: z.number().int().positive(),
     }).strict(),

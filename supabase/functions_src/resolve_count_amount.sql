@@ -299,6 +299,24 @@ begin
     from public.game_session_players
     where session_id = p_session_id and coalesce(life_lost_this_turn, 0) > 0;
 
+  elsif v_count = 'opponents_with_more_lands' then
+    -- Priest of the Blessed Graf (mig 435): "the number of opponents who
+    -- control more lands than you."
+    select count(*)::integer into v_n
+    from public.game_session_players sp
+    where sp.session_id = p_session_id
+      and sp.player_id is distinct from p_controller_id
+      and (select count(*) from public.game_cards gc
+           join public.cards c on c.id = gc.card_id
+           where gc.session_id = p_session_id and gc.zone = 'battlefield'
+             and coalesce(gc.controller_player_id, gc.owner_id) = sp.player_id
+             and c.type_line ilike '%land%')
+        > (select count(*) from public.game_cards gc
+           join public.cards c on c.id = gc.card_id
+           where gc.session_id = p_session_id and gc.zone = 'battlefield'
+             and coalesce(gc.controller_player_id, gc.owner_id) = p_controller_id
+             and c.type_line ilike '%land%');
+
   elsif v_count = 'num_opponents' then
     -- Other players in the game (mig 298, Syphon Mind: "draw a card for each
     -- card discarded this way" ~ one per opponent who discarded).

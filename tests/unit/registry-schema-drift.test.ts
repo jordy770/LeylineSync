@@ -92,6 +92,7 @@ const JSON_ONLY: Record<string, string> = {
   graveyard_to_library_top: 'put a graveyard card on top of its owners library (Noxious Revival, mig 275); JSON/AI-authored',
   shuffle_self_into_library: 'omen back-face rider — the source shuffles itself away (Flush Out / Dynamic Soar, mig 289); JSON/AI-authored',
   animate: 'target land becomes an X/X creature, still a land (Obuun / Embodiment / Waker, mig 277); JSON/AI-authored',
+  shuffle_graveyards_into_libraries: 'each player shuffles their graveyard into their library (Struggle // Survive aftermath, mig 435); JSON/AI-authored',
 }
 
 const registryTypes = new Set(EFFECT_REGISTRY.map((def) => def.type))
