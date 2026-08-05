@@ -2203,7 +2203,10 @@
           {
             "type": "return_from_graveyard",
             "filter": {
-              "type_line": "Dragon"
+              "types": [
+                "Dragon",
+                "Ugin"
+              ]
             },
             "to": "hand"
           }
@@ -9105,7 +9108,7 @@
         "effects": [
           {
             "type": "exile_until_leaves",
-            "target_type": "creature",
+            "target_type": "nonland_permanent",
             "target_controller": "opponent"
           }
         ]
@@ -9632,6 +9635,13 @@
           ]
         }
       ]
+    },
+    "cost_reduction": {
+      "amount": 3,
+      "if": {
+        "count": "nonland_permanents_on_battlefield",
+        "at_least": 10
+      }
     }
   },
   "Inspiring Call": {
@@ -16506,6 +16516,13 @@
             "keyword": "lifelink",
             "target_type": "creature",
             "target_controller": "you"
+          },
+          {
+            "type": "add_counters",
+            "amount": 1,
+            "target_type": "creature",
+            "target_controller": "you",
+            "if_target_type_line": "Vampire"
           }
         ]
       },
@@ -19512,12 +19529,24 @@
           {
             "type": "sacrifice",
             "who": "you",
-            "count": 1
+            "count": 1,
+            "filter": {
+              "type_line_any": [
+                "creature",
+                "planeswalker"
+              ]
+            }
           },
           {
             "type": "sacrifice",
             "who": "each_opponent",
-            "count": 1
+            "count": 1,
+            "filter": {
+              "type_line_any": [
+                "creature",
+                "planeswalker"
+              ]
+            }
           }
         ]
       }
@@ -25174,12 +25203,24 @@
           {
             "type": "sacrifice",
             "who": "you",
-            "count": 1
+            "count": 1,
+            "filter": {
+              "type_line_any": [
+                "creature",
+                "planeswalker"
+              ]
+            }
           },
           {
             "type": "sacrifice",
             "who": "each_opponent",
-            "count": 1
+            "count": 1,
+            "filter": {
+              "type_line_any": [
+                "creature",
+                "planeswalker"
+              ]
+            }
           }
         ]
       }

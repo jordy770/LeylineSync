@@ -995,6 +995,9 @@ const CardBehaviorActionSchema = z.union([
     target_controller: TargetControllerSchema,
     counter_type: PermanentCounterTypeSchema,
     all: z.boolean().optional(),
+    // "If it's a Vampire, put a +1/+1 counter on it" (mig 439, Sorin's +1):
+    // the counter only lands when the target's effective type line matches.
+    if_target_type_line: z.string().optional(),
   }),
   z.object({
     type: z.literal('add_counters_all'),
@@ -1494,7 +1497,7 @@ export const CardBehaviorScriptV2Schema = z.object({
   cost_reduction: z.object({
     amount: z.number().int().positive(),
     if: z.object({
-      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'opponent_graveyard_cards']),
+      count: z.enum(['creatures_you_control', 'lands_you_control', 'artifacts_you_control', 'opponent_graveyard_cards', 'nonland_permanents_on_battlefield']),
       type_line: z.string().optional(),
       at_least: z.number().int().positive(),
     }).strict().optional(),

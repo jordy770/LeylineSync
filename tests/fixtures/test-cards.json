@@ -13376,5 +13376,60 @@
         }
       ]
     }
+  },
+  {
+    "name": "Walker Edict Test",
+    "type_line": "Sorcery",
+    "oracle_text": "Each opponent sacrifices a creature or planeswalker of their choice.",
+    "power_toughness": null,
+    "mana_cost": "{2}{B}",
+    "script": {
+      "schema_version": 2,
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "sacrifice",
+            "who": "each_opponent",
+            "count": 1,
+            "filter": {
+              "type_line_any": [
+                "creature",
+                "planeswalker"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Revelation Test",
+    "type_line": "Sorcery",
+    "oracle_text": "This spell costs {3} less to cast if there are ten or more nonland permanents on the battlefield.\nDestroy all nonland permanents.",
+    "power_toughness": null,
+    "mana_cost": "{3}{W}{W}{W}",
+    "script": {
+      "schema_version": 2,
+      "cost_reduction": {
+        "amount": 3,
+        "if": {
+          "count": "nonland_permanents_on_battlefield",
+          "at_least": 10
+        }
+      },
+      "spell_effect": {
+        "actions": [
+          {
+            "type": "destroy_all",
+            "types": [
+              "creature",
+              "artifact",
+              "enchantment",
+              "planeswalker"
+            ]
+          }
+        ]
+      }
+    }
   }
 ]

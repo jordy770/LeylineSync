@@ -299,6 +299,15 @@ begin
     from public.game_session_players
     where session_id = p_session_id and coalesce(life_lost_this_turn, 0) > 0;
 
+  elsif v_count = 'nonland_permanents_on_battlefield' then
+    -- Hour of Revelation (mig 439): "if there are ten or more nonland
+    -- permanents on the battlefield" — every player's, any type but land.
+    select count(*)::integer into v_n
+    from public.game_cards gc
+    join public.cards c on c.id = gc.card_id
+    where gc.session_id = p_session_id and gc.zone = 'battlefield'
+      and c.type_line not ilike '%land%';
+
   elsif v_count = 'opponents_attacked_this_combat' then
     -- Melee (mig 438, Drogskol Reinforcements): the number of distinct
     -- opponents attacked by the controller's creatures this combat.
