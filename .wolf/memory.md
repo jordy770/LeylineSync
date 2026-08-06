@@ -9037,3 +9037,11 @@
 | 21:43 | Edited SESSION-PROMPT.md | inline fix | ~87 |
 | 13:1x | Bucket-9-slice (mig 442, reflexive riders): self-pump (Stormshriek), owner_draws (Oblation), grant-expiry (Not Dead After All), artifact_return-emblem (Daretti -10); RED-first 6 tests, volle suite 2572/2572; backlog 212 -> 207, bucket 9 AF | functions_src x5, mig 442, schema, shared.ts, card-scripts.json, ronde-doc | DONE | ~45k |
 | 21:44 | Created ../../AppData/Local/Temp/claude/C--Users-Jordy-dev-LeylineSync/88f928ec-76d7-41da-b21f-cda6d2df47fe/scratchpad/commit-msg-b9.txt | — | ~356 |
+| 21:44 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/engine-primitive-rounds.md | inline fix | ~54 |
+| 21:44 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/engine-primitive-rounds.md | inline fix | ~18 |
+| 21:44 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/engine-primitive-rounds.md | inline fix | ~79 |
+| 21:45 | Edited ../../.claude/projects/C--Users-Jordy-dev-LeylineSync/memory/MEMORY.md | inline fix | ~72 |
+| 09:06 | Edited SESSION-PROMPT.md | 4→5 lines | ~74 |
+| 09:06 | Edited SESSION-PROMPT.md | modified call() | ~581 |
+| 09:07 | Edited SESSION-PROMPT.md | inline fix | ~50 |
+| 13:4x | SESSION-PROMPT ververst: kop 6 aug, "Eerder besloten"-sectie (A2/A3/A5-A8 van 4 aug), 5 verse ANSWERS (prioriteit, deploy, rounds-vervolg, deferrals, Stripe-timing); questions.html 5 open | SESSION-PROMPT.md, questions.html | ok | ~2k |
