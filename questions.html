@@ -86,7 +86,7 @@
 <h1>LeylineSync — Vragen aan Jordy</h1>
 <p class="sub">Beslissingen die alleen jij kunt nemen — bron: het ANSWERS-blok in SESSION-PROMPT.md.</p>
 <p class="gen-note">Gegenereerd — niet handmatig bewerken. Verversen: <code>npm run dashboard</code>.</p>
-<div class="meta"><span class="chip ok">0 open</span><span class="chip ok">8 beantwoord</span></div>
+<div class="meta"><span class="chip warn">5 open</span><span class="chip ok">0 beantwoord</span></div>
 </div>
 
 </div>
@@ -95,51 +95,32 @@
 <main>
 
 <h2>Richting van de sessie</h2>
-<div class="q">
-<div class="qhead"><span class="qid">A1</span><span class="badge ok">BEANTWOORD</span></div>
-<p>Welk spoor krijgt deze sessie prioriteit: engine-backlog-rounds, Collection/monetization, opponent-view-implementatie, of open-items.md verversen</p>
-<p class="ans">engine-backlog-rounds</p>
+<div class="q openq">
+<div class="qhead"><span class="qid">A1</span><span class="badge warn">OPEN</span></div>
+<p>Welk spoor krijgt deze sessie prioriteit: (a) engine-backlog-rounds voortzetten (buckets 10+ / bucket-1-triage), (b) live phone-test van de nieuwe cast-UI (~10 knoppen/pickers uit de ronde van 5–6 aug, nog nooit in een echt potje gezien — aangeraden vóór verder UI-werk of deploy), (c) Collection: import-wizard + teaser + veilige her-import (voorwerk voor premium), (d) opponent-view implementeren, (e) open-items.md re-scan en herschrijven</p>
+<p class="ans">Nog geen antwoord — vul het ANSWERS-blok in SESSION-PROMPT.md in.</p>
 </div>
 
 <h2>Beslissingen die openstaan</h2>
-<div class="q">
-<div class="qhead"><span class="qid">A2</span><span class="badge ok">BEANTWOORD</span></div>
-<p>Collection als monetization-pijler: wat komt achter de paywall (deck-generatie? AI-suggesties? alles boven N decks?) en wat blijft gratis/heuristisch</p>
-<p class="ans">Wat lijkt jou de beste manier om het toegankelijk te houden maar ook interesant te maken om het uit te willen proberen. Er zijn al best veel collection apps en deck build apps misschien, concurentie analyse doen en vanuit daar meer informatie of een richting uit te kiezen.</p>
+<div class="q openq">
+<div class="qhead"><span class="qid">A2</span><span class="badge warn">OPEN</span></div>
+<p>v0.20 naar OVH deployen (migs 419–442 staan alleen lokaal)? Advies: pas ná de phone-test (A1-b); de deploy is jouw call (flow in docs/deploy-ovh.md + hosting-memory, incl. script-upsert erna)</p>
+<p class="ans">Nog geen antwoord — vul het ANSWERS-blok in SESSION-PROMPT.md in.</p>
 </div>
-<div class="q">
-<div class="qhead"><span class="qid">A3</span><span class="badge ok">BEANTWOORD</span></div>
-<p>Opponent-view-redesign (mockups/opponent-view-flow.html): nu bouwen, of eerst het Collection-spoor afmaken</p>
-<p class="ans">Collection-spoor afmaken</p>
+<div class="q openq">
+<div class="qhead"><span class="qid">A3</span><span class="badge warn">OPEN</span></div>
+<p>Engine-rounds-vervolg (als A1-a): de dunne buckets 10–34 aflopen (b10 deal_damage-exclusies ×5, b11 colour-lock lands ×4, …), of de bucket-1-misc (136 kaarten) triageren in nieuwe sub-buckets, of een doeldeck kiezen en diens gaten volgen</p>
+<p class="ans">Nog geen antwoord — vul het ANSWERS-blok in SESSION-PROMPT.md in.</p>
 </div>
-<div class="q">
-<div class="qhead"><span class="qid">A4</span><span class="badge ok">BEANTWOORD</span></div>
-<p>Engine-rounds: akkoord om met bucket 2 (alternative/additional casting cost, 31 kaarten) te beginnen, of liever een doeldeck kiezen en de buckets volgen die dát deck nodig heeft</p>
-<p class="ans">bucket 2 interdaad</p>
+<div class="q openq">
+<div class="qhead"><span class="qid">A4</span><span class="badge warn">OPEN</span></div>
+<p>De 8 gedocumenteerde engine-deferrals met ontwerpnotitie (Emet-Selch, Savage Stomp, Wayta, Myr Battlesphere, Xantcha, Coveted Jewel + b2-misfits): deze ronde meenemen of laten staan</p>
+<p class="ans">Nog geen antwoord — vul het ANSWERS-blok in SESSION-PROMPT.md in.</p>
 </div>
-<div class="q">
-<div class="qhead"><span class="qid">A5</span><span class="badge ok">BEANTWOORD</span></div>
-<p>De niche deferred-gaten uit open-items.md (damage-redirect, planeswalker statics, morph, …): laten liggen tot een deck erom vraagt (huidige lijn), of bewust een sessie inplannen</p>
-<p class="ans">bewust inplannen</p>
-</div>
-
-<h2>Bevestigen (aannames uit deze prompt)</h2>
-<div class="q">
-<div class="qhead"><span class="qid">A6</span><span class="badge ok">BEANTWOORD</span></div>
-<p>Commit-beleid: zelf blijven committen op master (conventional + chore(wolf)), nooit pushen/deployen zonder jouw akkoord — klopt dat zo</p>
-<p class="ans">dat klopt</p>
-</div>
-<div class="q">
-<div class="qhead"><span class="qid">A7</span><span class="badge ok">BEANTWOORD</span></div>
-<p>open-items.md mag herschreven worden zodra de re-scan gedaan is (het oude doc claimt supersedence, dus een verse versie moet dat expliciet overnemen)</p>
-<p class="ans">ja</p>
-</div>
-
-<h2>Nieuw sinds 4 aug (concurrentie-analyse)</h2>
-<div class="q">
-<div class="qhead"><span class="qid">A8</span><span class="badge ok">BEANTWOORD</span></div>
-<p>Paywall-voorstel in docs/collection-optimizer/competitor-analysis-2026-08.md §4: gratis = alles ruimhartig (geen caps) + top-3 buildable commanders als teaser; premium €3,99/mnd of €35/jr = volledige advisor + AI-generatie met dagquotum. Akkoord met grens en prijs, en wanneer/waarmee (Stripe?) bouwen</p>
-<p class="ans">klinkt goed</p>
+<div class="q openq">
+<div class="qhead"><span class="qid">A5</span><span class="badge warn">OPEN</span></div>
+<p>Collection premium: na de import-wizard meteen door met Stripe (€3,99/mnd, A8-besluit van 4 aug), of eerst de IA/usability-restpunten (decklijst, touch-preview)</p>
+<p class="ans">Nog geen antwoord — vul het ANSWERS-blok in SESSION-PROMPT.md in.</p>
 </div>
 </main>
 

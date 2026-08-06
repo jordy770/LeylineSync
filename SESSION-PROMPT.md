@@ -1,7 +1,8 @@
 # Prompt voor de volgende sessie
 
 Kopieer alles tussen de lijnen in een verse Claude Code-conversatie en vul daarna je antwoorden in het
-**ANSWERS**-blok onderaan in. Opgesteld **4 augustus 2026** (na de /decks binder-restyle-run).
+**ANSWERS**-blok onderaan in. Opgesteld **6 augustus 2026** (na de engine-ronde migs 428–442, buckets
+2 t/m 9 afgewerkt, backlog 280 → 207).
 
 > **Dit is de algemene "verder bouwen en de roadmap bewegen"-prompt.** Hij dekt alle sporen: engine,
 > Collection Optimizer, couch-play UX en deploy. Voor bulk-scripting van een nieuw commander-deck bestaat
@@ -87,7 +88,7 @@ is erger.
 | Wat | Detail |
 |---|---|
 | **Engine-backlog-rounds** | 207 kaarten in 34 buckets (was 280; ronde 5–6 aug sloot 73). Buckets 5+7+9 AF; b2 11 misfits, b3/b4/b6/b8 bijna dicht (rest = gedocumenteerde deferrals in het ronde-doc). Massa zit nu in bucket 1 (misc, 136) en buckets 10–34. Per ronde: triage → primitives → scripts → tests → deploy-notitie. |
-| **Collection als monetization-pijler** | Beslissing over paywall-grens en welke AI-features erachter komen staat open (zie ANSWERS). |
+| **Collection als monetization-pijler** | Grens en prijs zijn besloten (zie "Eerder besloten"); te bouwen: import-wizard + teaser + veilige her-import, daarna premium-tier (Stripe). |
 | **Opponent-view implementeren** | Ontwerp klaar, mockup klaar, nul code. Raakt `ControllerListV5` + `OpponentBoardOverlay`. |
 | **`docs/open-items.md` verversen** | Zes weken stale; een re-scan zoals die van 25 juni (claims tegen code verifiëren) is een dagdeel en voorkomt dubbel werk. |
 | **Niche client-gaten** | Modal-spells guided-form editor, hybrid/Phyrexian mana-picker — engine klaar, UI ontbreekt; alleen oppakken als een deck erom vraagt. |
@@ -163,32 +164,38 @@ Zo werkt de interactiviteit — en wat jouw taak daarin is:
 
 ---
 
+## Eerder besloten (niet opnieuw vragen)
+
+- **Paywall-grens en prijs** (4 aug, A8): gratis = alles ruimhartig zonder caps + top-3 buildable
+  commanders als teaser; premium €3,99/mnd of €35/jr = volledige advisor + AI-generatie met dagquotum.
+  Voorstel in `docs/collection-optimizer/competitor-analysis-2026-08.md` §4.
+- **Volgorde Collection vóór opponent-view** (4 aug, A3); binnen Collection eerst import-wizard/usability,
+  dan pas Stripe (dashboard-milestones).
+- **open-items.md mag herschreven** worden zodra de re-scan gedaan is (4 aug, A7).
+- **Niche deferred-gaten**: bewust een sessie inplannen, niet wachten op een deck (4 aug, A5).
+- **Commit-beleid** (4 aug, A6): committen op master (conventional + aparte chore(wolf)), nooit pushen
+  of deployen zonder Jordy's akkoord.
+
 ## ANSWERS
 
 ```
 --- Richting van de sessie ---
-A1 — Welk spoor krijgt deze sessie prioriteit: engine-backlog-rounds, Collection/monetization,
-     opponent-view-implementatie, of open-items.md verversen: engine-backlog-rounds
+A1 — Welk spoor krijgt deze sessie prioriteit:
+     (a) engine-backlog-rounds voortzetten (buckets 10+ / bucket-1-triage),
+     (b) live phone-test van de nieuwe cast-UI (~10 knoppen/pickers uit de ronde van 5–6 aug,
+         nog nooit in een echt potje gezien — aangeraden vóór verder UI-werk of deploy),
+     (c) Collection: import-wizard + teaser + veilige her-import (voorwerk voor premium),
+     (d) opponent-view implementeren,
+     (e) open-items.md re-scan en herschrijven:
 
 --- Beslissingen die openstaan ---
-A2 — Collection als monetization-pijler: wat komt achter de paywall (deck-generatie? AI-suggesties?
-     alles boven N decks?) en wat blijft gratis/heuristisch: Wat lijkt jou de beste manier om het toegankelijk te houden maar ook interesant te maken om het uit te willen proberen. Er zijn al best veel collection apps en deck build apps misschien, concurentie analyse doen en vanuit daar meer informatie of een richting uit te kiezen.
-A3 — Opponent-view-redesign (mockups/opponent-view-flow.html): nu bouwen, of eerst het Collection-spoor
-     afmaken: Collection-spoor afmaken
-A4 — Engine-rounds: akkoord om met bucket 2 (alternative/additional casting cost, 31 kaarten) te beginnen,
-     of liever een doeldeck kiezen en de buckets volgen die dát deck nodig heeft: bucket 2 interdaad
-A5 — De niche deferred-gaten uit open-items.md (damage-redirect, planeswalker statics, morph, …):
-     laten liggen tot een deck erom vraagt (huidige lijn), of bewust een sessie inplannen: bewust inplannen
-
---- Bevestigen (aannames uit deze prompt) ---
-A6 — Commit-beleid: zelf blijven committen op master (conventional + chore(wolf)), nooit pushen/deployen
-     zonder jouw akkoord — klopt dat zo: dat klopt
-A7 — open-items.md mag herschreven worden zodra de re-scan gedaan is (het oude doc claimt supersedence,
-     dus een verse versie moet dat expliciet overnemen): ja
-
---- Nieuw sinds 4 aug (concurrentie-analyse) ---
-A8 — Paywall-voorstel in docs/collection-optimizer/competitor-analysis-2026-08.md §4: gratis = alles
-     ruimhartig (geen caps) + top-3 buildable commanders als teaser; premium €3,99/mnd of €35/jr =
-     volledige advisor + AI-generatie met dagquotum. Akkoord met grens en prijs, en wanneer/waarmee
-     (Stripe?) bouwen: klinkt goed 
+A2 — v0.20 naar OVH deployen (migs 419–442 staan alleen lokaal)? Advies: pas ná de phone-test (A1-b);
+     de deploy is jouw call (flow in docs/deploy-ovh.md + hosting-memory, incl. script-upsert erna):
+A3 — Engine-rounds-vervolg (als A1-a): de dunne buckets 10–34 aflopen (b10 deal_damage-exclusies ×5,
+     b11 colour-lock lands ×4, …), of de bucket-1-misc (136 kaarten) triageren in nieuwe sub-buckets,
+     of een doeldeck kiezen en diens gaten volgen:
+A4 — De 8 gedocumenteerde engine-deferrals met ontwerpnotitie (Emet-Selch, Savage Stomp, Wayta,
+     Myr Battlesphere, Xantcha, Coveted Jewel + b2-misfits): deze ronde meenemen of laten staan:
+A5 — Collection premium: na de import-wizard meteen door met Stripe (€3,99/mnd, A8-besluit van 4 aug),
+     of eerst de IA/usability-restpunten (decklijst, touch-preview):
 ```
