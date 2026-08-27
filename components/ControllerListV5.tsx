@@ -484,6 +484,9 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
   // sessions not started via start_game_session) have opening_hand_kept
   // true/undefined for everyone, so the overlay never shows there.
   const playersNotKept = players.filter((p) => p.opening_hand_kept === false)
+  // Server-side pass_priority is gated until EVERY player keeps — mirror that
+  // exactly here, or auto-pass spams P0001 while an opponent is still mulliganing.
+  const anyOpeningHandPending = playersNotKept.length > 0
   const openingHandWaitingFor = playersNotKept
     .filter((p) => p.player_id !== playerId)
     .map((p) => p.username || `Player ${p.seat_number}`)
@@ -816,7 +819,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
       hasEligibleAttacker,
       hasBlockDecision,
       hasMainPhaseAction,
-      openingHandPending: currentPlayer?.opening_hand_kept === false,
+      openingHandPending: anyOpeningHandPending,
     })
     // TEMP DIAGNOSTIC (autopass v2) — remove after debugging. If you DON'T see this
     // line in the browser console on your main phases, the app is running an OLD
@@ -855,7 +858,7 @@ export default function ControllerListV5({ sessionId }: { sessionId: string }) {
         .catch(() => { /* lost a race to a state change; the next tick re-evaluates */ })
     }, beatMs)
     return () => { cancelled = true; clearTimeout(timer) }
-  }, [autoPass, isYielding, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState, currentStackKey, iHaveResponse, hasEligibleAttacker, hasBlockDecision, hasMainPhaseAction, currentPlayer?.opening_hand_kept])
+  }, [autoPass, isYielding, playerId, isSessionFinished, passBlockReason, supabase, sessionId, refresh, turnState, currentStackKey, iHaveResponse, hasEligibleAttacker, hasBlockDecision, hasMainPhaseAction, anyOpeningHandPending])
 
   // Combat damage is fully resolved once the 'regular' pass has run
   const combatDamageResolved = combatDamageStage === 'regular'

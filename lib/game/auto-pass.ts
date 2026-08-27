@@ -48,8 +48,10 @@ export type AutoPassDecisionInput = {
   hasBlockDecision: boolean
   /** You have something to do in your main phase (land / spell / ability). */
   hasMainPhaseAction: boolean
-  /** Your opening hand isn't kept yet — never auto-pass (it would advance the turn
-   *  and draw a card while the mulligan overlay is still open). */
+  /** ANY player's opening hand isn't kept yet — never auto-pass. The server's
+   *  pass_priority gate blocks until EVERY player has kept, so passing while any
+   *  mulligan is open just spams P0001 errors (and your own open mulligan would
+   *  otherwise advance the turn and draw a card). */
   openingHandPending: boolean
 }
 

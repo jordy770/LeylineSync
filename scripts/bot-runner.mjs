@@ -488,6 +488,14 @@ async function tick(session, bot) {
     return
   }
 
+  // pass_priority is server-gated until EVERY player keeps — while any human is
+  // still mulliganing, passing would just raise P0001 every tick. Wait it out.
+  const anyNotKept = (await q(
+    `select 1 from public.game_session_players where session_id = $1 and opening_hand_kept = false limit 1`,
+    [session],
+  )).length > 0
+  if (anyNotKept) return
+
   // A pending decision the bot owns would hard-stall the game — resolve first.
   await resolveDecisions(session, bot)
 
