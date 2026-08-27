@@ -58,11 +58,15 @@ jobs:
           path: lib/oracle-cards.json
           key: scryfall-oracle-v1
 
+      # Scryfall dropped the plain-JSON `download_uri` (aug 2026); bulk data is now
+      # gzipped JSONL only. Consumers expect a JSON array, so convert with jq -s.
       - name: Download Scryfall oracle bulk (cache miss)
         if: steps.oracle-cache.outputs.cache-hit != 'true'
         run: |
-          url=$(curl -s https://api.scryfall.com/bulk-data/oracle-cards | jq -r .download_uri)
-          curl -sL "$url" -o lib/oracle-cards.json
+          url=$(curl -s https://api.scryfall.com/bulk-data/oracle-cards | jq -re .jsonl_download_uri)
+          curl -sL "$url" -o /tmp/oracle-cards.jsonl.gz
+          gunzip /tmp/oracle-cards.jsonl.gz
+          jq -s '.' /tmp/oracle-cards.jsonl > lib/oracle-cards.json
           ls -la lib/oracle-cards.json
 
       - name: Build test database
